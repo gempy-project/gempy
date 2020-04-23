@@ -37,3 +37,4 @@ def test_restricting_wrapper():
     print(s)
     with pytest.raises(AttributeError):
         print(s.add_surfaces)
+

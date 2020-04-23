@@ -76,15 +76,20 @@ def map_series_to_surfaces(geo_model: Project, mapping_object: Union[dict, pn.Ca
 
 
 # region create
-@_setdoc(Project.__doc__)
 def create_model(project_name='default_project'):
-    """Create a Project object #TODO: Adding saving address
+    """Create a Project object.
 
     Args:
-        project_name:
+        project_name (str): Name of the project
 
     Returns:
-        Project
+        :class:`model.Project`
+
+    See Also:
+        :class:`model.Project`
+
+    Notes:
+        TODO: Adding saving address
     """
     return Project(project_name)
 
@@ -128,32 +133,24 @@ def create_data(project_name: str = 'default_project',
 def init_data(geo_model: Project, extent: Union[list, ndarray] = None,
               resolution: Union[list, ndarray] = None,
               **kwargs) -> Project:
-    """Create a :class:`gempy.core.model.Project` object and initialize some of
-    the main functions such as:
+    """Initialize some of the main functions such as:
 
-     - Grid :class:`gempy.core.data.GridClass`: To regular grid.
-     - read_csv: SurfacePoints and orientations: From csv files
+     - Grid :class:`model.GridClass`: To regular grid.
+     - read_csv: :class:`SurfacePoints` and :class:`Orientations`: From csv files
      - set_values to default
 
     Args:
-        geo_model (Project):
-        extent (list or array): [x_min, x_max, y_min, y_max, z_min, z_max].
-            Extent for the visualization of data and default of for the grid
-            class.
-        resolution (list or array): [nx, ny, nz]. Resolution for the
-            visualization of data and default of for the grid class.
-        **kwargs:
+        geo_model (Project): [s0]
+        extent: [s_extent]
+        resolution: [s_resolution]
 
     Keyword Args:
-        path_i: Path to the data bases of surface_points. Default os.getcwd(),
-        path_o: Path to the data bases of orientations. Default os.getcwd()
-        surface_points_df: A pn.Dataframe object with X, Y, Z, and surface
-         columns
-        orientations_df: A pn.Dataframe object with X, Y, Z, surface columns and
-         pole or orientation columns.
-
+        path_i: [s_path_i]
+        path_o: [s_path_o]
+        surface_points_df: [s_surface_points_df]
+        orientations_df: [s_orientations_df]
     Returns:
-        :class:`gempy.data_management.InputData`
+        :class:`model.Project`
     """
 
     if extent is None or resolution is None:

@@ -74,8 +74,8 @@ def test_pile_geomodel(interpolator):
     geo_model.set_theano_function(interpolator)
     gp.compute_model(geo_model)
 
-    gp.plot.plot_section(geo_model, cell_number=25,
-                         direction='y', show_data=True)
+    gp.plot.plot_2d(geo_model, cell_number=25,
+                    direction='y', show_data=True)
 
     plt.savefig(os.path.dirname(__file__) + '/../figs/test_pile_lith_block')
 
@@ -128,7 +128,7 @@ def test_pile_geomodel_2(interpolator):
     geo_model.set_theano_function(interpolator)
     gp.compute_model(geo_model)
 
-    gp.plot.plot_section(geo_model, cell_number=25,
+    gp.plot.plot_2d(geo_model, cell_number=25,
                          direction='y', show_data=True)
 
     from gempy.plot.plot_api import plot_2d

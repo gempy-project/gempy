@@ -146,7 +146,7 @@ class Plot2D:
             raise AttributeError(str(direction) + "must be a cartesian direction, i.e. xyz")
         return _a, _b, _c, extent_val, x, y, Gx, Gy
 
-    def create_figure(self, figsize=None, textsize=None):
+    def create_figure(self, figsize=None, textsize=None, **kwargs):
         """
         Create the figure.
 

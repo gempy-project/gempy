@@ -1,5 +1,8 @@
-extent = '[x_min, x_max, y_min, y_max, z_min, z_max] '
-resolution = '(np.ndarray): [nx, ny, nz] '
+extent = ' (numpy.ndarray[float]): [x_min, x_max, y_min, y_max, z_min, z_max]. Extent for the visualization of data ' \
+         'and ' \
+         'default of for the ' \
+         'regular grid class.'
+resolution = '(numpy.ndarray[int]): [nx, ny, nz]'
 
 coord = '2D numpy array where axis 1 is the XYZ coordinates while axis 0 is n number of input '
 coord_ori = coord + 'Notice that orientations may be place anywhere in the 3D space.'
@@ -25,9 +28,9 @@ z = 'values or list of values for the z coordinates'
 idx_sp = 'If passed, list of indices where the function will be applied.'
 
 file_path = 'Any valid string path is acceptable. The string could be a URL. Valid URL schemes include http, ftp, s3,' \
-            ' and file. For file URLs, a host is expected. A local file could be: file://localhost/path/to/table.csv. '\
+            ' and file. For file URLs, a host is expected. A local file could be: file://localhost/path/to/table.csv. ' \
             'If you want to pass in a path object, pandas accepts either pathlib.Path or py._path.local.LocalPath.' \
-            ' By file-like object, we refer to objects with a read() method, such as a file handler (e.g. via builtin '\
+            ' By file-like object, we refer to objects with a read() method, such as a file handler (e.g. via builtin ' \
             'open function) or StringIO.'
 
 debug = 'of debug is True the method will return the result without modify any related object'
@@ -66,3 +69,9 @@ theano_optimizer = 'Type of theano compilation. This rules the number ' \
                    'optimizations theano performs at compilation time: fast_run will take longer \
              to compile but at run time will be faster and will consume significantly less memory. fast_compile will \
              compile faster.'
+
+path_i = '(str): Path to the data bases of surface_points. Default os.getcwd()'
+path_o = '(str): Path to the data bases of orientations. Default os.getcwd()'
+surface_points_df = '(pandas.DataFrame): A pn.Dataframe object with X, Y, Z, and surface columns'
+orientations_df = '(pandas.DataFrame): A pn.Dataframe object with X, Y, Z, surface columns and pole or orientation ' \
+                  'columns.'

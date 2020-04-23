@@ -134,12 +134,12 @@ def test_compute_model(interpolator, map_sequential_pile):
     # We only compare the block because the absolute pot field I changed it
     np.testing.assert_array_almost_equal(np.round(geo_model.solutions.lith_block[test_values]), real_sol, decimal=0)
 
-    gp.plot.plot_section(geo_model, cell_number=25,
-                         direction='y', show_data=True)
+    gp.plot.plot_2d(geo_model, cell_number=25,
+                    direction='y', show_data=True)
     plt.savefig(os.path.dirname(__file__)+'/../figs/test_integration_lith_block')
 
-    gp.plot.plot_scalar_field(geo_model, cell_number=25, series=1, N=15,
-                              direction='y', show_data=True)
+    gp.plot.plot_2d(geo_model, cell_number=25, series_n=1, N=15, show_scalar=True,
+                    direction='y', show_data=True)
 
     plt.savefig(os.path.dirname(__file__)+'/../figs/test_integration_scalar')
 
@@ -149,8 +149,8 @@ def test_kriging_mutation(interpolator, map_sequential_pile):
     geo_model.set_theano_graph(interpolator)
 
     gp.compute_model(geo_model, compute_mesh=False)
-    gp.plot.plot_scalar_field(geo_model, cell_number=25, series=1, N=15,
-                              direction='y', show_data=True)
+    gp.plot.plot_2d(geo_model, cell_number=25, show_scalar=True, series_n=1, N=15,
+                    direction='y', show_data=True)
     print(geo_model.solutions.lith_block, geo_model._additional_data)
     #plt.savefig(os.path.dirname(__file__)+'/figs/test_kriging_mutation')
 
@@ -164,9 +164,10 @@ def test_kriging_mutation(interpolator, map_sequential_pile):
     gp.set_interpolator(geo_model, compile_theano=True,
                         theano_optimizer='fast_compile', update_kriging=False)
     gp.compute_model(geo_model, compute_mesh=False)
-    gp.plot.plot_scalar_field(geo_model, cell_number=25, series=1, N=15,
-                              direction='y', show_data=True)
+
+    gp.plot.plot_2d(geo_model, cell_number=25, series_n=1, N=15, show_boundaries=False,
+                    direction='y', show_data=True, show_lith=True)
 
     print(geo_model.solutions.lith_block, geo_model._additional_data)
-    # plt.savefig(os.path.dirname(__file__)+'/figs/test_kriging_mutation2')
+    plt.savefig(os.path.dirname(__file__)+'/../figs/test_kriging_mutation2')
     assert geo_model._additional_data.kriging_data.df['range'][0] == pre['range'][0]

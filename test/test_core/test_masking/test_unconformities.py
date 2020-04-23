@@ -40,7 +40,7 @@ def geo_model(interpolator):
 
 def test_all_erosion(geo_model):
     sol = gp.compute_model(geo_model, compute_mesh=False)
-    gp.plot.plot_section(geo_model, cell_number=2)
+    gp.plot.plot_2d(geo_model, cell_number=2)
 
     if save:
         np.save(os.path.dirname(__file__)+'/all_ero', sol.lith_block)
@@ -56,7 +56,7 @@ def test_one_onlap(geo_model):
     geo_model.set_bottom_relation('Inclined_Series', bottom_relation='Onlap')
     geo_model.set_bottom_relation('Flat_Series', bottom_relation='Erosion')
     sol = gp.compute_model(geo_model, compute_mesh=False)
-    gp.plot.plot_section(geo_model, cell_number=2)
+    gp.plot.plot_2d(geo_model, cell_number=2)
 
     if save:
         np.save(os.path.dirname(__file__)+'/one_onlap', sol.lith_block)
@@ -72,7 +72,7 @@ def test_one_onlap(geo_model):
 def test_two_onlap(geo_model):
     geo_model.set_bottom_relation(['Flat_Series', 'Inclined_Series'], bottom_relation='Onlap')
     sol = gp.compute_model(geo_model, compute_mesh=False)
-    gp.plot.plot_section(geo_model, cell_number=2)
+    gp.plot.plot_2d(geo_model, cell_number=2)
 
     if save:
         np.save(os.path.dirname(__file__)+'/two_onlap', sol.lith_block)

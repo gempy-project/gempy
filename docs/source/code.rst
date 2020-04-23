@@ -2,7 +2,49 @@ Code
 ====
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 2
+
+
+GemPy API
+---------
+.. currentmodule:: gempy
+.. autosummary::
+    :toctree: GemPy API
+
+    activate_interactive_df
+    compute_model
+    compute_model_at
+    create_data
+    create_model
+    init_data
+    map_series_to_surfaces
+    read_csv
+    update_additional_data
+    get_data
+    get_surfaces
+    get_additional_data
+    get_interpolator
+    get_th_fn
+
+
+Model
+-----
+.. currentmodule:: model
+.. autosummary::
+    :toctree: Model
+
+    Project
+    ImplicitCoKriging
+
+
+Plot
+____
+.. currentmodule:: gempy.plot.plot_api
+.. autosummary::
+    :toctree: Plot
+
+    plot_2d
+    plot_3d
 
 
 Data
@@ -24,28 +66,29 @@ Data
     AdditionalData
 
 
+Interpolator
+------------
+.. currentmodule:: model
+.. autosummary::
+    :toctree: Interpolator
+
+    InterpolatorModel
+    InterpolatorGravity
+
+
 Solution
 --------
-.. currentmodule:: solution
+.. currentmodule:: gempy.core.solution
 .. autosummary::
     :toctree: Solution
 
     Solution
 
-:py:mod:`sphinx_gallery`:
 
-GemPy API
----------
-.. currentmodule:: gempy
+MetaData
+--------
+.. currentmodule:: model
 .. autosummary::
-    :toctree: GemPy API
+    :toctree: MetaData
 
-    activate_interactive_df
-    compute_model
-    compute_model_at
-    create_data
-    create_model
-    init_data
-    map_series_to_surfaces
-    read_csv
-    update_additional_data
+    MetaData

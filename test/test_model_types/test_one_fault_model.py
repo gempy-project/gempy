@@ -17,7 +17,7 @@ class TestFabianModel:
         print(gp.get_data(one_fault_model, itype='additional_data'))
 
     def test_plotting_data(self, one_fault_model):
-        gp.plot.plot_data(one_fault_model)
+        gp.plot.plot_2d(one_fault_model, show_data=True, show_results=False)
 
     def test_compute_model(self, one_fault_model_solution):
         sol = one_fault_model_solution.solutions
@@ -26,8 +26,8 @@ class TestFabianModel:
 
     def test_plot_section(self, one_fault_model):
 
-        gp.plot.plot_section(one_fault_model, cell_number=25,
-                             direction='y', show_data=True)
+        gp.plot.plot_2d(one_fault_model, cell_number=25,
+                       direction='y', show_data=True)
 
        # plt.savefig(os.pardir+'/../figs/example1.png')
 

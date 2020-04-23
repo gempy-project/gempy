@@ -55,6 +55,7 @@ except ImportError:
 def plot_2d(model, n_axis=None, section_names: list = None,
             cell_number: list = None, direction: list = 'y',
             show_data: Union[bool, list] = True,
+            show_results: Union[bool, list] = True,
             show_lith: Union[bool, list] = True,
             show_values: Union[bool, list] = False,
             show_block: Union[bool, list] = False,
@@ -78,6 +79,7 @@ def plot_2d(model, n_axis=None, section_names: list = None,
         cell_number (list): Position of the array to plot
         direction (str): Cartesian direction to be plotted (xyz)
         show_data (bool): Show original input data. Defaults to True.
+        show_results (bool): If False, override show lith, show_calar, show_values
         show_lith (bool): Show lithological block volumes. Defaults to True.
         show_scalar (bool): Show scalar field isolines. Defaults to False.
         show_boundaries (bool): Show surface boundaries as lines. Defaults to True.
@@ -100,8 +102,21 @@ def plot_2d(model, n_axis=None, section_names: list = None,
         cell_number = ['mid']
     direction = [] if direction is None else direction
 
+    if type(cell_number) != list:
+        cell_number = [cell_number]
+
+    if type(direction) != list:
+        direction = [direction]
+
     if n_axis is None:
         n_axis = len(section_names) + len(cell_number)
+
+    if show_results is False:
+        show_lith = False
+        show_values = False
+        show_block = False
+        show_scalar = False
+        show_boundaries = False
 
     if type(show_data) is bool:
         show_data = [show_data] * n_axis

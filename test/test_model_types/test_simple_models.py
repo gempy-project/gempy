@@ -38,10 +38,10 @@ class TestNoFaults:
         real_sol = np.load(input_path + '/test_a_sol.npy')
 
         # Checking that the plots do not rise errors
-        gempy.plot.plot_section(geo_data, 25, direction='y', show_data=True)
+        gempy.plot.plot_2d(geo_data, cell_number=25, direction='y', show_data=True)
         plt.savefig(os.path.dirname(__file__) + '/../figs/test_a.png', dpi=100)
 
-        gempy.plot.plot_scalar_field(geo_data, 25)
+        gempy.plot.plot_2d(geo_data, cell_number=25, show_scalar=True)
 
         # We only compare the block because the absolute pot field I changed it
         np.testing.assert_array_almost_equal(np.round(sol.lith_block[test_values]), real_sol, decimal=0)
@@ -61,7 +61,7 @@ class TestNoFaults:
         # Compute model
         sol = gempy.compute_model(geo_data)
 
-        gempy.plot.plot_section(geo_data, 25, direction='y', show_data=True)
+        gempy.plot.plot_2d(geo_data, cell_number=25, direction='y', show_data=True)
         plt.savefig(os.path.dirname(__file__) + '/../figs/test_b.png', dpi=200)
 
         if update_sol:
@@ -71,7 +71,7 @@ class TestNoFaults:
         real_sol = np.load(input_path + '/test_b_sol.npy')
 
         # Checking that the plots do not rise errors
-        gempy.plot.plot_scalar_field(geo_data, 25)
+        gempy.plot.plot_2d(geo_data, cell_number=25)
 
         # We only compare the block because the absolute pot field I changed it
         np.testing.assert_array_almost_equal(np.round(sol.lith_block[test_values]), real_sol, decimal=0)
@@ -91,7 +91,7 @@ class TestNoFaults:
         # Compute model
         sol = gempy.compute_model(geo_data)
 
-        gempy.plot.plot_section(geo_data, 25, direction='y', show_data=True)
+        gempy.plot.plot_2d(geo_data, cell_number=25, direction='y', show_data=True)
         plt.savefig(os.path.dirname(__file__) + '/../figs/test_c.png', dpi=200)
 
         if update_sol:
@@ -101,8 +101,8 @@ class TestNoFaults:
         real_sol = np.load(input_path + '/test_c_sol.npy')
 
         # Checking that the plots do not rise errors
-        gempy.plot.plot_section(geo_data, 25, direction='y', show_data=True)
-        gempy.plot.plot_scalar_field(geo_data, 25)
+        gempy.plot.plot_2d(geo_data, cell_number=25, direction='y', show_data=True)
+        gempy.plot.plot_2d(geo_data, cell_number=25, show_scalar=True)
 
         # We only compare the block because the absolute pot field I changed it
         np.testing.assert_array_almost_equal(np.round(sol.lith_block[test_values]), real_sol, decimal=0)
@@ -129,7 +129,7 @@ class TestFaults:
         # Compute model
         sol = gempy.compute_model(geo_data)
 
-        gempy.plot.plot_section(geo_data, 25, direction='y', show_data=True)
+        gempy.plot.plot_2d(geo_data, cell_number=25, direction='y', show_data=True)
         plt.savefig(os.path.dirname(__file__) + '/../figs/test_d.png', dpi=200)
 
         if update_sol:
@@ -161,7 +161,7 @@ class TestFaults:
         if update_sol:
             np.save(input_path + '/test_e_sol.npy', sol.lith_block[test_values])
 
-        gempy.plot.plot_section(geo_data, 25, direction='y', show_data=True)
+        gempy.plot.plot_2d(geo_data, cell_number=25, direction='y', show_data=True)
         plt.savefig(os.path.dirname(__file__) + '/../figs/test_e.png', dpi=200)
 
         # Load model
@@ -199,7 +199,7 @@ class TestFaults:
             np.save(input_path + '/test_f_sol.npy', sol.lith_block[test_values])
 
         real_sol = np.load(input_path + '/test_f_sol.npy')
-        gempy.plot.plot_section(geo_data, 25, direction='y', show_data=True)
+        gempy.plot.plot_2d(geo_data, cell_number=25, direction='y', show_data=True)
 
         plt.savefig(os.path.dirname(__file__) + '/../figs/test_f.png', dpi=200)
 

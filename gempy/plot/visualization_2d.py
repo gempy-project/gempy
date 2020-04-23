@@ -36,7 +36,7 @@ import sys
 # This is for sphenix to find the packages
 sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 from gempy.core.solution import Solution
-import gempy.plot.helpers as plothelp
+from  gempy.plot import helpers as plothelp
 sns.set_context('talk')
 plt.style.use(['seaborn-white', 'seaborn-talk'])
 from scipy.interpolate import RegularGridInterpolator

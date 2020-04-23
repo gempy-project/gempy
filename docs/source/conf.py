@@ -31,6 +31,8 @@ from pygments.plugin import find_plugin_lexers
 sys.path.insert(0, os.path.abspath('.'))
 # sys.path.insert(0, os.path.abspath('../../gempy/grid_modules/'))
 sys.path.insert(0, os.path.abspath('../../gempy/core/'))
+sys.path.insert(0, os.path.abspath('../../gempy/plot/'))
+
 #sys.path.insert(0, os.path.abspath('../../gempy/core/data_modules'))
 
 
@@ -109,10 +111,10 @@ intersphinx_mapping = {
 
 napoleon_google_docstring = True
 
-nbsphinx_execute = 'never'
-nbsphinx_allow_errors = True
+# nbsphinx_execute = 'never'
+# nbsphinx_allow_errors = True
 
-autodoc_default_flags = ['members']
+# autodoc_default_flags = ['members']
 autosummary_generate = True
 
 # Add any paths that contain templates here, relative to this directory.
@@ -156,6 +158,7 @@ exclude_patterns = ['_build', '**.ipynb_checkpoints']
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
+highlight_language = 'python3'
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = True
@@ -178,7 +181,7 @@ sphinx_gallery_conf = {
     # Sort gallery example by file name instead of number of lines (default)
     "within_subsection_order": FileNameSortKey,
     # directory where function granular galleries are stored
-    "backreferences_dir": 'backrefs',#'gen_modules/backreferences',
+    "backreferences_dir": 'gen_modules/backreferences',
     # Modules for which function level galleries are created.  In
     "doc_module": ("gempy", 'numpy', 'pandas', 'matplotlib'),
     "image_scrapers": ('pyvista', 'matplotlib'),
@@ -201,7 +204,7 @@ sphinx_gallery_conf = {
 # a list of builtin themes.
 #
 html_theme = 'alabaster'
-#html_theme = 'bootstrap'
+# html_theme = 'bootstrap'
 #html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -289,5 +292,7 @@ texinfo_documents = [
      'Geomodelling'),
 ]
 
-# Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'https://docs.python.org/': None}
+# Remove matplotlib agg warnings from generated doc when using plt.show
+warnings.filterwarnings("ignore", category=UserWarning,
+                        message='Matplotlib is currently using agg, which is a'
+                                ' non-GUI backend, so cannot show the figure.')

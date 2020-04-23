@@ -6,35 +6,32 @@ from typing import Union
 import warnings
 
 
-def get_data(model: Project, itype='data', numeric=False):
-    """
-    Method to return the data stored in :class:`DataFrame` within a :class:`gempy.interpolator.InterpolatorData`
-    object.
+def get_data(model: Project, itype='data', numeric=False, verbosity=0):
+    """Method to return the data stored in :class:`DataFrame` within a :class:`gempy.interpolator.InterpolatorData`
+     object.
 
     Args:
-        model (:class:`gempy.core.model.Project`)
-        itype(str {'all', 'surface_points', 'orientations', 'surfaces', 'series', 'faults', 'faults_relations',
-        additional data}): input data type to be retrieved.
+        model (:class:`model.Project`): Input model.
+        itype (str{'all', 'surface_points', 'orientations', 'surfaces', 'series', 'faults', 'faults_relations','additional data'}):
+            input data type to be retrieved.
         numeric (bool): if True it only returns numerical properties. This may be useful due to memory issues
         verbosity (int): Number of properties shown
 
     Returns:
-        pandas.core.frame.DataFrame
+        pandas.DataFrame: Data Object df.
 
     """
-    return model.get_data(itype=itype, numeric=numeric)
+    return model.get_data(itype=itype, numeric=numeric, verbosity=verbosity)
 
 
 def get_surfaces(model_solution: Union[Project, Solution]):
-    """
-    Get vertices and simplices of the surface_points for its vtk visualization and further
-    analysis
+    """Get vertices and simplices of the surface_points for its vtk visualization and further analysis.
 
     Args:
-       model_solution (:class:`Project` or :class:`Solution)
+       model_solution (:class:`Project` or :class:`Solution`)
 
     Returns:
-        list[np.array]: vertices, simpleces
+        list[numpy.array]: vertices, simpleces
     """
     if isinstance(model_solution, Project):
         return model_solution.solutions.vertices, model_solution.solutions.edges
@@ -49,11 +46,10 @@ def get_interpolator(model: Project):
 
 
 def get_th_fn(model: Project):
-    """
-    Get the compiled theano function
+    """Get the compiled theano function
 
     Args:
-        model (:class:`gempy.core.model.Project`)
+        model (:class:`model.Project`)
 
     Returns:
         :class:`theano.compile.function_module.Function`: Compiled function if C or CUDA which computes the interpolation given the input data

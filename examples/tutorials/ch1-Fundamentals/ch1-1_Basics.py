@@ -14,9 +14,6 @@ import gempy as gp
 import numpy as np
 import matplotlib.pyplot as plt
 
-#%%
-a = np.sin(55)
-
 # %%
 # Importing and creating a set of input data
 # ------------------------------------------
@@ -25,7 +22,7 @@ a = np.sin(55)
 # Python objects. The main data classes are:
 # 
 # ::
-# 
+#
 #     -  Surface_points
 #     -  Orientations
 #     -  Grid
@@ -33,7 +30,7 @@ a = np.sin(55)
 #     -  Series
 #     -  Additional data
 #     -  Faults
-# 
+#
 # We will see each of this class in further detail in the future.
 # 
 # Most of data can also be generated from raw data that comes in the form
@@ -73,6 +70,7 @@ geo_model = gp.create_model('Tutorial_ch1-1_Basics')
 
 # %%
 data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
+data_path = 'H:\SSD\PycharmProjects\gempy\examples'
 # Importing the data from CSV-files and setting extent and resolution
 gp.init_data(geo_model, [0, 2000., 0, 2000., 0, 2000.], [50, 50, 50],
              path_o=data_path + "/data/input_data/tut_chapter1/simple_fault_model_orientations.csv",
@@ -80,7 +78,7 @@ gp.init_data(geo_model, [0, 2000., 0, 2000., 0, 2000.], [50, 50, 50],
              default_values=True)
 
 # %%
-geo_model._surfaces
+geo_model.surfaces
 
 # %%
 # The input data can then be listed using the command ``get_data``. Note
@@ -154,7 +152,7 @@ gp.get_data(geo_model, 'orientations').head()
 # 
 
 # %% 
-geo_model._surfaces
+geo_model.surfaces
 
 # %% 
 gp.map_series_to_surfaces(geo_model,
@@ -164,22 +162,22 @@ gp.map_series_to_surfaces(geo_model,
                           remove_unused_series=True)
 
 # %% 
-geo_model._surfaces
+geo_model.surfaces
 
 # %% 
-geo_model._stack
+geo_model.stack
 
 # %% 
 geo_model.set_is_fault(['Fault_Series'])
 
 # %% 
-geo_model._faults.faults_relations_df
+geo_model.faults.faults_relations_df
 
 # %% 
-geo_model._faults
+geo_model.faults
 
 # %% 
-geo_model._faults.faults_relations_df
+geo_model.faults.faults_relations_df
 
 # %%
 # Returning information from our input data
@@ -194,7 +192,7 @@ geo_model._faults.faults_relations_df
 # 
 
 # %% 
-geo_model._grid.values
+geo_model.grid
 
 # %%
 # As mentioned before, GemPy's core algorithm is based on interpolation of
@@ -238,7 +236,7 @@ gp.get_data(geo_model, 'orientations')
 # 
 
 # %%
-plot = gp._plot.plot_2d(geo_model, show_lith=False, show_boundaries=False)
+plot = gp.plot.plot_2d(geo_model, show_lith=False, show_boundaries=False)
 plt.show()
 
 # %%
@@ -258,7 +256,7 @@ plt.show()
 
 
 # %%
-gp._plot.plot_3d(geo_model, plotter_type='basic')
+gp.plot.plot_3d(geo_model, plotter_type='basic')
 
 # %%
 # Model generation
@@ -369,13 +367,13 @@ gp.compute_model(geo_model)
 geo_model.solutions.lith_block
 
 # %% 
-geo_model._grid.values
+geo_model.grid
 
 # %%
-gp._plot.plot_2d(geo_model, show_data=False)
+gp.plot.plot_2d(geo_model, show_data=False)
 plt.show()
 # %% 
-geo_model._surfaces
+geo_model.surfaces
 
 # %%
 # With ``cell_number=25`` and remembering that we defined our resolution
@@ -390,15 +388,12 @@ geo_model._surfaces
 # We can do the same with out lithological scalar-field solution:
 # 
 
-# %% 
-gp.plot.plot_scalar_field(geo_model, cell_number=25, N=15, series=0,
-                          direction='y', show_data=True)
 # %%
-gp._plot.plot_2d(geo_model, show_data=False, show_scalar=True, show_lith=False)
+gp.plot.plot_2d(geo_model, show_data=False, show_scalar=True, show_lith=False)
 plt.show()
 
 # %%
-gp._plot.plot_2d(geo_model, series_n=1, show_data=False, show_scalar=True, show_lith=False)
+gp.plot.plot_2d(geo_model, series_n=1, show_data=False, show_scalar=True, show_lith=False)
 plt.show()
 
 
@@ -413,11 +408,11 @@ plt.show()
 geo_model.solutions.scalar_field_at_surface_points
 
 # %%
-gp._plot.plot_2d(geo_model, show_block=True, show_lith=False)
+gp.plot.plot_2d(geo_model, show_block=True, show_lith=False)
 plt.show()
 
 # %%
-gp._plot.plot_2d(geo_model, series_n=1, show_block=True, show_lith=False)
+gp.plot.plot_2d(geo_model, series_n=1, show_block=True, show_lith=False)
 plt.show()
 
 
@@ -438,7 +433,8 @@ ver, sim = gp.get_surfaces(geo_model)
 
 
 # %%
-gp._plot.plot_3d(geo_model, plotter_type='basic')
+# sphinx_gallery_thumbnail_number = 8
+gp.plot.plot_3d(geo_model, plotter_type='basic')
 
 # %%
 # Using the rescaled interpolation data, we can also run our 3D VTK

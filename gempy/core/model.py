@@ -23,6 +23,7 @@ pn.options.mode.chained_assignment = None
 class RestrictingWrapper(object):
     def __init__(self, w):
         self._w = w
+        self._accepted_members = ['__repr__', '_repr_html_', 'faults_relations_df']
 
     def __repr__(self):
         return self._w.__repr__()
@@ -30,13 +31,18 @@ class RestrictingWrapper(object):
     def _repr_html_(self):
         return self._w._repr_html_()
 
+    def __getattr__(self, item):
+        if item in self._accepted_members:
+            return getattr(self._w, item)
+        else:
+            raise AttributeError(item)
+
 
 @_setdoc_pro([Grid.__doc__, Faults.__doc__, Series.__doc__, Surfaces.__doc__, SurfacePoints.__doc__,
              Orientations.__doc__, RescaledData.__doc__, AdditionalData.__doc__, InterpolatorModel.__doc__,
              Solution.__doc__])
 class ImplicitCoKriging(object):
-    """
-    This class handles all the mutation of an object belonging to model and the update of every single object depend
+    """This class handles all the mutation of an object belonging to model and the update of every single object depend
     on that.
 
     Attributes:
@@ -1192,7 +1198,7 @@ class ImplicitCoKriging(object):
         return self._surfaces
 
 
-def Model(project_name= 'default_project'):
+def Model(project_name='default_project'):
     """ Container class of all objects that constitute a GemPy model.
 
       In addition the class provides the methods that act in more than one of this class. Model is a child class of
@@ -1205,13 +1211,14 @@ def Model(project_name= 'default_project'):
     return Project(project_name)
 
 
-@_setdoc([MetaData.__doc__, ImplicitCoKriging.__doc__], indent=False)
 class Project(ImplicitCoKriging):
-    """ Container class of all objects that constitute a GemPy model.
+    """Container class of all objects that constitute a GemPy model.
 
-    In addition the class provides the methods that act in more than one of this class. Model is a child class of
-    :class:`DataMutation` and :class:`MetaData`.
+    In addition the class provides all the methods you need to construct a geological
+    model with :class:`ImplicitCoKriging`.
 
+    See Also:
+        :class:`MetaData`, :class:`ImplicitCoKriging`
     """
     def __init__(self, project_name='default_project'):
 

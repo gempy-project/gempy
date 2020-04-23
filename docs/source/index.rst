@@ -8,6 +8,9 @@ GemPy
 Software for 3D structural geologic implicit modeling in Python.
 ****************************************************************
 
+:class:`numpy.ndarray`
+
+
 .. image:: ../logos/gempy1.png
    :width: 30%
 

@@ -13,7 +13,7 @@
 
    .. autofunction:: {{ item }}
 
-   .. include:: backrefs/{{fullname}}.{{item}}.examples
+   .. include:: backreferences/{{fullname}}.{{item}}.examples
 
    .. raw:: html
 
@@ -33,7 +33,7 @@
    .. autoclass:: {{ item }}
       :members:
 
-   .. include:: backrefs/{{fullname}}.{{item}}.examples
+   .. include:: backreferences/{{fullname}}.{{item}}.examples
 
    .. raw:: html
 
