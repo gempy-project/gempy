@@ -4,18 +4,10 @@ Code
 .. toctree::
    :maxdepth: 4
 
-Model
------
-.. currentmodule:: model
-.. autosummary::
-    :toctree: Model
-
-    Model
-    DataMutation
 
 Data
 ----
-.. currentmodule:: data
+.. currentmodule:: model
 .. autosummary::
     :toctree: Data
 
@@ -23,7 +15,6 @@ Data
     Faults
     Series
     Surfaces
-    GeometricData
     SurfacePoints
     Orientations
     RescaledData
@@ -32,15 +23,6 @@ Data
     Options
     AdditionalData
 
-Interpolator
-------------
-.. currentmodule:: interpolator
-.. autosummary::
-    :toctree: Interpolator
-
-    Interpolator
-    InterpolatorModel
-    InterpolatorGravity
 
 Solution
 --------
@@ -50,31 +32,20 @@ Solution
 
     Solution
 
+:py:mod:`sphinx_gallery`:
 
-Front end
+GemPy API
 ---------
-.. currentmodule:: gempy_api
+.. currentmodule:: gempy
 .. autosummary::
     :toctree: GemPy API
-    :template: module.rst
 
     activate_interactive_df
     compute_model
     compute_model_at
     create_data
     create_model
-    get_additional_data
-    get_interpolator
-    get_surfaces
-    get_th_fn
     init_data
-    load_model
-    load_model_pickle
     map_series_to_surfaces
     read_csv
-    save_model
-    save_model_to_pickle
-    set_interpolator
-    set_orientation_from_surface_points
-    set_series
     update_additional_data

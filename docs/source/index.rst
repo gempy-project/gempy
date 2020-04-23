@@ -33,7 +33,6 @@ Contents:
 
    self
    code
-   about
 
 .. toctree::
    :maxdepth: 4

@@ -27,7 +27,7 @@ import qgrid
 #gp.save_model(geo_model, 'CreateModelTuto5', path=os.pardir+'/data/gempy_models')
 
 # %% 
-data_path= '../..'
+data_path= '../../..'
 if False:
     geo_model = gp.load_model('Tutorial_ch1-6_CreatingModels', path=data_path+'/data/gempy_models')
 else:

@@ -21,7 +21,7 @@ import os
 
 # %% 
 geo_model = gp.create_model('Single_layer_topo')
-data_path= '../..'
+data_path= '../../..'
 gp.init_data(geo_model, extent=[450000, 460000, 70000,80000,-1000,500],resolution = (50,50,50),
                          path_i = data_path+"/data/input_data/tut-ch1-7/onelayer_interfaces.csv",
                          path_o = data_path+"/data/input_data/tut-ch1-7/onelayer_orient.csv")
@@ -100,7 +100,7 @@ geo_model._grid.topography.save('test_topo')
 
 # %% 
 #load
-geo_model.set_topography(source='saved',filepath='test_topo.npy')
+geo_model.set_topography(source='saved', filepath='../test_topo.npy')
 
 
 # %%

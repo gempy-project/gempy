@@ -30,7 +30,7 @@ import qgrid
 # 
 
 # %% 
-geo_model = gp.load_model('Tutorial_ch1-9a_Fault_relations', path= '../../data/gempy_models', recompile=True)
+geo_model = gp.load_model('Tutorial_ch1-9a_Fault_relations', path='../../../data/gempy_models', recompile=True)
 
 # %% 
 geo_model._faults.faults_relations_df

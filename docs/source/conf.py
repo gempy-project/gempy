@@ -20,31 +20,39 @@
 import datetime
 import os
 import sys
+import warnings
+
+import sphinx_gallery
+from sphinx_gallery.sorting import FileNameSortKey
+import gempy
 
 import IPython.sphinxext
 from pygments.plugin import find_plugin_lexers
 sys.path.insert(0, os.path.abspath('.'))
 # sys.path.insert(0, os.path.abspath('../../gempy/grid_modules/'))
-# sys.path.insert(0, os.path.abspath('../../gempy/core/'))
+sys.path.insert(0, os.path.abspath('../../gempy/core/'))
+#sys.path.insert(0, os.path.abspath('../../gempy/core/data_modules'))
+
+
 # sys.path.insert(0, os.path.abspath('../../gempy/core/theano/'))
 # sys.path.insert(0, os.path.abspath('../../gempy/core/grid_modules/'))
 # sys.path.insert(0, os.path.abspath('../../gempy/assets/'))
 # sys.path.insert(0, os.path.abspath('../../gempy/bayesian/'))
 # sys.path.insert(0, os.path.abspath('../../gempy/plot/'))
 # sys.path.insert(0, os.path.abspath('../..'))
-sys.path.insert(0, os.path.abspath('../../gempy'))
-import gempy
-from unittest.mock import MagicMock
+# sys.path.insert(0, os.path.abspath('../../gempy'))
 
-
-class Mock(MagicMock):
-    @classmethod
-    def __getattr__(cls, name):
-            return MagicMock()
-
-
-MOCK_MODULES = ['IPython', 'git+git://github.com/Leguark/scikit-image@master']
-sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
+# from unittest.mock import MagicMock
+#
+#
+# class Mock(MagicMock):
+#     @classmethod
+#     def __getattr__(cls, name):
+#             return MagicMock()
+#
+#
+# MOCK_MODULES = ['IPython', 'git+git://github.com/Leguark/scikit-image@master']
+# sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 # -- General configuration ------------------------------------------------
 
@@ -57,8 +65,8 @@ sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 # ones.
 extensions = [
   #  'nbsphinx',
-    'matplotlib.sphinxext.mathmpl',
-    'matplotlib.sphinxext.plot_directive',
+  #  'matplotlib.sphinxext.mathmpl',
+  #  'matplotlib.sphinxext.plot_directive',
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.doctest',
@@ -67,12 +75,37 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
-    'sphinx.ext.githubpages',
+  #  'sphinx.ext.githubpages',
     'sphinx.ext.napoleon',
-    'IPython.sphinxext.ipython_console_highlighting',
-    'IPython.sphinxext.ipython_directive',
+   # 'IPython.sphinxext.ipython_console_highlighting',
+   # 'IPython.sphinxext.ipython_directive',
     'sphinx_gallery.gen_gallery'
 ]
+
+# extensions = [
+#     'sphinx.ext.autodoc',
+#     'sphinx.ext.napoleon',
+#     'sphinx.ext.viewcode',
+#     'sphinx.ext.autosummary',
+#     'sphinx.ext.doctest',
+#     'sphinx.ext.intersphinx',
+#     'sphinx.ext.todo',
+#     'sphinx.ext.coverage',
+#     'sphinx.ext.mathjax',
+#     'sphinx_gallery.gen_gallery',
+# ]
+
+
+intersphinx_mapping = {
+    'numpy': ('https://numpy.org/doc/stable/', None),
+    'python': ('https://docs.python.org/{.major}'.format(sys.version_info), None),
+    'matplotlib': ('https://matplotlib.org/', None),
+    'mayavi': ('http://docs.enthought.com/mayavi/mayavi', None),
+    'sklearn': ('https://scikit-learn.org/stable', None),
+    'sphinx': ('http://www.sphinx-doc.org/en/stable', None),
+    'pandas': ('https://pandas.pydata.org/pandas-docs/stable/', None),
+}
+
 
 napoleon_google_docstring = True
 
@@ -127,6 +160,9 @@ pygments_style = 'sphinx'
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = True
 
+# Example configuration for intersphinx: refer to the Python standard library.
+
+
 # -- Sphinx Gallery Options
 from sphinx_gallery.sorting import FileNameSortKey
 
@@ -142,16 +178,17 @@ sphinx_gallery_conf = {
     # Sort gallery example by file name instead of number of lines (default)
     "within_subsection_order": FileNameSortKey,
     # directory where function granular galleries are stored
-    "backreferences_dir": 'gen_modules/backreferences',
+    "backreferences_dir": 'backrefs',#'gen_modules/backreferences',
     # Modules for which function level galleries are created.  In
-    "doc_module": ("gempy", 'numpy'),
+    "doc_module": ("gempy", 'numpy', 'pandas', 'matplotlib'),
     "image_scrapers": ('pyvista', 'matplotlib'),
     'first_notebook_cell': ("%matplotlib inline\n"
                             "from pyvista import set_plot_theme\n"
                             "set_plot_theme('document')"),
     'reference_url': {
         # The module you locally document uses None
-        'sphinx_gallery': None,
+        'gempy': None,
+        'numpy': 'https://numpy.org/doc/stable/'
 
     },
 

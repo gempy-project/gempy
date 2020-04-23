@@ -34,7 +34,7 @@ import qgrid
 # 
 
 # %% 
-geo_model = gp.load_model('Tutorial_ch1-8_Onlap_relations', path= '../../data/gempy_models', recompile=False)
+geo_model = gp.load_model('Tutorial_ch1-8_Onlap_relations', path='../../../data/gempy_models', recompile=False)
 
 # %% 
 gp.plot.plot_data(geo_model)

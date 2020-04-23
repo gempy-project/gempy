@@ -87,7 +87,7 @@ model._additional_data
 # 
 
 # %% 
-data_path= '../..'
+data_path= '../../..'
 
 model.read_data(path_i=data_path+"/data/input_data/tut_chapter1/simple_fault_model_points.csv",
                 path_o=data_path+"/data/input_data/tut_chapter1/simple_fault_model_orientations.csv")

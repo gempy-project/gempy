@@ -97,7 +97,7 @@ class Interpolator(object):
         if output is None:
             output = ['geology']
 
-        import gempy.core.theano.theano_graph_pro as tg
+        import gempy.core.theano_modules.theano_graph_pro as tg
         import importlib
         importlib.reload(tg)
 
