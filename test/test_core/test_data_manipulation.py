@@ -258,6 +258,27 @@ class TestDataManipulation:
     def test_additional_data(self, create_additional_data):
         return create_additional_data
 
+def test_calc_ori_knn(coordinates, ref_orientations):
+    test_data = gp.create_model('Test')
+    test_data.set_surface_points(coordinates)
+    test_data.orientations.create_orientation_from_nn(test_data.surface_points.df, 3)
+    ref_orientations.index = test_data.orientations.df.index
+    test_data.orientations.df[['dip', 'azimuth']] = \
+        test_data.orientations.df[['dip', 'azimuth']].round(decimals=2)
+    test1 = np.array(test_data.orientations.df[['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity']])
+    test2 = np.array(ref_orientations[['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity']])
+    assert np.array_equal(test1, test2)
+
+def test_calc_ori_range(coordinates, ref_orientations):
+    test_data = gp.create_model('Test')
+    test_data.set_surface_points(coordinates)
+    test_data.orientations.create_orientation_from_nn(test_data.surface_points.df, 200.)
+    ref_orientations.index = test_data.orientations.df.index
+    test_data.orientations.df[['dip', 'azimuth']] = \
+        test_data.orientations.df[['dip', 'azimuth']].round(decimals=2)
+    test1 = np.array(test_data.orientations.df[['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity']])
+    test2 = np.array(ref_orientations[['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity']])
+    assert np.array_equal(test1, test2)
 
 
 
