@@ -53,7 +53,7 @@ class Faults(object):
             offset_faults (bool): If True by default faults offset other faults
 
         Returns:
-            Faults
+            :class:`gempy.core.data_modules.stack.Faults`
 
         """
         series_fault = np.atleast_1d(series_fault)
@@ -119,7 +119,7 @@ class Faults(object):
             toggle (bool): if True, passing a name which is already True will set it False.
 
         Returns:
-            Fault
+            :class:`gempy.core.data_modules.stack.Faults`
         """
         if series_finite[0] is not None:
             # check if given series is/are in dataframe
@@ -136,11 +136,14 @@ class Faults(object):
         return self
 
     def set_fault_relation(self, rel_matrix=None):
-        """
-        Method to set the df that offset a given sequence and therefore also another fault.
+        """Method to set the df that offset a given sequence and therefore also another fault.
 
         Args:
             rel_matrix (numpy.array[bool]): 2D Boolean array with boolean logic. Rows affect (offset) columns
+
+        Returns:
+            :class:`gempy.core.data_modules.stack.Faults.faults_relations_df
+            `
         """
         # TODO: block the lower triangular matrix of being changed
         if rel_matrix is None:

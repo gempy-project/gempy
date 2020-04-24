@@ -266,19 +266,9 @@ class SurfacePoints(GeometricData):
             idx (Optional[int, list[int]): [s4]
 
         Returns:
-            :class:`SurfacePoints`
+           :class:`gempy.core.data_modules.geometric_data.SurfacePoints`
 
         """
-
-        # TODO: Add the option to pass the surface number
-
-        # if idx is None:
-        #     idx = self.df.index.max()
-        #     if idx is np.nan:
-        #         idx = 0
-        #     else:
-        #         idx += 1
-
         max_idx = self.df.index.max()
 
         if idx is None:
@@ -293,7 +283,6 @@ class SurfacePoints(GeometricData):
 
         coord_array = np.array([x, y, z])
         assert coord_array.ndim == 1, 'Adding an interface only works one by one.'
-        # self.df.loc[idx] = self.df.loc[idx-1]
         self.df.loc[idx, ['X', 'Y', 'Z']] = coord_array.astype('float64')
 
         try:
@@ -326,21 +315,21 @@ class SurfacePoints(GeometricData):
 
     @_setdoc_pro([ds.idx_sp])
     def del_surface_points(self, idx: Union[int, list, np.ndarray]):
-        """
-        Delete surface points
+        """Delete surface points.
+
         Args:
             idx (int, list[int]): [s0]
 
         Returns:
-            :class:`SurfacePoints`
+            :class:`gempy.core.data_modules.geometric_data.SurfacePoints`
+
         """
         self.df.drop(idx, inplace=True)
         return self
 
     @_setdoc_pro([ds.idx_sp, ds.x, ds.y, ds.z, ds.surface_sp])
     def modify_surface_points(self, idx: Union[int, list, np.ndarray], **kwargs):
-        """
-         Allows modification of the x,y and/or z-coordinates of an interface at specified dataframe index.
+        """Allows modification of the x,y and/or z-coordinates of an interface at specified dataframe index.
 
          Args:
              idx (int, list, np.ndarray): [s0]
@@ -351,7 +340,8 @@ class SurfacePoints(GeometricData):
                 * surface: [s4]
 
          Returns:
-            :class:`SurfacePoints`
+            :class:`gempy.core.data_modules.geometric_data.SurfacePoints`
+
          """
         idx = np.array(idx, ndmin=1)
         try:
@@ -627,27 +617,27 @@ class Orientations(GeometricData):
         self.sort_table()
         return self
 
-    @_setdoc_pro([ds.idx_sp])
+    @_setdoc_pro()
     def del_orientation(self, idx):
-        """
-        Delete orientation
+        """Delete orientation
 
         Args:
-            idx (int, list[int]): [s0]
+            idx: [s_idx_sp]
 
         Returns:
-            :class:`Orientations`
+            :class:`gempy.core.data_modules.geometric_data.Orientations`
+
         """
         self.df.drop(idx, inplace=True)
 
     @_setdoc_pro([ds.idx_sp, ds.surface_sp])
     def modify_orientations(self, idx, **kwargs):
-        """
-         Allows modification of any of an orientation column at a given index.
+        """Allows modification of any of an orientation column at a given index.
 
-         Args:
-             idx (int, list[int]): [s0]
-             **kwargs:
+        Args:
+            idx (int, list[int]): [s0]
+
+        Keyword Args:
                 * X
                 * Y
                 * Z
@@ -660,6 +650,7 @@ class Orientations(GeometricData):
                 * surface (str): [s1]
 
          Returns:
+            :class:`gempy.core.data_modules.geometric_data.Orientations`
 
          """
 
@@ -674,9 +665,8 @@ class Orientations(GeometricData):
         except KeyError:
             pass
 
+        # TODO Dep
         keys = list(kwargs.keys())
-        # is_surface_ = np.isin('surface', keys)
-        # is_surface = is_surface_.all()
 
         # Check idx exist in the df
         assert np.isin(np.atleast_1d(idx), self.df.index).all(), 'Indices must exist in the dataframe to be modified.'
@@ -1004,11 +994,13 @@ class RescaledData(object):
 
         Args:
             attribute (str): Attribute to be modified. It can be: centers, rescaling factor
-            value (float, list[float]):
                 * centers: [s0]
                 * rescaling factor: [s1]
+            value (float, list[float])
+
 
         Returns:
+            :class:`gempy.core.data_modules.geometric_data.Rescaling`
 
         """
         assert np.isin(attribute, self.df.columns).all(), 'Valid attributes are: ' + np.array2string(self.df.columns)
@@ -1024,6 +1016,8 @@ class RescaledData(object):
 
         else:
             self.df.loc['values', attribute] = value
+
+        return self
 
     @_setdoc_pro([ds.centers, ds.rescaling_factor])
     def rescale_data(self, rescaling_factor=None, centers=None):

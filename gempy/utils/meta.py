@@ -27,14 +27,18 @@ def _setdoc(docstring, indent=True, position='end'):
 
             func.__doc__ = docstring
         else:
+
             if indent is True:
                 aux = docstring.replace('\n', '\n\n        ')
-                func.__doc__ += ' (inserted) \n        ' + aux
+                stop = aux.find('\nExamples\n-----')
+                func.__doc__ += ' (inserted) \n        ' + aux[:stop]
             else:
+                stop = docstring.find('\nExamples\n-----')
                 if position == 'end':
-                    func.__doc__ += ' (inserted) ' + docstring
+
+                    func.__doc__ += docstring[:stop]
                 else:
-                    func.__doc__ = '' + docstring + '\n'+ func.__doc__
+                    func.__doc__ = docstring[:stop] + '\n'+ func.__doc__
         return func
 
     return decor

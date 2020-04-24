@@ -7,10 +7,10 @@ resolution = '(numpy.ndarray[int]): [nx, ny, nz]'
 coord = '(numpy.ndarray[float, 3]): XYZ 2D array. Axis 1 is the coordinates while axis 0 is n number of input '
 coord_ori = coord + 'Notice that orientations may be place anywhere in the 3D space.'
 
-pole_vector = '2D numpy array where axis 1 is the gradient values G_x, G_y, G_z of the pole while axis 0 is n number of' \
+pole_vector = '(numpy.ndarray[float, 3]): 2D numpy array where axis 1 is the gradient values G_x, G_y, G_z of the pole while axis 0 is n number of' \
               ' orientations.'
 
-orientations = '2D numpy array where axis 1 is are orientation values [dip, azimuth, polarity] of the pole while axis 0' \
+orientations = '(numpy.ndarray[float, 3]): 2D numpy array where axis 1 is are orientation values [dip, azimuth, polarity] of the pole while axis 0' \
                ' is n number of orientations. --- ' \
                '*Dip* is the inclination angle of 0 to 90 degrees measured from the horizontal plane downwards. ' \
                '*Azimuth* is the dip direction defined by a 360 degrees clockwise rotation, i.e. 0 = North,' \
@@ -19,13 +19,13 @@ orientations = '2D numpy array where axis 1 is are orientation values [dip, azim
                'is and can be declared to be either normal (1) or reversed (-1).' \
                'The orientation plane is perpendicular to the gradient.'
 
-surface_sp = 'list with the surface names for each input point. They must exist in the surfaces ' \
+surface_sp = '(str, Iterable[str]): list with the surface names for each input point. They must exist in the surfaces ' \
              'object linked to SurfacePoints.'
 
-x = 'values or list of values for the x coordinates'
-y = 'values or list of values for the y coordinates'
-z = 'values or list of values for the z coordinates'
-idx_sp = 'If passed, list of indices where the function will be applied.'
+x = '(float, Iterable[float]): values or list of values for the x coordinates'
+y = '(float, Iterable[float]): values or list of values for the y coordinates'
+z = '(float, Iterable[float]): values or list of values for the z coordinates'
+idx_sp = '(int, list, numpy.ndarray): If passed, list of indices where the function will be applied.'
 
 file_path = 'Any valid string path is acceptable. The string could be a URL. Valid URL schemes include http, ftp, s3,' \
             ' and file. For file URLs, a host is expected. A local file could be: file://localhost/path/to/table.csv. ' \
@@ -64,7 +64,7 @@ edges = 'List of numpy arrays containing the indices of the vertices numpy array
         ' triangle. '
 geological_map = '2D array containing the lithologies at the surfaces. '
 
-recompute_rf = 'if True recompute the rescaling factor'
+recompute_rf = '(bool): if True recompute the rescaling factor'
 
 compile_theano = 'Default true. Either if the theano graph must be compiled or not'
 theano_optimizer = 'Type of theano compilation. This rules the number ' \

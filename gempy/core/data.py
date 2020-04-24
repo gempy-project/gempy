@@ -541,8 +541,7 @@ class Surfaces(object):
             update_df (bool): Update Surfaces.df columns with the default values
 
         Returns:
-             :class:`Surfaces`:
-
+            :class:`gempy.core.data.Surfaces`
         """
 
         surface_list = np.atleast_1d(surface_list)
@@ -588,8 +587,9 @@ class Surfaces(object):
             self.reset_order_surfaces()
         return self
 
-    @_setdoc(pn.Series.replace.__doc__)
+    @_setdoc(pn.Series.replace.__doc__, indent=False)
     def rename_surfaces(self, to_replace: Union[str, list, dict],  **kwargs):
+        """"""
         if np.isin(to_replace, self.df['surface']).any():
             print('Two surfaces cannot have the same name.')
         else:
@@ -601,17 +601,17 @@ class Surfaces(object):
 
     def modify_order_surfaces(self, new_value: int, idx: int, series_name: str = None):
         """
-          Replace to the new location the old series
+        Replace to the new location the old series
 
-          Args:
-              new_value (int): New location
-              idx (int): Index of the surface to be moved
-              series_name (str): name of the series to be moved
+        Args:
+            new_value (int): New location
+            idx (int): Index of the surface to be moved
+            series_name (str): name of the series to be moved
 
-          Returns:
-             :class:`Surfaces`:
+        Returns:
+            :class:`gempy.core.data.Surfaces`
 
-          """
+        """
         if series_name is None:
             series_name = self.df.loc[idx, 'series']
 
@@ -719,16 +719,16 @@ class Surfaces(object):
 # endregion
 
     def add_surfaces_values(self, values_array: Union[np.ndarray, list], properties_names: list = np.empty(0)):
-        """
-        Add values to be interpolated for each surfaces
+        """Add values to be interpolated for each surfaces.
+
         Args:
             values_array (np.ndarray, list): array-like of the same length as number of surfaces. This functionality
-            can be used to assign different geophysical properties to each layer
+             can be used to assign different geophysical properties to each layer
             properties_names (list): list of names for each values_array columns. This must be of same size as
-            values_array axis 1. By default properties will take the column name: 'value_X'.
+             values_array axis 1. By default properties will take the column name: 'value_X'.
 
         Returns:
-             :class:`Surfaces`:
+            :class:`gempy.core.data.Surfaces`
 
         """
         values_array = np.atleast_2d(values_array)
@@ -745,13 +745,13 @@ class Surfaces(object):
         return self
 
     def delete_surface_values(self, properties_names: Union[str, list]):
-        """
-        Delete a property or several properties column.
+        """Delete a property or several properties column.
+
         Args:
             properties_names (str, list[str]): Name of the property to delete
 
         Returns:
-             :class:`Surfaces`:
+             :class:`gempy.core.data.Surfaces`
 
         """
 
@@ -760,16 +760,16 @@ class Surfaces(object):
         return True
 
     def set_surfaces_values(self, values_array: Union[np.ndarray, list], properties_names: list = np.empty(0)):
-        """
-        Set values to be interpolated for each surfaces. This method will delete the previous values.
+        """Set values to be interpolated for each surfaces. This method will delete the previous values.
+
         Args:
             values_array (np.ndarray, list): array-like of the same length as number of surfaces. This functionality
-            can be used to assign different geophysical properties to each layer
+             can be used to assign different geophysical properties to each layer
             properties_names (list): list of names for each values_array columns. This must be of same size as
-            values_array axis 1. By default properties will take the column name: 'value_X'.
+             values_array axis 1. By default properties will take the column name: 'value_X'.
 
         Returns:
-             :class:`Surfaces`:
+             :class:`gempy.core.data.Surfaces`
 
         """
         # Check if there are values columns already
@@ -787,11 +787,11 @@ class Surfaces(object):
 
         Args:
             idx (int, list[int]):
-            properties_names (str, list[str]:
+            properties_names (str, list[str]):
             values (float, np.ndarray):
 
         Returns:
-             :class:`Surfaces`:
+             :class:`gempy.core.data.Surfaces`
 
         """
         properties_names = np.atleast_1d(properties_names)
@@ -1005,8 +1005,7 @@ class Options(object):
         self.df['dtype'].cat.set_categories(['float32', 'float64'], inplace=True)
         self.df['theano_optimizer'].cat.set_categories(['fast_run', 'fast_compile'], inplace=True)
         self.df['device'].cat.set_categories(['cpu', 'cuda'], inplace=True)
-       # self.df['output'].cat.set_categories(['geology', 'gradients'], inplace=True)
-       # self.df.at['values', 'verbosity'] = []
+
         self.default_options()
 
     def __repr__(self):
@@ -1016,15 +1015,14 @@ class Options(object):
         return self.df.T.to_html()
 
     def modify_options(self, attribute, value):
-        """
-        Method to modify a given field
+        """Method to modify a given field
 
         Args:
             attribute (str): Name of the field to modify
             value: new value of the field. It will have to exist in the category in order for pandas to modify it.
 
         Returns:
-            :class:`pn.DataFrame`: df where options data is stored
+            :class:`pandas.DataFrame`: df where options data is stored
         """
 
         assert np.isin(attribute, self.df.columns).all(), 'Valid properties are: ' + np.array2string(self.df.columns)
@@ -1032,8 +1030,7 @@ class Options(object):
         return self.df
 
     def default_options(self):
-        """
-        Set default options.
+        """Set default options.
 
         Returns:
             bool: True
@@ -1088,8 +1085,7 @@ class KrigingParameters(object):
         return self.df.T.to_html()
 
     def modify_kriging_parameters(self, attribute: str, value, **kwargs):
-        """
-        Method to modify a given field
+        """Method to modify a given field
 
         Args:
             attribute (str): Name of the field to modify
@@ -1098,7 +1094,7 @@ class KrigingParameters(object):
                 * u_grade_sep (str): If drift equations values are `str`, symbol that separates the values.
 
         Returns:
-            :class:`pn.DataFrame`: df where options data is stored
+            :class:`pandas.DataFrame`: df where options data is stored
         """
 
         u_grade_sep = kwargs.get('u_grade_sep', ',')

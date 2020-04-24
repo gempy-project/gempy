@@ -534,7 +534,7 @@ class ImplicitCoKriging(object):
         self._orientations.df['series'].cat.rename_categories(new_categories, inplace=True)
         return self._stack
 
-    @_setdoc(rename_features, indent=False)
+    @_setdoc(rename_features.__doc__, indent=False)
     def rename_series(self, new_categories: Union[dict, list]):
         warnings.warn(DeprecationWarning, 'Series are getting renamed to Stack/features.'
                                           'Please use rename_features instead')
@@ -584,6 +584,8 @@ class ImplicitCoKriging(object):
         Args:
            new_categories (list): list with all series names in the desired order.
 
+        Returns:
+            :class:`gempy.core.data_modules.stack.Stack`
         """
         self._stack.reorder_series(new_categories)
         self._surfaces.df['series'].cat.reorder_categories(np.asarray(self._stack.df.index),
@@ -701,24 +703,23 @@ class ImplicitCoKriging(object):
         self.update_structure()
         return self._surfaces
 
-    @_setdoc(Surfaces.delete_surface.__doc__, indent=False)
+    @_setdoc_pro([Surfaces.update_id.__doc__])
     def delete_surfaces(self, indices: Union[str, Iterable[str]], update_id=True, remove_data=True):
         """
         @TODO When implemeted activate geometric data, change remove data to False by default
         Delete a surface and update all related object.
 
         Args:
+            indices (str, list): name or list of names of the series to apply the functionality
+            update_id (bool): if true [s0]
             remove_data (bool): if true delete all GeometricData labeled with the given surface.
 
-        Surface.delete_surface Doc:
+        Returns:
+            :class:`gempy.core.data.Surfaces`
+
         """
         indices = np.atleast_1d(indices)
         self._surfaces.delete_surface(indices, update_id)
-
-        # TODO check this does not break anything anymore
-        # if remove_data is False:
-        #     remove_data = True
-        #     warnings.warn('At the moment data must be deleted. Soon will be only deactivated.')
 
         if indices.dtype == int:
             surfaces_names = self._surfaces.df.loc[indices, 'surface']
@@ -752,6 +753,7 @@ class ImplicitCoKriging(object):
     @_setdoc(Surfaces.modify_order_surfaces.__doc__, indent=False)
     def modify_order_surfaces(self, new_value: int, idx: int, series_name: str = None):
         """"""
+
         self._surfaces.modify_order_surfaces(new_value, idx, series_name)
 
         self.map_geometric_data_df(self._surface_points.df)
@@ -779,28 +781,37 @@ class ImplicitCoKriging(object):
         self._surfaces.modify_surface_values(idx, properties_names, values)
         return self._surfaces
 
+    @_setdoc(Surfaces.set_surfaces_values.__doc__, indent=False)
     def set_surface_values(self, values_array: Iterable, properties_names: list = np.empty(0)):
         self._surfaces.set_surfaces_values(values_array, properties_names)
         return self._surfaces
 
-    @_setdoc([Surfaces.map_series.__doc__], indent=False)
     def map_series_to_surfaces(self, mapping_object: Union[dict, pn.Categorical] = None,
-                               set_series=True, sort_geometric_data: bool = True, remove_unused_series=True,
-                               twofins=False):
-        """
-        Map series to surfaces and update all related objects accordingly to the following arguments:
+                               set_series=True, sort_geometric_data: bool = True,
+                               remove_unused_series=True,
+                               twofins=False
+                              ):
+        """Map series to surfaces and update all related objects accordingly to the following arguments:
 
         Args:
+            mapping_object (dict, :class:`pandas.DataFrame`):
+
+                * dict: keys are the series and values the surfaces belonging to that series
+
+                * pandas.DataFrame: Dataframe with surfaces as index and a column series with the correspondent series
+                name of each surface
+
             set_series (bool): if True, if mapping object has non existing series they will be created.
             sort_geometric_data (bool): If true geometric data will be sorted accordingly to the new order of the
              series
             remove_unused_series (bool): if true, if an existing series is not assigned with a surface, it will get
-             removed from the Series object
+             removed from the Series object.
+            twofins (bool): If True, it allows to set several surfaces of a given geological feature to fault.
+             This is behaviour is not tested and could have unexpected behaviour.
 
         Returns:
-            Surfaces
+            :class:`gempy.core.data.Surfaces`
 
-        Surfaces.map_series Doc:
         """
         # Add New series to the series df
         if set_series is True:
@@ -842,13 +853,14 @@ class ImplicitCoKriging(object):
                 'fault its own series. If you are really sure what you are doing, you can set '\
                 'twofins to True to suppress this error.'
 
-        return self._surfaces
+        return self.surfaces
 
     # endregion
 
     # region Surface_points
 
     def set_surface_points_object(self, surface_points: SurfacePoints, update_model=True):
+        """Not Implemented"""
         raise NotImplementedError
 
     @staticmethod
@@ -856,13 +868,18 @@ class ImplicitCoKriging(object):
         possible_candidates = np.array(possible_candidates)
         return possible_candidates[np.isin(possible_candidates, table.columns)][0]
 
-    @_setdoc(SurfacePoints.set_surface_points.__doc__, indent=False, position='beg')
+    @_setdoc_pro(SurfacePoints.set_surface_points.__doc__)
     def set_surface_points(self, table: pn.DataFrame, **kwargs):
-        """
+        """Set coordinates and surface columns on the df.
+
         Args:
-            table (pn.Dataframe): table with surface points data.
-            **kwargs:
-                - add_basement (bool): add a basement surface to the df. foo
+            table (pandas.Dataframe): table with surface points data.
+
+        Keyword Args:
+            bool add_basement: add a basement surface to the df.
+
+        See Also:
+            :class:`gempy.core.data_modules.geometric_data.SurfacePoints`
 
         """
 
@@ -893,12 +910,22 @@ class ImplicitCoKriging(object):
         self.map_geometric_data_df(self._surface_points.df)
         self._rescaling.rescale_data()
         self.update_structure()
+        return self._surface_points
 
     @_setdoc(Orientations.set_orientations.__doc__, indent=False, position='beg')
     def set_orientations(self, table: pn.DataFrame, **kwargs):
-        """
+        """ Set coordinates, surface and orientation data.
+
+        If both are passed pole vector has priority over orientation
+
         Args:
             table (pn.Dataframe): table with surface points data.
+
+        Returns:
+            :class:`gempy.core.data_modules.geometric_data.Orientations`
+
+        See Also:
+            :class:`gempy.core.data_modules.geometric_data.Orientations`
 
         """
         g_x_name = kwargs.get('G_x_name', 'G_x')
@@ -934,6 +961,8 @@ class ImplicitCoKriging(object):
         self._rescaling.rescale_data()
         self.update_structure()
 
+        return self._orientations
+
     @_setdoc_pro(ds.recompute_rf)
     @_setdoc(SurfacePoints.add_surface_points.__doc__, indent=False, position='beg')
     @plot_add_surface_points
@@ -941,7 +970,7 @@ class ImplicitCoKriging(object):
                            recompute_rescale_factor=False):
         """
         Args:
-            recompute_rescale_factor (bool): [s0]
+            recompute_rescale_factor (bool): [s0].
         """
 
         surface = np.atleast_1d(surface)
@@ -969,18 +998,39 @@ class ImplicitCoKriging(object):
 
     def delete_surface_points_basement(self):
         """Delete surface points belonging to the basement layer if any"""
+
         basement_name = self._surfaces.df['surface'][self._surfaces.df['isBasement']].values
         select = (self._surface_points.df['surface'] == basement_name)
         self.delete_surface_points(self._surface_points.df.index[select])
         return True
 
-    @_setdoc_pro(ds.recompute_rf)
-    @_setdoc(SurfacePoints.modify_surface_points.__doc__, indent=False, position='beg')
+    @_setdoc_pro()
     @plot_move_surface_points
     def modify_surface_points(self, indices: Union[int, list], recompute_rescale_factor=False, **kwargs):
-        """
+        """Allows modification of the x,y and/or z-coordinates of an interface at specified dataframe index.
+
         Args:
-            recompute_rescale_factor: [s0]
+            indices: [s_idx_sp]
+            recompute_rescale_factor: [s_recompute_rf]
+
+        Keyword Args:
+                * X: [s_x]
+
+                * Y: [s_y]
+
+                * Z: [s_z]
+
+                * surface: [s_surface_sp]
+
+         Returns:
+            :class:`gempy.core.data_modules.geometric_data.SurfacePoints`
+
+         """
+
+        """
+        
+        Args:
+            recompute_rescale_factor: [s0] foo
         """
         keys = list(kwargs.keys())
         is_surface = np.isin('surface', keys).all()
@@ -1015,14 +1065,24 @@ class ImplicitCoKriging(object):
     def set_orientations_object(self, orientations: Orientations, update_model=True):
         raise NotImplementedError
 
-    @_setdoc_pro(ds.recompute_rf)
-    @_setdoc(Orientations.add_orientation.__doc__, indent=False, position='beg')
+    @_setdoc_pro()
     @plot_add_orientation
     def add_orientations(self,  X, Y, Z, surface, pole_vector: Iterable = None,
                          orientation: Iterable = None, idx=None, recompute_rescale_factor=False):
-        """
+        """Add orientation.
+
         Args:
-            recompute_rescale_factor: [s0]
+            X: [s_x]
+            Y: [s_y]
+            Z: [s_z]
+            surface: [s_surface_sp]
+            pole_vector: [s_pole_vector]
+            orientation: [s_orientations]
+            idx: [s_idx_sp]
+            recompute_rescale_factor: [s_recompute_rf]
+
+        Returns:
+            :class:`gempy.core.data_modules.geometric_data.Orientations`
 
         """
 
@@ -1072,6 +1132,7 @@ class ImplicitCoKriging(object):
         self._additional_data.options.modify_options(attribute, value)
         warnings.warn('You need to recompile the Theano code to make it the changes in options.')
 
+        return self._additional_data.options
     # endregion
 
     # region Kriging
@@ -1082,6 +1143,7 @@ class ImplicitCoKriging(object):
         if attribute == 'drift equations':
             self._interpolator.set_initial_results()
             self.update_structure()
+        return self._additional_data.kriging_data
 
     # endregion
 
@@ -1091,6 +1153,8 @@ class ImplicitCoKriging(object):
         self._additional_data.rescaling_data.modify_rescaling_parameters(attribute, value)
         self._additional_data.rescaling_data.rescale_data()
         self._additional_data.update_default_kriging()
+
+        return self._additional_data.rescaling_data
     # endregion
 
     # ======================================
@@ -1098,14 +1162,15 @@ class ImplicitCoKriging(object):
     # ======================================
 
     def set_default_surface_point(self, **kwargs):
-        """
-        Set a default surface point if the df is empty. This is necessary for some type of functionality such as qgrid
+        """Set a default surface point if the df is empty. This is necessary for some
+        type of functionality such as qgrid.
 
         Args:
-            **kwargs: :meth:`add_surface_points` kwargs
+            **kwargs: Same as :func:`gempy.core.data_modules.geometric_data.SurfacePoints.add_surface_points`
 
         Returns:
-            SurfacePoints
+            :class:`gempy.core.data_modules.geometric_data.SurfacePoints`
+
         """
         if self._surface_points.df.shape[0] == 0:
             self.add_surface_points(0.00001, 0.00001, 0.00001, self._surfaces.df['surface'].iloc[0],
@@ -1113,14 +1178,14 @@ class ImplicitCoKriging(object):
         return self._surface_points
 
     def set_default_orientation(self, **kwargs):
-        """
-         Set a default orientation if the df is empty. This is necessary for some type of functionality such as qgrid
+        """Set a default orientation if the df is empty. This is necessary for some type of functionality such as qgrid
 
          Args:
-             **kwargs: :meth:`add_orientation` kwargs
+             **kwargs: Same as :func::class:`gempy.core.data_modules.geometric_data.Orientations.add_orientation`
 
          Returns:
-             Orientations
+             :class:`gempy.core.data_modules.geometric_data.Orientations`
+
          """
         if self._orientations.df.shape[0] == 0:
             # TODO DEBUG: I am not sure that surfaces always has at least one entry. Check it
@@ -1129,26 +1194,27 @@ class ImplicitCoKriging(object):
                                   [0, 0, 1], recompute_rescale_factor=True, **kwargs)
 
     def set_default_surfaces(self):
-        """
-         Set two default surfaces if the df is empty. This is necessary for some type of functionality such as qgrid
+        """Set two default surfaces if the df is empty. This is necessary for some type of functionality such as qgrid
 
          Returns:
-             Surfaces
+             :class:`gempy.core.data.Surfaces`
+
          """
         if self._surfaces.df.shape[0] == 0:
             self.add_surfaces(['surface1', 'surface2'])
         self.update_from_surfaces()
         return self._surfaces
 
-    @_setdoc_pro(ds.extent)
+    @_setdoc_pro()
     def set_extent(self, extent: Iterable):
         """
         Set project extent
 
         Args:
-            extent: [s0]
+            extent: [s_extent]
 
         Returns:
+            :class:`gempy.core.data.Grid`
 
         """
         extent = np.atleast_1d(extent)
@@ -1158,8 +1224,7 @@ class ImplicitCoKriging(object):
 
     def update_from_series(self, reorder_series=True, sort_geometric_data=True,
                            update_interpolator=True):
-        """
-        Update all objects dependent on series.
+        """Update all objects dependent on series.
 
         This method is a bit of a legacy and has been substituted by :meth:`rename_series` and :meth:`reorder_series`,
         however is useful if you want to make sure all objects are up to date with the latest changes on series.
@@ -1266,17 +1331,23 @@ class ImplicitCoKriging(object):
         self.update_to_interpolator()
         return True
 
-    @_setdoc(InterpolatorModel.__doc__)
+    #@_setdoc(InterpolatorModel.__doc__)
     def set_theano_function(self, interpolator: InterpolatorModel,
                             update_structure=True, update_kriging=True):
-        """
-        Pass a theano function and its correspondent graph from an Interpolator instance other than the Model compose
+        """Pass a theano function and its correspondent graph from an Interpolator
+         instance other than the Model compose
 
         Args:
-            interpolator (:class:`InterpolatorModel`): [s0]
+            interpolator (:class:`gempy.core.interpolator.InterpolatorModel`): interpolator object
+             with the compile graph.
+            update_kriging (bool): if True update kriging parameters
+            update_structure (bool): if Ture update structure
 
         Returns:
-             True
+            bool: True
+
+        See Also:
+            :class:`gempy.core.interpolator.InterpolatorModel`
         """
 
         self._interpolator.theano_graph = interpolator.theano_graph
