@@ -120,7 +120,7 @@ class TestFaults:
                                      path_o=input_path + "/GeoModeller/test_d/test_d_Foliations.csv",
                                      path_i=input_path + "/GeoModeller/test_d/test_d_Points.csv")
 
-        gempy.map_series_to_surfaces(geo_data, {'fault1': 'f1', 'series': ('A', 'B')})
+        gempy.map_stack_to_surfaces(geo_data, {'fault1': 'f1', 'series': ('A', 'B')})
 
         geo_data.set_is_fault('fault1')
 
@@ -150,7 +150,7 @@ class TestFaults:
                                      path_o=input_path + "/GeoModeller/test_e/test_e_Foliations.csv",
                                      path_i=input_path + "/GeoModeller/test_e/test_e_Points.csv")
 
-        gempy.map_series_to_surfaces(geo_data, {'fault1': 'f1', 'series': ('A', 'B')})
+        gempy.map_stack_to_surfaces(geo_data, {'fault1': 'f1', 'series': ('A', 'B')})
         geo_data.set_is_fault('fault1')
 
         geo_data.set_theano_function(interpolator)
@@ -180,14 +180,14 @@ class TestFaults:
                                      path_o=input_path + "/GeoModeller/test_f/test_f_Foliations.csv",
                                      path_i=input_path + "/GeoModeller/test_f/test_f_Points.csv")
 
-        gempy.map_series_to_surfaces(geo_data, {'fault1': 'MainFault',
+        gempy.map_stack_to_surfaces(geo_data, {'fault1': 'MainFault',
                                                 'series': ('Reservoir',
                                                            'Seal',
                                                            'SecondaryReservoir',
                                                            'NonReservoirDeep'
                                                            ),
-                                                },
-                                     )
+                                               },
+                                    )
 
         geo_data.set_theano_function(interpolator)
         geo_data.set_is_fault('fault1')

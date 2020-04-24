@@ -36,10 +36,10 @@ def one_fault_model_no_interp():
                            path_i=input_path2 + 'tut_chapter1/simple_fault_model_points.csv')
 
     # Assigning series to surface as well as their order (timewise)
-    gp.map_series_to_surfaces(model, {"Fault_Series": 'Main_Fault',
+    gp.map_stack_to_surfaces(model, {"Fault_Series": 'Main_Fault',
                                       "Strat_Series": ('Sandstone_2', 'Siltstone',
                                                        'Shale', 'Sandstone_1')},
-                              )
+                             )
     model.set_is_fault(['Fault_Series'])
     return model
 
@@ -52,10 +52,10 @@ def one_fault_model(interpolator):
                            path_i=input_path2 + 'tut_chapter1/simple_fault_model_points.csv')
 
     # Assigning series to surface as well as their order (timewise)
-    gp.map_series_to_surfaces(model, {"Fault_Series": 'Main_Fault',
+    gp.map_stack_to_surfaces(model, {"Fault_Series": 'Main_Fault',
                                       "Strat_Series": ('Sandstone_2', 'Siltstone',
                                                        'Shale', 'Sandstone_1')},
-                              )
+                             )
     model.set_is_fault(['Fault_Series'])
 
     model.set_theano_function(interpolator)
@@ -79,7 +79,7 @@ def unconformity_model(interpolator):
         path_i=input_path2 + "jan_models/model6_surface_points.csv"
     )
 
-    gp.map_series_to_surfaces(
+    gp.map_stack_to_surfaces(
         geo_model,
         {"Strat_Series1": ('rock3'),
          "Strat_Series2": ('rock2', 'rock1'),
@@ -115,7 +115,7 @@ def model_complex(interpolator):
                                  path_i=input_path2 + "jan_models/fixture_model_surfaces.csv")
 
     # Assigning series to surface as well as their order (timewise)
-    gp.map_series_to_surfaces(model, {"Fault_Series": ('fault'), "Strat_Series1": ('rock3'),
+    gp.map_stack_to_surfaces(model, {"Fault_Series": ('fault'), "Strat_Series1": ('rock3'),
                                             "Strat_Series2": ('rock2', 'rock1'),
                                             "Basement_Series": ('basement')})
 

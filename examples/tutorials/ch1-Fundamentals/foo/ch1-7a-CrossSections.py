@@ -31,8 +31,8 @@ geo_model = gp.create_model('Tutorial_ch1-1_Basics')
 gp.init_data(geo_model, [0,2000.,0,2000.,0,2000.],[5,5,5], 
       path_o = os.pardir+"/../data/input_data/tut_chapter1/simple_fault_model_orientations.csv",
       path_i = os.pardir+"/../data/input_data/tut_chapter1/simple_fault_model_points.csv", default_values=True)
-gp.map_series_to_surfaces(geo_model,
-                            {"Fault_Series":'Main_Fault', 
+gp.map_stack_to_surfaces(geo_model,
+                         {"Fault_Series":'Main_Fault',
                              "Strat_Series": ('Sandstone_2','Siltstone',
                                               'Shale', 'Sandstone_1', 'basement')}, remove_unused_series=True)
 geo_model.set_is_fault(['Fault_Series'])

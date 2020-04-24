@@ -33,7 +33,7 @@ gp.init_data(
     path_i="../../data/input_data/tut_chapter6/ch6_data_interf.csv", 
     path_o="../../data/input_data/tut_chapter6/ch6_data_fol.csv"
 )
-gp.map_series_to_surfaces(
+gp.map_stack_to_surfaces(
     geo_model,
     {
         "fault": "Fault",

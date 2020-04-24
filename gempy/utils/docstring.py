@@ -75,3 +75,12 @@ path_o = '(str): Path to the data bases of orientations. Default os.getcwd()'
 surface_points_df = '(pandas.DataFrame): A pn.Dataframe object with X, Y, Z, and surface columns'
 orientations_df = '(pandas.DataFrame): A pn.Dataframe object with X, Y, Z, surface columns and pole or orientation ' \
                   'columns.'
+
+mapping_object = '(dict, :class:`pandas.DataFrame`):\n                * dict: keys are the series and values the ' \
+                 'surfaces ' \
+                 'belonging to that series\n\n                * pn.DataFrame: Dataframe with surfaces as index and a ' \
+                 'column series with the correspondent series name\n                  of each surface '
+
+geo_model = '(:class:`gempy.core.model.Project`): Container class of all objects that constitute a GemPy model.'
+
+itype = "(str{'all', 'surface_points', 'orientations', 'surfaces', 'series', 'faults', 'faults_relations','additional data'}): input data type to be retrieved."

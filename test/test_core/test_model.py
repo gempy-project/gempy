@@ -100,10 +100,10 @@ def map_sequential_pile(load_model):
 
     # TODO decide what I do with the layer order
 
-    gp.map_series_to_surfaces(geo_model, {"Fault_Series": 'Main_Fault',
+    gp.map_stack_to_surfaces(geo_model, {"Fault_Series": 'Main_Fault',
                                           "Strat_Series": ('Sandstone_2', 'Siltstone',
                                                            'Shale', 'Sandstone_1', 'basement')},
-                                            remove_unused_series=True)
+                             remove_unused_series=True)
 
     geo_model.set_is_fault(['Fault_Series'])
     return geo_model

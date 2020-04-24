@@ -179,7 +179,7 @@ class GemPyToVista(WidgetsCallbacks):
             if extent is None:
                 extent = self.extent
             self.p.show_bounds(
-                bounds=extent, location=location, grid=grid, use_2d=True, **kwargs
+                bounds=extent, location=location, grid=grid, use_2d=False, **kwargs
             )
 
     def plot_data(self, surfaces='all', surface_points=None, orientations=None, **kwargs):

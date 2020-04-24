@@ -46,16 +46,33 @@ class ImplicitCoKriging(object):
     on that.
 
     Attributes:
-        _grid (:class:`Grid`): [s0]
-        _faults (:class:`Faults`): [s1]
-        _stack (:class:`Series`): [s2]
-        _surfaces (:class:`Surfaces`): [s3]
-        _surface_points (:class:`SurfacePoints`): [s4]
-        _orientations (:class:`Orientations`): [s5]
-        _rescaling (:class:`Rescaling`): [s6]
-        _additional_data (:class:`AdditionalData`): [s7]
-        _interpolator (:class:`InterpolatorModel`): [s8]
-        solutions (:class:`Solutions`): [s9]
+        grid (:class:`gempy.core.data.Grid`): [s0]
+        faults (:class:`gempy.core.data.Grid`): [s1]
+        stack (:class:`gempy.core.data_modules.stack.Stack`): [s2]
+        surfaces (:class:`gempy.core.data.Surfaces`): [s3]
+        surface_points (:class:`gempy.core.data_modules.geometric_data.SurfacePoints`): [s4]
+        orientations (:class:`gempy.core.data_modules.geometric_data.Orientations`): [s5]
+        rescaling (:class:`gempy.core.data_modules.geometric_data.Rescaling`): [s6]
+        additional_data (:class:`gempy.core.data.AdditionalData`): [s7]
+        interpolator (:class:`gempy.core.interpolator.InterpolatorModel`): [s8]
+        solutions (:class:`gempy.core.solutions.Solutions`): [s9]
+        _grid (:class:`gempy.core.data.Grid`): Actual data objects. Use its methods only if you know what are you doing.
+        _faults (:class:`gempy.core.data_modules.stack.Faults`): Actual data objects. Use its methods only if you know
+         what are you doing.
+        _stack (:class:`gempy.core.data_modules.stack.Stack`): Actual data objects. Use its methods only if you know
+         what are you doing.
+        _surfaces (:class:`gempy.core.data.Surfaces`): Actual data objects. Use its methods only if you know what are
+         you doing.
+        _surface_points (:class:`gempy.core.data_modules.geometric_data.SurfacePoints`): Actual data objects. Use its
+         methods only if you know what are you doing.
+        _orientations (:class:`gempy.core.data_modules.geometric_data.Orientations`): Actual data objects. Use its
+         methods only if you know what are you doing.
+        _rescaling (:class:`gempy.core.data_modules.geometric_data.Rescaling`): Actual data objects. Use its methods
+         only if you know what are you doing.
+        _additional_data (:class:`gempy.core.data.AdditionalData`): Actual data objects. Use its methods only if you
+         know what are you doing.
+        _interpolator (:class:`gempy.core.interpolator.InterpolatorModel`): Actual data objects. Use its methods only if
+        you know what are you doing.
 
      """
 
@@ -1359,13 +1376,13 @@ class Project(ImplicitCoKriging):
         self._additional_data.update_default_kriging()
         return True
 
+    @_setdoc_pro()
     def get_data(self, itype='data', verbosity=0, numeric=False):
-        """
-        Method that returns the surface_points and orientations pandas Dataframes. Can return both at the same time or only
-        one of the two
+        """Method to return the data stored in :class:`panda.DataFrame` within a
+        :class:`gempy.core.model.Project` data object.
 
         Args:
-            itype: input_data data type, either 'orientations', 'surface_points' or 'all' for both.
+            itype: [s_itype]
             numeric(bool): Return only the numerical values of the dataframe. This is much lighter database for storing
                 traces
             verbosity (int): Number of properties shown

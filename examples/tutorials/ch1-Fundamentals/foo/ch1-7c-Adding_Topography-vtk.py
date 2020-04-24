@@ -35,7 +35,7 @@ geo_model._surfaces.colors.change_colors({'layer1': '#ff8000', 'basement': '#88c
 
 # %% 
 # %matplotlib inline
-gp.map_series_to_surfaces(geo_model, {'series':('layer1','basement')})
+gp.map_stack_to_surfaces(geo_model, {'series':('layer1', 'basement')})
 
 
 # %%

@@ -45,9 +45,9 @@ def test_pile_geomodel(interpolator):
         "sediments": ("tarbert", "ness", "etive"),
     }
 
-    gp.map_series_to_surfaces(geo_model,
-                              series_distribution,
-                              remove_unused_series=True)
+    gp.map_stack_to_surfaces(geo_model,
+                             series_distribution,
+                             remove_unused_series=True)
 
     geo_model.reorder_features(["unconformity", "fault3", "fault4",
                               "sediments", "Basement"])
@@ -99,9 +99,9 @@ def test_pile_geomodel_2(interpolator):
         "sediments": ("tarbert", "ness", "etive"),
     }
 
-    gp.map_series_to_surfaces(geo_model,
-                              series_distribution,
-                              remove_unused_series=True)
+    gp.map_stack_to_surfaces(geo_model,
+                             series_distribution,
+                             remove_unused_series=True)
 
     geo_model.reorder_features(["unconformity", "fault3", "fault4",
                               "sediments", "Basement"])
@@ -218,7 +218,7 @@ def test_complete_model(tmpdir, interpolator):
 
     geo_model.modify_order_features(1, 'Fault1')
     geo_model.add_surfaces(['F1'])
-    gp.map_series_to_surfaces(geo_model, {'Fault1': 'F1'})
+    gp.map_stack_to_surfaces(geo_model, {'Fault1': 'F1'})
 
     # Add input data of the fault
     geo_model.add_surface_points(X=1203, Y=138, Z=600, surface='F1')
@@ -276,7 +276,7 @@ def test_complete_model(tmpdir, interpolator):
     # Second cycle
     geo_model.add_features(['Cycle2'])
     geo_model.add_surfaces(['G', 'H'])
-    gp.map_series_to_surfaces(geo_model, {'Cycle2': ['G', 'H']})
+    gp.map_stack_to_surfaces(geo_model, {'Cycle2': ['G', 'H']})
     geo_model.reorder_features(['Cycle2', 'Fault1', 'Cycle1'])
 
     # Surface G
@@ -313,7 +313,7 @@ def test_complete_model(tmpdir, interpolator):
     geo_model.add_surfaces('F2')
 
     geo_model.reorder_features(['Cycle2', 'Fault1', 'Fault2', 'Cycle1'])
-    gp.map_series_to_surfaces(geo_model, {'Fault2': 'F2'})
+    gp.map_stack_to_surfaces(geo_model, {'Fault2': 'F2'})
 
     geo_model.add_surface_points(X=3232, Y=178, Z=1000, surface='F2')
     geo_model.add_surface_points(X=3132, Y=951, Z=700, surface='F2')

@@ -27,8 +27,8 @@ def geo_model(interpolator):
                  path_o=input_path + '/05_toy_fold_unconformity_orientations.csv',
                  path_i=input_path + '/05_toy_fold_unconformity_interfaces.csv', default_values=True);
 
-    gp.map_series_to_surfaces(geo_model,
-                              {"Flat_Series": 'Flat',
+    gp.map_stack_to_surfaces(geo_model,
+                             {"Flat_Series": 'Flat',
                                "Inclined_Series": 'Inclined',
                                "Fold_Series": ('Basefold', 'Topfold', 'basement')})
 

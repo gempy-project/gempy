@@ -22,7 +22,7 @@ def test_set_orientations():
     gp.get_data(geo_data)
 
     # Assigning series to formations as well as their order (timewise)
-    gp.map_series_to_surfaces(geo_data, {"Fault_Series": 'Main_Fault',
+    gp.map_stack_to_surfaces(geo_data, {"Fault_Series": 'Main_Fault',
                                          "Strat_Series": ('Sandstone_2', 'Siltstone')})
 
     geo_data._orientations.create_orientation_from_surface_points(geo_data._surface_points, [0, 1, 2])

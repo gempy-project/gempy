@@ -55,7 +55,7 @@ gp.set_interpolation_data(geo_data, theano_optimizer='fast_compile',
                          verbose=[])
 
 # %% 
-gp.map_series_to_surfaces(geo_data, {"Fault_Series":'fault', 
+gp.map_stack_to_surfaces(geo_data, {"Fault_Series": 'fault',
                          "Strat_Series": ('rock2','rock1')})
 geo_data.set_is_fault(['Fault_Series'])
 

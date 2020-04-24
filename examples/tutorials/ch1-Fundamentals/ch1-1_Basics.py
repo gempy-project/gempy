@@ -97,7 +97,7 @@ gp.get_data(geo_model, 'orientations').head()
 # Declaring the sequential order of geological formations
 # -------------------------------------------------------
 # 
-# -  TODO @Fabian update this
+# -  TODO update this section
 # 
 # We want our geological units to appear in the correct order relative to
 # age. Such order might for example be given by a depositional sequence of
@@ -155,11 +155,11 @@ gp.get_data(geo_model, 'orientations').head()
 geo_model.surfaces
 
 # %% 
-gp.map_series_to_surfaces(geo_model,
-                          {"Fault_Series": 'Main_Fault',
+gp.map_stack_to_surfaces(geo_model,
+                         {"Fault_Series": 'Main_Fault',
                            "Strat_Series": ('Sandstone_2', 'Siltstone',
                                             'Shale', 'Sandstone_1', 'basement')},
-                          remove_unused_series=True)
+                         remove_unused_series=True)
 
 # %% 
 geo_model.surfaces
@@ -440,8 +440,8 @@ gp.plot.plot_3d(geo_model, plotter_type='basic')
 # Using the rescaled interpolation data, we can also run our 3D VTK
 # visualization in an interactive mode which allows us to alter and update
 # our model in real time. Similarly to the interactive 3D visualization of
-# our input data, the changes are permamently saved (in the
-# InterpolationInput dataframe object). Addtionally, the resulting changes
+# our input data, the changes are permanently saved (in the
+# InterpolationInput dataframe object). Additionally, the resulting changes
 # in the geological models are re-computed in real time.
 # 
 
@@ -450,9 +450,9 @@ gp.plot.plot_3d(geo_model, plotter_type='basic')
 # Compute at a given location
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # 
-# This is done by modifing the grid to a custom grid and recomputing.
+# This is done by modifying the grid to a custom grid and recomputing.
 # Notice that the results are given as *grid + surfaces\_points\_ref +
-# surface\_pontints\_rest locations*
+# surface\_points\_rest locations*
 # 
 
 # %% 

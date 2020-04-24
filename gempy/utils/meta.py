@@ -40,7 +40,7 @@ def _setdoc(docstring, indent=True, position='end'):
     return decor
 
 
-def _setdoc_pro(docstring):
+def _setdoc_pro(docstring=[]):
     """This takes a list and places where it finds [s+0]"""
     if type(docstring) is not list:
         docstring = [docstring]

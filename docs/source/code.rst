@@ -29,7 +29,7 @@ GemPy API
 
 Model
 -----
-.. currentmodule:: model
+.. currentmodule:: gempy.core.model
 .. autosummary::
     :toctree: Model
 
@@ -49,26 +49,38 @@ ____
 
 Data
 ----
-.. currentmodule:: model
+.. currentmodule:: gempy.core.data
 .. autosummary::
     :toctree: Data
 
     Grid
-    Faults
-    Series
     Surfaces
-    SurfacePoints
-    Orientations
-    RescaledData
     Structure
     KrigingParameters
     Options
     AdditionalData
+    MetaData
+
+.. currentmodule:: gempy.core.data_modules.geometric_data
+.. autosummary::
+    :toctree: Data
+
+    SurfacePoints
+    Orientations
+    RescaledData
+
+.. currentmodule:: gempy.core.data_modules.stack
+.. autosummary::
+    :toctree: Data
+
+    Stack
+    Series
+    Faults
 
 
 Interpolator
 ------------
-.. currentmodule:: model
+.. currentmodule:: gempy.core.interpolator
 .. autosummary::
     :toctree: Interpolator
 
@@ -83,12 +95,3 @@ Solution
     :toctree: Solution
 
     Solution
-
-
-MetaData
---------
-.. currentmodule:: model
-.. autosummary::
-    :toctree: MetaData
-
-    MetaData

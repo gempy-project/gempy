@@ -11,12 +11,13 @@ PACKAGE_PARENT = '..'
 SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__))))
 sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
 
+
 from gempy.gempy_api import *
 from gempy.api_modules.getters import *
 from gempy.api_modules.setters import *
 from gempy.api_modules.io import *
-from gempy.core.model import ImplicitCoKriging, AdditionalData, Faults, Grid, \
-    MetaData, Orientations, RescaledData, Series, SurfacePoints, \
+from gempy.core.model import Project, ImplicitCoKriging, AdditionalData, Faults, Grid, \
+    Orientations, RescaledData, Series, SurfacePoints, \
     Surfaces, Options, Structure, KrigingParameters
 
 from gempy.addons.gempy_to_rexfile import geomodel_to_rex

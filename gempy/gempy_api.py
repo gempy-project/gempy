@@ -57,20 +57,48 @@ def edit(model: Project, data_object: str, method: str, **kwargs):
 
 
 # region mapping
-@_setdoc(Project.map_series_to_surfaces.__doc__)
+@_setdoc_pro(Project.__doc__)
 def map_series_to_surfaces(geo_model: Project, mapping_object: Union[dict, pn.Categorical] = None,
                            set_series=True, sort_geometric_data: bool = True, remove_unused_series=True):
-    """
+    """Mapping which surfaces belongs to which geological feature
+
     Args:
-        geo_model (Project):
-        mapping_object:
-        set_series:
-        sort_geometric_data (bool):
-        remove_unused_series:
+        geo_model (:class:`gempy.core.model.Project`): [s0]
+        mapping_object: [s_mapping_object]
+        set_series (bool): If True set missing series from the mapping object
+        sort_geometric_data (bool): If True sort the geometric_data according to the new
+         order of the stack
+        remove_unused_series(bool):
+
+    Returns
+        :class:`gempy.core.data.Surfaces`
     """
+    warnings.warn(DeprecationWarning, 'Series is going to get renamed to Stack. Please use'
+                                      '`map_stack_to_surfaces` instead.')
+
     geo_model.map_series_to_surfaces(mapping_object, set_series, sort_geometric_data, remove_unused_series)
     return geo_model._surfaces
 
+
+@_setdoc_pro(Project.__doc__)
+def map_stack_to_surfaces(geo_model: Project, mapping_object: Union[dict, pn.Categorical] = None,
+                          set_features=True, sort_geometric_data: bool = True, remove_unused_series=True):
+    """Mapping which surfaces belongs to which geological feature
+
+    Args:
+        geo_model (:class:`gempy.core.model.Project`): [s0]
+        mapping_object: [s_mapping_object]
+        set_features (bool): If True set missing features from the mapping object
+        sort_geometric_data (bool): If True sort the geometric_data according to the new
+         order of the stack
+        remove_unused_series(bool):
+
+    Returns
+        :class:`gempy.core.data.Surfaces`
+    """
+
+    geo_model.map_series_to_surfaces(mapping_object, set_features, sort_geometric_data, remove_unused_series)
+    return geo_model._surfaces
 
 # endregion
 
@@ -83,10 +111,10 @@ def create_model(project_name='default_project'):
         project_name (str): Name of the project
 
     Returns:
-        :class:`model.Project`
+        :class:`gempy.core.model.Project`
 
     See Also:
-        :class:`model.Project`
+        :class:`gempy.core.model.Project`
 
     Notes:
         TODO: Adding saving address
@@ -104,6 +132,8 @@ def create_data(project_name: str = 'default_project',
     - Grid :class:`gempy.core.data.GridClass`: To regular grid.
     - read_csv: SurfacePoints and orientations: From csv files
     - set_values to default
+
+
 
     Args:
         project_name (str):
@@ -129,14 +159,15 @@ def create_data(project_name: str = 'default_project',
 
 # TODO We need to decide how to initialize a model. Having create_data and init
 #  data  does not seem too robust
-# @_setdoc_pro([Project.__doc__])
+@_setdoc_pro([Project.__doc__])
 def init_data(geo_model: Project, extent: Union[list, ndarray] = None,
               resolution: Union[list, ndarray] = None,
               **kwargs) -> Project:
     """Initialize some of the main functions such as:
 
-     - Grid :class:`model.GridClass`: To regular grid.
-     - read_csv: :class:`SurfacePoints` and :class:`Orientations`: From csv files
+     - Regular grid (:class:`gempy.core.data.Grid`).
+     - read_csv: :class:`gempy.core.data_modules.geometric_data.SurfacePoints`
+       and :class:`gempy.core.data_modules.geometric_data.Orientations` From csv files
      - set_values to default
 
     Args:
@@ -150,7 +181,7 @@ def init_data(geo_model: Project, extent: Union[list, ndarray] = None,
         surface_points_df: [s_surface_points_df]
         orientations_df: [s_orientations_df]
     Returns:
-        :class:`model.Project`
+        :class:`gempy.core.model.Project`
     """
 
     if extent is None or resolution is None:

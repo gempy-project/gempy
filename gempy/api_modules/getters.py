@@ -4,16 +4,17 @@
 from gempy import Project, Solution
 from typing import Union
 import warnings
+from gempy.utils.meta import _setdoc_pro
 
 
+@_setdoc_pro()
 def get_data(model: Project, itype='data', numeric=False, verbosity=0):
-    """Method to return the data stored in :class:`DataFrame` within a :class:`gempy.interpolator.InterpolatorData`
-     object.
+    """Method to return the data stored in :class:`panda.DataFrame` within a
+    :class:`gempy.core.model.Project` data object.
 
     Args:
-        model (:class:`model.Project`): Input model.
-        itype (str{'all', 'surface_points', 'orientations', 'surfaces', 'series', 'faults', 'faults_relations','additional data'}):
-            input data type to be retrieved.
+        model: [s_geo_model]
+        itype: [s_itype]
         numeric (bool): if True it only returns numerical properties. This may be useful due to memory issues
         verbosity (int): Number of properties shown
 

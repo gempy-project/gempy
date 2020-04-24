@@ -100,7 +100,7 @@ a = model._surfaces.df['series'].cat
 a.set_categories(model._stack.df.index)
 
 # %% 
-model.map_series_to_surfaces({"Fault_Series":('Main_Fault', 'Silstone'), 
+model.map_stack_to_surfaces({"Fault_Series":('Main_Fault', 'Silstone'),
                                "Strat_Series": ( 'Sandstone_2', 'Sandstone_1', 'Siltstone',
                                              'Shale', )}, )
 
@@ -124,7 +124,7 @@ model._orientations.df.head()
 # 
 
 # %% 
-model.map_series_to_surfaces({"Fault_Series":'Main_Fault', 
+model.map_stack_to_surfaces({"Fault_Series": 'Main_Fault',
                                 "Strat_Series": ('Sandstone_2','Siltstone',
                                                  'Shale', 'Sandstone_1')})
 

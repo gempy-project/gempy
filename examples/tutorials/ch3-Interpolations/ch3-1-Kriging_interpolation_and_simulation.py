@@ -49,7 +49,7 @@ geo_data = gp.create_data([0,1000,0,50,0,1000],resolution=[50,1,50],
 # Setting and ordering the units and series:
 # 
 
-gp.map_series_to_surfaces(geo_data, {"Strat_Series": ('rock2','rock1'),"Basement_Series":('basement')})
+gp.map_stack_to_surfaces(geo_data, {"Strat_Series": ('rock2', 'rock1'), "Basement_Series":('basement')})
 
 #%matplotlib inline
 #gp.plot.plot_data(geo_data, direction='y')

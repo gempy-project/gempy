@@ -23,7 +23,7 @@ def test_add_point():
 
     strats = ['surface1', 'surface2', 'basement']
 
-    gp.map_series_to_surfaces(geo_model, {'Strat_Series': strats})
+    gp.map_stack_to_surfaces(geo_model, {'Strat_Series': strats})
 
     geo_model.add_surface_points(x, y, z, f)
     geo_model.add_orientations(x, y, z, f, pole_vector=(1,0,0))
