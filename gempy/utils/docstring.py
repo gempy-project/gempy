@@ -4,7 +4,7 @@ extent = ' (numpy.ndarray[float]): [x_min, x_max, y_min, y_max, z_min, z_max]. E
          'regular grid class.'
 resolution = '(numpy.ndarray[int]): [nx, ny, nz]'
 
-coord = '2D numpy array where axis 1 is the XYZ coordinates while axis 0 is n number of input '
+coord = '(numpy.ndarray[float, 3]): XYZ 2D array. Axis 1 is the coordinates while axis 0 is n number of input '
 coord_ori = coord + 'Notice that orientations may be place anywhere in the 3D space.'
 
 pole_vector = '2D numpy array where axis 1 is the gradient values G_x, G_y, G_z of the pole while axis 0 is n number of' \
@@ -36,7 +36,9 @@ file_path = 'Any valid string path is acceptable. The string could be a URL. Val
 debug = 'of debug is True the method will return the result without modify any related object'
 inplace = 'if True, perform operation in-place'
 
-centers = 'XYZ array with the center of the data. This controls how much we shift the input coordinates'
+centers = '(numpy.ndarray[float, 3]): XYZ array with the center of the data. This controls how much we shift the ' \
+          'input coordinates'
+
 rescaling_factor = 'Scaling factor by which all the parameters will be rescaled.'
 
 theano_graph_pro = 'GemPy object that contains all graph structure of theano'
@@ -84,3 +86,5 @@ mapping_object = '(dict, :class:`pandas.DataFrame`):\n                * dict: ke
 geo_model = '(:class:`gempy.core.model.Project`): Container class of all objects that constitute a GemPy model.'
 
 itype = "(str{'all', 'surface_points', 'orientations', 'surfaces', 'series', 'faults', 'faults_relations','additional data'}): input data type to be retrieved."
+
+section_dict = "(dict):  'section name': ([p1_x, p1_y], [p2_x, p2_y], [xyres, zres])"

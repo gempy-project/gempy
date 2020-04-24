@@ -18,7 +18,6 @@
 @author: Alexander Schaaf
 """
 import numpy as np
-from nptyping import Array
 from typing import List, Set, Tuple, Dict, Union, Optional
 import matplotlib.pyplot as plt
 
@@ -33,7 +32,7 @@ def _get_nfaults(geo_model) -> int:
     return np.count_nonzero(geo_model._faults.df.isFault)
 
 
-def _get_fb(geo_model) -> Array:
+def _get_fb(geo_model) -> np.ndarray:
     n_unconf = _get_nunconf(geo_model)
     n_faults = _get_nfaults(geo_model)
     return np.round(
@@ -41,7 +40,7 @@ def _get_fb(geo_model) -> Array:
     ).astype(int).sum(axis=0).reshape(*geo_model._grid.regular_grid.resolution)
 
 
-def _get_lb(geo_model) -> Array:
+def _get_lb(geo_model) -> np.ndarray:
     return np.round(
         geo_model.solutions.lith_block
     ).astype(int).reshape(*geo_model._grid.regular_grid.resolution)
@@ -335,8 +334,8 @@ def get_detailed_labels(
 
 
 def _get_edges(
-        l: Array[int, ..., ..., ...],
-        r: Array[int, ..., ..., ...]
+        l: np.ndarray,
+        r: np.ndarray
 ) -> Optional[np.ndarray]:
     """Get edges from given shifted arrays.
 
@@ -358,7 +357,7 @@ def _get_edges(
 def clean_unconformity_topology(
         geo_model,
         unconf_lith_id: int,
-        edges: Array[int, ..., 2],
+        edges: np.ndarray,
         centroids: Dict[int, np.ndarray]
 ) -> Tuple[Set[Tuple[int, int]], Dict[int, np.ndarray]]:
     """Clean unconformity topology edges and centroids. Needs to be run for
@@ -414,7 +413,7 @@ def jaccard_index(
     return intersection_cardinality / union_cardinality
 
 
-def _get_centroids(labels: Array[int, ..., ..., ...]) -> dict:
+def _get_centroids(labels: np.ndarray) -> dict:
     """Get geobody node centroids in array coordinates.
     
     Args:
@@ -439,7 +438,7 @@ def get_adjacency_matrix(
         geo_model,
         edges: Set[Tuple[int, int]],
         centroids,
-) -> Array[bool, ..., ...]:
+) -> np.ndarray:
     """[summary]
     
     Args:
@@ -486,8 +485,17 @@ def _get_adj_matrix_labels(geo_model):
 
 def plot_adjacency_matrix(
         geo_model,
-        adj_matrix: Array[bool, ..., ...]
+        adj_matrix: np.ndarray
 ):
+    """
+
+    Args:
+        geo_model:
+        adj_matrix: Array[bool, ..., ...]
+
+    Returns:
+
+    """
     f_ids = get_fault_ids(geo_model)
     n_faults = len(f_ids) // 2
     lith_ids = get_lith_ids(geo_model)

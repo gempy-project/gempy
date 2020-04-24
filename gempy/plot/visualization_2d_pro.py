@@ -299,15 +299,18 @@ class Plot2D:
                   cmap=self.cmap, norm=self.norm, extent=extent_val)
         return ax
 
-    def plot_lith(self, ax, section_name=None, cell_number=None, direction='y'):
+    def plot_lith(self, ax, section_name=None, cell_number=None, direction='y', **kwargs):
         block = self.model.solutions.lith_block
         self.plot_regular_grid(ax, section_name, cell_number, direction, block=block)
 
-    def plot_values(self, ax, series_n=0, section_name=None, cell_number=None, direction='y'):
+    def plot_values(self, ax, series_n=0, section_name=None, cell_number=None,
+                    direction='y', **kwargs):
         block = self.model.solutions.values_matrix[series_n]
-        self.plot_regular_grid(ax, section_name, cell_number, direction, block=block)
+        self.plot_regular_grid(ax, section_name, cell_number, direction, block=block,
+                               **kwargs)
 
-    def plot_block(self, ax, series_n=0, section_name=None, cell_number=None, direction='y'):
+    def plot_block(self, ax, series_n=0, section_name=None, cell_number=None, direction='y',
+                   **kwargs):
         block = self.model.solutions.block_matrix[series_n]
         self.plot_regular_grid(ax, section_name, cell_number, direction, block=block)
 
@@ -422,6 +425,8 @@ class Plot2D:
             raise AttributeError
 
         ax.contour(image, cmap='autumn', extent=extent_val, zorder=8, **kwargs)
+        if 'N' in kwargs:
+            kwargs.pop('N')
         ax.contourf(image, N=200, cmap='autumn', extent=extent_val, zorder=7, alpha=.8,
                     **kwargs)
 

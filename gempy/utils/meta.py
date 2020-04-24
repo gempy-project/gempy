@@ -34,7 +34,7 @@ def _setdoc(docstring, indent=True, position='end'):
                 if position == 'end':
                     func.__doc__ += ' (inserted) ' + docstring
                 else:
-                    func.__doc__ = ' (inserted) - ' + docstring +'\n'+ func.__doc__
+                    func.__doc__ = '' + docstring + '\n'+ func.__doc__
         return func
 
     return decor

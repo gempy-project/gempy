@@ -27,7 +27,6 @@
 # sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 
 from typing import Set, Tuple, Dict, Union
-from nptyping import Array
 import gempy as _gempy
 from .visualization_2d import PlotData2D, PlotSolution
 from .visualization_3d import GemPyvtkInteract
@@ -355,7 +354,7 @@ def plot_gradient(geo_data, scalar_field, gx, gy, gz, cell_number, q_stepsize=5,
 def plot_topology(
         geo_model,
         edges: Set[Tuple[int, int]],
-        centroids: Dict[int, Array[int, 3]],
+        centroids: Dict,
         direction: Union["x", "y", "z"] = "y",
         scale: bool = True,
         label_kwargs: dict = None,

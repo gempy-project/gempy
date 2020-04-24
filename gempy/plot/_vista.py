@@ -53,7 +53,7 @@ try:
 except ImportError:
     VTK_IMPORT = False
 
-from nptyping import Array
+
 from logging import debug
 
 
@@ -755,10 +755,17 @@ class Vista:
         return meshes
 
     @staticmethod
-    def _simplices_to_pv_tri_simplices(sim: Array[int, ..., 3]) -> Array[
-        int, ..., 4]:
+    def _simplices_to_pv_tri_simplices(sim: np.ndarray) -> np.ndarray:
         """Convert triangle simplices (n, 3) to pyvista-compatible
-        simplices (n, 4)."""
+        simplices (n, 4).
+
+        Args:
+            sim (numpy.ndarray[int, ..., 3])
+
+        Returns:
+              numpy.ndarray[int, ..., 4]
+
+        """
         n_edges = np.ones(sim.shape[0]) * 3
         return np.append(n_edges[:, None], sim, axis=1)
 

@@ -42,8 +42,8 @@ class RestrictingWrapper(object):
              Orientations.__doc__, RescaledData.__doc__, AdditionalData.__doc__, InterpolatorModel.__doc__,
              Solution.__doc__])
 class ImplicitCoKriging(object):
-    """This class handles all the mutation of an object belonging to model and the update of every single object depend
-    on that.
+    """This class handles all the mutation of the data objects of the model involved on the
+     implicit cokriging ensuring the synchronization of all the members.
 
     Attributes:
         grid (:class:`gempy.core.data.Grid`): [s0]
@@ -178,9 +178,14 @@ class ImplicitCoKriging(object):
         [s1]
 
         Args:
-            update_theano: str{'matrices', 'weights'}:
+            update_theano (str{'matrices', 'weights'}):
+
                 * matrices [s2]
+
                 * weights [s3]
+
+        Returns:
+            :class:`gempy.core.data.Structure`
         """
 
         self._additional_data.update_structure()
@@ -224,6 +229,9 @@ class ImplicitCoKriging(object):
 
     # region Grid
     def update_from_grid(self):
+        """Update objects dependent from the grid.
+
+        """
         self._rescaling.rescale_data()
         self._interpolator.set_initial_results_matrices()
 
@@ -235,15 +243,15 @@ class ImplicitCoKriging(object):
             self._interpolator.theano_graph.grid_val_T.set_value(self._grid.values_r.astype(self._interpolator.dtype))
 
     def set_active_grid(self, grid_name: Union[str, Iterable[str]], reset=False):
-        """
-        Set active a given or several grids.
+        """Set active a given or several grids.
 
         Args:
-            grid_name (str, list) {regular, custom, topography, centered}:
-            reset (bool): If true set inactive all grids not in grid_name
+            grid_name (str, list[str]): Name of the grid you want to activate. Options are
+             {regular, custom, topography, centered}
+            reset (bool): If True set inactive all grids not in grid_name
 
         Returns:
-            Grid
+            :class:`gempy.core.data.Grid`
 
         """
         if reset is True:
@@ -255,23 +263,36 @@ class ImplicitCoKriging(object):
         return self._grid
 
     def set_grid_object(self, grid: Grid, update_model=True):
-        # TODO this should go to the api and let call all different grid types
-        raise NotImplementedError
+        """Not implemented
 
-    @_setdoc(Grid.create_regular_grid.__doc__)
-    @_setdoc_pro([ds.extent, ds.resolution])
-    def set_regular_grid(self, extent, resolution):
-        """
-        Set a regular grid, rescale data and initialize theano solutions.
+        # TODO this should go to the api and let call all different grid types
 
         Args:
-            extent (np.ndarray): [s0]
-            resolution (np.ndarray): [s1]
+            grid:
+            update_model:
 
         Returns:
-            Grid
 
-        Set regular grid docs
+        """
+        raise NotImplementedError
+
+    # @_setdoc(Grid.create_regular_grid.__doc__)
+    @_setdoc_pro()
+    def set_regular_grid(self, extent, resolution):
+        """Set a regular grid, rescale data and initialize theano solutions.
+
+        Args:
+            extent: [s_extent]
+            resolution: [s_resolution]
+
+        Returns:
+            :class:`gempy.core.data.Grid`
+
+        See Also:
+            :class:`gempy.core.data.Grid.create_regular_grid`
+
+            :class:`gempy.core.data.grid_modules.grid_types.RegularGrid`
+
         """
         if self._grid.regular_grid is None:
             self._grid.create_regular_grid(extent=extent, resolution=resolution)
@@ -286,18 +307,21 @@ class ImplicitCoKriging(object):
         print(f'Active grids: {self._grid.grid_types[self._grid.active_grids]}')
         return self._grid
 
-    @_setdoc(Grid.create_custom_grid.__doc__, )
-    @_setdoc_pro(ds.coord)
+    @_setdoc_pro()
     def set_custom_grid(self, custom_grid):
-        """
-        Set custom grid, rescale gird and initialize theano solutions. foo
+        """Set custom grid, rescale gird and initialize theano solutions. foo
 
         Args:
-            custom_grid (np.array): [s0]
-        Returns:
-            Grid
+            custom_grid: [s_coord]
 
-        Set custom grid Docs
+        Returns:
+            :class:`gempy.core.data.Grid`
+
+        See Also:
+            :class:`gempy.core.data.Grid.create_custom_grid`
+
+            :class:`gempy.core.data.grid_modules.grid_types.CustomGrid`
+
         """
         if self._grid.custom_grid is None:
             self._grid.create_custom_grid(custom_grid)
@@ -310,10 +334,43 @@ class ImplicitCoKriging(object):
         return self._grid
 
     @plot_set_topography
-    @_setdoc(Grid.create_topography.__doc__)
     def set_topography(self, source='random', **kwargs):
-        """
-        Create a topography grid and activate it.
+        """Create a topography grid and activate it.
+
+        Args:
+            source:
+                'gdal':     Load topography from a raster file.
+                'random':   Generate random topography (based on a fractal grid).
+                'saved':    Load topography that was saved with the topography.save() function.
+                            This is useful after loading and saving a heavy raster file with gdal once or after saving a
+                            random topography with the save() function. This .npy file can then be set as topography.
+
+        Keyword Args:
+            if source = 'gdal:
+
+                *filepath:   path to raster file, e.g. '.tif', (for all file formats see
+                https://gdal.org/drivers/raster/index.html)
+
+            if source = 'random':
+
+                * fd:         fractal dimension, defaults to 2.0
+
+                - d_z:        maximum height difference. If none, last 20% of the model in z direction
+
+                * extent:     extent in xy direction. If none, geo_model.grid.extent
+
+                * resolution: desired resolution of the topography array. If none, geo_model.grid.resoution
+
+            if source = 'saved':
+
+                * filepath:   path to the .npy file that was created using the topography.save() function
+
+        Returns:
+             :class:`gempy.core.data.Grid`
+
+        See Also:
+            :class:`gempy.core.grid_modules.grid_types.Topography`
+
         """
 
         self._grid.create_topography(source, **kwargs)
@@ -321,8 +378,22 @@ class ImplicitCoKriging(object):
         print(f'Active grids: {self._grid.grid_types[self._grid.active_grids]}')
         return self._grid
 
-    @_setdoc(Grid.create_centered_grid.__doc__)
+    @_setdoc_pro(Grid.create_centered_grid.__doc__)
     def set_centered_grid(self, centers, radius, resolution=None):
+        """[s0]
+
+        Args:
+            centers (numpy.ndarray[float, 3]): Location of the center of each kernel.
+            radius (float): Distance from each center to create each XYZ point
+            resolution (numpy.ndarray[3]): Number of voxels in each direction per kernel
+
+        Returns:
+            :class:`gempy.core.data.Grid`
+
+        See Also:
+            :class:`gempy.core.grid_modules.grid_types.CenteredGrid`
+
+        """
         if self._grid.centered_grid is None:
             self._grid.create_centered_grid(centers, radius, resolution=resolution)
         else:
@@ -333,8 +404,19 @@ class ImplicitCoKriging(object):
         print(f'Active grids: {self._grid.grid_types[self._grid.active_grids]}')
         return self._grid
 
-    @_setdoc(Grid.create_section_grid.__doc__)
+    @_setdoc_pro(Grid.create_section_grid.__doc__)
     def set_section_grid(self, section_dict):
+        """[s0]
+
+        Args:
+            section_dict: [s_section_dict]
+
+        Returns:
+            :class:`gempy.core.grid_modules.grid_types.Sections`
+
+        See Also:
+            :class:`gempy.core.grid_modules.grid_types.Sections`
+        """
         # TODO being able to change the regular grid associated to the section grid
         if self._grid.sections is None:
             self._grid.create_section_grid(section_dict=section_dict)
@@ -350,9 +432,7 @@ class ImplicitCoKriging(object):
     # region Series
     def set_series_object(self):
         """
-        Not implemented yet. Exchange the series object of the Model object. foo
-
-        Returns:
+        Not implemented yet. Exchange the series object of the Model object.
 
         """
         raise NotImplementedError
@@ -364,29 +444,48 @@ class ImplicitCoKriging(object):
         self._interpolator.set_theano_shared_relations()
         return self._stack
 
-    @_setdoc(Series.add_series.__doc__, indent=False)
-    def add_features(self, series_list: Union[str, list], reset_order_series=True):
-        """ Add series, update the categories dependet on them and reset the flow control.
+    @_setdoc_pro(Stack.reset_order_series.__doc__)
+    def add_features(self, features_list: Union[str, list], reset_order_series=True):
+        """ Add series, update the categories dependent on them and reset the flow control.
+
+        Args:
+            features_list: (str, list): name or list of names of the series to apply the functionality
+            reset_order_series: if true [s0]
+
+        Returns:
+            :class:`gempy.core.data_modules.stack.Stack`
+
         """
-        self._stack.add_series(series_list, reset_order_series)
-        self._surfaces.df['series'].cat.add_categories(series_list, inplace=True)
-        self._surface_points.df['series'].cat.add_categories(series_list, inplace=True)
-        self._orientations.df['series'].cat.add_categories(series_list, inplace=True)
+        self._stack.add_series(features_list, reset_order_series)
+        self._surfaces.df['series'].cat.add_categories(features_list, inplace=True)
+        self._surface_points.df['series'].cat.add_categories(features_list, inplace=True)
+        self._orientations.df['series'].cat.add_categories(features_list, inplace=True)
         self._interpolator.set_flow_control()
         return self._stack
 
+    @_setdoc(Series.add_series.__doc__, indent=False)
     def add_series(self, series_list: Union[str, list], reset_order_series=True):
         warnings.warn(DeprecationWarning, 'Series are getting renamed to Stack/features.'
                                           'Please use add_features instead')
         return self.add_features(series_list, reset_order_series)
 
-    @_setdoc(Series.delete_series.__doc__, indent=False)
-    def delete_features(self, indices: Union[str, list], refactor_order_series=True,
+    @_setdoc_pro(Stack.reset_order_series.__doc__)
+    def delete_features(self, indices: Union[str, list], reset_order_features=True,
                         remove_surfaces=False, remove_data=False):
-        """ Delete series, update the categories dependet on them and reset the flow control.
+        """ Delete series, update the categories dependent on them and reset the flow control.
+
+        Args:
+            indices (str, list): name or list of names of the series to apply the functionality
+            reset_order_features: (bool): if true [s0]
+            remove_surfaces (bool): if True remove the surfaces associated with the feature.
+            remove_data (bool): if True remove the geometric data associated with the feature
+
+        Returns:
+             :class:`gempy.core.data_modules.stack.Stack`
+
         """
         indices = np.atleast_1d(indices)
-        self._stack.delete_series(indices, refactor_order_series)
+        self._stack.delete_series(indices, reset_order_features)
 
         if remove_surfaces is True:
             for s in indices:
@@ -403,6 +502,7 @@ class ImplicitCoKriging(object):
         self._interpolator.set_flow_control()
         return self._stack
 
+    @_setdoc(delete_features.__doc__, indent=False)
     def delete_series(self, indices: Union[str, list], refactor_order_series=True,
                      remove_surfaces=False, remove_data=False):
 
@@ -413,23 +513,44 @@ class ImplicitCoKriging(object):
 
     @_setdoc(Series.rename_series.__doc__, indent=False)
     def rename_features(self, new_categories: Union[dict, list]):
-        """Rename series and update the categories dependet on them."""
+        """Rename features and update the categoriedependentet on them.
+
+        Args:
+            new_categories (list, dict):
+                * list-like: all items must be unique and the number of items in the new
+                 categories must match the existing number of categories.
+
+                * dict-like: specifies a mapping from old categories to new. Categories
+                 not contained in the mapping are passed through and extra categories in the mapping are ignored.
+
+        Returns:
+            :class:`gempy.core.data_modules.stack.Stack`
+
+
+        """
         self._stack.rename_series(new_categories)
         self._surfaces.df['series'].cat.rename_categories(new_categories, inplace=True)
         self._surface_points.df['series'].cat.rename_categories(new_categories, inplace=True)
         self._orientations.df['series'].cat.rename_categories(new_categories, inplace=True)
         return self._stack
 
+    @_setdoc(rename_features, indent=False)
     def rename_series(self, new_categories: Union[dict, list]):
         warnings.warn(DeprecationWarning, 'Series are getting renamed to Stack/features.'
                                           'Please use rename_features instead')
         self.rename_features(new_categories)
 
-    @_setdoc(Series.modify_order_series.__doc__, indent=False)
     def modify_order_features(self, new_value: int, idx: str):
-        """Modify order of the series. Reorder categories of the link Surfaces, sort surface (reset the basement layer)
-        remap the Series and Surfaces to the corrspondent dataframes, sort Geometric objects, update structure and
+        """Modify order of the feature. Reorder categories of the link Surfaces, sort surface (reset the basement layer)
+        remap the Stack and Surfaces to the corespondent dataframes, sort Geometric objects, update structure and
         reset the flow control objects.
+
+        Args:
+            new_value (int): New location
+            idx (str): name of the feature to be moved
+
+        Returns:
+            :class:`gempy.core.data_modules.stack.Stack`
 
         """
         self._stack.modify_order_series(new_value, idx)
@@ -449,16 +570,20 @@ class ImplicitCoKriging(object):
         self.update_structure()
         return self._stack
 
+    @_setdoc(Series.modify_order_series.__doc__, indent=False)
     def modify_order_series(self, new_value: int, idx: str):
         warnings.warn(DeprecationWarning, 'Series are getting renamed to Stack/features.'
                                           'Please use modify_order_features instead')
         return self.modify_options(new_value, idx)
 
-    @_setdoc(Series.reset_order_series.__doc__, indent=False)
     def reorder_features(self, new_categories: Iterable[str]):
         """Reorder series. Reorder categories of the link Surfaces, sort surface (reset the basement layer)
-        remap the Series and Surfaces to the corrspondent dataframes, sort Geometric objects, update structure and
+        remap the Series and Surfaces to the corespondent dataframes, sort Geometric objects, update structure and
         reset the flow control objects.
+
+        Args:
+           new_categories (list): list with all series names in the desired order.
+
         """
         self._stack.reorder_series(new_categories)
         self._surfaces.df['series'].cat.reorder_categories(np.asarray(self._stack.df.index),
@@ -476,6 +601,7 @@ class ImplicitCoKriging(object):
         self.update_structure(update_theano='weights')
         return self._stack
 
+    @_setdoc(reorder_features.__doc__, indent=False)
     def reorder_series(self, new_categories: Iterable[str]):
         warnings.warn(DeprecationWarning, 'Series are getting renamed to Stack/features.'
                                           'Please use reorder_features instead')
@@ -485,51 +611,62 @@ class ImplicitCoKriging(object):
 
     # region Faults
     def set_fault_object(self):
-        pass
+        """Not implemented"""
+        raise NotImplementedError
 
     @_setdoc([Faults.set_is_fault.__doc__], indent=False)
-    def set_is_fault(self, series_fault: Union[str, list] = None, toggle: bool = False, offset_faults=False,
-                     change_color: bool = True, twofins = False):
+    def set_is_fault(self, feature_fault: Union[str, list] = None, toggle: bool = False, offset_faults=False,
+                     change_color: bool = True, twofins=False):
         """
-        Set a series to fault and update all dependet objects of the Model.
+        Set a feature to fault and update all dependent objects of the Model.
 
         Args:
+
+            feature_fault(str, list[str]): Name of the series which are faults
+            toggle (bool): if True, passing a name which is already True will set it False.
+            offset_faults (bool): If True by default faults offset other faults
+            twofins (bool): If True, it allows to set several surfaces of a given geological feature to fault.
+             This is behaviour is not tested and could have unexpected behaviour.
             change_color (bool): If True faults surfaces get the default fault color (light gray)
 
-        Faults.set_is_fault Doc:
+        Returns:
+            :class:`gempy.core.data_modules.stack.Faults`
+
+        See Also:
+            :class:`gempy.core.data_modules.stack.Faults.set_is_fault`
 
         """
-        series_fault = np.atleast_1d(series_fault)
+        feature_fault = np.atleast_1d(feature_fault)
         if twofins is False:
-            for fault in series_fault:
+            for fault in feature_fault:
                 assert np.sum(self._surfaces.df['series'] == fault) < 2,\
                     'Having more than one fault in a series is generally rather bad. Better go' \
                     ' back to the function map_series_to_surfaces and give each fault its own' \
                     ' series. If you are really sure what you are doing, you can set twofins to' \
                     ' True to suppress this error.'
 
-        self._faults.set_is_fault(series_fault, toggle=toggle)
+        self._faults.set_is_fault(feature_fault, toggle=toggle)
 
         if toggle is True:
-            already_fault = self._stack.df.loc[series_fault, 'BottomRelation'] == 'Fault'
-            self._stack.df.loc[series_fault[already_fault], 'BottomRelation'] = 'Erosion'
-            self._stack.df.loc[series_fault[~already_fault], 'BottomRelation'] = 'Fault'
+            already_fault = self._stack.df.loc[feature_fault, 'BottomRelation'] == 'Fault'
+            self._stack.df.loc[feature_fault[already_fault], 'BottomRelation'] = 'Erosion'
+            self._stack.df.loc[feature_fault[~already_fault], 'BottomRelation'] = 'Fault'
         else:
-            self._stack.df.loc[series_fault, 'BottomRelation'] = 'Fault'
+            self._stack.df.loc[feature_fault, 'BottomRelation'] = 'Fault'
 
         self._additional_data.structure_data.set_number_of_faults()
         self._interpolator.set_theano_shared_relations()
         self._interpolator.set_theano_shared_loop()
         if change_color:
             print('Fault colors changed. If you do not like this behavior, set change_color to False.')
-            self._surfaces.colors.make_faults_black(series_fault)
+            self._surfaces.colors.make_faults_black(feature_fault)
         self.update_from_series(False, False, False)
         self.update_structure(update_theano='matrices')
         return self._faults
 
     @_setdoc([Faults.set_is_finite_fault.__doc__], indent=False)
     def set_is_finite_fault(self, series_fault=None, toggle: bool = True):
-        """ """
+        """"""
         s = self._faults.set_is_finite_fault(series_fault, toggle)  # change df in Fault obj
         # change shared theano variable for infinite factor
         self._interpolator.set_theano_shared_is_finite()
@@ -1358,7 +1495,9 @@ class Project(ImplicitCoKriging):
             bool: True
 
         See Also:
+
             * :class:`gempy.core.data_modules.geometric_data.SurfacePoints.read_surface_points.`
+
             * :class:`gempy.core.data_modules.geometric_data.Orientations.read_orientations`
         """
         if 'update_surfaces' not in kwargs:

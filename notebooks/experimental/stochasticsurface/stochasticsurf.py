@@ -1,6 +1,5 @@
 import scipy.stats as ss
 import numpy as np
-from nptyping import Array
 from copy import deepcopy
 import pandas as pd
 from abc import ABC, abstractmethod
@@ -49,7 +48,7 @@ class _StochasticSurfaceAbstract(ABC):
         pass
 
     @abstractmethod
-    def draw_surfpts(self) -> Array:
+    def draw_surfpts(self) -> np.ndarray:
         pass
 
     @classmethod
@@ -112,7 +111,7 @@ class StochasticSurfaceScipy(_StochasticSurfaceAbstract):
 
         self.stoch_param.update({direction: params})
 
-    def draw_surfpts(self) -> Array:
+    def draw_surfpts(self) -> np.ndarray:
         """Random draw from stochastic parametrization."""
         if not self.stoch_param:
             raise AttributeError("No stochastic parametrization present.")

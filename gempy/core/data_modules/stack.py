@@ -242,8 +242,12 @@ class Series(object):
 
         # But we need to update the values too
         for c in series_order:
-            self.df.loc[c, 'BottomRelation'] = 'Erosion'
-            self.faults.df.loc[c, ['isFault', 'isFinite']] = [False, False]
+            try:
+                self.df.loc[c] = [-1, 'Erosion', False, False, False]
+            # This is in case someone use the old series
+            except ValueError:
+                self.df.loc[c] = [-1, 'Erosion', False]
+                self.faults.df.loc[c, ['isFault', 'isFinite']] = [False, False]
             self.faults.faults_relations_df.loc[c, c] = False
 
         self.faults.faults_relations_df.fillna(False, inplace=True)
@@ -260,7 +264,7 @@ class Series(object):
             bottom_relation (str{Onlap, Erode, Fault}, list[str]):
 
         Returns:
-            Series
+            :class:`gempy.core.data_modules.stack.Stack`
         """
         self.df.loc[series_list, 'BottomRelation'] = bottom_relation
 
@@ -292,8 +296,12 @@ class Series(object):
         self.update_faults_index_rename()
 
         for c in series_list:
-            self.df.loc[c, 'BottomRelation'] = 'Erosion'
-            self.faults.df.loc[c, ['isFault', 'isFinite']] = [False, False]
+            # This is in case someone wants to run the old series
+            try:
+                self.df.loc[c] = [-1, 'Erosion', False, False, False]
+            except ValueError:
+                self.df.loc[c] = [-1, 'Erosion', False]
+                self.faults.df.loc[c, ['isFault', 'isFinite']] = [False, False]
             self.faults.faults_relations_df.loc[c, c] = False
 
         self.faults.faults_relations_df.fillna(False, inplace=True)
@@ -427,15 +435,21 @@ class Stack(Series, Faults):
             features_names = ['Default series']
 
         # Set unique df
-        self.df = pn.DataFrame(np.array([[1, np.nan, False, False, False]]),
+        df_ = pn.DataFrame(np.array([[1, np.nan, False, False, False]]),
                                index=pn.CategoricalIndex(features_names, ordered=False),
                                columns=['order_series', 'BottomRelation', 'isActive', 'isFault', 'isFinite'])
 
+        self.df = df_.astype({'order_series': int,
+                              'BottomRelation': 'category',
+                              'isActive': bool,
+                              'isFault': bool,
+                              'isFinite': bool})
+
         self.df['order_series'] = self.df['order_series'].astype(int)
         self.df['BottomRelation'] = pn.Categorical(['Erosion'], categories=['Erosion', 'Onlap', 'Fault'])
-        self.df['isActive'] = False
-        self.df['isFault'] = False
-        self.df['isFinite'] = False
+        # self.df['isActive'] = False
+        # self.df['isFault'] = False
+        # self.df['isFinite'] = False
         # self.faults = MockFault()
         # self.faults.df = self.df
 

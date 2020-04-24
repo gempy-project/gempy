@@ -46,7 +46,6 @@ except ImportError:
 
 import gempy as gp
 from gempy.plot.vista_widgets import WidgetsCallbacks
-from nptyping import Array
 from logging import debug
 import matplotlib
 
@@ -152,9 +151,9 @@ class GemPyToVista(WidgetsCallbacks):
                 if is_faults is True and is_basement is True:
                     lith_c = surf_df.groupby('isActive').get_group(True)['color']
                 elif is_faults is True and is_basement is False:
-                    lith_c = surf_df.groupby(('isActive', 'isBasement')).get_group((True, False))['color']
+                    lith_c = surf_df.groupby(['isActive', 'isBasement']).get_group((True, False))['color']
                 else:
-                    lith_c = surf_df.groupby(('isActive', 'isFault')).get_group((True, False))[
+                    lith_c = surf_df.groupby(['isActive', 'isFault']).get_group((True, False))[
                         'color']
 
         color_lot = lith_c

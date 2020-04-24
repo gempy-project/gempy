@@ -146,8 +146,8 @@ class Grid(object):
         self.set_active('custom')
 
     def create_topography(self, source='random', **kwargs):
-        """
-        Create a topography grid and activate it.
+        """Create a topography grid and activate it.
+
         Args:
             source:
                 'gdal':     Load topography from a raster file.
@@ -155,7 +155,7 @@ class Grid(object):
                 'saved':    Load topography that was saved with the topography.save() function.
                             This is useful after loading and saving a heavy raster file with gdal once or after saving a
                             random topography with the save() function. This .npy file can then be set as topography.
-        Kwargs:
+        Keyword Args:
             if source = 'gdal:
                 filepath:   path to raster file, e.g. '.tif', (for all file formats see https://gdal.org/drivers/raster/index.html)
             if source = 'random':
@@ -166,7 +166,8 @@ class Grid(object):
             if source = 'saved':
                 filepath:   path to the .npy file that was created using the topography.save() function
 
-        Returns: :class:gempy.core.data.Topography
+        Returns:
+             :class:gempy.core.data.Topography
         """
         self.topography = grid_types.Topography(self.regular_grid)
 

@@ -2,7 +2,7 @@ Code
 ====
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
 
 GemPy API
@@ -10,6 +10,7 @@ GemPy API
 .. currentmodule:: gempy
 .. autosummary::
     :toctree: GemPy API
+
 
     activate_interactive_df
     compute_model
@@ -49,17 +50,44 @@ ____
 
 Data
 ----
+.. currentmodule:: gempy.core.data_modules.stack
+.. autosummary::
+    :toctree: Data
+
+    Stack
+    Series
+    Faults
+
+
 .. currentmodule:: gempy.core.data
 .. autosummary::
     :toctree: Data
 
-    Grid
+
     Surfaces
     Structure
     KrigingParameters
     Options
     AdditionalData
     MetaData
+    Grid
+
+Grids
+-----
+
+.. currentmodule:: gempy.core.grid_modules.grid_types
+.. autosummary::
+    :toctree: Data/Grid
+
+    RegularGrid
+    CustomGrid
+    Topography
+    Sections
+    CenteredGrid
+
+
+Geometric Data
+--------------
 
 .. currentmodule:: gempy.core.data_modules.geometric_data
 .. autosummary::
@@ -68,14 +96,6 @@ Data
     SurfacePoints
     Orientations
     RescaledData
-
-.. currentmodule:: gempy.core.data_modules.stack
-.. autosummary::
-    :toctree: Data
-
-    Stack
-    Series
-    Faults
 
 
 Interpolator
