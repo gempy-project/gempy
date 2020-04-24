@@ -1340,7 +1340,7 @@ class Project(ImplicitCoKriging):
 
         return True
 
-    @_setdoc([SurfacePoints.read_surface_points.__doc__, Orientations.read_orientations.__doc__])
+    # @_setdoc([SurfacePoints.read_surface_points.__doc__, Orientations.read_orientations.__doc__])
     def read_data(self, source_i=None, source_o=None, add_basement=True, **kwargs):
         """
         Read data from a csv, or directly supplied dataframes
@@ -1350,11 +1350,16 @@ class Project(ImplicitCoKriging):
             source_o: Path to the data bases of orientations. Default os.getcwd(), or direct pandas data frame
             add_basement (bool): if True add a basement surface. This wont be interpolated it just gives the values
             for the volume below the last surface.
-            **kwargs:
-                update_surfaces (bool): True
+
+        Keyword Args:
+            update_surfaces (bool): True
 
         Returns:
-            True
+            bool: True
+
+        See Also:
+            * :class:`gempy.core.data_modules.geometric_data.SurfacePoints.read_surface_points.`
+            * :class:`gempy.core.data_modules.geometric_data.Orientations.read_orientations`
         """
         if 'update_surfaces' not in kwargs:
             kwargs['update_surfaces'] = True
@@ -1388,7 +1393,7 @@ class Project(ImplicitCoKriging):
             verbosity (int): Number of properties shown
 
         Returns:
-            pandas.core.frame.DataFrame: Data frame with the raw data
+            pandas.DataFrame: Data Object df.
 
         """
 

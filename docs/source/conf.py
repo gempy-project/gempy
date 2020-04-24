@@ -30,7 +30,7 @@ import IPython.sphinxext
 from pygments.plugin import find_plugin_lexers
 sys.path.insert(0, os.path.abspath('.'))
 # sys.path.insert(0, os.path.abspath('../../gempy/grid_modules/'))
-#sys.path.insert(0, os.path.abspath('../../gempy/core/'))
+sys.path.insert(0, os.path.abspath('../../gempy/core/'))
 #sys.path.insert(0, os.path.abspath('../../gempy/plot/'))
 
 #sys.path.insert(0, os.path.abspath('../../gempy/core/data_modules'))
@@ -115,7 +115,17 @@ napoleon_google_docstring = True
 # nbsphinx_allow_errors = True
 
 # autodoc_default_flags = ['members']
+
+autodoc_default_options = {
+    'autodoc_default_flags' : ['members'],
+    'members': None,
+    'member-order': 'bysource',
+    'special-members': '__init__',
+    'undoc-members': True,
+    'exclude-members': '__weakref__'
+}
 autosummary_generate = True
+autosummary_imported_members = False
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -218,7 +228,7 @@ html_theme_options = {
                         'logo_name': True,
                         'travis_button': True,
                         'page_width': '1200px',
-                        'fixed_sidebar': False,
+                        'fixed_sidebar': True,
                         }
 
 
@@ -296,3 +306,52 @@ texinfo_documents = [
 warnings.filterwarnings("ignore", category=UserWarning,
                         message='Matplotlib is currently using agg, which is a'
                                 ' non-GUI backend, so cannot show the figure.')
+
+# from sphinx.ext.autosummary import Autosummary
+# from sphinx.ext.autosummary import get_documenter
+# from docutils.parsers.rst import directives
+# from sphinx.util.inspect import safe_getattr
+# import re
+#
+# class AutoAutoSummary(Autosummary):
+#
+#     option_spec = {
+#         'methods': directives.unchanged,
+#         'attributes': directives.unchanged
+#     }
+#
+#     required_arguments = 1
+#
+#     @staticmethod
+#     def get_members(obj, typ, include_public=None):
+#         if not include_public:
+#             include_public = []
+#         items = []
+#         for name in dir(obj):
+#             try:
+#                 documenter = get_documenter(safe_getattr(obj, name), obj)
+#             except AttributeError:
+#                 continue
+#             if documenter.objtype == typ:
+#                 items.append(name)
+#         public = [x for x in items if x in include_public or not x.startswith('_')]
+#         return public, items
+#
+#     def run(self):
+#         clazz = str(self.arguments[0])
+#         try:
+#             (module_name, class_name) = clazz.rsplit('.', 1)
+#             m = __import__(module_name, globals(), locals(), [class_name])
+#             c = getattr(m, class_name)
+#             if 'methods' in self.options:
+#                 _, methods = self.get_members(c, 'method', ['__init__'])
+#
+#                 self.content = ["~%s.%s" % (clazz, method) for method in methods if not method.startswith('_')]
+#             if 'attributes' in self.options:
+#                 _, attribs = self.get_members(c, 'attribute')
+#                 self.content = ["~%s.%s" % (clazz, attrib) for attrib in attribs if not attrib.startswith('_')]
+#         finally:
+#             return super(AutoAutoSummary, self).run()
+#
+# def setup(app):
+#     app.add_directive('autoautosummary', AutoAutoSummary)
