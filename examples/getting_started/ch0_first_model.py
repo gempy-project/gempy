@@ -66,7 +66,7 @@ import matplotlib.pyplot as plt
 # 
 
 # %% 
-geo_model = gp.create_model('Tutorial_ch1-1_Basics')
+geo_model = gp.create_model('Getting_started_Basics')
 
 # %%
 data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
