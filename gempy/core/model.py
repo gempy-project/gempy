@@ -46,33 +46,17 @@ class ImplicitCoKriging(object):
      implicit cokriging ensuring the synchronization of all the members.
 
     Attributes:
-        grid (:class:`gempy.core.data.Grid`): [s0]
-        faults (:class:`gempy.core.data.Grid`): [s1]
-        stack (:class:`gempy.core.data_modules.stack.Stack`): [s2]
-        surfaces (:class:`gempy.core.data.Surfaces`): [s3]
-        surface_points (:class:`gempy.core.data_modules.geometric_data.SurfacePoints`): [s4]
-        orientations (:class:`gempy.core.data_modules.geometric_data.Orientations`): [s5]
-        rescaling (:class:`gempy.core.data_modules.geometric_data.Rescaling`): [s6]
-        additional_data (:class:`gempy.core.data.AdditionalData`): [s7]
-        interpolator (:class:`gempy.core.interpolator.InterpolatorModel`): [s8]
+        _grid (:class:`gempy.core.data.Grid`): [s0]
+        _faults (:class:`gempy.core.data.Grid`): [s1]
+        _stack (:class:`gempy.core.data_modules.stack.Stack`): [s2]
+        _surfaces (:class:`gempy.core.data.Surfaces`): [s3]
+        _surface_points (:class:`gempy.core.data_modules.geometric_data.SurfacePoints`): [s4]
+        _orientations (:class:`gempy.core.data_modules.geometric_data.Orientations`): [s5]
+        _rescaling (:class:`gempy.core.data_modules.geometric_data.Rescaling`): [s6]
+        _additional_data (:class:`gempy.core.data.AdditionalData`): [s7]
+        _interpolator (:class:`gempy.core.interpolator.InterpolatorModel`): [s8]
         solutions (:class:`gempy.core.solutions.Solutions`): [s9]
-        _grid (:class:`gempy.core.data.Grid`): Actual data objects. Use its methods only if you know what are you doing.
-        _faults (:class:`gempy.core.data_modules.stack.Faults`): Actual data objects. Use its methods only if you know
-         what are you doing.
-        _stack (:class:`gempy.core.data_modules.stack.Stack`): Actual data objects. Use its methods only if you know
-         what are you doing.
-        _surfaces (:class:`gempy.core.data.Surfaces`): Actual data objects. Use its methods only if you know what are
-         you doing.
-        _surface_points (:class:`gempy.core.data_modules.geometric_data.SurfacePoints`): Actual data objects. Use its
-         methods only if you know what are you doing.
-        _orientations (:class:`gempy.core.data_modules.geometric_data.Orientations`): Actual data objects. Use its
-         methods only if you know what are you doing.
-        _rescaling (:class:`gempy.core.data_modules.geometric_data.Rescaling`): Actual data objects. Use its methods
-         only if you know what are you doing.
-        _additional_data (:class:`gempy.core.data.AdditionalData`): Actual data objects. Use its methods only if you
-         know what are you doing.
-        _interpolator (:class:`gempy.core.interpolator.InterpolatorModel`): Actual data objects. Use its methods only if
-        you know what are you doing.
+
 
      """
 
@@ -101,46 +85,68 @@ class ImplicitCoKriging(object):
 
         self.solutions = Solution(self._grid, self._surfaces, self._stack)
 
+    @_setdoc_pro(Grid.__doc__)
     @property
     def grid(self):
+        """ :class:`gempy.core.data.Grid` [s0]
+
+        """
         return RestrictingWrapper(self._grid)
 
+    @_setdoc_pro(Faults.__doc__)
     @property
     def faults(self):
+        """:class:`gempy.core.data_modules.stack.Faults` [s0]"""
         return RestrictingWrapper(self._faults)
 
+    @_setdoc_pro(Stack.__doc__)
     @property
     def stack(self):
+        """:class:`gempy.core.data_modules.stack.Stack` [s0]"""
         return RestrictingWrapper(self._stack)
 
+    @_setdoc_pro(Series.__doc__)
     @property
     def series(self):
-        warnings.warn(DeprecationWarning, 'series will be deprecated in the future.'
-                                          'Use stack instead.')
+        """"""
+        #warnings.warn(DeprecationWarning, 'series will be deprecated in the future.'
+        #                                  'Use stack instead.')
         return RestrictingWrapper(self._stack)
 
+    @_setdoc_pro(Surfaces.__doc__)
     @property
     def surfaces(self):
+        """:class:`gempy.core.data.Surfaces` [s0]"""
         return RestrictingWrapper(self._surfaces)
 
+    @_setdoc_pro(SurfacePoints.__doc__)
     @property
     def surface_points(self):
+        """:class:`gempy.core.data_modules.geometric_data.SurfacePoints` [s0]"""
         return RestrictingWrapper(self._surface_points)
 
+    @_setdoc_pro(Orientations.__doc__)
     @property
     def orientations(self):
+        """:class:`gempy.core.data_modules.geometric_data.Orientations` [s0]"""
         return RestrictingWrapper(self._orientations)
 
+    @_setdoc_pro(RescaledData.__doc__)
     @property
     def rescaling(self):
+        """:class:`gempy.core.data_modules.geometric_data.Rescaling` [s0]"""
         return RestrictingWrapper(self._rescaling)
 
+    @_setdoc_pro(AdditionalData.__doc__)
     @property
     def additional_data(self):
+        """:class:`gempy.core.data.AdditionalData` [s0]"""
         return RestrictingWrapper(self._additional_data)
 
+    @_setdoc_pro(InterpolatorModel.__doc__)
     @property
     def interpolator(self):
+        """:class:`gempy.core.interpolator.InterpolatorModel` [s0]"""
         return RestrictingWrapper(self._interpolator)
 
     def _add_valid_idx_s(self, idx):

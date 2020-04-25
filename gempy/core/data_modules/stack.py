@@ -431,9 +431,18 @@ class MockFault:
 
 
 class Stack(Series, Faults):
+    """Class that encapsulates all type of geological features. So far is Series and
+          Faults
 
-    def __init__(self, features_names: Iterable = None, series_fault: Iterable = None,
+         Args:
+             features_names (Iterable): Names of the features
+             fault_features (Iterable): List of features that are faults
+             rel_matrix:
+
+    """
+    def __init__(self, features_names: Iterable = None, fault_features: Iterable = None,
                  rel_matrix: Iterable = None):
+
         if features_names is None:
             features_names = ['Default series']
 
@@ -460,7 +469,7 @@ class Stack(Series, Faults):
         self.faults_relations_df = pn.DataFrame(index=pn.CategoricalIndex(['Default series']),
                                                 columns=pn.CategoricalIndex(['Default series', '']), dtype='bool')
 
-        self.set_is_fault(series_fault=series_fault)
+        self.set_is_fault(series_fault=fault_features)
         self.set_fault_relation(rel_matrix=rel_matrix)
         self.n_faults = 0
         self._offset_faults = False

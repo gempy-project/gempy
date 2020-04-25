@@ -236,7 +236,7 @@ gp.get_data(geo_model, 'orientations')
 # 
 
 # %%
-plot = gp.plot.plot_2d(geo_model, show_lith=False, show_boundaries=False)
+plot = gp.plot_2d(geo_model, show_lith=False, show_boundaries=False)
 plt.show()
 
 # %%
@@ -256,7 +256,7 @@ plt.show()
 
 
 # %%
-gp.plot.plot_3d(geo_model, plotter_type='basic')
+gp.plot_3d(geo_model, plotter_type='basic')
 
 # %%
 # Model generation

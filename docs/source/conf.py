@@ -40,7 +40,7 @@ sys.path.insert(0, os.path.abspath('.'))
 # sys.path.insert(0, os.path.abspath('../../gempy/core/grid_modules/'))
 # sys.path.insert(0, os.path.abspath('../../gempy/assets/'))
 # sys.path.insert(0, os.path.abspath('../../gempy/bayesian/'))
-# sys.path.insert(0, os.path.abspath('../../gempy/plot/'))
+sys.path.insert(0, os.path.abspath('../../gempy/plot/'))
 # sys.path.insert(0, os.path.abspath('../..'))
 # sys.path.insert(0, os.path.abspath('../../gempy'))
 

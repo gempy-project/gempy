@@ -19,6 +19,7 @@ GemPy API
     create_model
     init_data
     map_series_to_surfaces
+    map_stack_to_surfaces
     read_csv
     update_additional_data
     get_data
@@ -39,8 +40,8 @@ Model
 
 
 Plot
-____
-.. currentmodule:: gempy.plot.plot_api
+----
+.. currentmodule:: gempy
 .. autosummary::
     :toctree: Plot
 
@@ -71,6 +72,11 @@ Data
     AdditionalData
     MetaData
     Grid
+
+.. currentmodule:: gempy.core.data
+.. autosummary::
+    :toctree: Data
+
 
 Grids
 -----

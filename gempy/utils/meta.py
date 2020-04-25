@@ -52,7 +52,8 @@ def _setdoc_pro(docstring=[]):
     def decor(func):
 
         if func.__doc__ is None:
-            func.__doc__ = docstring
+            raise AttributeError('Add """"""" to the docstring')
+           # print(func.__doc__)
         else:
             # Loop for the docstrings we pass looking for numbers
             for e, i in enumerate(docstring):
@@ -78,7 +79,7 @@ def _setdoc_pro(docstring=[]):
         for e in range(10):
             #print(len(func.__doc__), func.__doc__)
             #print('loc_1', loc_1)
-
+            #print(func.__doc__)
             loc_0 = func.__doc__[loc_1:].find(marker)
             if loc_0 == -1:
                 break

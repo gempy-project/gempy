@@ -9,7 +9,7 @@ from gempy.utils.meta import _setdoc_pro
 
 @_setdoc_pro()
 def get_data(model: Project, itype='data', numeric=False, verbosity=0):
-    """Method to return the data stored in :class:`panda.DataFrame` within a
+    """Method to return the data stored in :class:`pandas.DataFrame` within a
     :class:`gempy.core.model.Project` data object.
 
     Args:

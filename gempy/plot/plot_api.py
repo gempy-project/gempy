@@ -64,15 +64,17 @@ def plot_2d(model, n_axis=None, section_names: list = None,
             show_topography: Union[bool, list] = False,
             series_n: Union[int, List[int]] = 0,
             **kwargs):
-    """"Plot 2-D sections of geomodel.
+    """Plot 2-D sections of geomodel.
 
     Plot cross sections either based on custom section traces or cell number in xyz direction.
     Options to plot lithology block, scalar field or rendered surface lines.
     Input data and topography can be included.
 
     Args:
-        show_block:
-        show_values:
+        show_block (bool): If True and model has been computed, plot cross section
+         of the final model.
+        show_values (bool): If True and model has been computed, plot cross section
+         of the value... TODO need to add attribute to choose which value to be plot
         model: Geomodel object with solutions.
         n_axis (int): Subplot axis for multiple sections
         section_names (list): Names of predefined custom section traces
@@ -89,7 +91,8 @@ def plot_2d(model, n_axis=None, section_names: list = None,
         **kwargs:
 
     Returns:
-        (Plot2D) Plot2D object
+        :class:`gempy.plot.visualization_2d_pro.Plot2D`: Plot2D object
+
     """
     if section_names is None and cell_number is None:
         cell_number = ['mid']
@@ -283,13 +286,33 @@ def plot_stereonet(self, litho=None, planes=True, poles=True,
 
 def plot_3d(model, plotter_type='background',
             show_data: bool = True,
+            show_results:bool = True,
             show_surfaces: bool = True,
             show_lith: bool = True,
             show_scalar: bool = False,
             show_boundaries: bool = True,
             show_topography: Union[bool, list] = False,
             **kwargs):
+    """foobar
 
+    Args:
+        model (:class:`gempy.core.model.Project`): Container class of all
+         objects that constitute a GemPy model.
+        plotter_type: PyVista plotter types. Supported plotters are:
+         'basic', 'background', and 'notebook'.
+        show_data (bool): Show original input data. Defaults to True.
+        show_results (bool): If False, override show lith, show_calar, show_values
+        show_lith (bool): Show lithological block volumes. Defaults to True.
+        show_scalar (bool): Show scalar field isolines. Defaults to False.
+        show_boundaries (bool): Show surface boundaries as lines. Defaults to True.
+        show_topography (bool): Show topography on plot. Defaults to False.
+        series_n (int): number of the scalar field.
+        **kwargs:
+
+    Returns:
+        :class:`gempy.plot.vista.GemPyToVista`
+
+    """
     gpv = GemPyToVista(model, plotter_type=plotter_type, **kwargs)
     if show_surfaces and len(model.solutions.vertices) != 0:
         gpv.plot_surfaces()
