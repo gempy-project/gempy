@@ -1,6 +1,6 @@
 """
-Chapter 1: Basics of geological modeling with GemPy
-===================================================
+Basics of geological modeling with GemPy
+========================================
 
 """
 
@@ -70,7 +70,7 @@ geo_model = gp.create_model('Tutorial_ch1-1_Basics')
 
 # %%
 data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
-data_path = 'H:\SSD\PycharmProjects\gempy\examples'
+#data_path = 'H:\SSD\PycharmProjects\gempy\examples'
 # Importing the data from CSV-files and setting extent and resolution
 gp.init_data(geo_model, [0, 2000., 0, 2000., 0, 2000.], [50, 50, 50],
              path_o=data_path + "/data/input_data/tut_chapter1/simple_fault_model_orientations.csv",
