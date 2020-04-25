@@ -6,3 +6,4 @@ pytest
 seaborn>=0.9
 networkx
 scikit-image
+pyvista

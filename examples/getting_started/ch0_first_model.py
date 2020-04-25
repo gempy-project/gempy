@@ -70,9 +70,9 @@ geo_model = gp.create_model('Getting_started_Basics')
 
 # %%
 data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
-#data_path = 'H:\SSD\PycharmProjects\gempy\examples'
+# data_path = 'H:\SSD\PycharmProjects\gempy\examples'
 # Importing the data from CSV-files and setting extent and resolution
-gp.init_data(geo_model, [0, 2000., 0, 2000., 0, 2000.], [50, 50, 50],
+gp.init_data(geo_model, [0, 2000., 0, 2000., 0, 750.], [50, 50, 50],
              path_o=data_path + "/data/input_data/getting_started/simple_fault_model_orientations.csv",
              path_i=data_path + "/data/input_data/getting_started/simple_fault_model_points.csv",
              default_values=True)
@@ -157,8 +157,8 @@ geo_model.surfaces
 # %% 
 gp.map_stack_to_surfaces(geo_model,
                          {"Fault_Series": 'Main_Fault',
-                           "Strat_Series": ('Sandstone_2', 'Siltstone',
-                                            'Shale', 'Sandstone_1', 'basement')},
+                          "Strat_Series": ('Sandstone_2', 'Siltstone',
+                                           'Shale', 'Sandstone_1', 'basement')},
                          remove_unused_series=True)
 
 # %% 
@@ -236,7 +236,7 @@ gp.get_data(geo_model, 'orientations')
 # 
 
 # %%
-plot = gp.plot.plot_2d(geo_model, show_lith=False, show_boundaries=False)
+plot = gp.plot_2d(geo_model, show_lith=False, show_boundaries=False)
 plt.show()
 
 # %%
@@ -396,7 +396,6 @@ plt.show()
 gp.plot.plot_2d(geo_model, series_n=1, show_data=False, show_scalar=True, show_lith=False)
 plt.show()
 
-
 # %%
 # This illustrates well the fold-related deformation of the stratigraphy,
 # as well as the way the layers are influenced by the fault.
@@ -415,7 +414,6 @@ plt.show()
 gp.plot.plot_2d(geo_model, series_n=1, show_block=True, show_lith=False)
 plt.show()
 
-
 # %%
 # Marching cubes and vtk visualization
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -430,7 +428,6 @@ plt.show()
 
 # %% 
 ver, sim = gp.get_surfaces(geo_model)
-
 
 # %%
 # sphinx_gallery_thumbnail_number = 8
@@ -465,7 +462,7 @@ sol = gp.compute_model(geo_model, at=x_i)
 # %%
 sol.custom
 
-#%%
+# %%
 # This return the id, and the scalar field values for each series
 
 # %%
@@ -488,4 +485,3 @@ sol.custom
 
 # %% 
 gp.save_model(geo_model)
-
