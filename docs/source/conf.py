@@ -29,20 +29,8 @@ import gempy
 import IPython.sphinxext
 from pygments.plugin import find_plugin_lexers
 sys.path.insert(0, os.path.abspath('.'))
-# sys.path.insert(0, os.path.abspath('../../gempy/grid_modules/'))
-# sys.path.insert(0, os.path.abspath('../../gempy/core/'))
-#sys.path.insert(0, os.path.abspath('../../gempy/plot/'))
-
-#sys.path.insert(0, os.path.abspath('../../gempy/core/data_modules'))
-
-
-# sys.path.insert(0, os.path.abspath('../../gempy/core/theano/'))
-# sys.path.insert(0, os.path.abspath('../../gempy/core/grid_modules/'))
-# sys.path.insert(0, os.path.abspath('../../gempy/assets/'))
-# sys.path.insert(0, os.path.abspath('../../gempy/bayesian/'))
 sys.path.insert(0, os.path.abspath('../../gempy/plot/'))
-# sys.path.insert(0, os.path.abspath('../..'))
-# sys.path.insert(0, os.path.abspath('../../gempy'))
+
 
 # from unittest.mock import MagicMock
 #
@@ -66,9 +54,6 @@ sys.path.insert(0, os.path.abspath('../../gempy/plot/'))
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-  #  'nbsphinx',
-  #  'matplotlib.sphinxext.mathmpl',
-  #  'matplotlib.sphinxext.plot_directive',
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.doctest',
@@ -79,23 +64,10 @@ extensions = [
     'sphinx.ext.viewcode',
   #  'sphinx.ext.githubpages',
     'sphinx.ext.napoleon',
-   # 'IPython.sphinxext.ipython_console_highlighting',
-   # 'IPython.sphinxext.ipython_directive',
+
     'sphinx_gallery.gen_gallery'
 ]
 
-# extensions = [
-#     'sphinx.ext.autodoc',
-#     'sphinx.ext.napoleon',
-#     'sphinx.ext.viewcode',
-#     'sphinx.ext.autosummary',
-#     'sphinx.ext.doctest',
-#     'sphinx.ext.intersphinx',
-#     'sphinx.ext.todo',
-#     'sphinx.ext.coverage',
-#     'sphinx.ext.mathjax',
-#     'sphinx_gallery.gen_gallery',
-# ]
 
 
 intersphinx_mapping = {
@@ -213,9 +185,10 @@ sphinx_gallery_conf = {
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'alabaster'
-# html_theme = 'bootstrap'
-#html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
+import alabaster, sphinx_bootstrap_theme
+#html_theme = 'alabaster'
+#html_theme = 'bootstrap'
+#html_theme_path = [sphinx_bootstrap_theme.get_html_theme_path()[0]+'/bootsrap']
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
@@ -307,51 +280,52 @@ warnings.filterwarnings("ignore", category=UserWarning,
                         message='Matplotlib is currently using agg, which is a'
                                 ' non-GUI backend, so cannot show the figure.')
 
-# from sphinx.ext.autosummary import Autosummary
-# from sphinx.ext.autosummary import get_documenter
-# from docutils.parsers.rst import directives
-# from sphinx.util.inspect import safe_getattr
-# import re
-#
-# class AutoAutoSummary(Autosummary):
-#
-#     option_spec = {
-#         'methods': directives.unchanged,
-#         'attributes': directives.unchanged
-#     }
-#
-#     required_arguments = 1
-#
-#     @staticmethod
-#     def get_members(obj, typ, include_public=None):
-#         if not include_public:
-#             include_public = []
-#         items = []
-#         for name in dir(obj):
-#             try:
-#                 documenter = get_documenter(safe_getattr(obj, name), obj)
-#             except AttributeError:
-#                 continue
-#             if documenter.objtype == typ:
-#                 items.append(name)
-#         public = [x for x in items if x in include_public or not x.startswith('_')]
-#         return public, items
-#
-#     def run(self):
-#         clazz = str(self.arguments[0])
-#         try:
-#             (module_name, class_name) = clazz.rsplit('.', 1)
-#             m = __import__(module_name, globals(), locals(), [class_name])
-#             c = getattr(m, class_name)
-#             if 'methods' in self.options:
-#                 _, methods = self.get_members(c, 'method', ['__init__'])
-#
-#                 self.content = ["~%s.%s" % (clazz, method) for method in methods if not method.startswith('_')]
-#             if 'attributes' in self.options:
-#                 _, attribs = self.get_members(c, 'attribute')
-#                 self.content = ["~%s.%s" % (clazz, attrib) for attrib in attribs if not attrib.startswith('_')]
-#         finally:
-#             return super(AutoAutoSummary, self).run()
-#
-# def setup(app):
-#     app.add_directive('autoautosummary', AutoAutoSummary)
+from sphinx.ext.autosummary import Autosummary
+from sphinx.ext.autosummary import get_documenter
+from docutils.parsers.rst import directives
+from sphinx.util.inspect import safe_getattr
+import re
+
+
+class AutoAutoSummary(Autosummary):
+
+    option_spec = {
+        'methods': directives.unchanged,
+        'attributes': directives.unchanged
+    }
+
+    required_arguments = 1
+
+    @staticmethod
+    def get_members(obj, typ, include_public=None):
+        if not include_public:
+            include_public = []
+        items = []
+        for name in dir(obj):
+            try:
+                documenter = get_documenter(safe_getattr(obj, name), obj)
+            except AttributeError:
+                continue
+            if documenter.objtype == typ:
+                items.append(name)
+        public = [x for x in items if x in include_public or not x.startswith('_')]
+        return public, items
+
+    def run(self):
+        clazz = str(self.arguments[0])
+        try:
+            (module_name, class_name) = clazz.rsplit('.', 1)
+            m = __import__(module_name, globals(), locals(), [class_name])
+            c = getattr(m, class_name)
+            if 'methods' in self.options:
+                _, methods = self.get_members(c, 'method', ['__init__'])
+
+                self.content = ["~%s.%s" % (clazz, method) for method in methods if not method.startswith('_')]
+            if 'attributes' in self.options:
+                _, attribs = self.get_members(c, 'attribute')
+                self.content = ["~%s.%s" % (clazz, attrib) for attrib in attribs if not attrib.startswith('_')]
+        finally:
+            return super(AutoAutoSummary, self).run()
+
+def setup(app):
+    app.add_directive('autoautosummary', AutoAutoSummary)

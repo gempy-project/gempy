@@ -163,6 +163,7 @@ gp.map_stack_to_surfaces(geo_model,
 
 # %% 
 geo_model.surfaces
+geo_model._surfaces
 
 # %% 
 geo_model.stack

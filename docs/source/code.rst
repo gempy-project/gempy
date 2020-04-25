@@ -10,7 +10,7 @@ GemPy API
 .. currentmodule:: gempy
 .. autosummary::
     :toctree: GemPy API
-
+    :template: base.rst
 
     activate_interactive_df
     compute_model
@@ -34,6 +34,7 @@ Model
 .. currentmodule:: gempy.core.model
 .. autosummary::
     :toctree: Model
+    :template: class.rst
 
     Project
     ImplicitCoKriging
@@ -44,6 +45,7 @@ Plot
 .. currentmodule:: gempy
 .. autosummary::
     :toctree: Plot
+    :template: base.rst
 
     plot_2d
     plot_3d
@@ -54,6 +56,7 @@ Data
 .. currentmodule:: gempy.core.data_modules.stack
 .. autosummary::
     :toctree: Data
+    :template: class.rst
 
     Stack
     Series
@@ -63,6 +66,7 @@ Data
 .. currentmodule:: gempy.core.data
 .. autosummary::
     :toctree: Data
+    :template: class.rst
 
 
     Surfaces
@@ -73,10 +77,6 @@ Data
     MetaData
     Grid
 
-.. currentmodule:: gempy.core.data
-.. autosummary::
-    :toctree: Data
-
 
 Grids
 -----
@@ -84,6 +84,7 @@ Grids
 .. currentmodule:: gempy.core.grid_modules.grid_types
 .. autosummary::
     :toctree: Data/Grid
+    :template: class.rst
 
     RegularGrid
     CustomGrid
@@ -98,6 +99,7 @@ Geometric Data
 .. currentmodule:: gempy.core.data_modules.geometric_data
 .. autosummary::
     :toctree: Data
+    :template: class.rst
 
     SurfacePoints
     Orientations
@@ -109,6 +111,7 @@ Interpolator
 .. currentmodule:: gempy.core.interpolator
 .. autosummary::
     :toctree: Interpolator
+    :template: class.rst
 
     InterpolatorModel
     InterpolatorGravity
@@ -119,5 +122,6 @@ Solution
 .. currentmodule:: gempy.core.solution
 .. autosummary::
     :toctree: Solution
+    :template: class.rst
 
     Solution

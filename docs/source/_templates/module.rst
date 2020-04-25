@@ -1,53 +1,32 @@
-{{ fullname }}
-{{ underline }}
+{{ fullname | escape | underline}}
 
 .. automodule:: {{ fullname }}
 
    {% block functions %}
    {% if functions %}
+   .. rubric:: Functions
 
-   Functions
-   ---------
-
+   .. autosummary::
    {% for item in functions %}
-
-   .. autofunction:: {{ item }}
-
-   .. include:: backreferences/{{fullname}}.{{item}}.examples
-
-   .. raw:: html
-
-	       <div class="sphx-glr-clear"></div>
-
+      {{ item }}
    {%- endfor %}
    {% endif %}
    {% endblock %}
 
    {% block classes %}
    {% if classes %}
+   .. rubric:: Classes
 
-   Classes
-   -------
-
+   .. autosummary::
    {% for item in classes %}
-   .. autoclass:: {{ item }}
-      :members:
-
-   .. include:: backreferences/{{fullname}}.{{item}}.examples
-
-   .. raw:: html
-
-	       <div class="sphx-glr-clear"></div>
-
+      {{ item }}
    {%- endfor %}
    {% endif %}
    {% endblock %}
 
    {% block exceptions %}
    {% if exceptions %}
-
-   Exceptions
-   ----------
+   .. rubric:: Exceptions
 
    .. autosummary::
    {% for item in exceptions %}
