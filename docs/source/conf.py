@@ -166,7 +166,7 @@ sphinx_gallery_conf = {
     "backreferences_dir": 'gen_modules/backreferences',
     # Modules for which function level galleries are created.  In
     "doc_module": ("gempy", 'numpy', 'pandas', 'matplotlib'),
-    "image_scrapers": ('pyvista', 'matplotlib'),
+    "image_scrapers": ('matplotlib'),
     'first_notebook_cell': ("%matplotlib inline\n"
                             "from pyvista import set_plot_theme\n"
                             "set_plot_theme('document')"),

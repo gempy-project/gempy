@@ -256,7 +256,7 @@ plt.show()
 
 
 # %%
-gp.plot.plot_3d(geo_model, plotter_type='basic')
+gp.plot_3d(geo_model, plotter_type='basic')
 
 # %%
 # Model generation
