@@ -25,6 +25,21 @@ import warnings
 import sphinx_gallery
 from sphinx_gallery.sorting import FileNameSortKey
 import gempy
+import pyvista
+import numpy as np
+
+pyvista.set_error_output_file('errors.txt')
+# Ensure that offscreen rendering is used for docs generation
+pyvista.OFF_SCREEN = True # Not necessary - simply an insurance policy
+# Preferred plotting style for documentation
+pyvista.set_plot_theme('document')
+pyvista.rcParams['window_size'] = np.array([1024, 768]) * 2
+# Save figures in specified directory
+pyvista.FIGURE_PATH = os.path.join(os.path.abspath('./images/'), 'auto-generated/')
+if not os.path.exists(pyvista.FIGURE_PATH):
+    os.makedirs(pyvista.FIGURE_PATH)
+
+
 
 import IPython.sphinxext
 from pygments.plugin import find_plugin_lexers
@@ -62,7 +77,7 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
-  #  'sphinx.ext.githubpages',
+    'sphinx.ext.githubpages',
     'sphinx.ext.napoleon',
 
     'sphinx_gallery.gen_gallery'
@@ -166,7 +181,7 @@ sphinx_gallery_conf = {
     "backreferences_dir": 'gen_modules/backreferences',
     # Modules for which function level galleries are created.  In
     "doc_module": ("gempy", 'numpy', 'pandas', 'matplotlib'),
-    "image_scrapers": ('matplotlib'),
+    "image_scrapers": ('pyvista', 'matplotlib'),
     'first_notebook_cell': ("%matplotlib inline\n"
                             "from pyvista import set_plot_theme\n"
                             "set_plot_theme('document')"),
