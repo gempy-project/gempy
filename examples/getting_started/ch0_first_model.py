@@ -73,8 +73,8 @@ data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
 #data_path = 'H:\SSD\PycharmProjects\gempy\examples'
 # Importing the data from CSV-files and setting extent and resolution
 gp.init_data(geo_model, [0, 2000., 0, 2000., 0, 2000.], [50, 50, 50],
-             path_o=data_path + "/data/input_data/tut_chapter1/simple_fault_model_orientations.csv",
-             path_i=data_path + "/data/input_data/tut_chapter1/simple_fault_model_points.csv",
+             path_o=data_path + "/data/input_data/getting_started/simple_fault_model_orientations.csv",
+             path_i=data_path + "/data/input_data/getting_started/simple_fault_model_points.csv",
              default_values=True)
 
 # %%

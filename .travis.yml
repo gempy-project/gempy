@@ -38,7 +38,7 @@ jobs:
        # if: (NOT type IN (pull_request)) AND (branch = sphinx-gallery) # only deploy if merging on master
 
         before_script:
-         - pip install .
+         - pip install -e .
          - cd docs
         script: pipenv run make html
         deploy:

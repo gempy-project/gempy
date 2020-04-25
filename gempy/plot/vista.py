@@ -78,7 +78,7 @@ class GemPyToVista(WidgetsCallbacks):
         """
 
         # Override default notebook value
-
+        pv.set_plot_theme("document")
         kwargs['notebook'] = kwargs.get('notebook', True)
 
         # Model properties
