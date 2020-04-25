@@ -7,6 +7,11 @@ python:
 
 env: TRAVIS=true
 
+before_install:
+  # configure a headless display
+  - git clone --depth 1 git://github.com/pyvista/gl-ci-helpers.git
+  - source ./gl-ci-helpers/travis/setup_headless_display.sh
+
 install:
   - pip install --upgrade setuptools pip
   - pip install -r requirements.txt
