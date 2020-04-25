@@ -36,7 +36,10 @@ jobs:
       - stage: deploy
         name: Deploy to GitHub Pages
        # if: (NOT type IN (pull_request)) AND (branch = sphinx-gallery) # only deploy if merging on master
-        before_script: cd docs
+
+        before_script:
+         - pip install .
+         - cd docs
         script: pipenv run make html
         deploy:
           provider: pages # deploy on github pages

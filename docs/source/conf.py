@@ -29,7 +29,7 @@ import gempy
 import IPython.sphinxext
 from pygments.plugin import find_plugin_lexers
 sys.path.insert(0, os.path.abspath('.'))
-sys.path.insert(0, os.path.abspath('../../'))
+sys.path.insert(0, os.path.abspath('../..'))
 #sys.path.insert(0, os.path.abspath('../../gempy/plot/'))
 
 
