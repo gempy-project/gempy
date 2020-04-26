@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 
 
 class Load_DEM_GDAL():
-    '''Class to include height elevation data (e.g. DEMs) with the geological grid '''
+    """Class to include height elevation data (e.g. DEMs) with the geological grid """
 
     def __init__(self, path_dem, grid=None):
         '''
@@ -166,7 +166,7 @@ class Load_DEM_GDAL():
         return np.array([upleft, lowleft, upright, lowright])
 
 
-class Load_DEM_artificial():
+class LoadDEMArtificial:
 
     def __init__(self, grid, fd=2.0, extent=None, resolution=None, d_z=None):
         """
@@ -200,7 +200,7 @@ class Load_DEM_artificial():
         self.create_topo_array()
 
     def fractalGrid(self, fd, N=256):
-        '''
+        """
         Modified after https://github.com/samthiele/pycompass/blob/master/examples/3_Synthetic%20Examples.ipynb
 
         Generate isotropic fractal surface image using
@@ -214,7 +214,7 @@ class Load_DEM_artificial():
          -fd = the fractal dimension
          -N = the size of the fractal surface/image
 
-        '''
+        """
         H = 1 - (fd - 2)
         #X = np.zeros((N, N), complex)
         A = np.zeros((N, N), complex)
@@ -260,7 +260,7 @@ class Load_DEM_artificial():
         return itemp.real / itemp.real.max()
 
     def create_topo_array(self):
-        '''for masking the lith block'''
+        """for masking the lith block"""
         x = np.linspace(self.grid.values[:, 0].min(), self.grid.values[:, 0].max(), self.resolution[1])
         y = np.linspace(self.grid.values[:, 1].min(), self.grid.values[:, 1].max(), self.resolution[0])
         xx, yy = np.meshgrid(x, y, indexing='ij')

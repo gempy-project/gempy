@@ -209,13 +209,15 @@ class Solution(object):
             )
 
         if rescale is True:
-            vertices += np.array([self.grid.regular_grid.extent_r[0],
-                                  self.grid.regular_grid.extent_r[2],
-                                  self.grid.regular_grid.extent_r[4]]).reshape(1, 3)
+            loc_0 = self.grid.regular_grid.extent_r[[0, 2, 4]] + \
+                    np.array(self.grid.regular_grid.get_dx_dy_dz(rescale=True))/2
+
+            vertices += np.array(loc_0).reshape(1, 3)
+
         else:
-            vertices += np.array([self.grid.regular_grid.extent[0],
-                                  self.grid.regular_grid.extent[2],
-                                  self.grid.regular_grid.extent[4]]).reshape(1, 3)
+            loc_0 = self.grid.regular_grid.extent[[0, 2, 4]] + \
+                    np.array(self.grid.regular_grid.get_dx_dy_dz(rescale=False)) / 2
+            vertices += np.array(loc_0).reshape(1, 3)
 
         return [vertices, simplices, normals, values]
 

@@ -1,9 +1,9 @@
 """
-Basics of geological modeling with GemPy
-========================================
+Chapter 1.1 -Basics of geological modeling with GemPy
+=====================================================
 
 """
-
+# %%
 # Importing GemPy
 import gempy as gp
 
@@ -66,7 +66,7 @@ import matplotlib.pyplot as plt
 # 
 
 # %% 
-geo_model = gp.create_model('Getting_started_Basics')
+geo_model = gp.create_model('Tutorial_ch1_1_Basics')
 
 # %%
 data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
@@ -176,8 +176,9 @@ geo_model.faults.faults_relations_df
 # %% 
 geo_model.faults
 
-# %% 
+# %%
 geo_model.faults.faults_relations_df
+
 
 # %%
 # Returning information from our input data
@@ -343,7 +344,7 @@ geo_model._surfaces
 # %% 
 sol = gp.compute_model(geo_model, compute_mesh=True, sort_surfaces=False)
 
-# %% 
+# %%
 geo_model._surfaces
 
 # %% 
@@ -431,7 +432,11 @@ ver, sim = gp.get_surfaces(geo_model)
 
 # %%
 # sphinx_gallery_thumbnail_number = 8
-gp.plot.plot_3d(geo_model, plotter_type='basic')
+gpv = gp.plot.plot_3d(geo_model, plotter_type='basic', notebook=False, off_screen=True)
+img = gpv.p.show(screenshot=True)
+plt.imshow(img[1])
+plt.show()
+
 
 # %%
 # Using the rescaled interpolation data, we can also run our 3D VTK
@@ -442,6 +447,20 @@ gp.plot.plot_3d(geo_model, plotter_type='basic')
 # in the geological models are re-computed in real time.
 # 
 
+
+# %%
+# Adding topography
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+geo_model.set_topography()
+gp.compute_model(geo_model)
+gp.plot_2d(geo_model, show_topography=True)
+plt.show()
+
+#%%
+gpv = gp.plot.plot_3d(geo_model, show_topography=True,
+                      plotter_type='basic', notebook=False)
+img = gpv.p.show(screenshot=True)
 
 # %%
 # Compute at a given location

@@ -104,7 +104,7 @@ def map_stack_to_surfaces(geo_model: Project, mapping_object: Union[dict, pn.Cat
 
 
 # region create
-def create_model(project_name='default_project'):
+def create_model(project_name='default_project') -> Project:
     """Create a Project object.
 
     Args:

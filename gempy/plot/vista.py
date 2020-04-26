@@ -79,7 +79,7 @@ class GemPyToVista(WidgetsCallbacks):
 
         # Override default notebook value
         pv.set_plot_theme("document")
-        kwargs['notebook'] = kwargs.get('notebook', True)
+        kwargs['notebook'] = kwargs.get('notebook', False)
 
         # Model properties
         self.model = model
@@ -433,7 +433,7 @@ class GemPyToVista(WidgetsCallbacks):
         elif scalars is None:
             scalars = 'topography'
 
-        if scalars == "geomap":
+        if scalars == "geomap_":
             arr_ = np.empty((0, 3), dtype=int)
             # convert hex colors to rgb
             for val in list(self._get_color_lot(is_faults=False)):
@@ -442,9 +442,14 @@ class GemPyToVista(WidgetsCallbacks):
 
             sel = np.round(self.model.solutions.geological_map[0]).astype(int)[0]
 
-            scalars_val = numpy_to_vtk(arr_[sel - 1], array_type=3)
+            scalars_val = numpy_to_vtk(arr_[sel-1], array_type=3)
             cm = None
+            # cm = mcolors.ListedColormap(list(self._get_color_lot(is_faults=True)))
             rgb = True
+
+        if scalars == 'geomap':
+            cm = mcolors.ListedColormap(list(self._get_color_lot(is_faults=False)))
+            scalars_val = self.model.solutions.geological_map[0][0]
 
         elif scalars == "topography":
             scalars_val = topography[:, 2]
@@ -466,6 +471,7 @@ class GemPyToVista(WidgetsCallbacks):
             scalars='scalars_val',
             cmap=cm,
             rgb=rgb,
+            show_scalar_bar=False,
             **kwargs
         )
         self.surface_poly['topography'] = polydata

@@ -1,4 +1,4 @@
-from gempy.utils.create_topography import Load_DEM_artificial, Load_DEM_GDAL
+from gempy.utils.create_topography import LoadDEMArtificial, Load_DEM_GDAL
 import numpy as np
 import skimage.transform
 import matplotlib.pyplot as plt
@@ -412,7 +412,7 @@ class Topography:
         self.type = 'real'
 
     def load_random_hills(self, **kwargs):
-        self.topo = Load_DEM_artificial(self.regular_grid, **kwargs)
+        self.topo = LoadDEMArtificial(self.regular_grid, **kwargs)
         self._create_init()
         self._fit2model()
         self.type = 'artificial'

@@ -145,7 +145,7 @@ class Grid(object):
         self.custom_grid = grid_types.CustomGrid(custom_grid)
         self.set_active('custom')
 
-    def create_topography(self, source='random', **kwargs):
+    def create_topography(self, source='random', plot=False, **kwargs):
         """Create a topography grid and activate it.
 
         Args:
@@ -155,6 +155,8 @@ class Grid(object):
                 'saved':    Load topography that was saved with the topography.save() function.
                             This is useful after loading and saving a heavy raster file with gdal once or after saving a
                             random topography with the save() function. This .npy file can then be set as topography.
+            plot (bool): If True plot topography.
+
         Keyword Args:
             if source = 'gdal:
                 filepath:   path to raster file, e.g. '.tif', (for all file formats see https://gdal.org/drivers/raster/index.html)
@@ -188,7 +190,8 @@ class Grid(object):
         else:
             raise AttributeError('source must be random, gdal or saved')
 
-        self.topography.show()
+        if plot is True:
+            self.topography.show()
         self.set_active('topography')
 
     @_setdoc(grid_types.Sections.__doc__)

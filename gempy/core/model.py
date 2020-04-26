@@ -21,15 +21,15 @@ pn.options.mode.chained_assignment = None
 
 
 class RestrictingWrapper(object):
-    def __init__(self, w):
+    def __init__(self, w, accepted_members=['__repr__', '_repr_html_']):
         self._w = w
-        self._accepted_members = ['__repr__', '_repr_html_', 'faults_relations_df']
+        self._accepted_members = accepted_members
 
-    def __repr__(self):
-        return self._w.__repr__()
+    # def __repr__(self):
+    #     return self._w.__repr__()
 
-    def _repr_html_(self):
-        return self._w._repr_html_()
+    # def _repr_html_(self):
+    #     return self._w._repr_html_()
 
     def __getattr__(self, item):
         if item in self._accepted_members:
@@ -91,13 +91,14 @@ class ImplicitCoKriging(object):
         """ :class:`gempy.core.data.Grid` [s0]
 
         """
-        return RestrictingWrapper(self._grid)
+        return RestrictingWrapper(self._grid,
+          accepted_members=['__repr__'])
 
     @_setdoc_pro(Faults.__doc__)
     @property
     def faults(self):
         """:class:`gempy.core.data_modules.stack.Faults` [s0]"""
-        return RestrictingWrapper(self._faults)
+        return RestrictingWrapper(self._faults, accepted_members=['__repr__', '_repr_html_', 'faults_relations_df'])
 
     @_setdoc_pro(Stack.__doc__)
     @property
@@ -340,7 +341,7 @@ class ImplicitCoKriging(object):
         return self._grid
 
     @plot_set_topography
-    def set_topography(self, source='random', **kwargs):
+    def set_topography(self, source='random', plot=False, **kwargs):
         """Create a topography grid and activate it.
 
         Args:
@@ -350,6 +351,8 @@ class ImplicitCoKriging(object):
                 'saved':    Load topography that was saved with the topography.save() function.
                             This is useful after loading and saving a heavy raster file with gdal once or after saving a
                             random topography with the save() function. This .npy file can then be set as topography.
+
+            plot (bool): If True plot topography.
 
         Keyword Args:
             if source = 'gdal:
@@ -379,7 +382,7 @@ class ImplicitCoKriging(object):
 
         """
 
-        self._grid.create_topography(source, **kwargs)
+        self._grid.create_topography(source, plot=plot, **kwargs)
         self.update_from_grid()
         print(f'Active grids: {self._grid.grid_types[self._grid.active_grids]}')
         return self._grid

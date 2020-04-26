@@ -2,6 +2,7 @@ import os
 import pytest
 import gempy as gp
 import numpy as np
+import matplotlib.pyplot as plt
 
 input_path = os.path.dirname(__file__) + '/../../notebooks/data'
 
@@ -17,7 +18,9 @@ class TestVista:
         """
         from gempy.plot.vista import GemPyToVista
 
-        return GemPyToVista(one_fault_model_no_interp, plotter_type='background')
+        return GemPyToVista(one_fault_model_no_interp,
+                            #plotter_type='background')
+                            plotter_type='basic',  off_screen=True)
 
     @pytest.fixture(scope='module')
     def vista_object_computed(self, one_fault_model_solution):
@@ -27,7 +30,9 @@ class TestVista:
         """
         from gempy.plot.vista import GemPyToVista
 
-        return GemPyToVista(one_fault_model_solution, plotter_type='background')
+        return GemPyToVista(one_fault_model_solution, plotter_type='basic',
+                            off_screen=True
+                            )
 
     @pytest.fixture(scope='module')
     def vista_object_computed_topo(self, one_fault_model_solution):
@@ -42,7 +47,7 @@ class TestVista:
         one_fault_model_solution.set_topography()
         gp.compute_model(one_fault_model_solution)
 
-        return GemPyToVista(one_fault_model_solution, plotter_type='background')
+        return GemPyToVista(one_fault_model_solution, plotter_type='basic', off_screen=True)
 
     def test_set_bounds(self, vista_object_only_data):
         """
@@ -137,7 +142,12 @@ class TestVista:
         Args:
             vista_object_computed:
         """
-        vista_object_computed.plot_structured_grid('lith', render_topography=False)
+        vista_object_computed.plot_structured_grid('lith', render_topography=False,
+                                                   opacity=.8)
+        img = vista_object_computed.p.show(screenshot=True)
+        plt.imshow(img[1])
+        plt.show()
+
         print('foo')
 
     def test_plot_regular_grid_scalar_0(self, vista_object_computed):

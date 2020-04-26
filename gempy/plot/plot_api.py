@@ -292,10 +292,12 @@ def plot_3d(model, plotter_type='background',
             show_scalar: bool = False,
             show_boundaries: bool = True,
             show_topography: Union[bool, list] = False,
+            kwargs_plot_structured_grid: dict = None,
             **kwargs):
     """foobar
 
     Args:
+
         model (:class:`gempy.core.model.Project`): Container class of all
          objects that constitute a GemPy model.
         plotter_type: PyVista plotter types. Supported plotters are:
@@ -307,6 +309,7 @@ def plot_3d(model, plotter_type='background',
         show_boundaries (bool): Show surface boundaries as lines. Defaults to True.
         show_topography (bool): Show topography on plot. Defaults to False.
         series_n (int): number of the scalar field.
+        kwargs_plot_structured_grid:
         **kwargs:
 
     Returns:
@@ -316,6 +319,8 @@ def plot_3d(model, plotter_type='background',
     gpv = GemPyToVista(model, plotter_type=plotter_type, **kwargs)
     if show_surfaces and len(model.solutions.vertices) != 0:
         gpv.plot_surfaces()
+    if show_lith is True and model.solutions.lith_block.shape[0] != 0:
+        gpv.plot_structured_grid('lith', **kwargs_plot_structured_grid)
     if show_data:
         gpv.plot_data()
     if show_topography and model._grid.topography is not None:

@@ -71,14 +71,25 @@ def one_fault_model_solution(one_fault_model):
 
 
 @pytest.fixture(scope='session')
+def one_fault_model_topo_solution(one_fault_model):
+
+    one_fault_model.update_additional_data()
+    one_fault_model.update_to_interpolator()
+    one_fault_model.set_topography()
+    gp.compute_model(one_fault_model)
+    return one_fault_model
+
+
+@pytest.fixture(scope='session')
 def unconformity_model(interpolator):
     geo_model = gp.create_data('unconformity_model',
         [0, 1000, 0, 1000, 0, 1000],
-        resolution=[50, 50, 50],
+        resolution=[50, 42, 33],
         path_o=input_path2 + "jan_models/model6_orientations.csv",
         path_i=input_path2 + "jan_models/model6_surface_points.csv"
     )
 
+    geo_model.set_topography('random', d_z=(500, 920))
     gp.map_stack_to_surfaces(
         geo_model,
         {"Strat_Series1": ('rock3'),
@@ -91,6 +102,7 @@ def unconformity_model(interpolator):
     geo_model.set_theano_function(interpolator)
     gp.compute_model(geo_model)
     return geo_model
+
 
 
 @pytest.fixture(scope='session')
