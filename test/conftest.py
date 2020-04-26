@@ -75,7 +75,7 @@ def one_fault_model_topo_solution(one_fault_model):
 
     one_fault_model.update_additional_data()
     one_fault_model.update_to_interpolator()
-    one_fault_model.set_topography()
+    one_fault_model.set_topography(d_z = (800, 1800))
     gp.compute_model(one_fault_model)
     return one_fault_model
 

@@ -404,7 +404,7 @@ class GemPyToVista(WidgetsCallbacks):
     def plot_topography(
             self,
             topography=None,
-            scalars=None,
+            scalars='geomap',
             clear=True,
             **kwargs
     ):
@@ -433,10 +433,10 @@ class GemPyToVista(WidgetsCallbacks):
         elif scalars is None:
             scalars = 'topography'
 
-        if scalars == "geomap_":
+        if scalars == "geomap":
             arr_ = np.empty((0, 3), dtype=int)
             # convert hex colors to rgb
-            for val in list(self._get_color_lot(is_faults=False)):
+            for val in list(self._get_color_lot(is_faults=True)):
                 rgb = (255 * np.array(mcolors.hex2color(val)))
                 arr_ = np.vstack((arr_, rgb))
 
@@ -444,12 +444,8 @@ class GemPyToVista(WidgetsCallbacks):
 
             scalars_val = numpy_to_vtk(arr_[sel-1], array_type=3)
             cm = None
-            # cm = mcolors.ListedColormap(list(self._get_color_lot(is_faults=True)))
             rgb = True
 
-        if scalars == 'geomap':
-            cm = mcolors.ListedColormap(list(self._get_color_lot(is_faults=False)))
-            scalars_val = self.model.solutions.geological_map[0][0]
 
         elif scalars == "topography":
             scalars_val = topography[:, 2]

@@ -22,6 +22,19 @@ def test_plot_3d_geo_map(unconformity_model):
     plt.imshow(img[1])
     plt.show()
 
+
+def test_plot_3d_geo_map2(one_fault_model_topo_solution):
+    gpv = gp.plot.plot_3d(one_fault_model_topo_solution,
+                          plotter_type='basic', off_screen=False,
+                          show_topography=True,
+                          show_scalar=False,
+                          show_lith=False,
+                          kwargs_plot_structured_grid={'opacity': .5})
+    img = gpv.p.show(screenshot=True)
+    plt.imshow(img[1])
+    plt.show()
+
+
 def test_plot_3d_structure_topo(one_fault_model_topo_solution):
     gpv = gp.plot.plot_3d(one_fault_model_topo_solution,
                           plotter_type='basic', off_screen=False,
