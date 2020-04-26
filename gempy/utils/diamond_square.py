@@ -344,7 +344,7 @@ class DiaomondSquare(object):
             z_diamond = self.get_selection_diamond(m_pow)
             z_square = self.get_selection_square(m_pow)
             if pad:
-                z_pad = np.pad(z_diamond, m)
+                z_pad = np.pad(z_diamond, m, mode='constant')
                 axes[0, i].imshow(z_pad, cmap='viridis', vmin=0, vmax=2)
                 axes[1, i].imshow(z_square, cmap='viridis', vmin=0, vmax=2)
             else:
