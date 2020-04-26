@@ -564,9 +564,22 @@ class Plot2D:
             raise NotImplementedError
         return p1, p2
 
-    def _slice_topo_4_sections(self, p1, p2, resx):
+    def _slice_topo_4_sections(self, p1, p2, resx, method='interp2d'):
+        """
+        Slices topography along a set linear section
+
+        Args:
+            :param p1: starting point (x,y) of the section
+            :param p2: end point (x,y) of the section
+            :param resx: resolution of the defined section
+            :param method: interpolation method, 'interp2d' for cubic scipy.interpolate.interp2d
+                                             'spline' for scipy.interpolate.RectBivariateSpline
+
+        Returns:
+            :return: returns x,y,z values of the topography along the section
+        """
         xy = self.model._grid.sections.calculate_line_coordinates_2points(p1, p2, resx)
-        z = self.model._grid.topography.interpolate_zvals_at_xy(xy)
+        z = self.model._grid.topography.interpolate_zvals_at_xy(xy, method)
         return xy[:, 0], xy[:, 1], z
 
     def plot_topography(self, ax, section_name=None, cell_number=None, direction='y', block=None, **kwargs):

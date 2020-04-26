@@ -1,0 +1,4 @@
+X,Y,Z,azimuth,dip,polarity,formation
+20,1,43,270,14,1,l2_left
+70,1,40,270,14,1,l2_left
+50,1,40,90,63,1,fault

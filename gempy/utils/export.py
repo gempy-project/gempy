@@ -62,12 +62,13 @@ def export_geomap2geotiff(path, geo_model, geo_map=None, geotiff_filepath=None):
 
     print("Successfully exported geological map to  " +path)
 
-def export_moose_input(geo_model, path=None):
+def export_moose_input(geo_model, path=None, filename='geo_model_units_moose_input.i'):
     """
     Method to export a 3D geological model as MOOSE compatible input. 
 
     Args:
         path (str): Filepath for the exported input file
+        filename (str): name of exported input file
 
     Returns:
         
@@ -127,7 +128,7 @@ def export_moose_input(geo_model, path=None):
     if not os.path.exists(path):
       os.makedirs(path)
 
-    f = open(path+'geo_model_units_moose_input.i', 'w+')
+    f = open(path+filename, 'w+')
     
     f.write(fstring)
     f.close()
