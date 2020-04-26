@@ -81,7 +81,6 @@ def test_random_initialization_level():
        [0.64707457, 0.44744272, 0.36504945, 0.52473407, 0.27948164]]))
 
 
-
 def test_reset_grid():
     ds = gempy.utils.diamond_square.DiaomondSquare(size=(5, 6), seed=52062)
     ds.random_initialization()

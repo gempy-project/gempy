@@ -294,7 +294,7 @@ class DiaomondSquare(object):
         step_size = int(2 ** m_pow)
 
         # pad cells with zero value
-        z_pad = np.pad(z, step_size)
+        z_pad = np.pad(z, step_size, mode='constant')
 
         # Checkerboard odd
         # ----------------
