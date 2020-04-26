@@ -34,7 +34,7 @@ The implementations (in Python) I could find online were either difficult to und
 selections, especially at edges. Here is a fully vectorized implementation, using padding at edges, to avoid
 all these case selections for a more straight-forward implementation (I hope).
 
-This impoementaion is also adjusted to work on non-square start matrices, and on reduced hierarchies with
+This implementation is also adjusted to work on non-square start matrices, and on reduced hierarchies with
 more initial (internal) points.
 
 Created on 10.04.2020
@@ -118,11 +118,12 @@ class DiaomondSquare(object):
         else:
             raise NotImplementedError("Random function type %s not implemented" % self.r_type)
 
-    def random_initialization(self, level='highest'):
+    def random_initialization(self, level='highest', verbose: bool=False):
         """Initialize cells on speicifc hierarchy with random values
 
         Args:
             level = 'hightest', int : hierarchy level for interpolation (default: highest)
+            verbose: verbose output (default: False)
 
         With highest hierarchy, we refer here to the largest diamond-square step, i.e. the corner points
         for a square grid; Or, more formally: the diamond points for `min(self.n, self.m)`
@@ -133,7 +134,8 @@ class DiaomondSquare(object):
             m_pow_max = level
 
         step_size = int(2 ** m_pow_max)
-        print("Initialize on step size %d" % step_size)
+        if verbose:
+            print("Initialize on step size %d" % step_size)
 
         level_shape = self.grid[::step_size, ::step_size].shape
 
@@ -172,9 +174,6 @@ class DiaomondSquare(object):
         """
         step_size = int(2 ** m_pow)
 
-        # adjust random range
-        rand_range = self.roughness * self.base_rand_range * 2 ** (- self.roughness * i)
-
         # Diamond step
         # ----------------
 
@@ -202,10 +201,6 @@ class DiaomondSquare(object):
         Note: for more details on the vectorized selection, see self.get_selection_square()
         """
         step_size = int(2 ** m_pow)
-
-        # adjust random range
-        rand_range = self.roughness * self.base_rand_range * 2 ** (- self.roughness * i)
-        print(rand_range)
 
         # pad cells with zero value
         z_pad = np.pad(self.grid, step_size)
