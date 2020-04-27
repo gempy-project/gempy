@@ -100,7 +100,7 @@ gp.plot.plot_all_sections(geo_model)
 # 
 
 # %% 
-from gempy.utils import section_utils
+from gempy.core.grid_modules import section_utils
 
 # %% 
 polygondict, cdict, extent = section_utils.get_polygon_dictionary(geo_model, 'section1')

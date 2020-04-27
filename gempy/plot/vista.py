@@ -126,7 +126,10 @@ class GemPyToVista(WidgetsCallbacks):
         self.topo_edges = None
         self.topo_ctrs = None
 
-    def _get_color_lot(self, lith_c: pd.DataFrame = None, is_faults: bool = True, is_basement: bool = False) -> \
+    def _get_color_lot(self, lith_c: pd.DataFrame = None,
+                       index='surface',
+                       is_faults: bool = True,
+                       is_basement: bool = False) -> \
             pd.Series:
         """Method to get the right color list depending on the type of plot.
 
@@ -139,7 +142,7 @@ class GemPyToVista(WidgetsCallbacks):
                 for the lith block and false for surfaces and input data.
         """
         if lith_c is None:
-            surf_df = self.model._surfaces.df.set_index('surface')
+            surf_df = self.model._surfaces.df.set_index(index)
             unique_surf_points = np.unique(self.model._surface_points.df['id'])
 
             if len(unique_surf_points) != 0:
@@ -434,18 +437,23 @@ class GemPyToVista(WidgetsCallbacks):
             scalars = 'topography'
 
         if scalars == "geomap":
-            arr_ = np.empty((0, 3), dtype=int)
-            # convert hex colors to rgb
-            for val in list(self._get_color_lot(is_faults=True)):
-                rgb = (255 * np.array(mcolors.hex2color(val)))
-                arr_ = np.vstack((arr_, rgb))
+            # Old code
+            # arr_ = np.empty((0, 3), dtype=int)
+            # # convert hex colors to rgb
+            # for val in list(self._get_color_lot(is_faults=True)):
+            #     rgb = (255 * np.array(mcolors.hex2color(val)))
+            #     arr_ = np.vstack((arr_, rgb))
+            #
+
+            colors_hex = self._get_color_lot(is_faults=False, is_basement=True, index='id')
+            colors_rgb_ = colors_hex.apply(lambda val: list(mcolors.hex2color(val)))
+            colors_rgb = pd.DataFrame(colors_rgb_.to_list(), index=colors_hex.index)*255
 
             sel = np.round(self.model.solutions.geological_map[0]).astype(int)[0]
 
-            scalars_val = numpy_to_vtk(arr_[sel-1], array_type=3)
+            scalars_val = numpy_to_vtk(colors_rgb.loc[sel], array_type=3)
             cm = None
             rgb = True
-
 
         elif scalars == "topography":
             scalars_val = topography[:, 2]

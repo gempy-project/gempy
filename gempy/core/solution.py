@@ -137,35 +137,38 @@ class Solution(object):
 
         """
         regular_grid_length_l0, regular_grid_length_l1 = self.grid.get_grid_args('regular')
-        x_to_intep_length = self.grid.length[-1]
 
         # Lithology final block
         self.lith_block = values[0][0, regular_grid_length_l0: regular_grid_length_l1]
 
         # Properties
         self.values_matrix = values[0][1:, regular_grid_length_l0: regular_grid_length_l1]
-        self.values_at_surface_points = values[0][1:, x_to_intep_length:]
 
         # Axis 0 is the series. Axis 1 is the value
         self.block_matrix = values[1][:, :, regular_grid_length_l0: regular_grid_length_l1]
-        self.block_at_surface_points = values[1][:, :, x_to_intep_length:]
 
         self.fault_block = values[2]
         self.weights_vector = values[3]
 
         self.scalar_field_matrix = values[4][:, regular_grid_length_l0: regular_grid_length_l1]
-        self._scalar_field_at_surface = values[4][:, x_to_intep_length:]
-
-        self.scalar_field_at_surface_points = values[5]
 
         self.mask_matrix = values[6][:, regular_grid_length_l0: regular_grid_length_l1]
-        self.mask_at_surface_points = values[6][:, x_to_intep_length:]
 
         self.fault_mask = values[7][:, regular_grid_length_l0: regular_grid_length_l1]
 
         # TODO add topology solutions
 
         return True
+
+    def set_values_to_surface_points(self, values):
+        x_to_intep_length = self.grid.length[-1]
+        self.scalar_field_at_surface_points = values[5]
+
+        self.values_at_surface_points = values[0][1:, x_to_intep_length:]
+        self.block_at_surface_points = values[1][:, :, x_to_intep_length:]
+        self._scalar_field_at_surface = values[4][:, x_to_intep_length:]
+        self.mask_at_surface_points = values[6][:, x_to_intep_length:]
+        return self.scalar_field_at_surface_points
 
     @_setdoc(measure.marching_cubes_lewiner.__doc__)
     def compute_marching_cubes_regular_grid(self, level: float, scalar_field, mask_array=None, classic=False,

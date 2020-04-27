@@ -1731,9 +1731,11 @@ class TheanoGraphPro(object):
 
         # A tensor with the values to segment
         scalar_field_iter = T.concatenate((
-            T.stack([0], axis=0),
-            scalar_field_at_surface_points,
-            T.stack([0], axis=0)
+          #  T.stack([T.max(Z_x)], axis=0),
+             T.stack([0], axis=0), # somehow this also works. I do not remember why
+             scalar_field_at_surface_points,
+             T.stack([0], axis=0)
+         #   T.stack([T.min(Z_x)], axis=0)
         ))
 
         if "scalar_field_iter" in self.verbose:
@@ -1753,8 +1755,8 @@ class TheanoGraphPro(object):
         formations_block, updates2 = theano.scan(
             fn=self.compare,
             outputs_info=None,
-            sequences=[dict(input=scalar_field_iter, taps=[0, 1]), T.arange(0, n_surface_op_float_sigmoid.shape[1],
-                                                                            2, dtype='int64')],
+            sequences=[dict(input=scalar_field_iter, taps=[0, 1]),
+                       T.arange(0, n_surface_op_float_sigmoid.shape[1], 2, dtype='int64')],
             non_sequences=[Z_x, l, n_surface_op_float_sigmoid, drift],
             name='Looping compare',
             profile=False,

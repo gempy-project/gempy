@@ -200,8 +200,16 @@ class TestFaults:
 
         real_sol = np.load(input_path + '/test_f_sol.npy')
         gempy.plot.plot_2d(geo_data, cell_number=25, direction='y', show_data=True)
-
+        plt.show()
         plt.savefig(os.path.dirname(__file__) + '/../figs/test_f.png', dpi=200)
+
+        gempy.compute_model(geo_data)
+        gempy.plot.plot_2d(geo_data, cell_number=25, direction='y', show_data=True)
+        plt.show()
+
+        gempy.compute_model(geo_data)
+        gempy.plot.plot_2d(geo_data, cell_number=25, direction='y', show_data=True)
+        plt.show()
 
         # We only compare the block because the absolute pot field I changed it
         np.testing.assert_array_almost_equal(np.round(sol.lith_block[test_values]), real_sol, decimal=0)

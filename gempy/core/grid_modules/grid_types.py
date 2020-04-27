@@ -1,12 +1,11 @@
-from gempy.utils.create_topography import LoadDEMArtificial, Load_DEM_GDAL
+from gempy.core.grid_modules.create_topography import LoadDEMArtificial, Load_DEM_GDAL
 import numpy as np
 import skimage.transform
 import matplotlib.pyplot as plt
 from scipy.constants import G
 from scipy import interpolate
-from gempy.utils.meta import _setdoc, _setdoc_pro
+from gempy.utils.meta import _setdoc_pro
 import gempy.utils.docstring as ds
-from typing import Optional
 import pandas as pn
 
 
@@ -514,7 +513,8 @@ class Topography:
         xj = self.values_3D[:, :, 0][0, :]
         yj = self.values_3D[:, :, 1][:, 0]
         zj = self.values_3D[:, :, 2]
-        if method=='interp2d':
+
+        if method == 'interp2d':
             f = interpolate.interp2d(xj, yj, zj, kind='cubic')
             zi = f(xy[:, 0], xy[:, 1])
             if xy[:, 0][0] <= xy[:, 0][-1] and xy[:, 1][0] <= xy[:, 1][-1]:

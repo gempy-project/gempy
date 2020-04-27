@@ -47,8 +47,8 @@ def test_plot_3d_structure_topo(one_fault_model_topo_solution):
     plt.show()
 
 
-def test_plot_3d_structure_topo2(unconformity_model):
-    gpv = gp.plot.plot_3d(unconformity_model,
+def test_plot_3d_structure_topo2(unconformity_model_topo):
+    gpv = gp.plot.plot_3d(unconformity_model_topo,
                           plotter_type='basic', off_screen=False,
                           show_topography=True,
                           show_scalar=False,

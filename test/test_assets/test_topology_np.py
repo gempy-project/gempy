@@ -1,19 +1,25 @@
 import pytest
 from gempy.assets import topology as tp
 import numpy as np
+import gempy as gp
+import matplotlib.pyplot as plt
 
 
 @pytest.fixture(scope='module')
 def topology_fabian(one_fault_model_solution):
     """Return a GemPy Vista instance with basic geomodel attached."""
     geo_model = one_fault_model_solution
+
     edges, centroids = tp.compute_topology(geo_model, voxel_threshold=1)
+
     return edges, centroids
 
 
 @pytest.fixture(scope='module')
 def topology_jan_unconf(unconformity_model):
     geo_model = unconformity_model
+    gp.plot.plot_2d(unconformity_model)
+    plt.show()
     edges, centroids = tp.compute_topology(geo_model, voxel_threshold=1)
     return edges, centroids
 
@@ -60,10 +66,10 @@ def edges_jan_unconf_test():
 
 @pytest.fixture
 def centroids_jan_unconf_test():
-    return {1: np.array([24.5, 24.5, 42.]),
-            2: np.array([24.5, 24.5, 32.79276316]),
-            3: np.array([24.5, 24.5, 29.22189458]),
-            4: np.array([24.5, 24.5, 14.98711422])}
+    return {1: np.array([24.5, 20.5, 27.5]),
+            2: np.array([24.5, 20.5, 21.37869822]),
+            3: np.array([24.5, 20.5, 19.12100139]),
+            4: np.array([24.5, 20.5, 9.71685136])}
 
 
 def test_edges_jan_unconf(topology_jan_unconf, edges_jan_unconf_test):

@@ -21,13 +21,13 @@ pn.options.mode.chained_assignment = None
 
 
 class RestrictingWrapper(object):
-    def __init__(self, w, accepted_members=['__repr__', '_repr_html_']):
+    def __init__(self, w, accepted_members=['__repr__', '_repr_html_', '__str__']):
         self._w = w
         self._accepted_members = accepted_members
 
-    # def __repr__(self):
-    #     return self._w.__repr__()
-
+    def __repr__(self):
+        return self._w.__repr__()
+    #
     # def _repr_html_(self):
     #     return self._w._repr_html_()
 
@@ -85,6 +85,9 @@ class ImplicitCoKriging(object):
 
         self.solutions = Solution(self._grid, self._surfaces, self._stack)
 
+        # Previous values of sfai.
+        self._sfai_order_0 = None
+
     @_setdoc_pro(Grid.__doc__)
     @property
     def grid(self):
@@ -92,7 +95,7 @@ class ImplicitCoKriging(object):
 
         """
         return RestrictingWrapper(self._grid,
-          accepted_members=['__repr__'])
+          accepted_members=['__repr__', '__str__'])
 
     @_setdoc_pro(Faults.__doc__)
     @property
@@ -583,7 +586,7 @@ class ImplicitCoKriging(object):
     def modify_order_series(self, new_value: int, idx: str):
         warnings.warn(DeprecationWarning, 'Series are getting renamed to Stack/features.'
                                           'Please use modify_order_features instead')
-        return self.modify_options(new_value, idx)
+        return self.modify_order_features(new_value, idx)
 
     def reorder_features(self, new_categories: Iterable[str]):
         """Reorder series. Reorder categories of the link Surfaces, sort surface (reset the basement layer)
@@ -1416,19 +1419,23 @@ class ImplicitCoKriging(object):
         """
 
         sfai_order = self.solutions.scalar_field_at_surface_points.sum(axis=0)
-        sel = self._surfaces.df['isActive'] & ~self._surfaces.df['isBasement']
-        self._surfaces.df.loc[sel, 'sfai'] = sfai_order
-        self._surfaces.df.sort_values(by=['series', 'sfai'], inplace=True, ascending=False)
-        self._surfaces.reset_order_surfaces()
-        self._surfaces.sort_surfaces()
-        self._surfaces.set_basement()
-        self._surface_points.df['id'] = self._surface_points.df['surface'].map(
-            self._surfaces.df.set_index('surface')['id']).astype(int)
-        self._orientations.df['id'] = self._orientations.df['surface'].map(
-            self._surfaces.df.set_index('surface')['id']).astype(int)
-        self._surface_points.sort_table()
-        self._orientations.sort_table()
-        self.update_structure()
+        # Check if the order has changed
+        if not np.array_equal(sfai_order, self._sfai_order_0):
+
+            self._sfai_order_0 = sfai_order
+            sel = self._surfaces.df['isActive'] & ~self._surfaces.df['isBasement']
+            self._surfaces.df.loc[sel, 'sfai'] = sfai_order
+            self._surfaces.df.sort_values(by=['series', 'sfai'], inplace=True, ascending=False)
+            self._surfaces.reset_order_surfaces()
+            self._surfaces.sort_surfaces()
+            self._surfaces.set_basement()
+            self._surface_points.df['id'] = self._surface_points.df['surface'].map(
+                self._surfaces.df.set_index('surface')['id']).astype(int)
+            self._orientations.df['id'] = self._orientations.df['surface'].map(
+                self._surfaces.df.set_index('surface')['id']).astype(int)
+            self._surface_points.sort_table()
+            self._orientations.sort_table()
+            self.update_structure()
         return self._surfaces
 
 

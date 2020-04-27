@@ -88,6 +88,28 @@ def unconformity_model(interpolator):
         path_o=input_path2 + "jan_models/model6_orientations.csv",
         path_i=input_path2 + "jan_models/model6_surface_points.csv"
     )
+    gp.map_stack_to_surfaces(
+        geo_model,
+        {"Strat_Series1": ('rock3'),
+         "Strat_Series2": ('rock2', 'rock1'),
+         "Basement_Series": ('basement')}
+    )
+
+    # with open("input_data/geomodel_jan_sol.p", "rb") as f:
+    # geo_model.solutions = load(f)
+    geo_model.set_theano_function(interpolator)
+    gp.compute_model(geo_model)
+    return geo_model
+
+
+@pytest.fixture(scope='session')
+def unconformity_model_topo(interpolator):
+    geo_model = gp.create_data('unconformity_model',
+        [0, 1000, 0, 1000, 0, 1000],
+        resolution=[50, 42, 33],
+        path_o=input_path2 + "jan_models/model6_orientations.csv",
+        path_i=input_path2 + "jan_models/model6_surface_points.csv"
+    )
 
     geo_model.set_topography('random', d_z=(500, 920))
     gp.map_stack_to_surfaces(
@@ -102,7 +124,6 @@ def unconformity_model(interpolator):
     geo_model.set_theano_function(interpolator)
     gp.compute_model(geo_model)
     return geo_model
-
 
 
 @pytest.fixture(scope='session')

@@ -306,6 +306,8 @@ def compute_model(model: Project, output=None, at: np.ndarray = None, compute_me
     elif set_solutions is True:
 
         # Set geology:
+        model.solutions.set_values_to_surface_points(sol)
+
         if model._grid.active_grids[0] is np.True_:
             model.solutions.set_solution_to_regular_grid(sol, compute_mesh=compute_mesh, **kwargs)
         if model._grid.active_grids[1] is np.True_:

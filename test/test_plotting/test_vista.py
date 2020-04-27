@@ -23,6 +23,18 @@ class TestVista:
                             plotter_type='basic',  off_screen=True)
 
     @pytest.fixture(scope='module')
+    def vista_object_only_data_interactive(self, one_fault_model_no_interp):
+        """
+        Args:
+            one_fault_model:
+        """
+        from gempy.plot.vista import GemPyToVista
+
+        return GemPyToVista(one_fault_model_no_interp,
+                            plotter_type='background')
+
+
+    @pytest.fixture(scope='module')
     def vista_object_computed(self, one_fault_model_solution):
         """
         Args:
@@ -70,13 +82,13 @@ class TestVista:
         with pytest.raises(KeyError):
             sp2.loc[4, 'X_r']
 
-    def test_plot_surface_points_poly_live(self, vista_object_only_data):
+    def test_plot_surface_points_poly_live(self, vista_object_only_data_interactive):
         """
         Args:
             vista_object_only_data:
         """
-        vista_object_only_data.live_updating = True
-        vista_object_only_data.plot_surface_points()
+        vista_object_only_data_interactive.live_updating = True
+        vista_object_only_data_interactive.plot_surface_points()
         print('foo')
 
     def test_plot_surface_points_poly_static(self, vista_object_only_data):
@@ -92,13 +104,13 @@ class TestVista:
         vista_object_only_data.plot_data()
         print('foo')
 
-    def test_plot_orientations_poly_live(self, vista_object_only_data):
+    def test_plot_orientations_poly_live(self, vista_object_only_data_interactive):
         """
         Args:
             vista_object_only_data:
         """
-        vista_object_only_data.live_updating = True
-        vista_object_only_data.plot_orientations()
+        vista_object_only_data_interactive.live_updating = True
+        vista_object_only_data_interactive.plot_orientations()
         print('foo')
 
     def test_plot_orientations_poly_static(self, vista_object_only_data):
