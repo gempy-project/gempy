@@ -203,7 +203,7 @@ class DiaomondSquare(object):
         step_size = int(2 ** m_pow)
 
         # pad cells with zero value
-        z_pad = np.pad(self.grid, step_size)
+        z_pad = np.pad(self.grid, step_size, mode='constant')
 
         # also create a grid for division to divide only by 3 on borders
         grid_div = np.ones_like(self.grid[1:-1, 1:-1]) * 4.
