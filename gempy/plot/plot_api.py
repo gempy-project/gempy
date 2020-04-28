@@ -94,7 +94,7 @@ def plot_2d(model, n_axis=None, section_names: list = None,
         :class:`gempy.plot.visualization_2d_pro.Plot2D`: Plot2D object
 
     """
-    if section_names is None and cell_number is None:
+    if section_names is None and cell_number is None and direction is not None:
         cell_number = ['mid']
 
     section_names = [] if section_names is None else section_names
@@ -169,10 +169,12 @@ def plot_2d(model, n_axis=None, section_names: list = None,
             p.plot_block(temp_ax, series_n=series_n[e], section_name=sn, **kwargs)
         if show_scalar[e] is True and model.solutions.scalar_field_matrix.shape[0] != 0:
             p.plot_scalar_field(temp_ax, series_n=series_n[e], section_name=sn, **kwargs)
-        if show_boundaries[e] is True:
+        if show_boundaries[e] is True and model.solutions.scalar_field_matrix.shape[0] != 0:
             p.plot_contacts(temp_ax, section_name=sn, **kwargs)
         if show_topography[e] is True:
-            p.plot_topography(temp_ax, section_name=sn, **kwargs)
+            # Check if anything dense is plot. If not plot dense topography
+            f_c = False if show_lith[e] or show_scalar[e] or show_values[e] else True
+            p.plot_topography(temp_ax, section_name=sn, fill_contour=f_c,**kwargs)
 
         # If there are section we need to shift one axis for the perpendicular
         e = e + 1
@@ -200,7 +202,7 @@ def plot_2d(model, n_axis=None, section_names: list = None,
         if show_scalar[e + e2] is True and model.solutions.scalar_field_matrix.shape[0] != 0:
             p.plot_scalar_field(temp_ax, series_n=series_n[e], cell_number=cell_number[e2],
                                 direction=direction[e2], **kwargs)
-        if show_boundaries[e + e2] is True:
+        if show_boundaries[e + e2] is True and model.solutions.scalar_field_matrix.shape[0] != 0:
             p.plot_contacts(temp_ax, cell_number=cell_number[e2],
                             direction=direction[e2], **kwargs)
         if show_topography[e + e2] is True:

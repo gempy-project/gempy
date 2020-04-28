@@ -171,7 +171,7 @@ class Load_DEM_GDAL():
 
 class LoadDEMArtificial:
 
-    def __init__(self, grid, fd=2.0, extent=None, resolution=None, d_z=None):
+    def __init__(self, grid=None, fd=2.0, extent=None, resolution=None, d_z=None):
         """
         Class to create a random topography based on a fractal grid algorithm.
         Args:
@@ -180,18 +180,19 @@ class LoadDEMArtificial:
             extent:     extent in xy direction. If none, geo_model.grid.extent
             resolution: desired resolution of the topography array. If none, geo_model.grid.resolution
         """
-        self.grid = grid
+        self.values_2d = np.array([])
 
         self.resolution = grid.resolution[:2] if resolution is None else resolution
 
         assert all(np.asarray(self.resolution) >= 2), 'The regular grid needs to be at least of size 2 on all ' \
                                                       'directions.'
-        self.extent = self.grid.extent[:4] if extent is None else extent
+        self.extent = grid.extent if extent is None else extent
 
         if d_z is None:
             self.d_z = np.array(
-                [self.grid.extent[5] - (self.grid.extent[5] - self.grid.extent[4]) * 1 / 5,
-                 self.grid.extent[5]])
+
+                [self.extent[5] - (self.extent[5] - self.extent[4]) * 1 / 5,
+                 self.extent[5]])
             print(self.d_z)
         else:
             self.d_z = d_z
@@ -264,7 +265,11 @@ class LoadDEMArtificial:
 
     def create_topo_array(self):
         """for masking the lith block"""
-        x = np.linspace(self.grid.values[:, 0].min(), self.grid.values[:, 0].max(), self.resolution[1])
-        y = np.linspace(self.grid.values[:, 1].min(), self.grid.values[:, 1].max(), self.resolution[0])
+        x = np.linspace(self.extent[0], self.extent[1], self.resolution[1])
+        y = np.linspace(self.extent[2], self.extent[3], self.resolution[0])
         xx, yy = np.meshgrid(x, y, indexing='ij')
-        self.values_3D = np.dstack([xx.T, yy.T, self.dem_zval.T])
+        self.values_2d = np.dstack([xx.T, yy.T, self.dem_zval.T])
+        self.values_3D = self.values_2d
+
+    def get_values(self):
+        return self.values_2d

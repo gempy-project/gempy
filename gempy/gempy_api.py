@@ -73,8 +73,8 @@ def map_series_to_surfaces(geo_model: Project, mapping_object: Union[dict, pn.Ca
     Returns
         :class:`gempy.core.data.Surfaces`
     """
-    warnings.warn(DeprecationWarning, 'Series is going to get renamed to Stack. Please use'
-                                      '`map_stack_to_surfaces` instead.')
+    warnings.warn('Series is going to get renamed to Stack. Please use'
+                  '`map_stack_to_surfaces` instead.', DeprecationWarning)
 
     geo_model.map_series_to_surfaces(mapping_object, set_series, sort_geometric_data, remove_unused_series)
     return geo_model._surfaces

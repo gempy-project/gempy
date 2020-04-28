@@ -111,7 +111,7 @@ def unconformity_model_topo(interpolator):
         path_i=input_path2 + "jan_models/model6_surface_points.csv"
     )
 
-    geo_model.set_topography('random', d_z=(500, 920))
+    geo_model.set_topography('random', d_z=(200, 920))
     gp.map_stack_to_surfaces(
         geo_model,
         {"Strat_Series1": ('rock3'),

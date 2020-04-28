@@ -92,8 +92,31 @@ class RegularGrid:
         return self.values
 
     def set_topography_mask(self, topography):
+        """This method takes a topography grid of the same extent as the regular
+         grid and creates a mask of voxels
 
-        ind = topography._find_indices()
+        Args:
+            topography (:class:`gempy.core.grid_modules.topography.Topography`):
+
+        Returns:
+
+        """
+        assert np.array_equal(topography.extent, self.extent), 'The extent of' \
+            'the topography must match to the extent of the regular grid.'
+
+        zs = np.linspace(self.extent[4], self.extent[5],
+                         self.resolution[2])
+        dz = (zs[-1] - zs[0]) / len(zs)
+
+        # interpolate topography values to the regular grid
+        regular_grid_topo = skimage.transform.resize(
+            topography.values_2d,
+            (self.resolution[0], self.resolution[1]),
+            mode='constant',
+            anti_aliasing=False, preserve_range=True)
+
+        ind = ((regular_grid_topo[:, :, 2] - zs[0]) / dz + 1).astype(int)
+
         gridz = self.values[:, 2].reshape(*self.resolution).copy()
         for x in range(self.resolution[0]):
             for y in range(self.resolution[1]):
@@ -101,7 +124,7 @@ class RegularGrid:
                 gridz[x, y, z:] = 99999
         mask = (gridz == 99999)
         self.mask_topo = mask
-        return mask  # np.multiply(np.full(self.regular_grid.values.shape, True).T, mask.ravel()).T
+        return mask.swapaxes(0, 1)
 
 
 class Sections:
@@ -430,6 +453,8 @@ class Topography:
         self.extent = self.topo.extent
         self.resolution = self.topo.resolution
 
+    # These two methods makes more sense in regular grid passing a topography
+    # object.
     def _fit2model(self):
         self.values = np.vstack((
             self.values_3D[:, :, 0].ravel(), self.values_3D[:, :, 1].ravel(),

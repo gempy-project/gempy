@@ -18,6 +18,7 @@ except ModuleNotFoundError:
 
 # This is for sphenix to find the packages
 from gempy.core.grid_modules import grid_types
+from gempy.core.grid_modules import topography
 from gempy.utils.meta import _setdoc, _setdoc_pro
 import gempy.utils.docstring as ds
 
@@ -171,7 +172,7 @@ class Grid(object):
         Returns:
              :class:gempy.core.data.Topography
         """
-        self.topography = grid_types.Topography(self.regular_grid)
+        self.topography = topography.Topography(self.regular_grid)
 
         if source == 'random':
             self.topography.load_random_hills(**kwargs)

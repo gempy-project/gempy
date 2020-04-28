@@ -101,7 +101,8 @@ class ImplicitCoKriging(object):
     @property
     def faults(self):
         """:class:`gempy.core.data_modules.stack.Faults` [s0]"""
-        return RestrictingWrapper(self._faults, accepted_members=['__repr__', '_repr_html_', 'faults_relations_df'])
+        return RestrictingWrapper(self._faults,
+                                  accepted_members=['__repr__', '_repr_html_', 'faults_relations_df'])
 
     @_setdoc_pro(Stack.__doc__)
     @property
@@ -121,7 +122,8 @@ class ImplicitCoKriging(object):
     @property
     def surfaces(self):
         """:class:`gempy.core.data.Surfaces` [s0]"""
-        return RestrictingWrapper(self._surfaces)
+        return RestrictingWrapper(self._surfaces,
+                                  accepted_members=['__repr__', '_repr_html_', 'colors'])
 
     @_setdoc_pro(SurfacePoints.__doc__)
     @property
