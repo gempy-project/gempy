@@ -16,7 +16,16 @@ def artificial_grid(one_fault_model_no_interp):
 def test_plot_2d_topography(one_fault_model_no_interp, artificial_grid):
     geo_model = one_fault_model_no_interp
     geo_model._grid.topography = artificial_grid
-    p2d = gp.plot_2d(geo_model, section_names=['topography'], show_topography=True)
+    p2d = gp.plot_2d(geo_model, section_names=['topography'], show_topography=True,
+                     kwargs_topography={'hillshade': False})
+    plt.show()
+
+    p2d = gp.plot_2d(geo_model, section_names=['topography'], show_topography=True,
+                     kwargs_topography={'hillshade': True, 'fill_contour': False})
+    plt.show()
+
+    p2d = gp.plot_2d(geo_model, section_names=['topography'], show_topography=True,
+                     kwargs_topography={'hillshade': True})
     plt.show()
 
 

@@ -63,6 +63,7 @@ def plot_2d(model, n_axis=None, section_names: list = None,
             show_boundaries: Union[bool, list] = True,
             show_topography: Union[bool, list] = False,
             series_n: Union[int, List[int]] = 0,
+            kwargs_topography=None,
             **kwargs):
     """Plot 2-D sections of geomodel.
 
@@ -88,12 +89,22 @@ def plot_2d(model, n_axis=None, section_names: list = None,
         show_topography (bool): Show topography on plot. Defaults to False.
         series_n (int): number of the scalar field.
          TODO being able to pass a list of int for each axis
-        **kwargs:
+        kwargs_topography (dict):
+            * fill_contour
+            * hillshade (bool): Calculate and add hillshading using elevation data
+            * azdeg (float): azimuth of sun for hillshade
+            * altdeg (float): altitude in degrees of sun for hillshade
+
+
+    Keyword Args:
+
 
     Returns:
         :class:`gempy.plot.visualization_2d_pro.Plot2D`: Plot2D object
 
     """
+    if kwargs_topography is None:
+        kwargs_topography = dict()
     if section_names is None and cell_number is None and direction is not None:
         cell_number = ['mid']
 
@@ -154,6 +165,8 @@ def plot_2d(model, n_axis=None, section_names: list = None,
     n_columns = 10 if len(section_names) + len(cell_number) < 2 else 20
 
     for e, sn in enumerate(section_names):
+        # Check if a plot that fills all pixels is plotted
+        _is_filled = False
         assert e < 10, 'Reached maximum of axes'
 
         ax_pos = (int(n_axis / 2) + 1) * 100 + n_columns + e + 1
@@ -162,19 +175,28 @@ def plot_2d(model, n_axis=None, section_names: list = None,
         if show_data[e] is True:
             p.plot_data(temp_ax, section_name=sn, **kwargs)
         if show_lith[e] is True and model.solutions.lith_block.shape[0] != 0:
+            _is_filled = True
             p.plot_lith(temp_ax, section_name=sn, **kwargs)
         elif show_values[e] is True and model.solutions.values_matrix.shape[0] != 0:
+            _is_filled = True
             p.plot_values(temp_ax, series_n=series_n[e], section_name=sn, **kwargs)
         elif show_block[e] is True and model.solutions.block_matrix.shape[0] != 0:
+            _is_filled = True
             p.plot_block(temp_ax, series_n=series_n[e], section_name=sn, **kwargs)
         if show_scalar[e] is True and model.solutions.scalar_field_matrix.shape[0] != 0:
+            _is_filled = True
             p.plot_scalar_field(temp_ax, series_n=series_n[e], section_name=sn, **kwargs)
         if show_boundaries[e] is True and model.solutions.scalar_field_matrix.shape[0] != 0:
             p.plot_contacts(temp_ax, section_name=sn, **kwargs)
         if show_topography[e] is True:
             # Check if anything dense is plot. If not plot dense topography
-            f_c = False if show_lith[e] or show_scalar[e] or show_values[e] else True
-            p.plot_topography(temp_ax, section_name=sn, fill_contour=f_c,**kwargs)
+            f_c_ = not _is_filled
+            # f_c = kwargs_topography.get('fill_contour', f_c_)
+            if not 'fill_contour' in kwargs_topography:
+                kwargs_topography['fill_contour'] = f_c_
+
+            p.plot_topography(temp_ax, section_name=sn, # fill_contour=f_c,
+                              **kwargs_topography)
 
         # If there are section we need to shift one axis for the perpendicular
         e = e + 1
@@ -207,9 +229,63 @@ def plot_2d(model, n_axis=None, section_names: list = None,
                             direction=direction[e2], **kwargs)
         if show_topography[e + e2] is True:
             p.plot_topography(temp_ax, cell_number=cell_number[e2],
-                              direction=direction[e2], **kwargs)
+                              direction=direction[e2], **kwargs_topography)
 
     return p
+
+
+def plot_3d(model, plotter_type='background',
+            show_data: bool = True,
+            show_results:bool = True,
+            show_surfaces: bool = True,
+            show_lith: bool = True,
+            show_scalar: bool = False,
+            show_boundaries: bool = True,
+            show_topography: Union[bool, list] = False,
+            kwargs_plot_structured_grid=None,
+            **kwargs):
+    """foobar
+
+    Args:
+
+        model (:class:`gempy.core.model.Project`): Container class of all
+         objects that constitute a GemPy model.
+        plotter_type: PyVista plotter types. Supported plotters are:
+         'basic', 'background', and 'notebook'.
+        show_data (bool): Show original input data. Defaults to True.
+        show_results (bool): If False, override show lith, show_calar, show_values
+        show_lith (bool): Show lithological block volumes. Defaults to True.
+        show_scalar (bool): Show scalar field isolines. Defaults to False.
+        show_boundaries (bool): Show surface boundaries as lines. Defaults to True.
+        show_topography (bool): Show topography on plot. Defaults to False.
+        series_n (int): number of the scalar field.
+        kwargs_plot_structured_grid:
+        **kwargs:
+
+    Returns:
+        :class:`gempy.plot.vista.GemPyToVista`
+
+    """
+    if kwargs_plot_structured_grid is None:
+        kwargs_plot_structured_grid = dict()
+    ve: float = kwargs.get('ve', 1)
+   # cpos = kwargs.get('cpos', [[-1.0, -1.0, 0.6], [0.0, 0.0, 0.0], [0.0, 0.0, 1.0]])
+    fig_path: str = kwargs.get('fig_path', None)
+
+    gpv = GemPyToVista(model, plotter_type=plotter_type, **kwargs)
+    if show_surfaces and len(model.solutions.vertices) != 0:
+        gpv.plot_surfaces()
+    if show_lith is True and model.solutions.lith_block.shape[0] != 0:
+        gpv.plot_structured_grid('lith', **kwargs_plot_structured_grid)
+    if show_data:
+        gpv.plot_data()
+    if show_topography and model._grid.topography is not None:
+        gpv.plot_topography()
+
+    if fig_path is not None:
+        gpv.p.show(screenshot=fig_path)
+
+    return gpv
 
 
 def plot_section_traces(model):
@@ -286,56 +362,6 @@ def plot_stereonet(self, litho=None, planes=True, poles=True,
         ax._grid(True, color='black', alpha=0.25)
 
 
-def plot_3d(model, plotter_type='background',
-            show_data: bool = True,
-            show_results:bool = True,
-            show_surfaces: bool = True,
-            show_lith: bool = True,
-            show_scalar: bool = False,
-            show_boundaries: bool = True,
-            show_topography: Union[bool, list] = False,
-            kwargs_plot_structured_grid: dict = None,
-            **kwargs):
-    """foobar
-
-    Args:
-
-        model (:class:`gempy.core.model.Project`): Container class of all
-         objects that constitute a GemPy model.
-        plotter_type: PyVista plotter types. Supported plotters are:
-         'basic', 'background', and 'notebook'.
-        show_data (bool): Show original input data. Defaults to True.
-        show_results (bool): If False, override show lith, show_calar, show_values
-        show_lith (bool): Show lithological block volumes. Defaults to True.
-        show_scalar (bool): Show scalar field isolines. Defaults to False.
-        show_boundaries (bool): Show surface boundaries as lines. Defaults to True.
-        show_topography (bool): Show topography on plot. Defaults to False.
-        series_n (int): number of the scalar field.
-        kwargs_plot_structured_grid:
-        **kwargs:
-
-    Returns:
-        :class:`gempy.plot.vista.GemPyToVista`
-
-    """
-    ve: float = kwargs.get('ve', 1)
-   # cpos = kwargs.get('cpos', [[-1.0, -1.0, 0.6], [0.0, 0.0, 0.0], [0.0, 0.0, 1.0]])
-    fig_path: str = kwargs.get('fig_path', None)
-
-    gpv = GemPyToVista(model, plotter_type=plotter_type, **kwargs)
-    if show_surfaces and len(model.solutions.vertices) != 0:
-        gpv.plot_surfaces()
-    if show_lith is True and model.solutions.lith_block.shape[0] != 0:
-        gpv.plot_structured_grid('lith', **kwargs_plot_structured_grid)
-    if show_data:
-        gpv.plot_data()
-    if show_topography and model._grid.topography is not None:
-        gpv.plot_topography()
-
-    if fig_path is not None:
-        gpv.p.show(screenshot=fig_path)
-
-    return gpv
 #
 # if PYVISTA_IMPORT and False:
 #     def plot_3d(

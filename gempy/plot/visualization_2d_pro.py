@@ -605,6 +605,10 @@ class Plot2D:
     def plot_topography(self, ax, fill_contour=False,
                         section_name=None,
                         cell_number=None, direction='y', block=None, **kwargs):
+
+        hillshade = kwargs.get('hillshade', True)
+        azdeg = kwargs.get('azdeg', 225)
+        altdeg = kwargs.get('altdeg', 45)
         self.update_colot_lot()
         section_name, cell_number, direction = self._check_default_section(ax, section_name, cell_number, direction)
 
@@ -636,11 +640,29 @@ class Plot2D:
                 if fill_contour is True:
 
                     CS2 = ax.contourf(topo.values_2d[:, :, 2], extent=(topo.extent[:4]), cmap='terrain')
-                add_colorbar(axes=ax, label='elevation [m]', cs=CS2)
+                    add_colorbar(axes=ax, label='elevation [m]', cs=CS2)
             elif topo.source == 'gdal':
                 im = plt.imshow(np.flipud(topo.plot_2d[:, :, 2]),
                                 extent=(topo.extent[:4]))
                 add_colorbar(im=im, label='elevation [m]')
+
+            bbox = ax.get_window_extent().transformed(self.fig.dpi_scale_trans.inverted())
+            width, height = bbox.width, bbox.height
+            width *= self.fig.dpi
+            height *= self.fig.dpi
+            if hillshade is True:
+                from matplotlib.colors import LightSource
+                import skimage
+                ls = LightSource(azdeg=azdeg, altdeg=altdeg)
+
+                topo_super_res = skimage.transform.resize(
+                    topo.values_2d,
+                    (1600, 1600),
+                    order=3,
+                    mode='edge',
+                    anti_aliasing=True, preserve_range=False)
+                hillshade_topography = ls.hillshade(topo_super_res[:, :, 2])
+                ax.imshow(hillshade_topography, origin='lower', extent=topo.extent[:4], alpha=0.5, zorder=11)
 
         elif cell_number is not None or block is not None:
             p1, p2 = self.calculate_p1p2(direction, cell_number)

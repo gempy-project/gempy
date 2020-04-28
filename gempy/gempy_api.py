@@ -234,7 +234,11 @@ def read_csv(geo_model: Project, path_i=None, path_o=None, **kwargs):
         **kwargs:
     """
     if path_i is not None or path_o is not None:
-        geo_model.read_data(path_i, path_o, **kwargs)
+        try:
+            geo_model.read_data(path_i, path_o, **kwargs)
+        except KeyError:
+            raise KeyError('Loading of CSV file failed. Check if you use commas '
+                           'to separate your data.')
     return True
 
 

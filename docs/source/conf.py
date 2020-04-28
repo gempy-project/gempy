@@ -167,7 +167,7 @@ from sphinx_gallery.sorting import FileNameSortKey
 
 sphinx_gallery_conf = {
     # path to your examples scripts
-    "examples_dirs": ["../../examples/getting_started", "../../examples/tutorials"],
+    "examples_dirs": ["../../examples/tutorials", "../../examples/getting_started"],
     # path where to save gallery generated examples
     "gallery_dirs": ["examples"],
     # Patter to search for example files
