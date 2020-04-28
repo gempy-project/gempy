@@ -152,21 +152,24 @@ def plot_stereonet(geo_data, litho=None, planes=True, poles=True,
                         show_density=show_density)
 
 
-def plot_map(model, contour_lines=True, show_data=True, figsize=(12, 12)):
+def plot_map(model, contour_lines=True, show_data=True, show_hillshades: bool = False, figsize=(12, 12), **kwargs):
     """
 
     Args:
+        figsize:
+        show_hillshades:
         model:
         contour_lines:
         show_faults:
         show_data:
+        **kwargs
 
     Returns:
 
     """
     plot = PlotSolution(model)
-    plot.plot_map(contour_lines=contour_lines, show_data=show_data,
-                  figsize=figsize)
+    plot.plot_map(contour_lines=contour_lines, show_data=show_data, show_hillshades=show_hillshades,
+                  figsize=figsize, **kwargs)
 
 
 def plot_section_traces(model, section_names=None, contour_lines=False,
@@ -384,6 +387,7 @@ def plot_topology(
         edge_kwargs=edge_kwargs
     )
 
+
 def plot_ar(geo_model, path=None, project_name=None, api_token=None, secret=None):
     """ Create, upload and retrieve tag to visualize the model in AR in rexview
 
@@ -405,7 +409,7 @@ def plot_ar(geo_model, path=None, project_name=None, api_token=None, secret=None
         project_name = geo_model.meta.project_name
 
     if path is None:
-        path='./'
+        path = './'
 
     rex_bytes = geomodel_to_rex(geo_model)
     files_path = write_rex(rex_bytes, path)
@@ -415,7 +419,7 @@ def plot_ar(geo_model, path=None, project_name=None, api_token=None, secret=None
             tag = upload_to_rexcloud(files_path, project_name=project_name_, api_token=api_token, secret=secret)
             break
         except ConnectionError:
-            project_name_ = project_name+str(i)
+            project_name_ = project_name + str(i)
             pass
 
     return tag

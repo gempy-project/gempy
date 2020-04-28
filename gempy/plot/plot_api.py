@@ -26,7 +26,7 @@
 # This is for sphenix to find the packages
 # sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 
-from typing import Union, List
+from typing import Union, List, Any
 
 import matplotlib.pyplot as plt
 # from .vista import Vista
@@ -318,6 +318,10 @@ def plot_3d(model, plotter_type='background',
         :class:`gempy.plot.vista.GemPyToVista`
 
     """
+    ve: float = kwargs.get('ve', 1)
+   # cpos = kwargs.get('cpos', [[-1.0, -1.0, 0.6], [0.0, 0.0, 0.0], [0.0, 0.0, 1.0]])
+    fig_path: str = kwargs.get('fig_path', None)
+
     gpv = GemPyToVista(model, plotter_type=plotter_type, **kwargs)
     if show_surfaces and len(model.solutions.vertices) != 0:
         gpv.plot_surfaces()
@@ -327,7 +331,10 @@ def plot_3d(model, plotter_type='background',
         gpv.plot_data()
     if show_topography and model._grid.topography is not None:
         gpv.plot_topography()
-    #gpv.p.show()
+
+    if fig_path is not None:
+        gpv.p.show(screenshot=fig_path)
+
     return gpv
 #
 # if PYVISTA_IMPORT and False:
