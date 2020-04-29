@@ -366,7 +366,11 @@ class GemPyToVista(WidgetsCallbacks):
             poly = pv.PolyData(orientations[["X", "Y", "Z"]].values)
             poly['id'] = orientations['id']
             poly['vectors'] = orientations[['G_x', 'G_y', 'G_z']].values
-            arrows = poly.glyph(orient='vectors', scale=False, factor=np.mean(self.extent) / (100 / arrow_size))
+
+            min_axes = np.min(np.diff(self.extent)[[0, 2, 4]])
+
+            arrows = poly.glyph(orient='vectors', scale=False,
+                                factor=min_axes / (100 / arrow_size))
 
             cmap = mcolors.ListedColormap(list(self._get_color_lot(is_faults=True)))
             self.orientations_actor = self.p.add_mesh(arrows, cmap=cmap)
@@ -515,9 +519,9 @@ class GemPyToVista(WidgetsCallbacks):
         regular_grid_mesh, cmap = self.set_scalar_data(regular_grid_mesh,
                                                        data=data, scalar_field=scalar_field)
 
-        if render_topography == True and regular_grid.mask_topo.shape[0] != 0:
+        if render_topography == True and regular_grid.mask_topo.shape[0] != 0 and True:
             main_scalar = 'lith' if scalar_field == 'all' else regular_grid_mesh.array_names[-1]
-            regular_grid_mesh[main_scalar][regular_grid.mask_topo.T.ravel(order='F')] = -100
+            regular_grid_mesh[main_scalar][regular_grid.mask_topo.ravel(order='C')] = -100
             regular_grid_mesh = regular_grid_mesh.threshold(-99)
 
         self.regular_grid_actor = self.p.add_mesh(regular_grid_mesh, cmap=cmap,

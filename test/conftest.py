@@ -6,6 +6,8 @@ import os
 
 input_path = os.path.dirname(__file__)+'/input_data'
 input_path2 = os.path.dirname(__file__)+'/../examples/data/input_data/'
+import numpy as np
+np.random.seed(1234)
 
 
 @pytest.fixture(scope='session')
@@ -106,7 +108,7 @@ def unconformity_model(interpolator):
 def unconformity_model_topo(interpolator):
     geo_model = gp.create_data('unconformity_model',
         [0, 1000, 0, 1000, 0, 1000],
-        resolution=[50, 42, 33],
+        resolution=[50, 42, 38],
         path_o=input_path2 + "jan_models/model6_orientations.csv",
         path_i=input_path2 + "jan_models/model6_surface_points.csv"
     )

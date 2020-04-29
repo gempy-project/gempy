@@ -1,5 +1,5 @@
 import numpy as np
-from .create_topography import LoadDEMArtificial
+from .create_topography import LoadDEMArtificial, Load_DEM_GDAL
 
 
 class Topography:
@@ -49,7 +49,7 @@ class Topography:
         self.values_2d = values_2d
 
         # n,3 array
-        self.values = values_2d.reshape(-1, 3)
+        self.values = values_2d.reshape((-1, 3), order='C')
         return self
 
     def crop_topography(self, extent):
@@ -68,6 +68,23 @@ class Topography:
     def load_random_hills(self, **kwargs):
         dem = LoadDEMArtificial(extent=self.extent,
                                 resolution=self.resolution, **kwargs)
+
         self.set_values(dem.get_values())
-        self.source = 'artificial'
+        # self.source = 'artificial'
+
+    def load_from_gdal(self, filepath):
+        dem = Load_DEM_GDAL(filepath, extent=self.extent)
+        self.set_values(dem.get_values())
+        # self.source = 'gdal'
+
+    def save(self, path):
+        np.save(path, self.values_2d)
+
+    def load(self, path):
+        self.set_values(np.load(path))
+        return self.values
+
+    def load_from_saved(self, *args, **kwargs):
+        self.load(*args, **kwargs)
+
 

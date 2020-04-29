@@ -346,7 +346,7 @@ class ImplicitCoKriging(object):
         return self._grid
 
     @plot_set_topography
-    def set_topography(self, source='random', plot=False, **kwargs):
+    def set_topography(self, source='random', set_mask=True, **kwargs):
         """Create a topography grid and activate it.
 
         Args:
@@ -356,8 +356,6 @@ class ImplicitCoKriging(object):
                 'saved':    Load topography that was saved with the topography.save() function.
                             This is useful after loading and saving a heavy raster file with gdal once or after saving a
                             random topography with the save() function. This .npy file can then be set as topography.
-
-            plot (bool): If True plot topography.
 
         Keyword Args:
             if source = 'gdal:
@@ -387,7 +385,13 @@ class ImplicitCoKriging(object):
 
         """
 
-        self._grid.create_topography(source, plot=plot, **kwargs)
+        self._grid.create_topography(source, **kwargs)
+        if set_mask is True:
+            try:
+                self._grid.regular_grid.set_topography_mask(self._grid.topography)
+            except AttributeError:
+                pass
+
         self.update_from_grid()
         print(f'Active grids: {self._grid.grid_types[self._grid.active_grids]}')
         return self._grid

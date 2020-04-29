@@ -146,7 +146,7 @@ class Grid(object):
         self.custom_grid = grid_types.CustomGrid(custom_grid)
         self.set_active('custom')
 
-    def create_topography(self, source='random', plot=False, **kwargs):
+    def create_topography(self, source='random', **kwargs):
         """Create a topography grid and activate it.
 
         Args:
@@ -191,8 +191,6 @@ class Grid(object):
         else:
             raise AttributeError('source must be random, gdal or saved')
 
-        if plot is True:
-            self.topography.show()
         self.set_active('topography')
 
     @_setdoc(grid_types.Sections.__doc__)

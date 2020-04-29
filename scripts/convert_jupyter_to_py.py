@@ -50,8 +50,9 @@ def convert_ipynb_to_gallery(nb, new_file):
     python_file = python_file.replace("\n%", "\n# %")
     open(new_file, 'w', newline='').write(python_file)
 
-
-directory = os.getcwd()+'/../notebooks/tutorials/ch1-Fundamentals/'
+#%%
+directory = os.getcwd()+'/../notebooks/experimental/gempy-paper/'
+directory = 'I:\PycharmProjects\gempy_notebooks\notebooks\Probabilistic Modeling'
 
 for root, dirs, files in os.walk(directory):
     for file in files:
@@ -63,7 +64,10 @@ for root, dirs, files in os.walk(directory):
             file_name = root+'/'+file
             print(os.path.basename(file_name[:-5]))
             nb = root+'/'+file #jupytext.read(root+'/'+file)
-            new_dir = root.replace('notebooks', 'examples')
+            if True:
+                new_dir = root.replace('notebooks', 'examples')
+            else:
+                pass
             new_file = new_dir+'/'+file.replace('.ipynb', '.py')
             try:
                 os.makedirs(new_dir)

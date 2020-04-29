@@ -242,7 +242,9 @@ def plot_3d(model, plotter_type='background',
             show_scalar: bool = False,
             show_boundaries: bool = True,
             show_topography: Union[bool, list] = False,
+            ve=None,
             kwargs_plot_structured_grid=None,
+            kwargs_plot_topography=None,
             **kwargs):
     """foobar
 
@@ -259,13 +261,17 @@ def plot_3d(model, plotter_type='background',
         show_boundaries (bool): Show surface boundaries as lines. Defaults to True.
         show_topography (bool): Show topography on plot. Defaults to False.
         series_n (int): number of the scalar field.
+        ve (float): Vertical Exaggeration
         kwargs_plot_structured_grid:
+        kwargs_plot_topography:
         **kwargs:
 
     Returns:
         :class:`gempy.plot.vista.GemPyToVista`
 
     """
+    if kwargs_plot_topography is None:
+        kwargs_plot_topography = dict()
     if kwargs_plot_structured_grid is None:
         kwargs_plot_structured_grid = dict()
     ve: float = kwargs.get('ve', 1)
@@ -280,7 +286,10 @@ def plot_3d(model, plotter_type='background',
     if show_data:
         gpv.plot_data()
     if show_topography and model._grid.topography is not None:
-        gpv.plot_topography()
+        gpv.plot_topography(**kwargs_plot_topography)
+
+    if ve is not None:
+        gpv.p.set_scale(zscale=ve)
 
     if fig_path is not None:
         gpv.p.show(screenshot=fig_path)
