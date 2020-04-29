@@ -24,6 +24,31 @@ def section_model(one_fault_model_topo_solution):
 
 
 def test_topo_sections_iterp2(section_model):
+    # Test 1 single
     gp.plot_2d(section_model, section_names=['section_NW-SE'],
                show_topography=True)
+    plt.show()
+
+    # Test 2 plots
+    gp.plot_2d(section_model, section_names=['section_NW-SE', 'section_NW-SE'],
+               show_topography=True)
+    plt.show()
+
+    # Test 3 plots
+    gp.plot_2d(section_model, section_names=['section_NW-SE', 'section_NW-SE', 'topography'],
+               show_topography=True)
+    plt.show()
+
+    # Test 4
+    gp.plot_2d(section_model, section_names=['section_NW-SE', 'section_NW-SE', 'topography'],
+               direction=['x'], cell_number=['mid'],
+               show_topography=True)
+    plt.show()
+
+
+def test_ve(section_model):
+    # Test ve
+    p2d = gp.plot_2d(section_model, section_names=['section_NW-SE', 'section_NW-SE'],
+                     show_topography=True, ve=3)
+
     plt.show()

@@ -169,6 +169,7 @@ class Plot2D:
     def add_section(self, section_name=None, cell_number=None, direction='y', ax=None, ax_pos=111,
                     ve=1., **kwargs):
 
+
         extent_val = kwargs.get('extent', None)
         self.update_colot_lot()
 
@@ -313,91 +314,6 @@ class Plot2D:
                    **kwargs):
         block = self.model.solutions.block_matrix[series_n]
         self.plot_regular_grid(ax, section_name, cell_number, direction, block=block)
-
-    # def plot_topography(self, ax):
-    #     from gempy.plot.helpers import add_colorbar
-    #     topo = self.model._grid.topography
-    #
-    #     if topo.source == 'artificial':
-    #         CS = ax.contour(topo.values_2d[:, :, 2], extent=(topo.extent[:4]),
-    #                         colors='k', linestyles='solid')
-    #         ax.clabel(CS, inline=1, fontsize=10, fmt='%d')
-    #         CS2 = ax.contourf(topo.values_2d[:, :, 2], extent=(topo.extent[:4]), cmap='terrain')
-    #         add_colorbar(axes=ax, label='elevation [m]', cs=CS2)
-    #     elif topo.source == 'gdal':
-    #         im = plt.imshow(np.flipud(topo.plot_2d[:, :, 2]),
-    #                         extent=(topo.extent[:4]))
-    #         add_colorbar(im=im, label='elevation [m]')
-
-    # plt.axis('scaled')
-    # plt.xlabel('X')
-    # plt.ylabel('Y')
-    # plt.title('Model topography')
-
-    # def plot_lith(self, ax, section_name=None, cell_number=None, direction='y',
-    #               block=None, mask=None, **kwargs):
-    #     """
-    #
-    #     Args:
-    #         section_name:
-    #         cell_number:
-    #         direction:
-    #         ax:
-    #         extent_val:
-    #         **kwargs: imshow kwargs
-    #
-    #     Returns:
-    #
-    #     """
-    #     self.update_colot_lot()
-    #     extent_val = [*ax.get_xlim(), *ax.get_ylim()]
-    #
-    #     section_name, cell_number, direction = self._check_default_section(ax, section_name, cell_number, direction)
-    #
-    #     if section_name is not None:
-    #         if section_name == 'topography':
-    #             try:
-    #                 image = self.model.solutions.geological_map[0].reshape(
-    #                     self.model.grid.topography.values_3D[:, :, 2].shape)
-    #                 # mask = self.model.solutions.geological_map[4].reshape(
-    #                 #    self.model.grid.topography.values_3D[:, :, 2].shape)
-    #             except AttributeError:
-    #                 raise AttributeError('Geological map not computed. Activate the topography grid.')
-    #         else:
-    #             assert type(section_name) == str or type(
-    #                 section_name) == np.str_, 'section name must be a string of the name of the section'
-    #             assert self.model.solutions.sections is not None, 'no sections for plotting defined'
-    #
-    #             l0, l1 = self.model.grid.sections.get_section_args(section_name)
-    #             shape = self.model.grid.sections.df.loc[section_name, 'resolution']
-    #             image = self.model.solutions.sections[0][0][l0:l1].reshape(shape[0], shape[1]).T
-    #             # mask = self.model.solutions.sections[0].reshape(shape[0], shape[1]).T
-    #
-    #     elif cell_number is not None or block is not None:
-    #         _a, _b, _c, _, x, y = self._slice(direction, cell_number)[:-2]
-    #         if block is None:
-    #             _block = self.model.solutions.lith_block
-    #         else:
-    #             _block = block
-    #
-    #         if mask is None:
-    #             _mask = self.model.solutions.mask_matrix
-    #         else:
-    #             _mask = mask
-    #
-    #         plot_block = _block.reshape(self.model.grid.regular_grid.resolution)
-    #         image = plot_block[_a, _b, _c].T
-    #         # mask = _mask.reshape(-1, *self.model.grid.regular_grid.resolution)[:, _a, _b, _c]
-    #     else:
-    #         raise AttributeError
-    #     # for mask_series in mask:
-    #     #     image_series = np.ma.array(image, mask = ~mask_series.T)
-    #     #     ax.imshow(image_series, origin='lower', zorder=-100,
-    #     #               cmap=self.cmap, norm=self.norm, extent=extent_val)
-    #     #
-    #     ax.imshow(image, origin='lower', zorder=-100,
-    #               cmap=self.cmap, norm=self.norm, extent=extent_val)
-    #     return ax
 
     def plot_scalar_field(self, ax, section_name=None, cell_number=None, series_n=0, direction='y',
                           block=None, **kwargs):
@@ -650,48 +566,10 @@ class Plot2D:
                 CS2 = ax.contourf(values, extent=(topo.extent[:4]), cmap='terrain')
                 add_colorbar(axes=ax, label='elevation [m]', cs=CS2)
 
-            # if topo.source == 'gdal':
-            #     from scipy.ndimage.filters import gaussian_filter
-            #    # sigma = 5
-            #     #values = gaussian_filter(topo.values_2d[:, :, 2], sigma=sigma, order=1)
-            #     values = topo_super_res[:, :, 2]
-            #     ax.imshow(values, extent=(topo.extent[:4]), origin='bottom', cmap='terrain')
-            #     #ax.imshow(topo.values_2d[:, :, 2], extent=(topo.extent[:4]), origin='bottom', cmap='terrain')
-            #
-            # else:
-            #     values = topo.values_2d[:, :, 2]
-            # if topo.source == 'artificial' or True:
-            #     CS = ax.contour(values, extent=(topo.extent[:4]),
-            #                     colors='k', linestyles='solid', origin='lower')
-            #     ax.clabel(CS, inline=1, fontsize=10, fmt='%d')
-            #     if fill_contour is True:
-            #
-            #         CS2 = ax.contourf(topo.values_2d[:, :, 2], extent=(topo.extent[:4]), cmap='terrain')
-            #         add_colorbar(axes=ax, label='elevation [m]', cs=CS2)
-            #
-            # elif topo.source == 'gdal':
-            #
-            #
-            #     im = plt.imshow(np.flipud(topo.values_2d[:, :, 2]),
-            #                     extent=(topo.extent[:4]))
-            #     add_colorbar(im=im, label='elevation [m]')
-
-            # bbox = ax.get_window_extent().transformed(self.fig.dpi_scale_trans.inverted())
-            # width, height = bbox.width, bbox.height
-            # width *= self.fig.dpi
-            # height *= self.fig.dpi
-
             if hillshade is True:
                 from matplotlib.colors import LightSource
 
                 ls = LightSource(azdeg=azdeg, altdeg=altdeg)
-
-                # topo_super_res = skimage.transform.resize(
-                #     topo.values_2d,
-                #     (1600, 1600),
-                #     order=3,
-                #     mode='edge',
-                #     anti_aliasing=True, preserve_range=False)
                 hillshade_topography = ls.hillshade(values)
                 ax.imshow(hillshade_topography, origin='lower', extent=topo.extent[:4], alpha=0.5, zorder=11)
 

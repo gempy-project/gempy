@@ -63,6 +63,7 @@ def plot_2d(model, n_axis=None, section_names: list = None,
             show_boundaries: Union[bool, list] = True,
             show_topography: Union[bool, list] = False,
             series_n: Union[int, List[int]] = 0,
+            ve=1,
             kwargs_topography=None,
             **kwargs):
     """Plot 2-D sections of geomodel.
@@ -169,9 +170,9 @@ def plot_2d(model, n_axis=None, section_names: list = None,
         _is_filled = False
         assert e < 10, 'Reached maximum of axes'
 
-        ax_pos = (int(n_axis / 2) + 1) * 100 + n_columns + e + 1
+        ax_pos = (round(n_axis / 2 + 0.1)) * 100 + n_columns + e + 1
         # print(ax_pos, '1')
-        temp_ax = p.add_section(section_name=sn, ax_pos=ax_pos, **kwargs)
+        temp_ax = p.add_section(section_name=sn, ax_pos=ax_pos, ve=ve, **kwargs)
         if show_data[e] is True:
             p.plot_data(temp_ax, section_name=sn, **kwargs)
         if show_lith[e] is True and model.solutions.lith_block.shape[0] != 0:
@@ -198,17 +199,19 @@ def plot_2d(model, n_axis=None, section_names: list = None,
             p.plot_topography(temp_ax, section_name=sn, # fill_contour=f_c,
                               **kwargs_topography)
 
+        temp_ax.set_aspect(ve)
+
         # If there are section we need to shift one axis for the perpendicular
         e = e + 1
 
     for e2 in range(len(cell_number)):
         assert (e + e2) < 10, 'Reached maximum of axes'
 
-        ax_pos = (int(n_axis / 2) + 1) * 100 + n_columns + e + e2 + 1
+        ax_pos = (round(n_axis / 2 + 0.1)) * 100 + n_columns + e + e2 + 1
         print(ax_pos)
 
         temp_ax = p.add_section(cell_number=cell_number[e2],
-                                direction=direction[e2], ax_pos=ax_pos)
+                                direction=direction[e2], ax_pos=ax_pos, ve=ve)
         if show_data[e + e2] is True:
             p.plot_data(temp_ax, cell_number=cell_number[e2],
                         direction=direction[e2], **kwargs)
@@ -230,7 +233,7 @@ def plot_2d(model, n_axis=None, section_names: list = None,
         if show_topography[e + e2] is True:
             p.plot_topography(temp_ax, cell_number=cell_number[e2],
                               direction=direction[e2], **kwargs_topography)
-
+        temp_ax.set_aspect(ve)
     return p
 
 
