@@ -214,7 +214,8 @@ class Plot2D:
         ax.section_name = section_name
         ax.cell_number = cell_number
         ax.direction = direction
-
+        # ax.set_xticklabels(ax.get_xticklabels(), rotation=30, ha='right')
+        ax.tick_params(axis='x', labelrotation=30)
         self.axes = np.append(self.axes, ax)
         self.fig.tight_layout()
 
@@ -238,7 +239,7 @@ class Plot2D:
         return section_name, cell_number, direction
 
     def plot_regular_grid(self, ax, section_name=None, cell_number=None, direction='y',
-                          block=None, resolution=None, **kwargs):
+                          block: np.ndarray = None, resolution=None, **kwargs):
         """Generic function to plot all regular data
 
         Args:
@@ -254,6 +255,14 @@ class Plot2D:
         """
         self.update_colot_lot()
         extent_val = [*ax.get_xlim(), *ax.get_ylim()]
+        if 'cmap' in kwargs:
+            cmap = kwargs['cmap']
+        else:
+            cmap = self.cmap
+        if 'norm' in kwargs:
+            norm = kwargs['norm']
+        else:
+            norm = self.norm
 
         section_name, cell_number, direction = self._check_default_section(ax, section_name, cell_number, direction)
 
@@ -262,8 +271,7 @@ class Plot2D:
                 try:
                     image = self.model.solutions.geological_map[0].reshape(
                         self.model._grid.topography.values_2d[:, :, 2].shape)
-                    # mask = self.model.solutions.geological_map[4].reshape(
-                    #    self.model.grid.topography.values_3D[:, :, 2].shape)
+
                 except AttributeError:
                     raise AttributeError('Geological map not computed. Activate the topography grid.')
             else:
@@ -274,30 +282,19 @@ class Plot2D:
                 l0, l1 = self.model._grid.sections.get_section_args(section_name)
                 shape = self.model._grid.sections.df.loc[section_name, 'resolution']
                 image = self.model.solutions.sections[0][0][l0:l1].reshape(shape[0], shape[1]).T
-                # mask = self.model.solutions.sections[0].reshape(shape[0], shape[1]).T
 
         elif cell_number is not None or block is not None:
             _a, _b, _c, _, x, y = self._slice(direction, cell_number)[:-2]
-
-            # if mask is None:
-            #     _mask = self.model.solutions.mask_matrix
-            # else:
-            #     _mask = mask
             if resolution is None:
                 resolution = self.model._grid.regular_grid.resolution
 
             plot_block = block.reshape(self.model._grid.regular_grid.resolution)
             image = plot_block[_a, _b, _c].T
-            # mask = _mask.reshape(-1, *self.model.grid.regular_grid.resolution)[:, _a, _b, _c]
         else:
             raise AttributeError
-        # for mask_series in mask:
-        #     image_series = np.ma.array(image, mask = ~mask_series.T)
-        #     ax.imshow(image_series, origin='lower', zorder=-100,
-        #               cmap=self.cmap, norm=self.norm, extent=extent_val)
-        #
+
         ax.imshow(image, origin='lower', zorder=-100,
-                  cmap=self.cmap, norm=self.norm, extent=extent_val)
+                  cmap=cmap, norm=norm, extent=extent_val)
         return ax
 
     def plot_lith(self, ax, section_name=None, cell_number=None, direction='y', **kwargs):
@@ -312,6 +309,7 @@ class Plot2D:
 
     def plot_block(self, ax, series_n=0, section_name=None, cell_number=None, direction='y',
                    **kwargs):
+
         block = self.model.solutions.block_matrix[series_n]
         self.plot_regular_grid(ax, section_name, cell_number, direction, block=block)
 

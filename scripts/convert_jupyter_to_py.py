@@ -8,7 +8,7 @@ import json
 def convert_ipynb_to_gallery(nb, new_file):
     python_file = ""
 
-    nb_dict = json.load(open(nb))
+    nb_dict = json.load(open(nb, encoding="utf8", errors='ignore'))
     cells = nb_dict['cells']
 
     for i, cell in enumerate(cells):
@@ -48,11 +48,11 @@ def convert_ipynb_to_gallery(nb, new_file):
                 python_file = python_file + '\n' * 2 + '# %% \n' + source
 
     python_file = python_file.replace("\n%", "\n# %")
-    open(new_file, 'w', newline='').write(python_file)
+    open(new_file, 'w', newline='',  errors='ignore').write(python_file)
 
 #%%
 directory = os.getcwd()+'/../notebooks/experimental/gempy-paper/'
-directory = 'I:\PycharmProjects\gempy_notebooks\notebooks\Probabilistic Modeling'
+#directory = '/mnt/i/PycharmProjects/gempy_notebooks/notebooks/Probabilistic Modeling'
 
 for root, dirs, files in os.walk(directory):
     for file in files:

@@ -19,10 +19,10 @@ def save_model_to_pickle(model: Project, path=None):
 
 @_setdoc(Project.save_model.__doc__)
 def save_model(model: Project, name=None, path=None):
-    try:
-        model._grid.topography.topo = None
-    except AttributeError:
-        pass
+    # try:
+    #     model._grid.topography.topo = None
+    # except AttributeError:
+    #     pass
     model.save_model(name, path)
     return True
 
@@ -66,6 +66,9 @@ def load_model(name, path=None, recompile=False):
     # create model with extent and resolution from csv - check
     geo_model = create_model()
     init_data(geo_model, np.load(f'{path}/{name}_extent.npy'), np.load(f'{path}/{name}_resolution.npy'))
+
+    geo_model.set_topography(source='saved', filepath=f'{path}/{name}_topography.npy')
+
     # rel_matrix = np.load()
     # set additonal data
     geo_model._additional_data.kriging_data.df = pn.read_csv(f'{path}/{name}_kriging_data.csv', index_col=0,
@@ -85,7 +88,7 @@ def load_model(name, path=None, recompile=False):
                                                                                  inplace=True)
     geo_model._additional_data.options.df['device'].cat.set_categories(['cpu', 'cuda'], inplace=True)
     geo_model._additional_data.options.df['output'].cat.set_categories(['geology', 'gradients'], inplace=True)
-
+    geo_model._additional_data.options.df.loc['values', 'verbosity'] = None
     # do series properly - this needs proper check
     geo_model._stack.df = pn.read_csv(f'{path}/{name}_series.csv', index_col=0,
                                       dtype={'order_series': 'int32', 'BottomRelation': 'category'})

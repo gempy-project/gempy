@@ -44,7 +44,7 @@ import matplotlib.pyplot as plt
 # root folder of GemPy. The data comprises :math:`x`-, :math:`y`- and
 # :math:`z`-positional values for all surface points and orientation
 # measurements. For the latter, poles, azimuth and polarity are
-# additionally included. Surface points are furthermore assigned a
+# additionally included. Surface6points are furth9rmore assigned a
 # formation. This might be a lithological unit such as "Sandstone" or a
 # structural feature such as "Main Fault". It is decisive to remember
 # that, in GemPy, interface position points mark the **bottom** of a
@@ -63,7 +63,7 @@ import matplotlib.pyplot as plt
 # recommend going much higher than 100 cells in every direction (1,000,000
 # voxels), as higher resolutions will become increasingly difficult to
 # compute.
-# 
+#
 
 # %% 
 geo_model = gp.create_model('Tutorial_ch1_1_Basics')

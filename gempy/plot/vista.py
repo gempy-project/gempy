@@ -482,8 +482,14 @@ class GemPyToVista(WidgetsCallbacks):
             show_scalar_bar=False,
             **kwargs
         )
+
+        #contours = polydata.contour()
+        #contours_actor = self.p.add_mesh(contours, color="white", line_width=5)
+
         self.surface_poly['topography'] = polydata
+        #self.surface_poly['topography_cont'] = contours
         self.surface_actors["topography"] = topography_actor
+        #self.surface_actors["topography_cont"] = contours_actor
         return topography_actor
 
     def plot_structured_grid(self, scalar_field: str = 'all',

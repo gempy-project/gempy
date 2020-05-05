@@ -88,7 +88,19 @@ Grids
 
     RegularGrid
     CustomGrid
+
+.. currentmodule:: gempy.core.grid_modules.topography
+.. autosummary::
+    :toctree: Data/Grid
+    :template: class.rst
+
     Topography
+
+.. currentmodule:: gempy.core.grid_modules.grid_types
+.. autosummary::
+    :toctree: Data/Grid
+    :template: class.rst
+
     Sections
     CenteredGrid
 

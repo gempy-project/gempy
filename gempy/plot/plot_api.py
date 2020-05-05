@@ -64,7 +64,9 @@ def plot_2d(model, n_axis=None, section_names: list = None,
             show_topography: Union[bool, list] = False,
             series_n: Union[int, List[int]] = 0,
             ve=1,
+            regular_grid=None,
             kwargs_topography=None,
+            kwargs_regurlar_grid=None,
             **kwargs):
     """Plot 2-D sections of geomodel.
 
@@ -89,7 +91,8 @@ def plot_2d(model, n_axis=None, section_names: list = None,
         show_boundaries (bool): Show surface boundaries as lines. Defaults to True.
         show_topography (bool): Show topography on plot. Defaults to False.
         series_n (int): number of the scalar field.
-         TODO being able to pass a list of int for each axis
+        ve (float): vertical exageration
+        regular_grid (numpy.ndarray): Numpy array of the size of model.grid.regular_grid
         kwargs_topography (dict):
             * fill_contour
             * hillshade (bool): Calculate and add hillshading using elevation data
@@ -98,12 +101,15 @@ def plot_2d(model, n_axis=None, section_names: list = None,
 
 
     Keyword Args:
+        legend (bool): If True plot legend. Default True
 
 
     Returns:
         :class:`gempy.plot.visualization_2d_pro.Plot2D`: Plot2D object
 
     """
+    if kwargs_regurlar_grid is None:
+        kwargs_regurlar_grid = dict()
     if kwargs_topography is None:
         kwargs_topography = dict()
     if section_names is None and cell_number is None and direction is not None:
@@ -155,13 +161,6 @@ def plot_2d(model, n_axis=None, section_names: list = None,
     # init e
     e = 0
 
-    # Check if topography in section names
-    # try:
-    #     section_names.pop(np.where('topography'==np.array(section_names))[0])
-    #
-    # except TypeError:
-    #     pass
-
     # is 10 and 10 because in the ax pos is the second digit
     n_columns = 10 if len(section_names) + len(cell_number) < 2 else 20
 
@@ -171,7 +170,6 @@ def plot_2d(model, n_axis=None, section_names: list = None,
         assert e < 10, 'Reached maximum of axes'
 
         ax_pos = (round(n_axis / 2 + 0.1)) * 100 + n_columns + e + 1
-        # print(ax_pos, '1')
         temp_ax = p.add_section(section_name=sn, ax_pos=ax_pos, ve=ve, **kwargs)
         if show_data[e] is True:
             p.plot_data(temp_ax, section_name=sn, **kwargs)
@@ -195,9 +193,11 @@ def plot_2d(model, n_axis=None, section_names: list = None,
             # f_c = kwargs_topography.get('fill_contour', f_c_)
             if not 'fill_contour' in kwargs_topography:
                 kwargs_topography['fill_contour'] = f_c_
-
             p.plot_topography(temp_ax, section_name=sn, # fill_contour=f_c,
                               **kwargs_topography)
+        if regular_grid is not None:
+            p.plot_regular_grid(temp_ax, block=regular_grid, section_name=sn,
+                                **kwargs_regurlar_grid)
 
         temp_ax.set_aspect(ve)
 
@@ -208,8 +208,6 @@ def plot_2d(model, n_axis=None, section_names: list = None,
         assert (e + e2) < 10, 'Reached maximum of axes'
 
         ax_pos = (round(n_axis / 2 + 0.1)) * 100 + n_columns + e + e2 + 1
-        print(ax_pos)
-
         temp_ax = p.add_section(cell_number=cell_number[e2],
                                 direction=direction[e2], ax_pos=ax_pos, ve=ve)
         if show_data[e + e2] is True:
@@ -233,6 +231,11 @@ def plot_2d(model, n_axis=None, section_names: list = None,
         if show_topography[e + e2] is True:
             p.plot_topography(temp_ax, cell_number=cell_number[e2],
                               direction=direction[e2], **kwargs_topography)
+
+        if regular_grid is not None:
+            p.plot_regular_grid(temp_ax, block=regular_grid, cell_number=cell_number[e2],
+                                direction=direction[e2], **kwargs_regurlar_grid)
+
         temp_ax.set_aspect(ve)
     return p
 

@@ -37,7 +37,8 @@ import matplotlib.colors
 
 
 class Posterior():
-    def __init__(self, dbname, model_type='map', entropy=False, topography=None, interpdata=None, geodata=None):
+    def __init__(self, dbname, model_type='map', entropy=False,
+                 topography=None, interpdata=None, geodata=None):
 
         if entropy:
             print('All post models are calculated. Based on the model complexity and the number of iterations, '

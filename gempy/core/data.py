@@ -418,7 +418,8 @@ class Surfaces(object):
                          'isBasement', 'isFault', 'isActive', 'hasData', 'color',
                          'vertices', 'edges', 'sfai', 'id']
 
-        self._columns_vis_drop = ['vertices', 'edges', 'sfai', 'isBasement', 'isFault']
+        self._columns_vis_drop = ['vertices', 'edges', 'sfai', 'isBasement', 'isFault',
+                                  'isActive', 'hasData']
         self._n_properties = len(self._columns) - 1
         self.series = series
         self.colors = Colors(self)

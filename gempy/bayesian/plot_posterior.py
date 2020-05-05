@@ -8,10 +8,13 @@ import matplotlib.gridspec as gridspect
 
 # Create cmap
 from matplotlib.colors import ListedColormap
+import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 import matplotlib.cm as cmx
 import seaborn as sns
 from arviz.plots.jointplot import *
+from arviz.plots.plot_utils import make_label
+from arviz import plot_kde, plot_dist
 from arviz.plots.jointplot import _var_names, _scale_fig_size
 from arviz.plots.kdeplot import _fast_kde_2d
 from arviz.stats import hpd

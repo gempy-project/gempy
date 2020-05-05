@@ -261,7 +261,7 @@ class Sections:
         zj = topography.values_2d[:, :, 2]
 
         if method == 'interp2d':
-            f = interpolate.interp2d(xj, yj, zj, kind='cubic')
+            f = interpolate.interp2d(xj, yj, zj.T, kind='cubic')
             zi = f(xy[:, 0], xy[:, 1])
             if xy[:, 0][0] <= xy[:, 0][-1] and xy[:, 1][0] <= xy[:, 1][-1]:
                 return np.diag(zi)

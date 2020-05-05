@@ -1561,6 +1561,8 @@ class Project(ImplicitCoKriging):
         np.save(f'{path}/{name}_extent.npy', self._grid.regular_grid.extent)
         np.save(f'{path}/{name}_resolution.npy', self._grid.regular_grid.resolution)
 
+        self._grid.topography.save(f'{path}/{name}_topography.npy')
+
         # # save solutions as npy
         # np.save(f'{path}/{name}_lith_block.npy' ,self.solutions.lith_block)
         # np.save(f'{path}/{name}_scalar_field_lith.npy', self.solutions.scalar_field_matrix)
