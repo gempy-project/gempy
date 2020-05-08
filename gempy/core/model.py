@@ -95,7 +95,7 @@ class ImplicitCoKriging(object):
 
         """
         return RestrictingWrapper(self._grid,
-          accepted_members=['__repr__', '__str__'])
+          accepted_members=['__repr__', '__str__', 'values'])
 
     @_setdoc_pro(Faults.__doc__)
     @property
@@ -147,7 +147,9 @@ class ImplicitCoKriging(object):
     @property
     def additional_data(self):
         """:class:`gempy.core.data.AdditionalData` [s0]"""
-        return RestrictingWrapper(self._additional_data)
+        return RestrictingWrapper(self._additional_data,
+                                  accepted_members=['structure_data', 'options',
+                                                    'kriging_parameters'])
 
     @_setdoc_pro(InterpolatorModel.__doc__)
     @property

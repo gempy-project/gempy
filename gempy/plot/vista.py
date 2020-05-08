@@ -91,17 +91,19 @@ class GemPyToVista(WidgetsCallbacks):
         # Choosing plotter
         if plotter_type == 'basic':
             self.p = pv.Plotter(**kwargs)
+            self.p.view_isometric(negative=False)
         elif plotter_type == 'notebook':
-            self.p = pv.PlotterITK()
+            raise NotImplementedError
+            # self.p = pv.PlotterITK()
         elif plotter_type == 'background':
             self.p = pv.BackgroundPlotter(**kwargs)
+            self.p.view_isometric(negative=False)
         else:
             raise AttributeError('Plotter type must be basic, background or notebook.')
 
-        self.p.plotter_type = plotter_type
+        self.plotter_type = plotter_type
         # Default camera and bounds
         self.set_bounds()
-        self.p.view_isometric(negative=False)
 
         # Actors containers
         self.surface_actors = {}
@@ -162,6 +164,32 @@ class GemPyToVista(WidgetsCallbacks):
         color_lot = lith_c
         return color_lot
 
+    @property
+    def scalar_bar_options(self):
+        sargs = dict(
+            title_font_size=20,
+            label_font_size=16,
+            shadow=True,
+            italic=True,
+            font_family="arial",
+            height=0.25, vertical=True,
+            position_x=0.05,
+            position_y=0.35
+        )
+
+        return sargs
+
+    def set_scalar_bar(self):
+        n_labels = self.model._surfaces.df.shape[0]
+        arr_ = self.model._surfaces.df['id']
+        sargs = self.scalar_bar_options
+        sargs['title'] = 'id'
+        sargs['n_labels'] = n_labels
+        sargs['position_y'] = 0.05
+        sargs['fmt'] = "%.0f"
+        self.p.add_scalar_bar(**sargs)
+        self.p.update_scalar_bar_range((arr_.min(), arr_.max()))
+
     def set_bounds(
             self,
             extent: list = None,
@@ -177,12 +205,15 @@ class GemPyToVista(WidgetsCallbacks):
             location (str): [description]. Defaults to 'furthest'.
             **kwargs:
         """
-        if self.p.plotter_type != 'notebook':
+        if self.plotter_type != 'notebook':
             if extent is None:
                 extent = self.extent
-            self.p.show_bounds(
-                bounds=extent, location=location, grid=grid, use_2d=False, **kwargs
-            )
+            try:
+                self.p.show_bounds(
+                    bounds=extent, location=location, grid=grid, use_2d=False, **kwargs
+                )
+            except KeyError:
+                pass
 
     def plot_data(self, surfaces='all', surface_points=None, orientations=None, **kwargs):
         """Plot all the geometric data
@@ -196,6 +227,7 @@ class GemPyToVista(WidgetsCallbacks):
         """
         self.plot_surface_points(surfaces=surfaces, surface_points=surface_points, **kwargs)
         self.plot_orientations(surfaces=surfaces, orientations=orientations, **kwargs)
+        self.set_scalar_bar()
 
     @staticmethod
     def _select_surfaces_data(data_df: pd.core.frame.DataFrame,
@@ -316,8 +348,12 @@ class GemPyToVista(WidgetsCallbacks):
             surface_points = self._select_surfaces_data(self.model._surface_points.df, surfaces)
 
         if clear is True:
-            self.p.clear_sphere_widgets()
-            self.p.remove_actor(self.surface_points_actor)
+            if self.plotter_type != 'notebook':
+                self.p.clear_sphere_widgets()
+                try:
+                    self.p.remove_actor(self.surface_points_actor)
+                except KeyError:
+                    pass
 
         if self.live_updating is True:
 
@@ -328,10 +364,12 @@ class GemPyToVista(WidgetsCallbacks):
             poly = pv.PolyData(surface_points[["X", "Y", "Z"]].values)
             poly['id'] = surface_points['id']
 
-            cmap = mcolors.ListedColormap(list(self._get_color_lot(is_faults=True)))
+            cmap = mcolors.ListedColormap(list(self._get_color_lot(is_faults=True, is_basement=True)))
             self.surface_points_actor = self.p.add_mesh(poly, cmap=cmap,
                                                         render_points_as_spheres=render_points_as_spheres,
-                                                        point_size=point_size)
+                                                        point_size=point_size, show_scalar_bar=False)
+            self.set_scalar_bar()
+
             r = self.surface_points_actor
         self.set_bounds()
         return r
@@ -356,7 +394,10 @@ class GemPyToVista(WidgetsCallbacks):
 
         if clear is True:
             self.p.clear_plane_widgets()
-            self.p.remove_actor(self.orientations_actor)
+            try:
+                self.p.remove_actor(self.orientations_actor)
+            except KeyError:
+                pass
 
         if self.live_updating is True:
             orientations_widgets = self.create_orientations_widget(orientations)
@@ -372,10 +413,12 @@ class GemPyToVista(WidgetsCallbacks):
             arrows = poly.glyph(orient='vectors', scale=False,
                                 factor=min_axes / (100 / arrow_size))
 
-            cmap = mcolors.ListedColormap(list(self._get_color_lot(is_faults=True)))
-            self.orientations_actor = self.p.add_mesh(arrows, cmap=cmap)
+            cmap = mcolors.ListedColormap(list(self._get_color_lot(is_faults=True, is_basement=True)))
+            self.orientations_actor = self.p.add_mesh(arrows, cmap=cmap, show_scalar_bar=False)
             r = self.orientations_actor
         self.set_bounds()
+        if self.live_updating is False:
+            self.set_scalar_bar()
         return r
 
     def plot_surfaces(self, surfaces: Union[str, Iterable[str]] = 'all',
@@ -390,28 +433,39 @@ class GemPyToVista(WidgetsCallbacks):
             clear:
             **kwargs:
         """
-        colors = self._get_color_lot(is_faults=True, is_basement=False)
-
-        if clear is True:
-            [self.p.remove_actor(actor) for actor in self.surface_actors.items()]
+        # colors = self._get_color_lot(is_faults=True, is_basement=False)
+        cmap = mcolors.ListedColormap(list(self._get_color_lot(is_faults=True, is_basement=True)))
+        if clear is True and self.plotter_type !='notebook':
+            try:
+                [self.p.remove_actor(actor) for actor in self.surface_actors.items()]
+            except KeyError:
+                pass
 
         if surfaces_df is None:
             surfaces_df = self._select_surfaces_data(self.model._surfaces.df, surfaces)
 
         select_active = surfaces_df['isActive']
-        for idx, val in surfaces_df[select_active][['vertices', 'edges', 'color', 'surface']].dropna().iterrows():
+        for idx, val in surfaces_df[select_active][['vertices', 'edges', 'color', 'surface', 'id']].dropna().iterrows():
             surf = pv.PolyData(val['vertices'], np.insert(val['edges'], 0, 3, axis=1).ravel())
-
+            # surf['id'] = val['id']
             self.surface_poly[val['surface']] = surf
-            self.surface_actors[val['surface']] = self.p.add_mesh(surf, parse_color(val['color']), **kwargs)
-
+            self.surface_actors[val['surface']] = self.p.add_mesh(
+                surf, parse_color(val['color']), show_scalar_bar=True,
+                cmap=cmap, **kwargs)
         self.set_bounds()
+
+        # In order to set the scalar bar to only surfaces we would need to map
+        # every vertex of each layer with the right id. So far I am going to avoid
+        # the overhead since usually surfaces will be plotted either with data
+        # or the regular grid.
+        # self.set_scalar_bar()
         return self.surface_actors
 
     def plot_topography(
             self,
             topography=None,
-            scalars='geomap',
+            scalars=None,
+            contours=True,
             clear=True,
             **kwargs
     ):
@@ -423,7 +477,7 @@ class GemPyToVista(WidgetsCallbacks):
             **kwargs:
         """
         rgb = False
-        if clear is True and 'topography' in self.surface_actors:
+        if clear is True and 'topography' in self.surface_actors and self.plotter_type != 'notebook':
             self.p.remove_actor(self.surface_actors['topography'])
 
         if not topography:
@@ -441,22 +495,15 @@ class GemPyToVista(WidgetsCallbacks):
             scalars = 'topography'
 
         if scalars == "geomap":
-            # Old code
-            # arr_ = np.empty((0, 3), dtype=int)
-            # # convert hex colors to rgb
-            # for val in list(self._get_color_lot(is_faults=True)):
-            #     rgb = (255 * np.array(mcolors.hex2color(val)))
-            #     arr_ = np.vstack((arr_, rgb))
-            #
 
             colors_hex = self._get_color_lot(is_faults=False, is_basement=True, index='id')
             colors_rgb_ = colors_hex.apply(lambda val: list(mcolors.hex2color(val)))
-            colors_rgb = pd.DataFrame(colors_rgb_.to_list(), index=colors_hex.index)*255
+            colors_rgb = pd.DataFrame(colors_rgb_.to_list(), index=colors_hex.index) * 255
 
             sel = np.round(self.model.solutions.geological_map[0]).astype(int)[0]
 
             scalars_val = numpy_to_vtk(colors_rgb.loc[sel], array_type=3)
-            cm = None
+            cm = mcolors.ListedColormap(list(self._get_color_lot(is_faults=True, is_basement=True)))
             rgb = True
 
         elif scalars == "topography":
@@ -472,30 +519,45 @@ class GemPyToVista(WidgetsCallbacks):
                       'geomap', 'topography' or a np.ndarray with scalar values")
 
         polydata.delaunay_2d(inplace=True)
-        polydata['scalars_val'] = scalars_val
-
+        polydata['id'] = scalars_val
+        polydata['height'] = topography[:, 2]
+        if scalars != 'geomap':
+            show_scalar_bar = True
+            scalars = 'height'
+        else:
+            show_scalar_bar = False
+            scalars = 'id'
+        sbo = self.scalar_bar_options
+        sbo['position_y'] = .65
         topography_actor = self.p.add_mesh(
             polydata,
-            scalars='scalars_val',
+            scalars=scalars,
             cmap=cm,
             rgb=rgb,
-            show_scalar_bar=False,
+            show_scalar_bar=show_scalar_bar,
+            scalar_bar_args=sbo,
             **kwargs
         )
 
-        #contours = polydata.contour()
-        #contours_actor = self.p.add_mesh(contours, color="white", line_width=5)
+        if scalars == 'geomap':
+            self.set_scalar_bar()
 
-        self.surface_poly['topography'] = polydata
-        #self.surface_poly['topography_cont'] = contours
-        self.surface_actors["topography"] = topography_actor
-        #self.surface_actors["topography_cont"] = contours_actor
+        if contours is True:
+            contours = polydata.contour(scalars='height')
+            contours_actor = self.p.add_mesh(contours, color="white", line_width=3)
+
+            self.surface_poly['topography'] = polydata
+            self.surface_poly['topography_cont'] = contours
+            self.surface_actors["topography"] = topography_actor
+            self.surface_actors["topography_cont"] = contours_actor
         return topography_actor
 
     def plot_structured_grid(self, scalar_field: str = 'all',
                              data: Union[dict, str] = 'Default',
-                             series: str = None,
+                             series: str = '',
                              render_topography: bool = True,
+                             opacity=.5,
+                             clear=True,
                              **kwargs) -> list:
         """Plot a structured grid of the geomodel.
 
@@ -509,6 +571,12 @@ class GemPyToVista(WidgetsCallbacks):
             render_topography (bool):
             **kwargs:
         """
+        if clear is True:
+            try:
+                self.p.remove_actor(self.regular_grid_actor)
+            except KeyError:
+                pass
+
         regular_grid = self.model._grid.regular_grid
 
         if regular_grid.values is self._grid_values:
@@ -523,15 +591,29 @@ class GemPyToVista(WidgetsCallbacks):
 
         # Set the scalar field-Activate it-getting cmap?
         regular_grid_mesh, cmap = self.set_scalar_data(regular_grid_mesh,
-                                                       data=data, scalar_field=scalar_field)
+                                                       data=data, scalar_field=scalar_field,
+                                                       series=series)
 
         if render_topography == True and regular_grid.mask_topo.shape[0] != 0 and True:
             main_scalar = 'lith' if scalar_field == 'all' else regular_grid_mesh.array_names[-1]
             regular_grid_mesh[main_scalar][regular_grid.mask_topo.ravel(order='C')] = -100
-            regular_grid_mesh = regular_grid_mesh.threshold(-99)
+            regular_grid_mesh = regular_grid_mesh.threshold(-99, scalars=main_scalar)
+
+        if scalar_field == 'all' or scalar_field == 'lith':
+            stitle = 'id'
+            show_scalar_bar = False
+        else:
+            stitle = scalar_field + ': ' + series
+            show_scalar_bar = True
 
         self.regular_grid_actor = self.p.add_mesh(regular_grid_mesh, cmap=cmap,
-                                                  stitle='values', **kwargs)
+                                                  stitle=stitle,
+                                                  show_scalar_bar=show_scalar_bar,
+                                                  scalar_bar_args=self.scalar_bar_options,
+                                                  opacity=opacity,
+                                                  **kwargs)
+        if scalar_field == 'all' or scalar_field == 'lith':
+            self.set_scalar_bar()
         self.regular_grid_mesh = regular_grid_mesh
         return [regular_grid_mesh]
 
@@ -552,15 +634,16 @@ class GemPyToVista(WidgetsCallbacks):
         if isinstance(data, gp.Solution):
             if scalar_field == 'lith' or scalar_field == 'all':
                 regular_grid['lith'] = data.lith_block
-                scalar_field_ = 'lith'
-                hex_colors = list(self._get_color_lot(is_faults=False))
+                hex_colors = list(self._get_color_lot(is_faults=True, is_basement=True))
                 cmap = mcolors.ListedColormap(hex_colors)
-            if scalar_field == 'scalar' or scalar_field == 'all':
+            if scalar_field == 'scalar' or scalar_field == 'all' or 'sf_' in scalar_field:
                 scalar_field_ = 'sf_'
                 for e, series in enumerate(self.model._stack.df.groupby('isActive').groups[True]):
                     regular_grid[scalar_field_ + series] = data.scalar_field_matrix[e]
 
-            if (scalar_field == 'values' or scalar_field == 'all') and data.values_matrix.shape[0] != 0:
+            if (scalar_field == 'values' or scalar_field == 'all' or 'values_' in scalar_field) and\
+                    data.values_matrix.shape[0] \
+                    != 0:
                 scalar_field_ = 'values_'
                 for e, lith_property in enumerate(self.model._surfaces.df.columns[self.model._surfaces._n_properties:]):
                     regular_grid[scalar_field_ + lith_property] = data.values_matrix[e]
@@ -569,9 +652,12 @@ class GemPyToVista(WidgetsCallbacks):
             for key in data:
                 regular_grid[key] = data[key]
 
-        if scalar_field == 'all':
+        if scalar_field == 'all' or scalar_field == 'lith':
             scalar_field_ = 'lith'
             series = ''
+        # else:
+        #     scalar_field_ = regular_grid.scalar_names[-1]
+        #     series = ''
 
         self.set_active_scalar_fields(scalar_field_ + series, regular_grid, update_cmap=False)
 
@@ -597,9 +683,10 @@ class GemPyToVista(WidgetsCallbacks):
         if update_cmap is True and self.regular_grid_actor is not None:
             cmap = 'lith' if scalar_field == 'lith' else 'viridis'
             self.set_scalar_field_cmap(cmap=cmap)
-
             arr_ = regular_grid.get_array(scalar_field)
-            self.p.update_scalar_bar_range((arr_.min(), arr_.max()))
+            if scalar_field is not'lith':
+                self.p.add_scalar_bar(title='values')
+                self.p.update_scalar_bar_range((arr_.min(), arr_.max()))
 
     def set_scalar_field_cmap(self, cmap: Union[str, dict] = 'viridis',
                               regular_grid_actor = None) -> None:

@@ -251,7 +251,8 @@ def plot_3d(model, plotter_type='background',
             ve=None,
             kwargs_plot_structured_grid=None,
             kwargs_plot_topography=None,
-            **kwargs):
+            image=False,
+            off_screen=False, **kwargs):
     """foobar
 
     Args:
@@ -276,6 +277,10 @@ def plot_3d(model, plotter_type='background',
         :class:`gempy.plot.vista.GemPyToVista`
 
     """
+    if image is True:
+        off_screen = True
+        plotter_type = 'basic'
+
     if kwargs_plot_topography is None:
         kwargs_plot_topography = dict()
     if kwargs_plot_structured_grid is None:
@@ -299,6 +304,12 @@ def plot_3d(model, plotter_type='background',
 
     if fig_path is not None:
         gpv.p.show(screenshot=fig_path)
+    if image is True:
+        img = gpv.p.show(screenshot=True)
+        plt.imshow(img[1])
+        plt.axis('off')
+    if off_screen is False:
+        gpv.p.show()
 
     return gpv
 

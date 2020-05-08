@@ -3,6 +3,7 @@ import pytest
 import gempy as gp
 import numpy as np
 import matplotlib.pyplot as plt
+from gempy.plot.vista import GemPyToVista
 
 input_path = os.path.dirname(__file__) + '/../../notebooks/data'
 
@@ -32,7 +33,6 @@ class TestVista:
 
         return GemPyToVista(one_fault_model_no_interp,
                             plotter_type='background')
-
 
     @pytest.fixture(scope='module')
     def vista_object_computed(self, one_fault_model_solution):
@@ -98,10 +98,29 @@ class TestVista:
         """
         vista_object_only_data.live_updating = False
         vista_object_only_data.plot_surface_points()
+        img = vista_object_only_data.p.show(screenshot=True, auto_close=False)
+        plt.imshow(img[1])
+        plt.show()
+        print('foo')
+
+    def test_plot_surface_points_poly_clear(self, vista_object_only_data):
+        """
+        Args:
+            vista_object_only_data:
+        """
+        vista_object_only_data.live_updating = False
+        vista_object_only_data.plot_surface_points()
+        vista_object_only_data.plot_surface_points()
+        img = vista_object_only_data.p.show(screenshot=True, auto_close=False)
+        plt.imshow(img[1])
+        plt.show()
         print('foo')
 
     def test_plot_data_static(self, vista_object_only_data):
         vista_object_only_data.plot_data()
+        img = vista_object_only_data.p.show(screenshot=True, auto_close=False)
+        plt.imshow(img[1])
+        plt.show()
         print('foo')
 
     def test_plot_orientations_poly_live(self, vista_object_only_data_interactive):
@@ -111,6 +130,7 @@ class TestVista:
         """
         vista_object_only_data_interactive.live_updating = True
         vista_object_only_data_interactive.plot_orientations()
+
         print('foo')
 
     def test_plot_orientations_poly_static(self, vista_object_only_data):
@@ -120,6 +140,10 @@ class TestVista:
         """
         vista_object_only_data.live_updating = False
         vista_object_only_data.plot_orientations()
+        img = vista_object_only_data.p.show(screenshot=True, auto_close=False)
+        plt.imshow(img[1])
+        plt.show()
+
         print('foo')
 
     def test_plot_surfaces(self, vista_object_computed):
@@ -128,25 +152,47 @@ class TestVista:
             vista_object_computed:
         """
         a = vista_object_computed.plot_surfaces()
-        print(a)
-        aa = vista_object_computed.plot_surfaces()
-        print(aa)
-        print('foo')
+        img = vista_object_computed.p.show(screenshot=True, auto_close=False)
+        plt.imshow(img[1])
+        plt.show()
 
-    def test_plot_topography_high(self, vista_object_computed_topo):
-       # vista_object_only_data.model.set_topography()
+    def test_plot_surfaces_data(self, vista_object_computed):
+        """
+        Args:
+            vista_object_computed:
+        """
+        a = vista_object_computed.plot_surfaces()
+        vista_object_computed.plot_data()
+        img = vista_object_computed.p.show(screenshot=True, auto_close=False)
+        plt.imshow(img[1])
+        plt.show()
+
+    def test_plot_topography_lith(self, one_fault_model_topo_solution):
         """
         Args:
             vista_object_computed_topo:
         """
-        vista_object_computed_topo.plot_topography()
 
-    def test_plot_topography(self, vista_object_computed_topo):
-        """
-        Args:
-            vista_object_computed_topo:
-        """
+        vista_object_computed_topo = GemPyToVista(one_fault_model_topo_solution,
+                                                  plotter_type='basic', off_screen=True)
+
         vista_object_computed_topo.plot_topography(scalars='geomap')
+        img = vista_object_computed_topo.p.show(screenshot=True)
+        plt.imshow(img[1])
+        plt.show()
+
+    def test_plot_topography_high(self, one_fault_model_topo_solution):
+        """
+        Args:
+            vista_object_computed_topo:
+        """
+        vista_object_computed_topo = GemPyToVista(one_fault_model_topo_solution,
+                                                  plotter_type='basic', off_screen=True)
+
+        vista_object_computed_topo.plot_topography(scalars='topography')
+        img = vista_object_computed_topo.p.show(screenshot=True)
+        plt.imshow(img[1])
+        plt.show()
         print('foo')
 
     def test_plot_regular_grid_lith(self, vista_object_computed):
@@ -182,12 +228,20 @@ class TestVista:
 
         print('foo')
 
-    def test_plot_regular_grid_scalar_topo(self, vista_object_computed_topo):
+    def test_plot_regular_grid_scalar_topo(self, one_fault_model_topo_solution):
         """
         Args:
             vista_object_computed_topo:
         """
+        vista_object_computed_topo = GemPyToVista(one_fault_model_topo_solution,
+                                                  plotter_type='basic', off_screen=True)
+
         vista_object_computed_topo.plot_structured_grid('lith', render_topography=False)
+        vista_object_computed_topo.plot_surfaces()
+        # vista_object_computed_topo.set_scalar_bar()
+        img = vista_object_computed_topo.p.show(screenshot=True)
+        plt.imshow(img[1])
+        plt.show()
         print('foo')
 
     def test_plot_regular_grid_scalar_1(self, vista_object_computed):
@@ -198,13 +252,57 @@ class TestVista:
         vista_object_computed.plot_structured_grid('scalar', render_topography=True)
         print('foo')
 
-    def test_plot_regular_grid_select_field(self, vista_object_computed):
+    def test_plot_regular_grid_select_field(self, one_fault_model_solution):
         """
         Args:
             vista_object_computed:
         """
+
+        vista_object_computed = GemPyToVista(one_fault_model_solution,
+                                             plotter_type='basic',
+                                             off_screen=True
+                                           )
         vista_object_computed.plot_structured_grid('lith')
         with pytest.raises(AttributeError):
             vista_object_computed.set_active_scalar_fields(scalar_field='scalar')
         # vista_object_computed.plot_structured_grid('scalar')
         print('foo')
+
+    def test_plot_several(self, one_fault_model_topo_solution):
+        vista_object_computed_topo = GemPyToVista(one_fault_model_topo_solution,
+                                                  plotter_type='basic', off_screen=True)
+
+        vista_object_computed_topo.plot_surface_points()
+        vista_object_computed_topo.plot_surfaces()
+        vista_object_computed_topo.plot_structured_grid('scalar',
+                                                        series='Strat_Series',
+                                                        render_topography=False)
+        img = vista_object_computed_topo.p.show(screenshot=True)
+        plt.imshow(img[1])
+        plt.show()
+
+    def test_plot_several2(self, one_fault_model_topo_solution):
+        vista_object_computed_topo = GemPyToVista(one_fault_model_topo_solution,
+                                                  plotter_type='basic', off_screen=True)
+
+        vista_object_computed_topo.plot_surface_points()
+        vista_object_computed_topo.plot_surfaces()
+        vista_object_computed_topo.plot_structured_grid(render_topography=False)
+        img = vista_object_computed_topo.p.show(screenshot=True)
+        plt.imshow(img[1])
+        plt.show()
+
+    def test_plot_several3(self, one_fault_model_topo_solution):
+        vista_object_computed_topo = GemPyToVista(one_fault_model_topo_solution,
+                                                  plotter_type='basic', off_screen=True)
+
+        vista_object_computed_topo.plot_surface_points()
+        vista_object_computed_topo.plot_surfaces()
+        vista_object_computed_topo.plot_structured_grid(render_topography=True,
+                                                        scalar_field='scalar',
+                                                        series='Strat_Series',
+                                                        )
+        vista_object_computed_topo.plot_topography(scalars='topography')
+        img = vista_object_computed_topo.p.show(screenshot=True)
+        plt.imshow(img[1])
+        plt.show()

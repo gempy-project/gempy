@@ -7,12 +7,13 @@ Chapter 1.1 -Basics of geological modeling with GemPy
 # Importing GemPy
 import gempy as gp
 
-# Embedding matplotlib figures in the notebooks
-# %matplotlib inline
-
 # Importing auxiliary libraries
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
+import os
+
+pd.set_option('precision', 2)
 
 # %%
 # Importing and creating a set of input data
@@ -70,7 +71,8 @@ geo_model = gp.create_model('Tutorial_ch1_1_Basics')
 
 # %%
 data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
-# data_path = 'H:\SSD\PycharmProjects\gempy\examples'
+#data_path = os.getcwd()+'/../..'
+print(data_path)
 # Importing the data from CSV-files and setting extent and resolution
 gp.init_data(geo_model, [0, 2000., 0, 2000., 0, 750.], [50, 50, 50],
              path_o=data_path + "/data/input_data/getting_started/simple_fault_model_orientations.csv",
@@ -154,6 +156,7 @@ gp.get_data(geo_model, 'orientations').head()
 # %% 
 geo_model.surfaces
 
+
 # %% 
 gp.map_stack_to_surfaces(geo_model,
                          {"Fault_Series": 'Main_Fault',
@@ -200,12 +203,11 @@ geo_model.grid
 # two types of data: - surface\_points and - orientation measurements
 # 
 # (if you want to know more on how this this interpolation algorithm
-# works, checkout our chapter on the theory behind GemPy).
+# works, checkout our paper: https://www.geosci-model-dev.net/12/1/2019/gmd-12-1-2019.pdf).
 # 
 # We introduced the function *get\_data* above. You can also specify which
 # kind of data you want to call, by declaring the string attribute
-# "*dtype*" to be either "interfaces" (surface points) or "foliations"
-# (orientation measurements).
+# "*dtype*" to be either "interfaces" (surface points) or "orientations".
 # 
 # Interfaces Dataframe:
 # ^^^^^^^^^^^^^^^^^^^^^
@@ -257,7 +259,8 @@ plt.show()
 
 
 # %%
-gp.plot_3d(geo_model, plotter_type='basic')
+gpv = gp.plot_3d(geo_model, image=True)
+
 
 # %%
 # Model generation
@@ -278,7 +281,7 @@ gp.plot_3d(geo_model, plotter_type='basic')
 gp.set_interpolator(geo_model,
                     compile_theano=True,
                     theano_optimizer='fast_compile',
-                    verbose=[])
+                    )
 
 # %%
 # This function rescales the extent and coordinates of the original data
@@ -336,13 +339,13 @@ gp.get_data(geo_model, 'kriging')
 # 
 
 # %% 
-geo_model._additional_data.structure_data
+geo_model.additional_data.structure_data
 
 # %% 
-geo_model._surfaces
+geo_model.surfaces
 
 # %% 
-sol = gp.compute_model(geo_model, compute_mesh=True, sort_surfaces=False)
+sol = gp.compute_model(geo_model, compute_mesh=False, sort_surfaces=False)
 
 # %%
 geo_model._surfaces
@@ -371,7 +374,7 @@ geo_model.solutions.lith_block
 geo_model.grid
 
 # %%
-gp.plot.plot_2d(geo_model, show_data=False)
+gp.plot.plot_2d(geo_model, show_data=True)
 plt.show()
 # %% 
 geo_model.surfaces
@@ -432,10 +435,7 @@ ver, sim = gp.get_surfaces(geo_model)
 
 # %%
 # sphinx_gallery_thumbnail_number = 8
-gpv = gp.plot.plot_3d(geo_model, plotter_type='basic', notebook=False, off_screen=True)
-img = gpv.p.show(screenshot=True)
-plt.imshow(img[1])
-plt.show()
+gpv = gp.plot.plot_3d(geo_model, image=True)
 
 
 # %%
@@ -452,15 +452,14 @@ plt.show()
 # Adding topography
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-geo_model.set_topography()
+geo_model.set_topography(d_z=(500,750))
 gp.compute_model(geo_model)
 gp.plot_2d(geo_model, show_topography=True)
 plt.show()
 
 #%%
 gpv = gp.plot.plot_3d(geo_model, show_topography=True,
-                      plotter_type='basic', notebook=False)
-img = gpv.p.show(screenshot=True)
+                      image=True)
 
 # %%
 # Compute at a given location

@@ -45,3 +45,8 @@ def test_custom_grid_solution(model_horizontal_two_layers):
     # Compute model
     sol = gempy.compute_model(geo_model, compute_mesh=False)
     assert sol.custom.shape == (2,1,5)
+
+def test_masked_marching_cubes():
+    pass
+
+

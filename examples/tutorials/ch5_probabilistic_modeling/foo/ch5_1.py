@@ -136,7 +136,7 @@ plot_geo_setting()
 # %%
 # Now we just sample from a random variable and loop it as much as we want:
 lith_blocks = np.array([])
-n_iterations = 20
+n_iterations = 500
 for i in range(n_iterations):
     Z = np.random.normal(1000, 500, size=2)
     geo_model.modify_surface_points([2, 3], Z=Z)
@@ -164,9 +164,13 @@ entropy_block = calculate_ie_masked(prob_block)
 p2dp = gp.plot_2d(geo_model,
                   show_lith=False, show_boundaries=False, show_data=False,
                   regular_grid=entropy_block,
-                  kwargs_regurlar_grid={'cmap': 'magma',
+                  kwargs_regurlar_grid={'cmap': 'viridis',
                                         'norm': None}
                   )
+
+# %%
+#p2dp.fig.savefig('entropy.svg')
+plt.savefig('entropy.svg')
 plt.show()
 
 # %%
