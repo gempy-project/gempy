@@ -171,7 +171,8 @@ class Solution(object):
         return self.scalar_field_at_surface_points
 
     @_setdoc(measure.marching_cubes_lewiner.__doc__)
-    def compute_marching_cubes_regular_grid(self, level: float, scalar_field, mask_array=None, classic=False,
+    def compute_marching_cubes_regular_grid(self, level: float, scalar_field,
+                                            mask_array=None, classic=False,
                                             rescale=False, **kwargs):
         """
         Compute the surface (vertices and edges) of a given surface by computing marching cubes (by skimage)
@@ -213,7 +214,7 @@ class Solution(object):
 
         if rescale is True:
             loc_0 = self.grid.regular_grid.extent_r[[0, 2, 4]] + \
-                    np.array(self.grid.regular_grid.get_dx_dy_dz(rescale=True))/2
+                    np.array(self.grid.regular_grid.get_dx_dy_dz(rescale=True)) / 2
 
             vertices += np.array(loc_0).reshape(1, 3)
 
@@ -230,7 +231,7 @@ class Solution(object):
         a = (np.swapaxes(x, 0, 1) * mask_matrix)
         return a
 
-    def padding_mask_matrix(self, mask_topography=False, shift=2):
+    def padding_mask_matrix(self, mask_topography=True, shift=2):
         """Pad as many elements as in shift to the masking arrays. This is done to guarantee intersection of layers
         if masked marching cubes are done"""
         self.mask_matrix_pad = []
@@ -243,9 +244,7 @@ class Solution(object):
                 mask_series_reshape, True, shift=shift))
 
             if mask_topography and self.grid.regular_grid.mask_topo.size != 0:
-                raise NotImplementedError
-               # mask_pad = self.mask_topo(mask_pad)
-
+                mask_pad *= np.invert(self.grid.regular_grid.mask_topo)
             self.mask_matrix_pad.append(mask_pad)
         return True
 
@@ -278,8 +277,8 @@ class Solution(object):
             sfas = self.scalar_field_at_surface_points[e]
             # Drop
             sfas = sfas[np.nonzero(sfas)]
-            if series_type[e-1] == 'Onlap':
-                mask_array = self.mask_matrix_pad[e-1]
+            if series_type[e - 1] == 'Onlap':
+                mask_array = self.mask_matrix_pad[e - 1]
             elif series_type[e] == 'Fault':
                 mask_array = None
             else:
@@ -287,17 +286,18 @@ class Solution(object):
 
             for level in sfas:
                 try:
-                    v, s, norm, val = self.compute_marching_cubes_regular_grid(level, scalar_field, mask_array,
-                                                                               rescale=rescale, **kwargs)
+                    v, s, norm, val = self.compute_marching_cubes_regular_grid(
+                        level, scalar_field, mask_array, rescale=rescale, **kwargs)
 
                 except TypeError as e:
-                    warnings.warn('Attribute error. Using non masked marching cubes' + str(e)+'.')
-                    v, s, norm, val = self.compute_marching_cubes_regular_grid(level, scalar_field, mask_array,
-                                                                               rescale=rescale,
-                                                                               classic=True, **kwargs)
+                    warnings.warn('Attribute error. Using non masked marching cubes' + str(e) + '.')
+                    v, s, norm, val = self.compute_marching_cubes_regular_grid(
+                        level, scalar_field, mask_array,
+                        rescale=rescale,
+                        classic=True, **kwargs)
 
                 except Exception as e:
-                    warnings.warn('Surfaces not computed due to: ' + str(e)+'. The surface is: Series: '+str(e)+
+                    warnings.warn('Surfaces not computed due to: ' + str(e) + '. The surface is: Series: ' + str(e) +
                                   '; Surface Number:' + str(s_n))
                     v = np.nan
                     s = np.nan

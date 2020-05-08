@@ -172,7 +172,7 @@ class GemPyToVista(WidgetsCallbacks):
             shadow=True,
             italic=True,
             font_family="arial",
-            height=0.25, vertical=True,
+            height=-0.25, vertical=True,
             position_x=0.05,
             position_y=0.35
         )
@@ -185,7 +185,8 @@ class GemPyToVista(WidgetsCallbacks):
         sargs = self.scalar_bar_options
         sargs['title'] = 'id'
         sargs['n_labels'] = n_labels
-        sargs['position_y'] = 0.05
+        sargs['position_y'] = 0.30
+        sargs['height'] = -0.25
         sargs['fmt'] = "%.0f"
         self.p.add_scalar_bar(**sargs)
         self.p.update_scalar_bar_range((arr_.min(), arr_.max()))

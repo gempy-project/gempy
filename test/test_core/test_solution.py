@@ -1,6 +1,8 @@
 import gempy
 import os
 import numpy as np
+import gempy as gp
+import matplotlib.pyplot as plt
 input_path = os.path.dirname(__file__)+'/../input_data'
 
 
@@ -46,7 +48,31 @@ def test_custom_grid_solution(model_horizontal_two_layers):
     sol = gempy.compute_model(geo_model, compute_mesh=False)
     assert sol.custom.shape == (2,1,5)
 
-def test_masked_marching_cubes():
-    pass
+
+def test_masked_marching_cubes(unconformity_model_topo):
+    geo_model = unconformity_model_topo
+    gp.plot_2d(geo_model)
+    plt.show()
+
+    gp.plot_2d(geo_model, regular_grid=geo_model.solutions.mask_matrix_pad[0],
+               kwargs_regurlar_grid={'cmap': 'viridis',
+                                     'norm': None}
+               )
+    print(geo_model.solutions.mask_matrix_pad[0])
+    plt.show()
+
+    gp.plot_2d(geo_model, regular_grid=geo_model.solutions.mask_matrix_pad[1],
+               kwargs_regurlar_grid={'cmap': 'viridis',
+                                     'norm': None}
+               )
+    print(geo_model.solutions.mask_matrix_pad[1])
+    plt.show()
+
+    gp.plot_2d(geo_model, regular_grid=geo_model.solutions.mask_matrix[0],
+               kwargs_regurlar_grid={'cmap': 'viridis',
+                                     'norm': None}
+               )
+    print(geo_model.solutions.mask_matrix[0])
+    plt.show()
 
 
