@@ -39,6 +39,10 @@ Check out the documentation either in [gempy.org](https://www.gempy.org/)
 * [Getting Started](#getstart)
     * [Dependencies](#depend)
     * [Installation](#installation)
+        * [Docker Image](#docker)
+        * [Manual installation of cutting-edge version](#cutting-edge)
+        * [Windows with GPU support](#windows)
+        * [MacOSX 10.14 from scratch](#macosx)
 * [Documentation](#doc)
 * [References](#ref)
 
@@ -368,7 +372,7 @@ and then manually install it using the provided Python install file by calling
 in the cloned or downloaded repository folder. Make sure you have installed all
 necessary dependencies listed above before using `GemPy`.
 
-<a name="Windows"></a>
+<a name="windows"></a>
 ##### Windows installation guide (March 2020)
 
 1) This step is **only important if you want GPU acceleration**. Install CUDA if you
