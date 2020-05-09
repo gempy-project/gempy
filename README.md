@@ -97,7 +97,8 @@ complex fault networks to be considered in the modeling process.
 Models generated with `GemPy` can be visualized in several ways:
 
 - direct visualization of 2D model sections (or geological maps) using
-`matplotlib`;
+`matplotlib`, including hillshading and other options for intuitive
+representation of results;
 - interactive 3D visualization and model input manipulation using the
 Visualization Toolkit (VTK);
 - We also actively develop a link to the fantastic [
@@ -109,7 +110,18 @@ in a variety of ways:
 
 - Export of VTK files for further visualization and processing in other
 software such as ParaView;
--
+- Export of triangulated surface meshes (e.g. for further processing in
+meshing programs);
+- Export of images (e.g. geological maps) for
+
+We are also currently working on a tighter integration wtih several
+meshing libraries, notably [`CGAL`](https://www.cgal.org) and
+[`gmesh`](https://gmsh.info). In addition, we have established
+links to several other open-source libraries, including [`pygimli`](https://www.pygimli.org)
+for geophysical modeling and inversion. In the current state, however, these
+links have to be considered as highly experimental and they are not yet
+part of the stable release. If you are interested in these features,
+feel free to contact us.
 
 <p align="center"><img src="docs/source/images/vtkFault.png" width="600"></p>
 
@@ -190,7 +202,7 @@ three-dimensional facts in an accessible way.
 
 In addition to applications in teaching and research, this development
 offers great potential as an interactive exhibit with high outreach
-for the geosciences thanks to its intuitive operation.
+for the geosciences thanks to its intuitive opeÍÍration.
 The finished sandbox can be used in numerous lectures and public events,
 but is mainly used as an interface to `GemPy` software and for rapid
 prototyping of implicit geological models.
@@ -219,7 +231,7 @@ map, which can then be reimported into GoogleEarth.
 <a name="depend"></a>
 ### Dependencies
 
-*GemPy* requires Python 3 and makes use of numerous open-source libraries:
+`GemPy` requires Python 3.x and makes use of numerous open-source libraries:
 
 * pandas==0.24
 * Theano>=1.0.4
@@ -246,36 +258,63 @@ Optional:
 * pyqrcode
 * mplstereonet
 
-Overall we recommend the use of a dedicated Python distribution, such as 
+Overall we recommend the use of a **dedicated Python distribution**, such as
 [Anaconda](https://www.continuum.io/what-is-anaconda), for hassle-free package installation. 
-We are currently working on providing GemPy also via Anaconda Cloud, for easier installation of
+We are currently working on providing `GemPy` also via Anaconda Cloud, for easier installation of
 its dependencies.
 
 #### Conflictive packages.
 
-Installing Theano (specially in windows) and vtk sometimes is problematic. Here we give a few advices that
-usually works for us:
-* Theano: install the following packages before installing theano: `conda install mingw libpython m2w64-toolchain`. Then install Theano via `conda install theano`. 
+Installing Theano (especially under Windows) and vtk can sometimes be difficult.
+Here, we provide adivce that should use in most cases (but certainly not all):
+
+<ul>
+<li> Theano: install the following packages before installing theano:
+
+`conda install mingw libpython m2w64-toolchain`
+
+Then install Theano via
+
+`conda install theano`
+
 If the installation fails at some point try to re-install anaconda for a single user (no administrator priveleges) and with the Path Environment set.
-To use Theano with `numpy version 1.16.0` or following, it has to be updated to `Theano 1.0.4` using `pip install theano --upgrade`.
+To use Theano with `numpy version 1.16.0` or following, it has to be updated to `Theano 1.0.4` using
+
+`pip install theano --upgrade`
+
+Note that this is not yet available in the conda package manager.
+</li>
+
+<li>
+
+`scikit_image`  (Spring 2019): To use `scikit_image` with `numpy version 1.16.0` or following, it has to be updated to `scikit_image 1.14.2` using
+
+`pip install scikit_image --upgrade`
+
 Note that this is not yet available in the conda package manager.
 
-* scikit_image (Spring 2019): To use scikit_image with `numpy version 1.16.0` or following, it has to be updated to `scikit_image 1.14.2` using `pip install scikit_image --upgrade`.
-Note that this is not yet available in the conda package manager.
+</li>
 
-* vtk: Right now (Fall 2018), does not have compatibility with python 3.7. The simplest solution to install it is to
-use `conda install python=3.6` to downgrade the python version and then using `pip install vtk`.
+<li/>
+
+`vtk`: There have been compatibilty problems between with the `vtk` package
+and python 3.7. The simplest solution to install it is to
+use `conda install python=3.6` to downgrade the python version and then
+using `pip install vtk`.
+</li>
+
+</ul>
+
 
 <a name="installation"></a>
-### Installation
+### Installing `GemPy`
 
-We provide the latest release version of *GemPy* via the **Conda** and **PyPi** package services. We highly
-recommend using either PyPi as it will take care of automatically installing all dependencies.
+We provide the latest release version of `GemPy` via the **Conda** and **PyPi** package services. We highly
+recommend using PyPi, as it will take care of automatically installing all dependencies.
 
 #### PyPi 
 
 `$ pip install gempy`
-
 
 #### New in GemPy 2.0: Docker image
 
@@ -289,6 +328,7 @@ with and run by others, enabling them to use intricate dependencies
 with just a few commands. For this to work the user needs to have a
 working [Docker](https://www.docker.com/) installation.
 
+<a name="docker"></a>
 ##### Pull Docker image from DockerHub
 
 The easiest way to get remote-geomod running is by running the pre-compiled Docker image (containing everything you
@@ -314,10 +354,10 @@ has to look something like this (Just be aware of the  brackets):
     Or copy and paste one of these URLs:
         http://(ce2cdcc55bb0 or 127.0.0.1):8899/?token=97d52c1dc321c42083d8c1b4d
 
+<a name="cutting-edge"></a>
+#### Manual installation of cutting-edge version
 
-#### Manual
-
-Otherwise you can clone the current repository by downloading is manually or by using Git by calling
+You can clone the current repository by downloading is manually or by using Git by calling
 
 `$ git clone https://github.com/cgre-aachen/gempy.git`
 
@@ -325,8 +365,10 @@ and then manually install it using the provided Python install file by calling
 
 `$ python gempy/setup.py install`
 
-in the cloned or downloaded repository folder. Make sure you have installed all necessary dependencies listed above before using *GemPy*.
+in the cloned or downloaded repository folder. Make sure you have installed all
+necessary dependencies listed above before using `GemPy`.
 
+<a name="Windows"></a>
 ##### Windows installation guide (March 2020)
 
 1) This step is **only important if you want GPU acceleration**. Install CUDA if you
@@ -336,7 +378,7 @@ in the cloned or downloaded repository folder. Make sure you have installed all 
          `C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\bin` )
         - Duplicate cublas64_XX and nvrtc64_XX and rename them to cublas64_70 and nvrtc64_70
 
-2) Install Conda (recommended latest miniconda)
+2) Install Conda (recommended: latest miniconda)
     - Install in you user
     - Add conda to the main path
     - Add conda enviroment:
@@ -347,39 +389,130 @@ in the cloned or downloaded repository folder. Make sure you have installed all 
 
 3) Install Theano and associated packages from the Anaconda prompt as administrator, and finally install GemPy 2.0:
 
-    - conda update --all
-    - conda install libpython
-    - conda install m2w64-toolchain
-    - conda install git
-    - conda install -c conda-forge pygpu
-    - conda install python==3.7 **Downgrade python back to 3.7 till vtk has 
+    - `conda update --all`
+    - `conda install libpython`
+    - `conda install m2w64-toolchain`
+    - `conda install git`
+    - `conda install -c conda-forge pygpu`
+    - `conda install python==3.7` **Downgrade python back to 3.7 until vtk has
     support for python 3.8**
-    - pip install theano==1.0.4
-    - pip install gempy
+    - `pip install theano==1.0.4`
+    - `pip install gempy`
 
 4) Set up Jupyter to work properly with conda environments:
-    - conda install Jupyter
-    - conda install nb_conda_kernels
-    - pip install jupyter-conda
+    - `conda install Jupyter`
+    - `conda install nb_conda_kernels`
+    - `pip install jupyter-conda`
     
 5) Optional requirements:
-    - pip install pyvista
-    - pip install pyevtk
-    - conda install gdal
+    - `pip install pyvista`
+    - `pip install pyevtk`
+    - `conda install gdal`
 
-Note that:
+**Note**:
 
-a) some other packages required by Theano are already included in Anaconda: numpy, scipy, mkl-service, nose, and sphinx.
+- some other packages required by Theano are already included in Anaconda: numpy, scipy, mkl-service, nose, and sphinx.
+- `pydot-ng` (suggested on Theano web site) yields a lot of errors. I dropped this. It is needed to handle large picture for gif/images and probably it is not needed by GemPy.
+- Trying to install all the packages in one go but it does not work, as well as doing the same in Anaconda Navigator, or installing an older Anaconda release with Python 3.5 (Anaconda3 4.2.0) as indicated in some tutorial on Theano.
 
-b) pydot-ng (suggested on Theano web site) yields a lot of errors. I dropped this. It is needed to handle large picture for gif/images and probably it is not needed by GemPy.
+<a name="macosx"></a>
+##### MacOSX 10.14 installation guide (April 2020)
 
-c) Trying to install all the packages in one go but it does not work, as well as doing the same in Anaconda Navigator, or installing an older Anaconda release with Python 3.5 (Anaconda3 4.2.0) as indicated in some tutorial on Theano.
+**Note**: The following guide is for a standard installation (no GPU support).
+It should also work on MacOSX 10.15, but this is not tested, yet.
+
+<ol>
+
+<li> Install Anaconda
+
+For a minimal installation, you can install the
+[Miniconda distribution](https://docs.conda.io/en/latest/miniconda.html}.
+The full Anaconda distribution contains some additional features, IDE's
+etc. and is available on the [Anaconda page](https://www.anaconda.com/products/individual).
+
+</li>
+
+<li> Create a <code>GemPy</code> conda environment
+
+We strongly suggtest to create a separate conda environment, to avoid
+conflicts with other Python installations and packages on your system.
+This is easily done in a bash terminal:
+
+<ul>
+
+<li>
+
+`conda create --name gempy`
+
+</li>
+<li> To activate this environment:
+
+`conda activate gempy`
+
+You should now see `(gempy)` at the beginning of the command line. If
+the previous command fails (some known issues), then try:
+
+`source activate gempy`
+
+</li>
+</ul>
+</li>
+
+<li>Install required Python packages
+
+- `conda update --all`
+- `conda install python==3.7` **Downgrade python back to 3.7 until vtk has support for python 3.8**
+- `pip install theano==1.0.4`
+
+- Test the `theano` installation: run `python`, then try `import theano`.
+If you get an error (e.g. `stdio.h` not found), then:
+<ul>
+<li> Test if the Xcode command-line tools are installed (info for
+example <a href="https://osxdaily.com/2014/02/12/install-command-line-tools-mac-os-x/">here</a>).
+<li> If this still fails, try installing `theano` through conda-forge instead:
+
+`conda install -c conda-forge theano`
+
+</ul>
+
+
+**Note**: Theano requires the Xcode command-line tools installed. Overall,
+getting Theano to run can be a bit daunting... we hope to find a better
+method in the future.
+
+
+
+</li>
+
+<li>Install <code>GemPy</code>:
+
+- `pip install gempy`
+
+</li>
+
+<li> Set up Jupyter to work properly with conda environments:
+
+- `conda install Jupyter`
+- `conda install nb_conda_kernels`
+- `pip install jupyter-conda`
+
+</li>
+
+<li> Optional requirements:
+
+- `pip install pyvista`
+- `pip install pyevtk`
+- `conda install gdal`
+
+</li>
+
+</ol>
 
 
 <a name="doc"></a>
 ## Documentation
 
-Extensive documentation for *GemPy* is hosted at [gempy.readthedocs.io](http://gempy.readthedocs.io/),
+Extensive documentation for `GemPy` is hosted at [gempy.readthedocs.io](http://gempy.readthedocs.io/),
 explaining its capabilities, [the theory behind it](https://www.geosci-model-dev.net/12/1/2019/) and 
 providing detailed [tutorials](https://www.gempy.org/tutorials) on how to use it.
 
@@ -389,3 +522,6 @@ providing detailed [tutorials](https://www.gempy.org/tutorials) on how to use it
 * de la Varga, M., Schaaf, A., and Wellmann, F.: GemPy 1.0: open-source stochastic geological modeling and inversion, Geosci. Model Dev., 12, 1-32, https://doi.org/10.5194/gmd-12-1-2019, 2019
 * Calcagno, P., Chilès, J. P., Courrioux, G., & Guillen, A. (2008). Geological modelling from field data and geological knowledge: Part I. Modelling method coupling 3D potential-field interpolation and geological rules. Physics of the Earth and Planetary Interiors, 171(1-4), 147-157.
 * Lajaunie, C., Courrioux, G., & Manuel, L. (1997). Foliation fields and 3D cartography in geology: principles of a method based on potential interpolation. Mathematical Geology, 29(4), 571-584.
+* Wellmann, F., Schaaf, A., de la Varga, M., & von Hagke, C. (2019). [From Google Earth to 3D Geology Problem 2: Seeing Below the Surface of the Digital Earth](
+https://www.sciencedirect.com/science/article/pii/B9780128140482000156).
+In Developments in Structural Geology and Tectonics (Vol. 5, pp. 189-204). Elsevier.
