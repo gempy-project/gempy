@@ -129,7 +129,7 @@ class RegularGrid:
         mask = np.greater(values_3d[:, :, :], regular_grid_topo[:, :, [2]])
 
         sel = regular_grid_topo[:, :, 2]
-        self.mask_topo = mask#.swapaxes(0, 1)
+        self.mask_topo = mask
         return self.mask_topo
 
 

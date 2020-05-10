@@ -36,7 +36,8 @@ def test_plot_3d_geo_map2(one_fault_model_topo_solution):
 
 
 def test_plot_3d_structure_topo(one_fault_model_topo_solution):
-    one_fault_model_topo_solution._grid.regular_grid.set_topography_mask(one_fault_model_topo_solution._grid.topography)
+    one_fault_model_topo_solution._grid.regular_grid.set_topography_mask(
+        one_fault_model_topo_solution._grid.topography)
     gpv = gp.plot.plot_3d(one_fault_model_topo_solution,
                           plotter_type='basic', off_screen=True,
                           show_topography=True,

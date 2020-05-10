@@ -12,6 +12,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
+np.random.seed(1515)
 
 pd.set_option('precision', 2)
 
@@ -433,8 +434,7 @@ plt.show()
 # %% 
 ver, sim = gp.get_surfaces(geo_model)
 
-# %%
-# sphinx_gallery_thumbnail_number = 8
+
 gpv = gp.plot.plot_3d(geo_model, image=True)
 
 
@@ -452,13 +452,18 @@ gpv = gp.plot.plot_3d(geo_model, image=True)
 # Adding topography
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-geo_model.set_topography(d_z=(500,750))
+geo_model.set_topography(d_z=(350, 750))
+
+# %%
 gp.compute_model(geo_model)
 gp.plot_2d(geo_model, show_topography=True)
 plt.show()
 
+# %%
+# sphinx_gallery_thumbnail_number = 10
 #%%
-gpv = gp.plot.plot_3d(geo_model, show_topography=True,
+gpv = gp.plot.plot_3d(geo_model, show_topography=True, show_surfaces=True,
+                      show_lith=True,
                       image=True)
 
 # %%
@@ -487,7 +492,6 @@ sol.custom
 # Save the model
 # ~~~~~~~~~~~~~~
 # 
-
 
 # %%
 # GemPy uses Python [pickle] for fast storing temporary objects
