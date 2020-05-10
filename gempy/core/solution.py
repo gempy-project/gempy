@@ -40,10 +40,12 @@ class Solution(object):
         vertices (list[np.array]): [s13]
         edges (list[np.array]): [s14]
         geological_map (np.array): [s15]
+
     """
 
-    def __init__(self, grid: Grid = None, surfaces: Surfaces = None, series: Series = None,
-                 # additional_data: AdditionalData = None, surface_points: SurfacePoints = None
+    def __init__(self, grid: Grid = None,
+                 surfaces: Surfaces = None,
+                 series: Series = None,
                  ):
 
         # self.additional_data = additional_data
@@ -83,7 +85,8 @@ class Solution(object):
         return '\nLithology ids \n  %s \n' \
                % (np.array2string(self.lith_block))
 
-    def set_solution_to_regular_grid(self, values: Union[list, np.ndarray], compute_mesh: bool = True,
+    def set_solution_to_regular_grid(self, values: Union[list, np.ndarray],
+                                     compute_mesh: bool = True,
                                      compute_mesh_options: dict = None):
         """
         If regular grid is active set all the solution objects dependent on them and compute mesh.
@@ -125,9 +128,7 @@ class Solution(object):
         self.sections = np.array([values[0][:, l0: l1], values[4][:, l0: l1].astype(float)])
 
     def set_values_to_regular_grid(self, values: Union[list, np.ndarray]):
-        # TODO ============ Set asserts of give flexibility 20.09.18 =============
-        """
-        Set all solution values to the correspondent attribute
+        """Set all solution values to the correspondent attribute
 
         Args:
             values (np.ndarray): values returned by `function: gempy.compute_model` function
@@ -170,9 +171,9 @@ class Solution(object):
         self.mask_at_surface_points = values[6][:, x_to_intep_length:]
         return self.scalar_field_at_surface_points
 
-    @_setdoc(measure.marching_cubes_lewiner.__doc__)
+    @_setdoc(measure.marching_cubes.__doc__)
     def compute_marching_cubes_regular_grid(self, level: float, scalar_field,
-                                            mask_array=None, classic=False,
+                                            mask_array=None,
                                             rescale=False, **kwargs):
         """
         Compute the surface (vertices and edges) of a given surface by computing marching cubes (by skimage)
@@ -181,8 +182,7 @@ class Solution(object):
             level (float): value of the scalar field at the surface
             scalar_field (np.array): scalar_field vector objects
             mask_array (np.array): mask vector with trues where marching cubes has to be performed
-            classic (bool): if True use original marching cubes without the masking functionality. 07/19 this is a
-             necessary function until the pull request gets accepted.
+            rescale (bool): if True surfaces will be located between 0 and 1
             **kwargs: skimage.measure.marching_cubes_lewiner args (see below)
 
         Returns:
@@ -191,26 +191,14 @@ class Solution(object):
         Marching cubes Docs:
         """
 
-        if classic is True:
-            vertices, simplices, normals, values = measure.marching_cubes_lewiner(
-                scalar_field.reshape(self.grid.regular_grid.resolution[0],
-                                     self.grid.regular_grid.resolution[1],
-                                     self.grid.regular_grid.resolution[2]),
-                level,
-                spacing=self.grid.regular_grid.get_dx_dy_dz(rescale=rescale),
-                **kwargs
-            )
-
-        else:
-            vertices, simplices, normals, values = measure.marching_cubes_lewiner(
-                scalar_field.reshape(self.grid.regular_grid.resolution[0],
-                                     self.grid.regular_grid.resolution[1],
-                                     self.grid.regular_grid.resolution[2]),
-                level,
-                spacing=self.grid.regular_grid.get_dx_dy_dz(rescale=rescale),
-                mask=mask_array,
-                **kwargs
-            )
+        vertices, simplices, normals, values = measure.marching_cubes(
+            scalar_field.reshape(self.grid.regular_grid.resolution[0],
+                                 self.grid.regular_grid.resolution[1],
+                                 self.grid.regular_grid.resolution[2]),
+            level,
+            spacing=self.grid.regular_grid.get_dx_dy_dz(rescale=rescale),
+            mask=mask_array,
+            **kwargs)
 
         if rescale is True:
             loc_0 = self.grid.regular_grid.extent_r[[0, 2, 4]] + \
@@ -225,15 +213,15 @@ class Solution(object):
 
         return [vertices, simplices, normals, values]
 
-    def mask_topo(self, mask_matrix):
-        """Add the masked elements of the topography to the masking matrix"""
-        x = ~self.grid.regular_grid.mask_topo
-        a = (np.swapaxes(x, 0, 1) * mask_matrix)
-        return a
+    # def mask_topo(self, mask_matrix):
+    #     """Add the masked elements of the topography to the masking matrix"""
+    #     x = ~self.grid.regular_grid.mask_topo
+    #     a = (np.swapaxes(x, 0, 1) * mask_matrix)
+    #     return a
 
     def padding_mask_matrix(self, mask_topography=True, shift=2):
-        """Pad as many elements as in shift to the masking arrays. This is done to guarantee intersection of layers
-        if masked marching cubes are done"""
+        """Pad as many elements as in shift to the masking arrays. This is done
+         to guarantee intersection of layers if masked marching cubes are done"""
         self.mask_matrix_pad = []
         for mask_series in self.mask_matrix:
             mask_series_reshape = mask_series.reshape((self.grid.regular_grid.resolution[0],
@@ -277,10 +265,12 @@ class Solution(object):
             sfas = self.scalar_field_at_surface_points[e]
             # Drop
             sfas = sfas[np.nonzero(sfas)]
+
+            # TODO: I think this condition is not necessary anymore
             if series_type[e - 1] == 'Onlap':
-                mask_array = self.mask_matrix_pad[e - 1]
-            elif series_type[e] == 'Fault':
-                mask_array = None
+                mask_array = self.mask_matrix_pad[e]
+            #elif series_type[e] == 'Fault':
+            #    mask_array = None
             else:
                 mask_array = self.mask_matrix_pad[e]
 
@@ -288,13 +278,12 @@ class Solution(object):
                 try:
                     v, s, norm, val = self.compute_marching_cubes_regular_grid(
                         level, scalar_field, mask_array, rescale=rescale, **kwargs)
-
-                except TypeError as e:
-                    warnings.warn('Attribute error. Using non masked marching cubes' + str(e) + '.')
-                    v, s, norm, val = self.compute_marching_cubes_regular_grid(
-                        level, scalar_field, mask_array,
-                        rescale=rescale,
-                        classic=True, **kwargs)
+                # except TypeError as e:
+                #     warnings.warn('Attribute error. Using non masked marching cubes' + str(e) + '.')
+                #     v, s, norm, val = self.compute_marching_cubes_regular_grid(
+                #         level, scalar_field, mask_array,
+                #         rescale=rescale,
+                #         classic=True, **kwargs)
 
                 except Exception as e:
                     warnings.warn('Surfaces not computed due to: ' + str(e) + '. The surface is: Series: ' + str(e) +

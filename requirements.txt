@@ -5,5 +5,5 @@ numpy
 pytest
 seaborn>=0.9
 networkx
-scikit-image
+scikit-image>=0.17
 pyvista

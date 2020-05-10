@@ -279,6 +279,7 @@ def plot_3d(model, plotter_type='background',
     """
     if image is True:
         off_screen = True
+        kwargs['off_screen'] = True
         plotter_type = 'basic'
 
     if kwargs_plot_topography is None:
@@ -286,7 +287,6 @@ def plot_3d(model, plotter_type='background',
     if kwargs_plot_structured_grid is None:
         kwargs_plot_structured_grid = dict()
     ve: float = kwargs.get('ve', 1)
-   # cpos = kwargs.get('cpos', [[-1.0, -1.0, 0.6], [0.0, 0.0, 0.0], [0.0, 0.0, 1.0]])
     fig_path: str = kwargs.get('fig_path', None)
 
     gpv = GemPyToVista(model, plotter_type=plotter_type, **kwargs)
@@ -304,10 +304,12 @@ def plot_3d(model, plotter_type='background',
 
     if fig_path is not None:
         gpv.p.show(screenshot=fig_path)
+
     if image is True:
         img = gpv.p.show(screenshot=True)
         plt.imshow(img[1])
         plt.axis('off')
+
     if off_screen is False:
         gpv.p.show()
 
