@@ -90,7 +90,7 @@ def get_polygon_dictionary(geo_model, section_name):
     """
     p = vv.Plot2D(geo_model)
     p.create_figure((13, 13))
-    t = p.add_section(section_name, ax_pos=224)
+    t = p.add_section(section_name, ax_pos=111)
 
     cs, colors, extent = _extract_boundaries(p, p.axes[0], section_name)
 

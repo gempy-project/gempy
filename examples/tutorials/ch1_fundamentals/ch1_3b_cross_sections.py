@@ -9,6 +9,7 @@
 import gempy as gp
 import numpy as np
 import matplotlib.pyplot as plt
+np.random.seed(1234)
 
 # %%
 # Setup the model
@@ -79,9 +80,11 @@ gp.plot_2d(geo_model, section_names=['topography'])
 gp.plot_2d(geo_model, section_names=['section1'])
 plt.show()
 
-# %% 
+# %%
+# sphinx_gallery_thumbnail_number = 4
 gp.plot_2d(geo_model, section_names=['section1', 'section2',
-                                     'section3', 'topography'])
+                                     'section3', 'topography'],
+           show_topography=True)
 plt.show()
 
 # %%
@@ -115,7 +118,7 @@ if pointslist.shape != ():
     plt.xlim(extent[:2])
 
 # %% 
-#### The same in geological map
+# The same in geological map
 polygondict, cdict, extent = section_utils.get_polygon_dictionary(geo_model, 'topography')
 
 # %% 

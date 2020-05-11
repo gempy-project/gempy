@@ -76,7 +76,7 @@ def map_series_to_surfaces(geo_model: Project, mapping_object: Union[dict, pn.Ca
     warnings.warn('Series is going to get renamed to Stack. Please use'
                   '`map_stack_to_surfaces` instead.', DeprecationWarning)
 
-    geo_model.map_series_to_surfaces(mapping_object, set_series, sort_geometric_data, remove_unused_series)
+    geo_model.map_stack_to_surfaces(mapping_object, set_series, sort_geometric_data, remove_unused_series)
     return geo_model._surfaces
 
 
@@ -97,7 +97,7 @@ def map_stack_to_surfaces(geo_model: Project, mapping_object: Union[dict, pn.Cat
         :class:`gempy.core.data.Surfaces`
     """
 
-    geo_model.map_series_to_surfaces(mapping_object, set_features, sort_geometric_data, remove_unused_series)
+    geo_model.map_stack_to_surfaces(mapping_object, set_features, sort_geometric_data, remove_unused_series)
     return geo_model._surfaces
 
 # endregion

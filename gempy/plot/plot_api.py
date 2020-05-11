@@ -288,7 +288,7 @@ def plot_3d(model, plotter_type='basic',
         kwargs_plot_topography = dict()
     if kwargs_plot_structured_grid is None:
         kwargs_plot_structured_grid = dict()
-    ve: float = kwargs.get('ve', 1)
+
     fig_path: str = kwargs.get('fig_path', None)
 
     gpv = GemPyToVista(model, plotter_type=plotter_type, **kwargs)

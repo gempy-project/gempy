@@ -432,8 +432,8 @@ class QgridModelIntegration(object):
             if event['column'] == 'series':
                 idx = event['index']
                 new_series = event['new']
-                self._geo_model.map_series_to_surfaces({new_series: surface_object.df.loc[idx, ['surface']]},
-                                                       set_series=False, sort_geometric_data=True)
+                self._geo_model.map_stack_to_surfaces({new_series: surface_object.df.loc[idx, ['surface']]},
+                                                      set_series=False, sort_geometric_data=True)
 
             if event['column'] == 'order_surfaces':
                 idx = event['index']

@@ -132,7 +132,7 @@ class LoadDEMGDAL:
         gdal.Translate(path_dest, self.dem, options=gdal.TranslateOptions(options=['format'], format="XYZ"))
 
         xyz = pn.read_csv(path_dest, header=None, sep=' ').values
-        self.values_3D = xyz.reshape((34, 73, 3), order='C')
+        self.values_3D = xyz.reshape((*shape, 3), order='C')
 
         # This is for 3D going from xyz to ijk
         self.values_3D = self.values_3D.swapaxes(0, 1)

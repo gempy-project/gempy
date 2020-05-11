@@ -195,6 +195,25 @@ class TestVista:
         plt.show()
         print('foo')
 
+    def test_plot_topography_high_clear(self, one_fault_model_topo_solution):
+        """
+        Args:
+            vista_object_computed_topo:
+        """
+        vista_object_computed_topo = GemPyToVista(one_fault_model_topo_solution,
+                                                  plotter_type='basic', off_screen=True)
+
+        vista_object_computed_topo.plot_topography(scalars='topography')
+        one_fault_model_topo_solution.set_topography()
+        gp.compute_model(one_fault_model_topo_solution)
+
+        vista_object_computed_topo.plot_topography(scalars='topography')
+        img = vista_object_computed_topo.p.show(screenshot=True)
+        plt.imshow(img[1])
+        plt.show()
+        print('foo')
+
+
     def test_plot_regular_grid_lith(self, vista_object_computed):
         """
         Args:

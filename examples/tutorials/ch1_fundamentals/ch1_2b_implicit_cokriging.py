@@ -1,31 +1,23 @@
 """
-The Model class
-===============
+1.2b: The Implicit coKriging class
+==================================
 
 """
 
-# %% 
-# These two lines are necessary only if GemPy is not installed
-import sys, os
-sys.path.append("../../..")
-
+# %%
 # Importing GemPy
 import gempy as gp
 
-# Embedding matplotlib figures in the notebooks
-# %matplotlib inline
-
 # Importing auxiliary libraries
 import numpy as np
-import pandas as pn
+import pandas as pd
 import matplotlib.pyplot as plt
 
-
-
+pd.set_option('precision', 2)
 
 # %%
 # The description of the methods nomenclature remains the same as for the
-# ``data.py`` module with the particularity that update is splitted in:
+# ``data.py`` module with the particularity that update is slitted in:
 # 
 # -  *update\_from*
 # 
@@ -37,37 +29,34 @@ import matplotlib.pyplot as plt
 # 
 #    -  update dataframes from the current object. This is useful if you
 #       modify one of the model dependencies and you want to update all
-#       the other dependecies
+#       the other dependencies
 # 
-# When we initialize a ``Model`` class we create all the necessary objects
-# already entangled with each other.
+# When we initialize a :class:`gempy.core.model.Project` class we create all the
+# necessary objects already linked with each other.
 # 
 
 # %% 
-model = gp.Model()
-
+model = gp.Project()
 
 # %%
 # As expected these dependencies are empty:
 # 
 
 # %% 
-model._surface_points
+model.surface_points
 
 # %% 
-model._surfaces
+model.surfaces
 
 # %% 
-model._stack
-
+model.stack
 
 # %%
-# The pandas DataFrames are already configurated properly to categories:
+# The pandas DataFrames are already configured properly to categories:
 # 
 
 # %% 
 model._surfaces.df['series'], model._surfaces.df['surface']
-
 
 # %%
 # And additional data has everything pretty much empty:
@@ -75,7 +64,6 @@ model._surfaces.df['series'], model._surfaces.df['surface']
 
 # %% 
 model._additional_data
-
 
 # %%
 # Reading data
@@ -87,35 +75,30 @@ model._additional_data
 # 
 
 # %% 
-data_path= '../../..'
+data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
 
-model.read_data(path_i=data_path+"/data/input_data/tut_chapter1/simple_fault_model_points.csv",
-                path_o=data_path+"/data/input_data/tut_chapter1/simple_fault_model_orientations.csv")
-
-# %% 
-model._orientations
+model.read_data(path_i=data_path + "/data/input_data/tut_chapter1/simple_fault_model_points.csv",
+                path_o=data_path + "/data/input_data/tut_chapter1/simple_fault_model_orientations.csv")
 
 # %% 
-a = model._surfaces.df['series'].cat
-a.set_categories(model._stack.df.index)
+model.orientations
 
 # %% 
-model.map_stack_to_surfaces({"Fault_Series":('Main_Fault', 'Silstone'),
-                               "Strat_Series": ( 'Sandstone_2', 'Sandstone_1', 'Siltstone',
-                                             'Shale', )}, )
+model.map_stack_to_surfaces({"Fault_Series": ('Main_Fault', 'Silstone'),
+                             "Strat_Series": ('Sandstone_2', 'Sandstone_1', 'Siltstone',
+                                              'Shale',)}, )
 
 # %% 
-model._stack
+model.stack
 
 # %% 
-model._surfaces
+model.surfaces
 
 # %% 
-model._surface_points.df.head()
+model.surface_points
 
 # %% 
 model._orientations.df.head()
-
 
 # %%
 # Next we need to categorize each surface into the right series. This will
@@ -125,35 +108,33 @@ model._orientations.df.head()
 
 # %% 
 model.map_stack_to_surfaces({"Fault_Series": 'Main_Fault',
-                                "Strat_Series": ('Sandstone_2','Siltstone',
-                                                 'Shale', 'Sandstone_1')})
+                             "Strat_Series": ('Sandstone_2', 'Siltstone',
+                                              'Shale', 'Sandstone_1')})
 
 # %% 
 model._surfaces.df['series']
 
 # %% 
-model._surfaces
+model.surfaces
 
 # %% 
-model._surface_points.df.head()
+gp.get_data(model, 'surface points')
 
 # %% 
-model._stack
-
+model.stack
 
 # %%
 # In the case of having faults we need to assign wich series are faults:
 # 
 
 # %% 
-model._faults
+model.faults
 
 # %% 
 model.set_is_fault(['Fault_Series'])
 
 # %% 
-model._surface_points.df.head()
-
+model.surface_points
 
 # %%
 # Again as we can see, as long we use the model methods all the dependent
@@ -163,8 +144,7 @@ model._surface_points.df.head()
 # 
 
 # %% 
-model._additional_data
-
+model.additional_data
 
 # %%
 # Setting grid
@@ -176,11 +156,10 @@ model._additional_data
 # 
 
 # %% 
-model._grid.values
+model.grid
 
 # %% 
-model.set_regular_grid([0,10,0,10,0,10], [50,50,50])
-
+model.set_regular_grid([0, 10, 0, 10, 0, 10], [50, 50, 50])
 
 # %%
 # Getting data
@@ -195,14 +174,13 @@ model.set_regular_grid([0,10,0,10,0,10], [50,50,50])
 # %% 
 gp.get_data(model, 'surfaces')
 
-
 # %%
 # The class ``gempy.core.model.Model`` works as the parent container of
 # our project. Therefore the main step of any project is to create an
 # instance of this class. In the official documentation we use normally
 # geo\_model (geo\_data in the past) as name of this instance.
 # 
-# When we instiantiate a ``Model`` object we full data structure is
+# When we instantiate a ``Model`` object we full data structure is
 # created. By using ``gp.init_data`` and ``set_series`` we set the default
 # values -- given the attributes -- to all of fields. Data is stored in
 # pandas dataframes. With ``gp.get_data`` and the name of the data object
@@ -213,5 +191,5 @@ gp.get_data(model, 'surfaces')
 # 
 # These dataframes are stored in specific objects. These objects contain
 # the specific methods to manipulate them. You access these objects with
-# the spectific getter or as a attribute of ``Model``
-# 
+# the specific getter or as a attribute of ``Model``
+#

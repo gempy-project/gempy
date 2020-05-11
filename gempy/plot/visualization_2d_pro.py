@@ -53,6 +53,7 @@ class Plot2D:
     def __init__(self, model, cmap=None, norm=None, **kwargs):
         self.model = model
         self._color_lot = dict(zip(self.model._surfaces.df['surface'], self.model._surfaces.df['color']))
+        self.axes = list()
 
         if cmap is None:
             self.cmap = mcolors.ListedColormap(list(self.model._surfaces.df['color']))
@@ -168,7 +169,6 @@ class Plot2D:
         self.update_colot_lot()
 
         if ax is None:
-            # TODO
             ax = self.fig.add_subplot(ax_pos)
 
         if section_name is not None:
@@ -208,8 +208,7 @@ class Plot2D:
         ax.section_name = section_name
         ax.cell_number = cell_number
         ax.direction = direction
-        # ax.set_xticklabels(ax.get_xticklabels(), rotation=30, ha='right')
-      #  ax.tick_params(axis='x', labelrotation=30)
+        ax.tick_params(axis='x', labelrotation=30)
         self.axes = np.append(self.axes, ax)
         self.fig.tight_layout()
 
@@ -525,8 +524,10 @@ class Plot2D:
                         cell_number=None, direction='y', block=None, **kwargs):
 
         hillshade = kwargs.get('hillshade', True)
-        azdeg = kwargs.get('azdeg', 225)
-        altdeg = kwargs.get('altdeg', 45)
+        azdeg = kwargs.get('azdeg', 0)
+        altdeg = kwargs.get('altdeg', 0)
+        cmap = kwargs.get('cmap', 'terrain')
+
         self.update_colot_lot()
         section_name, cell_number, direction = self._check_default_section(ax, section_name, cell_number, direction)
 
@@ -564,7 +565,7 @@ class Plot2D:
                                 colors='k', linestyles='solid', origin='lower')
                 ax.clabel(CS, inline=1, fontsize=10, fmt='%d')
             if fill_contour is True:
-                CS2 = ax.contourf(values, extent=(topo.extent[:4]), cmap='terrain')
+                CS2 = ax.contourf(values, extent=(topo.extent[:4]), cmap=cmap)
                 add_colorbar(axes=ax, label='elevation [m]', cs=CS2)
 
             if hillshade is True:
@@ -572,7 +573,8 @@ class Plot2D:
 
                 ls = LightSource(azdeg=azdeg, altdeg=altdeg)
                 hillshade_topography = ls.hillshade(values)
-                ax.imshow(hillshade_topography, origin='lower', extent=topo.extent[:4], alpha=0.5, zorder=11)
+                ax.imshow(hillshade_topography, origin='lower', extent=topo.extent[:4], alpha=0.5, zorder=11,
+                          cmap='gray')
 
         elif cell_number is not None or block is not None:
             p1, p2 = self.calculate_p1p2(direction, cell_number)

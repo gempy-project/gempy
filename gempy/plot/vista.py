@@ -173,7 +173,7 @@ class GemPyToVista(WidgetsCallbacks):
             shadow=True,
             italic=True,
             font_family="arial",
-            height=-0.25, vertical=True,
+            height=0.25, vertical=True,
             position_x=0.05,
             position_y=0.35
         )
@@ -480,7 +480,9 @@ class GemPyToVista(WidgetsCallbacks):
         """
         rgb = False
         if clear is True and 'topography' in self.surface_actors and self.plotter_type != 'notebook':
-            self.p.remove_actor(self.surface_actors['topography'])
+                self.p._scalar_bar_slot_lookup['height'] = None
+                self.p.remove_actor(self.surface_actors['topography'])
+                self.p.remove_actor(self.surface_actors["topography_cont"])
 
         if not topography:
             try:
@@ -530,7 +532,8 @@ class GemPyToVista(WidgetsCallbacks):
             show_scalar_bar = False
             scalars = 'id'
         sbo = self.scalar_bar_options
-        sbo['position_y'] = .65
+        sbo['position_y'] = .35
+
         topography_actor = self.p.add_mesh(
             polydata,
             scalars=scalars,

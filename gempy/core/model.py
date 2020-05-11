@@ -812,11 +812,11 @@ class ImplicitCoKriging(object):
         self._surfaces.set_surfaces_values(values_array, properties_names)
         return self._surfaces
 
-    def map_series_to_surfaces(self, mapping_object: Union[dict, pn.Categorical] = None,
-                               set_series=True, sort_geometric_data: bool = True,
-                               remove_unused_series=True,
-                               twofins=False
-                               ):
+    def map_stack_to_surfaces(self, mapping_object: Union[dict, pn.Categorical] = None,
+                              set_series=True, sort_geometric_data: bool = True,
+                              remove_unused_series=True,
+                              twofins=False
+                              ):
         """Map series to surfaces and update all related objects accordingly to the following arguments:
 
         Args:
@@ -881,6 +881,10 @@ class ImplicitCoKriging(object):
 
         return self.surfaces
 
+    @_setdoc(map_stack_to_surfaces.__doc__, indent=False)
+    def map_series_to_surfaces(self, *args, **kwargs):
+        return self.map_stack_to_surfaces(*args, **kwargs)
+
     # endregion
 
     # region Surface_points
@@ -931,7 +935,7 @@ class ImplicitCoKriging(object):
         if 'add_basement' in kwargs:
             if kwargs['add_basement'] is True:
                 self._surfaces.add_surface(['basement'])
-                self.map_series_to_surfaces({'Basement': 'basement'}, set_series=True)
+                self.map_stack_to_surfaces({'Basement': 'basement'}, set_series=True)
 
         self.map_geometric_data_df(self._surface_points.df)
         self._rescaling.rescale_data()
@@ -1620,7 +1624,7 @@ class Project(ImplicitCoKriging):
             self._orientations.read_orientations(source_o, inplace=True, **kwargs)
         if add_basement is True:
             self._surfaces.add_surface(['basement'])
-            self.map_series_to_surfaces({'Basement': 'basement'}, set_series=True)
+            self.map_stack_to_surfaces({'Basement': 'basement'}, set_series=True)
         self._rescaling.rescale_data()
 
         self._additional_data.update_structure()
@@ -1660,7 +1664,7 @@ class Project(ImplicitCoKriging):
             # Be sure that the columns are in order when used for operations
             if numeric:
                 raw_data = raw_data[['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity']]
-        elif itype == 'surface_points':
+        elif itype == 'surface_points' or itype == 'surface points':
             raw_data = self._surface_points.df[show_par_i]  # .astype(dtype)
             # Be sure that the columns are in order when used for operations
             if numeric:
