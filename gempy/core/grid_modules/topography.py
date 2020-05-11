@@ -1,6 +1,6 @@
 import numpy as np
-from .create_topography import LoadDEMArtificial, Load_DEM_GDAL
-
+from .create_topography import LoadDEMArtificial, LoadDEMGDAL
+import skimage
 
 class Topography:
     """
@@ -65,15 +65,29 @@ class Topography:
         """
         raise NotImplementedError
 
+    def resize_topo(self):
+        regular_grid_topo = skimage.transform.resize(
+            self.values_2d,
+            (self.resolution[0], self.resolution[1]),
+            mode='constant',
+            anti_aliasing=False, preserve_range=True)
+
+        return regular_grid_topo
+
     def load_random_hills(self, **kwargs):
+        if 'extent' in kwargs:
+            self.extent = kwargs.pop('extent')
+
+        if 'resolution' in kwargs:
+            self.resolution = kwargs.pop('resolution')
+
         dem = LoadDEMArtificial(extent=self.extent,
                                 resolution=self.resolution, **kwargs)
 
         self.set_values(dem.get_values())
-        # self.source = 'artificial'
 
     def load_from_gdal(self, filepath):
-        dem = Load_DEM_GDAL(filepath, extent=self.extent)
+        dem = LoadDEMGDAL(filepath, extent=self.extent)
         self.set_values(dem.get_values())
         # self.source = 'gdal'
 

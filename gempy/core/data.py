@@ -21,6 +21,7 @@ from gempy.core.grid_modules import grid_types
 from gempy.core.grid_modules import topography
 from gempy.utils.meta import _setdoc, _setdoc_pro
 import gempy.utils.docstring as ds
+from IPython.display import display
 
 pn.options.mode.chained_assignment = None
 
@@ -151,23 +152,25 @@ class Grid(object):
 
         Args:
             source:
-                'gdal':     Load topography from a raster file.
-                'random':   Generate random topography (based on a fractal grid).
-                'saved':    Load topography that was saved with the topography.save() function.
-                            This is useful after loading and saving a heavy raster file with gdal once or after saving a
-                            random topography with the save() function. This .npy file can then be set as topography.
-            plot (bool): If True plot topography.
+                * 'gdal':  Load topography from a raster file.
+                * 'random': Generate random topography (based on a fractal grid).
+                * 'saved': Load topography that was saved with the topography.save() function.
+                  This is useful after loading and saving a heavy raster file with gdal once or after saving a
+                  random topography with the save() function. This .npy file can then be set as topography.
 
         Keyword Args:
-            if source = 'gdal:
-                filepath:   path to raster file, e.g. '.tif', (for all file formats see https://gdal.org/drivers/raster/index.html)
-            if source = 'random':
-                fd:         fractal dimension, defaults to 2.0
-                d_z:        maximum height difference. If none, last 20% of the model in z direction
-                extent:     extent in xy direction. If none, geo_model.grid.extent
-                resolution: desired resolution of the topography array. If none, geo_model.grid.resoution
-            if source = 'saved':
-                filepath:   path to the .npy file that was created using the topography.save() function
+            source = 'gdal':
+                * filepath:   path to raster file, e.g. '.tif', (for all file formats see
+                  https://gdal.org/drivers/raster/index.html)
+
+            source = 'random':
+                * fd:         fractal dimension, defaults to 2.0
+                * d_z:        maximum height difference. If none, last 20% of the model in z direction
+                * extent:     extent in xy direction. If none, geo_model.grid.extent
+                * resolution: desired resolution of the topography array. If none, geo_model.grid.resoution
+
+            source = 'saved':
+                * filepath:   path to the .npy file that was created using the topography.save() function
 
         Returns:
              :class:gempy.core.data.Topography
@@ -590,9 +593,21 @@ class Surfaces(object):
             self.reset_order_surfaces()
         return self
 
-    @_setdoc(pn.Series.replace.__doc__, indent=False)
     def rename_surfaces(self, to_replace: Union[str, list, dict],  **kwargs):
-        """"""
+        """Replace values given in to_replace with value.
+
+        Args:
+            to_replace (str, regex, list, dict, Series, int, float, or None) –
+             How to find the values that will be replaced.
+            **kwargs:
+
+        Returns:
+            :class:`gempy.core.data.Surfaces`
+
+        See Also:
+            :any:`pandas.Series.replace`
+
+        """
         if np.isin(to_replace, self.df['surface']).any():
             print('Two surfaces cannot have the same name.')
         else:

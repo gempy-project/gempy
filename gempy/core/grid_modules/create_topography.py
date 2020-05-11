@@ -22,7 +22,7 @@ except ImportError:
 import matplotlib.pyplot as plt
 
 
-class Load_DEM_GDAL():
+class LoadDEMGDAL:
     """Class to include height elevation data (e.g. DEMs) with the geological grid """
 
     def __init__(self, path_dem, grid=None, extent=None, delete_temp=True):
@@ -164,8 +164,8 @@ class Load_DEM_GDAL():
         print('file saved in ' + save_path)
 
     def _get_cornerpoints(self, extent):
-        """
-        Get the coordinates of the bounding box.
+        """Get the coordinates of the bounding box.
+
         Args:
             extent: np.array([xmin, xmax, ymin, ymax)]
 
@@ -182,8 +182,8 @@ class Load_DEM_GDAL():
 class LoadDEMArtificial:
 
     def __init__(self, grid=None, fd=2.0, extent=None, resolution=None, d_z=None):
-        """
-        Class to create a random topography based on a fractal grid algorithm.
+        """Class to create a random topography based on a fractal grid algorithm.
+
         Args:
             fd:         fractal dimension, defaults to 2.0
             d_z:        maximum height difference. If none, last 20% of the model in z direction
@@ -279,10 +279,6 @@ class LoadDEMArtificial:
         y = np.linspace(self.extent[2], self.extent[3], self.resolution[1])
         xx, yy = np.meshgrid(x, y, indexing='ij')
         self.values_2d = np.dstack([xx, yy, self.dem_zval])
-
-
-        # self.values_3D = np.flip(self.values_2d, axis=1)
-        #self.values_3D = np.swapaxes(self.values_2d, 0, 1)
 
     def get_values(self):
         return self.values_2d

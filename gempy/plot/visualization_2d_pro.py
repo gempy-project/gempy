@@ -25,28 +25,18 @@ Created on 23/09/2019
 
 import warnings
 import os
+import copy
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 from matplotlib.ticker import FixedFormatter, FixedLocator
 import matplotlib.gridspec as gridspect
-
+import matplotlib as mpl
+import scipy.spatial.distance as dd
 import seaborn as sns
-from os import path
-import sys
-
-# This is for sphenix to find the packages
-sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
-# from gempy.core.solution import Solution
-# import gempy.plot.helpers as plothelp
 
 sns.set_context('talk')
 plt.style.use(['seaborn-white', 'seaborn-talk'])
-# from scipy.interpolate import RegularGridInterpolator
-# from arviz.plots.jointplot import _var_names, _scale_fig_size
-import matplotlib as mpl
-
-import scipy.spatial.distance as dd
 
 warnings.filterwarnings("ignore", message="No contour levels were found")
 
@@ -79,12 +69,14 @@ class Plot2D:
     def update_colot_lot(self, color_dir=None):
         if color_dir is None:
             color_dir = dict(zip(self.model._surfaces.df['surface'], self.model._surfaces.df['color']))
+
         self._color_lot = color_dir
         if self._custom_colormap is False:
             self.cmap = mcolors.ListedColormap(list(self.model._surfaces.df['color']))
             self.norm = mcolors.Normalize(vmin=0.5, vmax=len(self.cmap.colors) + 0.5)
 
-    def remove(self, ax):
+    @staticmethod
+    def remove(ax):
         while len(ax.collections) != 0:
             list(map(lambda x: x.remove(), ax.collections))
 
@@ -157,8 +149,11 @@ class Plot2D:
         Returns:
             figure, list axes, subgrid values
         """
+        cols = kwargs.get('cols', 1)
+        rows = kwargs.get('rows', 1)
 
-        figsize, self.ax_labelsize, _, self.xt_labelsize, self.linewidth, _ = _scale_fig_size(figsize, textsize)
+        figsize, self.ax_labelsize, _, self.xt_labelsize, self.linewidth, _ = _scale_fig_size(
+            figsize, textsize, rows, cols)
         self.fig, self.axes = plt.subplots(0, 0, figsize=figsize, constrained_layout=False)
         self.fig.is_legend = False
         # TODO make grid variable
@@ -168,7 +163,6 @@ class Plot2D:
 
     def add_section(self, section_name=None, cell_number=None, direction='y', ax=None, ax_pos=111,
                     ve=1., **kwargs):
-
 
         extent_val = kwargs.get('extent', None)
         self.update_colot_lot()
@@ -215,7 +209,7 @@ class Plot2D:
         ax.cell_number = cell_number
         ax.direction = direction
         # ax.set_xticklabels(ax.get_xticklabels(), rotation=30, ha='right')
-        ax.tick_params(axis='x', labelrotation=30)
+      #  ax.tick_params(axis='x', labelrotation=30)
         self.axes = np.append(self.axes, ax)
         self.fig.tight_layout()
 
@@ -361,12 +355,12 @@ class Plot2D:
         ax.contour(image, cmap='autumn', extent=extent_val, zorder=8, **kwargs)
         if 'N' in kwargs:
             kwargs.pop('N')
-        ax.contourf(image, N=200, cmap='autumn', extent=extent_val, zorder=7, alpha=.8,
+        ax.contourf(image, cmap='autumn', extent=extent_val, zorder=7, alpha=.8,
                     **kwargs)
 
     def plot_data(self, ax, section_name=None, cell_number=None, direction='y',
                   legend=True,
-                  projection_distance=1e10, **kwargs):
+                  projection_distance=None, **kwargs):
         """
         Plot data--i.e. surface_points and orientations--of a section.
 
@@ -382,6 +376,9 @@ class Plot2D:
         Returns:
 
         """
+        if projection_distance is None:
+            projection_distance = 0.2 * self.model._rescaling.df['rescaling factor'].values[0]
+
         self.update_colot_lot()
 
         points = self.model._surface_points.df.copy()
@@ -459,8 +456,14 @@ class Plot2D:
         else:
             make_legend = None
 
-        sns.scatterplot(data=points[select_projected_p], x=x, y=y, hue='surface', ax=ax, legend=make_legend,
+        # Hack to keep the right X label:
+        temp_label = copy.copy(ax.xaxis.label)
+
+        sns.scatterplot(data=points[select_projected_p], x=x, y=y, hue='surface',
+                        ax=ax, legend=make_legend,
                         palette=self._color_lot, zorder=101)
+
+        ax.xaxis.label = temp_label
 
         sel_ori = orientations[select_projected_o]
 
@@ -607,8 +610,7 @@ class Plot2D:
         if section_name is not None:
             if section_name == 'topography':
                 shape = self.model._grid.topography.resolution
-                #    a = self.model.solutions.geological_map_scalfield
-                #    extent = self.model.grid.topography.extent
+
                 scalar_fields = self.model.solutions.geological_map[1]
                 c_id = 0  # color id startpoint
 
@@ -618,7 +620,7 @@ class Plot2D:
 
                     c_id2 = c_id + len(level)  # color id endpoint
                     ax.contour(block.reshape(shape), 0, levels=np.sort(level),
-                               colors=self.cmap.colors[c_id:c_id2],
+                               colors=self.cmap.colors[c_id:c_id2][::-1],
                                linestyles='solid', origin='lower',
                                extent=extent_val, zorder=zorder - (e + len(level))
                                )
@@ -827,7 +829,7 @@ def _scale_fig_size(figsize, textsize, rows=1, cols=1):
 
     if figsize is None:
         width, height = rc_width, rc_height
-        sff = 1 if (rows == cols == 1) else 1.15
+        sff = 1 if (rows == cols == 1) else 1.2
         width = width * cols * sff
         height = height * rows * sff
     else:

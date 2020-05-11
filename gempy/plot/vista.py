@@ -75,6 +75,7 @@ class GemPyToVista(WidgetsCallbacks):
             live_updating (bool, optional): Toggles real-time updating of the
                 plot. Defaults to False.
             **kwargs:
+
         """
 
         # Override default notebook value

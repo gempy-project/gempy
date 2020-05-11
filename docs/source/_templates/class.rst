@@ -2,9 +2,11 @@
 
 .. currentmodule:: {{ module }}
 
+
 .. autoclass:: {{ objname }}
 
-   {% block emaples%}
+
+   {% block examples%}
    .. rubric:: Examples using {{name}}
    .. include:: ../gen_modules/backreferences/{{fullname}}.examples
    .. raw:: html
@@ -32,4 +34,6 @@
    {%- endfor %}
    {% endif %}
    {% endblock %}
+
+
 

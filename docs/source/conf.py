@@ -39,24 +39,10 @@ pyvista.FIGURE_PATH = os.path.join(os.path.abspath('./images/'), 'auto-generated
 if not os.path.exists(pyvista.FIGURE_PATH):
     os.makedirs(pyvista.FIGURE_PATH)
 
-
 import IPython.sphinxext
 from pygments.plugin import find_plugin_lexers
 sys.path.insert(0, os.path.abspath('.'))
-#sys.path.insert(0, os.path.abspath('../../gempy/plot/'))
 
-
-# from unittest.mock import MagicMock
-#
-#
-# class Mock(MagicMock):
-#     @classmethod
-#     def __getattr__(cls, name):
-#             return MagicMock()
-#
-#
-# MOCK_MODULES = ['IPython', 'git+git://github.com/Leguark/scikit-image@master']
-# sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 # -- General configuration ------------------------------------------------
 
@@ -82,14 +68,14 @@ extensions = [
     'sphinx_gallery.gen_gallery'
 ]
 
-
-
 intersphinx_mapping = {
     'numpy': ('https://numpy.org/doc/stable/', None),
     'python': ('https://docs.python.org/{.major}'.format(sys.version_info), None),
     'matplotlib': ('https://matplotlib.org/', None),
     'mayavi': ('http://docs.enthought.com/mayavi/mayavi', None),
     'sklearn': ('https://scikit-learn.org/stable', None),
+    'skimage': ('https://scikit-image.org/docs/dev/', None),
+    'pyvista': ('https://docs.pyvista.org/', None),
     'sphinx': ('http://www.sphinx-doc.org/en/stable', None),
     'pandas': ('https://pandas.pydata.org/pandas-docs/stable/', None),
 }

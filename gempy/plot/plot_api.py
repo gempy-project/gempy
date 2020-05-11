@@ -156,13 +156,15 @@ def plot_2d(model, n_axis=None, section_names: list = None,
     if type(series_n) is int:
         series_n = [series_n] * n_axis
 
-    p = Plot2D(model, **kwargs)
-    p.create_figure(**kwargs)
     # init e
     e = 0
-
     # is 10 and 10 because in the ax pos is the second digit
-    n_columns = 10 if len(section_names) + len(cell_number) < 2 else 20
+    n_columns_ = 1 if len(section_names) + len(cell_number) < 2 else 2
+    n_columns = n_columns_ * 10 # This is for the axis location syntax
+    n_rows = (len(section_names) + len(cell_number))/n_columns_
+
+    p = Plot2D(model, **kwargs)
+    p.create_figure(cols=n_columns_, rows=n_rows, **kwargs)
 
     for e, sn in enumerate(section_names):
         # Check if a plot that fills all pixels is plotted
@@ -240,7 +242,7 @@ def plot_2d(model, n_axis=None, section_names: list = None,
     return p
 
 
-def plot_3d(model, plotter_type='background',
+def plot_3d(model, plotter_type='basic',
             show_data: bool = True,
             show_results:bool = True,
             show_surfaces: bool = True,

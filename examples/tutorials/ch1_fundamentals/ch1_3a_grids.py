@@ -1,18 +1,16 @@
 """
-ch1-3-Grids.
+1.3a: Grids.
+===========
 """
 
-import sys
-sys.path.append("../../..")
-
-import gempy as gp
 import numpy as np
-import matplotlib.pyplot as plt
-import os
-
-# %% 
+import pandas as pd
 from gempy.core.data import Grid
+from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 unused import
+import matplotlib.pyplot as plt
 
+pd.set_option('precision', 2)
+np.random.seed(55500)
 
 # %%
 # The Grid Class
@@ -26,7 +24,6 @@ from gempy.core.data import Grid
 # %% 
 grid = Grid()
 
-
 # %%
 # The most important attribute of Grid is ``values`` (and ``values_r``
 # which are the values rescaled) which are the 3D points in space that
@@ -36,15 +33,11 @@ grid = Grid()
 
 
 # %%
-# .. figure:: attachment:Photo-2019-07-08-11-32-37_struc.PNG
-#    :alt: Photo-2019-07-08-11-32-37\_struc.PNG
-# 
-#    Photo-2019-07-08-11-32-37\_struc.PNG
+# .. image:: /../../_static/grids.jpg
 # 
 
 # %% 
 grid.values, grid.values_r
-
 
 # %%
 # At the moment of writing this tutorial, there is 5 grid types. The
@@ -55,7 +48,6 @@ grid.values, grid.values_r
 # %% 
 grid.grid_types
 
-
 # %%
 # Each grid vill containt its own ``values`` attribute as well as other
 # methods to manipulate them depending on the type of grid.
@@ -63,7 +55,6 @@ grid.grid_types
 
 # %% 
 grid.regular_grid.values
-
 
 # %%
 # We can see what grids are activated (i.e. they are going to be
@@ -73,7 +64,6 @@ grid.regular_grid.values
 # %% 
 grid.active_grids
 
-
 # %%
 # By default only the *regular grid* is active. However, since the regular
 # grid is still empty ``Grid().values`` is empty too.
@@ -82,14 +72,12 @@ grid.active_grids
 # %% 
 grid.values
 
-
 # %%
 # The last important attribute of Grid is the length:
 # 
 
 # %% 
 grid.length
-
 
 # %%
 # Length gives back the interface indices between grids on the
@@ -101,7 +89,6 @@ grid.length
 
 # %% 
 grid.get_grid_args('topography')
-
 
 # %%
 # By now all is a bit confusing because we have no values. Lets start
@@ -121,8 +108,7 @@ grid.get_grid_args('topography')
 help(grid.create_regular_grid)
 
 # %% 
-grid.create_regular_grid(extent = [0,100,0,100,-100,0],  resolution = [20,20,20])
-
+grid.create_regular_grid(extent=[0, 100, 0, 100, -100, 0], resolution=[20, 20, 20])
 
 # %%
 # Now the regular grid object composed on ``Grid`` has been filled:
@@ -130,7 +116,6 @@ grid.create_regular_grid(extent = [0,100,0,100,-100,0],  resolution = [20,20,20]
 
 # %% 
 grid.regular_grid.values
-
 
 # %%
 # And the regular grid has been set active (it was already active in any
@@ -140,7 +125,6 @@ grid.regular_grid.values
 # %% 
 grid.active_grids
 
-
 # %%
 # Therefore the grid values will be equal to the regular grid:
 # 
@@ -148,14 +132,12 @@ grid.active_grids
 # %% 
 grid.values
 
-
 # %%
 # And the indices to extract the different arrays:
 # 
 
 # %% 
 grid.length
-
 
 # %%
 # Custom grid
@@ -165,10 +147,9 @@ grid.length
 # 
 
 # %% 
-grid.create_custom_grid(np.array([[1,2,3],
-                                  [4,5,6],
-                                  [7,8,9]]))
-
+grid.create_custom_grid(np.array([[1, 2, 3],
+                                  [4, 5, 6],
+                                  [7, 8, 9]]))
 
 # %%
 # Again set\_any\_grid will create a grid and activate it. So now the
@@ -177,7 +158,6 @@ grid.create_custom_grid(np.array([[1,2,3],
 
 # %% 
 grid.custom_grid.values
-
 
 # %%
 # and since is actived, will be add to the grid.values stack:
@@ -188,7 +168,6 @@ grid.active_grids
 
 # %% 
 grid.values.shape
-
 
 # %%
 # We can still recover those values with ``get_grid`` or by getting the
@@ -205,7 +184,6 @@ l0, l1
 # %% 
 grid.values[l0:l1]
 
-
 # %%
 # Topography
 # ~~~~~~~~~~
@@ -215,13 +193,11 @@ grid.values[l0:l1]
 # dealing with raster data. By default we will create a random topography:
 # 
 
-# %% 
-np.random.seed(55500)
+# %%
 grid.create_topography()
 
 # %% 
 grid.active_grids
-
 
 # %%
 # Now the grid values will contain both the regular grid and topography:
@@ -229,7 +205,6 @@ grid.active_grids
 
 # %% 
 grid.values, grid.length
-
 
 # %%
 # The topography args are got as follows:
@@ -239,7 +214,6 @@ grid.values, grid.length
 l0, l1 = grid.get_grid_args('topography')
 l0, l1
 
-
 # %%
 # Abd we can slice the values array as any other numpy array:
 # 
@@ -247,14 +221,12 @@ l0, l1
 # %% 
 grid.values[l0: l1]
 
-
 # %%
 # We can compare it to the topography.values:
 # 
 
 # %% 
 grid.topography.values
-
 
 # %%
 # Now that we have more than one grid we can activate and deactivate any
@@ -264,7 +236,6 @@ grid.topography.values
 # %% 
 grid.set_inactive('topography')
 grid.set_inactive('regular')
-
 
 # %%
 # Since now all grids are deactivated the values will be empty:
@@ -285,7 +256,6 @@ grid.set_active('regular')
 # %% 
 grid.values
 
-
 # %%
 # Centered Grid
 # ~~~~~~~~~~~~~
@@ -298,8 +268,8 @@ grid.values
 # 
 
 # %% 
-grid.create_centered_grid(centers=np.array([[300, 0, 0],[0,0,0]]), resolution=[10,10,20], radius=100)
-
+grid.create_centered_grid(centers=np.array([[300, 0, 0], [0, 0, 0]]),
+                          resolution=[10, 10, 20], radius=100)
 
 # %%
 # Resolution and radius create a geometric spaced kernel (blue dots) which
@@ -308,34 +278,24 @@ grid.create_centered_grid(centers=np.array([[300, 0, 0],[0,0,0]]), resolution=[1
 # 
 
 # %% 
-#%matplotlib qt5
-# This import registers the 3D projection, but is otherwise unused.
-from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 unused import
-
-import matplotlib.pyplot as plt
-import numpy as np
-
 
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 
-ax.scatter(grid.values[:, 0], grid.values[:,1], grid.values[:, 2], '.', alpha=.2)
-ax.scatter(np.array([[300, 0, 0],[0,0,0]])[:, 0],
-           np.array([[300, 0, 0],[0,0,0]])[:, 1],
-           np.array([[300, 0, 0],[0,0,0]])[:, 2], c='r', alpha=1, s=30)
-
+ax.scatter(grid.values[:, 0], grid.values[:, 1], grid.values[:, 2], '.', alpha=.2)
+ax.scatter(np.array([[300, 0, 0], [0, 0, 0]])[:, 0],
+           np.array([[300, 0, 0], [0, 0, 0]])[:, 1],
+           np.array([[300, 0, 0], [0, 0, 0]])[:, 2], c='r', alpha=1, s=30)
 
 ax.set_xlim(-100, 400)
 ax.set_xlabel('X Label')
 ax.set_ylabel('Y Label')
 ax.set_zlabel('Z Label')
-
-
-
+plt.show()
 
 # %%
 # Section Grid
 # ~~~~~~~~~~~~
 # 
 # This grid type has its own tutorial. See ch1-3b
-# 
+#

@@ -7,10 +7,10 @@ import pandas as pn
 from typing import Union, Iterable
 import warnings
 
-from gempy.core.data_modules.geometric_data import Orientations, SurfacePoints,\
+from gempy.core.data_modules.geometric_data import Orientations, SurfacePoints, \
     RescaledData, Surfaces, Grid
 from gempy.core.data_modules.stack import Stack, Faults, Series
-from gempy.core.data import AdditionalData,  MetaData, Options, Structure, KrigingParameters
+from gempy.core.data import AdditionalData, MetaData, Options, Structure, KrigingParameters
 from gempy.core.solution import Solution
 from gempy.core.interpolator import InterpolatorModel, InterpolatorGravity
 from gempy.utils.meta import _setdoc, _setdoc_pro
@@ -27,6 +27,7 @@ class RestrictingWrapper(object):
 
     def __repr__(self):
         return self._w.__repr__()
+
     #
     # def _repr_html_(self):
     #     return self._w._repr_html_()
@@ -39,8 +40,8 @@ class RestrictingWrapper(object):
 
 
 @_setdoc_pro([Grid.__doc__, Faults.__doc__, Series.__doc__, Surfaces.__doc__, SurfacePoints.__doc__,
-             Orientations.__doc__, RescaledData.__doc__, AdditionalData.__doc__, InterpolatorModel.__doc__,
-             Solution.__doc__])
+              Orientations.__doc__, RescaledData.__doc__, AdditionalData.__doc__, InterpolatorModel.__doc__,
+              Solution.__doc__])
 class ImplicitCoKriging(object):
     """This class handles all the mutation of the data objects of the model involved on the
      implicit cokriging ensuring the synchronization of all the members.
@@ -95,7 +96,7 @@ class ImplicitCoKriging(object):
 
         """
         return RestrictingWrapper(self._grid,
-          accepted_members=['__repr__', '__str__', 'values'])
+                                  accepted_members=['__repr__', '__str__', 'values'])
 
     @_setdoc_pro(Faults.__doc__)
     @property
@@ -114,7 +115,7 @@ class ImplicitCoKriging(object):
     @property
     def series(self):
         """"""
-        #warnings.warn(DeprecationWarning, 'series will be deprecated in the future.'
+        # warnings.warn(DeprecationWarning, 'series will be deprecated in the future.'
         #                                  'Use stack instead.')
         return RestrictingWrapper(self._stack)
 
@@ -182,8 +183,8 @@ class ImplicitCoKriging(object):
         return idx
 
     @_setdoc_pro([AdditionalData.update_structure.__doc__, InterpolatorModel.set_theano_shared_structure.__doc__,
-                 InterpolatorModel.modify_results_matrices_pro.__doc__,
-                 InterpolatorModel.modify_results_weights.__doc__])
+                  InterpolatorModel.modify_results_matrices_pro.__doc__,
+                  InterpolatorModel.modify_results_weights.__doc__])
     def update_structure(self, update_theano=None, update_series_is_active=True,
                          update_surface_is_active=True):
         """Update python and theano structure parameters.
@@ -205,7 +206,6 @@ class ImplicitCoKriging(object):
         self._additional_data.update_structure()
 
         if update_series_is_active is True:
-
             len_series_i = self._additional_data.structure_data.df.loc['values', 'len series surface_points'] - \
                            self._additional_data.structure_data.df.loc['values', 'number surfaces per series']
 
@@ -231,7 +231,7 @@ class ImplicitCoKriging(object):
                 # This is necessary to find the intersection between orientations (series) and
                 # surface points
                 self._surfaces.df['isActive'] = (act_series & bool_surf_points) | self._surfaces.df['isBasement']
-                self._surfaces.df['hasData'] = (act_series | bool_surf_points) # | self.surfaces.df['isBasement']
+                self._surfaces.df['hasData'] = (act_series | bool_surf_points)  # | self.surfaces.df['isBasement']
 
         if update_theano == 'matrices':
             self._interpolator.modify_results_matrices_pro()
@@ -275,6 +275,9 @@ class ImplicitCoKriging(object):
         print(f'Active grids: {self._grid.grid_types[self._grid.active_grids]}')
 
         return self._grid
+
+    def get_active_grids(self):
+        return self._grid.grid_types[self._grid.active_grids]
 
     def set_grid_object(self, grid: Grid, update_model=True):
         """Not implemented
@@ -353,29 +356,30 @@ class ImplicitCoKriging(object):
 
         Args:
             source:
-                'gdal':     Load topography from a raster file.
-                'random':   Generate random topography (based on a fractal grid).
-                'saved':    Load topography that was saved with the topography.save() function.
-                            This is useful after loading and saving a heavy raster file with gdal once or after saving a
-                            random topography with the save() function. This .npy file can then be set as topography.
+                * 'gdal': Load topography from a raster file.
+                * 'random': Generate random topography (based on a fractal grid).
+                * 'saved': Load topography that was saved with the topography.save() function.
+                  this is useful after loading and saving a heavy raster file with gdal once
+                  or after saving a random topography with the save() function. This .npy file can then be set as
+                  topography.
 
         Keyword Args:
-            if source = 'gdal:
+            source = 'gdal':
 
-                *filepath:   path to raster file, e.g. '.tif', (for all file formats see
-                https://gdal.org/drivers/raster/index.html)
+                * filepath: path to raster file, e.g. '.tif', (for all file formats see
+                  https://gdal.org/drivers/raster/index.html)
 
-            if source = 'random':
+            source = 'random':
 
                 * fd:         fractal dimension, defaults to 2.0
 
-                - d_z:        maximum height difference. If none, last 20% of the model in z direction
+                * d_z:        maximum height difference. If none, last 20% of the model in z direction
 
                 * extent:     extent in xy direction. If none, geo_model.grid.extent
 
                 * resolution: desired resolution of the topography array. If none, geo_model.grid.resoution
 
-            if source = 'saved':
+            source = 'saved':
 
                 * filepath:   path to the .npy file that was created using the topography.save() function
 
@@ -524,7 +528,7 @@ class ImplicitCoKriging(object):
 
     @_setdoc(delete_features.__doc__, indent=False)
     def delete_series(self, indices: Union[str, list], refactor_order_series=True,
-                     remove_surfaces=False, remove_data=False):
+                      remove_surfaces=False, remove_data=False):
 
         warnings.warn(DeprecationWarning, 'Series are getting renamed to Stack/features.'
                                           'Please use delete_features instead')
@@ -533,15 +537,15 @@ class ImplicitCoKriging(object):
 
     @_setdoc(Series.rename_series.__doc__, indent=False)
     def rename_features(self, new_categories: Union[dict, list]):
-        """Rename features and update the categoriedependentet on them.
+        """Rename features and update the category dependent on them.
 
         Args:
             new_categories (list, dict):
                 * list-like: all items must be unique and the number of items in the new
-                 categories must match the existing number of categories.
+                  categories must match the existing number of categories.
 
                 * dict-like: specifies a mapping from old categories to new. Categories
-                 not contained in the mapping are passed through and extra categories in the mapping are ignored.
+                  not contained in the mapping are passed through and extra categories in the mapping are ignored.
 
         Returns:
             :class:`gempy.core.data_modules.stack.Stack`
@@ -661,7 +665,7 @@ class ImplicitCoKriging(object):
         feature_fault = np.atleast_1d(feature_fault)
         if twofins is False:
             for fault in feature_fault:
-                assert np.sum(self._surfaces.df['series'] == fault) < 2,\
+                assert np.sum(self._surfaces.df['series'] == fault) < 2, \
                     'Having more than one fault in a series is generally rather bad. Better go' \
                     ' back to the function map_series_to_surfaces and give each fault its own' \
                     ' series. If you are really sure what you are doing, you can set twofins to' \
@@ -747,8 +751,10 @@ class ImplicitCoKriging(object):
             surfaces_names = indices
 
         if remove_data:
-            self._surface_points.del_surface_points(self._surface_points.df[self._surface_points.df.surface.isin(surfaces_names)].index)
-            self._orientations.del_orientation(self._orientations.df[self._orientations.df.surface.isin(surfaces_names)].index)
+            self._surface_points.del_surface_points(
+                self._surface_points.df[self._surface_points.df.surface.isin(surfaces_names)].index)
+            self._orientations.del_orientation(
+                self._orientations.df[self._orientations.df.surface.isin(surfaces_names)].index)
 
         self._surface_points.df['surface'].cat.remove_categories(surfaces_names, inplace=True)
         self._orientations.df['surface'].cat.remove_categories(surfaces_names, inplace=True)
@@ -785,7 +791,7 @@ class ImplicitCoKriging(object):
         return self._surfaces
 
     @_setdoc(Surfaces.add_surfaces_values.__doc__, indent=False)
-    def add_surface_values(self,  values_array: Iterable,
+    def add_surface_values(self, values_array: Iterable,
                            properties_names: Iterable[str] = np.empty(0)):
         self._surfaces.add_surfaces_values(values_array, properties_names)
         self.update_structure(update_theano='matrices')
@@ -810,7 +816,7 @@ class ImplicitCoKriging(object):
                                set_series=True, sort_geometric_data: bool = True,
                                remove_unused_series=True,
                                twofins=False
-                              ):
+                               ):
         """Map series to surfaces and update all related objects accordingly to the following arguments:
 
         Args:
@@ -819,7 +825,7 @@ class ImplicitCoKriging(object):
                 * dict: keys are the series and values the surfaces belonging to that series
 
                 * pandas.DataFrame: Dataframe with surfaces as index and a column series with the correspondent series
-                name of each surface
+                  name of each surface
 
             set_series (bool): if True, if mapping object has non existing series they will be created.
             sort_geometric_data (bool): If true geometric data will be sorted accordingly to the new order of the
@@ -866,12 +872,12 @@ class ImplicitCoKriging(object):
             aux = self._stack.df.index.drop('Basement').array
             self.reorder_features(np.append(aux, 'Basement'))
 
-        if twofins is False: # assert if every fault has its own series
+        if twofins is False:  # assert if every fault has its own series
             for serie in list(self._faults.df[self._faults.df['isFault'] == True].index):
                 assert np.sum(self._surfaces.df['series'] == serie) < 2, \
-                'Having more than one fault in a series is generally rather bad. Better give each '\
-                'fault its own series. If you are really sure what you are doing, you can set '\
-                'twofins to True to suppress this error.'
+                    'Having more than one fault in a series is generally rather bad. Better give each ' \
+                    'fault its own series. If you are really sure what you are doing, you can set ' \
+                    'twofins to True to suppress this error.'
 
         return self.surfaces
 
@@ -905,7 +911,7 @@ class ImplicitCoKriging(object):
 
         coord_x_name = kwargs.get('coord_x_name') if 'coord_x_name' in kwargs \
             else self._check_possible_column_names(table, ['X', 'x'])
-        coord_y_name =kwargs.get('coord_y_name') if 'coord_y_name' in kwargs \
+        coord_y_name = kwargs.get('coord_y_name') if 'coord_y_name' in kwargs \
             else self._check_possible_column_names(table, ['Y', 'y'])
         coord_z_name = kwargs.get('coord_z_name') if 'coord_z_name' in kwargs \
             else self._check_possible_column_names(table, ['Z', 'z'])
@@ -1056,7 +1062,7 @@ class ImplicitCoKriging(object):
         is_surface = np.isin('surface', keys).all()
         if is_surface:
             assert (~self._surfaces.df[self._surfaces.df['isBasement']]['surface'].isin(
-                np.atleast_1d(kwargs['surface']))).any(),\
+                np.atleast_1d(kwargs['surface']))).any(), \
                 'Surface points cannot belong to Basement. Add a new surface.'
 
         self._surface_points.modify_surface_points(indices, **kwargs)
@@ -1087,7 +1093,7 @@ class ImplicitCoKriging(object):
 
     @_setdoc_pro()
     @plot_add_orientation
-    def add_orientations(self,  X, Y, Z, surface, pole_vector: Iterable = None,
+    def add_orientations(self, X, Y, Z, surface, pole_vector: Iterable = None,
                          orientation: Iterable = None, idx=None, recompute_rescale_factor=False):
         """Add orientation.
 
@@ -1144,6 +1150,7 @@ class ImplicitCoKriging(object):
         if 'smooth' in kwargs:
             self._interpolator.set_theano_shared_nuggets()
         return self._orientations
+
     # endregion
 
     # region Options
@@ -1153,6 +1160,7 @@ class ImplicitCoKriging(object):
         warnings.warn('You need to recompile the Theano code to make it the changes in options.')
 
         return self._additional_data.options
+
     # endregion
 
     # region Kriging
@@ -1175,6 +1183,7 @@ class ImplicitCoKriging(object):
         self._additional_data.update_default_kriging()
 
         return self._additional_data.rescaling_data
+
     # endregion
 
     # ======================================
@@ -1333,7 +1342,7 @@ class ImplicitCoKriging(object):
 
     # region Theano interface
     @_setdoc(InterpolatorModel.__doc__)
-    def set_theano_graph(self, interpolator: InterpolatorModel,  update_structure=True, update_kriging=True):
+    def set_theano_graph(self, interpolator: InterpolatorModel, update_structure=True, update_kriging=True):
         """ Pass a theano graph of a Interpolator instance other than the Model compose
 
         Use this method only if you know what are you doing!
@@ -1351,7 +1360,7 @@ class ImplicitCoKriging(object):
         self.update_to_interpolator()
         return True
 
-    #@_setdoc(InterpolatorModel.__doc__)
+    # @_setdoc(InterpolatorModel.__doc__)
     def set_theano_function(self, interpolator: InterpolatorModel,
                             update_structure=True, update_kriging=True):
         """Pass a theano function and its correspondent graph from an Interpolator
@@ -1400,6 +1409,7 @@ class ImplicitCoKriging(object):
         if reset is True:
             self._interpolator.reset_flow_control_initial_results()
         return True
+
     # endregion
 
     def map_geometric_data_df(self, d: pn.DataFrame):
@@ -1429,7 +1439,6 @@ class ImplicitCoKriging(object):
         sfai_order = self.solutions.scalar_field_at_surface_points.sum(axis=0)
         # Check if the order has changed
         if not np.array_equal(sfai_order, self._sfai_order_0):
-
             self._sfai_order_0 = sfai_order
             sel = self._surfaces.df['isActive'] & ~self._surfaces.df['isBasement']
             self._surfaces.df.loc[sel, 'sfai'] = sfai_order
@@ -1469,6 +1478,7 @@ class Project(ImplicitCoKriging):
     See Also:
         :class:`MetaData`, :class:`ImplicitCoKriging`
     """
+
     def __init__(self, project_name='default_project'):
 
         self.meta = MetaData(project_name=project_name)
@@ -1499,9 +1509,9 @@ class Project(ImplicitCoKriging):
         sys.setrecursionlimit(10000)
 
         if not path:
-            path = './'+self.meta.project_name
+            path = './' + self.meta.project_name
         import pickle
-        with open(path+'.pickle', 'wb') as f:
+        with open(path + '.pickle', 'wb') as f:
             # Pickle the 'data' dictionary using the highest protocol available.
             pickle.dump(self, f, pickle.HIGHEST_PROTOCOL)
         return True
@@ -1684,5 +1694,3 @@ class Project(ImplicitCoKriging):
 
     def get_additional_data(self):
         return self._additional_data.get_additional_data()
-
-

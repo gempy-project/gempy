@@ -139,11 +139,12 @@ class Faults(object):
         """Method to set the df that offset a given sequence and therefore also another fault.
 
         Args:
-            rel_matrix (numpy.array[bool]): 2D Boolean array with boolean logic. Rows affect (offset) columns
+            rel_matrix (numpy.array[bool]): 2D Boolean array with boolean logic.
+             Rows affect (offset) columns
 
         Returns:
-            :class:`gempy.core.data_modules.stack.Faults.faults_relations_df
-            `
+            :class:`gempy.core.data_modules.stack.Faults.faults_relations_df`
+
         """
         # TODO: block the lower triangular matrix of being changed
         if rel_matrix is None:

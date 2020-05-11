@@ -138,8 +138,11 @@ notebooks/prototype notebooks/vtk_exp_smooth_trnasitions
 notebooks/prototype notebooks/plots
 
 docs/build
+docs/source
 test/figs
 
 Profiles
 examples/data/input_data/Claudius/Results_
+
+/docs/source/gen_modules/
 

@@ -1,50 +1,34 @@
 """
-Chapter 1.2: Data Structure and Manipulation
---------------------------------------------
+1.2: Data Structure and Manipulation
+====================================
 
 """
-
-# %% 
-# These two lines are necessary only if GemPy is not installed
-import sys, os
-
-import gempy.core.data_modules.geometric_data
-import gempy.core.data_modules.stack
-
-sys.path.append("../../..")
-
 # Importing GemPy
 import gempy as gp
-
-# Embedding matplotlib figures in the notebooks
-# %matplotlib notebook
-
-#%matplotlib inline
+import gempy
 
 # Importing auxiliary libraries
 import numpy as np
-import pandas as pn
-import matplotlib.pyplot as plt
-
+import pandas as pd
+pd.set_option('precision', 2)
 
 # %%
 # Series
-# ------
+# ~~~~~~
 # 
 # Series is the object that contains the properties associated with each
 # independent scalar field. Right now it is simply the order of the series
-# (which is infered by the index order). But in the future will be add the
+# (which is inferred by the index order). But in the future will be add the
 # unconformity relation or perhaps the type of interpolator
 # 
-# Series and Faults classes are quite entagled since fauls are a type of
+# Series and Faults classes are quite entangled since fault are a view of
 # series
 # 
 
 # %% 
-faults = gempy.core.data_modules.stack.Faults()
-series = gempy.core.data_modules.stack.Series(faults)
+faults = gp.Faults()
+series = gp.Series(faults)
 series.df
-
 
 # %%
 # We can modify the series bt using ``set_series_index``:
@@ -54,7 +38,6 @@ series.df
 series.set_series_index(['foo', 'foo2', 'foo5', 'foo7'])
 series
 
-
 # %%
 # The index of series are pandas categories. These provides quite handy
 # backend functionality (see pandas.Categorical).
@@ -62,7 +45,6 @@ series
 
 # %% 
 series.df.index
-
 
 # %%
 # For adding new series:
@@ -72,7 +54,6 @@ series.df.index
 series.add_series('foo3')
 series
 
-
 # %%
 # Delete series
 # 
@@ -81,15 +62,13 @@ series
 series.delete_series('foo3')
 series
 
-
 # %%
 # Rename series:
 # 
 
 # %% 
-series.rename_series({'foo':'boo'})
+series.rename_series({'foo': 'boo'})
 series
-
 
 # %%
 # Reorder series:
@@ -98,7 +77,6 @@ series
 # %% 
 series.reorder_series(['foo2', 'boo', 'foo7', 'foo5'])
 series
-
 
 # %%
 # Faults
@@ -113,7 +91,6 @@ series
 # %% 
 faults
 
-
 # %%
 # Finally we have the *faults relations df* which captures which
 # *mathematical series* a given fault offset in order to reproduce complex
@@ -123,14 +100,12 @@ faults
 # %% 
 faults.faults_relations_df
 
-
 # %%
 # We can use ``set_is_fault`` to choose which of our series are faults:
 # 
 
 # %% 
 faults.set_is_fault(['boo'])
-
 
 # %%
 # Similar thing for the fault relations:
@@ -143,7 +118,6 @@ fr[1, 2] = True
 
 faults.set_fault_relation(fr)
 
-
 # %%
 # Now if we change the series df and we update the series already defined
 # will conserve their values while the new ones will be set to false:
@@ -152,8 +126,7 @@ faults.set_fault_relation(fr)
 # %% 
 series.add_series('foo20')
 
-
-# %% 
+# %%
 series
 
 # %% 
@@ -161,7 +134,6 @@ faults
 
 # %% 
 faults.faults_relations_df
-
 
 # %%
 # When we add new series the values switch to NaN. We will be careful not
@@ -173,7 +145,6 @@ faults.set_is_fault()
 
 # %% 
 faults.set_fault_relation()
-
 
 # %%
 # Surfaces:
@@ -200,7 +171,6 @@ faults.set_fault_relation()
 # %% 
 surfaces = gp.Surfaces(series)
 
-
 # %%
 # We can set any number of formations by passing a list with the names. By
 # default they will take the name or the first series.
@@ -209,10 +179,8 @@ surfaces = gp.Surfaces(series)
 # %% 
 surfaces.set_surfaces_names(['foo', 'foo2', 'foo5'])
 
-
-# %% 
+# %%
 series
-
 
 # %%
 # We can add new formations:
@@ -221,7 +189,6 @@ series
 # %% 
 surfaces.add_surface(['feeeee'])
 surfaces
-
 
 # %%
 # The column formation is also a pandas.Categories. This will be important
@@ -234,7 +201,6 @@ surfaces.df['surface']
 # %% 
 surfaces
 
-
 # %%
 # Set values
 # ~~~~~~~~~~
@@ -243,11 +209,10 @@ surfaces
 # 
 
 # %% 
-surfaces.set_surfaces_values([2,2,2,5])
+surfaces.set_surfaces_values([2, 2, 2, 5])
 
 # %% 
 surfaces
-
 
 # %%
 # Set values with a given name:
@@ -257,11 +222,10 @@ surfaces
 # 
 
 # %% 
-surfaces.add_surfaces_values([[2,2,2,6], [2,2,1,8]], ['val_foo', 'val2_foo'])
+surfaces.add_surfaces_values([[2, 2, 2, 6], [2, 2, 1, 8]], ['val_foo', 'val2_foo'])
 
 # %% 
 surfaces
-
 
 # %%
 # Delete formations values
@@ -273,7 +237,6 @@ surfaces
 # %% 
 surfaces.delete_surface_values(['val_foo', 'value_0'])
 
-
 # %%
 # One of the formations must be set be the basement:
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -282,7 +245,6 @@ surfaces.delete_surface_values(['val_foo', 'value_0'])
 # %% 
 surfaces.set_basement()
 surfaces
-
 
 # %%
 # Set formation values
@@ -293,9 +255,8 @@ surfaces
 # 
 
 # %% 
-surfaces.set_surfaces_values([[2,2,2,6], [2,2,1,8]], ['val_foo', 'val2_foo'])
+surfaces.set_surfaces_values([[2, 2, 2, 6], [2, 2, 1, 8]], ['val_foo', 'val2_foo'])
 surfaces
-
 
 # %%
 # The last property is the correspondant series that each formation belong
@@ -309,7 +270,6 @@ surfaces.df['series']
 
 # %% 
 surfaces.df['surface']
-
 
 # %%
 # Map series to formation
@@ -327,24 +287,22 @@ surfaces
 # %% 
 series
 
-
 # %%
 # If a series does not exist in the ``Series`` object, we rise a warning
 # and we set those formations to nans
 # 
 
 # %% 
-d =  {"foo7":'foo', "booX": ('foo2','foo5', 'fee')}
+d = {"foo7": 'foo', "booX": ('foo2', 'foo5', 'fee')}
 
 # %% 
 surfaces.map_series(d)
 
 # %% 
-surfaces.map_series({"foo7":'foo', "boo": ('foo2','foo5', 'fee')})
+surfaces.map_series({"foo7": 'foo', "boo": ('foo2', 'foo5', 'fee')})
 
 # %% 
 surfaces
-
 
 # %%
 # An advantage of categories is that they are order so no we can tidy the
@@ -358,7 +316,7 @@ surfaces
 # 
 
 # %% 
-surfaces.rename_surfaces({'foo2':'lala'})
+surfaces.rename_surfaces({'foo2': 'lala'})
 
 # %% 
 surfaces
@@ -368,7 +326,6 @@ surfaces.df.loc[2, 'val_foo'] = 22
 
 # %% 
 surfaces
-
 
 # %%
 # Modify surface color
@@ -384,7 +341,6 @@ surfaces
 # %% 
 surfaces.colors.change_colors()
 
-
 # %%
 # This allow to change the colors interactively. If you already know which
 # colors you want to use, you can also update them with a dictionary
@@ -392,9 +348,8 @@ surfaces.colors.change_colors()
 # 
 
 # %% 
-new_colors={'foo':'#ff8000', 'foo5':'#4741be'}
+new_colors = {'foo': '#ff8000', 'foo5': '#4741be'}
 surfaces.colors.change_colors(new_colors)
-
 
 # %%
 # Data
@@ -410,13 +365,13 @@ surfaces.colors.change_colors(new_colors)
 
 # %% 
 surface_points = gempy.core.data_modules.geometric_data.SurfacePoints(surfaces)
-#orientations = gp.Orientations()
 
-# %% 
+# %%
 surface_points
 
 # %% 
-surface_points.set_surface_points(pn.DataFrame(np.random.rand(6,3)), ['foo', 'foo5', 'lala', 'foo5', 'lala', 'feeeee'])
+surface_points.set_surface_points(pd.DataFrame(np.random.rand(6, 3)),
+                                  ['foo', 'foo5', 'lala', 'foo5', 'lala', 'feeeee'])
 
 # %% 
 surface_points
@@ -443,7 +398,6 @@ surface_points
 # %% 
 faults
 
-
 # %%
 # Orientations
 # ~~~~~~~~~~~~
@@ -455,20 +409,19 @@ orientations = gempy.core.data_modules.geometric_data.Orientations(surfaces)
 # %% 
 orientations
 
-
 # %%
 # Set values passing pole vectors:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # 
 
 # %% 
-orientations.set_orientations(np.random.rand(6,3)*10,
-                            np.random.rand(6,3),
-                            surface=['foo', 'foo5', 'lala', 'foo5', 'lala', 'feeeee'])
+orientations.set_orientations(np.random.rand(6, 3) * 10,
+                              np.random.rand(6, 3),
+                              surface=['foo', 'foo5', 'lala', 'foo5',
+                                       'lala', 'feeeee'])
 
 # %% 
 orientations
-
 
 # %%
 # Set values pasing orientation data: azimuth, dip, pole (dip direction)
@@ -476,13 +429,13 @@ orientations
 # 
 
 # %% 
-orientations.set_orientations(np.random.rand(6,3)*10,
-                            orientation = np.random.rand(6,3)*20,
-                            surface=['foo', 'foo5', 'lala', 'foo5', 'lala', 'feeeee'])
+orientations.set_orientations(np.random.rand(6, 3) * 10,
+                              orientation=np.random.rand(6, 3) * 20,
+                              surface=['foo', 'foo5', 'lala', 'foo5',
+                                       'lala', 'feeeee'])
 
 # %% 
 orientations
-
 
 # %%
 # Mapping data from the other df
@@ -504,7 +457,6 @@ orientations
 # %% 
 orientations.update_annotations()
 
-
 # %%
 # Grid
 # ~~~~
@@ -512,11 +464,10 @@ orientations.update_annotations()
 
 # %% 
 grid = gp.Grid()
-grid.create_regular_grid([0,10,0,10,0,10], [50,50,50])
+grid.create_regular_grid([0, 10, 0, 10, 0, 10], [50, 50, 50])
 
 # %% 
 grid.values
-
 
 # %%
 # Rescaling Data
@@ -524,15 +475,14 @@ grid.values
 # 
 
 # %% 
-rescaling = gempy.core.data_modules.geometric_data.RescaledData(surface_points, orientations, grid)
+rescaling = gempy.core.data_modules.geometric_data.RescaledData(
+    surface_points, orientations, grid)
 
-
-# %% 
+# %%
 surface_points
 
 # %% 
 orientations
-
 
 # %%
 # Additional Data
@@ -542,8 +492,7 @@ orientations
 # %% 
 ad = gp.AdditionalData(surface_points, orientations, grid, faults, surfaces, rescaling)
 
-
-# %% 
+# %%
 ad
 
 # %% 
@@ -564,11 +513,14 @@ ad.kriging_data
 # %% 
 ad.rescaling_data
 
-
 # %%
 # Interpolator
 # ~~~~~~~~~~~~
 # 
+
+# %%
+
+faults.df['isFault'].values
 
 # %% 
 interp = gp.InterpolatorModel(surface_points, orientations, grid, surfaces, series, faults, ad)

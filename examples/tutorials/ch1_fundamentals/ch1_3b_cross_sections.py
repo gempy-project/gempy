@@ -1,24 +1,14 @@
 """
-2-D sections
-============
+1.3b: 2-D sections
+==================
 
 """
 
-# %% 
-# These two lines are necessary only if GemPy is not installed
-import sys, os
-sys.path.append("../../..")
-
-# Importing GemPy
+# %%
+# Importing
 import gempy as gp
-
-# Embedding matplotlib figures in the notebooks
-# %matplotlib inline
-
-# Importing auxiliary librarie
 import numpy as np
 import matplotlib.pyplot as plt
-
 
 # %%
 # Setup the model
@@ -27,16 +17,18 @@ import matplotlib.pyplot as plt
 
 # %% 
 geo_model = gp.create_model('Tutorial_ch1-1_Basics')
-# Importing the data from CSV-files and setting extent and resolution
-gp.init_data(geo_model, [0,2000.,0,2000.,0,2000.],[5,5,5], 
-      path_o = os.pardir+"/../data/input_data/tut_chapter1/simple_fault_model_orientations.csv",
-      path_i = os.pardir+"/../data/input_data/tut_chapter1/simple_fault_model_points.csv", default_values=True)
-gp.map_stack_to_surfaces(geo_model,
-                         {"Fault_Series":'Main_Fault',
-                             "Strat_Series": ('Sandstone_2','Siltstone',
-                                              'Shale', 'Sandstone_1', 'basement')}, remove_unused_series=True)
-geo_model.set_is_fault(['Fault_Series'])
 
+# Importing the data from CSV-files and setting extent and resolution
+data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
+
+gp.init_data(geo_model, [0, 2000., 0, 2000., 0, 2000.], [5, 5, 5],
+             path_o=data_path + "/data/input_data/tut_chapter1/simple_fault_model_orientations.csv",
+             path_i=data_path + "/data/input_data/tut_chapter1/simple_fault_model_points.csv", default_values=True)
+gp.map_stack_to_surfaces(geo_model,
+                         {"Fault_Series": 'Main_Fault',
+                          "Strat_Series": ('Sandstone_2', 'Siltstone',
+                                           'Shale', 'Sandstone_1', 'basement')}, remove_unused_series=True)
+geo_model.set_is_fault(['Fault_Series'])
 
 # %%
 # Add sections
@@ -50,11 +42,10 @@ geo_model.set_is_fault(['Fault_Series'])
 # 
 
 # %% 
-section_dict = {'section1':([0,0],[2000,2000],[100,80]),
-         'section2':([800,0],[800,2000],[150,100]),
-         'section3':([0,200],[1500,500],[200,150])} #p1,p2,resolution
-geo_model._grid.create_section_grid(section_dict)
-
+section_dict = {'section1': ([0, 0], [2000, 2000], [100, 80]),
+                'section2': ([800, 0], [800, 2000], [150, 100]),
+                'section3': ([0, 200], [1500, 500], [200, 150])}  # p1,p2,resolution
+geo_model.set_section_grid(section_dict)
 
 # %%
 # Add topography
@@ -62,37 +53,36 @@ geo_model._grid.create_section_grid(section_dict)
 # 
 
 # %% 
-geo_model.set_topography(fd=1.2,d_z=np.array([600,2000]),resolution=np.array([50,50]));
-
+geo_model.set_topography(fd=1.2, d_z=np.array([600, 2000]), resolution=np.array([50, 50]))
 
 # %%
 # Active grids:
 # 
 
 # %% 
-geo_model._grid.grid_types[geo_model._grid.active_grids]
+geo_model.get_active_grids()
 
 # %% 
 gp.plot.plot_section_traces(geo_model)
+plt.show()
 
 # %% 
-gp.set_interpolation_data(geo_model,
-                          compile_theano=True,
-                          theano_optimizer='fast_compile',
-                          verbose=[])
+gp.set_interpolator(geo_model)
 
 # %% 
 sol = gp.compute_model(geo_model, compute_mesh=False)
 
 # %% 
-gp.plot.plot_map(geo_model)
+gp.plot_2d(geo_model, section_names=['topography'])
 
 # %% 
-gp.plot.plot_section_by_name(geo_model, 'section1')
+gp.plot_2d(geo_model, section_names=['section1'])
+plt.show()
 
 # %% 
-gp.plot.plot_all_sections(geo_model)
-
+gp.plot_2d(geo_model, section_names=['section1', 'section2',
+                                     'section3', 'topography'])
+plt.show()
 
 # %%
 # Get polygons of formations in sections
@@ -109,7 +99,6 @@ polygondict, cdict, extent = section_utils.get_polygon_dictionary(geo_model, 'se
 # this stores the xy points in the sections for every surface.
 polygondict
 
-
 # %%
 # Look at resulting polygons:
 # '''''''''''''''''''''''''''
@@ -121,7 +110,7 @@ pointslist = np.array(polygondict[form])
 c = cdict[form]
 if pointslist.shape != ():
     for points in pointslist:
-        plt.plot(points[:,0], points[:,1], color=c)
+        plt.plot(points[:, 0], points[:, 1], color=c)
     plt.ylim(extent[2:4])
     plt.xlim(extent[:2])
 
@@ -135,6 +124,7 @@ pointslist = np.array(polygondict[form])
 c = cdict[form]
 if pointslist.shape != ():
     for points in pointslist:
-        plt.plot(points[:,0], points[:,1], color=c)
+        plt.plot(points[:, 0], points[:, 1], color=c)
     plt.ylim(extent[2:4])
     plt.xlim(extent[:2])
+plt.show()

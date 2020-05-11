@@ -1,6 +1,6 @@
 """
-Chapter 1.1 -Basics of geological modeling with GemPy
-=====================================================
+1.1 -Basics of geological modeling with GemPy
+==============================================
 
 """
 # %%
@@ -12,8 +12,9 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
-np.random.seed(1515)
 
+# Setting options
+np.random.seed(1515)
 pd.set_option('precision', 2)
 
 # %%
@@ -72,12 +73,12 @@ geo_model = gp.create_model('Tutorial_ch1_1_Basics')
 
 # %%
 data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
-#data_path = os.getcwd()+'/../..'
-print(data_path)
 # Importing the data from CSV-files and setting extent and resolution
 gp.init_data(geo_model, [0, 2000., 0, 2000., 0, 750.], [50, 50, 50],
-             path_o=data_path + "/data/input_data/getting_started/simple_fault_model_orientations.csv",
-             path_i=data_path + "/data/input_data/getting_started/simple_fault_model_points.csv",
+             path_o=data_path + "/data/input_data/getting_started/"
+                                "simple_fault_model_orientations.csv",
+             path_i=data_path + "/data/input_data/getting_started/"
+                                "simple_fault_model_points.csv",
              default_values=True)
 
 # %%
@@ -157,8 +158,7 @@ gp.get_data(geo_model, 'orientations').head()
 # %% 
 geo_model.surfaces
 
-
-# %% 
+# %%
 gp.map_stack_to_surfaces(geo_model,
                          {"Fault_Series": 'Main_Fault',
                           "Strat_Series": ('Sandstone_2', 'Siltstone',
@@ -182,7 +182,6 @@ geo_model.faults
 
 # %%
 geo_model.faults.faults_relations_df
-
 
 # %%
 # Returning information from our input data
@@ -260,8 +259,7 @@ plt.show()
 
 
 # %%
-gpv = gp.plot_3d(geo_model, image=True)
-
+gpv = gp.plot_3d(geo_model, image=False, plotter_type='basic')
 
 # %%
 # Model generation
@@ -339,17 +337,9 @@ gp.get_data(geo_model, 'kriging')
 # used.
 # 
 
-# %% 
-geo_model.additional_data.structure_data
 
 # %% 
-geo_model.surfaces
-
-# %% 
-sol = gp.compute_model(geo_model, compute_mesh=False, sort_surfaces=False)
-
-# %%
-geo_model._surfaces
+sol = gp.compute_model(geo_model)
 
 # %% 
 sol
@@ -363,22 +353,13 @@ geo_model.solutions
 # 
 # Model solutions can be easily visualized in 2D sections in GemPy
 # directly. Let's take a look at our lithology block:
-# 
-
-# %% 
-gp.compute_model(geo_model)
-
-# %% 
-geo_model.solutions.lith_block
-
-# %% 
-geo_model.grid
+#
 
 # %%
-gp.plot.plot_2d(geo_model, show_data=True)
+gp.plot_2d(geo_model, show_data=True)
 plt.show()
 # %% 
-geo_model.surfaces
+
 
 # %%
 # With ``cell_number=25`` and remembering that we defined our resolution
@@ -394,11 +375,11 @@ geo_model.surfaces
 # 
 
 # %%
-gp.plot.plot_2d(geo_model, show_data=False, show_scalar=True, show_lith=False)
+gp.plot_2d(geo_model, show_data=False, show_scalar=True, show_lith=False)
 plt.show()
 
 # %%
-gp.plot.plot_2d(geo_model, series_n=1, show_data=False, show_scalar=True, show_lith=False)
+gp.plot_2d(geo_model, series_n=1, show_data=False, show_scalar=True, show_lith=False)
 plt.show()
 
 # %%
@@ -412,11 +393,11 @@ plt.show()
 geo_model.solutions.scalar_field_at_surface_points
 
 # %%
-gp.plot.plot_2d(geo_model, show_block=True, show_lith=False)
+gp.plot_2d(geo_model, show_block=True, show_lith=False)
 plt.show()
 
 # %%
-gp.plot.plot_2d(geo_model, series_n=1, show_block=True, show_lith=False)
+gp.plot_2d(geo_model, series_n=1, show_block=True, show_lith=False)
 plt.show()
 
 # %%
@@ -433,10 +414,7 @@ plt.show()
 
 # %% 
 ver, sim = gp.get_surfaces(geo_model)
-
-
-gpv = gp.plot.plot_3d(geo_model, image=True)
-
+gpv = gp.plot_3d(geo_model, image=False, plotter_type='basic')
 
 # %%
 # Using the rescaled interpolation data, we can also run our 3D VTK
@@ -451,7 +429,6 @@ gpv = gp.plot.plot_3d(geo_model, image=True)
 # %%
 # Adding topography
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 geo_model.set_topography(d_z=(350, 750))
 
 # %%
@@ -459,12 +436,11 @@ gp.compute_model(geo_model)
 gp.plot_2d(geo_model, show_topography=True)
 plt.show()
 
-# %%
-# sphinx_gallery_thumbnail_number = 10
-#%%
-gpv = gp.plot.plot_3d(geo_model, show_topography=True, show_surfaces=True,
-                      show_lith=True,
-                      image=True)
+
+# sphinx_gallery_thumbnail_number = 9
+gpv = gp.plot_3d(geo_model, plotter_type='basic', show_topography=True, show_surfaces=True,
+                 show_lith=True,
+                 image=False)
 
 # %%
 # Compute at a given location

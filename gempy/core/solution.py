@@ -12,9 +12,11 @@ import gempy.utils.docstring as ds
 @_setdoc_pro([Grid.__doc__, Surfaces.__doc__, Series.__doc__, ds.weights_vector, ds.sfai, ds.bai, ds.mai, ds.vai,
               ds.lith_block, ds.sfm, ds.bm, ds.mm, ds.vm, ds.vertices, ds.edges, ds.geological_map])
 class Solution(object):
-    """
-    This class stores the output of the interpolation and the necessary objects to visualize and manipulate this data.
-    Depending on the activated grid (see :class:`Grid`) a different number of properties are returned returned:
+    """This class stores the output of the interpolation and the necessary objects
+    to visualize and manipulate this data.
+
+    Depending on the activated grid (see :class:`Grid`) a different number of
+     properties are returned returned:
 
     Args:
         grid (Grid): [s0]
@@ -25,21 +27,21 @@ class Solution(object):
         grid (Grid)
         surfaces (Surfaces)
         series (Series)
-        weights_vector (np.array): [s3]
-        scalar_field_at_surface_points (np.array): [s4]
-        block_at_surface_points (np.array): [s5]
-        mask_at_surface_points (np.array): [s6]
-        values_at_surface_points (np.array): [s7]
-        lith_block (np.array): [s8]
-        scalar_field_matrix (np.array): [s9]
-        block_matrix (np.array): [s10]
-        mask_matrix (np.array): [s11]
-        mask_matrix_pad (np.array): mask matrix padded 2 block in order to guarantee that the layers intersect each
+        weights_vector (numpy.array): [s3]
+        scalar_field_at_surface_points (numpy.array): [s4]
+        block_at_surface_points (numpy.array): [s5]
+        mask_at_surface_points (numpy.array): [s6]
+        values_at_surface_points (numpy.array): [s7]
+        lith_block (numpy.array): [s8]
+        scalar_field_matrix (numpy.array): [s9]
+        block_matrix (numpy.array): [s10]
+        mask_matrix (numpy.array): [s11]
+        mask_matrix_pad (numpy.array): mask matrix padded 2 block in order to guarantee that the layers intersect each
          other after marching cubes
-        values_matrix (np.array): [s12]
-        vertices (list[np.array]): [s13]
-        edges (list[np.array]): [s14]
-        geological_map (np.array): [s15]
+        values_matrix (numpy.array): [s12]
+        vertices (list[numpy.array]): [s13]
+        edges (list[numpy.array]): [s14]
+        geological_map (numpy.array): [s15]
 
     """
 
@@ -88,23 +90,25 @@ class Solution(object):
     def set_solution_to_regular_grid(self, values: Union[list, np.ndarray],
                                      compute_mesh: bool = True,
                                      compute_mesh_options: dict = None):
-        """
-        If regular grid is active set all the solution objects dependent on them and compute mesh.
+        """If regular grid is active set all the solution objects dependent on them and compute mesh.
 
         Args:
             values (list[np.array]): list with result of the theano evaluation (values returned by
              :func:`gempy.compute_model` function):
+
                  - block_matrix
                  - weights_vector
                  - scalar_field_matrix
                  - scalar field at interfaces
                  - mask_matrix
+
             compute_mesh (bool): if True perform marching cubes algorithm to recover the surface mesh from the
              implicit model.
             compute_mesh_options (dict): options for the marching cube function.
-             1) rescale: True
+                - rescale: True
 
         Returns:
+            :class:`gempy.core.solutions.Solutions`
 
         """
         if compute_mesh_options is None:
@@ -128,13 +132,14 @@ class Solution(object):
         self.sections = np.array([values[0][:, l0: l1], values[4][:, l0: l1].astype(float)])
 
     def set_values_to_regular_grid(self, values: Union[list, np.ndarray]):
-        """Set all solution values to the correspondent attribute
+        """Set all solution values to the correspondent attribute.
 
         Args:
             values (np.ndarray): values returned by `function: gempy.compute_model` function
             compute_mesh (bool): if true compute automatically the grid
 
         Returns:
+            :class:`gempy.core.solutions.Solutions`
 
         """
         regular_grid_length_l0, regular_grid_length_l1 = self.grid.get_grid_args('regular')
@@ -159,7 +164,7 @@ class Solution(object):
 
         # TODO add topology solutions
 
-        return True
+        return self
 
     def set_values_to_surface_points(self, values):
         x_to_intep_length = self.grid.length[-1]
@@ -171,12 +176,11 @@ class Solution(object):
         self.mask_at_surface_points = values[6][:, x_to_intep_length:]
         return self.scalar_field_at_surface_points
 
-    @_setdoc(measure.marching_cubes.__doc__)
     def compute_marching_cubes_regular_grid(self, level: float, scalar_field,
                                             mask_array=None,
                                             rescale=False, **kwargs):
-        """
-        Compute the surface (vertices and edges) of a given surface by computing marching cubes (by skimage)
+        """Compute the surface (vertices and edges) of a given surface by computing
+         marching cubes (by skimage)
 
         Args:
             level (float): value of the scalar field at the surface
@@ -188,7 +192,10 @@ class Solution(object):
         Returns:
             list: vertices, simplices, normals, values
 
-        Marching cubes Docs:
+        See Also:
+
+            :func:`skimage.measure.marching_cubes`
+
         """
 
         vertices, simplices, normals, values = measure.marching_cubes(
@@ -219,9 +226,18 @@ class Solution(object):
     #     a = (np.swapaxes(x, 0, 1) * mask_matrix)
     #     return a
 
-    def padding_mask_matrix(self, mask_topography=True, shift=2):
+    def padding_mask_matrix(self, mask_topography=True, shift=1):
         """Pad as many elements as in shift to the masking arrays. This is done
-         to guarantee intersection of layers if masked marching cubes are done"""
+         to guarantee intersection of layers if masked marching cubes are done
+
+        Args:
+            mask_topography (bool): if True mask also the topography. Default True
+            shift: Number of voxels shifted for the topology. Default 1.
+
+        Returns:
+              numpy.ndarray: masked regular grid
+        """
+
         self.mask_matrix_pad = []
         for mask_series in self.mask_matrix:
             mask_series_reshape = mask_series.reshape((self.grid.regular_grid.resolution[0],
@@ -234,20 +250,20 @@ class Solution(object):
             if mask_topography and self.grid.regular_grid.mask_topo.size != 0:
                 mask_pad *= np.invert(self.grid.regular_grid.mask_topo)
             self.mask_matrix_pad.append(mask_pad)
-        return True
+        return self.mask_matrix_pad
 
-    @_setdoc(compute_marching_cubes_regular_grid.__doc__)
     def compute_all_surfaces(self, **kwargs):
-        """
-        Compute all surfaces of the model given the geological features rules.
+        """Compute all surfaces of the model given the geological features rules.
 
         Args:
-            **kwargs: skimage.measure.marching_cubes_lewiner args (see below)
+            **kwargs: :any:`skimage.measure.marching_cubes` args (see below)
 
         Returns:
             list: vertices and edges
 
-        Compute a single surface Doc:
+        See Also:
+            :meth:`gempy.core.solution.Solution.compute_marching_cubes_regular_grid`
+
         """
         self.vertices = []
         self.edges = []
