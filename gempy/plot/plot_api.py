@@ -64,9 +64,10 @@ def plot_2d(model, n_axis=None, section_names: list = None,
             show_topography: Union[bool, list] = False,
             series_n: Union[int, List[int]] = 0,
             ve=1,
+            block=None,
             regular_grid=None,
             kwargs_topography=None,
-            kwargs_regurlar_grid=None,
+            kwargs_regular_grid=None,
             **kwargs):
     """Plot 2-D sections of geomodel.
 
@@ -102,18 +103,26 @@ def plot_2d(model, n_axis=None, section_names: list = None,
 
     Keyword Args:
         legend (bool): If True plot legend. Default True
-
+        show (bool): Call matplotlib show
 
     Returns:
         :class:`gempy.plot.visualization_2d_pro.Plot2D`: Plot2D object
 
     """
-    if kwargs_regurlar_grid is None:
-        kwargs_regurlar_grid = dict()
+    if kwargs_regular_grid is None:
+        kwargs_regular_grid = dict()
     if kwargs_topography is None:
         kwargs_topography = dict()
     if section_names is None and cell_number is None and direction is not None:
         cell_number = ['mid']
+
+    show = kwargs.get('show', True)
+
+    if block is not None:
+        import warnings
+        regular_grid = block
+        warnings.warn('block is going to be deprecated. Use regular grid instead',
+                      DeprecationWarning)
 
     section_names = [] if section_names is None else section_names
     section_names = np.atleast_1d(section_names)
@@ -199,7 +208,7 @@ def plot_2d(model, n_axis=None, section_names: list = None,
                               **kwargs_topography)
         if regular_grid is not None:
             p.plot_regular_grid(temp_ax, block=regular_grid, section_name=sn,
-                                **kwargs_regurlar_grid)
+                                **kwargs_regular_grid)
 
         temp_ax.set_aspect(ve)
 
@@ -236,9 +245,13 @@ def plot_2d(model, n_axis=None, section_names: list = None,
 
         if regular_grid is not None:
             p.plot_regular_grid(temp_ax, block=regular_grid, cell_number=cell_number[e2],
-                                direction=direction[e2], **kwargs_regurlar_grid)
+                                direction=direction[e2], **kwargs_regular_grid)
 
         temp_ax.set_aspect(ve)
+
+    if show is True:
+        plt.show()
+
     return p
 
 

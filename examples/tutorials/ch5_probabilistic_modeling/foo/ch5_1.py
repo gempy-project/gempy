@@ -152,7 +152,7 @@ prob_block = compute_prob(lith_blocks)
 p2dp = gp.plot_2d(geo_model,
                   show_lith=False, show_boundaries=False, show_data=False,
                   regular_grid=prob_block[2],
-                  kwargs_regurlar_grid={'cmap': 'viridis',
+                  kwargs_regular_grid={'cmap': 'viridis',
                                         'norm': None}
                   )
 plt.show()
@@ -164,7 +164,7 @@ entropy_block = calculate_ie_masked(prob_block)
 p2dp = gp.plot_2d(geo_model,
                   show_lith=False, show_boundaries=False, show_data=False,
                   regular_grid=entropy_block,
-                  kwargs_regurlar_grid={'cmap': 'viridis',
+                  kwargs_regular_grid={'cmap': 'viridis',
                                         'norm': None}
                   )
 

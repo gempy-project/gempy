@@ -317,7 +317,7 @@ class ImplicitCoKriging(object):
             self._grid.regular_grid.set_regular_grid(extent=extent, resolution=resolution)
             self._grid.set_active('regular')
 
-        if self._grid.topography is not None:
+        if self._grid.topography is not None and self._grid.topography.values.shape[0] != 0:
             self._grid.regular_grid.set_topography_mask(self._grid.topography)
 
         self.update_from_grid()

@@ -449,7 +449,7 @@ class TheanoGraphPro(object):
         final_model = self.compute_final_block(block_mask, self.block_op)
 
         return [final_model, self.block_op, fault_block, self.weights_op, self.scalar_op,
-                self.sfai_op, self.mask_op2, fault_mask]
+                self.sfai_op, block_mask, fault_mask]
 
     def create_oct_voxels(self, xyz, level=1):
         x_ = T.repeat(T.stack((xyz[:, 0] - self.dxdydz[0]/level / 4,

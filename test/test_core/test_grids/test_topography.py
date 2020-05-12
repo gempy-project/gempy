@@ -75,6 +75,7 @@ def test_real_grid_ales():
                           kwargs_plot_structured_grid={'opacity': 1,
                                                        'show_edges': False},
                           kwargs_plot_topography={'scalars': 'topography'})
+
     gpv.p.set_scale(zscale=10)
 
     img = gpv.p.show(screenshot=True)

@@ -226,7 +226,7 @@ class Solution(object):
     #     a = (np.swapaxes(x, 0, 1) * mask_matrix)
     #     return a
 
-    def padding_mask_matrix(self, mask_topography=True, shift=1):
+    def padding_mask_matrix(self, mask_topography=True, shift=2):
         """Pad as many elements as in shift to the masking arrays. This is done
          to guarantee intersection of layers if masked marching cubes are done
 
@@ -283,10 +283,14 @@ class Solution(object):
             sfas = sfas[np.nonzero(sfas)]
 
             # TODO: I think this condition is not necessary anymore
-            if series_type[e - 1] == 'Onlap':
-                mask_array = self.mask_matrix_pad[e]
-            #elif series_type[e] == 'Fault':
-            #    mask_array = None
+            # if series_type[e - 1] == 'Onlap':
+            #     mask_array = self.mask_matrix_pad[e]
+            # #elif series_type[e] == 'Fault':
+            # #    mask_array = None
+            # else:
+            #     mask_array = self.mask_matrix_pad[e]
+            if series_type[e] == 'Fault':
+                mask_array = np.invert(self.mask_matrix_pad[e])
             else:
                 mask_array = self.mask_matrix_pad[e]
 

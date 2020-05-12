@@ -67,22 +67,24 @@ def load_model(name, path=None, recompile=False):
     geo_model = create_model()
     init_data(geo_model, np.load(f'{path}/{name}_extent.npy'), np.load(f'{path}/{name}_resolution.npy'))
 
-    geo_model.set_topography(source='saved', filepath=f'{path}/{name}_topography.npy')
-
+    try:
+        geo_model.set_topography(source='saved', filepath=f'{path}/{name}_topography.npy')
+    except FileNotFoundError:
+        pass
     # rel_matrix = np.load()
     # set additonal data
     geo_model._additional_data.kriging_data.df = pn.read_csv(f'{path}/{name}_kriging_data.csv', index_col=0,
                                                              dtype={'range': 'float64', '$C_o$': 'float64',
-                                                                   'drift equations': object,
-                                                                   'nugget grad': 'float64',
-                                                                   'nugget scalar': 'float64'})
+                                                                    'drift equations': object,
+                                                                    'nugget grad': 'float64',
+                                                                    'nugget scalar': 'float64'})
 
     geo_model._additional_data.kriging_data.str2int_u_grade()
 
     geo_model._additional_data.options.df = pn.read_csv(f'{path}/{name}_options.csv', index_col=0,
                                                         dtype={'dtype': 'category', 'output': 'category',
-                                                              'theano_optimizer': 'category', 'device': 'category',
-                                                              'verbosity': object})
+                                                               'theano_optimizer': 'category', 'device': 'category',
+                                                               'verbosity': object})
     geo_model._additional_data.options.df['dtype'].cat.set_categories(['float32', 'float64'], inplace=True)
     geo_model._additional_data.options.df['theano_optimizer'].cat.set_categories(['fast_run', 'fast_compile'],
                                                                                  inplace=True)
@@ -90,8 +92,16 @@ def load_model(name, path=None, recompile=False):
     geo_model._additional_data.options.df['output'].cat.set_categories(['geology', 'gradients'], inplace=True)
     geo_model._additional_data.options.df.loc['values', 'verbosity'] = None
     # do series properly - this needs proper check
-    geo_model._stack.df = pn.read_csv(f'{path}/{name}_series.csv', index_col=0,
-                                      dtype={'order_series': 'int32', 'BottomRelation': 'category'})
+
+    # Load series
+    s = pn.read_csv(f'{path}/{name}_series.csv', index_col=0, dtype={'order_series': 'int32',
+                                                                     'BottomRelation': 'category'})
+
+    f = pn.read_csv(f'{path}/{name}_faults.csv', index_col=0,
+                                       dtype={'isFault': 'bool', 'isFinite': 'bool'})
+
+    stack = pn.concat([s, f], axis=1, sort=False)
+    geo_model._stack.df = stack
     series_index = pn.CategoricalIndex(geo_model._stack.df.index.values)
     # geo_model.series.df.index = pn.CategoricalIndex(series_index)
     geo_model._stack.df.index = series_index
@@ -104,9 +114,9 @@ def load_model(name, path=None, recompile=False):
     cat_series = geo_model._stack.df.index.values
 
     # do faults properly - check
-    geo_model._faults.df = pn.read_csv(f'{path}/{name}_faults.csv', index_col=0,
-                                       dtype={'isFault': 'bool', 'isFinite': 'bool'})
-    geo_model._faults.df.index = series_index
+   # geo_model._faults.df = pn.read_csv(f'{path}/{name}_faults.csv', index_col=0,
+   #                                    dtype={'isFault': 'bool', 'isFinite': 'bool'})
+   # geo_model._faults.df.index = series_index
 
     # # do faults relations properly - this is where I struggle
     geo_model._faults.faults_relations_df = pn.read_csv(f'{path}/{name}_faults_relations.csv', index_col=0)
@@ -139,19 +149,19 @@ def load_model(name, path=None, recompile=False):
     # do orientations properly, reset all dtypes
     geo_model._orientations.df = pn.read_csv(f'{path}/{name}_orientations.csv', index_col=0,
                                              dtype={'X': 'float64', 'Y': 'float64', 'Z': 'float64',
-                                                   'X_r': 'float64', 'Y_r': 'float64', 'Z_r': 'float64',
-                                                   'dip': 'float64', 'azimuth': 'float64', 'polarity': 'float64',
-                                                   'surface': 'category', 'series': 'category',
-                                                   'id': 'int64', 'order_series': 'int64'})
+                                                    'X_r': 'float64', 'Y_r': 'float64', 'Z_r': 'float64',
+                                                    'dip': 'float64', 'azimuth': 'float64', 'polarity': 'float64',
+                                                    'surface': 'category', 'series': 'category',
+                                                    'id': 'int64', 'order_series': 'int64'})
     geo_model._orientations.df['surface'].cat.set_categories(cat_surfaces, inplace=True)
     geo_model._orientations.df['series'].cat.set_categories(cat_series, inplace=True)
 
     # do surface_points properly, reset all dtypes
     geo_model._surface_points.df = pn.read_csv(f'{path}/{name}_surface_points.csv', index_col=0,
                                                dtype={'X': 'float64', 'Y': 'float64', 'Z': 'float64',
-                                                     'X_r': 'float64', 'Y_r': 'float64', 'Z_r': 'float64',
-                                                     'surface': 'category', 'series': 'category',
-                                                     'id': 'int64', 'order_series': 'int64'})
+                                                      'X_r': 'float64', 'Y_r': 'float64', 'Z_r': 'float64',
+                                                      'surface': 'category', 'series': 'category',
+                                                      'id': 'int64', 'order_series': 'int64'})
     geo_model._surface_points.df['surface'].cat.set_categories(cat_surfaces, inplace=True)
     geo_model._surface_points.df['series'].cat.set_categories(cat_series, inplace=True)
 
@@ -178,6 +188,8 @@ def load_model(name, path=None, recompile=False):
         set_interpolator(geo_model, verbose=[0])
 
     return geo_model
+
+
 # endregion
 
 
@@ -238,7 +250,7 @@ def load_surfaces(geo_model, path, name):
     # do surfaces properly
     geo_model._surfaces.df = pn.read_csv(f'{path}/{name}_surfaces.csv', index_col=0,
                                          dtype={'surface': 'str', 'series': 'category',
-                                               'order_surfaces': 'int64', 'isBasement': 'bool', 'id': 'int64'})
+                                                'order_surfaces': 'int64', 'isBasement': 'bool', 'id': 'int64'})
     geo_model._surfaces.df['series'].cat.set_categories(cat_series, inplace=True)
 
     cat_surfaces = geo_model._surfaces.df['surface'].values
@@ -248,10 +260,10 @@ def load_orientations(geo_model, path, name):
     # do orientations properly, reset all dtypes
     geo_model._orientations.df = pn.read_csv(f'{path}/{name}_orientations.csv', index_col=0,
                                              dtype={'X': 'float64', 'Y': 'float64', 'Z': 'float64',
-                                                   'X_r': 'float64', 'Y_r': 'float64', 'Z_r': 'float64',
-                                                   'dip': 'float64', 'azimuth': 'float64', 'polarity': 'float64',
-                                                   'surface': 'category', 'series': 'category',
-                                                   'id': 'int64', 'order_series': 'int64'})
+                                                    'X_r': 'float64', 'Y_r': 'float64', 'Z_r': 'float64',
+                                                    'dip': 'float64', 'azimuth': 'float64', 'polarity': 'float64',
+                                                    'surface': 'category', 'series': 'category',
+                                                    'id': 'int64', 'order_series': 'int64'})
     geo_model._orientations.df['surface'].cat.set_categories(cat_surfaces, inplace=True)
     geo_model._orientations.df['series'].cat.set_categories(cat_series, inplace=True)
 
@@ -260,9 +272,9 @@ def load_surface_points(geo_model, path, name):
     # do surface_points properly, reset all dtypes
     geo_model._surface_points.df = pn.read_csv(f'{path}/{name}_surface_points.csv', index_col=0,
                                                dtype={'X': 'float64', 'Y': 'float64', 'Z': 'float64',
-                                                     'X_r': 'float64', 'Y_r': 'float64', 'Z_r': 'float64',
-                                                     'surface': 'category', 'series': 'category',
-                                                     'id': 'int64', 'order_series': 'int64'})
+                                                      'X_r': 'float64', 'Y_r': 'float64', 'Z_r': 'float64',
+                                                      'surface': 'category', 'series': 'category',
+                                                      'id': 'int64', 'order_series': 'int64'})
     geo_model._surface_points.df['surface'].cat.set_categories(cat_surfaces, inplace=True)
     geo_model._surface_points.df['series'].cat.set_categories(cat_series, inplace=True)
 

@@ -561,7 +561,7 @@ class GemPyToVista(WidgetsCallbacks):
                              data: Union[dict, str] = 'Default',
                              series: str = '',
                              render_topography: bool = True,
-                             opacity=.5,
+                             opacity=.2,
                              clear=True,
                              **kwargs) -> list:
         """Plot a structured grid of the geomodel.

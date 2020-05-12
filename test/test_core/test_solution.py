@@ -55,21 +55,21 @@ def test_masked_marching_cubes(unconformity_model_topo):
     plt.show()
 
     gp.plot_2d(geo_model, regular_grid=geo_model.solutions.mask_matrix_pad[0],
-               kwargs_regurlar_grid={'cmap': 'viridis',
-                                     'norm': None}
+               kwargs_regular_grid={'cmap': 'viridis',
+                                    'norm': None}
                )
     print(geo_model.solutions.mask_matrix_pad[0])
     plt.show()
 
     gp.plot_2d(geo_model, regular_grid=geo_model.solutions.mask_matrix_pad[1],
-               kwargs_regurlar_grid={'cmap': 'viridis',
+               kwargs_regular_grid={'cmap': 'viridis',
                                      'norm': None}
                )
     print(geo_model.solutions.mask_matrix_pad[1])
     plt.show()
 
     gp.plot_2d(geo_model, regular_grid=geo_model.solutions.mask_matrix[0],
-               kwargs_regurlar_grid={'cmap': 'viridis',
+               kwargs_regular_grid={'cmap': 'viridis',
                                      'norm': None}
                )
     print(geo_model.solutions.mask_matrix[0])
