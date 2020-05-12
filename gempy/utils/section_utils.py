@@ -1,6 +1,7 @@
 from gempy.plot import visualization_2d_pro as vv
 import numpy as np
-
+import matplotlib.patches as patches
+import matplotlib.pyplot as plt
 
 def _extract_boundaries(self, axes, section_name='topography'):
     """
@@ -93,34 +94,32 @@ def get_polygon_dictionary(geo_model, section_name):
     t = p.add_section(section_name, ax_pos=224)
 
     cs, colors, extent = _extract_boundaries(p, p.axes[0], section_name)
-
     all_paths = []
-    for i in range(len(cs)):
-        for j in range(len(cs[i].collections)):
-            all_paths.append(cs[i].collections[j].get_paths())
+    for contour in cs:
+        for col in contour.collections:
+            all_paths.append(col.get_paths())
+
+    for p in all_paths:
+        if p == []:
+            all_paths.remove(p)
 
     surflist = []
     for color in colors:
         surflist.append(geo_model.surfaces.df[geo_model.surfaces.df['color'] == color]['surface'].values[0])
 
-    # Todo remove this dirty fix (for merle)
-    if len(all_paths) != len(surflist):
-        del all_paths[0]
-
-    pathdict = dict.fromkeys(surflist)
-    surfi = 0
-    for path in all_paths:
-        if len(path) != 0:
-            surface = surflist[surfi]
-            justpaths = []
-            for i in range(len(path)):
-                subpath = path[i]
-                if subpath is not None:
-                    justpaths.append(subpath.vertices)
-            pathdict.update({surface: justpaths})
-            surfi += 1
-
+    pathdict = dict(zip(surflist, all_paths))
     cdict = dict(zip(surflist, colors))
 
     return pathdict, cdict, extent
 
+
+def plot_pathdict(pathdict, cdict, extent, ax=None):
+    surflist = list(cdict.keys())
+    if ax == None:
+        fig, ax = plt.subplots()
+    for formation in surflist:
+        for path in pathdict.get(formation):
+            patch = patches.PathPatch(path, fill=False, lw=1, edgecolor=cdict.get(formation, None))
+            ax.add_patch(patch)
+    ax.set_xlim(extent[:2])
+    ax.set_ylim(extent[2:])
