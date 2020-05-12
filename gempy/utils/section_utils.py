@@ -112,14 +112,3 @@ def get_polygon_dictionary(geo_model, section_name):
 
     return pathdict, cdict, extent
 
-
-def plot_pathdict(pathdict, cdict, extent, ax=None):
-    surflist = list(cdict.keys())
-    if ax == None:
-        fig, ax = plt.subplots()
-    for formation in surflist:
-        for path in pathdict.get(formation):
-            patch = patches.PathPatch(path, fill=False, lw=1, edgecolor=cdict.get(formation, None))
-            ax.add_patch(patch)
-    ax.set_xlim(extent[:2])
-    ax.set_ylim(extent[2:])
