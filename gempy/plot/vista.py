@@ -114,9 +114,11 @@ class GemPyToVista(WidgetsCallbacks):
         self.regular_grid_mesh = None
 
         self.surface_points_actor = None
+        self.surface_points_mesh = None
         self.surface_points_widgets = {}
 
         self.orientations_actor = None
+        self.orientations_mesh = None
         self.orientations_widgets = {}
 
         # Private attributes
@@ -365,7 +367,7 @@ class GemPyToVista(WidgetsCallbacks):
         else:
             poly = pv.PolyData(surface_points[["X", "Y", "Z"]].values)
             poly['id'] = surface_points['id']
-
+            self.surface_points_mesh = poly
             cmap = mcolors.ListedColormap(list(self._get_color_lot(is_faults=True, is_basement=True)))
             self.surface_points_actor = self.p.add_mesh(poly, cmap=cmap,
                                                         render_points_as_spheres=render_points_as_spheres,
@@ -417,6 +419,7 @@ class GemPyToVista(WidgetsCallbacks):
 
             cmap = mcolors.ListedColormap(list(self._get_color_lot(is_faults=True, is_basement=True)))
             self.orientations_actor = self.p.add_mesh(arrows, cmap=cmap, show_scalar_bar=False)
+            self.orientations_mesh = arrows
             r = self.orientations_actor
         self.set_bounds()
         if self.live_updating is False:
@@ -561,7 +564,7 @@ class GemPyToVista(WidgetsCallbacks):
                              data: Union[dict, str] = 'Default',
                              series: str = '',
                              render_topography: bool = True,
-                             opacity=.2,
+                             opacity=.5,
                              clear=True,
                              **kwargs) -> list:
         """Plot a structured grid of the geomodel.

@@ -1,3 +1,6 @@
+.. toctree::
+   :maxdepth: 5
+
 GemPy Tutorials
 ===============
 

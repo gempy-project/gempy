@@ -266,9 +266,8 @@ def get_fault_ids(geo_model) -> List[int]:
     f_series_names = geo_model._faults.df[geo_model._faults.df.isFault].index
     fault_ids = [0]
     for fsn in f_series_names:
-        fid = \
-            geo_model._surfaces.df[
-                geo_model._surfaces.df._stack == fsn].id.values[0]
+        fid = geo_model._surfaces.df[
+                geo_model._surfaces.df.series == fsn].id.values[0]
         fault_ids.append(fid)
     return fault_ids
 
@@ -290,7 +289,7 @@ def get_lith_ids(geo_model, basement: bool = True) -> List[int]:
             if fsn == "Basement":
                 continue
         lids = geo_model._surfaces.df[
-            geo_model._surfaces.df._stack == fsn].id.values
+            geo_model._surfaces.df.series == fsn].id.values
         for lid in lids:
             lith_ids.append(lid)
     return lith_ids

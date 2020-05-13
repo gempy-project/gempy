@@ -95,8 +95,9 @@ class ImplicitCoKriging(object):
         """ :class:`gempy.core.data.Grid` [s0]
 
         """
-        return RestrictingWrapper(self._grid,
-                                  accepted_members=['__repr__', '__str__', 'values'])
+        return RestrictingWrapper(
+            self._grid,
+            accepted_members=['__repr__', '__str__', 'values', 'sections', 'centered_grid'])
 
     @_setdoc_pro(Faults.__doc__)
     @property

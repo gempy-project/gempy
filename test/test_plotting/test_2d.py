@@ -78,6 +78,8 @@ def test_topo_sections_iterp2(section_model):
                show_topography=True)
     plt.show()
 
+    gp.plot.plot_section_traces(section_model)
+    plt.show()
 
 def test_ve(section_model):
     # Test ve

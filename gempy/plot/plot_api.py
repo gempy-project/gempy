@@ -39,6 +39,7 @@ from gempy.plot.vista import GemPyToVista
 try:
     import pyvista as pv
     from ._vista import Vista as Vista
+
     PYVISTA_IMPORT = True
 except ImportError:
     PYVISTA_IMPORT = False
@@ -47,6 +48,7 @@ from .visualization_2d_pro import Plot2D
 
 try:
     import mplstereonet
+
     mplstereonet_import = True
 except ImportError:
     mplstereonet_import = False
@@ -62,6 +64,7 @@ def plot_2d(model, n_axis=None, section_names: list = None,
             show_scalar: Union[bool, list] = False,
             show_boundaries: Union[bool, list] = True,
             show_topography: Union[bool, list] = False,
+            show_section_traces: Union[bool, list] = True,
             series_n: Union[int, List[int]] = 0,
             ve=1,
             block=None,
@@ -169,8 +172,11 @@ def plot_2d(model, n_axis=None, section_names: list = None,
     e = 0
     # is 10 and 10 because in the ax pos is the second digit
     n_columns_ = 1 if len(section_names) + len(cell_number) < 2 else 2
-    n_columns = n_columns_ * 10 # This is for the axis location syntax
-    n_rows = (len(section_names) + len(cell_number))/n_columns_
+    n_columns = n_columns_ * 10  # This is for the axis location syntax
+    n_rows = (len(section_names) + len(cell_number)) / n_columns_
+
+    n_columns_ = np.max([n_columns_, 1])
+    n_rows = np.max([n_rows, 1])
 
     p = Plot2D(model, **kwargs)
     p.create_figure(cols=n_columns_, rows=n_rows, **kwargs)
@@ -202,10 +208,13 @@ def plot_2d(model, n_axis=None, section_names: list = None,
             # Check if anything dense is plot. If not plot dense topography
             f_c_ = not _is_filled
             # f_c = kwargs_topography.get('fill_contour', f_c_)
-            if not 'fill_contour' in kwargs_topography:
+            if 'fill_contour' not in kwargs_topography:
                 kwargs_topography['fill_contour'] = f_c_
-            p.plot_topography(temp_ax, section_name=sn, # fill_contour=f_c,
+            p.plot_topography(temp_ax, section_name=sn,  # fill_contour=f_c,
                               **kwargs_topography)
+            if show_section_traces is True and sn == 'topography':
+                p.plot_section_traces(temp_ax)
+
         if regular_grid is not None:
             p.plot_regular_grid(temp_ax, block=regular_grid, section_name=sn,
                                 **kwargs_regular_grid)
@@ -242,7 +251,6 @@ def plot_2d(model, n_axis=None, section_names: list = None,
         if show_topography[e + e2] is True:
             p.plot_topography(temp_ax, cell_number=cell_number[e2],
                               direction=direction[e2], **kwargs_topography)
-
         if regular_grid is not None:
             p.plot_regular_grid(temp_ax, block=regular_grid, cell_number=cell_number[e2],
                                 direction=direction[e2], **kwargs_regular_grid)
@@ -250,24 +258,25 @@ def plot_2d(model, n_axis=None, section_names: list = None,
         temp_ax.set_aspect(ve)
 
     if show is True:
-        plt.show()
+        p.fig.show()
 
     return p
 
 
 def plot_3d(model, plotter_type='basic',
             show_data: bool = True,
-            show_results:bool = True,
+            show_results: bool = True,
             show_surfaces: bool = True,
             show_lith: bool = True,
             show_scalar: bool = False,
             show_boundaries: bool = True,
             show_topography: Union[bool, list] = False,
+            scalar_field: str = None,
             ve=None,
             kwargs_plot_structured_grid=None,
             kwargs_plot_topography=None,
             image=False,
-            off_screen=False, **kwargs):
+            off_screen=False, **kwargs) -> GemPyToVista:
     """foobar
 
     Args:
@@ -277,11 +286,12 @@ def plot_3d(model, plotter_type='basic',
         plotter_type: PyVista plotter types. Supported plotters are:
          'basic', 'background', and 'notebook'.
         show_data (bool): Show original input data. Defaults to True.
-        show_results (bool): If False, override show lith, show_calar, show_values
+        show_results (bool): If False, override show lith, show_scalar, show_values
         show_lith (bool): Show lithological block volumes. Defaults to True.
         show_scalar (bool): Show scalar field isolines. Defaults to False.
         show_boundaries (bool): Show surface boundaries as lines. Defaults to True.
         show_topography (bool): Show topography on plot. Defaults to False.
+        scalar_field (str): Name of the field to be activated
         series_n (int): number of the scalar field.
         ve (float): Vertical Exaggeration
         kwargs_plot_structured_grid:
@@ -296,6 +306,10 @@ def plot_3d(model, plotter_type='basic',
         off_screen = True
         kwargs['off_screen'] = True
         plotter_type = 'basic'
+    if show_results is False:
+        show_surfaces = False
+        show_scalar = False
+        show_lith = False
 
     if kwargs_plot_topography is None:
         kwargs_plot_topography = dict()
@@ -309,6 +323,9 @@ def plot_3d(model, plotter_type='basic',
         gpv.plot_surfaces()
     if show_lith is True and model.solutions.lith_block.shape[0] != 0:
         gpv.plot_structured_grid('lith', **kwargs_plot_structured_grid)
+    if show_scalar is True and model.solutions.scalar_field_matrix.shape[0] != 0:
+        gpv.plot_structured_grid("scalar", series=scalar_field)
+
     if show_data:
         gpv.plot_data()
     if show_topography and model._grid.topography is not None:
@@ -341,7 +358,7 @@ def plot_section_traces(model):
         (Plot2D) Plot2D object
     """
     pst = plot_2d(model, n_axis=1, section_names=['topography'],
-                  show_data=False, show_boundaries=False, show_lith=False)
+                  show_data=False, show_boundaries=False, show_lith=False, show=False)
     pst.plot_section_traces(pst.axes[0], show_data=False)
     return pst
 
@@ -405,64 +422,89 @@ def plot_stereonet(self, litho=None, planes=True, poles=True,
         ax._grid(True, color='black', alpha=0.25)
 
 
-#
-# if PYVISTA_IMPORT and False:
-#     def plot_3d(
-#             geo_model,
-#             show_surfaces: bool = True,
-#             show_data: bool = True,
-#             show_topography: bool = False,
-#             **kwargs,
-#     ) -> Vista:
-#         """Plot 3-D geomodel.
-#
-#         Args:
-#             geo_model: Geomodel object with solutions.
-#             render_surfaces: Render geomodel surfaces. Defaults to True.
-#             render_data: Render geomodel input data. Defaults to True.
-#             render_topography: Render topography. Defaults to False.
-#             real_time: Toggles modyfiable input data and real-time geomodel
-#                 updating. Defaults to False.
-#
-#         Returns:
-#             (Vista) GemPy Vista object for plotting.
-#         """
-#         gpv = Vista(geo_model, **kwargs)
-#         gpv.set_bounds()
-#         if show_surfaces:
-#             gpv.plot_surfaces()
-#         if show_data:
-#             gpv._plot_surface_points_all()
-#             gpv._plot_orientations_all()
-#         if show_topography and geo_model.grid.topography is not None:
-#             gpv.plot_topography()
-#         gpv.show()
-#         return gpv
-#
-#
-#     def plot_interactive_3d(
-#             geo_model,
-#             name: str,
-#             render_topography: bool = False,
-#             **kwargs,
-#     ) -> Vista:
-#         """Plot interactive 3-D geomodel with three cross sections in subplots.
-#
-#         Args:
-#             geo_model: Geomodel object with solutions.
-#             name (str): Can be either one of the following
-#                     'lith' - Lithology id block.
-#                     'scalar' - Scalar field block.
-#                     'values' - Values matrix block.
-#             render_topography: Render topography. Defaults to False.
-#             **kwargs:
-#
-#         Returns:
-#             (Vista) GemPy Vista object for plotting.
-#         """
-#         gpv = Vista(geo_model, plotter_type='background', shape="1|3")
-#         gpv.set_bounds()
-#         gpv.plot_structured_grid_interactive(name=name, render_topography=render_topography, **kwargs)
-#
-#         gpv.show()
-#         return gpv
+def plot_topology(geo_model, edges, centroids, direction="y", scale=True,
+                  label_kwargs=None, edge_kwargs=None):
+    """Plot the topology adjacency graph in 2-D.
+
+        Args:
+            geo_model ([type]): GemPy geomodel instance.
+            edges (Set[Tuple[int, int]]): Set of topology edges.
+            centroids (Dict[int, Array[int, 3]]): Dictionary of topology id's and
+                their centroids.
+            direction (Union["x", "y", "z", optional): Section direction.
+                Defaults to "y".
+            label_kwargs (dict, optional): Keyword arguments for topology labels.
+                Defaults to None.
+            edge_kwargs (dict, optional): Keyword arguments for topology edges.
+                Defaults to None.
+
+        """
+    res = geo_model._grid.regular_grid.resolution
+    if direction == "y":
+        c1, c2 = (0, 2)
+        e1 = geo_model._grid.regular_grid.extent[1] - geo_model._grid.regular_grid.extent[0]
+        e2 = geo_model._grid.regular_grid.extent[5] - geo_model._grid.regular_grid.extent[4]
+        d1 = geo_model._grid.regular_grid.extent[0]
+        d2 = geo_model._grid.regular_grid.extent[4]
+        # if len(list(centroids.items())[0][1]) == 2:
+        #     c1, c2 = (0, 1)
+        r1 = res[0]
+        r2 = res[2]
+    elif direction == "x":
+        c1, c2 = (1, 2)
+        e1 = geo_model._grid.regular_grid.extent[3] - geo_model._grid.regular_grid.extent[2]
+        e2 = geo_model._grid.regular_grid.extent[5] - geo_model._grid.regular_grid.extent[4]
+        d1 = geo_model._grid.regular_grid.extent[2]
+        d2 = geo_model._grid.regular_grid.extent[4]
+        # if len(list(centroids.items())[0][1]) == 2:
+        #     c1, c2 = (0, 1)
+        r1 = res[1]
+        r2 = res[2]
+    elif direction == "z":
+        c1, c2 = (0, 1)
+        e1 = geo_model._grid.regular_grid.extent[1] - geo_model._grid.regular_grid.extent[0]
+        e2 = geo_model._grid.regular_grid.extent[3] - geo_model._grid.regular_grid.extent[2]
+        d1 = geo_model._grid.regular_grid.extent[0]
+        d2 = geo_model._grid.regular_grid.extent[2]
+        # if len(list(centroids.items())[0][1]) == 2:
+        #     c1, c2 = (0, 1)
+        r1 = res[0]
+        r2 = res[1]
+
+    tkw = {
+        "color": "white",
+        "fontsize": 13,
+        "ha": "center",
+        "va": "center",
+        "weight": "ultralight",
+        "family": "monospace",
+        "verticalalignment": "center",
+        "horizontalalignment": "center",
+        "bbox": dict(boxstyle='round', facecolor='black', alpha=1),
+    }
+    if label_kwargs is not None:
+        tkw.update(label_kwargs)
+
+    lkw = {
+        "linewidth": 1,
+        "color": "black"
+    }
+    if edge_kwargs is not None:
+        lkw.update(edge_kwargs)
+
+    for a, b in edges:
+        # plot edges
+        x = np.array([centroids[a][c1], centroids[b][c1]])
+        y = np.array([centroids[a][c2], centroids[b][c2]])
+        if scale:
+            x = x * e1 / r1 + d1
+            y = y * e2 / r2 + d2
+        plt.plot(x, y, **lkw)
+
+    for node in np.unique(list(edges)):
+        x = centroids[node][c1]
+        y = centroids[node][c2]
+        if scale:
+            x = x * e1 / r1 + d1
+            y = y * e2 / r2 + d2
+        plt.text(x, y, str(node), **tkw)

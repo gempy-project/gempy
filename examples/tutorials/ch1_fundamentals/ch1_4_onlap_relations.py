@@ -1,6 +1,6 @@
 """
-Chapter 1.4: Unconformity relationships
-========================================
+1.4: Unconformity relationships
+===============================
 
 """
 
