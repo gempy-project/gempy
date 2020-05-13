@@ -1,5 +1,5 @@
 """
-Chapter 1.8: Unconformity relationships
+Chapter 1.4: Unconformity relationships
 ========================================
 
 """

@@ -13,6 +13,13 @@ before_install:
   - source ./gl-ci-helpers/travis/setup_headless_display.sh
 
 install:
+  - wget https://repo.anaconda.com/pkgs/misc/conda-execs/conda-latest-linux-64.exe -O conda.exe
+  - chmod +x conda.exe
+  - export CONDA_ALWAYS_YES=1
+  # This is where you put any extra dependencies you may have.
+  - ./conda.exe create -p $HOME/miniconda python=$TRAVIS_PYTHON_VERSION conda conda-build pytest six pytest-cov pytest-mock
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - hash -r
   - pip install --upgrade setuptools pip
   - pip install -r requirements.txt
   - pip install sphinx-gallery
@@ -21,6 +28,7 @@ install:
   - pip install vtk
   - pip install pyevtk
   - pip install dataclasses emg3d pyvista panel discretize
+  - conda install gdal
 # - pip install --user travis-sphinx
   - export PATH="./bin:$PATH"
 
