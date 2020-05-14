@@ -97,7 +97,7 @@ class ImplicitCoKriging(object):
         """
         return RestrictingWrapper(
             self._grid,
-            accepted_members=['__repr__', '__str__', 'values', 'sections', 'centered_grid'])
+            accepted_members=['__repr__', '__str__', 'values', 'regular_grid', 'sections', 'centered_grid'])
 
     @_setdoc_pro(Faults.__doc__)
     @property
@@ -110,7 +110,8 @@ class ImplicitCoKriging(object):
     @property
     def stack(self):
         """:class:`gempy.core.data_modules.stack.Stack` [s0]"""
-        return RestrictingWrapper(self._stack)
+        return RestrictingWrapper(self._stack,
+                                  accepted_members=['__repr__', '_repr_html_', 'df'])
 
     @_setdoc_pro(Series.__doc__)
     @property
@@ -118,26 +119,29 @@ class ImplicitCoKriging(object):
         """"""
         # warnings.warn(DeprecationWarning, 'series will be deprecated in the future.'
         #                                  'Use stack instead.')
-        return RestrictingWrapper(self._stack)
+        return RestrictingWrapper(self._stack,
+                                  accepted_members=['__repr__', '_repr_html_', 'df'])
 
     @_setdoc_pro(Surfaces.__doc__)
     @property
     def surfaces(self):
         """:class:`gempy.core.data.Surfaces` [s0]"""
         return RestrictingWrapper(self._surfaces,
-                                  accepted_members=['__repr__', '_repr_html_', 'colors'])
+                                  accepted_members=['__repr__', '_repr_html_', 'colors', 'df'])
 
     @_setdoc_pro(SurfacePoints.__doc__)
     @property
     def surface_points(self):
         """:class:`gempy.core.data_modules.geometric_data.SurfacePoints` [s0]"""
-        return RestrictingWrapper(self._surface_points)
+        return RestrictingWrapper(self._surface_points,
+                                  accepted_members=['__repr__', '_repr_html_', 'df'])
 
     @_setdoc_pro(Orientations.__doc__)
     @property
     def orientations(self):
         """:class:`gempy.core.data_modules.geometric_data.Orientations` [s0]"""
-        return RestrictingWrapper(self._orientations)
+        return RestrictingWrapper(self._orientations,
+                                  accepted_members=['__repr__', '_repr_html_', 'df'])
 
     @_setdoc_pro(RescaledData.__doc__)
     @property
@@ -150,14 +154,17 @@ class ImplicitCoKriging(object):
     def additional_data(self):
         """:class:`gempy.core.data.AdditionalData` [s0]"""
         return RestrictingWrapper(self._additional_data,
-                                  accepted_members=['structure_data', 'options',
+                                  accepted_members=['__repr__', '_repr_html_',
+                                                    'structure_data', 'options',
                                                     'kriging_parameters'])
 
     @_setdoc_pro(InterpolatorModel.__doc__)
     @property
     def interpolator(self):
         """:class:`gempy.core.interpolator.InterpolatorModel` [s0]"""
-        return RestrictingWrapper(self._interpolator)
+        return RestrictingWrapper(self._interpolator,
+                                  accepted_members=['__repr__', '_repr_html_',
+                                                    'theano_graph'])
 
     def _add_valid_idx_s(self, idx):
         if idx is None:
@@ -490,8 +497,8 @@ class ImplicitCoKriging(object):
 
     @_setdoc(Series.add_series.__doc__, indent=False)
     def add_series(self, series_list: Union[str, list], reset_order_series=True):
-        warnings.warn(DeprecationWarning, 'Series are getting renamed to Stack/features.'
-                                          'Please use add_features instead')
+        warnings.warn('Series are getting renamed to Stack/features.'
+                      'Please use add_features instead', DeprecationWarning, )
         return self.add_features(series_list, reset_order_series)
 
     @_setdoc_pro(Stack.reset_order_series.__doc__)
@@ -561,8 +568,8 @@ class ImplicitCoKriging(object):
 
     @_setdoc(rename_features.__doc__, indent=False)
     def rename_series(self, new_categories: Union[dict, list]):
-        warnings.warn(DeprecationWarning, 'Series are getting renamed to Stack/features.'
-                                          'Please use rename_features instead')
+        warnings.warn('Series are getting renamed to Stack/features.'
+                      'Please use rename_features instead', DeprecationWarning)
         self.rename_features(new_categories)
 
     def modify_order_features(self, new_value: int, idx: str):
@@ -597,8 +604,8 @@ class ImplicitCoKriging(object):
 
     @_setdoc(Series.modify_order_series.__doc__, indent=False)
     def modify_order_series(self, new_value: int, idx: str):
-        warnings.warn(DeprecationWarning, 'Series are getting renamed to Stack/features.'
-                                          'Please use modify_order_features instead')
+        warnings.warn('Series are getting renamed to Stack/features.'
+                      'Please use modify_order_features instead', DeprecationWarning, )
         return self.modify_order_features(new_value, idx)
 
     def reorder_features(self, new_categories: Iterable[str]):
@@ -630,8 +637,8 @@ class ImplicitCoKriging(object):
 
     @_setdoc(reorder_features.__doc__, indent=False)
     def reorder_series(self, new_categories: Iterable[str]):
-        warnings.warn(DeprecationWarning, 'Series are getting renamed to Stack/features.'
-                                          'Please use reorder_features instead')
+        warnings.warn('Series are getting renamed to Stack/features.'
+                      'Please use reorder_features instead', DeprecationWarning)
         return self.reorder_features(new_categories)
 
     # endregion
@@ -1030,7 +1037,7 @@ class ImplicitCoKriging(object):
     def delete_surface_points_basement(self):
         """Delete surface points belonging to the basement layer if any"""
 
-        basement_name = self._surfaces.df['surface'][self._surfaces.df['isBasement']].values
+        basement_name = self._surfaces.df['surface'][self._surfaces.df['isBasement']].values[0]
         select = (self._surface_points.df['surface'] == basement_name)
         self.delete_surface_points(self._surface_points.df.index[select])
         return True

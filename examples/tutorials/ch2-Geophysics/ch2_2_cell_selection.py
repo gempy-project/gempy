@@ -1,6 +1,6 @@
 """
 2.2: Centered Grid.
-===================
+^^^^^^^^^^^^^^^^^^^
 
 Geophysics Preprocessing builds on the centered grid
 (https://github.com/cgre-aachen/gempy/blob/master/notebooks/tutorials/ch1-3-Grids.ipynb)

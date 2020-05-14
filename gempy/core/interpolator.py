@@ -104,6 +104,8 @@ class Interpolator(object):
         if additional_data is None:
             additional_data = self.additional_data
 
+        self.dtype = additional_data.options.df.loc['values', 'dtype']
+
         graph = tg.TheanoGraphPro(optimizer=additional_data.options.df.loc['values', 'theano_optimizer'],
                                   verbose=additional_data.options.df.loc['values', 'verbosity'],
                                   output=output,

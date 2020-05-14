@@ -51,7 +51,7 @@ def convert_ipynb_to_gallery(nb, new_file):
     open(new_file, 'w', newline='',  errors='ignore').write(python_file)
 
 #%%
-directory = os.getcwd()+'/../notebooks/tutorials/'
+directory = os.getcwd()+'/../notebooks/integrations/'
 #directory = '/mnt/i/PycharmProjects/gempy_notebooks/notebooks/Probabilistic Modeling'
 
 for root, dirs, files in os.walk(directory):

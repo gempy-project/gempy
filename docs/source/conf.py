@@ -30,7 +30,7 @@ import numpy as np
 
 pyvista.set_error_output_file('errors.txt')
 # Ensure that offscreen rendering is used for docs generation
-pyvista.OFF_SCREEN = True # Not necessary - simply an insurance policy
+pyvista.OFF_SCREEN = True  # Not necessary - simply an insurance policy
 # Preferred plotting style for documentation
 pyvista.set_plot_theme('document')
 pyvista.rcParams['window_size'] = np.array([1024, 768]) * 2
@@ -41,8 +41,8 @@ if not os.path.exists(pyvista.FIGURE_PATH):
 
 import IPython.sphinxext
 from pygments.plugin import find_plugin_lexers
-sys.path.insert(0, os.path.abspath('.'))
 
+sys.path.insert(0, os.path.abspath('.'))
 
 # -- General configuration ------------------------------------------------
 
@@ -64,7 +64,6 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
     'sphinx.ext.napoleon',
-
     'sphinx_gallery.gen_gallery'
 ]
 
@@ -80,16 +79,10 @@ intersphinx_mapping = {
     'pandas': ('https://pandas.pydata.org/pandas-docs/stable/', None),
 }
 
-
 napoleon_google_docstring = True
 
-# nbsphinx_execute = 'never'
-# nbsphinx_allow_errors = True
-
-# autodoc_default_flags = ['members']
-
 autodoc_default_options = {
-    'autodoc_default_flags' : ['members'],
+    'autodoc_default_flags': ['members'],
     'members': None,
     'member-order': 'bysource',
     'special-members': '__init__',
@@ -153,9 +146,19 @@ from sphinx_gallery.sorting import FileNameSortKey
 
 sphinx_gallery_conf = {
     # path to your examples scripts
-    "examples_dirs": ["../../examples/tutorials", "../../examples/getting_started"],
+    "examples_dirs": [
+        # "../../examples/getting_started",
+        "../../examples/tutorials",
+        "../../examples/examples",
+        "../../examples/integrations",
+    ],
     # path where to save gallery generated examples
-    "gallery_dirs": ["examples"],
+    "gallery_dirs": [
+        # 'getting_started',
+        'tutorials',
+        "examples",
+        'integrations'
+    ],
     # Patter to search for example files
     "filename_pattern": r"\.py",
     # Remove the "Download all examples" button from the top level gallery
@@ -179,7 +182,6 @@ sphinx_gallery_conf = {
 
 }
 
-
 # -- Options for HTML output ----------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
@@ -187,31 +189,32 @@ sphinx_gallery_conf = {
 #
 
 html_theme = 'alabaster'
-#html_theme = 'bootstrap'
-#html_theme_path = [sphinx_bootstrap_theme.get_html_theme_path()[0]+'/bootsrap']
+# html_theme = 'bootstrap'
+# html_theme_path = [sphinx_bootstrap_theme.get_html_theme_path()[0]+'/bootsrap']
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
 html_theme_options = {
     'github_user': 'cgre-aachen',
-                        'github_repo': 'gempy',
-                        'github_type': 'star',
-                        'logo': './logos/gempy.png',
-                        'logo_name': True,
-                        'travis_button': True,
-                        'page_width': '1200px',
-                        'fixed_sidebar': True,
-                        }
-
+    'github_repo': 'gempy',
+    'github_type': 'star',
+    'logo': './logos/gempy.png',
+    'logo_name': True,
+    'travis_button': True,
+    'page_width': '1200px',
+    'fixed_sidebar': True,
+    'show_related': True,
+    'sidebar_collapse': True,
+}
 
 # Custom sidebar templates, maps document names to template names.
-#html_sidebars = { '**': ['globaltoc.html', 'relations.html', 'sourcelink.html', 'searchbox.html']}
+# html_sidebars = { '**': ['globaltoc.html', 'relations.html', 'sourcelink.html', 'searchbox.html']}
 
-html_sidebars = {'**': [ 'about.html', 'navigation.html',
-        'relations.html',
-        'searchbox.html',
-        'donate.html',] }
+html_sidebars = {'**': ['about.html', 'navigation.html',
+                        'relations.html',
+                        'searchbox.html',
+                        'donate.html', ]}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -223,7 +226,6 @@ html_favicon = '_static/logos/favicon.ico'
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'GemPydoc'
-
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -253,7 +255,6 @@ latex_documents = [
      'Miguel de la Varga, CGR-Aachen Team', 'manual'),
 ]
 
-
 # -- Options for manual page output ---------------------------------------
 
 # One entry per manual page. List of tuples
@@ -262,7 +263,6 @@ man_pages = [
     (master_doc, 'gempy', 'GemPy Documentation',
      [author], 1)
 ]
-
 
 # -- Options for Texinfo output -------------------------------------------
 

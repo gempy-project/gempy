@@ -357,7 +357,7 @@ def plot_section_traces(model):
     Returns:
         (Plot2D) Plot2D object
     """
-    pst = plot_2d(model, n_axis=1, section_names=['topography'],
+    pst = plot_2d(model, n_axis=1, direction=['z'], cell_number=[-1],
                   show_data=False, show_boundaries=False, show_lith=False, show=False)
     pst.plot_section_traces(pst.axes[0], show_data=False)
     return pst
@@ -508,3 +508,40 @@ def plot_topology(geo_model, edges, centroids, direction="y", scale=True,
             x = x * e1 / r1 + d1
             y = y * e2 / r2 + d2
         plt.text(x, y, str(node), **tkw)
+
+
+def plot_ar(geo_model, path=None, project_name=None, api_token=None, secret=None):
+    """ Create, upload and retrieve tag to visualize the model in AR in rexview
+
+    https://www.rexos.org/getting-started/
+
+    Args:
+        geo_model (gempy.Model):
+        path: Location for rex files. Default cwd
+        project_name: Name of the project in rexos
+        api_token: rexos api token
+        secret: rexos secret
+
+    Returns:
+        gempy.addons.rex_api.Rextag
+    """
+    from gempy.addons.rex_api import upload_to_rexcloud
+    from gempy.addons.gempy_to_rexfile import write_rex, geomodel_to_rex
+    if project_name is None:
+        project_name = geo_model.meta.project_name
+
+    if path is None:
+        path = './'
+
+    rex_bytes = geomodel_to_rex(geo_model)
+    files_path = write_rex(rex_bytes, path)
+    project_name_ = project_name
+    for i in range(40):
+        try:
+            tag = upload_to_rexcloud(files_path, project_name=project_name_, api_token=api_token, secret=secret)
+            break
+        except ConnectionError:
+            project_name_ = project_name + str(i)
+            pass
+
+    return tag

@@ -1,6 +1,6 @@
 """
 1.1 -Basics of geological modeling with GemPy
----------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 """
 # %%
@@ -19,8 +19,7 @@ pd.set_option('precision', 2)
 
 # %%
 # Importing and creating a set of input data
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# 
+# """"""""""""""""""""""""""""""""""""""""""
 # The data used for the construction of a model in GemPy is stored in
 # Python objects. The main data classes are:
 # 

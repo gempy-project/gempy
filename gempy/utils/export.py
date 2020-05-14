@@ -74,8 +74,8 @@ def export_moose_input(geo_model, path=None, filename='geo_model_units_moose_inp
         
     """
     # get model dimensions
-    nx, ny, nz = geo_model._grid.regular_grid.resolution
-    xmin, xmax, ymin, ymax, zmin, zmax = geo_model.solutions._grid.regular_grid.extent
+    nx, ny, nz = geo_model.grid.regular_grid.resolution
+    xmin, xmax, ymin, ymax, zmin, zmax = geo_model.solutions.grid.regular_grid.extent
     
     # get unit IDs and restructure them
     ids = np.round(geo_model.solutions.lith_block)

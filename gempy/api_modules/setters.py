@@ -25,7 +25,7 @@ def set_interpolator(geo_model: Model, output: list = None, compile_theano: bool
     Method to create a graph and compile the theano code to compute the interpolation.
 
     Args:
-        geo_model (:class:`Model`): [s0]
+        geo_model (:class:`gempy.core.model.Project`): [s0]
         output (list[str:{geo, grav}]): type of interpolation.
         compile_theano (bool): [s1]
         theano_optimizer (str {'fast_run', 'fast_compile'}): [s2]
@@ -64,15 +64,20 @@ def set_interpolator(geo_model: Model, output: list = None, compile_theano: bool
         geo_model._additional_data.options.df.at['values', 'theano_optimizer'] = theano_optimizer
     if verbose is not None:
         geo_model._additional_data.options.df.at['values', 'verbosity'] = verbose
-
-    geo_model._interpolator.create_theano_graph(geo_model._additional_data, inplace=True,
-                                                output=output, **kwargs)
+    if 'dtype' in kwargs:
+        geo_model._additional_data.options.df.at['values', 'dtype'] = kwargs['dtype']
+    if 'device' in kwargs:
+        geo_model._additional_data.options.df.at['values', 'device'] = kwargs['device']
 
     # TODO add kwargs
     geo_model._rescaling.rescale_data()
     geo_model.update_additional_data(update_structure=update_structure, update_kriging=update_kriging)
+    geo_model.update_to_interpolator()
     geo_model._surface_points.sort_table()
     geo_model._orientations.sort_table()
+
+    geo_model._interpolator.create_theano_graph(geo_model._additional_data, inplace=True,
+                                                output=output, **kwargs)
 
     if 'gravity' in output:
         pos_density = kwargs.get('pos_density', 1)

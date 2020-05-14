@@ -101,6 +101,7 @@ def load_model(name, path=None, recompile=False):
                                        dtype={'isFault': 'bool', 'isFinite': 'bool'})
 
     stack = pn.concat([s, f], axis=1, sort=False)
+    stack = stack.loc[:, ~stack.columns.duplicated()]
     geo_model._stack.df = stack
     series_index = pn.CategoricalIndex(geo_model._stack.df.index.values)
     # geo_model.series.df.index = pn.CategoricalIndex(series_index)

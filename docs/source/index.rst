@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 GemPy
-=====================
+=====
 Software for 3D structural geologic implicit modeling in Python.
 ****************************************************************
 
@@ -16,7 +16,7 @@ Software for 3D structural geologic implicit modeling in Python.
    :width: 59%
 
 GemPy is an open-source tool for generating 3D structural geological models in Python (GemPy's code can be viewed in its repository: https://github.com/cgre-aachen/gempy.). Also, check our new website https://www.gempy.org/.
-It is capable of creating complex 3D geological models,
+It is capable of creating complex 3D geol      ogical models,
 including stratigraphic and structural features such as:
 
 - fold structures (e.g.: anticlines, synclines)
@@ -39,7 +39,9 @@ Contents:
    :maxdepth: 2
    :caption: Getting started
 
+   tutorials/index
    examples/index
+   integrations/index
 
 The core algorithm of *GemPy* is based on a universal cokriging interpolation method devised by
 Lajaunie et al. (1997) and extended by Calcagno et al. (2008). Its implicit nature allows the user to automatically

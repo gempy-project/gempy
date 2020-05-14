@@ -458,6 +458,7 @@ class Plot2D:
         # Hack to keep the right X label:
         temp_label = copy.copy(ax.xaxis.label)
 
+        #points['surface'] = points['surface'].astype('category')
         sns.scatterplot(data=points[select_projected_p], x=x, y=y, hue='surface',
                         ax=ax, legend=make_legend,
                         palette=self._color_lot, zorder=101)

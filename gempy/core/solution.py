@@ -239,13 +239,17 @@ class Solution(object):
         """
 
         self.mask_matrix_pad = []
-        for mask_series in self.mask_matrix:
+        series_type = self.series.df['BottomRelation']
+        for e, mask_series in enumerate(self.mask_matrix):
             mask_series_reshape = mask_series.reshape((self.grid.regular_grid.resolution[0],
                                                        self.grid.regular_grid.resolution[1],
                                                        self.grid.regular_grid.resolution[2]))
 
             mask_pad = (mask_series_reshape + find_interfaces_from_block_bottoms(
                 mask_series_reshape, True, shift=shift))
+
+            if series_type[e] == 'Fault':
+                mask_pad = np.invert(mask_pad)
 
             if mask_topography and self.grid.regular_grid.mask_topo.size != 0:
                 mask_pad *= np.invert(self.grid.regular_grid.mask_topo)
@@ -289,10 +293,11 @@ class Solution(object):
             # #    mask_array = None
             # else:
             #     mask_array = self.mask_matrix_pad[e]
-            if series_type[e] == 'Fault':
-                mask_array = np.invert(self.mask_matrix_pad[e])
-            else:
-                mask_array = self.mask_matrix_pad[e]
+            # if series_type[e] == 'Fault':
+            #     mask_array = np.invert(self.mask_matrix_pad[e])
+            # else:
+            #     mask_array = self.mask_matrix_pad[e]
+            mask_array = self.mask_matrix_pad[e]
 
             for level in sfas:
                 try:
