@@ -25,7 +25,6 @@ install:
   - pip install sphinx-gallery
   - pip install qgrid
   - pip install nbval
-  - pip install vtk
   - pip install pyevtk
   - pip install arviz
   - pip install recommonmark
@@ -35,6 +34,7 @@ install:
   - conda install --yes -c conda-forge python-graphviz
   - conda install --channel=numba llvmlite
   - conda install -c anaconda libffi
+  - conda install --yes jupyter pyzmq numpy scipy nose matplotlib pandas Cython patsy statsmodels joblib
   - pip install pymc3
 
     # Travis env is unable to import cached mpl sometimes https://github.com/pymc-devs/pymc3/issues/3423
