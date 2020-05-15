@@ -29,6 +29,7 @@ install:
   - pip install arviz
   - pip install recommonmark
   - pip install dataclasses pyvista panel discretize # emg3d
+  - pip install welly
   - conda install gdal
   - conda install --yes mkl-service
   - conda install --yes -c conda-forge python-graphviz
