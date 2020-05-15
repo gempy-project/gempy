@@ -157,7 +157,7 @@ units = units.flatten('F')
 
 # %%
 
-# sphinx_gallery_thumbnail_path = '/../_static/GemPy_model_combined.png'
+# sphinx_gallery_thumbnail_path = '_static/GemPy_model_combined.png'
 import gempy.utils.export as export
 export.export_moose_input(geo_model, path='')
 
