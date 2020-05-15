@@ -28,7 +28,7 @@ dfs = []
 for letter in 'ABCD':
     dfs.append(pn.read_csv('https://raw.githubusercontent.com/Loop3D/ImplicitBenchmark/master/Claudius/' +
                            letter + 'Points.csv', sep=';',
-                           names=['X', 'Y', 'Z', 'surface', 'cutoff'], header=0)[::1])
+                           names=['X', 'Y', 'Z', 'surface', 'cutoff'], header=0)[::5])
 # Add fault:
 dfs.append(pn.read_csv('https://raw.githubusercontent.com/Loop3D/ImplicitBenchmark/master/Claudius/Fault.csv',
                        names=['X', 'Y', 'Z', 'surface'], header=0, sep=';'))
