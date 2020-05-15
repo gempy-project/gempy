@@ -4,7 +4,7 @@
 
 
 .. autoclass:: {{ objname }}
-
+   :no-undoc-members:
 
    {% block examples%}
    .. rubric:: Examples using {{name}}
@@ -16,7 +16,6 @@
    {% block methods %}
    {% if methods %}
    .. rubric:: Methods
-
    .. autosummary::
    {% for item in methods %}
       ~{{ name }}.{{ item }}
