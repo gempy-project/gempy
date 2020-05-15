@@ -21,7 +21,9 @@ from importlib import reload
 from matplotlib.ticker import StrMethodFormatter
 from pathlib import Path
 
-import faulthandler; faulthandler.enable()
+import faulthandler
+faulthandler.enable()
+
 # %%
 # Model definition
 # ----------------

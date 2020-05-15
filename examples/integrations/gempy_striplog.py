@@ -25,7 +25,7 @@ from striplog import Striplog, Legend, Decor
 pn.set_option('precision', 2)
 
 # %%
-# #### Creating striplog object
+# Creating striplog object
 # -----------------------------
 # 
 
@@ -90,7 +90,7 @@ df = pn.DataFrame(rows, columns=column_names)
 df
 
 # %%
-# #### GemPy model
+# GemPy model
 # ----------------
 # 
 
@@ -175,7 +175,7 @@ gp.plot_3d(geo_model)
 
 
 # %%
-# ## Pinch out model
+# Pinch out model
 # ------------------
 # 
 # As we can see the 3D model generated above does not honor the forth well

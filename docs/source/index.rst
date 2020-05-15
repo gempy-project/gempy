@@ -33,12 +33,15 @@ Contents:
    :maxdepth: 2
 
    self
+   installation
    code
+   projects
 
 .. toctree::
    :maxdepth: 2
    :caption: Getting started
 
+   getting_started/index
    tutorials/index
    examples/index
    integrations/index
