@@ -1,6 +1,6 @@
 """
 Getting Started
----------------
+===============
 
 """
 
@@ -202,7 +202,7 @@ gp.plot_3d(geo_model, show_surfaces=True)
 
 # %%
 # Adding more layers:
-# -------------------
+# ~~~~~~~~~~~~~~~~~~~
 # 
 # So far we only need 2 units defined. The cross-section image that we
 # load have 4 however. Lets add two layers more:
@@ -260,8 +260,8 @@ gp.plot_2d(geo_model, cell_number=5, legend='force')
 gp.plot_3d(geo_model, kwargs_plot_structured_grid={'opacity': .2})
 
 # %%
-# Faults:
-# -------
+# Adding a Fault
+# --------------
 # 
 # So far the model is simply a depositional unit. GemPy allows for
 # unconformities and faults to build complex models. This input is given
@@ -343,7 +343,7 @@ gp.plot_3d(geo_model, kwargs_plot_structured_grid={'opacity':.2})
 # Here we will show some of them:
 # 
 # Topography
-# ~~~~~~~~~~
+# ----------
 # 
 # GemPy has a built-in capabilities to read and manipulate topographic
 # data (through gdal). To show an example we can just create a random
@@ -375,7 +375,7 @@ gp.plot_3d(geo_model, show_topography=True)
 
 # %%
 # Gravity inversion
-# ~~~~~~~~~~~~~~~~~
+# -----------------
 # 
 # GemPy also allows for inversions (in production only gravity so far). We
 # can see a small demo how this works.

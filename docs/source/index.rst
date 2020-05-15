@@ -34,7 +34,6 @@ Contents:
 
    self
    installation
-   code
    projects
 
 .. toctree::
@@ -45,6 +44,12 @@ Contents:
    tutorials/index
    examples/index
    integrations/index
+
+.. toctree::
+   :maxdepth: 2
+   :caption: API Reference
+
+   code
 
 The core algorithm of *GemPy* is based on a universal cokriging interpolation method devised by
 Lajaunie et al. (1997) and extended by Calcagno et al. (2008). Its implicit nature allows the user to automatically
