@@ -16,13 +16,8 @@ import pymc3 as pm
 import arviz as az
 
 from gempy.bayesian import plot_posterior as pp
-import seaborn as sns
 from importlib import reload
 from matplotlib.ticker import StrMethodFormatter
-from pathlib import Path
-
-import faulthandler
-faulthandler.enable()
 
 # %%
 # Model definition
