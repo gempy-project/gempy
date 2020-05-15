@@ -173,7 +173,7 @@ plt.show()
 # 
 
 # %% 
-# sphinx_gallery_thumbnail_number = 8
+# sphinx_gallery_thumbnail_number = 6
 reload(pp)
 p = pp.PlotPosterior(data)
 
