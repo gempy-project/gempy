@@ -32,6 +32,8 @@ install:
   - conda install gdal
   - conda install --yes mkl-service
   - conda install --yes -c conda-forge python-graphviz
+  - conda install --channel=numba llvmlite
+  - conda install -c anaconda libffi
   - pip install pymc3
 
     # Travis env is unable to import cached mpl sometimes https://github.com/pymc-devs/pymc3/issues/3423
