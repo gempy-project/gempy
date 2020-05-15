@@ -36,8 +36,7 @@ install:
   - conda install --yes -c conda-forge python-graphviz
 
     # Travis env is unable to import cached mpl sometimes https://github.com/pymc-devs/pymc3/issues/3423
-  -  pip install --no-cache-dir --force-reinstall -e .
-  -  pip install --no-cache-dir --force-reinstall -r requirements-dev.txt
+  - pip install ipython
 
     # Install untested, non-required code (linter fails without them)
   - pip install ipython ipywidgets
