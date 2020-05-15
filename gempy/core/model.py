@@ -156,7 +156,7 @@ class ImplicitCoKriging(object):
         return RestrictingWrapper(self._additional_data,
                                   accepted_members=['__repr__', '_repr_html_',
                                                     'structure_data', 'options',
-                                                    'kriging_parameters'])
+                                                    'kriging_parameters', 'kriging_data'])
 
     @_setdoc_pro(InterpolatorModel.__doc__)
     @property

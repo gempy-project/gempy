@@ -29,6 +29,7 @@ install:
   - pip install pyevtk
   - pip install arviz
   - pip install dataclasses emg3d pyvista panel discretize
+  - conda install --channel=numba llvmlite
   - conda install -c conda-forge pymc3
   - conda install gdal
 # - pip install --user travis-sphinx

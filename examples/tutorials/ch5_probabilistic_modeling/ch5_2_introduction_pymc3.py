@@ -7,7 +7,6 @@
 
 # Importing GemPy
 import gempy as gp
-from examples.tutorials.ch5_probabilistic_modeling.aux_functions.aux_funct import plot_geo_setting
 
 # Importing auxiliary libraries
 import os
@@ -22,6 +21,7 @@ from importlib import reload
 from matplotlib.ticker import StrMethodFormatter
 from pathlib import Path
 
+import faulthandler; faulthandler.enable()
 # %%
 # Model definition
 # ----------------

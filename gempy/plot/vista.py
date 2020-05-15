@@ -229,9 +229,11 @@ class GemPyToVista(WidgetsCallbacks):
             orientations:
             **kwargs:
         """
-        self.plot_surface_points(surfaces=surfaces, surface_points=surface_points, **kwargs)
-        self.plot_orientations(surfaces=surfaces, orientations=orientations, **kwargs)
-        self.set_scalar_bar()
+        if self.model.surface_points.df.shape[0] !=0:
+            self.plot_surface_points(surfaces=surfaces, surface_points=surface_points, **kwargs)
+            self.set_scalar_bar()
+        if self.model.orientations.df.shape[0] != 0:
+            self.plot_orientations(surfaces=surfaces, orientations=orientations, **kwargs)
 
     @staticmethod
     def _select_surfaces_data(data_df: pd.core.frame.DataFrame,
