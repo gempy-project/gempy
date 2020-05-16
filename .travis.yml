@@ -31,19 +31,12 @@ install:
   - pip install dataclasses pyvista panel discretize # emg3d
   - pip install welly
   - conda install gdal
-  - conda install --yes mkl-service
   - conda install --yes -c conda-forge python-graphviz
-  - conda install --channel=numba llvmlite
   - conda install -c anaconda libffi
-  - conda install --yes jupyter pyzmq numpy scipy nose matplotlib pandas Cython patsy statsmodels joblib
   - pip install pymc3
-
-    # Travis env is unable to import cached mpl sometimes https://github.com/pymc-devs/pymc3/issues/3423
   - pip install ipython
-
     # Install untested, non-required code (linter fails without them)
   - pip install ipython ipywidgets
-# - pip install --user travis-sphinx
   - export PATH="./bin:$PATH"
 
 script:
@@ -51,13 +44,10 @@ script:
 #  - pytest -v notebooks/integrations/ --nbval-lax --ignore-glob='*discret*'
 #  - pytest -v notebooks/examples/ --nbval-lax --current-env --ignore-glob='*pography*' --ignore-glob='*lesmodel*' --ignore-glob='*Course*'
 #  - pytest -v notebooks/tutorials/ --nbval-lax --current-env --ignore-glob='*ch1-6*' --ignore-glob='ch1-7*' --ignore-glob='*ch1-10*' --ignore-glob='*MaskedMarchinCube_Onlap_relations*'
-#  - pytest
-
+  - pytest
 
 stages:
   - deploy
-#after_success:
-#   - travis-sphinx deploy
 
 jobs:
   include:
