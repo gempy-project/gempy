@@ -25,7 +25,7 @@ from gempy.addons.gempy_to_rexfile import geomodel_to_rex
 import gempy.plot.plot_api as plot
 from gempy.plot.plot_api import plot_2d, plot_3d
 
-from gempy.plot import plot as _plot
+from gempy.plot import _plot as _plot
 
 assert sys.version_info[0] >= 3, "GemPy requires Python 3.X"  # sys.version_info[1] for minor e.g. 6
 __version__ = '2.1.1'

@@ -44,7 +44,7 @@ try:
 except ImportError:
     PYVISTA_IMPORT = False
 
-from .visualization_2d_pro import Plot2D
+from .visualization_2d import Plot2D
 
 try:
     import mplstereonet
@@ -109,7 +109,7 @@ def plot_2d(model, n_axis=None, section_names: list = None,
         show (bool): Call matplotlib show
 
     Returns:
-        :class:`gempy.plot.visualization_2d_pro.Plot2D`: Plot2D object
+        :class:`gempy.plot.visualization_2d.Plot2D`: Plot2D object
 
     """
     if kwargs_regular_grid is None:

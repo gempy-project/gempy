@@ -165,7 +165,7 @@ def test_complete_model(tmpdir, interpolator):
     if compute is True:
         geo_model.set_theano_function(interpolator)
 
-    from gempy.plot import visualization_2d_pro as vv
+    from gempy.plot import visualization_2d as vv
 
     # In this case perpendicular to the z axes
     p2d = vv.Plot2D(geo_model)

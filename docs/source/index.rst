@@ -140,9 +140,8 @@ in a variety of ways:
 * Export of images (e.g. geological maps) for
 
 We are also currently working on a tighter integration wtih several
-meshing libraries, notably `CGAL <https://www.cgal.org>`_ and
- `gmesh <https://gmsh.info>`_. In addition, we have established
-links to several other open-source libraries, including `pygiml <https://www.pygimli.org>`_
+meshing libraries, notably `CGAL <https://www.cgal.org>`_ and `gmesh <https://gmsh.info>`_. In addition, we have
+established links to several other open-source libraries, including `pygiml <https://www.pygimli.org>`_
 for geophysical modeling and inversion. In the current state, however, these
 links have to be considered as highly experimental and they are not yet
 part of the stable release. If you are interested in these features,
@@ -152,8 +151,6 @@ feel free to contact us.
    :target: https://cgre-aachen.github.io/gempy/_images/sphx_glr_ch1_1_basics_009.png
    :width: 70%
 
-
-:raw-html-m2r:`<a name="stochastic_modeling"></a>`
 
 Stochastic geological modeling
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

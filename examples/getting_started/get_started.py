@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 
 # %% 
-from gempy.plot import visualization_2d_pro as vv
+from gempy.plot import visualization_2d as vv
 from gempy.plot import vista
 
 # %%

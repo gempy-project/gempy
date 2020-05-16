@@ -40,7 +40,7 @@ def get():
 # region edit
 def edit(model: Project, data_object: str, method: str, **kwargs):
     """Function to edit any of the data_objects of gempy. Check
-        https://www.gempy.org/documentation-1 Data for documentation.
+        https://www.gempy.org/documentation data for documentation.
 
     Args:
         model (Project):
