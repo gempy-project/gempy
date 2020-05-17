@@ -45,7 +45,7 @@ except ImportError:
     PYVISTA_IMPORT = False
 
 import gempy as gp
-from gempy.plot.vista_widgets import WidgetsCallbacks
+from gempy.plot.vista_aux import WidgetsCallbacks, RenderChanges
 from logging import debug
 import matplotlib
 
@@ -61,7 +61,7 @@ except ImportError:
     VTK_IMPORT = False
 
 
-class GemPyToVista(WidgetsCallbacks):
+class GemPyToVista(WidgetsCallbacks, RenderChanges):
 
     def __init__(self, model, plotter_type: str = 'basic', extent=None, lith_c=None, live_updating=False, **kwargs):
         """GemPy 3-D visualization using pyVista.
@@ -293,13 +293,15 @@ class GemPyToVista(WidgetsCallbacks):
             centers = surface_points[['X', 'Y', 'Z']]
 
             # This is necessary to change the color of the widget if change id
-            colors = self._get_color_lot()[surface_points['surface']].values
+            colors = self._get_color_lot(is_faults=True, is_basement=False)[surface_points['surface']].values
             self._color_lot = colors
             s = self.p.add_sphere_widget(self.call_back_sphere,
                                          center=centers, color=colors, pass_widget=True,
                                          test_callback=test_callback,
                                          indices=surface_points.index.values,
                                          radius=radius, **kwargs)
+            if type(s) is not list:
+                s = [s]
             return s
 
     def create_orientations_widget(self,
@@ -314,12 +316,13 @@ class GemPyToVista(WidgetsCallbacks):
         Returns:
             List[vtkInteractionWidgetsPython.vtkPlaneWidget]:
         """
-        colors = self._get_color_lot()
+        colors = self._get_color_lot(is_faults=True, is_basement=False)
         widget_list = []
         # for index, pt, nrm in zip(i, pts, nrms):
+        self._color_lot = self._get_color_lot(is_faults=True, is_basement=False)
         for index, val in orientations.iterrows():
             widget = self.p.add_plane_widget(
-                self.pass_,
+                self.call_back_plane,
                 normal=val[['G_x', 'G_y', 'G_z']],
                 origin=val[['X', 'Y', 'Z']],
                 bounds=self.extent,
@@ -355,6 +358,9 @@ class GemPyToVista(WidgetsCallbacks):
 
         if clear is True:
             if self.plotter_type != 'notebook':
+                if 'id' not in self.p._scalar_bar_slot_lookup:
+                    self.p._scalar_bar_slot_lookup['id'] = None
+
                 self.p.clear_sphere_widgets()
                 try:
                     self.p.remove_actor(self.surface_points_actor)
@@ -372,6 +378,7 @@ class GemPyToVista(WidgetsCallbacks):
             self.surface_points_mesh = poly
             cmap = mcolors.ListedColormap(list(self._get_color_lot(is_faults=True, is_basement=True)))
             self.surface_points_actor = self.p.add_mesh(poly, cmap=cmap,
+                                                        scalars='id',
                                                         render_points_as_spheres=render_points_as_spheres,
                                                         point_size=point_size, show_scalar_bar=False)
             self.set_scalar_bar()
@@ -379,9 +386,6 @@ class GemPyToVista(WidgetsCallbacks):
             r = self.surface_points_actor
         self.set_bounds()
         return r
-
-    def pass_(self):
-        pass
 
     def plot_orientations(self, surfaces: Union[str, Iterable[str]] = 'all',
                           orientations: pd.DataFrame = None,
@@ -420,9 +424,11 @@ class GemPyToVista(WidgetsCallbacks):
                                 factor=min_axes / (100 / arrow_size))
 
             cmap = mcolors.ListedColormap(list(self._get_color_lot(is_faults=True, is_basement=True)))
-            self.orientations_actor = self.p.add_mesh(arrows, cmap=cmap, show_scalar_bar=False)
+            self.orientations_actor = self.p.add_mesh(arrows, cmap=cmap,
+                                                      show_scalar_bar=False)
             self.orientations_mesh = arrows
             r = self.orientations_actor
+            self.set_scalar_bar()
         self.set_bounds()
         if self.live_updating is False:
             self.set_scalar_bar()
@@ -440,7 +446,6 @@ class GemPyToVista(WidgetsCallbacks):
             clear:
             **kwargs:
         """
-        # colors = self._get_color_lot(is_faults=True, is_basement=False)
         cmap = mcolors.ListedColormap(list(self._get_color_lot(is_faults=True, is_basement=True)))
         if clear is True and self.plotter_type !='notebook':
             try:
@@ -467,6 +472,24 @@ class GemPyToVista(WidgetsCallbacks):
         # or the regular grid.
         # self.set_scalar_bar()
         return self.surface_actors
+
+    def update_surfaces(self, recompute=True):
+        print('4')
+        if recompute is True:
+            try:
+                gp.compute_model(self.model, sort_surfaces=False, compute_mesh=True)
+            except IndexError:
+                print('IndexError: Model not computed. Laking data in some surface')
+            except AssertionError:
+                print('AssertionError: Model not computed. Laking data in some surface')
+
+        surfaces = self.model._surfaces
+        # TODO add the option of update specific surfaces
+        for idx, val in surfaces.df[['vertices', 'edges', 'surface']].dropna().iterrows():
+            self.surface_poly[val['surface']].points = val['vertices']
+            self.surface_poly[val['surface']].faces = np.insert(val['edges'], 0, 3, axis=1).ravel()
+
+        return True
 
     def plot_topography(
             self,
@@ -586,7 +609,18 @@ class GemPyToVista(WidgetsCallbacks):
                 self.p.remove_actor(self.regular_grid_actor)
             except KeyError:
                 pass
-
+        regular_grid, cmap = self.create_regular_mesh(scalar_field, data,
+                                                      series, render_topography)
+        
+        return self.add_regular_grid_mesh(regular_grid, cmap, scalar_field, series,
+                                          opacity, **kwargs)
+    
+    def create_regular_mesh(self, scalar_field: str = 'all',
+                             data: Union[dict, str] = 'Default',
+                             series: str = '',
+                             render_topography: bool = True,
+                        ):
+        
         regular_grid = self.model._grid.regular_grid
 
         if regular_grid.values is self._grid_values:
@@ -598,35 +632,49 @@ class GemPyToVista(WidgetsCallbacks):
 
             grid_3d = self._grid_values.reshape(*regular_grid.resolution, 3).T
             regular_grid_mesh = pv.StructuredGrid(*grid_3d)
-
+        
         # Set the scalar field-Activate it-getting cmap?
         regular_grid_mesh, cmap = self.set_scalar_data(regular_grid_mesh,
                                                        data=data, scalar_field=scalar_field,
                                                        series=series)
 
         if render_topography == True and regular_grid.mask_topo.shape[0] != 0 and True:
-            main_scalar = 'lith' if scalar_field == 'all' else regular_grid_mesh.array_names[-1]
+            main_scalar = 'id' if scalar_field == 'all' else regular_grid_mesh.array_names[-1]
             regular_grid_mesh[main_scalar][regular_grid.mask_topo.ravel(order='C')] = -100
             regular_grid_mesh = regular_grid_mesh.threshold(-99, scalars=main_scalar)
+        
+        return regular_grid_mesh, cmap
+    
+    def add_regular_grid_mesh(self,
+                              regular_grid_mesh,
+                              cmap,
+                              scalar_field: str = 'all',
+                              series: str = '',
+                              opacity=.5, **kwargs):
 
         if scalar_field == 'all' or scalar_field == 'lith':
             stitle = 'id'
             show_scalar_bar = False
+            main_scalar = 'id'
         else:
             stitle = scalar_field + ': ' + series
             show_scalar_bar = True
+            main_scalar_prefix = 'sf_' if scalar_field == 'scalar' else 'values_'
+            main_scalar = main_scalar_prefix + series
 
         self.regular_grid_actor = self.p.add_mesh(regular_grid_mesh, cmap=cmap,
                                                   stitle=stitle,
+                                                  scalars=main_scalar,
                                                   show_scalar_bar=show_scalar_bar,
                                                   scalar_bar_args=self.scalar_bar_options,
                                                   opacity=opacity,
                                                   **kwargs)
+
         if scalar_field == 'all' or scalar_field == 'lith':
             self.set_scalar_bar()
         self.regular_grid_mesh = regular_grid_mesh
-        return [regular_grid_mesh]
-
+        return [regular_grid_mesh, cmap]
+    
     def set_scalar_data(self, regular_grid, data: Union[dict, gp.Solution, str] = 'Default',
                         scalar_field='all', series='', cmap='viridis'):
         """
@@ -643,7 +691,7 @@ class GemPyToVista(WidgetsCallbacks):
 
         if isinstance(data, gp.Solution):
             if scalar_field == 'lith' or scalar_field == 'all':
-                regular_grid['lith'] = data.lith_block
+                regular_grid['id'] = data.lith_block
                 hex_colors = list(self._get_color_lot(is_faults=True, is_basement=True))
                 cmap = mcolors.ListedColormap(hex_colors)
             if scalar_field == 'scalar' or scalar_field == 'all' or 'sf_' in scalar_field:
@@ -680,6 +728,9 @@ class GemPyToVista(WidgetsCallbacks):
             regular_grid:
             update_cmap:
         """
+        if scalar_field == 'lith':
+            scalar_field = 'id'
+
         if regular_grid is None:
             regular_grid = self.regular_grid_mesh
 
@@ -727,3 +778,153 @@ class GemPyToVista(WidgetsCallbacks):
                                  'rgb values')
         # Set the scalar field color map
         regular_grid_actor.GetMapper().GetLookupTable().SetTable(self._cmaps[cmap])
+
+    def plot_structured_grid_interactive(
+            self,
+            scalar_field: str,
+            series = None,
+            render_topography: bool = False,
+            **kwargs,
+    ):
+        """Plot interactive 3-D geomodel with three cross sections in subplot.
+
+        Args:
+            geo_model: Geomodel object with solutions.
+            scalar_field (str): Can be either one of the following
+                'lith' - Lithology id block.
+                'scalar' - Scalar field block.
+                'values' - Values matrix block.
+            render_topography: Render topography. Defaults to False.
+            **kwargs:
+
+        Returns:
+            (Vista) GemPy Vista object for plotting.
+        """
+        mesh, cmap = self.plot_structured_grid(name=scalar_field, series=series,
+                                               render_topography=render_topography, **kwargs)
+
+        if scalar_field == 'all' or scalar_field == 'lith':
+            main_scalar = 'id'
+        else:
+            main_scalar_prefix = 'sf_' if scalar_field == 'scalar' else 'values_'
+            main_scalar = main_scalar_prefix + series
+
+        # callback functions for subplots
+        def xcallback(normal, origin):
+            self.p.subplot(1)
+            self.p.add_mesh(mesh.slice(normal=normal, origin=origin),
+                            scalars=main_scalar, name="xslc", cmap=cmap)
+                
+        def ycallback(normal, origin):
+            self.p.subplot(2)
+            self.p.add_mesh(mesh.slice(normal=normal, origin=origin), name="yslc", cmap=cmap)
+        
+        def zcallback(normal, origin):
+            self.p.subplot(3)
+            self.p.add_mesh(mesh.slice(normal=normal, origin=origin), name="zslc", cmap=cmap)
+
+        # cross section widgets
+        self.p.subplot(0)
+        self.p.add_plane_widget(xcallback, normal="x")
+        self.p.subplot(0)
+        self.p.add_plane_widget(ycallback, normal="y")
+        self.p.subplot(0)
+        self.p.add_plane_widget(zcallback, normal="z")
+
+        # Lock other three views in place
+        self.p.subplot(1)
+        self.p.view_yz()
+        self.p.disable()
+        self.p.subplot(2)
+        self.p.view_xz()
+        self.p.disable()
+        self.p.subplot(3)
+        self.p.view_xy()
+        self.p.disable()
+
+        return self
+
+    def _scale_topology_centroids(
+            self,
+            centroids: Dict[int, np.ndarray]
+    ) -> Dict[int, np.ndarray]:
+        """Scale topology centroid coordinates from grid coordinates to
+        physical coordinates.
+
+        Args:
+            centroids (Dict[int, Array[float, 3]]): Centroid dictionary.
+
+        Returns:
+            Dict[int, Array[float, 3]]: Rescaled centroid dictionary.
+        """
+        res = self.model._grid.regular_grid.resolution
+        scaling = np.diff(self.extent)[::2] / res
+
+        scaled_centroids = {}
+        for n, pos in centroids.items():
+            pos_scaled = pos * scaling
+            pos_scaled[0] += np.min(self.extent[:2])
+            pos_scaled[1] += np.min(self.extent[2:4])
+            pos_scaled[2] += np.min(self.extent[4:])
+            scaled_centroids[n] = pos_scaled
+
+        return scaled_centroids
+
+    def plot_topology(
+            self,
+            edges: Set[Tuple[int, int]],
+            centroids: Dict[int, np.ndarray],
+            node_kwargs: dict = {},
+            edge_kwargs: dict = {}
+    ):
+        """Plot geomodel topology graph based on given set of topology edges
+        and node centroids.
+
+        Args:
+            edges (Set[Tuple[int, int]]): Topology edges.
+            centroids (Dict[int, Array[float, 3]]): Topology node centroids
+            node_kwargs (dict, optional): Node plotting options. Defaults to {}.
+            edge_kwargs (dict, optional): Edge plotting options. Defaults to {}.
+        """
+        lot = gp.assets.topology.get_lot_node_to_lith_id(self.model, centroids)
+        centroids_scaled = self._scale_topology_centroids(centroids)
+        colors = self._get_color_lot()
+        for node, pos in centroids_scaled.items():
+            mesh = pv.Sphere(
+                center=pos,
+                radius=np.average(self.extent) / 15
+            )
+            # * Requires topo id to lith id lot
+            self.p.add_mesh(
+                mesh,
+                color=colors.iloc[lot[node] - 1],
+                **node_kwargs
+            )
+
+        ekwargs = dict(
+            line_width=3
+        )
+        ekwargs.update(edge_kwargs)
+
+        for e1, e2 in edges:
+            pos1, pos2 = centroids_scaled[e1], centroids_scaled[e2]
+
+            x1, y1, z1 = pos1
+            x2, y2, z2 = pos2
+            x, y, z = (x1, x2), (y1, y2), (z1, z2)
+            pos_mid = (
+                min(x) + (max(x) - min(x)) / 2,
+                min(y) + (max(y) - min(y)) / 2,
+                min(z) + (max(z) - min(z)) / 2
+            )
+            mesh = pv.Line(
+                pointa=pos1,
+                pointb=pos_mid,
+            )
+            self.p.add_mesh(mesh, color=colors.iloc[lot[e1] - 1], **ekwargs)
+
+            mesh = pv.Line(
+                pointa=pos_mid,
+                pointb=pos2,
+            )
+            self.p.add_mesh(mesh, color=colors.iloc[lot[e2] - 1], **ekwargs)

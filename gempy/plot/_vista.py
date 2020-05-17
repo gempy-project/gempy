@@ -905,7 +905,6 @@ class Vista:
         self.p.view_xy()
         self.p.disable()
 
-
     def _callback_surface_points(self, pos, index, widget):
         i = index
         x, y, z = pos

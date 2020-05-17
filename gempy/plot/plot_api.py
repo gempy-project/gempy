@@ -348,6 +348,33 @@ def plot_3d(model, plotter_type='basic',
     return gpv
 
 
+def plot_interactive_3d(
+        geo_model,
+        scalar_field: str = 'all',
+        series=None,
+        render_topography: bool = False,
+        **kwargs,
+):
+    """Plot interactive 3-D geomodel with three cross sections in subplots.
+    Args:
+        geo_model: Geomodel object with solutions.
+        name (str): Can be either one of the following
+                'lith' - Lithology id block.
+                'scalar' - Scalar field block.
+                'values' - Values matrix block.
+        render_topography: Render topography. Defaults to False.
+        **kwargs:
+    Returns:
+        :class:`gempy.plot.vista.GemPyToVista`
+
+    """
+    gpv = GemPyToVista(geo_model, show_results=False, plotter_type='background', shape="1|3")
+    gpv.plot_structured_grid_interactive(scalar_field=scalar_field, series=series,
+                                         render_topography=render_topography, **kwargs)
+
+    return gpv
+
+
 def plot_section_traces(model):
     """Plot section traces of section grid in 2-D topview (xy).
 
