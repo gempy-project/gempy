@@ -44,10 +44,15 @@ script:
   - pytest
 
 stages:
+  - test
   - deploy
 
 jobs:
   include:
+      - stage: test
+        script:
+          - pytest -v notebooks/ --nbval-lax
+          - pytest
       - stage: deploy
         name: Deploy to GitHub Pages
        # if: (NOT type IN (pull_request)) AND (branch = sphinx-gallery) # only deploy if merging on master
