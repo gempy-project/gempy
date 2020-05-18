@@ -674,7 +674,7 @@ class ImplicitCoKriging(object):
         feature_fault = np.atleast_1d(feature_fault)
         if twofins is False:
             for fault in feature_fault:
-                assert np.sum(self._surfaces.df['series'] == fault) < 2, \
+                assert np.sum(self._surfaces.df.groupby('isBasement').get_group(False)['series'] == fault) < 2, \
                     'Having more than one fault in a series is generally rather bad. Better go' \
                     ' back to the function map_series_to_surfaces and give each fault its own' \
                     ' series. If you are really sure what you are doing, you can set twofins to' \

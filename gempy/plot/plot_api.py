@@ -352,7 +352,7 @@ def plot_interactive_3d(
         geo_model,
         scalar_field: str = 'all',
         series=None,
-        render_topography: bool = False,
+        show_topography: bool = False,
         **kwargs,
 ):
     """Plot interactive 3-D geomodel with three cross sections in subplots.
@@ -368,9 +368,10 @@ def plot_interactive_3d(
         :class:`gempy.plot.vista.GemPyToVista`
 
     """
-    gpv = GemPyToVista(geo_model, show_results=False, plotter_type='background', shape="1|3")
+    gpv = GemPyToVista(geo_model, plotter_type='background', shape="1|3")
+    gpv.plot_data()
     gpv.plot_structured_grid_interactive(scalar_field=scalar_field, series=series,
-                                         render_topography=render_topography, **kwargs)
+                                         render_topography=show_topography, **kwargs)
 
     return gpv
 

@@ -105,6 +105,7 @@ class GemPyToVista(WidgetsCallbacks, RenderChanges):
         self.plotter_type = plotter_type
         # Default camera and bounds
         self.set_bounds()
+        self.p.view_isometric(negative=False)
 
         # Actors containers
         self.surface_actors = {}
@@ -293,10 +294,10 @@ class GemPyToVista(WidgetsCallbacks, RenderChanges):
             centers = surface_points[['X', 'Y', 'Z']]
 
             # This is necessary to change the color of the widget if change id
-            colors = self._get_color_lot(is_faults=True, is_basement=False)[surface_points['surface']].values
-            self._color_lot = colors
+            colors = self._get_color_lot(is_faults=True, is_basement=False)[surface_points['surface']]
+            self._color_lot = self._get_color_lot(is_faults=True, is_basement=False, index='id')
             s = self.p.add_sphere_widget(self.call_back_sphere,
-                                         center=centers, color=colors, pass_widget=True,
+                                         center=centers, color=colors.values, pass_widget=True,
                                          test_callback=test_callback,
                                          indices=surface_points.index.values,
                                          radius=radius, **kwargs)
@@ -319,7 +320,7 @@ class GemPyToVista(WidgetsCallbacks, RenderChanges):
         colors = self._get_color_lot(is_faults=True, is_basement=False)
         widget_list = []
         # for index, pt, nrm in zip(i, pts, nrms):
-        self._color_lot = self._get_color_lot(is_faults=True, is_basement=False)
+        self._color_lot = self._get_color_lot(is_faults=True, is_basement=False, index='id')
         for index, val in orientations.iterrows():
             widget = self.p.add_plane_widget(
                 self.call_back_plane,
@@ -362,6 +363,7 @@ class GemPyToVista(WidgetsCallbacks, RenderChanges):
                     self.p._scalar_bar_slot_lookup['id'] = None
 
                 self.p.clear_sphere_widgets()
+                self.surface_points_widgets = {}
                 try:
                     self.p.remove_actor(self.surface_points_actor)
                 except KeyError:
@@ -370,7 +372,7 @@ class GemPyToVista(WidgetsCallbacks, RenderChanges):
         if self.live_updating is True:
 
             sphere_widgets = self.create_sphere_widgets(surface_points, colors, **kwargs)
-            self.surface_points_widgets = dict(zip(surface_points.index, sphere_widgets))
+            self.surface_points_widgets.update(dict(zip(surface_points.index, sphere_widgets)))
             r = self.surface_points_widgets
         else:
             poly = pv.PolyData(surface_points[["X", "Y", "Z"]].values)
@@ -404,6 +406,7 @@ class GemPyToVista(WidgetsCallbacks, RenderChanges):
 
         if clear is True:
             self.p.clear_plane_widgets()
+            self.orientations_widgets = {}
             try:
                 self.p.remove_actor(self.orientations_actor)
             except KeyError:
@@ -411,7 +414,7 @@ class GemPyToVista(WidgetsCallbacks, RenderChanges):
 
         if self.live_updating is True:
             orientations_widgets = self.create_orientations_widget(orientations)
-            self.orientations_widgets = dict(zip(orientations.index, orientations_widgets))
+            self.orientations_widgets.update(dict(zip(orientations.index, orientations_widgets)))
             r = self.orientations_widgets
         else:
             poly = pv.PolyData(orientations[["X", "Y", "Z"]].values)
@@ -474,22 +477,39 @@ class GemPyToVista(WidgetsCallbacks, RenderChanges):
         return self.surface_actors
 
     def update_surfaces(self, recompute=True):
-        print('4')
+        import time
+
         if recompute is True:
             try:
                 gp.compute_model(self.model, sort_surfaces=False, compute_mesh=True)
             except IndexError:
-                print('IndexError: Model not computed. Laking data in some surface')
+                t = time.localtime()
+                current_time = time.strftime("[%H:%M:%S]", t)
+                print(current_time + 'IndexError: Model not computed. Laking data in some surface')
             except AssertionError:
-                print('AssertionError: Model not computed. Laking data in some surface')
+                t = time.localtime()
+                current_time = time.strftime("[%H:%M:%S]", t)
+                print(current_time + 'AssertionError: Model not computed. Laking data in some surface')
 
+        self.remove_actor(self.regular_grid_actor)
         surfaces = self.model._surfaces
         # TODO add the option of update specific surfaces
-        for idx, val in surfaces.df[['vertices', 'edges', 'surface']].dropna().iterrows():
-            self.surface_poly[val['surface']].points = val['vertices']
-            self.surface_poly[val['surface']].faces = np.insert(val['edges'], 0, 3, axis=1).ravel()
+        try:
+            for idx, val in surfaces.df[['vertices', 'edges', 'surface']].dropna().iterrows():
+                self.surface_poly[val['surface']].points = val['vertices']
+                self.surface_poly[val['surface']].faces = np.insert(val['edges'], 0, 3, axis=1).ravel()
+        except KeyError:
+            self.plot_surfaces()
 
         return True
+
+    def toggle_live_updating(self):
+
+        self.live_updating = self.live_updating ^ True
+        self.plot_surface_points()
+        self.plot_orientations()
+
+        return self.live_updating
 
     def plot_topography(
             self,
@@ -639,6 +659,7 @@ class GemPyToVista(WidgetsCallbacks, RenderChanges):
                                                        series=series)
 
         if render_topography == True and regular_grid.mask_topo.shape[0] != 0 and True:
+
             main_scalar = 'id' if scalar_field == 'all' else regular_grid_mesh.array_names[-1]
             regular_grid_mesh[main_scalar][regular_grid.mask_topo.ravel(order='C')] = -100
             regular_grid_mesh = regular_grid_mesh.threshold(-99, scalars=main_scalar)
@@ -800,8 +821,11 @@ class GemPyToVista(WidgetsCallbacks, RenderChanges):
         Returns:
             (Vista) GemPy Vista object for plotting.
         """
-        mesh, cmap = self.plot_structured_grid(name=scalar_field, series=series,
-                                               render_topography=render_topography, **kwargs)
+        # mesh, cmap = self.plot_structured_grid(name=scalar_field, series=series,
+        #                                        render_topography=render_topography, **kwargs)
+
+        mesh, cmap = self.create_regular_mesh(scalar_field=scalar_field, series=series,
+                                              render_topography=render_topography)
 
         if scalar_field == 'all' or scalar_field == 'lith':
             main_scalar = 'id'
@@ -822,6 +846,8 @@ class GemPyToVista(WidgetsCallbacks, RenderChanges):
         def zcallback(normal, origin):
             self.p.subplot(3)
             self.p.add_mesh(mesh.slice(normal=normal, origin=origin), name="zslc", cmap=cmap)
+
+        self.add_regular_grid_mesh(mesh, cmap, scalar_field, series, **kwargs)
 
         # cross section widgets
         self.p.subplot(0)

@@ -13,8 +13,9 @@ class QgridModelIntegration(object):
         self._geo_model = geo_model
         self._plot_object = plot_object
         if plot_object is not None:
+            pass
             # Check if the window is already open
-            self.set_vtk_object(plot_object)
+            # self.set_vtk_object(plot_object)
 
             # if hasattr(plot_object, 'interactor'):
             #     self._plot_object.set_surface_points()
@@ -32,7 +33,7 @@ class QgridModelIntegration(object):
 
     def update_plot(self):
         if self._plot_object is not None:
-            self._plot_object.update_model()
+            self._plot_object.update_surfaces()
         else:
             pass
 
@@ -356,7 +357,8 @@ class QgridModelIntegration(object):
             idx = event['index']
             xyzs = qgrid_widget._df.loc[idx, ['X', 'Y', 'Z', 'surface']]
             gxyz = qgrid_widget._df.loc[idx, ['G_x', 'G_y', 'G_z']]
-            self._geo_model.add_orientations(*xyzs, pole_vector=gxyz.values, idx=int(idx), plot_object=self._plot_object)
+            self._geo_model.add_orientations(*xyzs, pole_vector=gxyz.values, idx=int(idx),
+                                             plot_object=self._plot_object)
             self.update_qgrd_objects()
 
         def handle_row_orientations_delete(event, widget, debug=False):

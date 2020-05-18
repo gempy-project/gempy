@@ -43,7 +43,8 @@ class Faults(object):
     def _repr_html_(self):
         return self.df.to_html()
 
-    def set_is_fault(self, series_fault: Union[str, list, np.ndarray] = None, toggle=False, offset_faults=False):
+    def set_is_fault(self, series_fault: Union[str, list, np.ndarray] = None,
+                     toggle=False, offset_faults=False):
         """
         Set a flag to the series that are faults.
 

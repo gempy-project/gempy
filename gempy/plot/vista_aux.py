@@ -59,9 +59,7 @@ class WidgetsCallbacks:
         # TODO: rethink why I am calling this. Technically this happens outside.
         #  It is for sanity check?
        # self.call_back_plane_move_changes(index)
-        print('2')
         if self.live_updating:
-            print('3')
             try:
                 self.update_surfaces(recompute=True)
 
@@ -73,18 +71,15 @@ class WidgetsCallbacks:
     def call_back_plane_change_df(self, index, new_center, new_normal):
         # Modify Pandas DataFrame
         # update the gradient vector components and its location
-        print(index)
         self.model.modify_orientations(index, X=new_center[0], Y=new_center[1], Z=new_center[2],
                                        G_x=new_normal[0], G_y=new_normal[1], G_z=new_normal[2])
         return True
-
 
     # endregion
 
 
 class RenderChanges:
     def call_back_plane_move_changes(self, indices):
-        print(indices)
         df_changes = self.model._orientations.df.loc[np.atleast_1d(indices).astype(int)][['X', 'Y', 'Z',
                                                                                           'G_x', 'G_y', 'G_z', 'id']]
         for index, new_values_df in df_changes.iterrows():
@@ -100,9 +95,9 @@ class RenderChanges:
             plane1.SetNormal(new_normal)
             plane1.SetCenter(new_center[0], new_center[1], new_center[2])
 
-            print(new_values_df['id'])
-            plane1.GetPlaneProperty().SetColor(mcolors.hex2color(self._color_lot[int(new_values_df['id'])]))
-            plane1.GetHandleProperty().SetColor(mcolors.hex2color(self._color_lot[int(new_values_df['id'])]))
+            _color_lot = self._get_color_lot(is_faults=True, is_basement=False, index='id')
+            plane1.GetPlaneProperty().SetColor(mcolors.hex2color(_color_lot[int(new_values_df['id'])]))
+            plane1.GetHandleProperty().SetColor(mcolors.hex2color(_color_lot[int(new_values_df['id'])]))
 
     def call_back_sphere_move_changes(self, indices):
         df_changes = self.model._surface_points.df.loc[np.atleast_1d(indices)][['X', 'Y', 'Z', 'id']]
@@ -116,7 +111,8 @@ class RenderChanges:
                            new_center[1] - r_f, new_center[1] + r_f,
                            new_center[2] - r_f, new_center[2] + r_f)
 
-            s1.GetSphereProperty().SetColor(mcolors.hex2color(self._color_lot[int(df_row['id'])]))
+            _color_lot = self._get_color_lot(is_faults=True, is_basement=False, index='id')
+            s1.GetSphereProperty().SetColor(mcolors.hex2color(_color_lot[(df_row['id'])]))
 
     def render_move_surface_points(self, indices):
         self.call_back_sphere_move_changes(indices)
@@ -127,7 +123,7 @@ class RenderChanges:
     def render_add_surface_points(self, indices):
         indices = np.atleast_1d(indices)
         surface_points = self.model._surface_points.df.loc[indices]
-        self.plot_surface_points(surface_points = surface_points)
+        self.plot_surface_points(surface_points = surface_points, clear=False)
         if self.live_updating is True:
             self.update_surfaces(recompute=True)
         self.p.interactor.Render()
@@ -145,14 +141,15 @@ class RenderChanges:
         self.call_back_plane_move_changes(indices)
         if self.live_updating is True:
             self.update_surfaces(recompute=True)
-        self.interactor.Render()
+        self.p.interactor.Render()
 
     def render_add_orientations(self, indices):
+        indices = np.atleast_1d(indices)
         orientations = self.model._orientations.df.loc[indices]
-        self.plot_orientations(orientations)
+        self.plot_orientations(orientations = orientations, clear=False)
         if self.live_updating is True:
             self.update_surfaces(recompute=True)
-        self.interactor.Render()
+        self.p.interactor.Render()
 
     def render_delete_orientations(self, index):
         ow = self.orientations_widgets.pop(index)
@@ -161,10 +158,10 @@ class RenderChanges:
 
         if self.live_updating is True:
             self.update_surfaces(recompute=True)
-        self.interactor.Render()
+        self.p.interactor.Render()
 
     def render_topography(self):
         if self.live_updating is True:
             self.update_surfaces(recompute=True)
         self.plot_topography()
-        self.interactor.Render()
+        self.p.interactor.Render()
