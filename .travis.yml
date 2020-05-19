@@ -51,7 +51,6 @@ jobs:
   include:
       - stage: test
         script:
-          - pytest -v notebooks/ --nbval-lax
           - pytest
       - stage: deploy
         name: Deploy to GitHub Pages
