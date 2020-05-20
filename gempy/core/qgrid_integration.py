@@ -1,4 +1,4 @@
-from gempy.core.model import Model
+from gempy.core.model import Project
 import qgrid
 
 
@@ -7,14 +7,15 @@ class QgridModelIntegration(object):
     Class that handles the changes done interactively in qgrid and updates a Model object.
 
     """
-    def __init__(self, geo_model: Model, plot_object=None):
+    def __init__(self, geo_model: Project, plot_object=None):
         # TODO add on all to update from data_object and plots?
 
         self._geo_model = geo_model
         self._plot_object = plot_object
         if plot_object is not None:
+            pass
             # Check if the window is already open
-            self.set_vtk_object(plot_object)
+            # self.set_vtk_object(plot_object)
 
             # if hasattr(plot_object, 'interactor'):
             #     self._plot_object.set_surface_points()
@@ -32,7 +33,7 @@ class QgridModelIntegration(object):
 
     def update_plot(self):
         if self._plot_object is not None:
-            self._plot_object.update_model()
+            self._plot_object.update_surfaces()
         else:
             pass
 
@@ -84,7 +85,7 @@ class QgridModelIntegration(object):
         for e, qgrid_object in enumerate(qgrid_objects):
            # print('qgrid_object' + str(e) )
             if e == 1:
-                qgrid_object.df = self._geo_model.series.df.reset_index().rename(columns={'index': 'series_names'}).astype(
+                qgrid_object.df = self._geo_model._stack.df.reset_index().rename(columns={'index': 'series_names'}).astype(
                     {'series_names': str})
 
             self.update_qgrid_object(qgrid_object)
@@ -141,7 +142,7 @@ class QgridModelIntegration(object):
                                  'options, kriging or rescale. UPDATE message')
 
     def create_faults_qgrid(self):
-        faults_object = self._geo_model.faults
+        faults_object = self._geo_model._faults
 
         qgrid_widget = qgrid.show_grid(faults_object.df,
                                        show_toolbar=False,
@@ -176,7 +177,7 @@ class QgridModelIntegration(object):
         return qgrid_widget
 
     def create_rescaling_data_qgrid(self):
-        rescaling_object = self._geo_model.rescaling
+        rescaling_object = self._geo_model._rescaling
 
         qgrid_widget = qgrid.show_grid(rescaling_object.df,
                                        show_toolbar=False,
@@ -197,7 +198,7 @@ class QgridModelIntegration(object):
         return qgrid_widget
 
     def create_options_qgrid(self):
-        options_object = self._geo_model.additional_data.options
+        options_object = self._geo_model._additional_data.options
 
         qgrid_widget = qgrid.show_grid(options_object.df,
                                        show_toolbar=False,
@@ -223,7 +224,7 @@ class QgridModelIntegration(object):
         return qgrid_widget
 
     def create_kriging_parameters_qgrid(self):
-        kriging_parameters_object = self._geo_model.additional_data.kriging_data
+        kriging_parameters_object = self._geo_model._additional_data.kriging_data
 
         qgrid_widget = qgrid.show_grid(kriging_parameters_object.df,
                                        show_toolbar=False,
@@ -245,7 +246,7 @@ class QgridModelIntegration(object):
         return qgrid_widget
 
     def create_faults_relations_qgrid(self):
-        faults_object = self._geo_model.faults
+        faults_object = self._geo_model._faults
 
         # We need to add the qgrid special columns to categories if does not exist
         try:
@@ -274,7 +275,7 @@ class QgridModelIntegration(object):
         return qgrid_widget
 
     def create_surface_points_qgrid(self):
-        surface_points_object = self._geo_model.surface_points
+        surface_points_object = self._geo_model._surface_points
         self._geo_model.set_default_surfaces()
         self._geo_model.set_default_surface_point(plot_object=self._plot_object)
 
@@ -329,7 +330,7 @@ class QgridModelIntegration(object):
         return qgrid_widget
 
     def create_orientations_qgrid(self):
-        orientations_object = self._geo_model.orientations
+        orientations_object = self._geo_model._orientations
         self._geo_model.set_default_orientation(plot_object=self._plot_object)
 
         qgrid_widget = qgrid.show_grid(
@@ -356,7 +357,8 @@ class QgridModelIntegration(object):
             idx = event['index']
             xyzs = qgrid_widget._df.loc[idx, ['X', 'Y', 'Z', 'surface']]
             gxyz = qgrid_widget._df.loc[idx, ['G_x', 'G_y', 'G_z']]
-            self._geo_model.add_orientations(*xyzs, pole_vector=gxyz.values, idx=int(idx), plot_object=self._plot_object)
+            self._geo_model.add_orientations(*xyzs, pole_vector=gxyz.values, idx=int(idx),
+                                             plot_object=self._plot_object)
             self.update_qgrd_objects()
 
         def handle_row_orientations_delete(event, widget, debug=False):
@@ -386,7 +388,7 @@ class QgridModelIntegration(object):
         return qgrid_widget
 
     def create_surfaces_qgrid(self):
-        surface_object = self._geo_model.surfaces
+        surface_object = self._geo_model._surfaces
 
         surface_object.set_default_surface_name()
         qgrid_widget = qgrid.show_grid(surface_object.df, show_toolbar=True,
@@ -432,8 +434,8 @@ class QgridModelIntegration(object):
             if event['column'] == 'series':
                 idx = event['index']
                 new_series = event['new']
-                self._geo_model.map_series_to_surfaces({new_series: surface_object.df.loc[idx, ['surface']]},
-                                                       set_series=False, sort_geometric_data=True)
+                self._geo_model.map_stack_to_surfaces({new_series: surface_object.df.loc[idx, ['surface']]},
+                                                      set_series=False, sort_geometric_data=True)
 
             if event['column'] == 'order_surfaces':
                 idx = event['index']
@@ -455,7 +457,7 @@ class QgridModelIntegration(object):
         return qgrid_widget
 
     def create_series_qgrid(self):
-        series_object = self._geo_model.series
+        series_object = self._geo_model._stack
 
         # I need to do a serious hack because qgrid does not accept categorical index yet
         qgrid_widget = qgrid.show_grid(
@@ -473,7 +475,7 @@ class QgridModelIntegration(object):
                 print(series_object.df.reset_index())
 
             idx = event['index']
-            self._geo_model.add_series(['series' + str(idx)])
+            self._geo_model.add_features(['series' + str(idx)])
 
             # This is because qgrid does not accept editing indeces. We enable the modification of the series name
             # by reindexing the df and change another column
@@ -493,7 +495,7 @@ class QgridModelIntegration(object):
             idx = event['indices']
             cat_idx = qgrid_widget.df.loc[idx, 'series_names']
 
-            self._geo_model.delete_series(cat_idx)
+            self._geo_model.delete_features(cat_idx)
 
             qgrid_widget.df = series_object.df.reset_index().rename(columns={'index': 'series_names'}).astype(
                 {'series_names': str})
@@ -510,14 +512,14 @@ class QgridModelIntegration(object):
                 print(cat_idx)
                 print(series_object.df.index)
             if event['column'] == 'series_names':
-                self._geo_model.rename_series({event['old']: event['new']})
+                self._geo_model.rename_features({event['old']: event['new']})
             if event['column'] == 'BottomRelation':
                 #series_object.df.loc[cat_idx, 'BottomRelation'] = event['new']
                 self._geo_model.set_bottom_relation(cat_idx, event['new'])
             if event['column'] == 'order_series':
                 idx = event['index']
                 try:
-                    self._geo_model.modify_order_series(int(event['new']), idx)
+                    self._geo_model.modify_order_features(int(event['new']), idx)
                 except AssertionError:
                     pass
 
@@ -525,7 +527,7 @@ class QgridModelIntegration(object):
 
          #   self._geo_model.update_from_series(rename_series={event['old']: event['new']})
             # Hack for the faults relations
-            print(self._geo_model.faults.faults_relations_df.columns)
+            print(self._geo_model._faults.faults_relations_df.columns)
            # self._geo_model.faults.faults_relations_df.columns = self._geo_model.faults.faults_relations_df.columns.add_categories(
           #      ['index', 'qgrid_unfiltered_index'])
 

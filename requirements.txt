@@ -1,12 +1,9 @@
-pandas==0.24
+pandas
 Theano>=1.0.4
 matplotlib
 numpy
 pytest
-nbsphinx
 seaborn>=0.9
 networkx
-ipywidgets
-scikit-image
-nptyping
-IPython
+scikit-image>=0.17
+pyvista

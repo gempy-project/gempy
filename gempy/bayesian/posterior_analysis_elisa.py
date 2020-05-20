@@ -37,7 +37,8 @@ import matplotlib.colors
 
 
 class Posterior():
-    def __init__(self, dbname, model_type='map', entropy=False, topography=None, interpdata=None, geodata=None):
+    def __init__(self, dbname, model_type='map', entropy=False,
+                 topography=None, interpdata=None, geodata=None):
 
         if entropy:
             print('All post models are calculated. Based on the model complexity and the number of iterations, '
@@ -82,7 +83,7 @@ class Posterior():
         # replace interface data
         self.interp_data.geo_data_res.interfaces[["X", "Y", "Z"]] = self.input_data[i][0]
         # replace foliation data
-        self.interp_data.geo_data_res.orientations[["G_x", "G_y", "G_z", "X", "Y", "Z", "dip", "azimuth", "polarity"]] = \
+        self.interp_data.geo_data_res._orientations[["G_x", "G_y", "G_z", "X", "Y", "Z", "dip", "azimuth", "polarity"]] = \
             self.input_data[i][1]
         self.interp_data.update_interpolator()
         # if self.verbose:

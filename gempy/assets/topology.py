@@ -18,33 +18,32 @@
 @author: Alexander Schaaf
 """
 import numpy as np
-from nptyping import Array
 from typing import List, Set, Tuple, Dict, Union, Optional
 import matplotlib.pyplot as plt
 
 
 def _get_nunconf(geo_model) -> int:
     return np.count_nonzero(
-        geo_model.series.df.BottomRelation == "Erosion"
+        geo_model._stack.df.BottomRelation == "Erosion"
     ) - 2  # TODO -2 n other lith series
 
 
 def _get_nfaults(geo_model) -> int:
-    return np.count_nonzero(geo_model.faults.df.isFault)
+    return np.count_nonzero(geo_model._faults.df.isFault)
 
 
-def _get_fb(geo_model) -> Array:
+def _get_fb(geo_model) -> np.ndarray:
     n_unconf = _get_nunconf(geo_model)
     n_faults = _get_nfaults(geo_model)
     return np.round(
         geo_model.solutions.block_matrix[n_unconf:n_faults + n_unconf, 0, :]
-    ).astype(int).sum(axis=0).reshape(*geo_model.grid.regular_grid.resolution)
+    ).astype(int).sum(axis=0).reshape(*geo_model._grid.regular_grid.resolution)
 
 
-def _get_lb(geo_model) -> Array:
+def _get_lb(geo_model) -> np.ndarray:
     return np.round(
         geo_model.solutions.lith_block
-    ).astype(int).reshape(*geo_model.grid.regular_grid.resolution)
+    ).astype(int).reshape(*geo_model._grid.regular_grid.resolution)
 
 
 def compute_topology(
@@ -54,7 +53,7 @@ def compute_topology(
         n_shift: int = 1,
         voxel_threshold: int = 1
 ):
-    res = geo_model.grid.regular_grid.resolution
+    res = geo_model._grid.regular_grid.resolution
     fb = _get_fb(geo_model)
     lb = _get_lb(geo_model)
     n_lith = len(np.unique(lb))  # ? quicker looking it up in geomodel?
@@ -201,7 +200,7 @@ def get_lot_node_to_lith_id(
         Dict[int, int]: Look-up table translating node id -> lith id.
     """
     lb = geo_model.solutions.lith_block.reshape(
-        geo_model.grid.regular_grid.resolution
+        geo_model._grid.regular_grid.resolution
     ).astype(int)
 
     lot = {}
@@ -264,12 +263,11 @@ def get_fault_ids(geo_model) -> List[int]:
     Returns:
         List[int]: List of fault id's.
     """
-    f_series_names = geo_model.faults.df[geo_model.faults.df.isFault].index
+    f_series_names = geo_model._faults.df[geo_model._faults.df.isFault].index
     fault_ids = [0]
     for fsn in f_series_names:
-        fid = \
-            geo_model.surfaces.df[
-                geo_model.surfaces.df.series == fsn].id.values[0]
+        fid = geo_model._surfaces.df[
+                geo_model._surfaces.df.series == fsn].id.values[0]
         fault_ids.append(fid)
     return fault_ids
 
@@ -284,14 +282,14 @@ def get_lith_ids(geo_model, basement: bool = True) -> List[int]:
     Returns:
         List[int]: List of lithology id's.
     """
-    fmt_series_names = geo_model.faults.df[~geo_model.faults.df.isFault].index
+    fmt_series_names = geo_model._faults.df[~geo_model._faults.df.isFault].index
     lith_ids = []
     for fsn in fmt_series_names:
         if not basement:
             if fsn == "Basement":
                 continue
-        lids = geo_model.surfaces.df[
-            geo_model.surfaces.df.series == fsn].id.values
+        lids = geo_model._surfaces.df[
+            geo_model._surfaces.df.series == fsn].id.values
         for lid in lids:
             lith_ids.append(lid)
     return lith_ids
@@ -335,8 +333,8 @@ def get_detailed_labels(
 
 
 def _get_edges(
-        l: Array[int, ..., ..., ...],
-        r: Array[int, ..., ..., ...]
+        l: np.ndarray,
+        r: np.ndarray
 ) -> Optional[np.ndarray]:
     """Get edges from given shifted arrays.
 
@@ -358,7 +356,7 @@ def _get_edges(
 def clean_unconformity_topology(
         geo_model,
         unconf_lith_id: int,
-        edges: Array[int, ..., 2],
+        edges: np.ndarray,
         centroids: Dict[int, np.ndarray]
 ) -> Tuple[Set[Tuple[int, int]], Dict[int, np.ndarray]]:
     """Clean unconformity topology edges and centroids. Needs to be run for
@@ -414,7 +412,7 @@ def jaccard_index(
     return intersection_cardinality / union_cardinality
 
 
-def _get_centroids(labels: Array[int, ..., ..., ...]) -> dict:
+def _get_centroids(labels: np.ndarray) -> dict:
     """Get geobody node centroids in array coordinates.
     
     Args:
@@ -439,7 +437,7 @@ def get_adjacency_matrix(
         geo_model,
         edges: Set[Tuple[int, int]],
         centroids,
-) -> Array[bool, ..., ...]:
+) -> np.ndarray:
     """[summary]
     
     Args:
@@ -486,8 +484,17 @@ def _get_adj_matrix_labels(geo_model):
 
 def plot_adjacency_matrix(
         geo_model,
-        adj_matrix: Array[bool, ..., ...]
+        adj_matrix: np.ndarray
 ):
+    """
+
+    Args:
+        geo_model:
+        adj_matrix: Array[bool, ..., ...]
+
+    Returns:
+
+    """
     f_ids = get_fault_ids(geo_model)
     n_faults = len(f_ids) // 2
     lith_ids = get_lith_ids(geo_model)
@@ -513,7 +520,7 @@ def plot_adjacency_matrix(
 
     # ///////////////////////////////////////////////////////
     # lith tick labels colors
-    colors = list(geo_model.surfaces.colors.colordict.values())
+    colors = list(geo_model._surfaces.colors.colordict.values())
     bboxkwargs = dict(
         edgecolor='none',
     )

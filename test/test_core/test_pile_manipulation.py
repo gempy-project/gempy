@@ -45,11 +45,11 @@ def test_pile_geomodel(interpolator):
         "sediments": ("tarbert", "ness", "etive"),
     }
 
-    gp.map_series_to_surfaces(geo_model,
-                              series_distribution,
-                              remove_unused_series=True)
+    gp.map_stack_to_surfaces(geo_model,
+                             series_distribution,
+                             remove_unused_series=True)
 
-    geo_model.reorder_series(["unconformity", "fault3", "fault4",
+    geo_model.reorder_features(["unconformity", "fault3", "fault4",
                               "sediments", "Basement"])
 
     geo_model.set_is_fault(["fault3"])
@@ -64,18 +64,18 @@ def test_pile_geomodel(interpolator):
     geo_model.set_fault_relation(rel_matrix)
 
     surf_groups = pd.read_csv(input_path + "/filtered_surface_points.csv").group
-    geo_model.surface_points.df["group"] = surf_groups
+    geo_model._surface_points.df["group"] = surf_groups
     orient_groups = pd.read_csv(input_path + "/filtered_orientations.csv").group
-    geo_model.orientations.df["group"] = orient_groups
+    geo_model._orientations.df["group"] = orient_groups
 
-    geo_model.surface_points.df.reset_index(inplace=True, drop=True)
-    geo_model.orientations.df.reset_index(inplace=True, drop=True)
+    geo_model._surface_points.df.reset_index(inplace=True, drop=True)
+    geo_model._orientations.df.reset_index(inplace=True, drop=True)
 
     geo_model.set_theano_function(interpolator)
     gp.compute_model(geo_model)
 
-    gp.plot.plot_section(geo_model, cell_number=25,
-                         direction='y', show_data=True)
+    gp.plot.plot_2d(geo_model, cell_number=25,
+                    direction='y', show_data=True)
 
     plt.savefig(os.path.dirname(__file__) + '/../figs/test_pile_lith_block')
 
@@ -99,11 +99,11 @@ def test_pile_geomodel_2(interpolator):
         "sediments": ("tarbert", "ness", "etive"),
     }
 
-    gp.map_series_to_surfaces(geo_model,
-                              series_distribution,
-                              remove_unused_series=True)
+    gp.map_stack_to_surfaces(geo_model,
+                             series_distribution,
+                             remove_unused_series=True)
 
-    geo_model.reorder_series(["unconformity", "fault3", "fault4",
+    geo_model.reorder_features(["unconformity", "fault3", "fault4",
                               "sediments", "Basement"])
 
     geo_model.set_is_fault(["fault3"])
@@ -118,17 +118,17 @@ def test_pile_geomodel_2(interpolator):
     geo_model.set_fault_relation(rel_matrix)
 
     surf_groups = pd.read_csv(input_path + "/filtered_surface_points.csv").group
-    geo_model.surface_points.df["group"] = surf_groups
+    geo_model._surface_points.df["group"] = surf_groups
     orient_groups = pd.read_csv(input_path + "/filtered_orientations.csv").group
-    geo_model.orientations.df["group"] = orient_groups
+    geo_model._orientations.df["group"] = orient_groups
 
-    geo_model.surface_points.df.reset_index(inplace=True, drop=True)
-    geo_model.orientations.df.reset_index(inplace=True, drop=True)
+    geo_model._surface_points.df.reset_index(inplace=True, drop=True)
+    geo_model._orientations.df.reset_index(inplace=True, drop=True)
 
     geo_model.set_theano_function(interpolator)
     gp.compute_model(geo_model)
 
-    gp.plot.plot_section(geo_model, cell_number=25,
+    gp.plot.plot_2d(geo_model, cell_number=25,
                          direction='y', show_data=True)
 
     from gempy.plot.plot_api import plot_2d
@@ -145,14 +145,14 @@ def test_reorder_series():
     geo_model = gp.create_model('Geological_Model1')
     geo_model = gp.init_data(geo_model, extent=[0, 4000, 0, 2775, 200, 1200], resolution=[100, 10, 100])
     # Adding a fault
-    geo_model.rename_series(['Cycle1'])
+    geo_model.rename_features(['Cycle1'])
 
-    geo_model.add_series(['Fault1'])
+    geo_model.add_features(['Fault1'])
     geo_model.set_is_fault(['Fault1'])
-    geo_model.reorder_series(['Fault1', 'Cycle1'])
-    assert (geo_model.series.df['BottomRelation'] == ['Fault', 'Erosion']).all()
-    assert (geo_model.series.df.index == ['Fault1', 'Cycle1']).all()
-    print(geo_model.series.df)
+    geo_model.reorder_features(['Fault1', 'Cycle1'])
+    assert (geo_model._stack.df['BottomRelation'] == ['Fault', 'Erosion']).all()
+    assert (geo_model._stack.df.index == ['Fault1', 'Cycle1']).all()
+    print(geo_model._stack.df)
 
 
 def test_complete_model(tmpdir, interpolator):
@@ -165,7 +165,7 @@ def test_complete_model(tmpdir, interpolator):
     if compute is True:
         geo_model.set_theano_function(interpolator)
 
-    from gempy.plot import visualization_2d_pro as vv
+    from gempy.plot import visualization_2d as vv
 
     # In this case perpendicular to the z axes
     p2d = vv.Plot2D(geo_model)
@@ -173,8 +173,8 @@ def test_complete_model(tmpdir, interpolator):
     ax = p2d.add_section(direction='z', ax_pos=121)
 
     ax2 = p2d.add_section(direction='y', ax_pos=122)
-    ax2.set_xlim(geo_model.grid.regular_grid.extent[0], geo_model.grid.regular_grid.extent[1])
-    ax2.set_ylim(geo_model.grid.regular_grid.extent[4], geo_model.grid.regular_grid.extent[5])
+    ax2.set_xlim(geo_model._grid.regular_grid.extent[0], geo_model._grid.regular_grid.extent[1])
+    ax2.set_ylim(geo_model._grid.regular_grid.extent[4], geo_model._grid.regular_grid.extent[5])
 
     geo_model.add_surfaces(['D', 'C', 'B', 'A'])
 
@@ -211,14 +211,14 @@ def test_complete_model(tmpdir, interpolator):
 
     # -----------
     # Adding a fault
-    geo_model.rename_series(['Cycle1'])
+    geo_model.rename_features(['Cycle1'])
 
-    geo_model.add_series(['Fault1'])
+    geo_model.add_features(['Fault1'])
     geo_model.set_is_fault(['Fault1'])
 
-    geo_model.modify_order_series(1, 'Fault1')
+    geo_model.modify_order_features(1, 'Fault1')
     geo_model.add_surfaces(['F1'])
-    gp.map_series_to_surfaces(geo_model, {'Fault1': 'F1'})
+    gp.map_stack_to_surfaces(geo_model, {'Fault1': 'F1'})
 
     # Add input data of the fault
     geo_model.add_surface_points(X=1203, Y=138, Z=600, surface='F1')
@@ -274,10 +274,10 @@ def test_complete_model(tmpdir, interpolator):
 
     # ----------------
     # Second cycle
-    geo_model.add_series(['Cycle2'])
+    geo_model.add_features(['Cycle2'])
     geo_model.add_surfaces(['G', 'H'])
-    gp.map_series_to_surfaces(geo_model, {'Cycle2': ['G', 'H']})
-    geo_model.reorder_series(['Cycle2', 'Fault1', 'Cycle1'])
+    gp.map_stack_to_surfaces(geo_model, {'Cycle2': ['G', 'H']})
+    geo_model.reorder_features(['Cycle2', 'Fault1', 'Cycle1'])
 
     # Surface G
     geo_model.add_surface_points(X=1012, Y=1493, Z=900, surface='G')
@@ -308,12 +308,12 @@ def test_complete_model(tmpdir, interpolator):
 
     # ----------------
     # Second Fault
-    geo_model.add_series('Fault2')
+    geo_model.add_features('Fault2')
     geo_model.set_is_fault('Fault2')
     geo_model.add_surfaces('F2')
 
-    geo_model.reorder_series(['Cycle2', 'Fault1', 'Fault2', 'Cycle1'])
-    gp.map_series_to_surfaces(geo_model, {'Fault2': 'F2'})
+    geo_model.reorder_features(['Cycle2', 'Fault1', 'Fault2', 'Cycle1'])
+    gp.map_stack_to_surfaces(geo_model, {'Fault2': 'F2'})
 
     geo_model.add_surface_points(X=3232, Y=178, Z=1000, surface='F2')
     geo_model.add_surface_points(X=3132, Y=951, Z=700, surface='F2')

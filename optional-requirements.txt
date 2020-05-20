@@ -1,9 +1,6 @@
-vtk
-pyvista
 gdal
 qgrid==1.3.0
 pymc3
-pyvolume
 pyevtk
 pyqrcode
 mplstereonet

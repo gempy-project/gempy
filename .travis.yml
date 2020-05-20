@@ -7,23 +7,66 @@ python:
 
 env: TRAVIS=true
 
+before_install:
+  # configure a headless display
+  - git clone --depth 1 git://github.com/pyvista/gl-ci-helpers.git
+  - source ./gl-ci-helpers/travis/setup_headless_display.sh
+
 install:
+  - wget https://repo.anaconda.com/pkgs/misc/conda-execs/conda-latest-linux-64.exe -O conda.exe
+  - chmod +x conda.exe
+  - export CONDA_ALWAYS_YES=1
+  # This is where you put any extra dependencies you may have.
+  - ./conda.exe create -p $HOME/miniconda python=$TRAVIS_PYTHON_VERSION conda conda-build pytest six pytest-cov pytest-mock
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - hash -r
   - pip install --upgrade setuptools pip
-  - pip install cython
   - pip install -r requirements.txt
+  - pip install sphinx-gallery
   - pip install qgrid
   - pip install nbval
-  - pip install git+git://github.com/Leguark/scikit-image@master
-  - pip install vtk
   - pip install pyevtk
-  - pip install dataclasses emg3d pyvista panel discretize
+  - pip install arviz
+  - pip install recommonmark
+  - pip install dataclasses pyvista panel discretize # emg3d
+  - pip install welly
+  - conda install gdal
+  - conda install --yes -c conda-forge python-graphviz
+  - conda install -c anaconda libffi
+  - pip install pymc3
+  - pip install ipython
+    # Install untested, non-required code (linter fails without them)
+  - pip install ipython ipywidgets
+  - export PATH="./bin:$PATH"
 
 script:
-
-  - pytest -v notebooks/integrations/ --nbval-lax --ignore-glob='*discret*'
-  - pytest -v notebooks/examples/ --nbval-lax --current-env --ignore-glob='*pography*' --ignore-glob='*lesmodel*' --ignore-glob='*Course*'
-  - pytest -v notebooks/tutorials/ --nbval-lax --current-env --ignore-glob='*ch1-6*' --ignore-glob='ch1-7*' --ignore-glob='*ch1-10*' --ignore-glob='*MaskedMarchinCube_Onlap_relations*'
+  - pytest -v notebooks/ --nbval-lax
   - pytest
 
+stages:
+  - test
+  - deploy
+
+jobs:
+  include:
+      - stage: test
+        script:
+          - pytest
+      - stage: deploy
+        name: Deploy to GitHub Pages
+       # if: (NOT type IN (pull_request)) AND (branch = sphinx-gallery) # only deploy if merging on master
+
+        before_script:
+         - pip install -e .
+         - cd docs
+        script: pipenv run make html
+        deploy:
+          provider: pages # deploy on github pages
+          skip_cleanup: true
+          github_token: $travis_doc # defined via the Travis interface
+          local_dir: docs/build/html
+          on:
+            branch: sprint_2.2
+          target_branch: gh-pages
 cache: pip
 

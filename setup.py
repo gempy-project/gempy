@@ -10,7 +10,7 @@ setup(
     include_package_data=True,
     install_requires=[
         'numpy',
-        'pandas==0.24',
+        'pandas',
         'matplotlib',
         'theano',
         'scikit-image',

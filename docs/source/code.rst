@@ -2,78 +2,138 @@ Code
 ====
 
 .. toctree::
-   :maxdepth: 4
-
-Model
------
-.. currentmodule:: model
-.. autosummary::
-    :toctree: Model
-
-    Model
-    DataMutation
-
-Data
-----
-.. currentmodule:: data
-.. autosummary::
-    :toctree: Data
-
-    Grid
-    Faults
-    Series
-    Surfaces
-    GeometricData
-    SurfacePoints
-    Orientations
-    RescaledData
-    Structure
-    KrigingParameters
-    Options
-    AdditionalData
-
-Interpolator
-------------
-.. currentmodule:: interpolator
-.. autosummary::
-    :toctree: Interpolator
-
-    Interpolator
-    InterpolatorModel
-    InterpolatorGravity
-
-Solution
---------
-.. currentmodule:: solution
-.. autosummary::
-    :toctree: Solution
-
-    Solution
+   :maxdepth: 3
 
 
-Front end
+GemPy API
 ---------
-.. currentmodule:: gempy_api
+.. currentmodule:: gempy
 .. autosummary::
     :toctree: GemPy API
+    :template: base.rst
 
     activate_interactive_df
     compute_model
     compute_model_at
     create_data
     create_model
+    init_data
+    map_series_to_surfaces
+    map_stack_to_surfaces
+    read_csv
+    update_additional_data
+    get_data
+    get_surfaces
     get_additional_data
     get_interpolator
-    get_surfaces
     get_th_fn
-    init_data
-    load_model
-    load_model_pickle
-    map_series_to_surfaces
-    read_csv
-    save_model
-    save_model_to_pickle
-    set_interpolation_data
-    set_orientation_from_surface_points
-    set_series
-    update_additional_data
+
+
+Model
+-----
+.. currentmodule:: gempy.core.model
+.. autosummary::
+    :toctree: Model
+    :template: class.rst
+
+    Project
+    ImplicitCoKriging
+
+
+Plot
+----
+.. currentmodule:: gempy
+.. autosummary::
+    :toctree: Plot
+    :template: base.rst
+
+    plot_2d
+    plot_3d
+
+
+Data
+----
+.. currentmodule:: gempy.core.data_modules.stack
+.. autosummary::
+    :toctree: Data
+    :template: class.rst
+
+    Stack
+    Series
+    Faults
+
+
+.. currentmodule:: gempy.core.data
+.. autosummary::
+    :toctree: Data
+    :template: class.rst
+
+
+    Surfaces
+    Structure
+    KrigingParameters
+    Options
+    AdditionalData
+    MetaData
+    Grid
+
+
+Grids
+-----
+
+.. currentmodule:: gempy.core.grid_modules.grid_types
+.. autosummary::
+    :toctree: Data/Grid
+    :template: class.rst
+
+    RegularGrid
+    CustomGrid
+
+.. currentmodule:: gempy.core.grid_modules.topography
+.. autosummary::
+    :toctree: Data/Grid
+    :template: class.rst
+
+    Topography
+
+.. currentmodule:: gempy.core.grid_modules.grid_types
+.. autosummary::
+    :toctree: Data/Grid
+    :template: class.rst
+
+    Sections
+    CenteredGrid
+
+
+Geometric Data
+--------------
+
+.. currentmodule:: gempy.core.data_modules.geometric_data
+.. autosummary::
+    :toctree: Data
+    :template: class.rst
+
+    SurfacePoints
+    Orientations
+    RescaledData
+
+
+Interpolator
+------------
+.. currentmodule:: gempy.core.interpolator
+.. autosummary::
+    :toctree: Interpolator
+    :template: class.rst
+
+    InterpolatorModel
+    InterpolatorGravity
+
+
+Solution
+--------
+.. currentmodule:: gempy.core.solution
+.. autosummary::
+    :toctree: Solution
+    :template: class.rst
+
+    Solution
