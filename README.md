@@ -23,8 +23,8 @@ powerful **implicit representation** approach. `GemPy` was designed from the
 ground up to support easy embedding in probabilistic frameworks for the
 uncertainty analysis of subsurface structures.
 
-Check out the documentation either in [gempy.org](https://www.gempy.org/)
-(better option), or [read the docs](http://gempy.readthedocs.io/).
+Check out the documentation either in the main website [gempy.org](https://www.gempy.org/)
+(better option), or the specific [docs site](http://docs.gempy.org/).
 
 ## Table of Contents
 
