@@ -1,6 +1,9 @@
-gdal
 qgrid==1.3.0
 pymc3
 pyevtk
 pyqrcode
 mplstereonet
+requests
+pyqt5
+# gdal # install gdal with conda! `conda install gdal`
+# pymc3

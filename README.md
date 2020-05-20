@@ -33,16 +33,7 @@ Check out the documentation either in [gempy.org](https://www.gempy.org/)
     * [Underlying interpolation approach](#interpolation)
     * [Visualization](#visualization)
     * [Stochastic geological modeling](#stochastic_modeling)
-* [Additional Projects](#additional_projects)
-    * [Augmented Reality Geology Sandbox](#sandbox)
-    * [Remote Geomod: Geomodeling with GoogleEarth](#remotegeo)
-* [Getting Started](#getstart)
-    * [Dependencies](#depend)
-    * [Installation](#installation)
-        * [Docker Image](#docker)
-        * [Manual installation of cutting-edge version](#cutting-edge)
-        * [Windows with GPU support](#windows)
-        * [MacOSX 10.14 from scratch](#macosx)
+* [Installation](#installation)
 * [Documentation](#doc)
 * [References](#ref)
 
@@ -172,11 +163,6 @@ For a more detailed elaboration of the theory behind `GemPy`, we refer to the
 **open access scientific publication**:
 [*"GemPy 1.0: open-source stochastic geological modeling and inversion"*
 by de la Varga et al. (2018)](https://www.geosci-model-dev.net/12/1/2019/gmd-12-1-2019.pdf).
-
-<a name="additional_projects"></a>
-### Additional projects based on `GemPy`
-
-Besides the main functionality, `GemPy` is the basis for additional projects:
 
 ## Installation
 <a name="installation"></a>

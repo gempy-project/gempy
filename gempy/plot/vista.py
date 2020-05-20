@@ -682,6 +682,8 @@ class GemPyToVista(WidgetsCallbacks, RenderChanges):
             show_scalar_bar = True
             main_scalar_prefix = 'sf_' if scalar_field == 'scalar' else 'values_'
             main_scalar = main_scalar_prefix + series
+            if series == '':
+                main_scalar = regular_grid_mesh.array_names[-1]
 
         self.regular_grid_actor = self.p.add_mesh(regular_grid_mesh, cmap=cmap,
                                                   stitle=stitle,

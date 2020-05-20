@@ -78,7 +78,8 @@ class TestGemPyToREX:
         model = gempy.create_data(extent=[0,10,0,10,0,10])
         model.set_default_surfaces()
         model._surfaces.df['isActive'] = False
-        rex_bytes = gtr.geomodel_to_rex(model)
+        with pytest.raises(RuntimeError):
+            rex_bytes = gtr.geomodel_to_rex(model)
 
     def test_plot_ar(self, geo_model):
         tag = gempy.plot.plot_ar(geo_model, api_token='8e8a12ef-5da2-4790-9a84-15923a287965', project_name='Alesmodel',

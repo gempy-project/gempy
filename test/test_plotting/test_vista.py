@@ -268,7 +268,7 @@ class TestVista:
         Args:
             vista_object_computed:
         """
-        vista_object_computed.plot_structured_grid('scalar', render_topography=True)
+        vista_object_computed.plot_structured_grid('scalar', series='Strat_Series', render_topography=True)
         print('foo')
 
     def test_plot_regular_grid_select_field(self, one_fault_model_solution):

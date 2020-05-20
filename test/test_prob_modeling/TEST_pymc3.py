@@ -1,7 +1,9 @@
 import os
 import gempy as gp
 from gempy.bayesian.theano_op import GemPyThOp
-import pymc3 as pm
+import pytest
+pm = pytest.importorskip("rgeomod")
+# import pymc3 as pm
 import arviz as az
 import numpy as np
 import matplotlib.pyplot as plt
