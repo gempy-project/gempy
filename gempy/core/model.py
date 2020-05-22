@@ -1047,8 +1047,8 @@ class DataMutation(object):
             Surfaces
         """
         # TODO time this function
-       # spu = self.surface_points.df['surface'].unique()
-       # sps = self.surface_points.df['series'].unique()
+        # spu = self.surface_points.df['surface'].unique()
+        # sps = self.surface_points.df['series'].unique()
 
         # # Boolean array of size len surfaces with True active surfaces minus Basemes
         # sel = self.surfaces.df['isActive'] & ~self.surfaces.df['isBasement'] #self.surfaces.df['surface'].isin(spu)
@@ -1109,6 +1109,8 @@ class Model(DataMutation, ABC):
         self.meta = MetaData(project_name=project_name)
         super().__init__()
         #self.interpolator_gravity = None
+
+        self.crs = None
 
     def __repr__(self):
         return self.meta.project_name + ' ' + self.meta.date
@@ -1356,3 +1358,23 @@ class Model(DataMutation, ABC):
             self.interpolator_gravity.compile_th_fn_grav(density_block, pos_density, inplace=True)
 
         return self.additional_data.options
+
+    def set_crs(self, crs_code: str):
+        """Set coordinate reference system of gempy project
+
+        Args:
+            crs_code: crs code, e.g. '4326' (see https://epsg.io)
+
+        Returns:
+
+        """
+        self.crs = crs_code
+
+    def get_crs(self) -> str:
+        """Return coordinate reference system code of project
+
+        Returns: crs_code (str)
+
+        """
+        return self.crs
+
