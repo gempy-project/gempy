@@ -1,7 +1,7 @@
 import sys, os
 sys.path.append("../../..")
 os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
-os.environ["THEANO_FLAGS"] = "mode=FAST_RUN,device=cpu"
+os.environ["THEANO_FLAGS"] = "mode=FAST_RUN,device=gpu"
 
 from theano import function, config, shared, tensor
 import numpy

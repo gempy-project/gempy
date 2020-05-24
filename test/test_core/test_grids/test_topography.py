@@ -2,7 +2,7 @@ import os
 import sys, os
 sys.path.append("../../..")
 os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
-os.environ["THEANO_FLAGS"] = "mode=FAST_RUN,device=cuda"
+os.environ["THEANO_FLAGS"] = "mode=FAST_RUN,device=cpu"
 
 import gempy as gp
 import matplotlib.pyplot as plt
