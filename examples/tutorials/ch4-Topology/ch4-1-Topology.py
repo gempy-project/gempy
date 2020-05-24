@@ -188,7 +188,8 @@ tp.get_lot_lith_to_node_id(lith_lot)
 # ~~~~~~~~~~~~~~~~~~~~~~
 # 
 
-# %% 
+# %%
+# sphinx_gallery_thumbnail_number = 4
 dedges, dcentroids = tp.get_detailed_labels(geo_model, edges, centroids)
 gp.plot_2d(geo_model, cell_number=[5], show=False)
 gp.plot.plot_topology(geo_model, dedges, dcentroids, scale=True)
