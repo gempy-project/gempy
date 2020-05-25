@@ -1110,7 +1110,8 @@ class Model(DataMutation, ABC):
         super().__init__()
         #self.interpolator_gravity = None
 
-        self.crs = None
+        # Initialize coordinate reference system
+        self.__crs = None
 
     def __repr__(self):
         return self.meta.project_name + ' ' + self.meta.date
@@ -1359,22 +1360,20 @@ class Model(DataMutation, ABC):
 
         return self.additional_data.options
 
-    def set_crs(self, crs_code: str):
-        """Set coordinate reference system of gempy project
-
-        Args:
-            crs_code: crs code, e.g. '4326' (see https://epsg.io)
-
-        Returns:
-
-        """
-        self.crs = crs_code
-
-    def get_crs(self) -> str:
+    @property
+    def crs(self) -> str:
         """Return coordinate reference system code of project
 
         Returns: crs_code (str)
 
         """
-        return self.crs
+        return self.__crs
 
+    @crs.setter
+    def crs(self, crs: str):
+        """Set coordinate reference system code of projcet
+
+        Args:
+            crs: crs code, e.g. '4326' (see https://epsg.io)
+        """
+        self.__crs = crs
