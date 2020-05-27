@@ -204,7 +204,7 @@ html_theme_options = {
     'logo_name': True,
     'travis_button': True,
     'page_width': '1200px',
-    'fixed_sidebar': True,
+    'fixed_sidebar': False,
     'show_related': True,
     'sidebar_collapse': True,
 }
