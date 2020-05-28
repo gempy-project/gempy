@@ -8,6 +8,7 @@ import pandas as pn
 
 try:
     import ipywidgets as widgets
+
     ipywidgets_import = True
 except ModuleNotFoundError:
     VTK_IMPORT = False
@@ -202,7 +203,7 @@ class Grid(object):
     def create_centered_grid(self, centers, radius, resolution=None):
         """Initialize gravity grid. Deactivate the rest of the grids"""
         self.centered_grid = grid_types.CenteredGrid(centers, radius, resolution)
-       # self.active_grids = np.zeros(4, dtype=bool)
+        # self.active_grids = np.zeros(4, dtype=bool)
         self.set_active('centered')
 
     def deactivate_all_grids(self):
@@ -244,7 +245,8 @@ class Grid(object):
         self.values = np.empty((0, 3))
         lengths = [0]
         try:
-            for e, grid_types in enumerate([self.regular_grid, self.custom_grid, self.topography, self.sections, self.centered_grid]):
+            for e, grid_types in enumerate(
+                    [self.regular_grid, self.custom_grid, self.topography, self.sections, self.centered_grid]):
                 if self.active_grids[e]:
                     self.values = np.vstack((self.values, grid_types.values))
                     lengths.append(grid_types.values.shape[0])
@@ -260,7 +262,7 @@ class Grid(object):
         assert type(grid_name) is str, 'Only one grid type can be retrieved'
         assert grid_name in self.grid_types, 'possible grid types are ' + str(self.grid_types)
         where = np.where(self.grid_types == grid_name)[0][0]
-        return self.length[where], self.length[where+1]
+        return self.length[where], self.length[where + 1]
 
     def get_grid(self, grid_name: str):
         assert type(grid_name) is str, 'Only one grid type can be retrieved'
@@ -269,10 +271,10 @@ class Grid(object):
         return self.values[l_0:l_1]
 
     def get_section_args(self, section_name: str):
-        #assert type(section_name) is str, 'Only one section type can be retrieved'
+        # assert type(section_name) is str, 'Only one section type can be retrieved'
         l0, l1 = self.get_grid_args('sections')
         where = np.where(self.sections.names == section_name)[0][0]
-        return l0 + self.sections.length[where], l0 + self.sections.length[where+1]
+        return l0 + self.sections.length[where], l0 + self.sections.length[where + 1]
 
 
 class Colors:
@@ -302,7 +304,9 @@ class Colors:
         if hex_colors == 'palettes':
             hex_colors = []
             if palettes == 'default':
+                hex_colors = ['#015482', '#9f0052', '#ffbe00', '#728f02', '#443988', '#ff3f20', '#5DA629']
                 palettes = ['muted', 'pastel', 'deep', 'bright', 'dark', 'colorblind']
+
             for i in palettes:
                 s = sns.color_palette(i).as_hex()
                 hex_colors += s
@@ -419,7 +423,7 @@ class Colors:
         return self.surfaces
 
 
-#@_setdoc_pro(Series.__doc__)
+# @_setdoc_pro(Series.__doc__)
 class Surfaces(object):
     """
     Class that contains the surfaces of the model and the values of each of them.
@@ -616,7 +620,7 @@ class Surfaces(object):
             self.reset_order_surfaces()
         return self
 
-    def rename_surfaces(self, to_replace: Union[str, list, dict],  **kwargs):
+    def rename_surfaces(self, to_replace: Union[str, list, dict], **kwargs):
         """Replace values given in to_replace with value.
 
         Args:
@@ -634,7 +638,7 @@ class Surfaces(object):
         if np.isin(to_replace, self.df['surface']).any():
             print('Two surfaces cannot have the same name.')
         else:
-            self.df['surface'].replace(to_replace,  inplace=True, **kwargs)
+            self.df['surface'].replace(to_replace, inplace=True, **kwargs)
         return self
 
     def reset_order_surfaces(self):
@@ -690,9 +694,9 @@ class Surfaces(object):
         assert self.df['isBasement'].values.astype(bool).sum() <= 1, 'Only one surface can be basement'
         return self
 
-# endregion
+    # endregion
 
-# set_series
+    # set_series
     def map_series(self, mapping_object: Union[dict, pn.DataFrame] = None):
         """
         Method to map to which series every surface belongs to. This step is necessary to assign differenct tectonics
@@ -735,7 +739,7 @@ class Surfaces(object):
                 new_series_mapping = mapping_object
 
             else:
-                raise AttributeError(str(type(mapping_object))+' is not the right attribute type.')
+                raise AttributeError(str(type(mapping_object)) + ' is not the right attribute type.')
 
             # Checking which surfaces are on the list to be mapped
             b = self.df['surface'].isin(new_series_mapping.index)
@@ -753,11 +757,11 @@ class Surfaces(object):
         self.set_basement()
         return self
 
-# endregion
+    # endregion
 
-# region update_id
+    # region update_id
 
-# endregion
+    # endregion
 
     def add_surfaces_values(self, values_array: Union[np.ndarray, list], properties_names: list = np.empty(0)):
         """Add values to be interpolated for each surfaces.
@@ -836,14 +840,14 @@ class Surfaces(object):
 
         """
         properties_names = np.atleast_1d(properties_names)
-        assert ~np.isin(properties_names, ['surface', 'series', 'order_surfaces', 'id', 'isBasement', 'color']),\
+        assert ~np.isin(properties_names, ['surface', 'series', 'order_surfaces', 'id', 'isBasement', 'color']), \
             'only property names can be modified with this method'
 
         self.df.loc[idx, properties_names] = values
         return self
 
 
-#@_setdoc_pro([SurfacePoints.__doc__, Orientations.__doc__, Surfaces.__doc__, Faults.__doc__])
+# @_setdoc_pro([SurfacePoints.__doc__, Orientations.__doc__, Surfaces.__doc__, Faults.__doc__])
 class Structure(object):
     """
     The structure_data class analyse the different lengths of subset in the interface and orientations categories_df
@@ -869,13 +873,12 @@ class Structure(object):
     """
 
     def __init__(self, surface_points, orientations, surfaces: Surfaces, faults):
-
         self.surface_points = surface_points
         self.orientations = orientations
         self.surfaces = surfaces
         self.faults = faults
 
-        df_ = pn.DataFrame(np.array(['False', 'False', -1, -1, -1, -1, -1, -1, -1],).reshape(1, -1),
+        df_ = pn.DataFrame(np.array(['False', 'False', -1, -1, -1, -1, -1, -1, -1], ).reshape(1, -1),
                            index=['values'],
                            columns=['isLith', 'isFault',
                                     'number faults', 'number surfaces', 'number series',
@@ -943,7 +946,7 @@ class Structure(object):
         # Array containing the size of every series. SurfacePoints.
         points_count = self.surface_points.df['order_series'].value_counts(sort=False)
         len_series_i = np.zeros(len_series, dtype=int)
-        len_series_i[points_count.index-1] = points_count.values
+        len_series_i[points_count.index - 1] = points_count.values
 
         if len_series_i.shape[0] is 0:
             len_series_i = np.insert(len_series_i, 0, 0)
@@ -962,9 +965,9 @@ class Structure(object):
         """
         # Array containing the size of every series. orientations.
 
-        len_series_o = np.zeros(self.surfaces.series.df.shape[0],dtype=int)
+        len_series_o = np.zeros(self.surfaces.series.df.shape[0], dtype=int)
         ori_count = self.orientations.df['order_series'].value_counts(sort=False)
-        len_series_o[ori_count.index-1] = ori_count.values
+        len_series_o[ori_count.index - 1] = ori_count.values
 
         self.df.at['values', 'len series orientations'] = len_series_o
 
@@ -978,11 +981,11 @@ class Structure(object):
             :class:`pn.DataFrame`: df where Structural data is stored
 
         """
-        len_sps = np.zeros(self.surfaces.series.df.shape[0],dtype=int)
-        surf_count = self.surface_points.df.groupby('order_series').\
+        len_sps = np.zeros(self.surfaces.series.df.shape[0], dtype=int)
+        surf_count = self.surface_points.df.groupby('order_series'). \
             surface.nunique()
 
-        len_sps[surf_count.index-1] = surf_count.values
+        len_sps[surf_count.index - 1] = surf_count.values
 
         self.df.at['values', 'number surfaces per series'] = len_sps
         return self.df
@@ -1019,7 +1022,7 @@ class Structure(object):
         Returns:
             :class:`pn.DataFrame`: df where Structural data is stored
         """
-        self.df['isLith'] = True if self.df.loc['values', 'number series'] >= self.df.loc['values', 'number faults']\
+        self.df['isLith'] = True if self.df.loc['values', 'number series'] >= self.df.loc['values', 'number faults'] \
             else False
         self.df['isFault'] = True if self.df.loc['values', 'number faults'] > 0 else False
 
@@ -1034,6 +1037,7 @@ class Options(object):
          change among those categories.
 
      """
+
     def __init__(self):
         df_ = pn.DataFrame(np.array(['float32', 'geology', 'fast_compile', 'cpu', None]).reshape(1, -1),
                            index=['values'],
@@ -1286,16 +1290,15 @@ class AdditionalData(object):
         rescaling_data (:class:`RescaledData`):
 
     """
+
     def __init__(self, surface_points, orientations, grid: Grid,
                  faults, surfaces: Surfaces, rescaling):
-
         self.structure_data = Structure(surface_points, orientations, surfaces, faults)
         self.options = Options()
         self.kriging_data = KrigingParameters(grid, self.structure_data)
         self.rescaling_data = rescaling
 
     def __repr__(self):
-
         concat_ = self.get_additional_data()
         return concat_.to_string()
 
@@ -1327,6 +1330,6 @@ class AdditionalData(object):
         Update fields dependent on input data sucha as structure and universal kriging grade
         """
         self.structure_data.update_structure_from_input()
-        if len(self.kriging_data.df.loc['values', 'drift equations']) <\
+        if len(self.kriging_data.df.loc['values', 'drift equations']) < \
                 self.structure_data.df.loc['values', 'number series']:
             self.kriging_data.set_u_grade()
