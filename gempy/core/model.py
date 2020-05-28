@@ -28,10 +28,6 @@ class RestrictingWrapper(object):
     def __repr__(self):
         return self._w.__repr__()
 
-    #
-    # def _repr_html_(self):
-    #     return self._w._repr_html_()
-
     def __getattr__(self, item):
         if item in self._accepted_members:
             return getattr(self._w, item)
@@ -97,7 +93,8 @@ class ImplicitCoKriging(object):
         """
         return RestrictingWrapper(
             self._grid,
-            accepted_members=['__repr__', '__str__', 'values', 'regular_grid', 'sections', 'centered_grid'])
+            accepted_members=['__repr__', '__str__', 'values', 'regular_grid',
+                              'sections', 'centered_grid'])
 
     @_setdoc_pro(Faults.__doc__)
     @property
