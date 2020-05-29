@@ -105,29 +105,33 @@ polygondict
 # %%
 # Look at resulting polygons:
 # '''''''''''''''''''''''''''
-# 
+#
 
-# %% 
-form = 'Sandstone_2'
-pointslist = np.array(polygondict[form])
-c = cdict[form]
-if pointslist.shape != ():
-    for points in pointslist:
-        plt.plot(points[:, 0], points[:, 1], color=c)
-    plt.ylim(extent[2:4])
-    plt.xlim(extent[:2])
+# %%
+import matplotlib.path
+import matplotlib.patches as patches
 
-# %% 
-# The same in geological map
-polygondict, cdict, extent = section_utils.get_polygon_dictionary(geo_model, 'topography')
 
-# %% 
-form = 'Siltstone'
-pointslist = np.array(polygondict[form])
-c = cdict[form]
-if pointslist.shape != ():
-    for points in pointslist:
-        plt.plot(points[:, 0], points[:, 1], color=c)
-    plt.ylim(extent[2:4])
-    plt.xlim(extent[:2])
-plt.show()
+def plot_pathdict(pathdict, cdict, extent, ax=None, surfaces=list(geo_model.surfaces.df['surface'])[:-1][::-1]):
+    if ax == None:
+        fig, ax = plt.subplots()
+    for formation in surfaces:
+        for path in pathdict.get(formation):
+            if path !=[]:
+                if type(path) == matplotlib.path.Path:
+                    patch = patches.PathPatch(path, fill=False, lw=1, edgecolor=cdict.get(formation, 'k'))
+                    ax.add_patch(patch)
+                elif type(path) == list:
+                    for subpath in path:
+                        assert type(subpath == matplotlib.path.Path)
+                        patch = patches.PathPatch(subpath, fill=False, lw=1, edgecolor=cdict.get(formation, 'k'))
+                        ax.add_patch(patch)
+    ax.set_ylim(extent[2:4])
+    ax.set_xlim(extent[:2])
+    plt.show()
+
+# %%
+plot_pathdict(polygondict, cdict, extent)
+
+# %%
+plot_pathdict(polygondict, cdict, extent, surfaces=['basement', 'Main_Fault'])
