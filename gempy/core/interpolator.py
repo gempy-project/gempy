@@ -1,14 +1,16 @@
 from typing import Union
-from gempy.core.data import SurfacePoints, Orientations, Grid, Surfaces, Series, Faults, AdditionalData
-from gempy.utils.meta import setdoc_pro, setdoc
+from gempy.core.data import Grid, Surfaces, AdditionalData
+from gempy.core.data_modules.geometric_data import  SurfacePoints, Orientations
+from gempy.core.data_modules.stack import Faults, Series
+from gempy.utils.meta import _setdoc_pro, _setdoc
 import gempy.utils.docstring as ds
 
 import numpy as np
 import theano
 
 
-@setdoc_pro([SurfacePoints.__doc__, Orientations.__doc__, Grid.__doc__, Surfaces.__doc__, Series.__doc__,
-             Faults.__doc__, AdditionalData.__doc__])
+@_setdoc_pro([SurfacePoints.__doc__, Orientations.__doc__, Grid.__doc__, Surfaces.__doc__, Series.__doc__,
+              Faults.__doc__, AdditionalData.__doc__])
 class Interpolator(object):
     """Class that act as:
      1) linker between the data objects and the theano graph
@@ -79,7 +81,7 @@ class Interpolator(object):
 
         self.len_series_w = self.len_series_i + self.len_series_o * 3 + self.len_series_u + self.len_series_f
 
-    @setdoc_pro([AdditionalData.__doc__, ds.inplace, ds.theano_graph_pro])
+    @_setdoc_pro([AdditionalData.__doc__, ds.inplace, ds.theano_graph_pro])
     def create_theano_graph(self, additional_data: "AdditionalData" = None, inplace=True,
                             output=None, **kwargs):
         """
@@ -95,12 +97,14 @@ class Interpolator(object):
         if output is None:
             output = ['geology']
 
-        import gempy.core.theano.theano_graph_pro as tg
+        import gempy.core.theano_modules.theano_graph_pro as tg
         import importlib
         importlib.reload(tg)
 
         if additional_data is None:
             additional_data = self.additional_data
+
+        self.dtype = additional_data.options.df.loc['values', 'dtype']
 
         graph = tg.TheanoGraphPro(optimizer=additional_data.options.df.loc['values', 'theano_optimizer'],
                                   verbose=additional_data.options.df.loc['values', 'verbosity'],
@@ -111,7 +115,7 @@ class Interpolator(object):
         else:
             return graph
 
-    @setdoc_pro([ds.theano_graph_pro])
+    @_setdoc_pro([ds.theano_graph_pro])
     def set_theano_graph(self, th_graph):
         """
         Attach an already create theano graph.
@@ -561,8 +565,8 @@ class InterpolatorMagnetics:
         self.set_theano_shared_magnetic_cts(incl, decl, B_ext)
         self.set_theano_shared_l0_l1()
 
-@setdoc_pro(ds.ctrl)
-@setdoc([Interpolator.__doc__])
+@_setdoc_pro(ds.ctrl)
+@_setdoc([Interpolator.__doc__])
 class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics):
     """
     Child class of :class:`Interpolator` which set the shared variables and compiles the theano
@@ -640,7 +644,7 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
         self.compute_block_ctrl = np.ones(n_series, dtype=bool)
         return True
 
-    @setdoc_pro(reset_flow_control_initial_results.__doc__)
+    @_setdoc_pro(reset_flow_control_initial_results.__doc__)
     def set_all_shared_parameters(self, reset_ctrl=False):
         """
         Set all theano shared parameters required for the computation of lithology
@@ -671,7 +675,7 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
         self.theano_graph.regular_grid_res.set_value(self.grid.regular_grid.resolution)
         self.theano_graph.dxdydz.set_value(np.array(self.grid.regular_grid.get_dx_dy_dz(), dtype=self.dtype))
 
-    @setdoc_pro(reset_flow_control_initial_results.__doc__)
+    @_setdoc_pro(reset_flow_control_initial_results.__doc__)
     def set_theano_shared_structure(self, reset_ctrl=False):
         """
         Set all theano shared variable dependent on :class:`Structure`.
@@ -770,7 +774,7 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
         self.theano_graph.n_universal_eq_T.set_value(
             list(self.additional_data.kriging_data.df.loc['values', 'drift equations'].astype('int32')[self.non_zero]))
 
-    @setdoc_pro(set_theano_shared_loop.__doc__)
+    @_setdoc_pro(set_theano_shared_loop.__doc__)
     def set_theano_shared_weights(self):
         """Set the theano shared weights and [s0]"""
         self.set_theano_shared_loop()
@@ -784,11 +788,12 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
 
     def set_theano_shared_is_fault(self):
         """Set theano shared variable which controls if a series is fault or not"""
-        self.theano_graph.is_fault.set_value(self.faults.df['isFault'].values[self.non_zero])
+        is_fault_ = self.faults.df['isFault'].values[self.non_zero]
+        self.theano_graph.is_fault.set_value(is_fault_)
 
     def set_theano_shared_is_finite(self):
         """Set theano shared variable which controls if a fault is finite or not"""
-        self.theano_graph.is_finite_ctrl.set_value(self.faults.df['isFinite'].values)
+        self.theano_graph.is_finite_ctrl.set_value(self.faults.df['isFinite'].values.astype(bool))
 
     def set_theano_shared_onlap_erode(self):
         """Set the theano variables which control the masking patterns according to the uncomformity relation"""

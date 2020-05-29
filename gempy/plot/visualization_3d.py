@@ -93,11 +93,11 @@ class vtkVisualization(object):
         self.ren_name = ren_name
         # Number of renders
         self.n_ren = 4
-        self.id = geo_data.surface_points.df['id'].unique()
-        self.surface_name = geo_data.surface_points.df['surface'].unique()
+        self.id = geo_data._surface_points.df['id'].unique()
+        self.surface_name = geo_data._surface_points.df['surface'].unique()
 
         # Extents
-        self.extent = copy.copy(self.geo_model.grid.regular_grid.extent)
+        self.extent = copy.copy(self.geo_model._grid.regular_grid.extent)
         self.extent[-1] = ve * self.extent[-1]
         self.extent[-2] = ve * self.extent[-2]
         _e = self.extent
@@ -118,7 +118,7 @@ class vtkVisualization(object):
         self.o_rend_4 = pn.DataFrame(columns=['val'])
 
         # Resolution
-        self.res = self.geo_model.grid.regular_grid.resolution
+        self.res = self.geo_model._grid.regular_grid.resolution
 
         # create render window, settings
         self.renwin = vtk.vtkRenderWindow()
@@ -337,7 +337,7 @@ class vtkVisualization(object):
 
         surf_actor = vtk.vtkActor()
         surf_actor.SetMapper(surf_mapper)
-        surf_actor.GetProperty().SetColor(mcolors.hex2color(self.geo_model.surfaces.df.set_index('id')['color'][fn]))#self.C_LOT[fn])
+        surf_actor.GetProperty().SetColor(mcolors.hex2color(self.geo_model._surfaces.df.set_index('id')['color'][fn]))#self.C_LOT[fn])
         surf_actor.GetProperty().SetOpacity(alpha)
 
         return surf_actor, surf_mapper, surf_polydata
@@ -365,7 +365,7 @@ class vtkVisualization(object):
         Z = Z * self.ve
         s.r_f = self._e_d_avrg * r
         s.PlaceWidget(X - s.r_f, X + s.r_f, Y - s.r_f, Y + s.r_f, Z - s.r_f, Z + s.r_f)
-        s.GetSphereProperty().SetColor(mcolors.hex2color(self.geo_model.surfaces.df.set_index('id')['color'][fn]))#self.C_LOT[fn])
+        s.GetSphereProperty().SetColor(mcolors.hex2color(self.geo_model._surfaces.df.set_index('id')['color'][fn]))#self.C_LOT[fn])
 
         s.SetCurrentRenderer(self.ren_list[n_render])
         s.n_sphere = n_sphere
@@ -425,8 +425,8 @@ class vtkVisualization(object):
         d.PlaceWidget(a, b, c, d_, e, f)
         d.SetNormal(Gx, Gy, Gz)
         d.SetCenter(X, Y, Z)
-        d.GetPlaneProperty().SetColor(mcolors.hex2color(self.geo_model.surfaces.df.set_index('id')['color'][fn]))#self.C_LOT[fn])
-        d.GetHandleProperty().SetColor(mcolors.hex2color(self.geo_model.surfaces.df.set_index('id')['color'][fn]))#self.C_LOT[fn])
+        d.GetPlaneProperty().SetColor(mcolors.hex2color(self.geo_model._surfaces.df.set_index('id')['color'][fn]))#self.C_LOT[fn])
+        d.GetHandleProperty().SetColor(mcolors.hex2color(self.geo_model._surfaces.df.set_index('id')['color'][fn]))#self.C_LOT[fn])
         d.GetHandleProperty().SetOpacity(alpha)
         d.SetCurrentRenderer(self.ren_list[n_render])
         d.n_plane = n_plane
@@ -458,7 +458,7 @@ class vtkVisualization(object):
 
         surfaces = self.surface_name
 
-        fns = self.geo_model.surface_points.df['id'].unique().squeeze()
+        fns = self.geo_model._surface_points.df['id'].unique().squeeze()
         assert type(vertices) is list or type(vertices) is np.ndarray, 'vertices and simpleces have to be a list of' \
                                                                        ' arrays even when only one' \
                                                                        ' surface is passed'
@@ -485,7 +485,7 @@ class vtkVisualization(object):
 
     def set_topography(self):
         # Create points on an XY grid with random Z coordinate
-        vertices = copy.copy(self.geo_model.grid.topography.values)
+        vertices = copy.copy(self.geo_model._grid.topography.values)
 
         points = vtk.vtkPoints()
         # for v in vertices:
@@ -544,7 +544,7 @@ class vtkVisualization(object):
         arr_ = np.empty((0, 3), dtype='int')
 
         # Convert hex colors to rgb
-        for idx, val in self.geo_model.surfaces.df['color'].iteritems():
+        for idx, val in self.geo_model._surfaces.df['color'].iteritems():
             rgb = (255 * np.array(mcolors.hex2color(val)))
             arr_ = np.vstack((arr_, rgb))
 
@@ -563,7 +563,7 @@ class vtkVisualization(object):
 
         if not indices:
 
-            for e, val in enumerate(self.geo_model.surface_points.df.iterrows()):
+            for e, val in enumerate(self.geo_model._surface_points.df.iterrows()):
                 index = val[0]
                 row = val[1]
                 self.s_rend_1.at[index] = (self.create_sphere(row['X'], row['Y'], row['Z'], row['id'],
@@ -575,7 +575,7 @@ class vtkVisualization(object):
                 self.s_rend_4.at[index] = (self.create_sphere(row['X'], row['Y'], row['Z'], row['id'],
                                            n_sphere=e, n_render=3, n_index=index))
         else:
-            for e, val in enumerate(self.geo_model.surface_points.df.loc[np.atleast_1d(indices)].iterrows()):
+            for e, val in enumerate(self.geo_model._surface_points.df.loc[np.atleast_1d(indices)].iterrows()):
                 index = val[0]
                 row = val[1]
                 self.s_rend_1.at[index] = (self.create_sphere(row['X'], row['Y'], row['Z'], row['id'],
@@ -596,7 +596,7 @@ class vtkVisualization(object):
         """
 
         if not indices:
-            for e, val in enumerate(self.geo_model.orientations.df.iterrows()):
+            for e, val in enumerate(self.geo_model._orientations.df.iterrows()):
                 index = val[0]
                 row = val[1]
                 self.o_rend_1.at[index] = (self.create_foliation(row['X'], row['Y'], row['Z'], row['id'],
@@ -612,7 +612,7 @@ class vtkVisualization(object):
                                            row['G_x'], row['G_y'], row['G_z'],
                                            n_plane=e, n_render=3, n_index=index))
         else:
-            for e, val in enumerate(self.geo_model.orientations.df.loc[np.atleast_1d(indices)].iterrows()):
+            for e, val in enumerate(self.geo_model._orientations.df.loc[np.atleast_1d(indices)].iterrows()):
                 index = val[0]
                 row = val[1]
                 self.o_rend_1.at[index] = (self.create_foliation(row['X'], row['Y'], row['Z'], row['id'],
@@ -689,7 +689,7 @@ class vtkVisualization(object):
             pass
         try:
             for sph in zip(self.s_rend_1['val'], self.s_rend_2['val'], self.s_rend_3['val'],
-                           self.s_rend_4['val'], self.geo_model.surface_points.df.iterrows()):
+                           self.s_rend_4['val'], self.geo_model._surface_points.df.iterrows()):
 
                 row_i = sph[4][1]
                 sph[0].PlaceWidget(row_i['X'] - sph[0].r_f, row_i['X'] + sph[0].r_f,
@@ -710,7 +710,7 @@ class vtkVisualization(object):
         except AttributeError:
             pass
         try:
-            for fol in (zip(self.f_rend_1, self.f_rend_2, self.f_rend_3, self.f_rend_4, self.geo_model.orientations.iterrows())):
+            for fol in (zip(self.f_rend_1, self.f_rend_2, self.f_rend_3, self.f_rend_4, self.geo_model._orientations.iterrows())):
                 row_f = fol[4][1]
 
                 fol[0].SetCenter(row_f['X'], row_f['Y'], row_f['Z'])
@@ -783,7 +783,7 @@ class vtkVisualization(object):
 
     def SphereCallbak_move_changes(self, indices):
        # print(indices)
-        df_changes = self.geo_model.surface_points.df.loc[np.atleast_1d(indices)][['X', 'Y', 'Z', 'id']]
+        df_changes = self.geo_model._surface_points.df.loc[np.atleast_1d(indices)][['X', 'Y', 'Z', 'id']]
         for index, df_row in df_changes.iterrows():
             new_center = df_row[['X', 'Y', 'Z']].values
 
@@ -795,7 +795,7 @@ class vtkVisualization(object):
                            new_center[2] - s1.r_f, new_center[2] + s1.r_f)
 
             s1.GetSphereProperty().SetColor(mcolors.hex2color(
-                self.geo_model.surfaces.df.set_index('id')['color'][df_row['id']]))#self.C_LOT[df_row['id']])
+                self.geo_model._surfaces.df.set_index('id')['color'][df_row['id']]))#self.C_LOT[df_row['id']])
 
             s2 = self.s_rend_2.loc[index, 'val']
             s2.PlaceWidget(new_center[0] - s2.r_f, new_center[0] + s2.r_f,
@@ -803,7 +803,7 @@ class vtkVisualization(object):
                            new_center[2] - s2.r_f, new_center[2] + s2.r_f)
 
             s2.GetSphereProperty().SetColor(mcolors.hex2color(
-                self.geo_model.surfaces.df.set_index('id')['color'][df_row['id']]))
+                self.geo_model._surfaces.df.set_index('id')['color'][df_row['id']]))
 
             s3 = self.s_rend_3.loc[index, 'val']
             s3.PlaceWidget(new_center[0] - s3.r_f, new_center[0] + s3.r_f,
@@ -811,7 +811,7 @@ class vtkVisualization(object):
                            new_center[2] - s3.r_f, new_center[2] + s3.r_f)
 
             s3.GetSphereProperty().SetColor(mcolors.hex2color(
-                self.geo_model.surfaces.df.set_index('id')['color'][df_row['id']]))
+                self.geo_model._surfaces.df.set_index('id')['color'][df_row['id']]))
 
             s4 = self.s_rend_4.loc[index, 'val']
             s4.PlaceWidget(new_center[0] - s4.r_f, new_center[0] + s4.r_f,
@@ -819,7 +819,7 @@ class vtkVisualization(object):
                            new_center[2] - s4.r_f, new_center[2] + s4.r_f)
 
             s4.GetSphereProperty().SetColor(mcolors.hex2color(
-                self.geo_model.surfaces.df.set_index('id')['color'][df_row['id']]))
+                self.geo_model._surfaces.df.set_index('id')['color'][df_row['id']]))
 
     def SphereCallback_delete_point(self, ind_i):
         """
@@ -884,7 +884,7 @@ class vtkVisualization(object):
         # self.geo_model.calculate_orientations()
 
     def planesCallback_move_changes(self, indices):
-        df_changes = self.geo_model.orientations.df.loc[np.atleast_1d(indices)][['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'id']]
+        df_changes = self.geo_model._orientations.df.loc[np.atleast_1d(indices)][['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'id']]
         for index, new_values_df in df_changes.iterrows():
             new_center = new_values_df[['X', 'Y', 'Z']].values
             new_normal = new_values_df[['G_x', 'G_y', 'G_z']].values
@@ -898,36 +898,36 @@ class vtkVisualization(object):
             plane1.SetNormal(new_normal)
             plane1.SetCenter(new_center[0], new_center[1], new_center[2])
             plane1.GetPlaneProperty().SetColor(mcolors.hex2color(
-                self.geo_model.surfaces.df.set_index('id')['color'][new_values_df['id']]))#self.C_LOT[new_values_df['id']])
+                self.geo_model._surfaces.df.set_index('id')['color'][new_values_df['id']]))#self.C_LOT[new_values_df['id']])
             plane1.GetHandleProperty().SetColor(mcolors.hex2color(
-                self.geo_model.surfaces.df.set_index('id')['color'][new_values_df['id']]))
+                self.geo_model._surfaces.df.set_index('id')['color'][new_values_df['id']]))
 
             plane2 = self.o_rend_2.loc[index, 'val']
             plane2.SetInputData(new_source.GetOutput())
             plane2.SetNormal(new_normal)
             plane2.SetCenter(new_center[0], new_center[1], new_center[2])
             plane2.GetPlaneProperty().SetColor(mcolors.hex2color(
-                self.geo_model.surfaces.df.set_index('id')['color'][new_values_df['id']]))
+                self.geo_model._surfaces.df.set_index('id')['color'][new_values_df['id']]))
             plane2.GetHandleProperty().SetColor(mcolors.hex2color(
-                self.geo_model.surfaces.df.set_index('id')['color'][new_values_df['id']]))
+                self.geo_model._surfaces.df.set_index('id')['color'][new_values_df['id']]))
 
             plane3 = self.o_rend_3.loc[index, 'val']
             plane3.SetInputData(new_source.GetOutput())
             plane3.SetNormal(new_normal)
             plane3.SetCenter(new_center[0], new_center[1], new_center[2])
             plane3.GetPlaneProperty().SetColor(mcolors.hex2color(
-                self.geo_model.surfaces.df.set_index('id')['color'][new_values_df['id']]))
+                self.geo_model._surfaces.df.set_index('id')['color'][new_values_df['id']]))
             plane3.GetHandleProperty().SetColor(mcolors.hex2color(
-                self.geo_model.surfaces.df.set_index('id')['color'][new_values_df['id']]))
+                self.geo_model._surfaces.df.set_index('id')['color'][new_values_df['id']]))
 
             plane4 = self.o_rend_4.loc[index, 'val']
             plane4.SetInputData(new_source.GetOutput())
             plane4.SetNormal(new_normal)
             plane4.SetCenter(new_center[0], new_center[1], new_center[2])
             plane4.GetPlaneProperty().SetColor(mcolors.hex2color(
-                self.geo_model.surfaces.df.set_index('id')['color'][new_values_df['id']]))
+                self.geo_model._surfaces.df.set_index('id')['color'][new_values_df['id']]))
             plane4.GetHandleProperty().SetColor(mcolors.hex2color(
-                self.geo_model.surfaces.df.set_index('id')['color'][new_values_df['id']]))
+                self.geo_model._surfaces.df.set_index('id')['color'][new_values_df['id']]))
 
     def planesCallback_delete_point(self, ind_o):
         """
@@ -1129,7 +1129,7 @@ class vtkVisualization(object):
         #     except IndexError:
         #         v_l, s_l = self.geo_model.surfaces.df['vertices'], self.geo_model.surfaces.df['edges']
 
-        self.set_surfaces(self.geo_model.surfaces)
+        self.set_surfaces(self.geo_model._surfaces)
         # if self.geo_model.solutions.geological_map is not None:
         #     try:
         #         self.set_geological_map()
@@ -1162,11 +1162,11 @@ class vtkVisualization(object):
 
         # Dimensions
 
-        nx, ny, nz = geo_data.grid.regular_grid.resolution
+        nx, ny, nz = geo_data._grid.regular_grid.resolution
 
-        lx = geo_data.grid.regular_grid.extent[1] - geo_data.grid.regular_grid.extent[0]
-        ly = geo_data.grid.regular_grid.extent[3] - geo_data.grid.regular_grid.extent[2]
-        lz = geo_data.grid.regular_grid.extent[5] - geo_data.grid.regular_grid.extent[4]
+        lx = geo_data._grid.regular_grid.extent[1] - geo_data._grid.regular_grid.extent[0]
+        ly = geo_data._grid.regular_grid.extent[3] - geo_data._grid.regular_grid.extent[2]
+        lz = geo_data._grid.regular_grid.extent[5] - geo_data._grid.regular_grid.extent[4]
 
         dx, dy, dz = lx / nx, ly / ny, lz / nz
 
@@ -1175,11 +1175,11 @@ class vtkVisualization(object):
         npoints = (nx + 1) * (ny + 1) * (nz + 1)
 
         # Coordinates
-        x = np.arange(geo_data.grid.regular_grid.extent[0], geo_data.grid.regular_grid.extent[1] + 0.1, dx, dtype='float64')
+        x = np.arange(geo_data._grid.regular_grid.extent[0], geo_data._grid.regular_grid.extent[1] + 0.1, dx, dtype='float64')
 
-        y = np.arange(geo_data.grid.regular_grid.extent[2], geo_data.grid.regular_grid.extent[3] + 0.1, dy, dtype='float64')
+        y = np.arange(geo_data._grid.regular_grid.extent[2], geo_data._grid.regular_grid.extent[3] + 0.1, dy, dtype='float64')
 
-        z = np.arange(geo_data.grid.regular_grid.extent[4], geo_data.grid.regular_grid.extent[5] + 0.1, dz, dtype='float64')
+        z = np.arange(geo_data._grid.regular_grid.extent[4], geo_data._grid.regular_grid.extent[5] + 0.1, dz, dtype='float64')
 
         if lith_block is None:
             lith_block = geo_data.solutions.lith_block
@@ -1249,7 +1249,7 @@ class vtkVisualization(object):
 
             surf_actor = vtk.vtkActor()
             surf_actor.SetMapper(surf_mapper)
-            surf_actor.GetProperty().SetColor(mcolors.hex2color(geo_model.surfaces.df.set_index('id')['color'][s_n]))
+            surf_actor.GetProperty().SetColor(mcolors.hex2color(geo_model._surfaces.df.set_index('id')['color'][s_n]))
             surf_actor.GetProperty().SetOpacity(alpha)
 
             if not path:
@@ -1272,7 +1272,7 @@ class GemPyvtkInteract(vtkVisualization):
         self.set_surface_points()
         self.set_orientations()
         if render_surfaces is True:
-            self.set_surfaces(self.geo_model.surfaces)
+            self.set_surfaces(self.geo_model._surfaces)
 
         self.render_model(**kwargs)
 
@@ -1327,7 +1327,7 @@ class GemPyvtkInteract(vtkVisualization):
 
     def render_surfaces(self, alpha=1):
         self.delete_surfaces()
-        self.set_surfaces(self.geo_model.surfaces, alpha=alpha)
+        self.set_surfaces(self.geo_model._surfaces, alpha=alpha)
         self.interactor.Render()
 
     def render_topography(self):
@@ -1430,7 +1430,7 @@ def get_fault_rotation_objects(geo_model, fault:str):
     rotated centroid, and the ellipse parameters a and b.
 
     Args:
-        geo_model (gempy.core.model.Model): gempy geo_model object
+        geo_model (gempy.core.model.Project): gempy geo_model object
         fault (str): Name of the fault surface.
 
     Returns:
@@ -1440,8 +1440,8 @@ def get_fault_rotation_objects(geo_model, fault:str):
         a (float): Horizontal ellipse parameter.
         b (float): Vertical ellipse parameter.
     """
-    filter_ = geo_model.surface_points.df.surface == fault
-    fpts = geo_model.surface_points.df[filter_][["X", "Y", "Z"]].values.T
+    filter_ = geo_model._surface_points.df.surface == fault
+    fpts = geo_model._surface_points.df[filter_][["X", "Y", "Z"]].values.T
     ctr = np.mean(fpts, axis=1)
     x = fpts - ctr.reshape((-1, 1))
     M = np.dot(x, x.T)
@@ -1458,7 +1458,7 @@ def cut_finite_fault_surfaces(geo_model, ver:dict, sim:dict):
     """Cut vertices and simplices for finite fault surfaces to finite fault ellipse
 
     Args:
-        geo_model (gempy.core.model.Model): gempy geo_model object
+        geo_model (gempy.core.model.Project): gempy geo_model object
         ver (dict): Dictionary with surfaces as keys and vertices ndarray as values.
         sim (dict): Dictionary with surfaces as keys and simplices ndarray as values.
 
@@ -1472,9 +1472,9 @@ def cut_finite_fault_surfaces(geo_model, ver:dict, sim:dict):
     finite_ver = copy(ver)
     finite_sim = copy(sim)
 
-    finite_fault_series = list(geo_model.faults.df[geo_model.faults.df["isFinite"] == True].index)
+    finite_fault_series = list(geo_model._faults.df[geo_model._faults.df["isFinite"] == True].index)
     finite_fault_surfaces = list(
-        geo_model.surfaces.df[geo_model.surfaces.df.series == finite_fault_series].surface.unique())
+        geo_model._surfaces.df[geo_model._surfaces.df._stack == finite_fault_series].surface.unique())
 
     for fault in finite_fault_surfaces:
         U, fpoints_rot, fctr_rot, a, b = get_fault_rotation_objects(geo_model, "Fault 1")

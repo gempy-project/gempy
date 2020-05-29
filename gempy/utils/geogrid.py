@@ -566,9 +566,9 @@ def combine_grids(G1, G2, direction, merge_type = 'keep_first', **kwds):
         #=======================================================================
         if merge_type == 'keep_first':
             if G1.ymax > G2.ymax:
-                G_comb.grid = np.concatenate((G2.grid[:,:G_low_ids[0],:], G1.grid), axis=1)
+                G_comb.grid = np.concatenate((G2._grid[:, :G_low_ids[0], :], G1._grid), axis=1)
             else:
-                G_comb.grid = np.concatenate((G1.grid, G2.grid[:,:G_low_ids[0],:]), axis=1)
+                G_comb.grid = np.concatenate((G1._grid, G2._grid[:, :G_low_ids[0], :]), axis=1)
 
         elif merge_type == 'keep_second':
             pass
