@@ -46,14 +46,17 @@ warnings.filterwarnings("ignore",
 
 # region Model
 @setdoc(Model.__doc__)
-def create_model(project_name='default_project'):
+def create_model(project_name='default_project', **kwargs):
     """Create a Model object
+
+    Keyword Args:
+        crs (str): EPSG Code of Coordinate References System, e.g. '4326' (see https://epsg.io)
 
     Returns:
         Model
 
     """
-    return Model(project_name)
+    return Model(project_name, **kwargs)
 # endregion
 
 
@@ -429,13 +432,14 @@ def create_data(extent: Union[list, ndarray], resolution: Union[list, ndarray] =
     Keyword Args:
         path_i: Path to the data bases of surface_points. Default os.getcwd(),
         path_o: Path to the data bases of orientations. Default os.getcwd()
+        crs (str): EPSG Code of Coordinate References System, e.g. '4326' (see https://epsg.io)
 
     Returns:
         :class:`Model`
 
     """
-
-    geo_model = create_model(project_name)
+    crs = kwargs.pop('crs', None)
+    geo_model = create_model(project_name, crs=crs)
     return init_data(geo_model, extent=extent, resolution=resolution, project_name=project_name, **kwargs)
 
 

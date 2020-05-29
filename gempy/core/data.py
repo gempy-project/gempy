@@ -30,7 +30,7 @@ class MetaData(object):
         project_name (str): Name of the project. This is use as default value for some I/O actions
 
     Keyword Args:
-        crs (str): Coordinate Reference System of project (default: None)
+        crs (str): EPSG Code of Coordinate References System, e.g. '4326' (see https://epsg.io)
 
     Attributes:
         date (str): Time of the creations of the project
