@@ -24,10 +24,13 @@ pn.options.mode.chained_assignment = None
 class MetaData(object):
     """Class containing metadata of the project.
 
-    Set of attributes and methods that are not related directly with the geological model but more with the project
+    Set of attributes and methods that are not directly related to the geological model but to the project in general.
 
     Args:
         project_name (str): Name of the project. This is use as default value for some I/O actions
+
+    Keyword Args:
+        crs (str): Coordinate Reference System of project (default: None)
 
     Attributes:
         date (str): Time of the creations of the project
@@ -35,7 +38,7 @@ class MetaData(object):
 
     """
 
-    def __init__(self, project_name='default_project'):
+    def __init__(self, project_name='default_project', **kwargs):
         import datetime
         now = datetime.datetime.now()
         self.date = now.strftime(" %Y-%m-%d %H:%M")
@@ -44,6 +47,27 @@ class MetaData(object):
             project_name += self.date
 
         self.project_name = project_name
+
+        # Initialize coordinate reference system
+        self.__crs = kwargs.get('crs', None)
+
+    @property
+    def crs(self) -> str:
+        """Return coordinate reference system code of project
+
+        Returns: crs_code (str)
+
+        """
+        return self.__crs
+
+    @crs.setter
+    def crs(self, crs: str):
+        """Set coordinate reference system code of project
+
+        Args:
+            crs: crs code, e.g. '4326' (see https://epsg.io)
+        """
+        self.__crs = crs
 
 
 @setdoc_pro([grid_types.RegularGrid.__doc__, grid_types.CustomGrid.__doc__])

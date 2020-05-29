@@ -17,11 +17,11 @@ def test_default_name():
 def test_default_crs():
     """Default crs should be set to None"""
     geomodel = gempy.core.model.Model()
-    assert geomodel.crs is None
+    assert geomodel.meta.crs is None
 
 
 def test_crs_property():
     """Set coordinate reference system using crs code"""
     geomodel = gempy.core.model.Model()
-    geomodel.crs = '4326'
-    assert geomodel.crs == '4326'
+    geomodel.meta.crs = '4326'
+    assert geomodel.meta.crs == '4326'

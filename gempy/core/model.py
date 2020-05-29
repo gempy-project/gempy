@@ -23,7 +23,7 @@ pn.options.mode.chained_assignment = None
              Solution.__doc__])
 class DataMutation(object):
     """
-    This class handles all the mutation of an object belonging to model and the update of every single object depend
+    This class handles all the mutations of an object belonging to model and the update of every single object depending
     on that.
 
     Attributes:
@@ -1104,14 +1104,11 @@ class Model(DataMutation, ABC):
     :class:`DataMutation` and :class:`MetaData`.
 
     """
-    def __init__(self, project_name='default_project'):
+    def __init__(self, project_name='default_project', **kwargs):
 
-        self.meta = MetaData(project_name=project_name)
+        self.meta = MetaData(project_name=project_name, **kwargs)
         super().__init__()
         #self.interpolator_gravity = None
-
-        # Initialize coordinate reference system
-        self.__crs = None
 
     def __repr__(self):
         return self.meta.project_name + ' ' + self.meta.date
@@ -1359,21 +1356,3 @@ class Model(DataMutation, ABC):
             self.interpolator_gravity.compile_th_fn_grav(density_block, pos_density, inplace=True)
 
         return self.additional_data.options
-
-    @property
-    def crs(self) -> str:
-        """Return coordinate reference system code of project
-
-        Returns: crs_code (str)
-
-        """
-        return self.__crs
-
-    @crs.setter
-    def crs(self, crs: str):
-        """Set coordinate reference system code of projcet
-
-        Args:
-            crs: crs code, e.g. '4326' (see https://epsg.io)
-        """
-        self.__crs = crs
