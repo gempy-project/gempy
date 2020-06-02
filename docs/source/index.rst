@@ -102,9 +102,9 @@ The algorithm allows for a direct integration of two of the most relevant
 geological input data types:
 
 
-* *Surface contact points*\ : 3D coordinates of points marking the boundaries
+* **Surface contact points**\ : 3D coordinates of points marking the boundaries
   between different features (e.g. layer interfaces, fault planes, unconformities).
-* *Orientation measurements*\ : Orientation of the poles perpendicular to
+* **Orientation measurements**\ : Orientation of the poles perpendicular to
   the dipping of surfaces at any point in the 3D space.
 
 ``GemPy`` also allows for the definition of topological elements such as
