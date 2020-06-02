@@ -22,6 +22,25 @@ PyPi
 You can also visit `PyPi <https://pypi.org/project/gempy/>`_, or
 `GitHub <https://github.com/cgre-aachen/gempy>`_
 
+Manual installation
+^^^^^^^^^^^^^^^^^^^
+If you want to use the newest, cutting-edge version of ``GemPy`` you can clone the current repository by downloading it manually or by using Git by calling
+
+``$ git clone https://github.com/cgre-aachen/gempy.git``
+
+and then manually install it using the provided Python install file by calling
+
+``$ python gempy/setup.py install``
+
+in the cloned or downloaded repository folder.
+
+Alternatively to running ``setup.py``, you can use pip to handle the installation from the repository and the updating of the path variables.
+For this, navigate to the root of the cloned repository and run
+
+``$ pip install -e .``
+
+Make sure you have installed all necessary dependencies listed below before using ``GemPy``.
+
 
 Dependencies
 ^^^^^^^^^^^^
@@ -56,7 +75,7 @@ Conflictive packages.
 ~~~~~~~~~~~~~~~~~~~~~
 
 Installing Theano (especially under Windows) and vtk can sometimes be difficult.
-Here, we provide adivce that should use in most cases (but certainly not all):
+Here, we provide advice that should use in most cases (but certainly not all):
 
 
 * ``Theano``\ :
@@ -131,20 +150,6 @@ has to look something like this (Just be aware of the  brackets):
 
 
 
-Manual installation of cutting-edge version
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-You can clone the current repository by downloading is manually or by using Git by calling
-
-``$ git clone https://github.com/cgre-aachen/gempy.git``
-
-and then manually install it using the provided Python install file by calling
-
-``$ python gempy/setup.py install``
-
-in the cloned or downloaded repository folder. Make sure you have installed all
-necessary dependencies listed above before using ``GemPy``.
-
 
 Windows installation guide (March 2020)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -160,11 +165,9 @@ Windows installation guide (March 2020)
 
 #. Install Conda (recommended: latest miniconda)
 
-   - Install in you user
+    Install Anaconda with the options  "for current user" and "add conda to Path environment".
 
-   - Add conda to the main path
-
-   - Add conda enviroment:
+    Add conda enviroment:
 
     ``$ conda create --name gempy``
 
@@ -172,116 +175,35 @@ Windows installation guide (March 2020)
 
     **As admin:** ``$ Set-ExecutionPolicy RemoteSigned``
 
-   - After this stage we should have a new empty environment attached to a user
+    After this stage we should have a new empty environment attached to a user
 
 
-#. Install Theano and associated packages from the Anaconda prompt as administrator, and finally install GemPy 2.0:
-
-   ``$ conda update --all``
-
-   ``$ conda install libpython``
-
-   ``$ conda install m2w64-toolchain``
-
-   ``$ conda install git``
-
-   ``$ conda install -c conda-forge pygpu``
-
-   ``$ conda install python==3.7`` **Downgrade python back to 3.7 until vtk has
-   support for python 3.8**
-
-   ``$ pip install theano==1.0.4``
-
-   ``$ pip install gempy``
-
-
-#. Set up Jupyter to work properly with conda environments:
-
-   ``$ conda install Jupyter``
-
-   ``$ conda install nb_conda_kernels``
-
-   ``$ pip install jupyter-conda``
-
-
-5) Optional requirements:
-
-   ``$ pip install pyvista``
-
-   ``$ pip install pyevtk``
-
-   ``$ conda install gdal``
-
-
-**Note**\ :
-
-
-* some other packages required by Theano are already included in Anaconda: numpy, scipy, mkl-service, nose, and sphinx.
-* ``pydot-ng`` (suggested on Theano web site) yields a lot of errors. I dropped this. It is needed to handle large picture for gif/images and probably it is not needed by GemPy.
-* Trying to install all the packages in one go but it does not work, as well as doing the same in Anaconda Navigator, or installing an older Anaconda release with Python 3.5 (Anaconda3 4.2.0) as indicated in some tutorial on Theano.
-
-
-MacOSX 10.14 installation guide (April 2020)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-**Note**\ : The following guide is for a standard installation (no GPU support).
-It should also work on MacOSX 10.15, but this is not tested, yet.
-
-#. Install Anaconda
-
-    For a minimal installation, you can install the
-    `Miniconda distribution <https://docs.conda.io/en/latest/miniconda.html|>`_\.
-    The full Anaconda distribution contains some additional features, IDE's
-    etc. and is available on the `Anaconda page <https://www.anaconda.com/products/individual>`_\.
-
-#. Create a ``GemPy`` conda environment
-
-    We strongly suggtest to create a separate conda environment, to avoid
-    conflicts with other Python installations and packages on your system.
-    This is easily done in a bash terminal:
-
-    ``$ conda create --name gempy``
-
-    To activate this environment:
-
-    ``$ conda activate gempy``
-
-    You should now see `(gempy)` at the beginning of the command line. If
-    the previous command fails (some known issues), then try:
-
-    ``$ source activate gempy``
-
-#. Install required Python packages
-
+#. Install Theano and associated packages from the Anaconda prompt as administrator:
 
     ``$ conda update --all``
 
-    ``$ conda install python==3.7`` **Downgrade python back to 3.7 until vtk has support for python 3.8**
+    ``$ conda install libpython``
+
+    ``$ conda install m2w64-toolchain``
+
+    ``$ conda install git``
+
+    ``$ conda install -c conda-forge pygpu``
+
+    ``$ conda install python==3.7`` **Downgrade python back to 3.7 until vtk has
+    support for python 3.8**
 
     ``$ pip install theano==1.0.4``
 
-    Test the `theano` installation: run ``python``\ , then try ``import theano``\ .
-    If you get an error (e.g. ``stdio.h`` not found), then:
-
-    Test if the Xcode command-line tools are installed (info for
-    example <a href="https://osxdaily.com/2014/02/12/install-command-line-tools-mac-os-x/">here</a>).
-    If this still fails, try installing ``theano`` through conda-forge instead:
-
-    ``$ conda install -c conda-forge theano``
 
 
+#. Install ``GemPy``
 
-    **Note**: Theano requires the Xcode command-line tools installed. Overall,
-    getting Theano to run can be a bit daunting... we hope to find a better
-    method in the future.
-
-
-
-#. Install <code>GemPy</code>:
+    install the latest release version of ``GemPy`` via ``PyPi``:
 
     ``$ pip install gempy``
 
-
+    Alternatively, if you need the latest developments in GemPy, follow the instruction from the chapter **Manual Installation** instead.
 
 #. Set up Jupyter to work properly with conda environments:
 
@@ -291,7 +213,102 @@ It should also work on MacOSX 10.15, but this is not tested, yet.
 
     ``$ pip install jupyter-conda``
 
+
 #. Optional requirements:
+
+    ``$ pip install pyvista``
+
+    ``$ pip install pyevtk``
+
+    ``$ conda install gdal``
+
+
+**Note**\ :
+
+
+* some other packages required by Theano are already included in Anaconda: numpy, scipy, mkl-service, nose, and sphinx.
+* ``pydot-ng`` (suggested on Theano web site) yields a lot of errors, therefore we dropped this. It is needed to handle large picture for gif/images and probably it is not needed by GemPy.
+* Trying to install all the packages in one go does not work, as well as doing the same in Anaconda Navigator, or installing an older Anaconda release with Python 3.5 (Anaconda3 4.2.0) as indicated in some tutorial on Theano.
+
+
+MacOS installation guide (May 2020)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+**Note**\ : The following guide is for a standard installation (no GPU support).
+It should work on MacOS 10.14 as well as 10.15 (Catalina).
+
+#. Install Anaconda (**Python Version 3.7**\ )
+
+    For a minimal installation, you can install the
+    `Miniconda distribution <https://docs.conda.io/en/latest/miniconda.html|>`_\.
+    The full Anaconda distribution contains some additional features, IDE's
+    etc. and is available on the `Anaconda page <https://www.anaconda.com/products/individual|>`_\.
+
+#. Create a ``GemPy`` conda environment
+
+    We strongly suggest to create a separate conda environment, to avoid
+    conflicts with other Python installations and packages on your system.
+    This is easily done in a bash terminal:
+
+    ``$ conda create --name gempy``
+
+    Set up Jupyter to work properly with conda environments:
+
+    ``$ python -m ipykernel install --user --name gempy``
+
+    Activate the new environment (do this every time you create a new terminal session):
+
+    ``$ conda activate gempy``
+
+    You should now see `(gempy)` at the beginning of the command line. If
+    the previous command fails (some known issues), then try:
+
+    ``$ source activate gempy``
+
+#. Install the Xcode command-line tools
+
+    In order for ``Theano`` to access the system compilers on MacOS, the Xcode command-line tools are required.
+    To automatically install the correct version for your OS, run:
+
+    ``$ xcode-select --install``
+
+    Follow the installation instructions. After the installation is complete, open ``Software  Update`` from your ``System Preferences`` and install any available  updates for the command-line tools.
+
+
+
+#. Install required Python packages
+
+    ``$ conda update --all``
+
+    **Only if your installed python version is >3.7:**  Downgrade python back to 3.7 until vtk has support for python 3.8
+
+    ``$ conda install python==3.7``
+
+    Install theano via PyPi
+
+    ``$ pip install theano==1.0.4``
+
+    Test the `theano` installation: run ``python``\ , then try ``import theano``\ .
+    If you get an error (e.g. ``stdio.h`` not found), then:
+
+    Test if the Xcode command-line tools are correctly installed and up-to-date.(info for
+    example `here <https://osxdaily.com/2014/02/12/install-command-line-tools-mac-os-x>`_).
+    If this still fails, try installing ``theano`` through conda-forge instead:
+
+    ``$ conda install -c conda-forge theano``
+
+
+#. ``Install GemPy``
+
+    install the latest release version of ``GemPy`` via ``PyPi``:
+
+    ``$ pip install gempy``
+
+    Alternatively, if you need the latest developments in GemPy, follow the instruction from the chapter **Manual Installation** instead.
+
+
+
+#. Install optional requirements:
 
     ``$ pip install pyvista``
 
