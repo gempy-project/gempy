@@ -2,6 +2,7 @@ import pytest
 import sys, os
 sys.path.append("../..")
 import gempy
+request = pytest.importorskip("request")
 from gempy.addons import gempy_to_rexfile as gtr
 from gempy.addons import rex_api
 pyqrcode = pytest.importorskip("pyqrcode")
