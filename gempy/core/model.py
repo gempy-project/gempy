@@ -1246,6 +1246,9 @@ class ImplicitCoKriging(object):
              :class:`gempy.core.data.Surfaces`
 
          """
+        if len(self._surfaces.df['surface']) != 0:
+            self.delete_surfaces(self._surfaces.df['surface'])
+
         if self._surfaces.df.shape[0] == 0:
             self.add_surfaces(['surface1', 'surface2'])
         self.update_from_surfaces()
