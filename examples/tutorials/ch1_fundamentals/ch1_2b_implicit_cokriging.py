@@ -19,13 +19,13 @@ pd.set_option('precision', 2)
 # The description of the methods nomenclature remains the same as for the
 # ``data.py`` module with the particularity that update is slitted in:
 # 
-# -  *update\_from*
+# -  ``update_from``
 # 
 #    -  update current object with the rest of dependencies. This is
 #       useful if you change an object and you want to update the fields
 #       with the rest of the objects. E.g after a set\_surface\_points
 # 
-# -  *update\_to*
+# -  ``update_to``
 # 
 #    -  update dataframes from the current object. This is useful if you
 #       modify one of the model dependencies and you want to update all
@@ -137,7 +137,7 @@ model.set_is_fault(['Fault_Series'])
 model.surface_points
 
 # %%
-# Again as we can see, as long we use the model methods all the dependent
+# Again as we can see, as long we use the model methods, all the dependent
 # objects change inplace accordingly. If for any reason you do not want
 # this behaviour you can always use the individual methods of the objects
 # (e.g. ``model.faults.set_is_fault``)
@@ -151,7 +151,7 @@ model.additional_data
 # ------------
 # 
 # So far we have worked on data that depends exclusively of input (i.e.
-# sequeantial pile, surface\_points, orientations, etc). With things like
+# sequential pile, surface_points, orientations, etc). With things like
 # grid the idea is the same:
 # 
 
@@ -175,10 +175,10 @@ model.set_regular_grid([0, 10, 0, 10, 0, 10], [50, 50, 50])
 gp.get_data(model, 'surfaces')
 
 # %%
-# The class ``gempy.core.model.Model`` works as the parent container of
+# The class :class:`gempy.core.model.Model` works as the parent container of
 # our project. Therefore the main step of any project is to create an
 # instance of this class. In the official documentation we use normally
-# geo\_model (geo\_data in the past) as name of this instance.
+# ``geo_model`` (``geo_data`` in the past) as name of this instance.
 # 
 # When we instantiate a ``Model`` object we full data structure is
 # created. By using ``gp.init_data`` and ``set_series`` we set the default
