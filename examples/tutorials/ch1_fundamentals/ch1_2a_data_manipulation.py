@@ -82,10 +82,10 @@ series
 # Faults
 # ~~~~~~
 # 
-# The *df faults* is used to charectirize which *mathematical series*
-# behave as fault and if mentioned faults are finite or infinite. Both df
-# should get updated automatically as we modify the series object linked
-# to the fault object (by passing it wehn a Series object is created).
+# The *df faults* is used to characterize which *mathematical series*
+# behave as fault and if mentioned faults are finite or infinite. Both dataframes
+# get updated automatically as we modify the series object linked
+# to the fault object (by passing it when a Series object is created).
 # 
 
 # %% 
@@ -137,7 +137,7 @@ faults.faults_relations_df
 
 # %%
 # When we add new series the values switch to NaN. We will be careful not
-# having any nan in the DataFrames or we will raise errors down the line.
+# having any NaNs in the DataFrames or we will raise errors down the line.
 # 
 
 # %% 
@@ -150,12 +150,12 @@ faults.set_fault_relation()
 # Surfaces:
 # ~~~~~~~~~
 # 
-# The *df* surfaces contains three properties. *id* refers to the order of
+# The *df surfaces* contains three properties. *id* refers to the order of
 # the surfaces on the sequential pile, i.e. the strict order of
 # computation. *values* on the other hand is the final value that each
 # voxel will have after discretization. This may be useful for example in
 # the case we want to map a specific geophysical property (such as
-# density) to a given unity. By default both are the same since to
+# density) to a given unit. By default both are the same since to
 # discretize lithological units the value is arbitrary.
 # 
 
@@ -165,7 +165,7 @@ faults.set_fault_relation()
 # ^^^^^^^^^^^^^^^^
 # 
 # The Surfaces class needs to have an associate series object. This will
-# limit the name of the series since they are a pandas.Category
+# limit the name of the series since they are a ``pandas.Categorical``\ .
 # 
 
 # %% 
@@ -191,8 +191,8 @@ surfaces.add_surface(['feeeee'])
 surfaces
 
 # %%
-# The column formation is also a pandas.Categories. This will be important
-# for the Data clases (surface\_points and Orientations)
+# The column formation is also a ''pandas.Categorical''\ . This will be important
+# for the Data classes (surface\_points and Orientations)
 # 
 
 # %% 
@@ -231,7 +231,7 @@ surfaces
 # Delete formations values
 # ~~~~~~~~~~~~~~~~~~~~~~~~
 # 
-# To delete a full propery:
+# To delete a full property:
 # 
 
 # %% 
@@ -250,7 +250,7 @@ surfaces
 # Set formation values
 # ^^^^^^^^^^^^^^^^^^^^
 # 
-# We can also use set values instead adding. This will delete the previous
+# We can also use ``set_surface_values`` instead adding. This will delete the previous
 # properties and add the new one
 # 
 
@@ -358,7 +358,7 @@ surfaces.colors.change_colors(new_colors)
 # surface\_points
 # ^^^^^^^^^^^^^^^
 # 
-# These two DataFrames (df from now on) will contain the individual
+# These two DataFrames (*df* from now on) will contain the individual
 # information of each point at an interface or orientation. Some
 # properties of this table are mapped from the *df* below.
 # 
