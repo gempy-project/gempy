@@ -9,18 +9,52 @@ Installation
 Installing ``GemPy``
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-We provide the latest release version of ``GemPy`` via the **Conda** and **PyPi** package services. We highly
-recommend using PyPi, as it will take care of automatically installing all dependencies.
-
-If you want to use  ``GemPy`` on **Windows** or **MacOS** we recommend following the specific installation instructions below.
-
-PyPi
-~~~~
+We provide the latest release version of ``GemPy`` via **PyPi** package services. We highly
+recommend using `PyPi <https://pypi.org/project/gempy/>`_,
 
 ``$ pip install gempy``
 
-You can also visit `PyPi <https://pypi.org/project/gempy/>`_, or
-`GitHub <https://github.com/cgre-aachen/gempy>`_
+as it will take care of automatically installing all the required dependencies - except in
+windows that required one extra step.
+
+Windows Installation
+~~~~~~~~~~~~~~~~~~~~
+
+Windows does not have a **gcc compilers** pre-installed. The easiest way to get a ``theano``
+compatible compiler is by using the ``theano`` conda installation. Therefore the process
+would be the following:
+
+``$ conda install theano``
+
+``$ pip install gempy``
+
+**Notes:**
+
+- The conda version of ``theano`` comes with a non critical bug that will rise a warning (``scan_perform.c``)
+  when computing a model with gempy. Once the compiler is installed, installing the pip version of ``theano``
+  will solve the problem:
+
+``$ pip install theano --force-reinstall``
+
+- The conda version of ``theano`` is not compatible with Catalina MacOS. Use pip!
+
+- For a more detailed description on the installation in case
+  something does not work or for CUDA acceleration check `Windows installation guide (March 2020)`_ and
+  `MacOS installation guide (May 2020)`_
+
+Developers Installation
+~~~~~~~~~~~~~~~~~~~~~~~
+
+If you are planning to contribute in ``gempy`` the easiest way is to clone the
+repository from `GitHub <https://github.com/cgre-aachen/gempy>`_ and use
+
+``$ pip install -e .``
+
+on the repository root. Notice that on the repo you can also find a ``optional-requirements.txt``
+for more experimental functionality. Finally to compile ``sphinx`` you will need:
+
+``$ pip install sphinx, sphinx-gallery``
+
 
 Manual installation
 ^^^^^^^^^^^^^^^^^^^
@@ -121,7 +155,7 @@ working `Docker <https://www.docker.com/>`_ installation.
 Pull Docker image from DockerHub
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The easiest way to get remote-geomod running is by running the pre-compiled Docker image (containing everything you
+The easiest way to get `gempy` running is by running the pre-compiled Docker image (containing everything you
 need) directly from the cloud service Docker Hub to get a locally running Docker container. Make sure to set your 
 Docker daemon to Linux containers in Docker's context menu.
 
@@ -165,17 +199,24 @@ Windows installation guide (March 2020)
 
 #. Install Conda (recommended: latest miniconda)
 
-    Install Anaconda with the options  "for current user" and "add conda to Path environment".
+    #. Use conda prompt as the python terminal
+
+        Install Anaconda with the options  "for current user".
 
     Add conda enviroment:
 
     ``$ conda create --name gempy``
 
-    ``$ conda init powershell``
+     or
 
-    **As admin:** ``$ Set-ExecutionPolicy RemoteSigned``
+    #. Set up conda in the powershell
+        Install Anaconda with the options  "for current user" and "add conda to Path environment".
 
-    After this stage we should have a new empty environment attached to a user
+        ``$ conda init powershell``
+
+        **As admin:** ``$ Set-ExecutionPolicy RemoteSigned``
+
+        After this stage we should have a new empty environment attached to a user
 
 
 #. Install Theano and associated packages from the Anaconda prompt as administrator:
@@ -216,7 +257,6 @@ Windows installation guide (March 2020)
 
 #. Optional requirements:
 
-    ``$ pip install pyvista``
 
     ``$ pip install pyevtk``
 
@@ -227,8 +267,10 @@ Windows installation guide (March 2020)
 
 
 * some other packages required by Theano are already included in Anaconda: numpy, scipy, mkl-service, nose, and sphinx.
-* ``pydot-ng`` (suggested on Theano web site) yields a lot of errors, therefore we dropped this. It is needed to handle large picture for gif/images and probably it is not needed by GemPy.
-* Trying to install all the packages in one go does not work, as well as doing the same in Anaconda Navigator, or installing an older Anaconda release with Python 3.5 (Anaconda3 4.2.0) as indicated in some tutorial on Theano.
+* ``pydot-ng`` (suggested on Theano web site) yields a lot of errors, therefore we dropped this.  It is needed to
+handle large picture for gif/images and probably it is not needed by GemPy.
+* Trying to install all the packages in one go does not work, as well as doing the same in  Anaconda Navigator, or
+installing an older Anaconda release with Python 3.5 (Anaconda3 4.2.0) as indicated in some tutorial on Theano.
 
 
 MacOS installation guide (May 2020)
