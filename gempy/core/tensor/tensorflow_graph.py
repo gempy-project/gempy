@@ -5,12 +5,12 @@ import sys
 
 class TFGraph(tf.Module):
 
-    def __init__(self, dips_position, dip_angles, azimuth, polarity,
+    def __init__(self, dip_angles, azimuth, polarity,
                  fault_drift, grid, values_properties,
                  number_of_points_per_surface, Range, C_o, nugget_effect_scalar,
                  nugget_effect_grad, rescalefactor, output=None, **kwargs):
         super(TFGraph, self).__init__()
-        self.dtype = tf.float32
+        self.dtype = tf.float64
         self.lengh_of_faults = tf.constant(0, dtype=tf.int32)
 
         # OPETIONS
@@ -67,33 +67,12 @@ class TFGraph(tf.Module):
 
 
 
-        self.dips_position_all = dips_position
-
         self.values_properties_op = values_properties
 
         self.grid_val = grid
 
         self.fault_matrix = fault_drift
 
-        # VARIABLE MANIPULATION
-
-        # self.dips_position_all_tiled = tf.tile(
-        #     self.dips_position_all, [self.n_dimensions, 1])
-
-        # self.ref_layer_points, self.rest_layer_points, self.ref_nugget, self.rest_nugget = self.set_rest_ref_matrix(
-        #     self.number_of_points_per_surface, self.surface_points_all, self.nugget_effect_scalar)
-
-        # self.nugget_effect_scalar_ref_rest = tf.expand_dims(
-        #     self.ref_nugget + self.rest_nugget, 1)
-
-        # self.len_points = self.surface_points_all.shape[0] - \
-        #     self.number_of_points_per_surface.shape[0]
-
-        # interface_loc = self.grid_val.shape[0]
-        # self.fault_drift_at_surface_points_rest = self.fault_matrix[
-        #     :, interface_loc: interface_loc + self.len_points]
-        # self.fault_drift_at_surface_points_ref = self.fault_matrix[
-        #     :, interface_loc + self.len_points:]
 
         if output is None:
             output = ['geology']
@@ -117,8 +96,7 @@ class TFGraph(tf.Module):
         self.n_surface = tf.range(
             1, 5000, dtype='int32', name='ID_of_surfaces')
 
-
-    @tf.function
+    
     def set_rest_ref_matrix(self, number_of_points_per_surface, surface_points_all, nugget_effect_scalar):
         # reference point: every first point of each layer
         ref_positions = tf.cumsum(
@@ -127,6 +105,7 @@ class TFGraph(tf.Module):
         partitions = tf.reduce_sum(tf.one_hot(ref_positions,tf.reduce_sum(number_of_points_per_surface+1),dtype = tf.int32),axis=0)
         # reference:1 rest: 0
 
+        ## selecting surface points as rest set and reference set
         rest_points = tf.dynamic_partition(surface_points_all, partitions, 2)[0]
         ref_points = tf.dynamic_partition(surface_points_all, partitions, 2)[1]
         
@@ -161,7 +140,7 @@ class TFGraph(tf.Module):
 
         return sqd
 
-    @tf.function
+    
     def matrices_shapes(self):
         """
         Get all the lengths of the matrices that form the covariance matrix
@@ -178,7 +157,7 @@ class TFGraph(tf.Module):
 
         return length_of_CG, length_of_CGI, length_of_U_I, length_of_faults, length_of_C
 
-    @tf.function
+    
     def cov_surface_points(self, ref_layer_points, rest_layer_points):
 
         sed_rest_rest = self.squared_euclidean_distance(
@@ -212,7 +191,7 @@ class TFGraph(tf.Module):
             self.nugget_effect_scalar_ref_rest
         return C_I
 
-    @tf.function
+    
     def cov_gradients(self, dips_position_all):
         dips_position_all_tiled = tf.tile(
             dips_position_all, [self.n_dimensions, 1])
@@ -258,7 +237,7 @@ class TFGraph(tf.Module):
 
         return C_G
 
-    @tf.function
+    
     def cartesian_dist(self, x_1, x_2):
         return tf.concat([
             tf.transpose(
@@ -268,7 +247,7 @@ class TFGraph(tf.Module):
             tf.transpose(
                 (x_1[:, 2] - tf.expand_dims(x_2[:, 2], axis=1)))], axis=0)
 
-    @tf.function
+    
     def cov_interface_gradients(self, dips_position_all, rest_layer_points, ref_layer_points):
         dips_position_all_tiled = tf.tile(
             dips_position_all, [self.n_dimensions, 1])
@@ -293,7 +272,7 @@ class TFGraph(tf.Module):
 
         return C_GI
 
-    @tf.function
+    
     def universal_matrix(self, dips_position_all, ref_layer_points, rest_layer_points):
 
         n = dips_position_all.shape[0]
@@ -355,7 +334,7 @@ class TFGraph(tf.Module):
 
         return U_G, U_I
 
-    @tf.function
+    
     def faults_matrix(self, f_ref=None, f_res=None):
         length_of_CG, _, _, length_of_faults = self.matrices_shapes()[
             :4]
@@ -371,7 +350,7 @@ class TFGraph(tf.Module):
 
         return F_I, F_G
 
-    @tf.function
+    
     def covariance_matrix(self, dips_position_all, ref_layer_points, rest_layer_points):
 
         length_of_CG, length_of_CGI, length_of_U_I, length_of_faults, length_of_C = self.matrices_shapes()
@@ -407,11 +386,11 @@ class TFGraph(tf.Module):
 
         return C_matrix
 
-    @tf.function
+    
     def deg2rad(self, degree_matrix):
         return degree_matrix * tf.constant(0.0174533, dtype=self.dtype)
 
-    @tf.function
+    
     def b_vector(self, dip_angles_=None, azimuth_=None, polarity_=None):
 
         length_of_C = self.matrices_shapes()[-1]
@@ -435,7 +414,7 @@ class TFGraph(tf.Module):
 
         return b_vector
 
-    @tf.function
+    
     def solve_kriging(self, dips_position_all, ref_layer_points, rest_layer_points, b=None):
 
         C_matrix = self.covariance_matrix(
@@ -449,14 +428,14 @@ class TFGraph(tf.Module):
 
         return DK
 
-    @tf.function
+    
     def x_to_interpolate(self, grid, ref_layer_points, rest_layer_points):
         grid_val = tf.concat([grid, rest_layer_points], 0)
         grid_val = tf.concat([grid_val, ref_layer_points], 0)
 
         return grid_val
 
-    @tf.function
+    
     def extend_dual_kriging(self, weights, grid_shape):
 
         DK_parameters = weights
@@ -465,7 +444,7 @@ class TFGraph(tf.Module):
 
         return DK_parameters
 
-    @tf.function
+    
     def contribution_gradient_interface(self, dips_position_all, grid_val=None, weights=None):
         dips_position_all_tiled = tf.tile(
             dips_position_all, [self.n_dimensions, 1])
@@ -489,7 +468,7 @@ class TFGraph(tf.Module):
         
         return sigma_0_grad
 
-    @tf.function
+    
     def contribution_interface(self, ref_layer_points, rest_layer_points, grid_val, weights=None):
 
         length_of_CG, length_of_CGI = self.matrices_shapes()[:2]
@@ -518,7 +497,7 @@ class TFGraph(tf.Module):
 
         return sigma_0_interf
 
-    @tf.function
+    
     def contribution_universal_drift(self, grid_val, weights=None):
 
         length_of_CG, length_of_CGI, length_of_U_I, length_of_faults, length_of_C = self.matrices_shapes()
@@ -542,12 +521,12 @@ class TFGraph(tf.Module):
                             universal_grid_surface_points_matrix[:self.n_universal_eq_T_op], 0)
 
         return f_0
-
-    @tf.function
-    def scalar_field(self, surface_point):
+    
+    
+    def scalar_field(self, surface_point,dips_position):
 
         self.dips_position_all_tiled = tf.tile(
-            self.dips_position_all, [self.n_dimensions, 1])
+            dips_position, [self.n_dimensions, 1])
 
         self.ref_layer_points, self.rest_layer_points, self.ref_nugget, self.rest_nugget = self.set_rest_ref_matrix(
             self.number_of_points_per_surface, surface_point, self.nugget_effect_scalar)
@@ -567,12 +546,12 @@ class TFGraph(tf.Module):
         grid_val = self.x_to_interpolate(
             self.grid_val, self.ref_layer_points, self.rest_layer_points)
         weights = self.solve_kriging(
-            self.dips_position_all, self.ref_layer_points, self.rest_layer_points)
+            dips_position, self.ref_layer_points, self.rest_layer_points)
 
 
         tiled_weights = self.extend_dual_kriging(
             weights, tf.shape(grid_val)[0])
-        sigma_0_grad = self.contribution_gradient_interface(self.dips_position_all,
+        sigma_0_grad = self.contribution_gradient_interface(dips_position,
                                                             grid_val, tiled_weights)
         sigma_0_interf = self.contribution_interface(
             self.ref_layer_points, self.rest_layer_points, grid_val, tiled_weights)
@@ -583,8 +562,7 @@ class TFGraph(tf.Module):
         return scalar_field_results
 
 
-
-    @tf.function
+    
     def get_scalar_field_at_surface_points(self, Z_x):
         partitions = tf.reduce_sum(tf.one_hot(self.npf, self.len_points, dtype='int32'), axis=0)
         #
@@ -593,10 +571,22 @@ class TFGraph(tf.Module):
         #     Z_x[-2 * self.len_points: -self.len_points], tf.expand_dims(self.npf, 1))
 
         return scalar_field_at_surface_points_values
-
-    @tf.function
+    
+    
     def compare(self, a, b, slice_init, Z_x, l, n_surface, drift):
+        """
+        Treshold of the points to interpolate given 2 potential field values. TODO: This function is the one we
+        need to change for a sigmoid function
+        
+        Args:
+            a (scalar): Upper limit of the potential field
+            b (scalar): Lower limit of the potential field
+            n_surface (scalar): Value given to the segmentation, i.e. lithology number
+            Zx (vector): Potential field values at all the interpolated points
 
+        Returns:
+            Tensor: segmented values
+        """
         n_surface_0 = n_surface[:, slice_init:slice_init + 1]
         n_surface_1 = n_surface[:, slice_init + 1:slice_init + 2]
         drift = drift[:, slice_init:slice_init + 1]
@@ -608,7 +598,7 @@ class TFGraph(tf.Module):
         sigm.set_shape([None, None])
         return sigm
 
-    @tf.function
+    
     def export_formation_block(self, Z_x, scalar_field_at_surface_points, values_properties):
 
         slope = self.sig_slope
@@ -644,7 +634,7 @@ class TFGraph(tf.Module):
 
         return formations_block
 
-    @tf.function
+    
     def compute_forward_gravity(self, tz, lg0, lg1, densities=None):
         n_devices = tf.math.floordiv((tf.shape(densities)[0]), tf.shape(tz)[0])
         tz_rep = tf.tile(tz, [n_devices])
