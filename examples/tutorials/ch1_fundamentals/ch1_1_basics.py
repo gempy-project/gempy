@@ -209,7 +209,7 @@ geo_model.grid
 # "*dtype*" to be either ``'surface_points'`` (interfaces) or ``'orientations'``\ .
 # 
 # Interfaces Dataframe:
-# ^^^^^^^^^^^^^^^^^^^^^
+# ~~~~~~~~~~~~~~~~~~~~~
 # 
 
 # %% 
@@ -217,7 +217,7 @@ gp.get_data(geo_model, 'surface_points').head()
 
 # %%
 # Orientations Dataframe:
-# ^^^^^^^^^^^^^^^^^^^^^^^
+# ~~~~~~~~~~~~~~~~~~~~~~~
 # 
 
 # %% 
