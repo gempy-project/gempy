@@ -148,6 +148,10 @@ notebooks/Mytest/Tensorflow_interpolator-Copy1.ipynb
 notebooks/Mytest/Tensorflow_interpolator.ipynb
 .vscode
 gempy/core/tensor/tensorflow_graph_test.py
+notebooks/Mytest/Tensorflow_interpolator-test.ipynb
+notebooks/Mytest/logs/
+notebooks/data/input_data/jan_models/model2_surface_points copy.csv
+notebooks/examples/Model 2 - Fold-Copy1.ipynb
 # gempy/core/tensor/interpolator_tf.py
 
 # gempy/assets/model_compare.py
