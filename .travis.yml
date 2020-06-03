@@ -68,6 +68,6 @@ jobs:
           on:
             branch: docs-devs
           target_branch: gh-pages
-          fqdn: https://docs.gempy.org/
+          fqdn: docs.gempy.org
 cache: pip
 
