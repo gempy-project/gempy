@@ -17,7 +17,7 @@ np.random.seed(55500)
 # --------------
 # 
 # The grid class will interact with the rest of data classes and grid
-# subclases. Its main purpose is to feed coordinates XYZ to the
+# subclasses. Its main purpose is to feed coordinates XYZ to the
 # interpolator.
 # 
 
@@ -42,14 +42,14 @@ grid.values, grid.values_r
 # %%
 # At the moment of writing this tutorial, there is 5 grid types. The
 # number of grid types is scalable and down the road we aim to connect
-# other grid packages (like Discretize) as an extra Grid type
+# other grid packages (like `Discretize <https://pypi.org/project/discretize/>`_) as an extra Grid type
 # 
 
 # %% 
 grid.grid_types
 
 # %%
-# Each grid vill containt its own ``values`` attribute as well as other
+# Each grid contains its own ``values`` attribute as well as other
 # methods to manipulate them depending on the type of grid.
 # 
 
@@ -65,7 +65,7 @@ grid.regular_grid.values
 grid.active_grids
 
 # %%
-# By default only the *regular grid* is active. However, since the regular
+# By default only the *regular grid* (``grid.regular_grid``\ ) is active. However, since the regular
 # grid is still empty ``Grid().values`` is empty too.
 # 
 
@@ -100,7 +100,7 @@ grid.get_grid_args('topography')
 # Regular grid
 # ~~~~~~~~~~~~
 # 
-# The ``Grid`` class have a bunch of methods to set each grid type and
+# The ``Grid`` class has a bunch of methods to set each grid type and
 # activate them.
 # 
 
@@ -152,7 +152,7 @@ grid.create_custom_grid(np.array([[1, 2, 3],
                                   [7, 8, 9]]))
 
 # %%
-# Again set\_any\_grid will create a grid and activate it. So now the
+# Again ``set_any_grid`` will create a grid and activate it. So now the
 # compose object will contain values:
 # 
 
@@ -160,7 +160,7 @@ grid.create_custom_grid(np.array([[1, 2, 3],
 grid.custom_grid.values
 
 # %%
-# and since is actived, will be add to the grid.values stack:
+# and since it is active, will be added to the grid.values stack:
 # 
 
 # %% 
@@ -188,7 +188,7 @@ grid.values[l0:l1]
 # Topography
 # ~~~~~~~~~~
 # 
-# Now we can set the topography. ``gempy.core.grid_types.Topography``
+# Now we can set the topography. :class:`Topography <gempy.core.grid_modules.topography.Topography>`
 # contains methods to create manual topographies as well as gdal for
 # dealing with raster data. By default we will create a random topography:
 # 
@@ -215,7 +215,7 @@ l0, l1 = grid.get_grid_args('topography')
 l0, l1
 
 # %%
-# Abd we can slice the values array as any other numpy array:
+# And we can slice the values array as any other numpy array:
 # 
 
 # %% 
@@ -262,9 +262,9 @@ grid.values
 # 
 # This grid contains an irregular grid where the majority of voxels are
 # centered around a value (or values). This type of grid is usually used
-# to compute certain types of forward physiscs where the influence
-# decreases with distance (e.g. gravity: Check tutorial 2.2-Cell-selection
-# https://github.com/cgreaachen/gempy/blob/master/notebooks/tutorials/ch2-2-Cell\_selection.ipynb)
+# to compute certain types of forward physics where the influence
+# decreases with distance (e.g. gravity: Check `tutorial 2.2-Cell-selection <https://github.com/cgre-aachen/gempy/blob/master/examples/tutorials/ch2-Geophysics/ch2_2_cell_selection.py>`_
+# )
 # 
 
 # %% 
