@@ -23,6 +23,9 @@ uncertainty analysis regarding subsurface structures.
 .. Check out the documentation either in `gempy.org <https://www.gempy.org/>`_
 (better option), or `read the docs <http://gempy.readthedocs.io/>`_.
 
+
+
+
 3D models created with GemPy may look like this:
 
 .. image:: ./images/perth_example.png
@@ -77,11 +80,11 @@ Geological features
 Combining these elements in GemPy allows for the generation of realistic
 3D geological models, on a par with most commercial geomodeling software.
 
-
 .. raw:: html
 
    <!-- Note: we should inlcude here links to models and/or publications where
    gempy has been used for realistic models!  -->
+
 
 
 Interpolation approach
