@@ -3,32 +3,29 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-.. image:: ../logos/gempy1.png
+.. ../logos/gempy1.png
    :width: 30%
 
-about
+About
 =====
-Software for 3D structural geologic implicit modeling in Python.
+Open-source software for implicit 3D structural geological modeling in Python.
 ****************************************************************
 
 Overview
 --------
 
-``GemPy`` is a Python-based, **open-source geomodeling library**. It is
-capable of constructing complex **3D geological models** of folded
-structures, fault networks and unconformities, based on the underlying
-powerful **implicit representation** approach. ``GemPy`` was designed from the
-ground up to support easy embedding in probabilistic frameworks for the
-uncertainty analysis of subsurface structures.
+``GemPy`` is a Python-based, community-driven, **open-source geomodeling library**. It is
+capable of constructing complex **3D geological models** including various features such as
+fold structures, fault networks and unconformities, based on an underlying
+powerful **implicit** approach. From the ground up, ``GemPy`` was designed to be easily embedded in probabilistic frameworks for conducting
+uncertainty analysis regarding subsurface structures.
 
-Check out the documentation either in `gempy.org <https://www.gempy.org/>`_
+.. Check out the documentation either in `gempy.org <https://www.gempy.org/>`_
 (better option), or `read the docs <http://gempy.readthedocs.io/>`_.
-
-
 
 3D models created with GemPy may look like this:
 
-.. image:: ./images/model_example.png
+.. image:: ./images/perth_example.png
 
 Contents:
 
@@ -58,8 +55,8 @@ Contents:
 Features
 --------
 
-Geological objects
-^^^^^^^^^^^^^^^^^^
+Geological features
+^^^^^^^^^^^^^^^^^^^
 
 
 .. raw:: html
@@ -68,9 +65,7 @@ Geological objects
 
 
 
-``GemPy`` enables the modeling of complex 3D geological settings,
-on par with many commercial geomodeling packages, including:
-
+``GemPy`` is capable of modeling complex 3D geological scenarios, including:
 
 * Multiple conformal layers (e.g. sequences of sedimentary layers)
 * Several sequences of layers, with conformal continuation or unconformities
@@ -79,8 +74,8 @@ on par with many commercial geomodeling packages, including:
 * Full fault networks (faults affecting faults)
 * Folds (affecting single layers or entire layer stacks, including overturned and recumbent folds)
 
-The combination of these elements allows for the generation of realistic
-3-D geological models in most typical geological settings.
+Combining these elements in GemPy allows for the generation of realistic
+3D geological models, on a par with most commercial geomodeling software.
 
 
 .. raw:: html
