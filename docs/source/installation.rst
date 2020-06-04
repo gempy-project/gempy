@@ -292,6 +292,9 @@ It should work on MacOS 10.14 as well as 10.15 (Catalina).
 
     ``$ conda create --name gempy python==3.7``
 
+    Set up Jupyter to work properly with conda environments:
+
+    ``$ python -m ipykernel install --user --name gempy``
 
     Activate the new environment (do this every time you create a new terminal session):
 
@@ -302,9 +305,6 @@ It should work on MacOS 10.14 as well as 10.15 (Catalina).
 
     ``$ source activate gempy``
 
-    Set up Jupyter to work properly with conda environments:
-
-    ``$ python -m ipykernel install --user --name gempy``
 
 #. Install the Xcode command-line tools
 
