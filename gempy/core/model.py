@@ -1013,6 +1013,11 @@ class ImplicitCoKriging(object):
                            recompute_rescale_factor=False):
         """
         Args:
+            X:
+            Y:
+            Z:
+            surface (str):
+            idx: Index of the point. If None, next available index will be used
             recompute_rescale_factor (bool): [s0].
         """
 
