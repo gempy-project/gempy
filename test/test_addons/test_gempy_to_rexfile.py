@@ -2,9 +2,10 @@ import pytest
 import sys, os
 sys.path.append("../..")
 import gempy
+request = pytest.importorskip("request")
 from gempy.addons import gempy_to_rexfile as gtr
 from gempy.addons import rex_api
-
+pyqrcode = pytest.importorskip("pyqrcode")
 input_path = os.path.dirname(__file__)+'/../input_data'
 
 
@@ -12,16 +13,8 @@ input_path = os.path.dirname(__file__)+'/../input_data'
                     reason="Skipping this test on Travis CI.")
 class TestGemPyToREX:
     @pytest.fixture(scope='module')
-    def geo_model(self, interpolator_islith_nofault):
-        """
-        2 Horizontal layers with drift 0
-        """
-        # Importing the data from csv files and settign extent and resolution
-        geo_data = gempy.create_data([0, 10, 0, 10, -10, 0], [50, 50, 50],
-                                     path_o=input_path + "/GeoModeller/test_a/test_a_Foliations.csv",
-                                     path_i=input_path + "/GeoModeller/test_a/test_a_Points.csv")
-
-        geo_data.set_theano_function(interpolator_islith_nofault)
+    def geo_model(self, model_horizontal_two_layers):
+        geo_data = model_horizontal_two_layers
 
         # Compute model
         sol = gempy.compute_model(geo_data, compute_mesh_options={'rescale': True})
@@ -74,8 +67,20 @@ class TestGemPyToREX:
         rex_api.RexAPI(project_name)
 
     def test_geo_model_to_rex(self, geo_model):
+        rex_bytes = gtr.geomodel_to_rex(geo_model)
+        print(len(rex_bytes['A']))
+        assert len(rex_bytes['A']) == 235706
 
-        gtr.geo_model_to_rex(geo_model, path=os.path.dirname(__file__)+'/rexfiles/gtr_test')
+    def test_rex_bytes_to_file(self, geo_model):
+        rex_bytes = gtr.geomodel_to_rex(geo_model)
+        gtr.write_rex(rex_bytes, path=os.path.dirname(__file__) + '/rexfiles/gtr_test')
+
+    def test_rex_bytes_to_file_except(self):
+        model = gempy.create_data(extent=[0,10,0,10,0,10])
+        model.set_default_surfaces()
+        model._surfaces.df['isActive'] = False
+        with pytest.raises(RuntimeError):
+            rex_bytes = gtr.geomodel_to_rex(model)
 
     def test_plot_ar(self, geo_model):
         tag = gempy.plot.plot_ar(geo_model, api_token='8e8a12ef-5da2-4790-9a84-15923a287965', project_name='Alesmodel',

@@ -245,7 +245,7 @@ class vMF():
                     ax.plane(point[0] - 90, point[1], linewidth=2, color='#015482', markersize=4, markeredgewidth=0.5,
                             markeredgecolor='black')
 
-        ax.grid()
+        ax._grid()
         if density:
             ax.density_contour(samples[:, 0] - 90, samples[:, 1], measurement='poles', sigma=1, method='exponential_kamb', cmap='Blues_r')
         try:

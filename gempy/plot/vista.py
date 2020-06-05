@@ -17,12 +17,13 @@
 
     Module with classes and methods to visualized structural geology data and
     potential fields of the regional modelling based on the potential field
-    method. Tested on Ubuntu 18, MacOS 12
+    method. Tested on Windows 10
 
-    Created on 16.10.2019
+    Created on 08.04.2020
 
-    @author: Miguel de la Varga, Bane Sullivan, Alexander Schaaf
+    @author: Miguel de la Varga, Bane Sullivan, Alexander Schaaf, Jan von Harten
 """
+from __future__ import annotations
 
 import warnings
 # insys.path.append("../../pyvista")
@@ -32,15 +33,21 @@ from typing import Union, Dict, List, Iterable, Set, Tuple
 import matplotlib.colors as mcolors
 from matplotlib import cm
 import numpy as np
-import pandas as pn
+import pandas as pd
+
+# TODO Check if this is necessary if it is implemented in the API
 try:
     import pyvista as pv
     from pyvista.plotting.theme import parse_color
+
     PYVISTA_IMPORT = True
 except ImportError:
     PYVISTA_IMPORT = False
 
 import gempy as gp
+from gempy.plot.vista_aux import WidgetsCallbacks, RenderChanges
+from logging import debug
+import matplotlib
 
 warnings.filterwarnings("ignore",
                         message='.*Conversion of the second argument of issubdtype *.',
@@ -53,454 +60,140 @@ try:
 except ImportError:
     VTK_IMPORT = False
 
-from nptyping import Array
-from logging import debug
 
+class GemPyToVista(WidgetsCallbacks, RenderChanges):
 
-class Vista:
-    """
-    Class to visualize data and results in 3D. Init will create all the render properties while the method render
-    model will lunch the window. Using set_surface_points, set_orientations and set_surfaces in between can be chosen what
-    will be displayed.
-    """
+    def __init__(self, model, plotter_type: str = 'basic', extent=None, lith_c=None, live_updating=False, **kwargs):
+        """GemPy 3-D visualization using pyVista.
 
-    def __init__(self, model, extent=None, lith_c: pn.DataFrame = None, real_time=False,
-                 plotter_type='basic', **kwargs):
+        Args:
+            model (gp.Model): Geomodel instance with solutions.
+            plotter_type (str): Set the plotter type. Defaults to 'basic'.
+            extent (List[float], optional): Custom extent. Defaults to None.
+            lith_c (pn.DataFrame, optional): Custom color scheme in the form of
+                a look-up table. Defaults to None.
+            live_updating (bool, optional): Toggles real-time updating of the
+                plot. Defaults to False.
+            **kwargs:
+
+        """
 
         # Override default notebook value
-        kwargs['notebook'] = kwargs.get('notebook', True)
+        pv.set_plot_theme("document")
+        kwargs['notebook'] = kwargs.get('notebook', False)
 
+        # Model properties
         self.model = model
-        self.extent = model.grid.regular_grid.extent if extent is None else extent
-        self._color_lot = model.surfaces.df.set_index('id')['color'] if lith_c is None else lith_c
+        self.extent = model._grid.regular_grid.extent if extent is None else extent
 
-        self.s_widget = pn.DataFrame(columns=['val'])
-        self.p_widget = pn.DataFrame(columns=['val'])
-        self.surf_polydata = pn.DataFrame(columns=['val'])
+        # plotting options
+        self.live_updating = live_updating
 
-        self.vista_rgrids_mesh = {}
-        self.vista_rgrids_actors = {}
-        self.vista_topo_actors = {}
-        self.vista_surf_actor = {}
-
-        self.real_time =real_time
-
+        # Choosing plotter
         if plotter_type == 'basic':
             self.p = pv.Plotter(**kwargs)
+            self.p.view_isometric(negative=False)
+        elif plotter_type == 'notebook':
+            raise NotImplementedError
+            # self.p = pv.PlotterITK()
         elif plotter_type == 'background':
             self.p = pv.BackgroundPlotter(**kwargs)
+            self.p.view_isometric(negative=False)
+        else:
+            raise AttributeError('Plotter type must be basic, background or notebook.')
 
+        self.plotter_type = plotter_type
+        # Default camera and bounds
         self.set_bounds()
         self.p.view_isometric(negative=False)
 
-    def update_colot_lot(self, lith_c=None):
-        if lith_c is None:
-            lith_c = self.model.surfaces.df.set_index('id')['color'] if lith_c is None else lith_c
-            # Hopefully this removes the colors that exist in surfaces but not in data
-            idx_uniq = self.model.surface_points.df['id'].unique()
-            # + basement
-            idx = np.append(idx_uniq, idx_uniq.max()+1)
-            lith_c = lith_c[idx]
-        self._color_lot = lith_c
-
-    def set_bounds(self, extent=None, grid=False, location='furthest', **kwargs):
-        if extent is None:
-            extent = self.extent
-        self.p.show_bounds(bounds=extent,  location=location, grid=grid, **kwargs)
-
-    def plot_structured_grid(
-            self,
-            regular_grid=None,
-            data: Union[dict, str] = 'Default',
-            name='lith',
-            **kwargs
-    ):
-        # Remove previous actor with the same name:
-        try:
-            self.p.remove_actor(self.vista_rgrids_actors[name])
-        except KeyError:
-            pass
-
-        self.update_colot_lot()
-        if regular_grid is None:
-            regular_grid = self.model.grid.regular_grid
-
-        g_values = regular_grid.values
-        g_3D = g_values.reshape(*regular_grid.resolution, 3).T
-        rg = pv.StructuredGrid(*g_3D)
-
-        self.plot_scalar_data(rg, data, name)
-        if name == 'lith':
-            n_faults = self.model.faults.df['isFault'].sum()
-            cmap = mcolors.ListedColormap(list(self._color_lot[n_faults:]))
-
-            kwargs['cmap'] = kwargs.get('cmap', cmap)
-
-        self.vista_rgrids_mesh[name] = rg
-
-        actor = self.p.add_mesh(rg,  **kwargs)
-        self.vista_rgrids_actors[name] = actor
-        return actor
-
-    def plot_scalar_data(self, regular_grid, data: Union[dict, gp.Solution, str] = 'Default', name='lith'):
-        """
-
-        Args:
-            regular_grid:
-            data: dictionary or solution
-            name: if data is a gp.Solutions object, name of the grid that you want to plot.
-
-        Returns:
-
-        """
-        if data == 'Default':
-            data = self.model.solutions
-
-        if isinstance(data, gp.Solution):
-            if name == 'lith':
-                data = {'lith': data.lith_block}
-
-            elif name == 'scalar':
-                data = {name: data.scalar_field_matrix.T}
-
-            elif name == 'values':
-                data = {name: data.values_matrix.T}
-
-        if type(data) == dict:
-            for key in data:
-                regular_grid.point_arrays[key] = data[key]
-
-        return regular_grid
-
-    def call_back_sphere(self, *args):
-
-        new_center = args[0]
-        obj = args[-1]
-        # Get which sphere we are moving
-        index = obj.WIDGET_INDEX
-        try:
-            self.call_back_sphere_change_df(index, new_center)
-            self.call_back_sphere_move_changes(index)
-
-        except KeyError as e:
-            print('call_back_sphere error:', e)
-
-        if self.real_time:
-            try:
-                self.update_surfaces_real_time()
-
-            except AssertionError:
-                print('Not enough data to compute the model')
-
-    # region Surface Points
-    def call_back_sphere_change_df(self, index, new_center):
-        index = np.atleast_1d(index)
-        # Modify Pandas DataFrame
-        self.model.modify_surface_points(index, X=[new_center[0]], Y=[new_center[1]], Z=[new_center[2]])
-
-    def call_back_sphere_move_changes(self, indices):
-        df_changes = self.model.surface_points.df.loc[np.atleast_1d(indices)][['X', 'Y', 'Z', 'id']]
-        for index, df_row in df_changes.iterrows():
-            new_center = df_row[['X', 'Y', 'Z']].values
-
-            # Update renderers
-            s1 = self.s_widget.loc[index, 'val']
-            r_f = s1.GetRadius() * 2
-            s1.PlaceWidget(new_center[0] - r_f, new_center[0] + r_f,
-                           new_center[1] - r_f, new_center[1] + r_f,
-                           new_center[2] - r_f, new_center[2] + r_f)
-
-            s1.GetSphereProperty().SetColor(mcolors.hex2color(self._color_lot[df_row['id']]))
-                #self.geo_model.surfaces.df.set_index('id')['color'][df_row['id']]))#self.C_LOT[df_row['id']])
-
-    def call_back_sphere_delete_point(self, ind_i):
-        """
-        Warning this deletion system will lead to memory leaks until the vtk object is reseted (hopefully). This is
-        mainly a vtk problem to delete objects
-        """
-        ind_i = np.atleast_1d(ind_i)
-        # Deactivating widget
-        for i in ind_i:
-            self.s_widget.loc[i, 'val'].Off()
-
-        self.s_widget.drop(ind_i)
-
-    # endregion
-
-    def plot_data(self, surface_points=None, orientations=None, **kwargs):
-        # TODO: When we call this method we need to set the plotter.notebook to False!
-        self.plot_surface_points(surface_points, **kwargs)
-        self.plot_orientations(orientations, **kwargs)
-
-    def plot_surface_points(self, surface_points=None, radius=None, clear=True, **kwargs):
-        self.update_colot_lot()
-        if clear is True:
-            self.p.clear_sphere_widgets()
-
-        # Calculate default surface_points radius
-        if radius is None:
-            _e = self.extent
-            _e_dx = _e[1] - _e[0]
-            _e_dy = _e[3] - _e[2]
-            _e_dz = _e[5] - _e[4]
-            _e_d_avrg = (_e_dx + _e_dy + _e_dz) / 3
-            radius = _e_d_avrg * .01
-
-        if surface_points is None:
-            surface_points = self.model.surface_points.df
-
-        test_callback = True if self.real_time is True else False
-
-        # This is Bane way. It gives me some error with index slicing
-        centers = surface_points[['X', 'Y', 'Z']]
-        colors = self._color_lot[surface_points['id']].values
-        s = self.p.add_sphere_widget(self.call_back_sphere,
-                                     center=centers, color=colors, pass_widget=True,
-                                     test_callback=test_callback,
-                                     indices=surface_points.index.values,
-                                     radius=radius, **kwargs)
-
-        self.s_widget.append(pn.DataFrame(data=s, index=surface_points.index, columns=['val']))
-
-        return self.s_widget
-
-    def call_back_plane(self, normal, origin, obj):
-        """
-              Function that rules what happens when we move a plane. At the moment we update the other 3 renderers and
-              update the pandas data frame
-              """
-        # Get new position of the plane and GxGyGz
-        new_center = origin
-        new_normal = normal
-
-        # Get which plane we are moving
-        index = obj.WIDGET_INDEX
-
-        self.call_back_plane_change_df(index, new_center, new_normal)
-        # TODO: rethink why I am calling this. Technically this happens outside. It is for sanity check?
-        self.call_back_plane_move_changes(index)
-
-        if self.real_time:
-
-            try:
-                self.update_surfaces_real_time()
-
-            except AssertionError:
-                print('Not enough data to compute the model')
-
-        return True
-
-    def call_back_plane_change_df(self, index, new_center, new_normal):
-        # Modify Pandas DataFrame
-        # update the gradient vector components and its location
-        self.model.modify_orientations(index, X=new_center[0], Y=new_center[1], Z=new_center[2],
-                                       G_x=new_normal[0], G_y=new_normal[1], G_z=new_normal[2])
-        return True
-
-    def call_back_plane_move_changes(self, indices):
-        df_changes = self.model.orientations.df.loc[np.atleast_1d(indices)][['X', 'Y', 'Z',
-                                                                             'G_x', 'G_y', 'G_z', 'id']]
-        for index, new_values_df in df_changes.iterrows():
-            new_center = new_values_df[['X', 'Y', 'Z']].values
-            new_normal = new_values_df[['G_x', 'G_y', 'G_z']].values
-            new_source = vtk.vtkPlaneSource()
-            new_source.SetCenter(new_center)
-            new_source.SetNormal(new_normal)
-            new_source.Update()
-
-            plane1 = self.p_widget.loc[index, 'val']
-            #  plane1.SetInputData(new_source.GetOutput())
-            plane1.SetNormal(new_normal)
-            plane1.SetCenter(new_center[0], new_center[1], new_center[2])
-
-            plane1.GetPlaneProperty().SetColor(
-                parse_color(self.model.surfaces.df.set_index('id')['color'][new_values_df['id']]))  # self.C_LOT[new_values_df['id']])
-            plane1.GetHandleProperty().SetColor(
-                parse_color(self.model.surfaces.df.set_index('id')['color'][new_values_df['id']]))
-        return True
-
-    def plot_orientations(self, orientations=None, clear=True, **kwargs):
-        self.update_colot_lot()
-        if clear is True:
-            self.p.clear_plane_widgets()
-        factor = kwargs.get('factor', 0.1)
-        kwargs['test_callback'] = kwargs.get('test_callback', False)
-
-        if orientations is None:
-            orientations = self.model.orientations.df
-        for e, val in orientations.iterrows():
-            c = self._color_lot[val['id']]
-            p = self.p.add_plane_widget(self.call_back_plane,
-                                        implicit=False, pass_widget=True,
-                                        normal=val[['G_x', 'G_y', 'G_z']],
-                                        origin=val[['X', 'Y', 'Z']], color=c,
-                                        bounds=self.model.grid.regular_grid.extent,
-                                        factor=factor, **kwargs)
-            p.WIDGET_INDEX = e
-            self.p_widget.at[e] = p
-        return self.p_widget
-
-    def plot_surfaces(self, surfaces=None, delete_surfaces=True, **kwargs):
-        self.update_colot_lot()
-        if delete_surfaces is True:
-            for actor in self.vista_surf_actor.values():
-                self.delete_surface(actor)
-
-        if surfaces is None:
-            surfaces = self.model.surfaces.df
-
-        select_active = surfaces['isActive']
-        for idx, val in surfaces[select_active][['vertices', 'edges', 'color']].dropna().iterrows():
-
-            surf = pv.PolyData(val['vertices'], np.insert(val['edges'], 0, 3, axis=1).ravel())
-            self.surf_polydata.at[idx] = surf
-            self.vista_surf_actor[idx] = self.p.add_mesh(surf, parse_color(val['color']), **kwargs)
-
-        self.set_bounds()
-        return self.surf_polydata
-
-    def update_surfaces(self):
-        surfaces = self.model.surfaces
-        # TODO add the option of update specific surfaces
-        for idx, val in surfaces.df[['vertices', 'edges', 'color']].dropna().iterrows():
-            self.surf_polydata.loc[idx, 'val'].points = val['vertices']
-            self.surf_polydata.loc[idx, 'val'].faces = np.insert(val['edges'], 0, 3, axis=1).ravel()
-
-        return True
-
-    def add_surface(self):
-        raise NotImplementedError
-
-    def delete_surface(self, actor):
-        self.p.remove_actor(actor)
-        return True
-
-    def update_surfaces_real_time(self, delete=True):
-
-        try:
-            gp.compute_model(self.model, sort_surfaces=False, compute_mesh=True)
-        except IndexError:
-            print('IndexError: Model not computed. Laking data in some surface')
-        except AssertionError:
-            print('AssertionError: Model not computed. Laking data in some surface')
-
-        self.update_surfaces()
-        return True
-
-    def plot_topography(self, topography = None, scalars='geo_map', **kwargs):
-        """
-
-        Args:
-            topography: gp Topography object, np.array or None
-            scalars:
-            **kwargs:
-
-        Returns:
-
-        """
-        if topography is None:
-            topography = self.model.grid.topography.values
-        rgb = False
-
-        # Create vtk object
-        cloud = pv.PolyData(topography)
-
-        # Set scalar values
-        if scalars == 'geo_map':
-            arr_ = np.empty((0, 3), dtype='int')
-
-            # Convert hex colors to rgb
-            for val in list(self._color_lot):
-                rgb = (255 * np.array(mcolors.hex2color(val)))
-                arr_ = np.vstack((arr_, rgb))
-
-            sel = np.round(self.model.solutions.geological_map[0]).astype(int)[0]
-          #  print(arr_)
-          #  print(sel)
-
-            scalars_val = numpy_to_vtk(arr_[sel-1], array_type=3)
-            cm = None
-            rgb = True
-
-        elif scalars == 'topography':
-            scalars_val = topography[:, 2]
-            cm = 'terrain'
-
-        elif type(scalars) is np.ndarray:
-            scalars_val = scalars
-            scalars = 'custom'
-            cm = 'terrain'
-        else:
-            raise AttributeError()
-
-        topo_actor = self.p.add_mesh(cloud.delaunay_2d(), scalars=scalars_val, cmap=cm, rgb=rgb, **kwargs)
-        self.vista_topo_actors[scalars] = topo_actor
-        return topo_actor
-
-
-class _Vista:
-    def __init__(
-            self,
-            model: gp.Model,
-            extent: List[float] = None,
-            color_lot: pn.DataFrame = None,
-            real_time: bool = False,
-            plotter_type: Union["basic", "background"] = 'basic',
-            **kwargs
-    ):
-        """GemPy 3-D visualization using pyVista.
-        
-        Args:
-            model (gp.Model): Geomodel instance with solutions.
-            extent (List[float], optional): Custom extent. Defaults to None.
-            color_lot (pn.DataFrame, optional): Custom color scheme in the form
-                of a look-up table. Defaults to None.
-            real_time (bool, optional): Toggles real-time updating of the plot. 
-                Defaults to False.
-            plotter_type (Union["basic", "background"], optional): Set the 
-                plotter type. Defaults to 'basic'.
-        """
-        self.model = model
-        if extent:
-            self.extent = list(extent)
-        else:
-            self.extent = list(model.grid.regular_grid.extent)
-
-        if color_lot:
-            self._color_lot = color_lot
-        else:
-            self._color_lot = model.surfaces.df.set_index('surface')['color']
-        self._color_id_lot = model.surfaces.df.set_index('id')['color']
-
-        if plotter_type == 'basic':
-            self.p = pv.Plotter(**kwargs)
-        elif plotter_type == 'background':
-            self.p = pv.BackgroundPlotter(**kwargs)
-
-        self._surface_actors = {}
-        self._surface_points_actors = {}
-        self._orientations_actors = {}
-
-        self._actors = []
-        self._live_updating = False
-
+        # Actors containers
+        self.surface_actors = {}
+        self.surface_poly = {}
+
+        self.regular_grid_actor = None
+        self.regular_grid_mesh = None
+
+        self.surface_points_actor = None
+        self.surface_points_mesh = None
+        self.surface_points_widgets = {}
+
+        self.orientations_actor = None
+        self.orientations_mesh = None
+        self.orientations_widgets = {}
+
+        # Private attributes
+        self._grid_values = None
+        col = matplotlib.cm.get_cmap('viridis')(np.linspace(0, 1, 255)) * 255
+        nv = numpy_to_vtk(col, array_type=3)
+        self._cmaps = {'viridis': nv}
+
+        # Topology properties
         self.topo_edges = None
         self.topo_ctrs = None
 
-        self.set_bounds()
+    def _get_color_lot(self, lith_c: pd.DataFrame = None,
+                       index='surface',
+                       is_faults: bool = True,
+                       is_basement: bool = False) -> \
+            pd.Series:
+        """Method to get the right color list depending on the type of plot.
 
-    def show(self):
-        self.p.show()
+        Args:
+            lith_c (pd.DataFrame): Pandas series with index surface names and
+                values hex strings with the colors
+            is_faults (bool): Return the colors of the faults. This should be
+                true for surfaces and input data and false for scalar values.
+            is_basement (bool): Return or not the basement. This should be true
+                for the lith block and false for surfaces and input data.
+        """
+        if lith_c is None:
+            surf_df = self.model._surfaces.df.set_index(index)
+            unique_surf_points = np.unique(self.model._surface_points.df['id'])
 
-    def _actor_exists(self, new_actor):
-        if not hasattr(new_actor, "points"):
-            return False
-        for actor in self._actors:
-            actor_str = actor.points.tostring()
-            if new_actor.points.tostring() == actor_str:
-                debug("Actor already exists.")
-                return True
-        return False
+            if len(unique_surf_points) != 0:
+                bool_surf_points = np.zeros(surf_df.shape[0], dtype=bool)
+                bool_surf_points[unique_surf_points - 1] = True
+
+                surf_df['isActive'] = (surf_df['isActive'] | bool_surf_points)
+
+                if is_faults is True and is_basement is True:
+                    lith_c = surf_df.groupby('isActive').get_group(True)['color']
+                elif is_faults is True and is_basement is False:
+                    lith_c = surf_df.groupby(['isActive', 'isBasement']).get_group((True, False))['color']
+                else:
+                    lith_c = surf_df.groupby(['isActive', 'isFault']).get_group((True, False))[
+                        'color']
+
+        color_lot = lith_c
+        return color_lot
+
+    @property
+    def scalar_bar_options(self):
+        sargs = dict(
+            title_font_size=20,
+            label_font_size=16,
+            shadow=True,
+            italic=True,
+            font_family="arial",
+            height=0.25, vertical=True,
+            position_x=0.05,
+            position_y=0.35
+        )
+
+        return sargs
+
+    def set_scalar_bar(self):
+        n_labels = self.model._surfaces.df.shape[0]
+        arr_ = self.model._surfaces.df['id']
+        sargs = self.scalar_bar_options
+        sargs['title'] = 'id'
+        sargs['n_labels'] = n_labels
+        sargs['position_y'] = 0.30
+        sargs['height'] = -0.25
+        sargs['fmt'] = "%.0f"
+        self.p.add_scalar_bar(**sargs)
+        self.p.update_scalar_bar_range((arr_.min(), arr_.max()))
 
     def set_bounds(
             self,
@@ -510,283 +203,609 @@ class _Vista:
             **kwargs
     ):
         """Set and toggle display of bounds of geomodel.
-        
+
         Args:
-            extent (list, optional): [description]. Defaults to None.
-            grid (bool, optional): [description]. Defaults to False.
-            location (str, optional): [description]. Defaults to 'furthest'.
+            extent (list): [description]. Defaults to None.
+            grid (bool): [description]. Defaults to False.
+            location (str): [description]. Defaults to 'furthest'.
+            **kwargs:
         """
-        if extent is None:
-            extent = self.extent
-        self.p.show_bounds(
-            bounds=extent, location=location, grid=grid, **kwargs
-        )
-
-    def plot_surface_points(self, fmt: str = None, **kwargs):
-        if fmt is None:
-            self._plot_surface_points_all()
-
-        i = self.model.surface_points.df.groupby("surface").groups[fmt]
-        if len(i) == 0:
-            return False
-
-        mesh = pv.PolyData(
-            self.model.surface_points.df.loc[i][["X", "Y", "Z"]].values
-        )
-        if self._actor_exists(mesh):
-            return []
-
-        self.p.add_mesh(
-            mesh,
-            color=self._color_lot[fmt],
-            **kwargs
-        )
-        self._actors.append(mesh)
-        return [mesh]
-
-    def plot_orientations(self, fmt: str = None, length: float = None, **kwargs):
-        if fmt is None:
-            self._plot_orientations_all()
-
-        meshes = []
-        i = self.model.orientations.df.groupby("surface").groups[fmt]
-        if len(i) == 0:
-            return meshes
-        if not length:
-            length = abs(
-                np.min(
-                    [
-                        np.diff(self.extent[:2]),
-                        np.diff(self.extent[2:4]),
-                        np.diff(self.extent[4:])
-                    ]
+        if self.plotter_type != 'notebook':
+            if extent is None:
+                extent = self.extent
+            try:
+                self.p.show_bounds(
+                    bounds=extent, location=location, grid=grid, use_2d=False, **kwargs
                 )
-            ) / 10
+            except KeyError:
+                pass
 
-        pts = self.model.orientations.df.loc[i][["X", "Y", "Z"]].values
-        nrms = self.model.orientations.df.loc[i][["G_x", "G_y", "G_z"]].values
+    def plot_data(self, surfaces='all', surface_points=None, orientations=None, **kwargs):
+        """Plot all the geometric data
 
-        line_kwargs = dict(
-            color=self._color_lot[fmt],
-            line_width=3,
-        )
-        line_kwargs.update(kwargs)
-
-        for pt, nrm in zip(pts, nrms):
-            mesh = pv.Line(
-                pointa=pt,
-                pointb=pt + length * nrm,
-            )
-            if self._actor_exists(mesh):
-                continue
-            self.p.add_mesh(
-                mesh,
-                **line_kwargs
-            )
-            self._actors.append(mesh)
-            meshes.append(mesh)
-        return meshes
-
-    def _plot_surface_points_all(self, **kwargs):
-        meshes = []
-        for fmt in self.model.surfaces.df.surface:
-            if fmt.lower() == "basement":
-                continue
-            new_meshes = self.plot_surface_points(fmt, **kwargs)
-            for mesh in new_meshes:
-                if mesh is not None:
-                    meshes.append(mesh)
-        return meshes
-
-    def _plot_orientations_all(self, **kwargs):
-        meshes = []
-        for fmt in self.model.surfaces.df.surface:
-            if fmt.lower() == "basement":
-                continue
-            orient_meshes = self.plot_orientations(fmt, **kwargs)
-            for orient_mesh in orient_meshes:
-                if orient_mesh is not None:
-                    meshes.append(orient_mesh)
-        return meshes
-
-    def get_surface(self, fmt: str) -> pv.PolyData:
-        i = self.model.surfaces.df.index[np.where(self.model.surfaces.df.surface == fmt)[0][0]]
-        ver = self.model.solutions.vertices[i]
-
-        sim = self._simplices_to_pv_tri_simplices(
-            self.model.solutions.edges[i]
-        )
-        mesh = pv.PolyData(ver, sim)
-        return mesh
-
-    def plot_surface(self, fmt: str, **kwargs):
-        mesh = self.get_surface(fmt)
-        if self._actor_exists(mesh):
-            return []
-
-        mesh_kwargs = dict(color=self._color_lot[fmt])
-        mesh_kwargs.update(kwargs)
-
-        self.p.add_mesh(mesh, **mesh_kwargs)
-        self._actors.append(mesh)
-        self._surface_actors[fmt] = mesh
-        return [mesh]
-
-    def clip_horizon_with_faults(
-            self,
-            horizon: pv.PolyData,
-            faults: Iterable[pv.PolyData],
-            value: float = None
-    ) -> List[pv.PolyData]:
-        """Clip given horizon surface with given list of fault surfaces. The
-        given value represents the distance to clip away from the fault 
-        surfaces.
-        
         Args:
-            horizon (pv.PolyData): The horizon surface to be clipped.
-            faults (Iterable[pv.PolyData]): Fault(s) surface(s) to clip with.
-            value (float, optional): Set the clipping value of the implicit 
-                function (clipping distance from faults). Defaults to 50.
-        
-        Returns:
-            List[pv.PolyData]: Individual clipped horizon surfaces.
+            surfaces(str, List[str]): Name of the surface, or list of names of surfaces to plot.
+             By default all will plot all surfaces.
+            surface_points:
+            orientations:
+            **kwargs:
         """
-        if hasattr(faults, "next"):
-            if type(faults[0]) == str:
-                faults = [self.get_surface(f) for f in faults]
-
-        horizons = []
-        if not value:
-            value = np.mean(self.model.grid.regular_grid.get_dx_dy_dz()[:2])
-
-        # TODO: this somehow doesn't work properly with Gullfaks model
-        horizons.append(
-            horizon.clip_surface(faults[0], value=-value)
-        )
-
-        horizons.append(
-            horizon.clip_surface(faults[-1], invert=False, value=-value)
-        )
-
-        if len(faults) == 1:
-            print("Returning after 1")
-            return horizons
-
-        for f1, f2 in zip(faults[:-1], faults[1:]):
-            horizons.append(
-                horizon.clip_surface(
-                    f1, invert=False, value=value
-                ).clip_surface(
-                    f2, value=-value
-                )
-            )
-
-        return horizons
-
-    def plot_surfaces_all(self, fmts: Iterable[str] = None, **kwargs):
-        """Plot all geomodel surfaces. If given an iterable containing surface
-        strings, it will plot all surfaces specified in it.
-        
-        Args:
-            fmts (List[str], optional): Names of surfaces to plot. 
-                Defaults to None.
-        """
-        meshes = []
-        if not fmts:
-            fmts = self.model.surfaces.df.surface[:-1].values
-        for fmt in fmts:
-            m = self.plot_surface(fmt, **kwargs)
-            for mesh in m:
-                meshes.append(mesh)
-        return meshes
+        if self.model.surface_points.df.shape[0] !=0:
+            self.plot_surface_points(surfaces=surfaces, surface_points=surface_points, **kwargs)
+            self.set_scalar_bar()
+        if self.model.orientations.df.shape[0] != 0:
+            self.plot_orientations(surfaces=surfaces, orientations=orientations, **kwargs)
 
     @staticmethod
-    def _simplices_to_pv_tri_simplices(sim: Array[int, ..., 3]) -> Array[
-        int, ..., 4]:
-        """Convert triangle simplices (n, 3) to pyvista-compatible
-        simplices (n, 4)."""
-        n_edges = np.ones(sim.shape[0]) * 3
-        return np.append(n_edges[:, None], sim, axis=1)
+    def _select_surfaces_data(data_df: pd.core.frame.DataFrame,
+                              surfaces: Union[str, List[str]] = 'all') -> \
+            pd.core.frame.DataFrame:
+        """Select the surfaces that has to be plot.
 
-    def plot_structured_grid(self, name: str, series: str = None, render_topography: bool = False,
+        Args:
+            data_df (pd.core.frame.DataFrame): GemPy data df that contains
+                surface property. E.g Surfaces, SurfacePoints or Orientations.
+            surfaces: If 'all' select all the active data. If a list of surface
+                names or a surface name is passed, plot only those.
+        """
+        if surfaces == 'all':
+            geometric_data = data_df
+        else:
+            geometric_data = pd.concat(
+                [data_df.groupby('surface').get_group(group)
+                 for group in surfaces])
+        return geometric_data
+
+    def remove_actor(self, actor, set_bounds=False):
+        """Remove pyvista mesh.
+
+        Args:
+            actor: Pyvista mesh
+            set_bounds (bool): if True reset the bound
+        """
+        self.p.remove_actor(actor, reset_camera=False)
+        if set_bounds is True:
+            self.set_bounds()
+
+    def create_sphere_widgets(self, surface_points: pd.core.frame.DataFrame,
+                              test_callback: Union[bool, None] = True, **kwargs) \
+            -> List[vtk.vtkInteractionWidgetsPython.vtkSphereWidget]:
+        """Create sphere widgets for each surface points with the call back to
+        recompute the model.
+
+        Args:
+            surface_points (pd.core.frame.DataFrame):
+            test_callback (bool):
+            **kwargs:
+
+        Returns:
+            List[vtkInteractionWidgetsPython.vtkSphereWidget]:
+        """
+        radius = kwargs.get('radius', None)
+        if radius is None:
+            _e = self.extent
+            _e_dx = _e[1] - _e[0]
+            _e_dy = _e[3] - _e[2]
+            _e_dz = _e[5] - _e[4]
+            _e_d_avrg = (_e_dx + _e_dy + _e_dz) / 3
+            radius = _e_d_avrg * .01
+
+            # This is Bane way. It gives me some error with index slicing
+            centers = surface_points[['X', 'Y', 'Z']]
+
+            # This is necessary to change the color of the widget if change id
+            colors = self._get_color_lot(is_faults=True, is_basement=False)[surface_points['surface']]
+            self._color_lot = self._get_color_lot(is_faults=True, is_basement=False, index='id')
+            s = self.p.add_sphere_widget(self.call_back_sphere,
+                                         center=centers, color=colors.values, pass_widget=True,
+                                         test_callback=test_callback,
+                                         indices=surface_points.index.values,
+                                         radius=radius, **kwargs)
+            if type(s) is not list:
+                s = [s]
+            return s
+
+    def create_orientations_widget(self,
+                                   orientations: pd.core.frame.DataFrame)\
+            -> List[vtk.vtkInteractionWidgetsPython.vtkPlaneWidget]:
+        """Create plane widget for each orientation with interactive recompute
+        of the model
+
+        Args:
+            orientations (pd.core.frame.DataFrame):
+
+        Returns:
+            List[vtkInteractionWidgetsPython.vtkPlaneWidget]:
+        """
+        colors = self._get_color_lot(is_faults=True, is_basement=False)
+        widget_list = []
+        # for index, pt, nrm in zip(i, pts, nrms):
+        self._color_lot = self._get_color_lot(is_faults=True, is_basement=False, index='id')
+        for index, val in orientations.iterrows():
+            widget = self.p.add_plane_widget(
+                self.call_back_plane,
+                normal=val[['G_x', 'G_y', 'G_z']],
+                origin=val[['X', 'Y', 'Z']],
+                bounds=self.extent,
+                factor=0.15,
+                implicit=False,
+                pass_widget=True,
+                test_callback=False,
+                color=colors[val['surface']]
+            )
+            widget.WIDGET_INDEX = index
+            widget_list.append(widget)
+
+        return widget_list
+
+    def plot_surface_points(self, surfaces: Union[str, Iterable[str]] = 'all',
+                            surface_points: pd.DataFrame = None,
+                            clear: bool = True, colors=None, render_points_as_spheres=True,
+                            point_size=10, **kwargs):
+
+        # Selecting the surfaces to plot
+        """
+        Args:
+            surfaces:
+            surface_points (pd.DataFrame):
+            clear (bool):
+            colors:
+            render_points_as_spheres:
+            point_size:
+            **kwargs:
+        """
+        if surface_points is None:
+            surface_points = self._select_surfaces_data(self.model._surface_points.df, surfaces)
+
+        if clear is True:
+            if self.plotter_type != 'notebook':
+                if 'id' not in self.p._scalar_bar_slot_lookup:
+                    self.p._scalar_bar_slot_lookup['id'] = None
+
+                self.p.clear_sphere_widgets()
+                self.surface_points_widgets = {}
+                try:
+                    self.p.remove_actor(self.surface_points_actor)
+                except KeyError:
+                    pass
+
+        if self.live_updating is True:
+
+            sphere_widgets = self.create_sphere_widgets(surface_points, colors, **kwargs)
+            self.surface_points_widgets.update(dict(zip(surface_points.index, sphere_widgets)))
+            r = self.surface_points_widgets
+        else:
+            poly = pv.PolyData(surface_points[["X", "Y", "Z"]].values)
+            poly['id'] = surface_points['id']
+            self.surface_points_mesh = poly
+            cmap = mcolors.ListedColormap(list(self._get_color_lot(is_faults=True, is_basement=True)))
+            self.surface_points_actor = self.p.add_mesh(poly, cmap=cmap,
+                                                        scalars='id',
+                                                        render_points_as_spheres=render_points_as_spheres,
+                                                        point_size=point_size, show_scalar_bar=False)
+            self.set_scalar_bar()
+
+            r = self.surface_points_actor
+        self.set_bounds()
+        return r
+
+    def plot_orientations(self, surfaces: Union[str, Iterable[str]] = 'all',
+                          orientations: pd.DataFrame = None,
+                          clear=True, arrow_size=10, **kwargs):
+        """
+
+        Args:
+            surfaces:
+            orientations (pd.DataFrame):
+            clear:
+            arrow_size:
+            **kwargs:
+        """
+        if orientations is None:
+            orientations = self._select_surfaces_data(self.model._orientations.df, surfaces)
+
+        if clear is True:
+            self.p.clear_plane_widgets()
+            self.orientations_widgets = {}
+            try:
+                self.p.remove_actor(self.orientations_actor)
+            except KeyError:
+                pass
+
+        if self.live_updating is True:
+            orientations_widgets = self.create_orientations_widget(orientations)
+            self.orientations_widgets.update(dict(zip(orientations.index, orientations_widgets)))
+            r = self.orientations_widgets
+        else:
+            poly = pv.PolyData(orientations[["X", "Y", "Z"]].values)
+            poly['id'] = orientations['id']
+            poly['vectors'] = orientations[['G_x', 'G_y', 'G_z']].values
+
+            min_axes = np.min(np.diff(self.extent)[[0, 2, 4]])
+
+            arrows = poly.glyph(orient='vectors', scale=False,
+                                factor=min_axes / (100 / arrow_size))
+
+            cmap = mcolors.ListedColormap(list(self._get_color_lot(is_faults=True, is_basement=True)))
+            self.orientations_actor = self.p.add_mesh(arrows, cmap=cmap,
+                                                      show_scalar_bar=False)
+            self.orientations_mesh = arrows
+            r = self.orientations_actor
+            self.set_scalar_bar()
+        self.set_bounds()
+        if self.live_updating is False:
+            self.set_scalar_bar()
+        return r
+
+    def plot_surfaces(self, surfaces: Union[str, Iterable[str]] = 'all',
+                      surfaces_df: pd.DataFrame = None, clear=True,
+                      **kwargs):
+
+        # TODO is this necessary for the updates?
+        """
+        Args:
+            surfaces:
+            surfaces_df (pd.DataFrame):
+            clear:
+            **kwargs:
+        """
+        cmap = mcolors.ListedColormap(list(self._get_color_lot(is_faults=True, is_basement=True)))
+        if clear is True and self.plotter_type !='notebook':
+            try:
+                [self.p.remove_actor(actor) for actor in self.surface_actors.items()]
+            except KeyError:
+                pass
+
+        if surfaces_df is None:
+            surfaces_df = self._select_surfaces_data(self.model._surfaces.df, surfaces)
+
+        select_active = surfaces_df['isActive']
+        for idx, val in surfaces_df[select_active][['vertices', 'edges', 'color', 'surface', 'id']].dropna().iterrows():
+            surf = pv.PolyData(val['vertices'], np.insert(val['edges'], 0, 3, axis=1).ravel())
+            # surf['id'] = val['id']
+            self.surface_poly[val['surface']] = surf
+            self.surface_actors[val['surface']] = self.p.add_mesh(
+                surf, parse_color(val['color']), show_scalar_bar=True,
+                cmap=cmap, **kwargs)
+        self.set_bounds()
+
+        # In order to set the scalar bar to only surfaces we would need to map
+        # every vertex of each layer with the right id. So far I am going to avoid
+        # the overhead since usually surfaces will be plotted either with data
+        # or the regular grid.
+        # self.set_scalar_bar()
+        return self.surface_actors
+
+    def update_surfaces(self, recompute=True):
+        import time
+
+        if recompute is True:
+            try:
+                gp.compute_model(self.model, sort_surfaces=False, compute_mesh=True)
+            except IndexError:
+                t = time.localtime()
+                current_time = time.strftime("[%H:%M:%S]", t)
+                print(current_time + 'IndexError: Model not computed. Laking data in some surface')
+            except AssertionError:
+                t = time.localtime()
+                current_time = time.strftime("[%H:%M:%S]", t)
+                print(current_time + 'AssertionError: Model not computed. Laking data in some surface')
+
+        self.remove_actor(self.regular_grid_actor)
+        surfaces = self.model._surfaces
+        # TODO add the option of update specific surfaces
+        try:
+            for idx, val in surfaces.df[['vertices', 'edges', 'surface']].dropna().iterrows():
+                self.surface_poly[val['surface']].points = val['vertices']
+                self.surface_poly[val['surface']].faces = np.insert(val['edges'], 0, 3, axis=1).ravel()
+        except KeyError:
+            self.plot_surfaces()
+
+        return True
+
+    def toggle_live_updating(self):
+
+        self.live_updating = self.live_updating ^ True
+        self.plot_surface_points()
+        self.plot_orientations()
+
+        return self.live_updating
+
+    def plot_topography(
+            self,
+            topography=None,
+            scalars=None,
+            contours=True,
+            clear=True,
+            **kwargs
+    ):
+        """
+        Args:
+            topography:
+            scalars:
+            clear:
+            **kwargs:
+        """
+        rgb = False
+        if clear is True and 'topography' in self.surface_actors and self.plotter_type != 'notebook':
+                self.p._scalar_bar_slot_lookup['height'] = None
+                self.p.remove_actor(self.surface_actors['topography'])
+                self.p.remove_actor(self.surface_actors["topography_cont"])
+
+        if not topography:
+            try:
+                topography = self.model._grid.topography.values
+            except AttributeError:
+                raise AttributeError("Unable to plot topography: Given geomodel instance "
+                                     "does not contain topography grid.")
+
+        polydata = pv.PolyData(topography)
+
+        if scalars is None and self.model.solutions.geological_map is not None:
+            scalars = 'geomap'
+        elif scalars is None:
+            scalars = 'topography'
+
+        if scalars == "geomap":
+
+            colors_hex = self._get_color_lot(is_faults=False, is_basement=True, index='id')
+            colors_rgb_ = colors_hex.apply(lambda val: list(mcolors.hex2color(val)))
+            colors_rgb = pd.DataFrame(colors_rgb_.to_list(), index=colors_hex.index) * 255
+
+            sel = np.round(self.model.solutions.geological_map[0]).astype(int)[0]
+
+            scalars_val = numpy_to_vtk(colors_rgb.loc[sel], array_type=3)
+            cm = mcolors.ListedColormap(list(self._get_color_lot(is_faults=True, is_basement=True)))
+            rgb = True
+
+        elif scalars == "topography":
+            scalars_val = topography[:, 2]
+            cm = 'terrain'
+
+        elif type(scalars) is np.ndarray:
+            scalars_val = scalars
+            cm = 'terrain'
+
+        else:
+            raise AttributeError("Parameter scalars needs to be either \
+                      'geomap', 'topography' or a np.ndarray with scalar values")
+
+        polydata.delaunay_2d(inplace=True)
+        polydata['id'] = scalars_val
+        polydata['height'] = topography[:, 2]
+        if scalars != 'geomap':
+            show_scalar_bar = True
+            scalars = 'height'
+        else:
+            show_scalar_bar = False
+            scalars = 'id'
+        sbo = self.scalar_bar_options
+        sbo['position_y'] = .35
+
+        topography_actor = self.p.add_mesh(
+            polydata,
+            scalars=scalars,
+            cmap=cm,
+            rgb=rgb,
+            show_scalar_bar=show_scalar_bar,
+            scalar_bar_args=sbo,
+            **kwargs
+        )
+
+        if scalars == 'geomap':
+            self.set_scalar_bar()
+
+        if contours is True:
+            contours = polydata.contour(scalars='height')
+            contours_actor = self.p.add_mesh(contours, color="white", line_width=3)
+
+            self.surface_poly['topography'] = polydata
+            self.surface_poly['topography_cont'] = contours
+            self.surface_actors["topography"] = topography_actor
+            self.surface_actors["topography_cont"] = contours_actor
+        return topography_actor
+
+    def plot_structured_grid(self, scalar_field: str = 'all',
+                             data: Union[dict, str] = 'Default',
+                             series: str = '',
+                             render_topography: bool = True,
+                             opacity=.5,
+                             clear=True,
                              **kwargs) -> list:
         """Plot a structured grid of the geomodel.
 
         Args:
-            name (str): Can be either one of the following
+            scalar_field (str): Can be either one of the following
 
-                'lith' - Lithology id block.
-                'scalar' - Scalar field block.
+                'lith' - Lithology id block. 'scalar' - Scalar field block.
                 'values' - Values matrix block.
+            data:
+            series (str):
+            render_topography (bool):
+            **kwargs:
         """
-        regular_grid = self.model.grid.regular_grid
+        if clear is True:
+            try:
+                self.p.remove_actor(self.regular_grid_actor)
+            except KeyError:
+                pass
+        regular_grid, cmap = self.create_regular_mesh(scalar_field, data,
+                                                      series, render_topography)
+        
+        return self.add_regular_grid_mesh(regular_grid, cmap, scalar_field, series,
+                                          opacity, **kwargs)
+    
+    def create_regular_mesh(self, scalar_field: str = 'all',
+                             data: Union[dict, str] = 'Default',
+                             series: str = '',
+                             render_topography: bool = True,
+                        ):
+        
+        regular_grid = self.model._grid.regular_grid
 
-        grid_values = regular_grid.values
-        grid_3d = grid_values.reshape(*regular_grid.resolution, 3).T
-        mesh = pv.StructuredGrid(*grid_3d)
+        if regular_grid.values is self._grid_values:
+            regular_grid_mesh = self.regular_grid_mesh
+        else:
+            # If the regular grid changes we need to create a new grid. Otherwise we can append it to the
+            # previous
+            self._grid_values = regular_grid.values
 
-        if name == "lith":
-            vals = self.model.solutions.lith_block.copy()
-            n_faults = self.model.faults.df['isFault'].sum()
-            cmap = mcolors.ListedColormap(list(self._color_id_lot[n_faults:]))
-            kwargs['cmap'] = kwargs.get('cmap', cmap)
-        elif name == "scalar":
-            if series == None:
-                # default to oldest series above basement
-                series = self.model.series.df.iloc[-2].name
-            vals = self.model.solutions.scalar_field_matrix.copy()[
-                self.model.series.df.index.get_loc(series)]
-        elif name == "values":
-            vals = self.model.solutions.values_matrix.copy().T
-            if vals.shape[1] == 0:
-                print("No scalar values matrix found in given geomodel.")
-                return
+            grid_3d = self._grid_values.reshape(*regular_grid.resolution, 3).T
+            regular_grid_mesh = pv.StructuredGrid(*grid_3d)
+        
+        # Set the scalar field-Activate it-getting cmap?
+        regular_grid_mesh, cmap = self.set_scalar_data(regular_grid_mesh,
+                                                       data=data, scalar_field=scalar_field,
+                                                       series=series)
 
-        mesh.point_arrays[name] = vals
+        if render_topography == True and regular_grid.mask_topo.shape[0] != 0 and True:
 
-        if render_topography == True:
-            mesh[name][regular_grid.mask_topo.T.ravel(order='F')] = -100
-            mesh = mesh.threshold(-99)
+            main_scalar = 'id' if scalar_field == 'all' else regular_grid_mesh.array_names[-1]
+            regular_grid_mesh[main_scalar][regular_grid.mask_topo.ravel(order='C')] = -100
+            regular_grid_mesh = regular_grid_mesh.threshold(-99, scalars=main_scalar)
+        
+        return regular_grid_mesh, cmap
+    
+    def add_regular_grid_mesh(self,
+                              regular_grid_mesh,
+                              cmap,
+                              scalar_field: str = 'all',
+                              series: str = '',
+                              opacity=.5, **kwargs):
 
-        if self._actor_exists(mesh):
-            return []
-        self._actors.append(mesh)
-        self.p.add_mesh(mesh, **kwargs)
-        return [mesh]
+        if scalar_field == 'all' or scalar_field == 'lith':
+            stitle = 'id'
+            show_scalar_bar = False
+            main_scalar = 'id'
+        else:
+            stitle = scalar_field + ': ' + series
+            show_scalar_bar = True
+            main_scalar_prefix = 'sf_' if scalar_field == 'scalar' else 'values_'
+            main_scalar = main_scalar_prefix + series
+            if series == '':
+                main_scalar = regular_grid_mesh.array_names[-1]
 
-    def set_scalar_data(self, regular_grid, data: Union[dict, gp.Solution, str] = 'Default', name='lith'):
+        self.regular_grid_actor = self.p.add_mesh(regular_grid_mesh, cmap=cmap,
+                                                  stitle=stitle,
+                                                  scalars=main_scalar,
+                                                  show_scalar_bar=show_scalar_bar,
+                                                  scalar_bar_args=self.scalar_bar_options,
+                                                  opacity=opacity,
+                                                  **kwargs)
+
+        if scalar_field == 'all' or scalar_field == 'lith':
+            self.set_scalar_bar()
+        self.regular_grid_mesh = regular_grid_mesh
+        return [regular_grid_mesh, cmap]
+    
+    def set_scalar_data(self, regular_grid, data: Union[dict, gp.Solution, str] = 'Default',
+                        scalar_field='all', series='', cmap='viridis'):
         """
-
         Args:
             regular_grid:
             data: dictionary or solution
-            name: if data is a gp.Solutions object, name of the grid that you want to plot.
-
-        Returns:
-
+            scalar_field: if data is a gp.Solutions object, name of the grid
+                that you want to plot.
+            series:
+            cmap:
         """
         if data == 'Default':
             data = self.model.solutions
 
         if isinstance(data, gp.Solution):
-            if name == 'lith':
-                data = {'lith': data.lith_block}
+            if scalar_field == 'lith' or scalar_field == 'all':
+                regular_grid['id'] = data.lith_block
+                hex_colors = list(self._get_color_lot(is_faults=True, is_basement=True))
+                cmap = mcolors.ListedColormap(hex_colors)
+            if scalar_field == 'scalar' or scalar_field == 'all' or 'sf_' in scalar_field:
+                scalar_field_ = 'sf_'
+                for e, series in enumerate(self.model._stack.df.groupby('isActive').groups[True]):
+                    regular_grid[scalar_field_ + series] = data.scalar_field_matrix[e]
 
-            elif name == 'scalar':
-                data = {name: data.scalar_field_matrix.T}
-
-            elif name == 'values':
-                data = {name: data.values_matrix.T}
+            if (scalar_field == 'values' or scalar_field == 'all' or 'values_' in scalar_field) and\
+                    data.values_matrix.shape[0] \
+                    != 0:
+                scalar_field_ = 'values_'
+                for e, lith_property in enumerate(self.model._surfaces.df.columns[self.model._surfaces._n_properties:]):
+                    regular_grid[scalar_field_ + lith_property] = data.values_matrix[e]
 
         if type(data) == dict:
             for key in data:
-                regular_grid.point_arrays[key] = data[key]
+                regular_grid[key] = data[key]
 
-        return regular_grid
+        if scalar_field == 'all' or scalar_field == 'lith':
+            scalar_field_ = 'lith'
+            series = ''
+        # else:
+        #     scalar_field_ = regular_grid.scalar_names[-1]
+        #     series = ''
+
+        self.set_active_scalar_fields(scalar_field_ + series, regular_grid, update_cmap=False)
+
+        return regular_grid, cmap
+
+    def set_active_scalar_fields(self, scalar_field, regular_grid=None, update_cmap=True):
+        """
+        Args:
+            scalar_field:
+            regular_grid:
+            update_cmap:
+        """
+        if scalar_field == 'lith':
+            scalar_field = 'id'
+
+        if regular_grid is None:
+            regular_grid = self.regular_grid_mesh
+
+        # Set the scalar field active
+        try:
+            regular_grid.set_active_scalars(scalar_field)
+        except RuntimeError:
+            raise AttributeError('The scalar field provided does not exist. Please pass '
+                                 'a valid field: {}'.format(regular_grid.array_names))
+
+        if update_cmap is True and self.regular_grid_actor is not None:
+            cmap = 'lith' if scalar_field == 'lith' else 'viridis'
+            self.set_scalar_field_cmap(cmap=cmap)
+            arr_ = regular_grid.get_array(scalar_field)
+            if scalar_field is not'lith':
+                self.p.add_scalar_bar(title='values')
+                self.p.update_scalar_bar_range((arr_.min(), arr_.max()))
+
+    def set_scalar_field_cmap(self, cmap: Union[str, dict] = 'viridis',
+                              regular_grid_actor = None) -> None:
+        """
+        Args:
+            cmap:
+            regular_grid_actor (Union[None, vtkRenderingOpenGL2Python.vtkOpenGLActor):
+        """
+        if regular_grid_actor is None:
+            regular_grid_actor = self.regular_grid_actor
+
+        if type(cmap) is dict:
+            self._cmaps = {**self._cmaps, **cmap}
+            cmap = cmap.keys()
+        elif type(cmap) is str:
+            if cmap == 'lith':
+                hex_colors = list(self._get_color_lot(is_faults=False))
+                n_colors = len(hex_colors)
+                cmap_ = mcolors.ListedColormap(hex_colors)
+                col = cmap_(np.linspace(0, 1, n_colors)) * 255
+                self._cmaps[cmap] = numpy_to_vtk(col, array_type=3)
+            if cmap not in self._cmaps.keys():
+                col = matplotlib.cm.get_cmap(cmap)(np.linspace(0, 1, 250)) * 255
+                nv = numpy_to_vtk(col, array_type=3)
+                self._cmaps[cmap] = nv
+        else:
+            raise AttributeError('cmap must be either a name of a matplotlib string or a dictionary containing the '
+                                 'rgb values')
+        # Set the scalar field color map
+        regular_grid_actor.GetMapper().GetLookupTable().SetTable(self._cmaps[cmap])
 
     def plot_structured_grid_interactive(
             self,
-            name: str,
+            scalar_field: str,
+            series = None,
             render_topography: bool = False,
             **kwargs,
     ):
@@ -794,7 +813,7 @@ class _Vista:
 
         Args:
             geo_model: Geomodel object with solutions.
-            name (str): Can be either one of the following
+            scalar_field (str): Can be either one of the following
                 'lith' - Lithology id block.
                 'scalar' - Scalar field block.
                 'values' - Values matrix block.
@@ -804,26 +823,33 @@ class _Vista:
         Returns:
             (Vista) GemPy Vista object for plotting.
         """
-        mesh = self.plot_structured_grid(name=name, render_topography=render_topography, **kwargs)[0]
+        # mesh, cmap = self.plot_structured_grid(name=scalar_field, series=series,
+        #                                        render_topography=render_topography, **kwargs)
 
-        # define colormaps
-        if name == "lith":
-            cmap = mcolors.ListedColormap(list(self._color_id_lot[self.model.series.faults.n_faults:]))
-        elif name == "scalar":
-            cmap = cm.viridis
+        mesh, cmap = self.create_regular_mesh(scalar_field=scalar_field, series=series,
+                                              render_topography=render_topography)
+
+        if scalar_field == 'all' or scalar_field == 'lith':
+            main_scalar = 'id'
+        else:
+            main_scalar_prefix = 'sf_' if scalar_field == 'scalar' else 'values_'
+            main_scalar = main_scalar_prefix + series
 
         # callback functions for subplots
         def xcallback(normal, origin):
             self.p.subplot(1)
-            self.p.add_mesh(mesh.slice(normal=normal, origin=origin), name="xslc", cmap=cmap)
-
+            self.p.add_mesh(mesh.slice(normal=normal, origin=origin),
+                            scalars=main_scalar, name="xslc", cmap=cmap)
+                
         def ycallback(normal, origin):
             self.p.subplot(2)
             self.p.add_mesh(mesh.slice(normal=normal, origin=origin), name="yslc", cmap=cmap)
-
+        
         def zcallback(normal, origin):
             self.p.subplot(3)
             self.p.add_mesh(mesh.slice(normal=normal, origin=origin), name="zslc", cmap=cmap)
+
+        self.add_regular_grid_mesh(mesh, cmap, scalar_field, series, **kwargs)
 
         # cross section widgets
         self.p.subplot(0)
@@ -844,124 +870,22 @@ class _Vista:
         self.p.view_xy()
         self.p.disable()
 
-
-    def _callback_surface_points(self, pos, index, widget):
-        i = index
-        x, y, z = pos
-
-        self.model.modify_surface_points(i, X=x, Y=y, Z=z)
-
-        if self._live_updating:
-            self._recompute()
-            self._update_surface_polydata()
-
-    def _callback_orientations(self, normal, loc, widget):
-        i = widget.WIDGET_INDEX
-        x, y, z = loc
-        gx, gy, gz = normal
-
-        self.model.modify_orientations(
-            i,
-            X=x, Y=y, Z=z,
-            G_x=gx, G_y=gy, G_z=gz
-        )
-
-        if self._live_updating:
-            self._recompute()
-            self._update_surface_polydata()
-
-    def _recompute(self, **kwargs):
-        gp.compute_model(self.model, compute_mesh=True, **kwargs)
-        # self.topo_edges, self.topo_ctrs = tp.topology.compute_topology(
-        #     self.model
-        # )q
-
-    def _update_surface_polydata(self):
-        surfaces = self.model.surfaces.df
-        for surf, (idx, val) in zip(
-                surfaces.surface,
-                surfaces[['vertices', 'edges']].dropna().iterrows()
-        ):
-            polydata = self._surface_actors.get(surf, False)
-            if polydata:
-                polydata.points = val["vertices"]
-                polydata.faces = np.insert(
-                    val['edges'], 0, 3, axis=1
-                ).ravel()
-                self._surface_actors[surf] = polydata
-
-    def plot_surface_points_interactive(self, fmt: str, **kwargs):
-        self._live_updating = True
-        i = self.model.surface_points.df.groupby("surface").groups[fmt]
-        if len(i) == 0:
-            return
-
-        pts = self.model.surface_points.df.loc[i][["X", "Y", "Z"]].values
-
-        self.p.add_sphere_widget(
-            self._callback_surface_points,
-            center=pts,
-            radius=np.mean(self.extent) / 20,
-            color=self._color_lot[fmt],
-            indices=i,
-            test_callback=False,
-            phi_resolution=6,
-            theta_resolution=6,
-            pass_widget=True,
-            **kwargs
-        )
-
-    def plot_surface_points_interactive_all(self, **kwargs):
-        self._live_updating = True
-        for fmt in self.model.surfaces.df.surface:
-            if fmt.lower() == "basement":
-                continue
-            self.plot_surface_points_interactive(fmt, **kwargs)
-
-    def plot_orientations_interactive(self, fmt: str):
-        self._live_updating = True
-        i = self.model.orientations.df.groupby("surface").groups[fmt]
-        if len(i) == 0:
-            return
-
-        pts = self.model.orientations.df.loc[i][["X", "Y", "Z"]].values
-        nrms = self.model.orientations.df.loc[i][["G_x", "G_y", "G_z"]].values
-
-        for index, pt, nrm in zip(i, pts, nrms):
-            widget = self.p.add_plane_widget(
-                self._callback_orientations,
-                normal=nrm,
-                origin=pt,
-                bounds=self.extent,
-                factor=0.15,
-                implicit=False,
-                pass_widget=True,
-                test_callback=False,
-                color=self._color_lot[fmt]
-            )
-            widget.WIDGET_INDEX = index
-
-    def plot_orientations_interactive_all(self):
-        self._live_updating = True
-        for fmt in self.model.surfaces.df.surface:
-            if fmt.lower() == "basement":
-                continue
-            self.plot_orientations_interactive(fmt)
+        return self
 
     def _scale_topology_centroids(
             self,
             centroids: Dict[int, np.ndarray]
     ) -> Dict[int, np.ndarray]:
-        """Scale topology centroid coordinates from grid coordinates to 
+        """Scale topology centroid coordinates from grid coordinates to
         physical coordinates.
-        
+
         Args:
             centroids (Dict[int, Array[float, 3]]): Centroid dictionary.
-        
+
         Returns:
             Dict[int, Array[float, 3]]: Rescaled centroid dictionary.
         """
-        res = self.model.grid.regular_grid.resolution
+        res = self.model._grid.regular_grid.resolution
         scaling = np.diff(self.extent)[::2] / res
 
         scaled_centroids = {}
@@ -981,9 +905,9 @@ class _Vista:
             node_kwargs: dict = {},
             edge_kwargs: dict = {}
     ):
-        """Plot geomodel topology graph based on given set of topology edges 
+        """Plot geomodel topology graph based on given set of topology edges
         and node centroids.
-        
+
         Args:
             edges (Set[Tuple[int, int]]): Topology edges.
             centroids (Dict[int, Array[float, 3]]): Topology node centroids
@@ -992,7 +916,7 @@ class _Vista:
         """
         lot = gp.assets.topology.get_lot_node_to_lith_id(self.model, centroids)
         centroids_scaled = self._scale_topology_centroids(centroids)
-
+        colors = self._get_color_lot()
         for node, pos in centroids_scaled.items():
             mesh = pv.Sphere(
                 center=pos,
@@ -1001,7 +925,7 @@ class _Vista:
             # * Requires topo id to lith id lot
             self.p.add_mesh(
                 mesh,
-                color=self._color_id_lot[lot[node]],
+                color=colors.iloc[lot[node] - 1],
                 **node_kwargs
             )
 
@@ -1025,82 +949,10 @@ class _Vista:
                 pointa=pos1,
                 pointb=pos_mid,
             )
-            self.p.add_mesh(mesh, color=self._color_id_lot[lot[e1]], **ekwargs)
+            self.p.add_mesh(mesh, color=colors.iloc[lot[e1] - 1], **ekwargs)
 
             mesh = pv.Line(
                 pointa=pos_mid,
                 pointb=pos2,
             )
-            self.p.add_mesh(mesh, color=self._color_id_lot[lot[e2]], **ekwargs)
-
-    def plot_topography(
-            self,
-            topography = None,
-            scalars="geomap",
-            **kwargs
-    ):
-        if not topography:
-            try:
-                topography = self.model.grid.topography.values
-            except AttributeError:
-                print("Unable to plot topography: Given geomodel instance "
-                      "does not contain topography grid.")
-                return
-
-        polydata = pv.PolyData(topography)
-
-        rgb = False
-        if scalars == "geomap":
-            arr_ = np.empty((0, 3), dtype=int)
-            # convert hex colors to rgb
-            for val in list(self._color_lot):
-                rgb = (255 * np.array(mcolors.hex2color(val)))
-                arr_ = np.vstack((arr_, rgb))
-
-            sel = np.round(self.model.solutions.geological_map[0]).astype(int)[0]
-
-            scalars_val = numpy_to_vtk(arr_[sel - 1], array_type=3)
-            cm = None
-            rgb = True
-        elif scalars == "topography":
-            scalars_val = topography[:, 2]
-            cm = 'terrain'
-        elif type(scalars) is np.ndarray:
-            scalars_val = scalars
-            scalars = 'custom'
-            cm = 'terrain'
-        else:
-            raise AttributeError("Parameter scalars needs to be either \
-                'geomap', 'topography' or a np.ndarray with scalar values")
-
-        topography_actor = self.p.add_mesh(
-            polydata.delaunay_2d(),
-            scalars=scalars_val,
-            cmap=cm,
-            rgb=rgb,
-            **kwargs
-        )
-        self._surface_actors["topography"] = topography_actor
-        return topography_actor
-
-
-    def plot_scalar_surfaces_3D(self, surfaces_nr: int = 10):
-        """Plot scalar field as surfaces
-
-        Args:
-            surfaces_nr: Number of plotted scalar field isosurfaces
-
-        Returns:
-
-        """
-        regular_grid = self.model.grid.regular_grid
-
-        grid_values = regular_grid.values
-        grid_3d = grid_values.reshape(*regular_grid.resolution, 3).T
-        mesh = pv.StructuredGrid(*grid_3d)
-
-        values = self.model.solutions.scalar_field_matrix.reshape(self.model.grid.regular_grid.resolution)
-        mesh["vol"] = values.flatten()
-        contours = mesh.contour(np.linspace(values.min(), values.max(), surfaces_nr + 2))
-        self.p.add_mesh(contours, show_scalar_bar=True, label="scalar_field_main")
-
+            self.p.add_mesh(mesh, color=colors.iloc[lot[e2] - 1], **ekwargs)

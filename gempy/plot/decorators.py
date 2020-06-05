@@ -1,4 +1,5 @@
 from .visualization_3d import GemPyvtkInteract
+from gempy.plot.vista import GemPyToVista
 from functools import wraps
 
 
@@ -8,8 +9,9 @@ def plot_add_surface_points(func):
         plot_object = kwargs.pop('plot_object') if 'plot_object' in kwargs else None
         surface_points, idx = func(*args, **kwargs)
         if plot_object is not None:
-            if isinstance(plot_object, GemPyvtkInteract):
-                plot_object.render_add_surface_points(idx)
+            if isinstance(plot_object, GemPyToVista):
+                if plot_object.live_updating is True:
+                    plot_object.render_add_surface_points(idx)
             else:
                 raise AttributeError('plot_object must be one GemPy compatible plot')
         return surface_points
@@ -22,8 +24,9 @@ def plot_delete_surface_points(func):
         plot_object = kwargs.pop('plot_object') if 'plot_object' in kwargs else None
         surface_points = func(*args, **kwargs)
         if plot_object is not None:
-            if isinstance(plot_object, GemPyvtkInteract):
-                plot_object.render_delete_surface_points(args[1])
+            if isinstance(plot_object, GemPyToVista):
+                if plot_object.live_updating is True:
+                    plot_object.render_delete_surface_points(args[1])
             else:
                 raise AttributeError('plot_object must be one GemPy compatible plot')
         return surface_points
@@ -43,8 +46,9 @@ def plot_move_surface_points(func):
         plot_object = kwargs.pop('plot_object') if 'plot_object' in kwargs else None
         surface_points = func(*args, **kwargs)
         if plot_object is not None:
-            if isinstance(plot_object, GemPyvtkInteract):
-                plot_object.render_move_surface_points(indices)
+            if isinstance(plot_object, GemPyToVista):
+                if plot_object.live_updating is True:
+                    plot_object.render_move_surface_points(indices)
             else:
                 raise AttributeError('plot_object must be one GemPy compatible plot')
         return surface_points
@@ -57,8 +61,9 @@ def plot_add_orientation(func):
         plot_object = kwargs.pop('plot_object') if 'plot_object' in kwargs else None
         orientation, idx = func(*args, **kwargs)
         if plot_object is not None:
-            if isinstance(plot_object, GemPyvtkInteract):
-                plot_object.render_add_orientations(idx)
+            if isinstance(plot_object, GemPyToVista):
+                if plot_object.live_updating is True:
+                    plot_object.render_add_orientations(idx)
             else:
                 raise AttributeError('plot_object must be one GemPy compatible plot')
         return orientation
@@ -71,8 +76,9 @@ def plot_delete_orientations(func):
         plot_object = kwargs.pop('plot_object') if 'plot_object' in kwargs else None
         orientations = func(*args, **kwargs)
         if plot_object is not None:
-            if isinstance(plot_object, GemPyvtkInteract):
-                plot_object.render_delete_orientations(args[1])
+            if isinstance(plot_object, GemPyToVista):
+                if plot_object.live_updating is True:
+                    plot_object.render_delete_orientations(args[1])
             else:
                 raise AttributeError('plot_object must be one GemPy compatible plot')
         return orientations
@@ -86,8 +92,9 @@ def plot_move_orientations(func):
         orientations = func(*args, **kwargs)
 
         if plot_object is not None:
-            if isinstance(plot_object, GemPyvtkInteract):
-                plot_object.render_move_orientations(args[1])
+            if isinstance(plot_object, GemPyToVista):
+                if plot_object.live_updating is True:
+                    plot_object.render_move_orientations(args[1])
             else:
                 raise AttributeError('plot_object must be one GemPy compatible plot')
         return orientations
@@ -101,8 +108,9 @@ def plot_set_topography(func):
         topography = func(*args, **kwargs)
 
         if plot_object is not None:
-            if isinstance(plot_object, GemPyvtkInteract):
-                plot_object.render_topography()
+            if isinstance(plot_object, GemPyToVista):
+                if plot_object.live_updating is True:
+                    plot_object.render_topography()
             else:
                 raise AttributeError('plot_object must be one GemPy compatible plot')
         return topography

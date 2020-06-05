@@ -1,13 +1,4 @@
 Before a big commit.
-(we need to make the tests!!!)
-
-- Check all notebooks work fine
-- Check that requirements has all the necessary libraries. Otherwise readmydocs may not produce the code tab
-- run update_doc_elements.sh to update the Shpinx tutorial notebooks
-- if you add some math to the notebooks probably you have to go afterwards to the rst and change the latex enviroment
-  to ..math:
-- Then you can build or not the html to check offline if everything is in order
-- Push and check that readmydocs just worked fine
 
 # set version number in setup.py, both for version and in download_url, also in the config file of the documentation
 [ ]version='X.X',
@@ -37,3 +28,8 @@ BLD: Updates to the build process/scripts
 PERF: Performance improvement
 CLN: Code cleanup
 
+
+### Doc strings:
+
+- Use sphinx reference a lot
+- Use decorator for arguments

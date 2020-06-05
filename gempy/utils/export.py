@@ -1,6 +1,6 @@
 
 from matplotlib.cm import ScalarMappable as SM
-from gempy.plot.visualization_2d import PlotData2D
+from gempy.plot._visualization_2d import PlotData2D
 import numpy as np
 import os
 
@@ -24,7 +24,7 @@ def export_geomap2geotiff(path, geo_model, geo_map=None, geotiff_filepath=None):
     norm = plot._norm
 
     if geo_map is None:
-        geo_map = geo_model.solutions.geological_map[0].reshape(geo_model.grid.topography.resolution)
+        geo_map = geo_model.solutions.geological_map[0].reshape(geo_model._grid.topography.resolution)
 
     if geotiff_filepath is None:
         # call the other function
@@ -62,12 +62,13 @@ def export_geomap2geotiff(path, geo_model, geo_map=None, geotiff_filepath=None):
 
     print("Successfully exported geological map to  " +path)
 
-def export_moose_input(geo_model, path=None):
+def export_moose_input(geo_model, path=None, filename='geo_model_units_moose_input.i'):
     """
     Method to export a 3D geological model as MOOSE compatible input. 
 
     Args:
         path (str): Filepath for the exported input file
+        filename (str): name of exported input file
 
     Returns:
         
@@ -87,7 +88,7 @@ def export_moose_input(geo_model, path=None):
     idstring = '\n  '.join(map(str, liths))
 
     # create a dictionary with unit names and corresponding unit IDs
-    sids = dict(zip(geo_model.surfaces.df['surface'], geo_model.surfaces.df['id']))
+    sids = dict(zip(geo_model._surfaces.df['surface'], geo_model._surfaces.df['id']))
     surfs = list(sids.keys())
     uids = list(sids.values())
     # create strings for fstring, so in MOOSE, units have a name instead of an ID
@@ -127,7 +128,7 @@ def export_moose_input(geo_model, path=None):
     if not os.path.exists(path):
       os.makedirs(path)
 
-    f = open(path+'geo_model_units_moose_input.i', 'w+')
+    f = open(path+filename, 'w+')
     
     f.write(fstring)
     f.close()

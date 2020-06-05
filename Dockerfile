@@ -2,9 +2,8 @@
 # Heavily Inspired from https://github.com/jupyter/docker-stacks/tree/master/minimal-notebook
 FROM nvidia/cuda:9.0-cudnn7-devel
 
-ENV THEANO_VERSION 1.0.3
-LABEL com.nvidia.theano.version="1.0.3"
-ENV PYGPU_VERSION 0.7.5
+# This loads nvidia cuda image
+# FROM nvidia/cuda
 
 USER root
 
@@ -34,8 +33,8 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-#RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
-#    locale-gen
+RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
+    locale-gen
 
 # Install Tini
 RUN wget --quiet https://github.com/krallin/tini/releases/download/v0.9.0/tini && \
@@ -49,59 +48,75 @@ ENV PATH $CONDA_DIR/bin:$PATH
 ENV SHELL /bin/bash
 ENV NB_USER gempy
 ENV NB_UID 1000
-#ENV LC_ALL en_US.UTF-8
-#ENV LANG en_US.UTF-8
-#ENV LANGUAGE en_US.UTF-8
+ENV LC_ALL en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US.UTF-8
 
-# Create jovyan user with UID=1000 and in the 'users' group
+# Create user with UID=1000 and in the 'users' group
 RUN useradd -m -s /bin/bash -N -u $NB_UID $NB_USER && \
     mkdir -p /opt/conda && \
     chown gempy /opt/conda
 
 USER gempy
 
-# Setup jovyan home directory
+# Setup home directory
 RUN mkdir /home/$NB_USER/work && \
     mkdir /home/$NB_USER/.jupyter && \
     mkdir /home/$NB_USER/.local && \
     echo "cacert=/etc/ssl/certs/ca-certificates.crt" > /home/$NB_USER/.curlrc
 
-# Install conda as jovyan
-ENV CONDA_VER 4.3.31
+# Install conda as
+ENV CONDA_VER latest
 ENV CONDA_MD5 7fe70b214bee1143e3e3f0467b71453c
 RUN cd /tmp && \
     mkdir -p $CONDA_DIR && \
     wget --quiet https://repo.continuum.io/miniconda/Miniconda3-${CONDA_VER}-Linux-x86_64.sh && \
-    echo "$CONDA_MD5 *Miniconda3-${CONDA_VER}-Linux-x86_64.sh" | md5sum -c - && \
     /bin/bash Miniconda3-${CONDA_VER}-Linux-x86_64.sh -f -b -p $CONDA_DIR && \
     rm Miniconda3-${CONDA_VER}-Linux-x86_64.sh && \
-    $CONDA_DIR/bin/conda install --quiet --yes conda==${CONDA_VER} && \
     conda config --set auto_update_conda False && \
     conda clean -tipsy
 
-# Install Jupyter notebook as jovyan
+# Install Jupyter notebook
 RUN conda install --quiet --yes \
     terminado \
     mkl-service \
     && conda clean -tipsy
 
 # Install Theano, pygpu
-RUN conda install -c mila-udem -y Theano=$THEANO_VERSION pygpu=$PYGPU_VERSION
-
+RUN conda install -c conda-forge pygpu
+RUN conda install theano gdal
 
 ENV MKL_THREADING_LAYER GNU
 
 USER root
 
-RUN pip install --upgrade --force-reinstall Theano>=1.0.4
-RUN pip install gempy pandas==0.24 cython pytest seaborn networkx ipywidgets scikit-image
-
-
 # Configure container startup as root
 EXPOSE 8888
 
+# Clone gempy
 WORKDIR /home/$NB_USER/work
-RUN git clone https://github.com/cgre-aachen/gempy.git
+RUN git clone https://github.com/cgre-aachen/gempy.git --depth 1 --branch master
+
+WORKDIR /home/$NB_USER/work/gempy
+
+# Pull from release
+RUN echo '2014122501' >/dev/null && git pull
+# This is necessary to get rid off the scan.c file missing
+
+RUN pip install --upgrade --force-reinstall Theano>=1.0.4
+RUN pip install -e .
+RUN pip install -r optional-requirements.txt
+
+# Pyvista headless display
+RUN sudo apt-get -y update && \
+    sudo apt-get -y install xvfb & \
+    export DISPLAY=:99.0 && \
+    export PYVISTA_OFF_SCREEN=true && \
+    export PYVISTA_USE_PANEL=true && \
+    Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 & \
+    sleep 3
+
+RUN sudo apt update && sudo apt -y install python-qt4 libgl1-mesa-glx
 # ENTRYPOINT ["tini", "--"]
 
 ## Add local files as late as possible to avoid cache busting
