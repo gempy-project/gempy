@@ -205,7 +205,7 @@ Windows installation guide (March 2020)
 
     Add conda enviroment:
 
-    ``$ conda create --name gempy``
+    ``$ conda create --name gempy python==3.7``
 
      or
 
@@ -231,8 +231,6 @@ Windows installation guide (March 2020)
 
     ``$ conda install -c conda-forge pygpu``
 
-    ``$ conda install python==3.7`` **Downgrade python back to 3.7 until vtk has
-    support for python 3.8**
 
     ``$ pip install theano==1.0.4``
 
@@ -292,8 +290,11 @@ It should work on MacOS 10.14 as well as 10.15 (Catalina).
     conflicts with other Python installations and packages on your system.
     This is easily done in a bash terminal:
 
-    ``$ conda create --name gempy``
+    ``$ conda create --name gempy python==3.7``
 
+    Set up Jupyter to work properly with conda environments:
+
+    ``$ python -m ipykernel install --user --name gempy``
 
     Activate the new environment (do this every time you create a new terminal session):
 
@@ -304,9 +305,6 @@ It should work on MacOS 10.14 as well as 10.15 (Catalina).
 
     ``$ source activate gempy``
 
-    Set up Jupyter to work properly with conda environments:
-
-    ``$ python -m ipykernel install --user --name gempy``
 
 #. Install the Xcode command-line tools
 
@@ -322,10 +320,6 @@ It should work on MacOS 10.14 as well as 10.15 (Catalina).
 #. Install required Python packages
 
     ``$ conda update --all``
-
-    **Only if your installed python version is >3.7:**  Downgrade python back to 3.7 until vtk has support for python 3.8
-
-    ``$ conda install python==3.7``
 
     Install theano via PyPi
 

@@ -2,6 +2,7 @@ import numpy as np
 from .create_topography import LoadDEMArtificial, LoadDEMGDAL
 import skimage
 
+
 class Topography:
     """
     Object to include topography in the model.
