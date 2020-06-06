@@ -20,6 +20,7 @@ setup(
         'scikit-image>=0.17',
         'pyvista',
         'iPython',
+        'pyvistaqt'
     ],
     url='https://github.com/cgre-aachen/gempy',
     download_url='https://github.com/cgre-aachen/gempy/archive/2.1.1tar.gz',
