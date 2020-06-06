@@ -18,9 +18,9 @@ setup(
         'seaborn>=0.9',
         'networkx',
         'scikit-image>=0.17',
-        'pyvista',
+        'pyvista>=0.25',
+        'pyvistaqt',
         'iPython',
-        'pyvistaqt'
     ],
     url='https://github.com/cgre-aachen/gempy',
     download_url='https://github.com/cgre-aachen/gempy/archive/2.1.1tar.gz',
