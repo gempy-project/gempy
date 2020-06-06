@@ -97,8 +97,11 @@ class GemPyToVista(WidgetsCallbacks, RenderChanges):
             raise NotImplementedError
             # self.p = pv.PlotterITK()
         elif plotter_type == 'background':
-            from pyvistaqt import BackgroundPlotter
-            self.p = BackgroundPlotter(**kwargs)
+            try:
+                from pyvistaqt import BackgroundPlotter
+                self.p = BackgroundPlotter(**kwargs)
+            except ImportError:
+                self.p = pv.BackgroundPlotter(**kwargs)
             self.p.view_isometric(negative=False)
         else:
             raise AttributeError('Plotter type must be basic, background or notebook.')
