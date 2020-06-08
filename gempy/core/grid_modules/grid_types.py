@@ -307,6 +307,7 @@ class CenteredGrid:
         self.grid_type = 'centered_grid'
         self.values = np.empty((0, 3))
         self.length = self.values.shape[0]
+        self.resolution = resolution
         self.kernel_centers = np.empty((0, 3))
         self.kernel_dxyz_left = np.empty((0, 3))
         self.kernel_dxyz_right = np.empty((0, 3))

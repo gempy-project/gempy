@@ -5,26 +5,76 @@
 Installation
 ------------
 
-:raw-html-m2r:`<a name="installation"></a>`
 
 Installing ``GemPy``
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-We provide the latest release version of ``GemPy`` via the **Conda** and **PyPi** package services. We highly
-recommend using PyPi, as it will take care of automatically installing all dependencies.
-
-PyPi
-~~~~
+We provide the latest release version of ``GemPy`` via **PyPi** package services. We highly
+recommend using `PyPi <https://pypi.org/project/gempy/>`_,
 
 ``$ pip install gempy``
 
-You can also visit `PyPi <https://pypi.org/project/gempy/>`_, or
-`GitHub <https://github.com/cgre-aachen/gempy>`_
+as it will take care of automatically installing all the required dependencies - except in
+windows that required one extra step.
 
-For more details in the installation check:
-`Installation <http://docs.pyvista.org/getting-started/installation.html#install-ref.>`_
+Windows Installation
+~~~~~~~~~~~~~~~~~~~~
 
-:raw-html-m2r:`<a name="depend"></a>`
+Windows does not have a **gcc compilers** pre-installed. The easiest way to get a ``theano``
+compatible compiler is by using the ``theano`` conda installation. Therefore the process
+would be the following:
+
+``$ conda install theano``
+
+``$ pip install gempy``
+
+**Notes:**
+
+- The conda version of ``theano`` comes with a non critical bug that will rise a warning (``scan_perform.c``)
+  when computing a model with gempy. Once the compiler is installed, installing the pip version of ``theano``
+  will solve the problem:
+
+``$ pip install theano --force-reinstall``
+
+- The conda version of ``theano`` is not compatible with Catalina MacOS. Use pip!
+
+- For a more detailed description on the installation in case
+  something does not work or for CUDA acceleration check `Windows installation guide (March 2020)`_ and
+  `MacOS installation guide (May 2020)`_
+
+Developers Installation
+~~~~~~~~~~~~~~~~~~~~~~~
+
+If you are planning to contribute in ``gempy`` the easiest way is to clone the
+repository from `GitHub <https://github.com/cgre-aachen/gempy>`_ and use
+
+``$ pip install -e .``
+
+on the repository root. Notice that on the repo you can also find a ``optional-requirements.txt``
+for more experimental functionality. Finally to compile ``sphinx`` you will need:
+
+``$ pip install sphinx, sphinx-gallery``
+
+
+Manual installation
+^^^^^^^^^^^^^^^^^^^
+If you want to use the newest, cutting-edge version of ``GemPy`` you can clone the current repository by downloading it manually or by using Git by calling
+
+``$ git clone https://github.com/cgre-aachen/gempy.git``
+
+and then manually install it using the provided Python install file by calling
+
+``$ python gempy/setup.py install``
+
+in the cloned or downloaded repository folder.
+
+Alternatively to running ``setup.py``, you can use pip to handle the installation from the repository and the updating of the path variables.
+For this, navigate to the root of the cloned repository and run
+
+``$ pip install -e .``
+
+Make sure you have installed all necessary dependencies listed below before using ``GemPy``.
+
 
 Dependencies
 ^^^^^^^^^^^^
@@ -43,12 +93,12 @@ Dependencies
 
 Optional requirements:
 
-*gdal
-*qgrid==1.3.0
-*pymc3
-*pyevtk
-*pyqrcode
-*mplstereonet
+* gdal
+* qgrid==1.3.0
+* pymc3
+* pyevtk
+* pyqrcode
+* mplstereonet
 
 Overall we recommend the use of a **dedicated Python distribution**\ , such as
 `Anaconda <https://www.continuum.io/what-is-anaconda>`_\ , for hassle-free package installation. 
@@ -59,39 +109,33 @@ Conflictive packages.
 ~~~~~~~~~~~~~~~~~~~~~
 
 Installing Theano (especially under Windows) and vtk can sometimes be difficult.
-Here, we provide adivce that should use in most cases (but certainly not all):
+Here, we provide advice that should use in most cases (but certainly not all):
 
 
-.. raw:: html
+* ``Theano``\ :
+    install the following packages before installing theano:
 
-   <ul>
-   <li> ``Theano``: install the following packages before installing theano:
+    ``$ conda install mingw libpython m2w64-toolchain``
 
-   `conda install mingw libpython m2w64-toolchain`
+    Then install Theano via
 
-   Then install Theano via
+    ``$ conda install theano``
 
-   `conda install theano`
+    If the installation fails at some point try to re-install anaconda for a single user (no administrator priveleges)
+    and with the Path Environment set.
+    To use Theano with ``numpy version 1.16.0`` or following, it has to be updated to ``Theano 1.0.4`` using
 
-   If the installation fails at some point try to re-install anaconda for a single user (no administrator priveleges) and with the Path Environment set.
-   To use Theano with `numpy version 1.16.0` or following, it has to be updated to `Theano 1.0.4` using
+    ``$ pip install theano --upgrade``
 
-   `pip install theano --upgrade`
-
-   Note that this is not yet available in the conda package manager.
-   </li>
+    Note that this is not yet available in the conda package manager.
 
 
-   <li>
+* ``vtk`` :
+    There have been compatibility problems between with the ``vtk`` package
+    and python 3.8. The simplest solution to install it is to
+    use ``$ conda install python==3.6`` to downgrade the python version and then
+    using ``$ pip install vtk`` .
 
-   ``vtk``: There have been compatibility problems between with the `vtk` package
-   and python 3.8. The simplest solution to install it is to
-   use `conda install python==3.6` to downgrade the python version and then
-   using `pip install vtk`.
-
-   </li>
-
-   </ul>
 
 
 Docker
@@ -107,18 +151,15 @@ with and run by others, enabling them to use intricate dependencies
 with just a few commands. For this to work the user needs to have a
 working `Docker <https://www.docker.com/>`_ installation.
 
-:raw-html-m2r:`<a name="docker"></a>`
 
 Pull Docker image from DockerHub
-""""""""""""""""""""""""""""""""
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The easiest way to get remote-geomod running is by running the pre-compiled Docker image (containing everything you
+The easiest way to get `gempy` running is by running the pre-compiled Docker image (containing everything you
 need) directly from the cloud service Docker Hub to get a locally running Docker container. Make sure to set your 
 Docker daemon to Linux containers in Docker's context menu.
 
-.. code-block::
-
-   $ docker run -it -p 8899:8899 leguark/gempy
+``$ docker run -it -p 8899:8899 leguark/gempy``
 
 
 This will automatically pull the Docker image from Docker Hub and run it, opening a command line shell inside of the
@@ -127,9 +168,7 @@ Docker image already contains the GemPy repository.
 
 Once you are in the docker console if you want to open the tutorials you will need to run:
 
-.. code-block::
-
-   $ jupyter notebook --ip 0.0.0.0 --port 8899 --no-browser --allow-root
+``$ jupyter notebook --ip 0.0.0.0 --port 8899 --no-browser --allow-root``
 
 
 Notice that we are running the notebook on the port  8899 to try to avoid conflicts with jupyter servers running in
@@ -144,185 +183,175 @@ has to look something like this (Just be aware of the  brackets):
        http://(ce2cdcc55bb0 or 127.0.0.1):8899/?token=97d52c1dc321c42083d8c1b4d
 
 
-:raw-html-m2r:`<a name="cutting-edge"></a>`
 
-Manual installation of cutting-edge version
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-You can clone the current repository by downloading is manually or by using Git by calling
-
-``$ git clone https://github.com/cgre-aachen/gempy.git``
-
-and then manually install it using the provided Python install file by calling
-
-``$ python gempy/setup.py install``
-
-in the cloned or downloaded repository folder. Make sure you have installed all
-necessary dependencies listed above before using ``GemPy``.
-
-:raw-html-m2r:`<a name="windows"></a>`
 
 Windows installation guide (March 2020)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1) This step is **only important if you want GPU acceleration**. Install CUDA if you do not have it already.
+#. This step is **only important if you want GPU acceleration**. Install CUDA if you do not have it already.
 
-.. code-block::
+   * For CUDA > 10 (For RTX cards you need those drivers):
 
-   - For CUDA > 10 (For RTX cards you need those drivers):
-       - Go to your cuda installation (probably
-        `C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\bin` )
-       - Duplicate cublas64_XX and nvrtc64_XX and rename them to cublas64_70 and nvrtc64_70
+       - Go to your cuda installation (probably ``C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\bin`` )
 
-
-2) Install Conda (recommended: latest miniconda)
-
-.. code-block::
-
-   - Install in you user
-   - Add conda to the main path
-   - Add conda enviroment:
-       - `conda create --name gempy`
-       - `conda init powershell`
-       -  As admin `Set-ExecutionPolicy RemoteSigned`
-   - After this stage we should have a new empty environment attached to a user
+       - Duplicate ``cublas64_XX`` and ``nvrtc64_XX`` and rename them to ``cublas64_70`` and ``nvrtc64_70``\ .
 
 
-3) Install Theano and associated packages from the Anaconda prompt as administrator, and finally install GemPy 2.0:
+#. Install Conda (recommended: latest miniconda)
 
-.. code-block::
+    #. Use conda prompt as the python terminal
 
-   - `conda update --all`
-   - `conda install libpython`
-   - `conda install m2w64-toolchain`
-   - `conda install git`
-   - `conda install -c conda-forge pygpu`
-   - `conda install python==3.7` **Downgrade python back to 3.7 until vtk has
-   support for python 3.8**
-   - `pip install theano==1.0.4`
-   - `pip install gempy`
+        Install Anaconda with the options  "for current user".
 
+    Add conda enviroment:
 
-4) Set up Jupyter to work properly with conda environments:
+    ``$ conda create --name gempy python==3.7``
 
-.. code-block::
+     or
 
-   - `conda install Jupyter`
-   - `conda install nb_conda_kernels`
-   - `pip install jupyter-conda`
+    #. Set up conda in the powershell
+        Install Anaconda with the options  "for current user" and "add conda to Path environment".
+
+        ``$ conda init powershell``
+
+        **As admin:** ``$ Set-ExecutionPolicy RemoteSigned``
+
+        After this stage we should have a new empty environment attached to a user
 
 
-5) Optional requirements:
+#. Install Theano and associated packages from the Anaconda prompt as administrator:
 
-.. code-block::
+    ``$ conda update --all``
 
-   - `pip install pyvista`
-   - `pip install pyevtk`
-   - `conda install gdal`
+    ``$ conda install libpython``
+
+    ``$ conda install m2w64-toolchain``
+
+    ``$ conda install git``
+
+    ``$ conda install -c conda-forge pygpu``
+
+
+    ``$ pip install theano==1.0.4``
+
+
+
+#. Install ``GemPy``
+
+    install the latest release version of ``GemPy`` via ``PyPi``:
+
+    ``$ pip install gempy``
+
+    Alternatively, if you need the latest developments in GemPy, follow the instruction from the chapter **Manual Installation** instead.
+
+#. Set up Jupyter to work properly with conda environments:
+
+    ``$ conda install Jupyter``
+
+    ``$ conda install nb_conda_kernels``
+
+    ``$ pip install jupyter-conda``
+
+
+#. Optional requirements:
+
+
+    ``$ pip install pyevtk``
+
+    ``$ conda install gdal``
 
 
 **Note**\ :
 
 
 * some other packages required by Theano are already included in Anaconda: numpy, scipy, mkl-service, nose, and sphinx.
-* ``pydot-ng`` (suggested on Theano web site) yields a lot of errors. I dropped this. It is needed to handle large picture for gif/images and probably it is not needed by GemPy.
-* Trying to install all the packages in one go but it does not work, as well as doing the same in Anaconda Navigator, or installing an older Anaconda release with Python 3.5 (Anaconda3 4.2.0) as indicated in some tutorial on Theano.
+* ``pydot-ng`` (suggested on Theano web site) yields a lot of errors, therefore we dropped this.  It is needed to
+handle large picture for gif/images and probably it is not needed by GemPy.
+* Trying to install all the packages in one go does not work, as well as doing the same in  Anaconda Navigator, or
+installing an older Anaconda release with Python 3.5 (Anaconda3 4.2.0) as indicated in some tutorial on Theano.
 
-:raw-html-m2r:`<a name="macosx"></a>`
 
-MacOSX 10.14 installation guide (April 2020)
+MacOS installation guide (May 2020)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 **Note**\ : The following guide is for a standard installation (no GPU support).
-It should also work on MacOSX 10.15, but this is not tested, yet.
+It should work on MacOS 10.14 as well as 10.15 (Catalina).
+
+#. Install Anaconda (**Python Version 3.7**\ )
+
+    For a minimal installation, you can install the
+    `Miniconda distribution <https://docs.conda.io/en/latest/miniconda.html|>`_\.
+    The full Anaconda distribution contains some additional features, IDE's
+    etc. and is available on the `Anaconda page <https://www.anaconda.com/products/individual|>`_\.
+
+#. Create a ``GemPy`` conda environment
+
+    We strongly suggest to create a separate conda environment, to avoid
+    conflicts with other Python installations and packages on your system.
+    This is easily done in a bash terminal:
+
+    ``$ conda create --name gempy python==3.7``
+
+    Set up Jupyter to work properly with conda environments:
+
+    ``$ python -m ipykernel install --user --name gempy``
+
+    Activate the new environment (do this every time you create a new terminal session):
+
+    ``$ conda activate gempy``
+
+    You should now see `(gempy)` at the beginning of the command line. If
+    the previous command fails (some known issues), then try:
+
+    ``$ source activate gempy``
 
 
-.. raw:: html
+#. Install the Xcode command-line tools
 
-   <ol>
+    In order for ``Theano`` to access the system compilers on MacOS, the Xcode command-line tools are required.
+    To automatically install the correct version for your OS, run:
 
-   <li> Install Anaconda
+    ``$ xcode-select --install``
 
-   For a minimal installation, you can install the
-   [Miniconda distribution](https://docs.conda.io/en/latest/miniconda.html}.
-   The full Anaconda distribution contains some additional features, IDE's
-   etc. and is available on the [Anaconda page](https://www.anaconda.com/products/individual).
-
-   </li>
-
-   <li> Create a <code>GemPy</code> conda environment
-
-   We strongly suggtest to create a separate conda environment, to avoid
-   conflicts with other Python installations and packages on your system.
-   This is easily done in a bash terminal:
-
-   <ul>
-
-   <li>
-
-   `conda create --name gempy`
-
-   </li>
-   <li> To activate this environment:
-
-   `conda activate gempy`
-
-   You should now see `(gempy)` at the beginning of the command line. If
-   the previous command fails (some known issues), then try:
-
-   `source activate gempy`
-
-   </li>
-   </ul>
-   </li>
-
-   <li>Install required Python packages
-
-   - `conda update --all`
-   - `conda install python==3.7` **Downgrade python back to 3.7 until vtk has support for python 3.8**
-   - `pip install theano==1.0.4`
-
-   - Test the `theano` installation: run `python`, then try `import theano`.
-   If you get an error (e.g. `stdio.h` not found), then:
-   <ul>
-   <li> Test if the Xcode command-line tools are installed (info for
-   example <a href="https://osxdaily.com/2014/02/12/install-command-line-tools-mac-os-x/">here</a>).
-   <li> If this still fails, try installing `theano` through conda-forge instead:
-
-   `conda install -c conda-forge theano`
-
-   </ul>
-
-
-   **Note**: Theano requires the Xcode command-line tools installed. Overall,
-   getting Theano to run can be a bit daunting... we hope to find a better
-   method in the future.
+    Follow the installation instructions. After the installation is complete, open ``Software  Update`` from your ``System Preferences`` and install any available  updates for the command-line tools.
 
 
 
-   </li>
+#. Install required Python packages
 
-   <li>Install <code>GemPy</code>:
+    ``$ conda update --all``
 
-   - `pip install gempy`
+    Install theano via PyPi
 
-   </li>
+    ``$ pip install theano==1.0.4``
 
-   <li> Set up Jupyter to work properly with conda environments:
+    Test the `theano` installation: run ``python``\ , then try ``import theano``\ .
+    If you get an error (e.g. ``stdio.h`` not found), then:
 
-   - `conda install Jupyter`
-   - `conda install nb_conda_kernels`
-   - `pip install jupyter-conda`
+    Test if the Xcode command-line tools are correctly installed and up-to-date.(info for
+    example `here <https://osxdaily.com/2014/02/12/install-command-line-tools-mac-os-x>`_).
+    If this still fails, try installing ``theano`` through conda-forge instead:
 
-   </li>
+    ``$ conda install -c conda-forge theano``
 
-   <li> Optional requirements:
 
-   - `pip install pyvista`
-   - `pip install pyevtk`
-   - `conda install gdal`
+#. ``Install GemPy``
 
-   </li>
+    install the latest release version of ``GemPy`` via ``PyPi``:
 
-   </ol>
+    ``$ pip install gempy``
+
+    Alternatively, if you need the latest developments in GemPy, follow the instruction from the chapter **Manual Installation** instead.
+
+
+
+#. Install optional requirements:
+
+    ``$ pip install pyvista``
+
+    ``$ pip install pyevtk``
+
+    ``$ conda install gdal``
+
+
 

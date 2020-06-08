@@ -72,7 +72,8 @@ plt.show()
 
 # %%
 # If there is no topography file, but you think that your model with
-# topography would look significantly cooler, you can use gempys function
+# topography would look significantly cooler, you can use gempys
+# :meth:`set_topography <gempy.core.model.ImplicitCoKriging.set_topography>` function
 # to generate a random topography based on a fractal grid:
 # 
 
@@ -83,13 +84,25 @@ gp.plot_2d(geo_model, show_topography=True, section_names=['topography'])
 plt.show()
 
 # %%
-# It has additional keywords to play around with: - fd: fractal dimension,
-# defaults to 2.0. The higher (try 2.9), the rougher the landscape will
-# be. - d\_z: height difference. If none, last 20% of the model in z
-# direction. - extent: extent in xy direction. If none,
-# geo\_model.grid.extent - resolution: resolution of the topography array.
-# If none, geo\_model.grid.resoution. Increasing the resolution leads to
-# much nicer geological maps!
+# It has additional keywords to play around with:
+#
+# * fd: fractal dimension:
+#       defaults to 2.0. The higher (try 2.9), the rougher the landscape will
+#       be.
+#
+# * d\_z: height difference:
+#       If none, last 20% of the model in z
+#       direction.
+#
+# * extent:
+#       extent in xy direction. If none,
+#       ``geo_model.grid.extent`` is used.
+#
+# * resolution:
+#       resolution of the topography array.
+#       If none, ``geo_model.grid.resoution`` is used. Increasing the resolution leads to
+#       much nicer geological maps!
+#
 # 
 
 # %% 
@@ -104,11 +117,11 @@ geo_model.set_topography(source='random', fd=1.9, d_z=np.array([0, 250]),
 # 
 
 # %% 
-# save
+# save:
 geo_model._grid.topography.save('test_topo')
 
 # %% 
-# load
+# load:
 geo_model.set_topography(source='saved', filepath='test_topo.npy')
 
 # %%
@@ -127,18 +140,30 @@ gp.compute_model(geo_model, compute_mesh=False, set_solutions=True)
 # ^^^^^^^^^^
 # 
 # Now, the solutions object does also contain the computed geological map.
-# It can be visualized using the plot\_map function:
-# 
+# It can be visualized using the 2D and 3D plotting functionality:
+#
 
 # %% 
-gp.plot_2d(geo_model, show_boundaries=False, show_data=False)
+gp.plot_2d(geo_model, show_topography=True, section_names=['topography'], show_boundaries=False, show_data=True)
 plt.show()
 
-# %% 
-gp.plot_2d(geo_model, cell_number=[4],
-           direction=['y'], show_data=True, show_faults=False)
-plt.show()
 
 # %% 
-gp.plot_2d(geo_model, section_names=['s1'])
+gp.plot_2d(geo_model, show_topography=True, section_names=['s1'])
 plt.show()
+
+# %%
+g3d = gp.plot_3d(geo_model,
+                 show_topography=True,
+                 show_lith=False,
+                 show_surfaces=False,
+                 show_results=False,
+                 ve=5)
+
+# %%
+# sphinx_gallery_thumbnail_number = 3
+g3d = gp.plot_3d(geo_model,
+                 show_topography=True,
+                 show_lith=True,
+                 show_surfaces=True,
+                 ve=5)

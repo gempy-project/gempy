@@ -3,31 +3,32 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-.. image:: ../logos/gempy1.png
+.. ../logos/gempy1.png
    :width: 30%
 
-about
+About
 =====
-Software for 3D structural geologic implicit modeling in Python.
+Open-source software for implicit 3D structural geological modeling in Python.
 ****************************************************************
 
 Overview
 --------
 
-``GemPy`` is a Python-based, **open-source geomodeling library**. It is
-capable of constructing complex **3D geological models** of folded
-structures, fault networks and unconformities, based on the underlying
-powerful **implicit representation** approach. ``GemPy`` was designed from the
-ground up to support easy embedding in probabilistic frameworks for the
-uncertainty analysis of subsurface structures.
+``GemPy`` is a Python-based, community-driven, **open-source geomodeling library**. It is
+capable of constructing complex **3D geological models** including various features such as
+fold structures, fault networks and unconformities, based on an underlying
+powerful **implicit** approach. From the ground up, ``GemPy`` was designed to be easily embedded in probabilistic frameworks for conducting
+uncertainty analysis regarding subsurface structures.
 
-Check out the documentation either in `gempy.org <https://www.gempy.org/>`_
+.. Check out the documentation either in `gempy.org <https://www.gempy.org/>`_
 (better option), or `read the docs <http://gempy.readthedocs.io/>`_.
+
+
 
 
 3D models created with GemPy may look like this:
 
-.. image:: ./images/model_example.png
+.. image:: ./images/perth_example.png
 
 Contents:
 
@@ -57,8 +58,8 @@ Contents:
 Features
 --------
 
-Geological objects
-^^^^^^^^^^^^^^^^^^
+Geological features
+^^^^^^^^^^^^^^^^^^^
 
 
 .. raw:: html
@@ -67,9 +68,7 @@ Geological objects
 
 
 
-``GemPy`` enables the modeling of complex 3D geological settings,
-on par with many commercial geomodeling packages, including:
-
+``GemPy`` is capable of modeling complex 3D geological scenarios, including:
 
 * Multiple conformal layers (e.g. sequences of sedimentary layers)
 * Several sequences of layers, with conformal continuation or unconformities
@@ -78,9 +77,8 @@ on par with many commercial geomodeling packages, including:
 * Full fault networks (faults affecting faults)
 * Folds (affecting single layers or entire layer stacks, including overturned and recumbent folds)
 
-The combination of these elements allows for the generation of realistic
-3-D geological models in most typical geological settings.
-
+Combining these elements in GemPy allows for the generation of realistic
+3D geological models, on a par with most commercial geomodeling software.
 
 .. raw:: html
 
@@ -88,12 +86,13 @@ The combination of these elements allows for the generation of realistic
    gempy has been used for realistic models!  -->
 
 
+
 Interpolation approach
 ^^^^^^^^^^^^^^^^^^^^^^
 
 The generation of complex structural settings is based on the powerful
 interpolation algorithm underlying ``GemPy``\ , a unviersal cokriging method
-devoised by Lajaunie et al. (1997) and extended by Calcagno et al. (2008).
+devoised by `Lajaunie et al. (1997)` and extended by `Calcagno et al. (2008)`\ .
 This method is used to interpolate a 3D scalar field, such that geologically
 significant interfaces are isosurfces in this field.
 
@@ -101,9 +100,9 @@ The algorithm allows for a direct integration of two of the most relevant
 geological input data types:
 
 
-* *Surface contact points*\ : 3D coordinates of points marking the boundaries
+* **Surface contact points**\ : 3D coordinates of points marking the boundaries
   between different features (e.g. layer interfaces, fault planes, unconformities).
-* *Orientation measurements*\ : Orientation of the poles perpendicular to
+* **Orientation measurements**\ : Orientation of the poles perpendicular to
   the dipping of surfaces at any point in the 3D space.
 
 ``GemPy`` also allows for the definition of topological elements such as
@@ -125,7 +124,7 @@ Models generated with ``GemPy`` can be visualized in several ways:
   representation of results;
 * interactive 3D visualization and model input manipulation using the
   Visualization Toolkit (VTK);
-* We also actively develop a link to the fantastic `
+* We also actively develop a link to the fantastic
   `pyvista <https://www.pyvista.org>`_ project
   for even better visualization and model interaction in 3D.
 
@@ -137,9 +136,9 @@ in a variety of ways:
   software such as ParaView;
 * Export of triangulated surface meshes (e.g. for further processing in
   meshing programs);
-* Export of images (e.g. geological maps) for
+* Export of images (e.g. geological maps).
 
-We are also currently working on a tighter integration wtih several
+We are also currently working on a tighter integration with several
 meshing libraries, notably `CGAL <https://www.cgal.org>`_ and `gmesh <https://gmsh.info>`_. In addition, we have
 established links to several other open-source libraries, including `pygiml <https://www.pygimli.org>`_
 for geophysical modeling and inversion. In the current state, however, these
@@ -155,7 +154,7 @@ feel free to contact us.
 Stochastic geological modeling
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-One of the most advanced features that sets ``gempy`` also apart from
+One of the most advanced features that sets ``GemPy`` also apart from
 available commercial packages is the full integration of stochastic
 geological modeling methods.
 ``GemPy`` was designed from the ground up to support stochastic geological
@@ -187,7 +186,7 @@ via PyMC will then result in different model realizations.
 
 Theano allows the automated computation of gradients, opening the door to
  the use of advanced gradient-based sampling methods
-coupling *GeMpy* and
+coupling ``GemPy`` and
 `PyMC3 <https://pymc-devs.github.io/pymc3/notebooks/getting_started.html>`_
 for advanced stochastic modeling. Also, the use of Theano allows making
 use of GPUs through cuda (see the Theano documentation for more information.
@@ -197,15 +196,15 @@ Making use of vtk interactivity and `Qgrid <https://github.com/quantopian/qgrid>
 
 For a more detailed elaboration of the theory behind ``GemPy``\ , we refer to the
 **open access scientific publication**\ :
-`\ *"GemPy 1.0: open-source stochastic geological modeling and inversion"*
-by de la Varga et al. (2018) <https://www.geosci-model-dev.net/12/1/2019/gmd-12-1-2019.pdf>`_.
+`\ "GemPy 1.0: open-source stochastic geological modeling and inversion"
+by de la Varga et al. (2019) <https://www.geosci-model-dev.net/12/1/2019/gmd-12-1-2019.pdf>`_.
 
 References
 ----------
 
-* de la Varga, M., Schaaf, A., & Wellmann, F. GemPy 1.0: open-source stochastic geological modeling and inversion.
-* Calcagno, P., Chilès, J. P., Courrioux, G., & Guillen, A. (2008). Geological modelling from field data and geological knowledge: Part I. Modelling method coupling 3D potential-field interpolation and geological rules. Physics of the Earth and Planetary Interiors, 171(1-4), 147-157.
-* Lajaunie, C., Courrioux, G., & Manuel, L. (1997). Foliation fields and 3D cartography in geology: principles of a method based on potential interpolation. Mathematical Geology, 29(4), 571-584.
+* de la Varga, M., Schaaf, A., and Wellmann, F.: GemPy 1.0: `open-source stochastic geological modeling and inversion,` Geosci. Model Dev., 12, 1–32, https://doi.org/10.5194/gmd-12-1-2019, 2019.
+* Calcagno, P., Chilès, J. P., Courrioux, G., & Guillen, A. (2008). `Geological modelling from field data and geological knowledge: Part I. Modelling method coupling 3D potential-field interpolation and geological rules.` Physics of the Earth and Planetary Interiors, 171(1-4), 147-157.
+* `Lajaunie, C., Courrioux, G., & Manuel, L. (1997). `Foliation fields and 3D cartography in geology: principles of a method based on potential interpolation.` Mathematical Geology, 29(4), 571-584.
 
 
 Indices and tables

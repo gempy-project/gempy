@@ -46,7 +46,7 @@ pd.set_option('precision', 2)
 # root folder of GemPy. The data comprises :math:`x`-, :math:`y`- and
 # :math:`z`-positional values for all surface points and orientation
 # measurements. For the latter, poles, azimuth and polarity are
-# additionally included. Surface6points are furth9rmore assigned a
+# additionally included. Surface points are furthermore assigned a
 # formation. This might be a lithological unit such as "Sandstone" or a
 # structural feature such as "Main Fault". It is decisive to remember
 # that, in GemPy, interface position points mark the **bottom** of a
@@ -63,7 +63,7 @@ pd.set_option('precision', 2)
 # representative space. As our model voxels are not cubes, but prisms, the
 # resolution can take a different shape than the extent. We don't
 # recommend going much higher than 100 cells in every direction (1,000,000
-# voxels), as higher resolutions will become increasingly difficult to
+# voxels), as higher resolutions will become increasingly expensive to
 # compute.
 #
 
@@ -107,23 +107,23 @@ gp.get_data(geo_model, 'orientations').head()
 # stratigraphy, unconformities due to erosion or other lithological
 # genesis events such as igneous intrusions. A similar age-related order
 # is to be declared for the faults in our model. In GemPy, the function
-# *set\_series* is used to assign formations to different sequential
+# ``set_series`` is used to assign formations to different sequential
 # series via declaration in a Python dictionary.
 # 
 # Defining the correct order of series is vital to the construction of the
-# model! If you are using Python 3.6, the age-related order will already
+# model! If you are using Python >3.6, the age-related order will already
 # be defined by the order of key entries, i.e. the first entry is the
 # youngest series, the last one the oldest. For older versions of Python,
 # you will have to specify the correct order as a separate list attribute
-# "*order\_series*" (see cell below).
+# "``order_series``\ " (see cell below).
 # 
 # You can assign several surfaces to one series. The order of the units
 # within such as series is only relevant for the color code, thus we
 # recommend to be consistent. You can define this order via another
-# attribute "*order\_formations*" or by using the specific command
-# *set\_order\_formations*. (If the order of the pile differs from the
+# attribute "``order_formations``/ " or by using the specific command
+# ``set_order_formations``. (If the order of the pile differs from the
 # final result the color of the interfaces and input data will be
-# different. ?)
+# different.)
 # 
 # Every fault is treated as an independent series and have to be at set at
 # the **top of the pile**. The relative order between the distinct faults
@@ -138,7 +138,7 @@ gp.get_data(geo_model, 'orientations').head()
 # need to declare a "newer" series to model an unconformity or an
 # intrusion that disturbs older stratigraphy.
 # 
-# By default we create a simple sequence infered by the data:
+# By default we create a simple sequence inferred by the data:
 # 
 
 
@@ -204,12 +204,12 @@ geo_model.grid
 # (if you want to know more on how this this interpolation algorithm
 # works, checkout our paper: https://www.geosci-model-dev.net/12/1/2019/gmd-12-1-2019.pdf).
 # 
-# We introduced the function *get\_data* above. You can also specify which
+# We introduced the function ``get\_data`` above. You can also specify which
 # kind of data you want to call, by declaring the string attribute
-# "*dtype*" to be either "interfaces" (surface points) or "orientations".
+# "*dtype*" to be either ``'surface_points'`` (interfaces) or ``'orientations'``\ .
 # 
 # Interfaces Dataframe:
-# ^^^^^^^^^^^^^^^^^^^^^
+# ~~~~~~~~~~~~~~~~~~~~~
 # 
 
 # %% 
@@ -217,7 +217,7 @@ gp.get_data(geo_model, 'surface_points').head()
 
 # %%
 # Orientations Dataframe:
-# ^^^^^^^^^^^^^^^^^^^^^^^
+# ~~~~~~~~~~~~~~~~~~~~~~~
 # 
 
 # %% 
@@ -232,7 +232,7 @@ gp.get_data(geo_model, 'orientations')
 # 
 # We can also visualize our input data. This might for example be useful
 # to check if all points and measurements are defined the way we want them
-# to. Using the function *plot\_data*, we attain a 2D projection of our
+# to. Using the function ``plot_data``\ , we attain a 2D projection of our
 # data points onto a plane of chosen *direction* (we can choose this
 # attribute to be either :math:`x`, :math:`y` or :math:`z`).
 # 
@@ -242,12 +242,12 @@ plot = gp.plot_2d(geo_model, show_lith=False, show_boundaries=False)
 plt.show()
 
 # %%
-# Using *plot\_data\_3D*, we can also visualize this data in 3D. Note that
+# Using ``plot_data_3D``\ , we can also visualize this data in 3D. Note that
 # direct 3D visualization in GemPy requires `the Visualization
 # Toolkit <https://www.vtk.org/>`__ (VTK) to be installed.
 # 
-# All 3D VTK plots in GemPy are interactive. This means that we can drag
-# and drop any data poit and measurement. The perpendicular axis views in
+# All 3D plots in GemPy are interactive. This means that we can drag
+# and drop any data point and measurement. The perpendicular axis views in
 # VTK are particularly useful to move points solely on a desired 2D plane.
 # Any changes will then be stored permanently in the "InputData"
 # dataframe. If we want to reset our data points, we will then need to
@@ -302,7 +302,7 @@ gp.set_interpolator(geo_model,
 # %%
 # The parameters used for the interpolation can be returned using the
 # function ``get_kriging_parameters``. These are generated automatically
-# from the orginal data, but can be changed if needed. However, users
+# from the original data, but can be changed if needed. However, users
 # should be careful doing so, if they do not fully understand their
 # significance.
 # 
@@ -329,7 +329,7 @@ gp.get_data(geo_model, 'kriging')
 # 
 #    -  Entry [0]: Array in which all fault-separated areas of the model
 #       are represented by a distinct number contained in each voxel.
-#    -  Entry [1}: Potential field array related to the fault network in
+#    -  Entry [1]: Potential field array related to the fault network in
 #       the block model.
 # 
 # Below, we illustrate these different model solutions and how they can be
@@ -366,7 +366,7 @@ plt.show()
 # the middle of our block. We have moved 25 cells in ``direction='y'``,
 # the plot thus depicts a plane parallel to the :math:`x`- and
 # :math:`y`-axes. Setting ``plot_data=True``, we could plot original data
-# together with the results. Changing the values for ``cell_number``\ and
+# together with the results. Changing the values for ``cell_number`` and
 # ``direction``, we can move through our 3D block model and explore it by
 # looking at different 2D planes.
 # 
@@ -408,7 +408,7 @@ plt.show()
 # (see function plot\_surfaces\_3D below). To create these triangles, we
 # need to extract respective vertices and simplices from the potential
 # fields of lithologies and faults. This process is automatized in GemPy
-# with the function get\_surface
+# with the function ``get_surface``\ .
 # 
 
 # %% 
@@ -420,7 +420,7 @@ gpv = gp.plot_3d(geo_model, image=False, plotter_type='basic')
 # visualization in an interactive mode which allows us to alter and update
 # our model in real time. Similarly to the interactive 3D visualization of
 # our input data, the changes are permanently saved (in the
-# InterpolationInput dataframe object). Additionally, the resulting changes
+# ``InterpolationInput.dataframe`` object). Additionally, the resulting changes
 # in the geological models are re-computed in real time.
 # 
 
