@@ -1,12 +1,12 @@
 from setuptools import setup, find_packages
-from gempy import __version__
+version = '2.2.2'
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(
     name='gempy',
-    version=__version__,
+    version=version,
     packages=find_packages(exclude=('test', 'docs')),
     include_package_data=True,
     install_requires=[
