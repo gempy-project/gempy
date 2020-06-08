@@ -19,8 +19,7 @@ setup(
         'networkx',
         'scikit-image>=0.17',
         'pyvista==0.24.3',
-        'iPython',
-        'pyvistaqt'
+        'iPython'
     ],
     url='https://github.com/cgre-aachen/gempy',
     download_url='https://github.com/cgre-aachen/gempy/archive/2.1.1tar.gz',
