@@ -431,7 +431,7 @@ class ImplicitCoKriging(object):
             self._grid.update_grid_values()
         self.set_active_grid('centered')
         self.update_from_grid()
-        print(f'Active grids: {self._grid.grid_types[self._grid.active_grids]}')
+        # print(f'Active grids: {self._grid.grid_types[self._grid.active_grids]}')
         return self._grid
 
     @_setdoc_pro(Grid.create_section_grid.__doc__)
