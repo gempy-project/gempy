@@ -321,6 +321,11 @@ It should work on MacOS 10.14 as well as 10.15 (Catalina).
 
     ``$ conda update --all``
 
+    This will probably updsate also the pyhon version which in some cases breaks the environment solve. If you run into
+    issues installing packages with conda, downgrade python back to 3.7 by running
+
+    ``$ conda install python==3.7``
+
     Install theano via PyPi
 
     ``$ pip install theano==1.0.4``
@@ -352,6 +357,8 @@ It should work on MacOS 10.14 as well as 10.15 (Catalina).
     ``$ pip install pyevtk``
 
     ``$ conda install gdal``
+
+
 
 
 
