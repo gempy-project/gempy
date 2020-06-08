@@ -1,5 +1,5 @@
 from setuptools import setup, find_packages
-from gempy import __version__
+from .gempy.__init__ import __version__
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -18,7 +18,7 @@ setup(
         'seaborn>=0.9',
         'networkx',
         'scikit-image>=0.17',
-        'pyvista',
+        'pyvista==0.24.3',
         'iPython',
         'pyvistaqt'
     ],
