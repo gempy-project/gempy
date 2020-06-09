@@ -5,7 +5,7 @@ import sys
 
 class TFGraph(tf.Module):
 
-    def __init__(self, dip_angles, azimuth, polarity,
+    def __init__(self, dips_position, dip_angles, azimuth, polarity,
                  fault_drift, grid, values_properties,
                  number_of_points_per_surface, Range, C_o, nugget_effect_scalar,
                  nugget_effect_grad, rescalefactor, output=None, **kwargs):
@@ -67,12 +67,33 @@ class TFGraph(tf.Module):
 
 
 
+        self.dips_position_all = dips_position
+
         self.values_properties_op = values_properties
 
         self.grid_val = grid
 
         self.fault_matrix = fault_drift
 
+        # VARIABLE MANIPULATION
+
+        # self.dips_position_all_tiled = tf.tile(
+        #     self.dips_position_all, [self.n_dimensions, 1])
+
+        # self.ref_layer_points, self.rest_layer_points, self.ref_nugget, self.rest_nugget = self.set_rest_ref_matrix(
+        #     self.number_of_points_per_surface, self.surface_points_all, self.nugget_effect_scalar)
+
+        # self.nugget_effect_scalar_ref_rest = tf.expand_dims(
+        #     self.ref_nugget + self.rest_nugget, 1)
+
+        # self.len_points = self.surface_points_all.shape[0] - \
+        #     self.number_of_points_per_surface.shape[0]
+
+        # interface_loc = self.grid_val.shape[0]
+        # self.fault_drift_at_surface_points_rest = self.fault_matrix[
+        #     :, interface_loc: interface_loc + self.len_points]
+        # self.fault_drift_at_surface_points_ref = self.fault_matrix[
+        #     :, interface_loc + self.len_points:]
 
         if output is None:
             output = ['geology']
@@ -523,10 +544,10 @@ class TFGraph(tf.Module):
         return f_0
     
     
-    def scalar_field(self, surface_point,dips_position):
+    def scalar_field(self, surface_point):
 
         self.dips_position_all_tiled = tf.tile(
-            dips_position, [self.n_dimensions, 1])
+            self.dips_position_all, [self.n_dimensions, 1])
 
         self.ref_layer_points, self.rest_layer_points, self.ref_nugget, self.rest_nugget = self.set_rest_ref_matrix(
             self.number_of_points_per_surface, surface_point, self.nugget_effect_scalar)
@@ -546,12 +567,12 @@ class TFGraph(tf.Module):
         grid_val = self.x_to_interpolate(
             self.grid_val, self.ref_layer_points, self.rest_layer_points)
         weights = self.solve_kriging(
-            dips_position, self.ref_layer_points, self.rest_layer_points)
+            self.dips_position_all, self.ref_layer_points, self.rest_layer_points)
 
 
         tiled_weights = self.extend_dual_kriging(
             weights, tf.shape(grid_val)[0])
-        sigma_0_grad = self.contribution_gradient_interface(dips_position,
+        sigma_0_grad = self.contribution_gradient_interface(self.dips_position_all,
                                                             grid_val, tiled_weights)
         sigma_0_interf = self.contribution_interface(
             self.ref_layer_points, self.rest_layer_points, grid_val, tiled_weights)
@@ -574,19 +595,7 @@ class TFGraph(tf.Module):
     
     
     def compare(self, a, b, slice_init, Z_x, l, n_surface, drift):
-        """
-        Treshold of the points to interpolate given 2 potential field values. TODO: This function is the one we
-        need to change for a sigmoid function
-        
-        Args:
-            a (scalar): Upper limit of the potential field
-            b (scalar): Lower limit of the potential field
-            n_surface (scalar): Value given to the segmentation, i.e. lithology number
-            Zx (vector): Potential field values at all the interpolated points
 
-        Returns:
-            Tensor: segmented values
-        """
         n_surface_0 = n_surface[:, slice_init:slice_init + 1]
         n_surface_1 = n_surface[:, slice_init + 1:slice_init + 2]
         drift = drift[:, slice_init:slice_init + 1]
