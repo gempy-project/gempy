@@ -1,2 +1,2 @@
-exclude notebooks/ *
-LICENSE
+exclude notebooks/*
+include LICENSE
