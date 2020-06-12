@@ -144,8 +144,6 @@ todo_include_todos = True
 
 
 # -- Sphinx Gallery Options
-from sphinx_gallery.sorting import FileNameSortKey
-
 sphinx_gallery_conf = {
     # path to your examples scripts
     "examples_dirs": [
