@@ -47,7 +47,7 @@ jobs:
   include:
       - stage: test
         script:
-          - pytest
+          - pytest -v
       - stage: deploy
         name: Deploy to GitHub Pages
        # if: (NOT type IN (pull_request)) AND (branch = sphinx-gallery) # only deploy if merging on master

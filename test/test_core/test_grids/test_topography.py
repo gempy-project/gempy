@@ -1,8 +1,15 @@
 import os
 import sys, os
 sys.path.append("../../..")
-os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
+
 os.environ["THEANO_FLAGS"] = "mode=FAST_RUN,device=cpu"
+import warnings
+
+try:
+    import faulthandler
+    faulthandler.enable()
+except Exception as e:  # pragma: no cover
+    warnings.warn('Unable to enable faulthandler:\n%s' % str(e))
 
 import gempy as gp
 import matplotlib.pyplot as plt
