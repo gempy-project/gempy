@@ -28,7 +28,9 @@ install:
   - source activate tenv
 
   # Installs from conda-forge
-  - conda install -c conda-forge python-graphviz emg3d discretize pip matplotlib ipython six pytest pytest-cov pytest-mock gdal pandas seaborn>=0.9 qgrid sphinx-gallery ipywidgets pyevtk arviz dataclasses scikit-image>=0.17 recommonmark networkx panel setuptools
+  - conda install -c conda-forge python-graphviz emg3d discretize pip matplotlib ipython six pytest pytest-cov pytest-mock
+    gdal pandas seaborn>=0.9 qgrid sphinx-gallery ipywidgets pyevtk arviz dataclasses scikit-image>=0.17 recommonmark
+    networkx panel setuptools mkl-service
 
   # Installs from anaconda
   - conda install -c anaconda libffi
