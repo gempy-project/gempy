@@ -41,6 +41,8 @@ install:
   # Install
   - pip install -e .
 
+  - python -c "import pyvista as pv;print(pv.Report())"
+
 stages:
   - test
   - deploy
