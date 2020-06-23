@@ -341,25 +341,23 @@ class Colors:
             zip(self.surfaces.df['surface'].values, hex_colors[:len(self.surfaces.df)])
         )
 
-    def change_colors(self, cdict=None):
-        ''' Updates the colors of the model.
+    def change_colors(self, colordict: dict = None):
+        """Change the model colors either by providing a color dictionary or,
+        if not, by using a color pick widget.
+
         Args:
-            cdict: dict with surface names mapped to hex color codes, e.g. {'layer1':'#6b0318'}
-            if None: opens jupyter widget to change colors interactively.
-
-        Returns: None
-
-        '''
+            colordict (dict, optional): dict with surface names mapped to hex color codes, e.g. {'layer1':'#6b0318'}
+            if None: opens jupyter widget to change colors interactively. Defaults to None.
+        """
         assert ipywidgets_import, 'ipywidgets not imported. Make sure the library is installed.'
 
-        if cdict is not None:
-            self.update_colors(cdict)
-            return self.surfaces
-
+        if colordict:
+            self.update_colors(colordict)
         else:
-            items = [widgets.ColorPicker(description=surface, value=color)
-                     for surface, color in self.colordict.items()]
-
+            items = [
+                widgets.ColorPicker(description=surface, value=color)
+                for surface, color in self.colordict.items()
+            ]
             colbox = widgets.VBox(items)
             print('Click to select new colors.')
             display(colbox)
