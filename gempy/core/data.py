@@ -281,7 +281,6 @@ class Colors:
     """
     Object that handles the color management in the model.
     """
-
     def __init__(self, surfaces):
         self.surfaces = surfaces
         self.colordict = None
@@ -307,31 +306,28 @@ class Colors:
             hex_colors: Union[List[str], str] = 'palettes',
             palettes: List[str] = 'default',
     ):
-        """generate colordict that assigns black to faults and random colors to surfaces
+        """Generates and sets color dictionary.
 
         Args:
-           hex_colors (list[str], str): List of hex values or specific values. In the
-            future this could accommodate the actual geological palettes. For example
-            striplog has a quite good set of palettes.
+           hex_colors (list[str], str): List of hex color values. In the future this could
+           accommodate the actual geological palettes. For example striplog has a quite
+           good set of palettes.
                 * palettes: If hexcolors='palettes' the colors will be chosen from the
                    palettes arg
                 * soft: https://medialab.github.io/iwanthue/
-
-           palettes (list[str]): list with name of seaborn palettes
+           palettes (list[str], optional): list with name of seaborn palettes. Defaults to 'default'.
         """
-        import seaborn as sns
+        import seaborn as sns  # should this be here? we need colors every time anyways
 
         if hex_colors == 'palettes':
             hex_colors = []
             if palettes == 'default':
                 # we predefine some 7 colors manually
                 hex_colors = ['#015482', '#9f0052', '#ffbe00', '#728f02', '#443988', '#ff3f20', '#5DA629']
-
                 # then we create a list of seaborn color palette names, as the user didn't provide any
                 palettes = ['muted', 'pastel', 'deep', 'bright', 'dark', 'colorblind']
-
             for palette in palettes:  # for each palette
-                hex_colors += sns.color_palette(palette).as_hex()
+                hex_colors += sns.color_palette(palette).as_hex()  # get all colors in palette and add to list
                 if len(hex_colors) >= len(self.surfaces.df):
                     break
         elif hex_colors == 'soft':
@@ -340,10 +336,17 @@ class Colors:
         surface_names = self.surfaces.df['surface'].values
         n_surfaces = len(surface_names)
 
-        # create color dict based on hex_colors list of hex strings (either provided or generated above)
+        while n_surfaces > len(hex_colors):
+            hex_colors.append(self._random_hexcolor())
+
         self.colordict = dict(
-            zip(self.surfaces.df['surface'].values, hex_colors[:len(self.surfaces.df)])
+            zip(surface_names, hex_colors[:n_surfaces])
         )
+
+    @staticmethod
+    def _random_hexcolor() -> str:
+        """Generates a random hex color string."""
+        return "#"+str(hex(np.random.randint(0, 16777215))).lstrip("0x")
 
     def change_colors(self, colordict: dict = None):
         """Change the model colors either by providing a color dictionary or,
@@ -374,19 +377,14 @@ class Colors:
                 cols.observe(on_change, 'value')
 
     def update_colors(self, colordict: dict = None):
-        ''' Updates the colors in self.colordict and in surfaces_df.
+        """ Updates the colors in self.colordict and in surfaces_df.
+
         Args:
-            colordict: dict with surface names mapped to hex color codes, e.g. {'layer1':'#6b0318'}
-
-        Returns: None
-
-        '''
+            colordict (dict, optional): dict with surface names mapped to hex
+                color codes, e.g. {'layer1':'#6b0318'}. Defaults to None.
+        """
         if colordict is None:
-            try:  # assert if any surface does not have a color
-                self._add_colors()  # the first thing this function does is call the same function as in the
-                # exception handling???
-            except AttributeError:
-                self.generate_colordict()
+            self.generate_colordict()
         else:
             for surf, color in colordict.items():  # map new colors to surfaces
                 # assert this because user can set it manually
@@ -397,15 +395,15 @@ class Colors:
         self._set_colors()
 
     def _add_colors(self):
-        '''assign color to last entry of surfaces df or check isnull and assign color there'''
+        """Assign a color to the last entry of surfaces df or check isnull and assign color there"""
         # can be done easier
         self.generate_colordict()
-        form2col = list(self.surfaces.df.loc[self.surfaces.df['color'].isnull(), 'surface'])
-        # this is the dict in-build function to update colors
-        self.colordict.update(dict(zip(form2col, [self.colordict[x] for x in form2col])))
+        # form2col = list(self.surfaces.df.loc[self.surfaces.df['color'].isnull(), 'surface'])
+        # # this is the dict in-build function to update colors
+        # self.colordict.update(dict(zip(form2col, [self.colordict[x] for x in form2col])))
 
     def _set_colors(self):
-        '''sets colordict in surfaces dataframe'''
+        """sets colordict in surfaces dataframe"""
         for surf, color in self.colordict.items():
             self.surfaces.df.loc[self.surfaces.df['surface'] == surf, 'color'] = color
 
