@@ -285,6 +285,22 @@ class Colors:
     def __init__(self, surfaces):
         self.surfaces = surfaces
         self.colordict = None
+        self._hexcolors_soft = [
+            '#015482', '#9f0052', '#ffbe00', '#728f02', '#443988',
+            '#ff3f20', '#5DA629', '#b271d0', '#72e54a', '#583bd1',
+            '#d0e63d', '#b949e2', '#95ce4b', '#6d2b9f', '#60eb91',
+            '#d746be', '#52a22e', '#5e63d8', '#e5c339', '#371970',
+            '#d3dc76', '#4d478e', '#43b665', '#d14897', '#59e5b8',
+            '#e5421d', '#62dedb', '#df344e', '#9ce4a9', '#d94077',
+            '#99c573', '#842f74', '#578131', '#708de7', '#df872f',
+            '#5a73b1', '#ab912b', '#321f4d', '#e4bd7c', '#142932',
+            '#cd4f30', '#69aedd', '#892a23', '#aad6de', '#5c1a34',
+            '#cfddb4', '#381d29', '#5da37c', '#d8676e', '#52a2a3',
+            '#9b405c', '#346542', '#de91c9', '#555719', '#bbaed6',
+            '#945624', '#517c91', '#de8a68', '#3c4b64', '#9d8a4d',
+            '#825f7e', '#2c3821', '#ddadaa', '#5e3524', '#a3a68e',
+            '#a2706b', '#686d56'
+        ]  # source: https://medialab.github.io/iwanthue/
 
     def generate_colordict(
             self,
@@ -319,22 +335,10 @@ class Colors:
                 if len(hex_colors) >= len(self.surfaces.df):
                     break
         elif hex_colors == 'soft':
-            hex_colors = [
-                '#015482', '#9f0052', '#ffbe00', '#728f02', '#443988',
-                '#ff3f20', '#5DA629', '#b271d0', '#72e54a', '#583bd1',
-                '#d0e63d', '#b949e2', '#95ce4b', '#6d2b9f', '#60eb91',
-                '#d746be', '#52a22e', '#5e63d8', '#e5c339', '#371970',
-                '#d3dc76', '#4d478e', '#43b665', '#d14897', '#59e5b8',
-                '#e5421d', '#62dedb', '#df344e', '#9ce4a9', '#d94077',
-                '#99c573', '#842f74', '#578131', '#708de7', '#df872f',
-                '#5a73b1', '#ab912b', '#321f4d', '#e4bd7c', '#142932',
-                '#cd4f30', '#69aedd', '#892a23', '#aad6de', '#5c1a34',
-                '#cfddb4', '#381d29', '#5da37c', '#d8676e', '#52a2a3',
-                '#9b405c', '#346542', '#de91c9', '#555719', '#bbaed6',
-                '#945624', '#517c91', '#de8a68', '#3c4b64', '#9d8a4d',
-                '#825f7e', '#2c3821', '#ddadaa', '#5e3524', '#a3a68e',
-                '#a2706b', '#686d56'
-            ]
+            hex_colors = self._hexcolors_soft
+
+        surface_names = self.surfaces.df['surface'].values
+        n_surfaces = len(surface_names)
 
         # create color dict based on hex_colors list of hex strings (either provided or generated above)
         self.colordict = dict(
