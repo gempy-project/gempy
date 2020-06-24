@@ -5,6 +5,7 @@ from typing import Union, List
 
 import numpy as np
 import pandas as pn
+import seaborn as sns
 
 try:
     import ipywidgets as widgets
@@ -317,8 +318,6 @@ class Colors:
                 * soft: https://medialab.github.io/iwanthue/
            palettes (list[str], optional): list with name of seaborn palettes. Defaults to 'default'.
         """
-        import seaborn as sns  # should this be here? we need colors every time anyways
-
         if hex_colors == 'palettes':
             hex_colors = []
             if palettes == 'default':
@@ -396,11 +395,7 @@ class Colors:
 
     def _add_colors(self):
         """Assign a color to the last entry of surfaces df or check isnull and assign color there"""
-        # can be done easier
         self.generate_colordict()
-        # form2col = list(self.surfaces.df.loc[self.surfaces.df['color'].isnull(), 'surface'])
-        # # this is the dict in-build function to update colors
-        # self.colordict.update(dict(zip(form2col, [self.colordict[x] for x in form2col])))
 
     def _set_colors(self):
         """sets colordict in surfaces dataframe"""
