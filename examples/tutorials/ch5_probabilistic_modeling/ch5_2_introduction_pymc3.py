@@ -193,6 +193,6 @@ p = pp.PlotPosterior(data)
 
 p.create_figure(figsize=(9, 5), joyplot=True, marginal=True, likelihood=True, n_samples=11)
 
-p.plot_posterior(['$\mu$', '$\sigma$'], ['$\mu$', '$\sigma$'], '$y$', 1000,
+p.plot_posterior(['$\mu$', '$\sigma$'], ['$\mu$', '$\sigma$'], '$y$', 999,
                  marginal_kwargs={'plot_trace': False, 'credible_interval': .93, 'kind': 'kde'})
 plt.show()
