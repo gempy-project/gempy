@@ -38,15 +38,21 @@ def test_real_grid_ales():
 
     p2d = gp.plot_2d(geo_model, section_names=['topography'], show_topography=True,
                      kwargs_topography={'hillshade': False, 'fill_contour': False})
-    plt.show()
+    p2d.fig.show()
+    if plt.fignum_exists(p2d.fig.number):
+        plt.close(p2d.fig)
 
     p2d = gp.plot_2d(geo_model, section_names=['topography'], show_topography=True,
                      kwargs_topography={'hillshade': False, 'fill_contour': True})
-    plt.show()
+    p2d.fig.show()
+    if plt.fignum_exists(p2d.fig.number):
+        plt.close(p2d.fig)
 
     p2d = gp.plot_2d(geo_model, section_names=['topography'], show_topography=True,
                      kwargs_topography={'hillshade': True, 'fill_contour': True})
-    plt.show()
+    p2d.fig.show()
+    if plt.fignum_exists(p2d.fig.number):
+        plt.close(p2d.fig)
 
     if False:
         gp.map_stack_to_surfaces(geo_model, {'fault_left': ('fault_left'),
@@ -81,6 +87,7 @@ def test_real_grid_ales():
     img = gpv.p.show(screenshot=True)
     plt.imshow(img[1])
     plt.show()
+    gpv.p.close()
 
 
 def test_plot_2d_topography(one_fault_model_no_interp, artificial_grid):
@@ -89,15 +96,21 @@ def test_plot_2d_topography(one_fault_model_no_interp, artificial_grid):
     geo_model.set_topography()
     p2d = gp.plot_2d(geo_model, section_names=['topography'], show_topography=True,
                      kwargs_topography={'hillshade': False})
-    plt.show()
+    p2d.fig.show()
+    if plt.fignum_exists(p2d.fig.number):
+        plt.close(p2d.fig)
 
     p2d = gp.plot_2d(geo_model, section_names=['topography'], show_topography=True,
                      kwargs_topography={'hillshade': True, 'fill_contour': False})
-    plt.show()
+    p2d.fig.show()
+    if plt.fignum_exists(p2d.fig.number):
+        plt.close(p2d.fig)
 
     p2d = gp.plot_2d(geo_model, section_names=['topography'], show_topography=True,
                      kwargs_topography={'hillshade': True})
-    plt.show()
+    p2d.fig.show()
+    if plt.fignum_exists(p2d.fig.number):
+        plt.close(p2d.fig)
 
 
 def test_plot_3d_structure_topo2(unconformity_model_topo, artificial_grid):
@@ -111,7 +124,9 @@ def test_plot_3d_structure_topo2(unconformity_model_topo, artificial_grid):
     p2d = gp.plot_2d(geo_model, section_names=['topography'], show_topography=True,
                      show_lith=False,
                      kwargs_topography={'hillshade': True})
-    plt.show()
+    p2d.fig.show()
+    if plt.fignum_exists(p2d.fig.number):
+        plt.close(p2d.fig)
 
     gpv = gp.plot.plot_3d(unconformity_model_topo,
                           plotter_type='basic', off_screen=True,
@@ -126,3 +141,5 @@ def test_plot_3d_structure_topo2(unconformity_model_topo, artificial_grid):
     img = gpv.p.show(screenshot=True)
     plt.imshow(img[1])
     plt.show()
+    gpv.p.close()
+    
