@@ -239,7 +239,9 @@ gp.get_data(geo_model, 'orientations')
 
 # %%
 plot = gp.plot_2d(geo_model, show_lith=False, show_boundaries=False)
-plt.show()
+plot.fig.show()
+if plt.fignum_exists(plot.fig.number):
+    plt.close(plot.fig)
 
 # %%
 # Using *plot\_data\_3D*, we can also visualize this data in 3D. Note that
@@ -259,6 +261,7 @@ plt.show()
 
 # %%
 gpv = gp.plot_3d(geo_model, image=False, plotter_type='basic')
+gpv.p.close()
 
 # %%
 # Model generation
@@ -355,8 +358,11 @@ geo_model.solutions
 #
 
 # %%
-gp.plot_2d(geo_model, show_data=True)
-plt.show()
+plot = gp.plot_2d(geo_model, show_data=True)
+plot.fig.show()
+if plt.fignum_exists(plot.fig.number):
+    plt.close(plot.fig)
+
 # %% 
 
 
@@ -374,12 +380,16 @@ plt.show()
 # 
 
 # %%
-gp.plot_2d(geo_model, show_data=False, show_scalar=True, show_lith=False)
-plt.show()
+plot = gp.plot_2d(geo_model, show_data=False, show_scalar=True, show_lith=False)
+plot.fig.show()
+if plt.fignum_exists(plot.fig.number):
+    plt.close(plot.fig)
 
 # %%
-gp.plot_2d(geo_model, series_n=1, show_data=False, show_scalar=True, show_lith=False)
-plt.show()
+plot = gp.plot_2d(geo_model, series_n=1, show_data=False, show_scalar=True, show_lith=False)
+plot.fig.show()
+if plt.fignum_exists(plot.fig.number):
+    plt.close(plot.fig)
 
 # %%
 # This illustrates well the fold-related deformation of the stratigraphy,
@@ -392,12 +402,16 @@ plt.show()
 geo_model.solutions.scalar_field_at_surface_points
 
 # %%
-gp.plot_2d(geo_model, show_block=True, show_lith=False)
-plt.show()
+plot = gp.plot_2d(geo_model, show_block=True, show_lith=False)
+plot.fig.show()
+if plt.fignum_exists(plot.fig.number):
+    plt.close(plot.fig)
 
 # %%
-gp.plot_2d(geo_model, series_n=1, show_block=True, show_lith=False)
-plt.show()
+plot = gp.plot_2d(geo_model, series_n=1, show_block=True, show_lith=False)
+plot.fig.show()
+if plt.fignum_exists(plot.fig.number):
+    plt.close(plot.fig)
 
 # %%
 # Marching cubes and vtk visualization
@@ -414,6 +428,7 @@ plt.show()
 # %% 
 ver, sim = gp.get_surfaces(geo_model)
 gpv = gp.plot_3d(geo_model, image=False, plotter_type='basic')
+gpv.p.close()
 
 # %%
 # Using the rescaled interpolation data, we can also run our 3D VTK
@@ -432,14 +447,16 @@ geo_model.set_topography(d_z=(350, 750))
 
 # %%
 gp.compute_model(geo_model)
-gp.plot_2d(geo_model, show_topography=True)
-plt.show()
-
+plot = gp.plot_2d(geo_model, show_topography=True)
+plot.fig.show()
+if plt.fignum_exists(plot.fig.number):
+    plt.close(plot.fig)
 
 # sphinx_gallery_thumbnail_number = 9
 gpv = gp.plot_3d(geo_model, plotter_type='basic', show_topography=True, show_surfaces=True,
                  show_lith=True,
                  image=False)
+gpv.p.close()
 
 # %%
 # Compute at a given location
