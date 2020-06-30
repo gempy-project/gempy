@@ -45,12 +45,17 @@ for discussion and link to that issue in your pull request.
 ### Python code guidelines
 We aim to follow particular Python coding guidelines to improve the sustainability and positive impact of this community project:
 
-- Follow [The Zen of Python](https://www.python.org/dev/peps/pep-0020/), most importantly "readability counts" when writing Python code.
-- Adhere to the [Style Guide for Python Code (PEP8)](https://www.python.org/dev/peps/pep-0008/).
-- Write thorough and effective documentation: 
-Make a docstring for each module, function, class, and method, 
-all following [PEP 257](https://www.python.org/dev/peps/pep-0257/) for high-level guidelines
-and [Google Python Style Guidelines](http://google.github.io/styleguide/pyguide.html) for Syntax. 
+- [The Zen of Python](https://www.python.org/dev/peps/pep-0020/), most importantly "readability counts" when writing Python code.
+- [Style Guide for Python Code (PEP8)](https://www.python.org/dev/peps/pep-0008/).
+- The code should explain the *what* and *how*. Add inline comments to explain the *why*.
+If an inline comment seems to be needed, consider first making the code more readable.
+For all comments, follow [PEP 8](https://www.python.org/dev/peps/pep-0008/).
+- Test every line of code. Untested code is dead code.
+
+Additionally, we aim to write thorough and effective documentation.
+Our approach follows [PEP 257](https://www.python.org/dev/peps/pep-0257/) for high-level guidelines
+and [Google Python Style Guidelines](http://google.github.io/styleguide/pyguide.html) for syntax. 
+At a minimum, there should be a docstring for each module, function, class, and method.
 **Example function documentation:**
 ```python
 def func(arg1: int, arg2: float) -> int:
@@ -70,10 +75,6 @@ def func(arg1: int, arg2: float) -> int:
     """
     return 42
 ```
-- The code should explain the *what* and *how*. Add inline comments to explain the *why*.
-If an inline comment seems to be needed, consider first making the code more readable.
-For all comments, follow [PEP 8](https://www.python.org/dev/peps/pep-0008/).
-- Test every line of code. Untested code is dead code.
 
 ### Licensing
 
