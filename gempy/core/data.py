@@ -5,6 +5,7 @@ from typing import Union, List
 
 import numpy as np
 import pandas as pn
+import seaborn as sns
 
 try:
     import ipywidgets as widgets
@@ -299,8 +300,6 @@ class Colors:
 
            palettes (list[str]): list with name of seaborn palettes
         """
-        import seaborn as sns
-
         if hex_colors == 'palettes':
             hex_colors = []
             if palettes == 'default':
