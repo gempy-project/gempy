@@ -9,6 +9,7 @@ def test_plot_3d_data_default(one_fault_model_no_interp):
     img = gpv.p.show(screenshot=True)
     plt.imshow(img[1])
     plt.show()
+    gpv.p.close()
 
 
 def test_plot_3d_geo_map(unconformity_model):
@@ -21,6 +22,7 @@ def test_plot_3d_geo_map(unconformity_model):
     img = gpv.p.show(screenshot=True)
     plt.imshow(img[1])
     plt.show()
+    gpv.p.close()
 
 
 def test_plot_3d_geo_map2(one_fault_model_topo_solution):
@@ -33,6 +35,7 @@ def test_plot_3d_geo_map2(one_fault_model_topo_solution):
     img = gpv.p.show(screenshot=True)
     plt.imshow(img[1])
     plt.show()
+    gpv.p.close()
 
 
 def test_plot_3d_structure_topo(one_fault_model_topo_solution):
@@ -47,6 +50,7 @@ def test_plot_3d_structure_topo(one_fault_model_topo_solution):
     img = gpv.p.show(screenshot=True)
     plt.imshow(img[1])
     plt.show()
+    gpv.p.close()
 
 
 def test_plot_3d_structure_topo2(unconformity_model_topo):
@@ -59,3 +63,4 @@ def test_plot_3d_structure_topo2(unconformity_model_topo):
     img = gpv.p.show(screenshot=True)
     plt.imshow(img[1])
     plt.show()
+    gpv.p.close()
