@@ -2,6 +2,11 @@ language: python
 os: linux
 dist: xenial
 
+branches:
+    only:
+        - master
+        - release
+
 python:
   - '3.7'
 
