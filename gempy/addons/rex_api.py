@@ -14,6 +14,14 @@ package_directory = os.path.dirname(os.path.abspath(__file__))
 class RexAPI:
 
     def __init__(self, project_name, api_token=None, secret=None):
+        """Rest client to connect to the RexOS system
+
+
+        Args:
+            project_name:
+            api_token:
+            secret:
+        """
         self.response = None  # saves the most current server response
 
         self.token_ID, self.secret = self.load_credentials(api_token=api_token, secret=secret)

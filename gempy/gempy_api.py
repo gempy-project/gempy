@@ -37,7 +37,7 @@ def edit(model: Project, data_object: str, method: str, **kwargs):
         method (str): Method you want to use
         **kwargs:
     """
-    data_object = getattr(model, '_'+data_object)
+    data_object = getattr(model, '_' + data_object)
     m = getattr(data_object, method)
     return m(**kwargs)
 
