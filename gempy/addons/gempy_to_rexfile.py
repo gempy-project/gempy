@@ -60,6 +60,7 @@ class GemPyToRex:
 
         byte_array = bytearray()
         byte_size = 0
+        self.data_id = 0
 
         if geo_model is None:
             geo_model = self.geo_model
@@ -68,21 +69,22 @@ class GemPyToRex:
             raise NotImplementedError
 
         flip_yz, backside, vertex_color = self.default_values(app)
+        flip_yz, backside, vertex_color = False, True, False
 
         surface_df = self.grab_meshes(geo_model)
 
         # Data Blocks
         # -----------
+        if material is True:
+            # Material
+            byte_array += self.gempy_color_to_rex_material(surface_df)
+
         if meshes is True:
             # Mesh
             byte_array += self.gempy_mesh_to_rex(
                 surface_df, flip_yz=flip_yz,
                 backside=backside,
                 vertex_color=vertex_color)
-
-        if material is True:
-            # Material
-            byte_array += self.gempy_color_to_rex_material(surface_df)
 
         # Size of all data blocks together
         byte_size += len(byte_array)
@@ -161,10 +163,10 @@ class GemPyToRex:
 
         """
         rex_bytes = bytearray()
-        self.data_id = 0
-
+        iter = 0
         # Loop surfaces
         for idx, surface_vals in surface_df.iterrows():
+
             tri = surface_vals['edges']
             if tri is np.nan:
                 continue
@@ -177,20 +179,11 @@ class GemPyToRex:
                 ver[:, 2] = ver_[:, 1]
                 ver[:, 1] = ver_[:, 2]
 
-            if backside:
-                # Coping triangles to create the backside normal of the layers
-                tri_ = np.copy(tri)
-                # TURN normals - One side of the normals
-                tri_[:, 2] = tri[:, 1]
-                tri_[:, 1] = tri[:, 2]
-
-                tri = np.append(tri, tri_)
-
-            # Preprocessing GemPy output
+            # Pre-processing GemPy output
             ver_ravel, tri_ravel, n_vtx_coord, n_triangles = mesh_preprocess(ver, tri)
 
             # Number of vertex colors
-            if vertex_color is True:
+            if vertex_color:
                 n_vtx_colors = n_vtx_coord
                 # Hex Colors
                 col_ = surface_vals['color']
@@ -202,54 +195,83 @@ class GemPyToRex:
                 n_vtx_colors = 0
                 c_r = None
 
-            # Write Mesh block - header
-            mesh_header_bytes = write_mesh_header(
-                n_vtx_coord / 3, n_triangles / 3,
-                n_vtx_colors=n_vtx_colors / 3,
-                start_vtx_coord=mesh_header_size,
-                start_nor_coord=mesh_header_size + n_vtx_coord * 4,
-                start_tex_coord=mesh_header_size + n_vtx_coord * 4,
-                start_vtx_colors=mesh_header_size + n_vtx_coord * 4,
-                start_triangles=mesh_header_size +
-                                ((n_vtx_coord + n_vtx_colors) * 4),
-                name=surface_vals['surface'], material_id=self.data_id + surface_df.shape[0])
+            rex_bytes = self._mesh_encode(
+                rex_bytes, iter,
+                n_vtx_coord, n_triangles, n_vtx_colors,
+                surface_vals['surface'], ver_ravel, tri_ravel, c_r)
 
-            # Write Mesh block - Vertex, triangles
-            mesh_block_bytes = write_mesh_coordinates(ver_ravel, tri_ravel,
-                                                      colors=c_r  # When using
-                                                      # material we can avoid this
-                                                      )
+            if backside:
+                # Coping triangles to create the backside normal of the layers
+                tri_ = np.copy(tri)
+                # TURN normals - One side of the normals
+                tri_[:, 2] = tri[:, 1]
+                tri_[:, 1] = tri[:, 2]
+                # Pre-processing GemPy output
+                ver_ravel, tri_ravel, n_vtx_coord, n_triangles = mesh_preprocess(ver, tri_)
+                # tri = np.append(tri, tri_)
 
-            # Calculate the size of the mesh block
-            mesh_block_size_no_data_block_header = len(mesh_header_bytes) + \
-                                                   len(mesh_block_bytes)  # This is cte 128
+                rex_bytes = self._mesh_encode(
+                    rex_bytes, iter,
+                    n_vtx_coord, n_triangles, n_vtx_colors,
+                    surface_vals['surface'], ver_ravel, tri_ravel, c_r)
+            iter += 1
 
-            # Write data block header for Mesh 1
-            data_header_bytes = write_data_block_header(
-                size_data=mesh_block_size_no_data_block_header,
-                data_id=self.data_id,
-                data_type=3,  # 3 for mesh
-                version_data=1  # Probably useful for counting
-                # the operation number
-            )
-            self.data_id += 1
-            rex_bytes += data_header_bytes + mesh_header_bytes + mesh_block_bytes
+        return rex_bytes
+
+    def _mesh_encode(self, rex_bytes, material_id,
+                     n_vtx_coord, n_triangles, n_vtx_colors,
+                     surface_name, ver_ravel, tri_ravel, c_r):
+        # Write Mesh block - header
+        mesh_header_bytes = write_mesh_header(
+            n_vtx_coord / 3, n_triangles / 3,
+            n_vtx_colors=n_vtx_colors / 3,
+            start_vtx_coord=mesh_header_size,
+            start_nor_coord=mesh_header_size + n_vtx_coord * 4,
+            start_tex_coord=mesh_header_size + n_vtx_coord * 4,
+            start_vtx_colors=mesh_header_size + n_vtx_coord * 4,
+            start_triangles=mesh_header_size +
+                            ((n_vtx_coord + n_vtx_colors) * 4),
+            name=surface_name,
+            material_id=material_id  # self.data_id + surface_df.shape[0]
+        )
+
+        # Write Mesh block - Vertex, triangles
+        mesh_block_bytes = write_mesh_coordinates(ver_ravel, tri_ravel,
+                                                  colors=c_r  # When using
+                                                  # material we can avoid this
+                                                  )
+
+        # Calculate the size of the mesh block
+        mesh_block_size_no_data_block_header = len(mesh_header_bytes) + \
+                                               len(mesh_block_bytes)  # This is cte 128
+
+        # Write data block header for Mesh 1
+        data_header_bytes = write_data_block_header(
+            size_data=mesh_block_size_no_data_block_header,
+            data_id=self.data_id,
+            data_type=3,  # 3 for mesh
+            version_data=1  # Probably useful for counting
+            # the operation number
+        )
+        self.data_id += 1
+        rex_bytes += data_header_bytes + mesh_header_bytes + mesh_block_bytes
 
         return rex_bytes
 
     def gempy_color_to_rex_material(self, surface_df):
+        rex_bytes = bytearray()
         for idx, surface_vals in surface_df.iterrows():
             # Write data block header for Material 1
             data_header_bytes = write_data_block_header(
                 data_type=5,  # Material data type
                 version_data=1,  # Version. Probably useful for operation counter
                 size_data=68,  # Size of the block is FIXED
-                data_id=self.data_id
+                data_id=self.data_id  # self.data_id
             )
             self.data_id += 1
 
             rgb_color = self.hex_to_rgb(surface_vals['color'], normalize=True)
-
+            #rgb_color = [1, 1, 1]
             # Write Material
             material_bytes = write_material_data(
                 ka_red=rgb_color[0], ka_green=rgb_color[1], ka_blue=rgb_color[2],
@@ -262,9 +284,9 @@ class GemPyToRex:
                 alpha=1  # opacity
             )
 
-            self.rex_bytes += data_header_bytes + material_bytes
+            rex_bytes += data_header_bytes + material_bytes
 
-        return self.rex_bytes
+        return rex_bytes
 
 
 def encode(input_: list):
@@ -482,7 +504,7 @@ def hex_to_rgb(hex):
     return tuple(int(hex[i:i + hlen // 3], 16) for i in range(0, hlen, hlen // 3))
 
 
-def geomodel_to_rex(geo_model):
+def geomodel_to_rex(geo_model, backside=True):
     """
 
     Args:
@@ -530,7 +552,12 @@ def geomodel_to_rex(geo_model):
         ver_ravel, tri_ravel, n_vtx_coord, n_triangles = mesh_preprocess(ver_, tri_)
 
         # Calculate the size of the mesh block
-        mesh_block_size_no_data_block_header = (2 *  # Number of
+        if backside is True:
+            n_sides = 2
+        else:
+            n_sides = 1
+
+        mesh_block_size_no_data_block_header = (2 *  # Coordinates and colors
                                                 n_vtx_coord + n_triangles) * 4 + \
                                                mesh_header_size  # This is cte 128
 
@@ -538,11 +565,15 @@ def geomodel_to_rex(geo_model):
         material_block_size_no_data_block_header = 68
 
         # Write file header
-        n_data_blocks = 3
+        if backside is True:
+            n_data_blocks = 3
+        else:
+            n_data_blocks = 2
         header_bytes = write_file_header_block(n_data_blocks=n_data_blocks,
-                                               size_data_blocks=mesh_block_size_no_data_block_header +
-                                                                rexDataBlockHeaderSize +
-                                                                material_block_size_no_data_block_header,
+                                               size_data_blocks=
+                                               n_sides * mesh_block_size_no_data_block_header +
+                                               rexDataBlockHeaderSize +
+                                               material_block_size_no_data_block_header,
                                                start_data=file_header_size)
 
         # Write data block header for Mesh 1
@@ -558,35 +589,36 @@ def geomodel_to_rex(geo_model):
                                               start_vtx_colors=mesh_header_size + n_vtx_coord * 4,
                                               start_triangles=mesh_header_size + 2 *
                                                               (n_vtx_coord * 4),
-                                              name='test_a', material_id=0)
+                                              name='rock1', material_id=0)
 
         # Write Mesh 1 block - header
         mesh_block_bytes = write_mesh_coordinates(ver_ravel, tri_ravel, colors=colors.ravel())
 
-        # Write data block header for Mesh 2
-        data_bytes_r = write_data_block_header(size_data=mesh_block_size_no_data_block_header,
-                                               data_id=2, data_type=3, version_data=1)
+        if backside:
+            # Write data block header for Mesh 2
+            data_bytes_r = write_data_block_header(size_data=mesh_block_size_no_data_block_header,
+                                                   data_id=2, data_type=3, version_data=1)
 
-        # TURN normals - One side of the normals
-        tri_[:, 2] = tri[:, 1]
-        tri_[:, 1] = tri[:, 2]
+            # TURN normals - One side of the normals
+            tri_[:, 2] = tri[:, 1]
+            tri_[:, 1] = tri[:, 2]
 
-        ver_ravel, tri_ravel, n_vtx_coord, n_triangles = mesh_preprocess(ver_, tri_)
+            ver_ravel, tri_ravel, n_vtx_coord, n_triangles = mesh_preprocess(ver_, tri_)
 
-        # Write Mesh 2 block - header
-        mesh_header_bytes_r = write_mesh_header(n_vtx_coord / 3, n_triangles / 3,
-                                                n_vtx_colors=n_vtx_coord / 3,
-                                                start_vtx_coord=mesh_header_size,
-                                                start_nor_coord=mesh_header_size + n_vtx_coord * 4,
-                                                start_tex_coord=mesh_header_size + n_vtx_coord * 4,
-                                                start_vtx_colors=mesh_header_size + n_vtx_coord * 4,
-                                                start_triangles=mesh_header_size + 2 *
-                                                                (n_vtx_coord * 4),
-                                                name='test_a', material_id=0)
+            # Write Mesh 2 block - header
+            mesh_header_bytes_r = write_mesh_header(n_vtx_coord / 3, n_triangles / 3,
+                                                    n_vtx_colors=n_vtx_coord / 3,
+                                                    start_vtx_coord=mesh_header_size,
+                                                    start_nor_coord=mesh_header_size + n_vtx_coord * 4,
+                                                    start_tex_coord=mesh_header_size + n_vtx_coord * 4,
+                                                    start_vtx_colors=mesh_header_size + n_vtx_coord * 4,
+                                                    start_triangles=mesh_header_size + 2 *
+                                                                    (n_vtx_coord * 4),
+                                                    name='test_a', material_id=0)
 
-        # Write Mesh 2 block - header
-        mesh_block_bytes_r = write_mesh_coordinates(ver_ravel, tri_ravel,
-                                                    colors=colors.ravel())
+            # Write Mesh 2 block - header
+            mesh_block_bytes_r = write_mesh_coordinates(ver_ravel, tri_ravel,
+                                                        colors=colors.ravel())
 
         # Write data block header for Material 1
         material_header_bytes = write_data_block_header(data_type=5, version_data=1, size_data=68,
@@ -596,13 +628,18 @@ def geomodel_to_rex(geo_model):
         material_bytes = write_material_data()
 
         # Putting all data together
-        all_bytes = header_bytes + data_bytes + mesh_header_bytes + mesh_block_bytes + \
-                    data_bytes_r + mesh_header_bytes_r + mesh_block_bytes_r + \
-                    material_header_bytes + material_bytes
+        if backside is True:
+            all_bytes = header_bytes + data_bytes + mesh_header_bytes + mesh_block_bytes + \
+                        data_bytes_r + mesh_header_bytes_r + mesh_block_bytes_r + \
+                        material_header_bytes + material_bytes
+
+        else:
+            all_bytes = header_bytes + data_bytes + mesh_header_bytes + mesh_block_bytes + \
+                        material_header_bytes + material_bytes
 
         # FOR REXView Saving each surface is a rexfile
         rex_bytes[surface_vals['surface']] = all_bytes
-    return rex_bytes
+    return all_bytes  # rex_bytes
 
 
 def mesh_preprocess(ver, tri):
@@ -616,8 +653,9 @@ def mesh_preprocess(ver, tri):
         list: vertices raveled, triangels ravel, n vertex, n triangles
     """
 
-    ver_ravel = ver.ravel()
-    tri_ravel = tri.ravel()
+    # TODO: Remove the type transform. Technically it does nothing
+    ver_ravel = ver.ravel().astype('float32')
+    tri_ravel = tri.ravel().astype('int32')
     n_vtx_coord = ver_ravel.shape[0]
     n_triangles = tri_ravel.shape[0]
     return ver_ravel, tri_ravel, n_vtx_coord, n_triangles
