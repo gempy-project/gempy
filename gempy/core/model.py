@@ -1054,7 +1054,8 @@ class ImplicitCoKriging(object):
 
     @_setdoc_pro()
     @plot_move_surface_points
-    def modify_surface_points(self, indices: Union[int, list], recompute_rescale_factor=False, **kwargs):
+    def modify_surface_points(self, indices: Union[int, list],
+                              recompute_rescale_factor=False, **kwargs):
         """Allows modification of the x,y and/or z-coordinates of an interface at specified dataframe index.
 
         Args:
@@ -1075,11 +1076,6 @@ class ImplicitCoKriging(object):
 
          """
 
-        """
-        
-        Args:
-            recompute_rescale_factor: [s0] foo
-        """
         keys = list(kwargs.keys())
         is_surface = np.isin('surface', keys).all()
         if is_surface:

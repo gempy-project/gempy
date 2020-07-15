@@ -212,7 +212,7 @@ class GemPyToRex:
                 start_vtx_colors=mesh_header_size + n_vtx_coord * 4,
                 start_triangles=mesh_header_size +
                                 ((n_vtx_coord + n_vtx_colors) * 4),
-                name=surface_vals['surface'], material_id=self.data_id + surface_df.shape[0] + 1)
+                name=surface_vals['surface'], material_id=self.data_id + surface_df.shape[0])
 
             # Write Mesh block - Vertex, triangles
             mesh_block_bytes = write_mesh_coordinates(ver_ravel, tri_ravel,
