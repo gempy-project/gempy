@@ -33,7 +33,7 @@ install:
   - source activate tenv
 
   # Installs from conda-forge
-  - conda install -c conda-forge python-graphviz emg3d
+  - conda install -c conda-forge python-graphviz # emg3d
     discretize==0.4.13 pip matplotlib ipython six pytest pytest-cov
     pytest-mock gdal pandas seaborn>=0.9 qgrid sphinx-gallery
     ipywidgets pyevtk arviz dataclasses scikit-image>=0.17
@@ -65,7 +65,7 @@ jobs:
 
         before_script:
          - cd docs
-        script: pipenv run make html
+        script: make html
         deploy:
           provider: pages # deploy on github pages
           skip_cleanup: true
