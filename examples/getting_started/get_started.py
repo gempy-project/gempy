@@ -13,6 +13,14 @@ import gempy as gp
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
+import warnings
+
+try:
+    import faulthandler
+    faulthandler.enable()
+except Exception as e:  # pragma: no cover
+    warnings.warn('Unable to enable faulthandler:\n%s' % str(e))
+
 
 # %%
 # Initializing the model:
