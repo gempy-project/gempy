@@ -66,7 +66,7 @@ jobs:
           github_token: $travis_doc # defined via the Travis interface
           local_dir: docs/build/html
           on:
-            branch: docs-devs
+            branch: release
           target_branch: gh-pages
           fqdn: docs.gempy.org
 cache: pip
