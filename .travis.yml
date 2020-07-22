@@ -75,4 +75,4 @@ jobs:
             branch: release
           target_branch: gh-pages
           fqdn: docs.gempy.org
-cache: pip
+# cache: pip
