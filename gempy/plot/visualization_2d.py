@@ -155,7 +155,7 @@ class Plot2D:
 
         figsize, self.ax_labelsize, _, self.xt_labelsize, self.linewidth, _ = _scale_fig_size(
             figsize, textsize, rows, cols)
-        self.fig, self.axes = plt.subplots(0, 0, figsize=figsize, constrained_layout=False)
+        self.fig = plt.figure( figsize=figsize, constrained_layout=False)
         self.fig.is_legend = False
         # TODO make grid variable
         # self.gs_0 = gridspect.GridSpec(2, 2, figure=self.fig, hspace=.9)
