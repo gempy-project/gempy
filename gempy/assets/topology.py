@@ -546,8 +546,9 @@ def plot_adjacency_matrix(
 
     newax.spines['bottom'].set_position(('outward', 29))
     newax.set_xlim(0, n_faults * 2)
+
     newax.set_xticks(np.arange(1, n_faults * 2 + 1) - 0.5)
-    newax.set_xticklabels(["FB " + str(i + 1) for i in range(4)])
+    newax.set_xticklabels(["FB " + str(i + 1) for i in range(n_faults * 2)])
 
     newax.spines['left'].set_position(('outward', 25))
     newax.set_ylim(0, n_faults * 2)

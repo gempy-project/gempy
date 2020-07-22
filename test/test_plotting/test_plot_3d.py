@@ -1,7 +1,13 @@
 import gempy as gp
 import pyvista as pv
 import matplotlib.pyplot as plt
+import warnings
 
+try:
+    import faulthandler
+    faulthandler.enable()
+except Exception as e:  # pragma: no cover
+    warnings.warn('Unable to enable faulthandler:\n%s' % str(e))
 
 def test_plot_3d_data_default(one_fault_model_no_interp):
     gpv = gp.plot.plot_3d(one_fault_model_no_interp,
