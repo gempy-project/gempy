@@ -4,12 +4,18 @@ import gempy as gp
 import numpy as np
 import matplotlib.pyplot as plt
 from gempy.plot.vista import GemPyToVista
+import warnings
+
+try:
+    import faulthandler
+    faulthandler.enable()
+except Exception as e:  # pragma: no cover
+    warnings.warn('Unable to enable faulthandler:\n%s' % str(e))
+
 
 input_path = os.path.dirname(__file__) + '/../../notebooks/data'
 
 
-@pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
-                    reason="Skipping this test on Travis CI.")
 class TestVista:
     @pytest.fixture(scope='module')
     def vista_object_only_data(self, one_fault_model_no_interp):
@@ -82,6 +88,8 @@ class TestVista:
         with pytest.raises(KeyError):
             sp2.loc[4, 'X_r']
 
+    @pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
+                        reason="Skipping this test on Travis CI.")
     def test_plot_surface_points_poly_live(self, vista_object_only_data_interactive):
         """
         Args:
@@ -123,6 +131,8 @@ class TestVista:
         plt.show()
         print('foo')
 
+    @pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
+                        reason="Skipping this test on Travis CI.")
     def test_plot_orientations_poly_live(self, vista_object_only_data_interactive):
         """
         Args:
