@@ -5,10 +5,10 @@ import matplotlib.pyplot as plt
 
 def test_plot_3d_data_default(one_fault_model_no_interp):
     gpv = gp.plot.plot_3d(one_fault_model_no_interp,
-                          plotter_type='basic', off_screen=True, notebook=False)
-    img = gpv.p.show(screenshot=True)
-    plt.imshow(img[1])
-    plt.show()
+                          plotter_type='basic', off_screen=True, image=True, notebook=False)
+    # img = gpv.p.show(screenshot=True)
+    # plt.imshow(img[1])
+    # plt.show()
 
 
 def test_plot_3d_geo_map(unconformity_model):
@@ -17,10 +17,11 @@ def test_plot_3d_geo_map(unconformity_model):
                           show_topography=True,
                           show_scalar=False,
                           show_lith=False,
+                          image=True,
                           kwargs_plot_structured_grid={'opacity': .5})
-    img = gpv.p.show(screenshot=True)
-    plt.imshow(img[1])
-    plt.show()
+    # img = gpv.p.show(screenshot=True)
+    # plt.imshow(img[1])
+    # plt.show()
 
 
 def test_plot_3d_geo_map2(one_fault_model_topo_solution):
@@ -29,10 +30,11 @@ def test_plot_3d_geo_map2(one_fault_model_topo_solution):
                           show_topography=True,
                           show_scalar=False,
                           show_lith=False,
+                          image=True,
                           kwargs_plot_structured_grid={'opacity': .5})
-    img = gpv.p.show(screenshot=True)
-    plt.imshow(img[1])
-    plt.show()
+    # img = gpv.p.show(screenshot=True)
+    # plt.imshow(img[1])
+    # plt.show()
 
 
 def test_plot_3d_structure_topo(one_fault_model_topo_solution):
@@ -43,10 +45,11 @@ def test_plot_3d_structure_topo(one_fault_model_topo_solution):
                           show_topography=True,
                           show_scalar=False,
                           show_lith=True,
+                          image=True,
                           kwargs_plot_structured_grid={'opacity': .5})
-    img = gpv.p.show(screenshot=True)
-    plt.imshow(img[1])
-    plt.show()
+    # img = gpv.p.show(screenshot=True)
+    # plt.imshow(img[1])
+    # plt.show()
 
 
 def test_plot_3d_structure_topo2(unconformity_model_topo):
@@ -55,7 +58,8 @@ def test_plot_3d_structure_topo2(unconformity_model_topo):
                           show_topography=True,
                           show_scalar=False,
                           show_lith=True,
+                          image=True,
                           kwargs_plot_structured_grid={'opacity': .5})
-    img = gpv.p.show(screenshot=True)
-    plt.imshow(img[1])
-    plt.show()
+    # img = gpv.p.show(screenshot=True)
+    # plt.imshow(img[1])
+    # plt.show()

@@ -2,6 +2,7 @@ qgrid==1.3.0
 pymc3
 pyevtk
 pyqrcode
+pyvistaqt
 mplstereonet
 requests
 pyqt5

@@ -34,13 +34,11 @@ import matplotlib.colors as mcolors
 from matplotlib import cm
 import numpy as np
 import pandas as pd
-
+import pyvista as pv
+from pyvista.plotting.theme import parse_color
 # TODO Check if this is necessary if it is implemented in the API
 try:
-    import pyvista as pv
     import pyvistaqt as pvqt
-    from pyvista.plotting.theme import parse_color
-
     PYVISTA_IMPORT = True
 except ImportError:
     PYVISTA_IMPORT = False
