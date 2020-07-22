@@ -327,7 +327,7 @@ gp.compute_model(geo_model)
 
 # Plot
 gp.plot_2d(geo_model, cell_number=5, legend='force')
-gp.plot_3d(geo_model, kwargs_plot_structured_grid={'opacity':.2})
+gp.plot_3d(geo_model, kwargs_plot_structured_grid={'opacity': .2})
 
 # %%
 # As you can see now instead of having folding layers we have a sharp

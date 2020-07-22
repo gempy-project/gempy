@@ -1,0 +1,4 @@
+# This are additional libraries necessary to run sphinx and all the test
+emg3d
+discretize==0.4.13
+welly
