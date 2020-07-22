@@ -759,7 +759,7 @@ class GemPyToVista(WidgetsCallbacks, RenderChanges):
         # Set the scalar field active
         try:
             regular_grid.set_active_scalars(scalar_field)
-        except RuntimeError:
+        except ValueError:
             raise AttributeError('The scalar field provided does not exist. Please pass '
                                  'a valid field: {}'.format(regular_grid.array_names))
 

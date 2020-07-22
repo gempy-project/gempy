@@ -132,7 +132,7 @@ plt.imshow(sol.fw_gravity.reshape(grav_res, grav_res),
                    xy_ravel[:, 0].max() - (xy_ravel[0, 0] - xy_ravel[1, 0]) / 2,
                    xy_ravel[:, 1].min() + (xy_ravel[0, 1] - xy_ravel[30, 1]) / 2,
                    xy_ravel[:, 1].max() - (xy_ravel[0, 1] - xy_ravel[30, 1]) / 2),
-           cmap='viridis_r', origin='bottom')
+           cmap='viridis_r', origin='lower')
 plt.show()
 # %%
 # Plotting lithologies
@@ -159,7 +159,7 @@ plt.imshow(grav.reshape(grav_res, grav_res),
                    xy_ravel[:, 0].max() - (xy_ravel[0, 0] - xy_ravel[1, 0]) / 2,
                    xy_ravel[:, 1].min() + (xy_ravel[0, 1] - xy_ravel[30, 1]) / 2,
                    xy_ravel[:, 1].max() - (xy_ravel[0, 1] - xy_ravel[30, 1]) / 2),
-           cmap='viridis_r', origin='bottom', alpha=.8)
+           cmap='viridis_r', origin='lower', alpha=.8)
 cbar = plt.colorbar()
 cbar.set_label(r'$\mu$gal')
 plt.show()

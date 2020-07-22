@@ -81,13 +81,15 @@ def test_real_grid_ales():
                           show_surfaces=False,
                           kwargs_plot_structured_grid={'opacity': 1,
                                                        'show_edges': False},
+                          ve=10,
+                          image=True,
                           kwargs_plot_topography={'scalars': 'topography'})
-
-    gpv.p.set_scale(zscale=10)
-
-    img = gpv.p.show(screenshot=True)
-    plt.imshow(img[1])
-    plt.show()
+    #
+    # gpv.p.set_scale(zscale=10)
+    #
+    # img = gpv.p.show(screenshot=True)
+    # plt.imshow(img[1])
+    # plt.show()
 
 
 def test_plot_2d_topography(one_fault_model_no_interp, artificial_grid):
