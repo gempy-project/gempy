@@ -69,7 +69,7 @@ class GemPyToRex:
             raise NotImplementedError
 
         flip_yz, backside, vertex_color = self.default_values(app)
-        flip_yz, backside, vertex_color = False, True, False
+        # flip_yz, backside, vertex_color = False, True, False
 
         surface_df = self.grab_meshes(geo_model)
 
