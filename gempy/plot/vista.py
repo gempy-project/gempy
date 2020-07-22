@@ -38,6 +38,7 @@ import pandas as pd
 # TODO Check if this is necessary if it is implemented in the API
 try:
     import pyvista as pv
+    import pyvistaqt as pvqt
     from pyvista.plotting.theme import parse_color
 
     PYVISTA_IMPORT = True
@@ -97,11 +98,7 @@ class GemPyToVista(WidgetsCallbacks, RenderChanges):
             raise NotImplementedError
             # self.p = pv.PlotterITK()
         elif plotter_type == 'background':
-            try:
-                from pyvistaqt import BackgroundPlotter
-                self.p = BackgroundPlotter(**kwargs)
-            except ImportError:
-                self.p = pv.BackgroundPlotter(**kwargs)
+            self.p = pvqt.BackgroundPlotter(**kwargs)
             self.p.view_isometric(negative=False)
         else:
             raise AttributeError('Plotter type must be basic, background or notebook.')
