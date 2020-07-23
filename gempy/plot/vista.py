@@ -26,8 +26,6 @@
 from __future__ import annotations
 
 import warnings
-# insys.path.append("../../pyvista")
-from copy import deepcopy
 from typing import Union, Dict, List, Iterable, Set, Tuple
 
 import matplotlib.colors as mcolors
@@ -45,7 +43,6 @@ except ImportError:
 
 import gempy as gp
 from gempy.plot.vista_aux import WidgetsCallbacks, RenderChanges
-from logging import debug
 import matplotlib
 
 warnings.filterwarnings("ignore",
@@ -96,7 +93,11 @@ class GemPyToVista(WidgetsCallbacks, RenderChanges):
             raise NotImplementedError
             # self.p = pv.PlotterITK()
         elif plotter_type == 'background':
-            self.p = pvqt.BackgroundPlotter(**kwargs)
+            try:
+                self.p = pv.BackgroundPlotter(**kwargs)
+            except pv.QtDeprecationError:
+                from pyvistaqt import BackgroundPlotter
+                self.p = BackgroundPlotter(**kwargs)
             self.p.view_isometric(negative=False)
         else:
             raise AttributeError('Plotter type must be basic, background or notebook.')
