@@ -43,10 +43,11 @@ install:
   - conda install -c anaconda libffi
 
   # Installs from pip
-  - pip install pyvista==0.24.3 welly pymc3
+  - pip install welly pymc3
 
   # Install
   - pip install -e .
+  - pip install pyvista==0.24.3 --force-reinstall
 
   - python -c "import pyvista as pv;print(pv.Report())"
 
