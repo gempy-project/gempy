@@ -18,8 +18,9 @@ setup(
         'seaborn>=0.9',
         'networkx',
         'scikit-image>=0.17',
-        'pyvista==0.24.3',
-        'iPython'
+        'pyvista>=0.25',
+        'pyvistaqt',
+        'iPython',
     ],
     url='https://github.com/cgre-aachen/gempy',
     license='LGPL v3',

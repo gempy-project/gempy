@@ -1,8 +1,15 @@
 import os
 import sys, os
 sys.path.append("../../..")
-os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
+
 os.environ["THEANO_FLAGS"] = "mode=FAST_RUN,device=cpu"
+import warnings
+
+try:
+    import faulthandler
+    faulthandler.enable()
+except Exception as e:  # pragma: no cover
+    warnings.warn('Unable to enable faulthandler:\n%s' % str(e))
 
 import gempy as gp
 import matplotlib.pyplot as plt
@@ -74,13 +81,15 @@ def test_real_grid_ales():
                           show_surfaces=False,
                           kwargs_plot_structured_grid={'opacity': 1,
                                                        'show_edges': False},
+                          ve=10,
+                          image=True,
                           kwargs_plot_topography={'scalars': 'topography'})
-
-    gpv.p.set_scale(zscale=10)
-
-    img = gpv.p.show(screenshot=True)
-    plt.imshow(img[1])
-    plt.show()
+    #
+    # gpv.p.set_scale(zscale=10)
+    #
+    # img = gpv.p.show(screenshot=True)
+    # plt.imshow(img[1])
+    # plt.show()
 
 
 def test_plot_2d_topography(one_fault_model_no_interp, artificial_grid):
@@ -121,8 +130,9 @@ def test_plot_3d_structure_topo2(unconformity_model_topo, artificial_grid):
                           show_surfaces=True,
                           kwargs_plot_structured_grid={'opacity': .5,
                                                        'show_edges': True},
+                          image=True,
                           kwargs_plot_topography={'scalars': 'topography'})
 
-    img = gpv.p.show(screenshot=True)
-    plt.imshow(img[1])
-    plt.show()
+    # img = gpv.p.show(screenshot=True)
+    # plt.imshow(img[1])
+    # plt.show()

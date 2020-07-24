@@ -1,11 +1,14 @@
 language: python
-
+os: linux
 dist: xenial
+
+branches:
+    only:
+        - master
+        - release
 
 python:
   - '3.7'
-
-env: TRAVIS=true
 
 before_install:
   # configure a headless display
@@ -13,35 +16,41 @@ before_install:
   - source ./gl-ci-helpers/travis/setup_headless_display.sh
 
 install:
-  - wget https://repo.anaconda.com/pkgs/misc/conda-execs/conda-latest-linux-64.exe -O conda.exe
-  - chmod +x conda.exe
-  - export CONDA_ALWAYS_YES=1
-  # This is where you put any extra dependencies you may have.
-  - ./conda.exe create -p $HOME/miniconda python=$TRAVIS_PYTHON_VERSION conda conda-build pytest six pytest-cov pytest-mock
+  - sudo apt-get update
+  # We do this conditionally because it saves us some downloading if the
+  # version is the same.
+  - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+  - bash miniconda.sh -b -p $HOME/miniconda
   - export PATH="$HOME/miniconda/bin:$PATH"
   - hash -r
-  - pip install --upgrade setuptools pip
-  - pip install -r requirements.txt
-  - pip install sphinx-gallery
-  - pip install qgrid
-  - pip install nbval
-  - pip install pyevtk
-  - pip install arviz
-  - pip install recommonmark
-  - pip install dataclasses pyvista panel discretize # emg3d
-  - pip install welly
-  - conda install gdal
-  - conda install --yes -c conda-forge python-graphviz
-  - conda install -c anaconda libffi
-  - pip install pymc3
-  - pip install ipython
-    # Install untested, non-required code (linter fails without them)
-  - pip install ipython ipywidgets
-  - export PATH="./bin:$PATH"
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update --all
+  # Useful for debugging any issues with conda
+  - conda info -a
 
-script:
-  - pytest -v notebooks/ --nbval-lax
-  - pytest
+  # Install and activate environment, install packages
+  - conda create -q -n tenv python=$TRAVIS_PYTHON_VERSION
+  - source activate tenv
+
+  # Installs from conda-forge
+  - conda install -c conda-forge python-graphviz emg3d
+    discretize==0.4.13 pip matplotlib ipython six pytest pytest-cov
+    pytest-mock gdal pandas seaborn>=0.9 qgrid sphinx-gallery
+    ipywidgets pyevtk arviz dataclasses scikit-image>=0.17
+    recommonmark networkx panel setuptools mkl-service
+
+  # Installs from anaconda
+  - conda install -c anaconda libffi
+
+  # Installs from pip
+  - pip install welly pymc3
+
+  # Install
+  - pip install -e .
+  # foo
+  - pip install pyvista==0.24.3 --force-reinstall
+
+  - python -c "import pyvista as pv;print(pv.Report())"
 
 stages:
   - test
@@ -51,13 +60,12 @@ jobs:
   include:
       - stage: test
         script:
-          - pytest
+          - pytest -v
       - stage: deploy
         name: Deploy to GitHub Pages
        # if: (NOT type IN (pull_request)) AND (branch = sphinx-gallery) # only deploy if merging on master
 
         before_script:
-         - pip install -e .
          - cd docs
         script: pipenv run make html
         deploy:
@@ -66,8 +74,7 @@ jobs:
           github_token: $travis_doc # defined via the Travis interface
           local_dir: docs/build/html
           on:
-            branch: docs-devs
+            branch: release
           target_branch: gh-pages
           fqdn: docs.gempy.org
 cache: pip
-
