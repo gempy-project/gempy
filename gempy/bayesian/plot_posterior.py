@@ -66,7 +66,7 @@ class PlotPosterior:
                       n_samples=11):
 
         figsize, self.ax_labelsize, _, self.xt_labelsize, self.linewidth, _ = _scale_fig_size(figsize, textsize)
-        self.fig, axes = plt.subplots(0, 0, figsize=figsize, constrained_layout=False)
+        self.fig = plt.figure(figsize=figsize, constrained_layout=False)
         gs_0 = gridspect.GridSpec(3, 6, figure=self.fig, hspace=.1)
 
         if marginal is True:
@@ -99,7 +99,7 @@ class PlotPosterior:
         # Instantiate figure and grid
 
         if figure is None:
-            fig, _ = plt.subplots(0, 0, figsize=figsize, constrained_layout=True)
+            fig = plt.figure(figsize=figsize, constrained_layout=True)
         else:
             fig = figure
 
@@ -126,7 +126,7 @@ class PlotPosterior:
         # Making the axes:
         if figure is None:
             figsize = kwargs.get('figsize', None)
-            fig, _ = plt.subplots(0, 0, figsize=figsize, constrained_layout=False)
+            fig = plt.figure(figsize=figsize, constrained_layout=False)
         else:
             fig = figure
 

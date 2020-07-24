@@ -4,23 +4,15 @@ Getting Started
 
 """
 
-# %% 
-# These two lines are necessary only if GemPy is not installed
-import sys, os
-import numpy as np
+# %%
 
 # Importing GemPy
 import gempy as gp
 
 # Importing aux libraries
-from ipywidgets import interact
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
-
-# %% 
-from gempy.plot import visualization_2d as vv
-from gempy.plot import vista
 
 # %%
 # Initializing the model:
@@ -327,7 +319,7 @@ gp.compute_model(geo_model)
 
 # Plot
 gp.plot_2d(geo_model, cell_number=5, legend='force')
-gp.plot_3d(geo_model, kwargs_plot_structured_grid={'opacity':.2})
+gp.plot_3d(geo_model, kwargs_plot_structured_grid={'opacity': .2})
 
 # %%
 # As you can see now instead of having folding layers we have a sharp

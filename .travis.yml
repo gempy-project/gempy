@@ -33,16 +33,24 @@ install:
   - source activate tenv
 
   # Installs from conda-forge
-  - conda install -c conda-forge python-graphviz emg3d discretize==0.4.13 pip matplotlib ipython six pytest pytest-cov pytest-mock gdal pandas seaborn>=0.9 qgrid sphinx-gallery ipywidgets pyevtk arviz dataclasses scikit-image>=0.17 recommonmark networkx panel setuptools
+  - conda install -c conda-forge python-graphviz emg3d
+    discretize==0.4.13 pip matplotlib ipython six pytest pytest-cov
+    pytest-mock gdal pandas seaborn>=0.9 qgrid sphinx-gallery
+    ipywidgets pyevtk arviz dataclasses scikit-image>=0.17
+    recommonmark networkx panel setuptools mkl-service
 
   # Installs from anaconda
   - conda install -c anaconda libffi
 
   # Installs from pip
-  - pip install pyvista welly pymc3
+  - pip install welly pymc3
 
   # Install
   - pip install -e .
+  # foo
+  - pip install pyvista==0.24.3 --force-reinstall
+
+  - python -c "import pyvista as pv;print(pv.Report())"
 
 stages:
   - test
@@ -52,7 +60,7 @@ jobs:
   include:
       - stage: test
         script:
-          - pytest
+          - pytest -v
       - stage: deploy
         name: Deploy to GitHub Pages
        # if: (NOT type IN (pull_request)) AND (branch = sphinx-gallery) # only deploy if merging on master
@@ -66,7 +74,7 @@ jobs:
           github_token: $travis_doc # defined via the Travis interface
           local_dir: docs/build/html
           on:
-            branch: docs-devs
+            branch: release
           target_branch: gh-pages
           fqdn: docs.gempy.org
 cache: pip

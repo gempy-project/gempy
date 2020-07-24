@@ -35,6 +35,7 @@ import numpy as np
 import pandas as pn
 try:
     import pyvista as pv
+    import pyvistaqt as pvqt
     from pyvista.plotting.theme import parse_color
     PYVISTA_IMPORT = True
 except ImportError:
@@ -88,7 +89,7 @@ class __Vista:
         if plotter_type == 'basic':
             self.p = pv.Plotter(**kwargs)
         elif plotter_type == 'background':
-            self.p = pv.BackgroundPlotter(**kwargs)
+            self.p = pvqt.BackgroundPlotter(**kwargs)
 
         self.set_bounds()
         self.p.view_isometric(negative=False)
@@ -469,7 +470,7 @@ class Vista:
         if plotter_type == 'basic':
             self.p = pv.Plotter(**kwargs)
         elif plotter_type == 'background':
-            self.p = pv.BackgroundPlotter(**kwargs)
+            self.p = pvqt.BackgroundPlotter(**kwargs)
 
         self._surface_actors = {}
         self._surface_points_actors = {}
