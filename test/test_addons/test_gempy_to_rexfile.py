@@ -35,9 +35,3 @@ class TestGemPyToRexClass:
 
     def test_gempy_to_rex_old(self, unconformity_model_topo):
         bytes2 = geomodel_to_rex(unconformity_model_topo, False)
-
-    def test_gempy_to_rex_comp(self, unconformity_model_topo):
-        gempy_to_rex = GemPyToRex()
-        bytes = gempy_to_rex(unconformity_model_topo, app='RexView')
-        bytes2 = geomodel_to_rex(unconformity_model_topo)
-        np.testing.assert_array_almost_equal(bytes, bytes2)
