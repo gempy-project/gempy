@@ -87,6 +87,8 @@ class TestGemPyToREX:
 
     # TODO this test should go away together with the request = pytest.importorskip("request")
     def test_plot_ar(self, geo_model):
-        tag = gempy.plot.plot_ar(geo_model, api_token='8e8a12ef-5da2-4790-9a84-15923a287965', project_name='Alesmodel',
+        tag = gempy.plot.plot_ar(geo_model,
+                                 api_token='8e8a12ef-5da2-4790-9a84-15923a287965', \
+                                 project_name='Alesmodel',
                                  secret='45tBkVGgbhodX1C9SCaGf7FxBOCTDIQv')
         print(tag.display_tag(reverse=False))
