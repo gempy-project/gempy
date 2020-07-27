@@ -37,7 +37,7 @@ from gempy.plot.plot_api import plot_2d, plot_3d
 from gempy.plot import _plot as _plot
 
 assert sys.version_info[0] >= 3, "GemPy requires Python 3.X"  # sys.version_info[1] for minor e.g. 6
-__version__ = '2.2.2'
+__version__ = '2.2.3'
 
 if __name__ == '__main__':
     pass
