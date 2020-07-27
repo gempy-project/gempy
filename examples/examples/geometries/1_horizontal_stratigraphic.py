@@ -34,7 +34,6 @@ geo_data = gp.create_data('horizontal', extent=[0, 1000, 0, 1000, 0, 1000], reso
 gp.map_stack_to_surfaces(geo_data, {"Strat_Series": ('rock2', 'rock1'), "Basement_Series": ('basement')})
 
 # %% 
-# %matplotlib inline
 gp.plot_2d(geo_data, direction=['y'])
 
 # %%

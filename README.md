@@ -5,9 +5,9 @@
 
 [![PyPI](https://img.shields.io/badge/python-3-blue.svg)](https://www.python.org/downloads/)
 [![PyPI](https://img.shields.io/badge/pypi-1.0-blue.svg)](https://pypi.org/project/gempy/)
-[![license: LGPL v3](https://img.shields.io/badge/license-LGPL%20v3-blue.svg)]()
+[![license: LGPL v3](https://img.shields.io/badge/license-LGPL%20v3-blue.svg)](https://github.com/cgre-aachen/gempy/blob/master/LICENSE)
 [![Documentation Status](https://assets.readthedocs.org/static/projects/badges/passing-flat.svg)](http://docs.gempy.org)
-[![Travis Build](https://travis-ci.org/cgre-aachen/gempy.svg?branch=master)]()
+[![Travis Build](https://travis-ci.org/cgre-aachen/gempy.svg?branch=master)](https://travis-ci.org/github/cgre-aachen/gempy/branches)
 [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/cgre-aachen/gempy/master)
 [![DOI](https://zenodo.org/badge/96211155.svg)](https://zenodo.org/badge/latestdoi/96211155)
 [![DOCKER](https://img.shields.io/docker/cloud/automated/leguark/gempy.svg)](https://cloud.docker.com/repository/docker/leguark/gempy)
@@ -67,7 +67,7 @@ gempy has been used for realistic models!  -->
 ### Interpolation approach
 
 The generation of complex structural settings is based on the powerful
-interpolation algorithm underlying `GemPy`, a unviersal cokriging method
+interpolation algorithm underlying `GemPy`, a universal cokriging method
 devoised by Lajaunie et al. (1997) and extended by Calcagno et al. (2008).
 This method is used to interpolate a 3D scalar field, such that geologically
 significant interfaces are isosurfces in this field.

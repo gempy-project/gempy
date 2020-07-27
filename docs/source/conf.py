@@ -36,6 +36,7 @@ pyvista.set_plot_theme('document')
 pyvista.rcParams['window_size'] = np.array([1024, 768]) * 2
 # Save figures in specified directory
 pyvista.FIGURE_PATH = os.path.join(os.path.abspath('./images/'), 'auto-generated/')
+pyvista.BUILDING_GALLERY = True
 if not os.path.exists(pyvista.FIGURE_PATH):
     os.makedirs(pyvista.FIGURE_PATH)
 
@@ -143,8 +144,6 @@ todo_include_todos = True
 
 
 # -- Sphinx Gallery Options
-from sphinx_gallery.sorting import FileNameSortKey
-
 sphinx_gallery_conf = {
     # path to your examples scripts
     "examples_dirs": [
@@ -204,7 +203,7 @@ html_theme_options = {
     'logo_name': True,
     'travis_button': True,
     'page_width': '1200px',
-    'fixed_sidebar': True,
+    'fixed_sidebar': False,
     'show_related': True,
     'sidebar_collapse': True,
 }

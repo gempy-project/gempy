@@ -320,6 +320,8 @@ class Solution(object):
                 self.edges.append(s)
 
                 idx = active_indices[s_n]
+
+                # TODO: Time this piece
                 self.surfaces.df.loc[idx, 'vertices'] = [v]
                 self.surfaces.df.loc[idx, 'edges'] = [s]
                 s_n += 1

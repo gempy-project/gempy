@@ -26,27 +26,23 @@
 from __future__ import annotations
 
 import warnings
-# insys.path.append("../../pyvista")
-from copy import deepcopy
 from typing import Union, Dict, List, Iterable, Set, Tuple
 
 import matplotlib.colors as mcolors
 from matplotlib import cm
 import numpy as np
 import pandas as pd
-
+import pyvista as pv
+from pyvista.plotting.theme import parse_color
 # TODO Check if this is necessary if it is implemented in the API
 try:
-    import pyvista as pv
-    from pyvista.plotting.theme import parse_color
-
+    import pyvistaqt as pvqt
     PYVISTA_IMPORT = True
 except ImportError:
     PYVISTA_IMPORT = False
 
 import gempy as gp
 from gempy.plot.vista_aux import WidgetsCallbacks, RenderChanges
-from logging import debug
 import matplotlib
 
 warnings.filterwarnings("ignore",
@@ -97,7 +93,11 @@ class GemPyToVista(WidgetsCallbacks, RenderChanges):
             raise NotImplementedError
             # self.p = pv.PlotterITK()
         elif plotter_type == 'background':
-            self.p = pv.BackgroundPlotter(**kwargs)
+            try:
+                self.p = pv.BackgroundPlotter(**kwargs)
+            except pv.QtDeprecationError:
+                from pyvistaqt import BackgroundPlotter
+                self.p = BackgroundPlotter(**kwargs)
             self.p.view_isometric(negative=False)
         else:
             raise AttributeError('Plotter type must be basic, background or notebook.')
@@ -760,7 +760,7 @@ class GemPyToVista(WidgetsCallbacks, RenderChanges):
         # Set the scalar field active
         try:
             regular_grid.set_active_scalars(scalar_field)
-        except RuntimeError:
+        except ValueError:
             raise AttributeError('The scalar field provided does not exist. Please pass '
                                  'a valid field: {}'.format(regular_grid.array_names))
 

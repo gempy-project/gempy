@@ -869,7 +869,7 @@ class PlotSolution(PlotData2D):
             imshow_kwargs.pop('grid_linewidth')
 
         im = plt.imshow(sliced_block,
-                        origin="bottom",
+                        origin="lower",
                         extent=extent_val,
                         interpolation=interpolation,
                         aspect=aspect,

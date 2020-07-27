@@ -1,4 +1,5 @@
 import pyvista as pv
+import pyvistaqt as pvqt
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
@@ -39,7 +40,7 @@ class MainWidget(QWidget):
         plot = QFrame()
         self.Vista = Vista(geo_model,
                            plotter_type="basic")  # init Vista plotter
-        self.vtk_widget = pv.QtInteractor(plot)
+        self.vtk_widget = pvqt.QtInteractor(plot)
         self.Vista.p = self.vtk_widget  # set Plotter to the vtk widget Plotter
 
         splitter.addWidget(self.vtk_widget)

@@ -154,5 +154,5 @@ ax = gp.plot_2d(geo_model_graben,
                 block=geo_model_graben.solutions.block_matrix[0, 0, :125000],
                 show_data=True, show=False)
 
-plt.imshow(intersection[:, 25, :].T, origin='bottom', extent=(0, 1000, -1000, 0), alpha=.5)
+plt.imshow(intersection[:, 25, :].T, origin='lower', extent=(0, 1000, -1000, 0), alpha=.5)
 plt.show()

@@ -7,6 +7,15 @@ Created on 21/10/2016
 import sys
 import os
 
+import warnings
+
+try:
+    import faulthandler
+    faulthandler.enable()
+except Exception as e:  # pragma: no cover
+    warnings.warn('Unable to enable faulthandler:\n%s' % str(e))
+
+
 PACKAGE_PARENT = '..'
 SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__))))
 sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
@@ -28,7 +37,7 @@ from gempy.plot.plot_api import plot_2d, plot_3d
 from gempy.plot import _plot as _plot
 
 assert sys.version_info[0] >= 3, "GemPy requires Python 3.X"  # sys.version_info[1] for minor e.g. 6
-__version__ = '2.2.0'
+__version__ = '2.2.2'
 
 if __name__ == '__main__':
     pass

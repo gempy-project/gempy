@@ -342,6 +342,8 @@ def plot_3d(model, plotter_type='basic',
         plt.imshow(img[1])
         plt.axis('off')
         plt.show()
+        gpv.p.close()
+
     if off_screen is False:
         gpv.p.show()
 

@@ -431,7 +431,7 @@ class ImplicitCoKriging(object):
             self._grid.update_grid_values()
         self.set_active_grid('centered')
         self.update_from_grid()
-        print(f'Active grids: {self._grid.grid_types[self._grid.active_grids]}')
+        # print(f'Active grids: {self._grid.grid_types[self._grid.active_grids]}')
         return self._grid
 
     @_setdoc_pro(Grid.create_section_grid.__doc__)
@@ -1013,6 +1013,11 @@ class ImplicitCoKriging(object):
                            recompute_rescale_factor=False):
         """
         Args:
+            X:
+            Y:
+            Z:
+            surface (str):
+            idx: Index of the point. If None, next available index will be used
             recompute_rescale_factor (bool): [s0].
         """
 
@@ -1049,7 +1054,8 @@ class ImplicitCoKriging(object):
 
     @_setdoc_pro()
     @plot_move_surface_points
-    def modify_surface_points(self, indices: Union[int, list], recompute_rescale_factor=False, **kwargs):
+    def modify_surface_points(self, indices: Union[int, list],
+                              recompute_rescale_factor=False, **kwargs):
         """Allows modification of the x,y and/or z-coordinates of an interface at specified dataframe index.
 
         Args:
@@ -1070,11 +1076,6 @@ class ImplicitCoKriging(object):
 
          """
 
-        """
-        
-        Args:
-            recompute_rescale_factor: [s0] foo
-        """
         keys = list(kwargs.keys())
         is_surface = np.isin('surface', keys).all()
         if is_surface:
@@ -1246,6 +1247,9 @@ class ImplicitCoKriging(object):
              :class:`gempy.core.data.Surfaces`
 
          """
+        if len(self._surfaces.df['surface']) != 0:
+            self.delete_surfaces(self._surfaces.df['surface'])
+
         if self._surfaces.df.shape[0] == 0:
             self.add_surfaces(['surface1', 'surface2'])
         self.update_from_surfaces()

@@ -81,6 +81,7 @@ def test_topo_sections_iterp2(section_model):
     gp.plot.plot_section_traces(section_model)
     plt.show()
 
+
 def test_ve(section_model):
     # Test ve
     p2d = gp.plot_2d(section_model, section_names=['section_NW-SE', 'section_NW-SE'],

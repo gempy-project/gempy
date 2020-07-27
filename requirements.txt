@@ -6,5 +6,7 @@ pytest
 seaborn>=0.9
 networkx
 scikit-image>=0.17
-pyvista
+pyvista # 0.24 and 0.25 compatible
+pyvistaqt # necessary for > 0.25
 iPython
+

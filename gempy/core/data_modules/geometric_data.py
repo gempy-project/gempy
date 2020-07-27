@@ -283,13 +283,13 @@ class SurfacePoints(GeometricData):
 
         coord_array = np.array([x, y, z])
         assert coord_array.ndim == 1, 'Adding an interface only works one by one.'
-        self.df.loc[idx, ['X', 'Y', 'Z']] = coord_array.astype('float64')
 
         try:
             if self.surfaces.df.groupby('isBasement').get_group(True)['surface'].isin(surface).any():
                 warnings.warn('Surface Points for the basement will not be used. Maybe you are missing an extra'
                               'layer at the bottom of the pile.')
 
+            self.df.loc[idx, ['X', 'Y', 'Z']] = coord_array.astype('float64')
             self.df.loc[idx, 'surface'] = surface
         # ToDO test this
         except ValueError as error:
@@ -358,7 +358,8 @@ class SurfacePoints(GeometricData):
     #    is_surface = np.isin('surface', keys).all()
 
         # Check idx exist in the df
-        assert np.isin(np.atleast_1d(idx), self.df.index).all(), 'Indices must exist in the dataframe to be modified.'
+        assert np.isin(np.atleast_1d(idx), self.df.index).all(), 'Indices must exist in the' \
+                                                                 ' dataframe to be modified.'
 
         # Check the properties are valid
         assert np.isin(list(kwargs.keys()), ['X', 'Y', 'Z', 'surface', 'smooth']).all(),\

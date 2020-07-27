@@ -1,23 +1,12 @@
 """
-    This file is part of gempy.
+This file is part of gempy.
 
-    gempy is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+gempy is free software. For license details, see the LICENSE.md file supplied
+ with gempy
 
-    Foobar is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+Created on 10/10 /2018
 
-    You should have received a copy of the GNU General Public License
-    along with gempy.  If not, see <http://www.gnu.org/licenses/>.
-
-
-    Created on 10/10 /2018
-
-    @author: Miguel de la Varga
+@author: Miguel de la Varga
 """
 
 import numpy as np
@@ -38,7 +27,7 @@ def get():
 # endregion
 
 # region edit
-def edit(model: Project, data_object: str, method: str, **kwargs):
+def edit(model: Project,  method: str, data_object: str = None, **kwargs):
     """Function to edit any of the data_objects of gempy. Check
         https://www.gempy.org/documentation data for documentation.
 
@@ -48,7 +37,10 @@ def edit(model: Project, data_object: str, method: str, **kwargs):
         method (str): Method you want to use
         **kwargs:
     """
-    data_object = getattr(model, '_'+data_object)
+    if data_object is not None:
+        data_object = getattr(model, '_' + data_object)
+    else:
+        data_object = model
     m = getattr(data_object, method)
     return m(**kwargs)
 
