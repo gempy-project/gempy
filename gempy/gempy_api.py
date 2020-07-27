@@ -27,7 +27,7 @@ def get():
 # endregion
 
 # region edit
-def edit(model: Project, data_object: str, method: str, **kwargs):
+def edit(model: Project,  method: str, data_object: str = None, **kwargs):
     """Function to edit any of the data_objects of gempy. Check
         https://www.gempy.org/documentation data for documentation.
 
@@ -37,7 +37,10 @@ def edit(model: Project, data_object: str, method: str, **kwargs):
         method (str): Method you want to use
         **kwargs:
     """
-    data_object = getattr(model, '_'+data_object)
+    if data_object is not None:
+        data_object = getattr(model, '_' + data_object)
+    else:
+        data_object = model
     m = getattr(data_object, method)
     return m(**kwargs)
 

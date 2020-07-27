@@ -358,7 +358,8 @@ class SurfacePoints(GeometricData):
     #    is_surface = np.isin('surface', keys).all()
 
         # Check idx exist in the df
-        assert np.isin(np.atleast_1d(idx), self.df.index).all(), 'Indices must exist in the dataframe to be modified.'
+        assert np.isin(np.atleast_1d(idx), self.df.index).all(), 'Indices must exist in the' \
+                                                                 ' dataframe to be modified.'
 
         # Check the properties are valid
         assert np.isin(list(kwargs.keys()), ['X', 'Y', 'Z', 'surface', 'smooth']).all(),\
