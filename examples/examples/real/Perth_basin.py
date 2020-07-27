@@ -3,15 +3,14 @@ Perth basin.
 ============
 """
 import os
-os.environ["THEANO_FLAGS"] = "mode=FAST_RUN,device=cuda"
 
 # Importing GemPy
 import gempy as gp
 
 # Importing auxiliary libraries
-import numpy as np
-import matplotlib.pyplot as plt
-
+import matplotlib
+matplotlib.rcParams['figure.figsize'] = (20.0, 10.0)
+os.environ["THEANO_FLAGS"] = "mode=FAST_RUN,device=cuda"
 
 # %%
 data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
