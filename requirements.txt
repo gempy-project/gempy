@@ -1,12 +1,12 @@
-pandas==0.24
-Theano>=1.0.4
+pandas
+Theano>=1.0.4 # In windows use conda! This will install all the required compilers
 matplotlib
 numpy
 pytest
-nbsphinx
 seaborn>=0.9
 networkx
-ipywidgets
-scikit-image
-nptyping
-IPython
+scikit-image>=0.17
+pyvista # 0.24 and 0.25 compatible
+pyvistaqt # necessary for > 0.25
+iPython
+

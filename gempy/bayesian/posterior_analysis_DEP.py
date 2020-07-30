@@ -55,13 +55,13 @@ def change_input_data_general(data_array, interp_data):
     interp_data.geo_data_res.interfaces[["X", "Y", "Z"]] = data_array[interf_mask, :3]
     # replace foliation data
     if data_array[orient_mask, :].shape[1] == 6:
-        interp_data.geo_data_res.orientations[["X", "Y", "Z", "dip", "azimuth", "polarity"]] = data_array[orient_mask, :]
+        interp_data.geo_data_res._orientations[["X", "Y", "Z", "dip", "azimuth", "polarity"]] = data_array[orient_mask, :]
     elif data_array[orient_mask, :].shape[1] == 9:
-        interp_data.geo_data_res.orientations[["X", "Y", "Z", "G_x", "G_y", "G_z", "dip", "azimuth", "polarity"]] = data_array[orient_mask, :]
+        interp_data.geo_data_res._orientations[["X", "Y", "Z", "G_x", "G_y", "G_z", "dip", "azimuth", "polarity"]] = data_array[orient_mask, :]
     else:
         raise ValueError("Value mismatch.")
     # recalc gradients
-    recalc_gradients(interp_data.geo_data_res.orientations)
+    recalc_gradients(interp_data.geo_data_res._orientations)
     # update interpolator
     interp_data.update_interpolator()
 
@@ -82,14 +82,14 @@ def change_input_data(db, interp_data, i):
     """
     i = int(i)
     # replace interface data
-    interp_data.geo_data_res.surface_points[["X", "Y", "Z"]] = db.trace("input_interf")[i]
+    interp_data.geo_data_res._surface_points[["X", "Y", "Z"]] = db.trace("input_interf")[i]
     # replace foliation data
     try:
-        interp_data.geo_data_res.orientations[["X", "Y", "Z", "dip", "azimuth", "polarity"]] = db.trace("input_orient")[i]
+        interp_data.geo_data_res._orientations[["X", "Y", "Z", "dip", "azimuth", "polarity"]] = db.trace("input_orient")[i]
     except ValueError:
-        interp_data.geo_data_res.orientations[["G_x", "G_y", "G_z", "X", "Y", "Z", "dip", "azimuth", "polarity"]] = db.trace("input_orient")[i]
+        interp_data.geo_data_res._orientations[["G_x", "G_y", "G_z", "X", "Y", "Z", "dip", "azimuth", "polarity"]] = db.trace("input_orient")[i]
 
-    recalc_gradients(interp_data.geo_data_res.orientations)
+    recalc_gradients(interp_data.geo_data_res._orientations)
 
     # interp_data.geo_data_res_no_basement = interp_data.rescale_data(interp_data.geo_data_res_no_basement)
 
@@ -106,9 +106,9 @@ def change_input_data_avrg(db, interp_data):
     # get input data
     trace = db.geo_model.gettrace()
     # set average in categories_df
-    interp_data.geo_data_res.surface_points[["X", "Y", "Z"]] = trace[:, 0][:].mean(axis=0)
-    interp_data.geo_data_res.orientations[["X", "Y", "Z", "dip", "azimuth", "polarity"]] = trace[:, 1][:].mean(axis=0)
-    recalc_gradients(interp_data.geo_data_res.orientations)  # recalc gradients
+    interp_data.geo_data_res._surface_points[["X", "Y", "Z"]] = trace[:, 0][:].mean(axis=0)
+    interp_data.geo_data_res._orientations[["X", "Y", "Z", "dip", "azimuth", "polarity"]] = trace[:, 1][:].mean(axis=0)
+    recalc_gradients(interp_data.geo_data_res._orientations)  # recalc gradients
     interp_data.update_interpolator()  # update interpolator
     return interp_data
 
@@ -127,14 +127,14 @@ def _change_input_data_old(db, interp_data, i, tracename="input_data"):
     """
     i = int(i)
     # replace interface data
-    interp_data.geo_data_res.surface_points[["X", "Y", "Z"]] = db.trace(tracename)[i][0]
+    interp_data.geo_data_res._surface_points[["X", "Y", "Z"]] = db.trace(tracename)[i][0]
     # replace foliation data
     try:
-        interp_data.geo_data_res.orientations[["X", "Y", "Z", "dip", "azimuth", "polarity"]] = db.trace(tracename)[i][1]
+        interp_data.geo_data_res._orientations[["X", "Y", "Z", "dip", "azimuth", "polarity"]] = db.trace(tracename)[i][1]
     except ValueError:
-        interp_data.geo_data_res.orientations[["G_x", "G_y", "G_z", "X", "Y", "Z", "dip", "azimuth", "polarity"]] = db.trace(tracename)[i][1]
+        interp_data.geo_data_res._orientations[["G_x", "G_y", "G_z", "X", "Y", "Z", "dip", "azimuth", "polarity"]] = db.trace(tracename)[i][1]
 
-    recalc_gradients(interp_data.geo_data_res.orientations)
+    recalc_gradients(interp_data.geo_data_res._orientations)
 
     # interp_data.geo_data_res_no_basement = interp_data.rescale_data(interp_data.geo_data_res_no_basement)
 
@@ -281,11 +281,11 @@ class Posterior:
         """
         i = int(i)
         # replace interface data
-        interp_data.geo_data_res.surface_points[["X", "Y", "Z"]] = self.input_data[i][0]
+        interp_data.geo_data_res._surface_points[["X", "Y", "Z"]] = self.input_data[i][0]
         # replace foliation data
-        interp_data.geo_data_res.orientations[["G_x", "G_y", "G_z", "X", "Y", "Z", "dip", "azimuth", "polarity"]] = self.input_data[i][1]
+        interp_data.geo_data_res._orientations[["G_x", "G_y", "G_z", "X", "Y", "Z", "dip", "azimuth", "polarity"]] = self.input_data[i][1]
 
-        recalc_gradients(interp_data.geo_data_res.orientations)
+        recalc_gradients(interp_data.geo_data_res._orientations)
 
         # update interpolator
         interp_data.update_interpolator()
@@ -300,9 +300,9 @@ class Posterior:
         interf_avrg = self.input_data[:, 0][:].mean(axis=0)
         orient_avrg = self.input_data[:, 1][:].mean(axis=0)
         # set average in categories_df
-        interp_data.geo_data_res.surface_points[["X", "Y", "Z"]] = interf_avrg
-        interp_data.geo_data_res.orientations[["G_x", "G_y", "G_z", "X", "Y", "Z", "dip", "azimuth", "polarity"]] = orient_avrg
-        recalc_gradients(interp_data.geo_data_res.orientations)  # recalc gradients
+        interp_data.geo_data_res._surface_points[["X", "Y", "Z"]] = interf_avrg
+        interp_data.geo_data_res._orientations[["G_x", "G_y", "G_z", "X", "Y", "Z", "dip", "azimuth", "polarity"]] = orient_avrg
+        recalc_gradients(interp_data.geo_data_res._orientations)  # recalc gradients
         interp_data.update_interpolator()  # update interpolator
         return interp_data
 
@@ -488,29 +488,29 @@ def modify_plane_dip(dip, group_id, data_obj):
         Directly modifies the given data object.
     """
     # get foliation and interface data points ids
-    fol_f = data_obj.orientations["group_id"] == group_id
-    interf_f = data_obj.surface_points["group_id"] == group_id
+    fol_f = data_obj._orientations["group_id"] == group_id
+    interf_f = data_obj._surface_points["group_id"] == group_id
 
     # get indices
-    interf_i = data_obj.surface_points[interf_f].index
-    fol_i = data_obj.orientations[fol_f].index[0]
+    interf_i = data_obj._surface_points[interf_f].index
+    fol_i = data_obj._orientations[fol_f].index[0]
 
     # update dip value for orientations
-    data_obj.orientations.set_value(fol_i, "dip", dip)
+    data_obj._orientations.set_value(fol_i, "dip", dip)
     # get azimuth and polarity
-    az = float(data_obj.orientations.iloc[fol_i]["azimuth"])
-    pol = data_obj.orientations.iloc[fol_i]["polarity"]
+    az = float(data_obj._orientations.iloc[fol_i]["azimuth"])
+    pol = data_obj._orientations.iloc[fol_i]["polarity"]
 
     # calculate gradient/normal and modify
     gx, gy, gz = calculate_gradient(dip, az, pol)
-    data_obj.orientations.set_value(fol_i, "G_x", gx)
-    data_obj.orientations.set_value(fol_i, "G_y", gy)
-    data_obj.orientations.set_value(fol_i, "G_z", gz)
+    data_obj._orientations.set_value(fol_i, "G_x", gx)
+    data_obj._orientations.set_value(fol_i, "G_y", gy)
+    data_obj._orientations.set_value(fol_i, "G_z", gz)
 
     normal = [gx, gy, gz]
-    centroid = np.array([float(data_obj.orientations[fol_f]["X"]),
-                         float(data_obj.orientations[fol_f]["Y"]),
-                         float(data_obj.orientations[fol_f]["Z"])])
+    centroid = np.array([float(data_obj._orientations[fol_f]["X"]),
+                         float(data_obj._orientations[fol_f]["Y"]),
+                         float(data_obj._orientations[fol_f]["Z"])])
     # move points vertically to fit plane
     move_plane_points(normal, centroid, data_obj, interf_f)
 
@@ -519,10 +519,10 @@ def move_plane_points(normal, centroid, data_obj, interf_f):
     """Moves interface points to fit plane of given normal and centroid in data object."""
     a, b, c = normal
     d = -a * centroid[0] - b * centroid[1] - c * centroid[2]
-    for i, row in data_obj.surface_points[interf_f].iterrows():
+    for i, row in data_obj._surface_points[interf_f].iterrows():
         # iterate over each point and recalculate Z, set Z
         Z = (a * row["X"] + b * row["Y"] + d) / -c
-        data_obj.surface_points.set_value(i, "Z", Z)
+        data_obj._surface_points.set_value(i, "Z", Z)
 
 
 def calculate_gradient(dip, az, pol):

@@ -14,7 +14,7 @@ except ImportError:
 
 import numpy as np
 import pandas as pd
-from gempy.plot import visualization_2d, plot, helpers
+from gempy.plot import _visualization_2d, _plot, helpers
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 from copy import deepcopy
@@ -257,7 +257,7 @@ class field_solution(object):
             print('prop must be val var or both')
 
         #create plot object
-        p = visualization_2d.PlotSolution(geo_data)
+        p = _visualization_2d.PlotSolution(geo_data)
         _a, _b, _c, extent_val, x, y = p._slice(direction, cell_number)[:-2]
 
         #colors
@@ -269,7 +269,7 @@ class field_solution(object):
             if show_data:
                 plt.scatter(self.domain.data_df[x].values, self.domain.data_df[y].values, marker='*', s=9, c='k')
 
-            plot.plot_section(geo_data, direction=direction, cell_number=cell_number)
+            _plot.plot_section(geo_data, direction=direction, cell_number=cell_number)
             if contour == True:
                 im = plt.contourf(a.reshape(self.domain.sol.grid.regular_grid.resolution)[_a, _b, _c].T, cmap=cmap,
                                   origin='lower', levels=25,

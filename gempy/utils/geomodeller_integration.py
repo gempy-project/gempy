@@ -65,8 +65,8 @@ def create_from_geomodeller_xml(fp, resolution=(50, 50, 50), return_xml=False, *
     geo_data = create_data(gmx.extent, resolution, **kwargs)
 
     # set interface and orientation dataframes
-    geo_data.surface_points = gmx.surface_points
-    geo_data.orientations = gmx.orientations
+    geo_data._surface_points = gmx._surface_points
+    geo_data._orientations = gmx._orientations
 
     if return_xml:
         return geo_data, gmx

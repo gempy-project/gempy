@@ -1,9 +1,10 @@
 import pyvista as pv
+import pyvistaqt as pvqt
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
-from gempy.plot.vista import Vista
+from gempy.plot._vista import Vista
 
 
 class MainWindow(QMainWindow):  # QtWidgets.QWidget
@@ -39,7 +40,7 @@ class MainWidget(QWidget):
         plot = QFrame()
         self.Vista = Vista(geo_model,
                            plotter_type="basic")  # init Vista plotter
-        self.vtk_widget = pv.QtInteractor(plot)
+        self.vtk_widget = pvqt.QtInteractor(plot)
         self.Vista.p = self.vtk_widget  # set Plotter to the vtk widget Plotter
 
         splitter.addWidget(self.vtk_widget)
@@ -55,7 +56,7 @@ class MainWidget(QWidget):
         self.tree_items = {"surfaces": {}}
         self.tree_actors = {"surfaces": {}}
 
-        for id_, row in self.model.surfaces.df.iterrows():
+        for id_, row in self.model._surfaces.df.iterrows():
             item = QTreeWidgetItem([row.surface])
             item.setCheckState(0, Qt.Unchecked)
             self.tree.addTopLevelItem(item)

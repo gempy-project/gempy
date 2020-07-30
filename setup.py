@@ -1,24 +1,28 @@
 from setuptools import setup, find_packages
+version = '2.2.2'
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(
     name='gempy',
-    version='2.1.1',
+    version=version,
     packages=find_packages(exclude=('test', 'docs')),
     include_package_data=True,
     install_requires=[
-        'numpy',
-        'pandas==0.24',
+        'pandas',
+        'Theano>=1.0.4',
         'matplotlib',
-        'theano',
-        'scikit-image',
-        'seaborn',
-        'nptyping',
+        'numpy',
+        'pytest',
+        'seaborn>=0.9',
+        'networkx',
+        'scikit-image>=0.17',
+        'pyvista>=0.25',
+        'pyvistaqt',
+        'iPython',
     ],
     url='https://github.com/cgre-aachen/gempy',
-    download_url='https://github.com/cgre-aachen/gempy/archive/2.1.1tar.gz',
     license='LGPL v3',
     author='Miguel de la Varga, Elisa Heim, Alexander Schaaf, Fabian Stamm, Florian Wellmann',
     author_email='varga@aices.rwth-aachen.de',

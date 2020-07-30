@@ -111,7 +111,7 @@ def set_surface_points_from_block(geo_data, block, block_grid=None, n_points=20,
     values = values[:-1]
 
     if block_grid is None:
-        block_grid = geo_data.grid.values
+        block_grid = geo_data._grid.values
 
     for e, value in enumerate(values):
         block_bool = find_surface_points_from_block(block, value)
@@ -121,7 +121,7 @@ def set_surface_points_from_block(geo_data, block, block_grid=None, n_points=20,
                                                                        formation_number=e, order_series=1,
                                                                        n_points=n_points), append=True)
         if reset_index:
-            geo_data.surface_points.reset_index(drop=True, inplace=True)
+            geo_data._surface_points.reset_index(drop=True, inplace=True)
 
     return geo_data
 
@@ -217,8 +217,8 @@ def change_data(interp_data, geo_data_stoch, priors):
                                                                                 prior.index_interf, prior.column] + value
         if prior.index_orient is not None:
             if prior.replace:  # replace the value
-                interp_data.geo_data_res.orientations.loc[prior.index_orient, prior.column] = value
+                interp_data.geo_data_res._orientations.loc[prior.index_orient, prior.column] = value
             else:  # add value
-                interp_data.geo_data_res.orientations.loc[prior.index_orient, prior.column] = geo_data_stoch.orientations.loc[
+                interp_data.geo_data_res._orientations.loc[prior.index_orient, prior.column] = geo_data_stoch._orientations.loc[
                                                                                   prior.index_orient, prior.column] + value
     return prior_draws

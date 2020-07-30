@@ -1,0 +1,8 @@
+# This are additional libraries necessary to run sphinx and all the test
+sphinx
+sphinx_gallery
+emg3d==0.11.0
+ipywidgets
+# This shold be installed with conda too: conda install -c conda-forge discretize==0.4.13
+welly
+requests

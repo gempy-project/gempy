@@ -1,6 +1,6 @@
 
 from matplotlib.cm import ScalarMappable as SM
-from gempy.plot.visualization_2d import PlotData2D
+from gempy.plot._visualization_2d import PlotData2D
 import numpy as np
 import os
 
@@ -24,7 +24,7 @@ def export_geomap2geotiff(path, geo_model, geo_map=None, geotiff_filepath=None):
     norm = plot._norm
 
     if geo_map is None:
-        geo_map = geo_model.solutions.geological_map[0].reshape(geo_model.grid.topography.resolution)
+        geo_map = geo_model.solutions.geological_map[0].reshape(geo_model._grid.topography.resolution)
 
     if geotiff_filepath is None:
         # call the other function
@@ -88,7 +88,7 @@ def export_moose_input(geo_model, path=None, filename='geo_model_units_moose_inp
     idstring = '\n  '.join(map(str, liths))
 
     # create a dictionary with unit names and corresponding unit IDs
-    sids = dict(zip(geo_model.surfaces.df['surface'], geo_model.surfaces.df['id']))
+    sids = dict(zip(geo_model._surfaces.df['surface'], geo_model._surfaces.df['id']))
     surfs = list(sids.keys())
     uids = list(sids.values())
     # create strings for fstring, so in MOOSE, units have a name instead of an ID

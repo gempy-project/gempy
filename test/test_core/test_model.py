@@ -100,10 +100,10 @@ def map_sequential_pile(load_model):
 
     # TODO decide what I do with the layer order
 
-    gp.map_series_to_surfaces(geo_model, {"Fault_Series": 'Main_Fault',
+    gp.map_stack_to_surfaces(geo_model, {"Fault_Series": 'Main_Fault',
                                           "Strat_Series": ('Sandstone_2', 'Siltstone',
                                                            'Shale', 'Sandstone_1', 'basement')},
-                                            remove_unused_series=True)
+                             remove_unused_series=True)
 
     geo_model.set_is_fault(['Fault_Series'])
     return geo_model
@@ -115,7 +115,7 @@ def test_get_data(load_model):
 
 
 def test_define_sequential_pile(map_sequential_pile):
-    print(map_sequential_pile.surfaces)
+    print(map_sequential_pile._surfaces)
 
 
 def test_compute_model(interpolator, map_sequential_pile):
@@ -134,12 +134,12 @@ def test_compute_model(interpolator, map_sequential_pile):
     # We only compare the block because the absolute pot field I changed it
     np.testing.assert_array_almost_equal(np.round(geo_model.solutions.lith_block[test_values]), real_sol, decimal=0)
 
-    gp.plot.plot_section(geo_model, cell_number=25,
-                         direction='y', show_data=True)
+    gp.plot.plot_2d(geo_model, cell_number=25,
+                    direction='y', show_data=True)
     plt.savefig(os.path.dirname(__file__)+'/../figs/test_integration_lith_block')
 
-    gp.plot.plot_scalar_field(geo_model, cell_number=25, series=1, N=15,
-                              direction='y', show_data=True)
+    gp.plot.plot_2d(geo_model, cell_number=25, series_n=1, N=15, show_scalar=True,
+                    direction='y', show_data=True)
 
     plt.savefig(os.path.dirname(__file__)+'/../figs/test_integration_scalar')
 
@@ -149,24 +149,25 @@ def test_kriging_mutation(interpolator, map_sequential_pile):
     geo_model.set_theano_graph(interpolator)
 
     gp.compute_model(geo_model, compute_mesh=False)
-    gp.plot.plot_scalar_field(geo_model, cell_number=25, series=1, N=15,
-                              direction='y', show_data=True)
-    print(geo_model.solutions.lith_block, geo_model.additional_data)
+    gp.plot.plot_2d(geo_model, cell_number=25, show_scalar=True, series_n=1, N=15,
+                    direction='y', show_data=True)
+    print(geo_model.solutions.lith_block, geo_model._additional_data)
     #plt.savefig(os.path.dirname(__file__)+'/figs/test_kriging_mutation')
 
     geo_model.modify_kriging_parameters('range', 1)
     geo_model.modify_kriging_parameters('drift equations', [0, 3])
 
-    print(geo_model.solutions.lith_block, geo_model.additional_data)
+    print(geo_model.solutions.lith_block, geo_model._additional_data)
     # copy dataframe before interpolator is calculated
-    pre = geo_model.additional_data.kriging_data.df.copy()
+    pre = geo_model._additional_data.kriging_data.df.copy()
 
     gp.set_interpolator(geo_model, compile_theano=True,
                         theano_optimizer='fast_compile', update_kriging=False)
     gp.compute_model(geo_model, compute_mesh=False)
-    gp.plot.plot_scalar_field(geo_model, cell_number=25, series=1, N=15,
-                              direction='y', show_data=True)
 
-    print(geo_model.solutions.lith_block, geo_model.additional_data)
-    # plt.savefig(os.path.dirname(__file__)+'/figs/test_kriging_mutation2')
-    assert geo_model.additional_data.kriging_data.df['range'][0] == pre['range'][0]
+    gp.plot.plot_2d(geo_model, cell_number=25, series_n=1, N=15, show_boundaries=False,
+                    direction='y', show_data=True, show_lith=True)
+
+    print(geo_model.solutions.lith_block, geo_model._additional_data)
+    plt.savefig(os.path.dirname(__file__)+'/../figs/test_kriging_mutation2')
+    assert geo_model._additional_data.kriging_data.df['range'][0] == pre['range'][0]

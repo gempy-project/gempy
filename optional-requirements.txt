@@ -1,9 +1,17 @@
-vtk
-pyvista
-gdal
+# Interactive pandas
 qgrid==1.3.0
+# Probability
 pymc3
-pyvolume
+arviz
+# vtk plugins
+pyvistaqt
 pyevtk
+
+# AR
 pyqrcode
+
+# Plot orientation
 mplstereonet
+welly
+# gdal # install gdal with conda! `conda install gdal`
+
