@@ -136,7 +136,7 @@ def export_moose_input(geo_model, path=None, filename='geo_model_units_moose_inp
     
     print("Successfully exported geological model as moose input to "+path)
 
-def export_shemat-suite_input_file(geo_model, path=None, filename='geo_model_SHEMAT_input'):
+def export_shemat_suite_input_file(geo_model, path=None, filename='geo_model_SHEMAT_input'):
     """
     Method to export a 3D geological model as SHEMAT-Suite input-file for a conductive HT-simulation. 
 
@@ -164,11 +164,14 @@ def export_shemat-suite_input_file(geo_model, path=None, filename='geo_model_SHE
     unit_id = [key for key, group in it.groupby(liths)]
     combined = ["%s*%s" % (pair) for pair in zip(sequence,unit_id)]
 
+    combined_string = " ".join(combined)
+
     # get number of units and set units string
-    n_units = np.max(np.unique(liths))
     units = geo_model.surfaces.df[['surface', 'id']]
     
-    unit_string = "0.01d-10    1.d0  1.d0  1.e-14	 1.e-10  1.d0  1.d0  3.74	0.  2077074.  10  2e-3	!Dummy" 	
+    unitstring = ""
+    for index, rows in units.iterrows():
+        unitstring += f"0.01d-10    1.d0  1.d0  1.e-14	 1.e-10  1.d0  1.d0  3.74	0.  2077074.  10  2e-3	!{rows['surface']} \n" 	
 
     # input file as f-string
     fstring = f"""!==========>>>>> INFO
@@ -250,19 +253,7 @@ def export_shemat-suite_input_file(geo_model, path=None, filename='geo_model_SHE
 !==========>>>>> UNIT DESCRIPTION
 !!
 # units
-0.01d-10    1.d0  1.d0  1.e-14	 1.e-10  1.d0  1.d0  3.74	0.  2077074.  10  2e-3	!Dummy 			
-0.01d-10    1.d0  1.d0  1.e-14	 1.e-10  1.d0  1.d0  3.74	0.  2077074.  10  2e-3	!Dummy 
-0.01d-10    1.d0  1.d0  1.e-14	 1.e-10  1.d0  1.d0  3.74	0.  2077074.  10  2e-3	!Dummy 
-0.01d-10    1.d0  1.d0  1.e-14	 1.e-10  1.d0  1.d0  3.74	0.  2077074.  10  2e-3	!Dummy 
-0.01d-10    1.d0  1.d0  1.e-14	 1.e-10  1.d0  1.d0  3.74	0.  2077074.  10  2e-3	!Dummy 
-0.07    1.d0  1.d0  5.e-14	 1.e-10  1.d0  1.d0  2.5	0.  2077074.  10  2e-3	! Tertiary
-0.03    1.d0  1.d0  1.e-16	 1.e-10  1.d0  1.d0  3.2	0.  2077074.  10  2e-3	! Orange
-0.10    1.d0  1.d0  5.e-13	 1.e-10  1.d0  1.d0  3.2	0.  2077074.  10  2e-3	! Pink
-0.01    1.d0  1.d0  1.e-18	 1.e-10  1.d0  1.d0  5.74	0.  2077074.  10  2e-3	! Mesozoic
-0.05    1.d0  1.d0  5.e-15	 1.e-10  1.d0  1.d0  3.2	0.  2077074.  10  2e-3	! Upper Filling
-0.03    1.d0  1.d0  1.e-15	 1.e-10  1.d0  1.d0  2.8	0.  2077074.  10  2e-3	! Middle Filling 
-0.02    1.d0  1.d0  1.e-17	 1.e-10  1.d0  1.d0  3.74	0.  2077074.  10  2e-3	! Lower Filling 
-0.01    1.d0  1.d0  1.e-18	 1.e-10  1.d0  1.d0  3.05	0.  2077074.  10  2e-3	! Basement 
+{unitstring}
 
 !==========>>>>>   define boundary properties
 # temp bcd, simple=top, value=init
@@ -271,6 +262,16 @@ def export_shemat-suite_input_file(geo_model, path=None, filename='geo_model_SHE
 {nx*ny}*0.06
 
 # uindex
-{combined}"""
+{combined_string}"""
 
-        
+    if not path:
+        path = './'
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+    f = open(path+filename, 'w+')
+    
+    f.write(fstring)
+    f.close()
+    
+    print("Successfully exported geological model as SHEMAT-Suite input to "+path)        
