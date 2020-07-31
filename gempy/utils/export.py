@@ -136,13 +136,13 @@ def export_moose_input(geo_model, path=None, filename='geo_model_units_moose_inp
     
     print("Successfully exported geological model as moose input to "+path)
 
-def export_shemat_suite_input_file(geo_model, path=None, filename='geo_model_SHEMAT_input'):
+def export_shemat_suite_input_file(geo_model, path: str=None, filename: str='geo_model_SHEMAT_input'):
     """
     Method to export a 3D geological model as SHEMAT-Suite input-file for a conductive HT-simulation. 
 
     Args:
-        path (str): Filepath for the exported input file
-        filename (str): name of exported input file
+        path (str): Filepath for the exported input file (default './')
+        filename (str): name of exported input file (default 'geo_model_SHEMAT_input')
     """
     # get model dimensions
     nx, ny, nz = geo_model.grid.regular_grid.resolution
