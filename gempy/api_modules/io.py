@@ -1,6 +1,6 @@
 """
-The aim of this module is to encapsulate the loading functionality. Also this will enable better error handling
-when some of the data files are missing
+The aim of this module is to encapsulate the loading functionality. Also this will enable
+ better error handling when some of the data files are missing
 """
 import os
 import shutil
@@ -44,13 +44,13 @@ def load_model_pickle(path):
     return Project.load_model_pickle(path)
 
 
-def load_model(name, path=None, recompile=False):
+def load_model(name=None, path=None, recompile=False):
     """
     Loading model saved with model.save_model function.
 
     Args:
         name: name of folder with saved files
-        path (str): path to folder directory
+        path (str): path to folder directory or the zip file
         recompile (bool): if true, theano functions will be recompiled
 
     Returns:
@@ -63,14 +63,28 @@ def load_model(name, path=None, recompile=False):
     #
 
     # Default path
-    if not path:
-        path = './'
-    path = f'{path}/{name}'
+    is_compressed = False
+    if path is None:
+        path = f'./{name}'
 
-    # Check if is a zip file and uncompress
-    is_compressed = os.path.exists(path+'.zip')
-    if is_compressed:
-        shutil.unpack_archive(path+'.zip', extract_dir=name)
+    # If the path includes .zip
+    if os.path.isfile(f'{path}'):
+        path = path[:-4]
+
+        try:
+            shutil.unpack_archive(path + '.zip', extract_dir=path)
+        except ValueError as e:
+            raise ValueError(e)
+        is_compressed = True
+
+    # if the path does not include .zip but exist
+    elif os.path.isfile(f'{path}.zip'):
+
+        try:
+            shutil.unpack_archive(path + '.zip', extract_dir=path)
+        except ValueError as e:
+            raise ValueError(e)
+        is_compressed = True
 
     # create model with extent and resolution from csv - check
     geo_model = create_model()

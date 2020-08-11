@@ -6,3 +6,4 @@ ipywidgets
 # This shold be installed with conda too: conda install -c conda-forge discretize==0.4.13
 welly
 requests
+pooch

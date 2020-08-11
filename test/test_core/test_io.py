@@ -28,6 +28,14 @@ def test_load_model_compressed():
     geo_model = gp.load_model(name="one_fault_model")
 
 
+def test_load_model_compressed_remote():
+    model_file = pooch.retrieve(url="https://github.com/cgre-aachen/gempy_data/raw/master/"
+                                    "data/gempy_models/viz_3d.zip",
+                                known_hash=None)
+
+    geo_model = gp.load_model(name='viz_3d', path=model_file)
+
+
 def test_pooch():
     goodboy = pooch.create(
         # Use the default cache folder for the OS
