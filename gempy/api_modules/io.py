@@ -2,6 +2,8 @@
 The aim of this module is to encapsulate the loading functionality. Also this will enable better error handling
 when some of the data files are missing
 """
+import os
+import shutil
 
 import pandas as pn
 import numpy as np
@@ -18,12 +20,12 @@ def save_model_to_pickle(model: Project, path=None):
 
 
 @_setdoc(Project.save_model.__doc__)
-def save_model(model: Project, name=None, path=None):
+def save_model(model: Project, name=None, path=None, compress=True):
     # try:
     #     model._grid.topography.topo = None
     # except AttributeError:
     #     pass
-    model.save_model(name, path)
+    model.save_model(name, path, compress)
     return True
 
 
@@ -55,24 +57,32 @@ def load_model(name, path=None, recompile=False):
         :class:`Project`
 
     """
-    # TODO: Divide each dataframe in its own function
+    # TODO: Divide each dataframe in its own function and move them as
+    #  method of the class
     # TODO: Include try except in case some of the datafiles is missing
     #
 
+    # Default path
     if not path:
         path = './'
     path = f'{path}/{name}'
 
+    # Check if is a zip file and uncompress
+    is_compressed = os.path.exists(path+'.zip')
+    if is_compressed:
+        shutil.unpack_archive(path+'.zip', extract_dir=name)
+
     # create model with extent and resolution from csv - check
     geo_model = create_model()
-    init_data(geo_model, np.load(f'{path}/{name}_extent.npy'), np.load(f'{path}/{name}_resolution.npy'))
+    init_data(geo_model, np.load(f'{path}/{name}_extent.npy'),
+              np.load(f'{path}/{name}_resolution.npy'))
 
     try:
-        geo_model.set_topography(source='saved', filepath=f'{path}/{name}_topography.npy')
+        geo_model.set_topography(source='saved',
+                                 filepath=f'{path}/{name}_topography.npy')
     except FileNotFoundError:
         pass
-    # rel_matrix = np.load()
-    # set additonal data
+
     geo_model._additional_data.kriging_data.df = pn.read_csv(f'{path}/{name}_kriging_data.csv', index_col=0,
                                                              dtype={'range': 'float64', '$C_o$': 'float64',
                                                                     'drift equations': object,
@@ -113,12 +123,6 @@ def load_model(name, path=None, recompile=False):
         geo_model._stack.df['isActive'] = False
 
     cat_series = geo_model._stack.df.index.values
-
-    # do faults properly - check
-   # geo_model._faults.df = pn.read_csv(f'{path}/{name}_faults.csv', index_col=0,
-   #                                    dtype={'isFault': 'bool', 'isFinite': 'bool'})
-   # geo_model._faults.df.index = series_index
-
     # # do faults relations properly - this is where I struggle
     geo_model._faults.faults_relations_df = pn.read_csv(f'{path}/{name}_faults_relations.csv', index_col=0)
     geo_model._faults.faults_relations_df.index = series_index
@@ -188,6 +192,10 @@ def load_model(name, path=None, recompile=False):
         from gempy.api_modules.setters import set_interpolator
         set_interpolator(geo_model, verbose=[0])
 
+    # Cleaning temp files
+    if is_compressed:
+        shutil.rmtree(path)
+
     return geo_model
 
 
@@ -235,7 +243,7 @@ def load_faults(geo_model, path, name):
     # do faults properly - check
     geo_model._faults.df = pn.read_csv(f'{path}/{name}_faults.csv', index_col=0,
                                        dtype={'isFault': 'bool', 'isFinite': 'bool'})
-    geo_model._faults.df.index = series_index
+    # geo_model._faults.df.index = series_index
 
 
 def load_faults_relations(geo_model, path, name):
