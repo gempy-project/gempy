@@ -25,7 +25,7 @@ class TestGemPyToRexClass:
         gempy_to_rex = GemPyToRex()
         surfaces = gempy_to_rex.grab_meshes(unconformity_model_topo)
 
-        gempy_to_rex.gempy_mesh_to_rex(surfaces)
+        gempy_to_rex.gempy_meshes_to_rex(surfaces)
 
     def test_gempy_to_rex(self, unconformity_model_topo):
         gempy_to_rex = GemPyToRex()
