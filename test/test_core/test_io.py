@@ -3,20 +3,24 @@ import gempy as gp
 import pooch
 
 
-def test_load_model(recompute=True):
+def test_load_model(recompute=False):
     """Load model from disk"""
     cwd = os.path.dirname(__file__)
     data_path = cwd + '/../../examples/'
 
     if recompute:
         geo_model = gp.load_model(r'Tutorial_ch1-8_Onlap_relations',
-                                  path=data_path + 'data/gempy_models', recompile=True)
+                                  path=data_path + 'data/gempy_models/Tutorial_ch1'
+                                                   '-8_Onlap_relations',
+                                  recompile=True)
         gp.compute_model(geo_model)
         gp.plot_3d(geo_model, image=True)
 
     else:
         geo_model = gp.load_model(r'Tutorial_ch1-8_Onlap_relations',
-                                  path=data_path + 'data/gempy_models', recompile=False)
+                                  path=data_path + 'data/gempy_models/Tutorial_ch1'
+                                                   '-8_Onlap_relations',
+                                  recompile=False)
 
 
 def test_save_model(one_fault_model_no_interp):
