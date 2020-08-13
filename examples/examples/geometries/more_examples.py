@@ -120,6 +120,8 @@ def create_example(name_model, interpolator=None, save_pickle=False, plot_sectio
         else:
             gp.save_model_to_pickle(geo_data, 'lisa-' + str(n_model))
 
+    gp.save_model(geo_data)
+
     return interp_data
 
 

@@ -72,3 +72,4 @@ gp.plot_2d(geo_data, cell_number=25,
            direction='y', show_data=True, show_scalar=True, series_n=1)
 
 
+gp.save_model(geo_data)

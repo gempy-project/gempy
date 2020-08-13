@@ -24,7 +24,9 @@ pd.set_option('precision', 2)
 data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
 path_to_data = data_path + "/data/input_data/jan_models/"
 
-geo_data = gp.create_data('unconformity', extent=[0, 2500, 0, 1000, 0, 1000], resolution=[125, 50, 50],
+geo_data = gp.create_data('combination',
+                          extent=[0, 2500, 0, 1000, 0, 1000],
+                          resolution=[125, 50, 50],
                           path_o=path_to_data + "model7_orientations.csv",
                           path_i=path_to_data + "model7_surface_points.csv")
 
@@ -70,3 +72,4 @@ gp.plot_2d(geo_data, cell_number=5,
 
 # %%
 gp.plot_3d(geo_data)
+gp.save_model(geo_data)

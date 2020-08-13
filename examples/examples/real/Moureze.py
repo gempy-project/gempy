@@ -192,3 +192,4 @@ geo_model.surfaces
 # np.save('Moureze_edges', geo_model.solutions.edges)
 # gp.plot.export_to_vtk(geo_model, 'Moureze')
 
+gp.save_model(geo_model)
