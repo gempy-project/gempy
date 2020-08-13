@@ -44,7 +44,7 @@ def test_load_model_compressed_remote():
 
 
 def test_load_model_compressed_remote_fail():
-    with pytest.raises(ConnectionError):
+    with pytest.raises(Exception):
         model_file = pooch.retrieve(url="https://nowhere.zip",
                                     known_hash=None)
 
@@ -58,7 +58,7 @@ def test_load_model_compressed_remote2():
 
     geo_model = gp.load_model(name='Onlap_relations', path=model_file, recompile=True)
     gp.compute_model(geo_model)
-    gp.plot_3d(geo_model, image=False)
+    gp.plot_3d(geo_model, image=True)
 
 
 def test_pooch():
