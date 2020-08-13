@@ -50,7 +50,7 @@ else:
     path_dir = cwd
 
 # %%
-geo_model = gp.load_model(r'2-layers', path=path_dir, recompile=True)
+geo_model = gp.load_model(r'2-layers', path=path_dir+r'2-layers', recompile=True)
 plot_geo_setting_well(geo_model=geo_model)
 
 # %%
