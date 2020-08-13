@@ -1,4 +1,7 @@
 import os
+
+import pytest
+
 import gempy as gp
 import pooch
 
@@ -38,6 +41,14 @@ def test_load_model_compressed_remote():
                                 known_hash=None)
 
     geo_model = gp.load_model(name='viz_3d', path=model_file)
+
+
+def test_load_model_compressed_remote_fail():
+    with pytest.raises(ConnectionError):
+        model_file = pooch.retrieve(url="https://nowhere.zip",
+                                    known_hash=None)
+
+        geo_model = gp.load_model(name='error', path=model_file)
 
 
 def test_load_model_compressed_remote2():
