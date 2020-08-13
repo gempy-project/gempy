@@ -40,6 +40,16 @@ def test_load_model_compressed_remote():
     geo_model = gp.load_model(name='viz_3d', path=model_file)
 
 
+def test_load_model_compressed_remote2():
+    model_file = pooch.retrieve(url="https://github.com/cgre-aachen/gempy_data/raw/master/"
+                                    "data/gempy_models/Onlap_relations.zip",
+                                known_hash=None)
+
+    geo_model = gp.load_model(name='Onlap_relations', path=model_file, recompile=True)
+    gp.compute_model(geo_model)
+    gp.plot_3d(geo_model, image=False)
+
+
 def test_pooch():
     goodboy = pooch.create(
         # Use the default cache folder for the OS

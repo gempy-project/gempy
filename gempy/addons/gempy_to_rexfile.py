@@ -135,7 +135,7 @@ class GemPyToRex:
     def grab_topography(geo_model):
         from scipy.spatial import Delaunay
 
-        if geo_model._grid.topography is None:
+        if geo_model._grid.topography is None or geo_model._grid.topography.values.shape[0] == 0:
             return None
         else:
             topography_dict = dict()

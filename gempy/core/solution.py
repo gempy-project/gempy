@@ -287,8 +287,7 @@ class Solution(object):
             sfas = sfas[np.nonzero(sfas)]
 
             # TODO: I think this condition is not necessary anymore
-            # if series_type[e - 1] == 'Onlap':
-            #     mask_array = self.mask_matrix_pad[e]
+
             # #elif series_type[e] == 'Fault':
             # #    mask_array = None
             # else:
@@ -297,7 +296,10 @@ class Solution(object):
             #     mask_array = np.invert(self.mask_matrix_pad[e])
             # else:
             #     mask_array = self.mask_matrix_pad[e]
-            mask_array = self.mask_matrix_pad[e]
+            if series_type[e-1] == 'Onlap':
+                mask_array = self.mask_matrix_pad[e-1]
+            else:
+                mask_array = self.mask_matrix_pad[e]
 
             for level in sfas:
                 try:
