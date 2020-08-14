@@ -298,3 +298,4 @@ def write_property_to_gocad_voxet(propertyfilename, propertyvalues):
 write_property_to_gocad_voxet('claudius_sf_gempy',
                               geo_model.solutions.scalar_field_matrix[1].reshape([38, 55, 30]).ravel('F'))
 
+gp.save_model(geo_model)

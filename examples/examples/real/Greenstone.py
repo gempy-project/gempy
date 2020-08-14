@@ -74,3 +74,4 @@ np.save('greenstone_edges', geo_model.solutions.edges)
 
 # %% 
 # gp.save_model(geo_model, path=os.pardir + '/data/gempy_models')
+gp.save_model(geo_model)

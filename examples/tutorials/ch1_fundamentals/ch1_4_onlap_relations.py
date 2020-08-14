@@ -30,7 +30,10 @@ else:
     data_path = cwd + '/../../'
 
 geo_model = gp.load_model(r'Tutorial_ch1-8_Onlap_relations',
-                          path=data_path + 'data/gempy_models', recompile=True)
+                          path=data_path + 'data/gempy_models/Tutorial_ch1-8_Onlap_relations',
+                          recompile=True)
+
+geo_model.meta.project_name = "Onlap_relations"
 
 # %% 
 gp.plot_2d(geo_model)
@@ -64,3 +67,5 @@ gp.plot_2d(geo_model, 2, regular_grid=geo_model.solutions.mask_matrix_pad[3],
 p3d = gp.plot_3d(geo_model, show_surfaces=True, show_data=True, image=False,
                  show_topography=True,
                  kwargs_plot_structured_grid={'opacity': .2})
+
+gp.save_model(geo_model)

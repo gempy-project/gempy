@@ -31,8 +31,10 @@ if 'examples' not in cwd:
 else:
     data_path = cwd + '/../../'
 
-geo_model = gp.load_model('Tutorial_ch1-9a_Fault_relations',
-                          path=data_path + 'data/gempy_models', recompile=True)
+geo_model = gp.load_model(r'Tutorial_ch1-9a_Fault_relations',
+                          path=data_path + 'data/gempy_models/Tutorial_ch1-9a_Fault_relations',
+                          recompile=True)
+
 
 # %% 
 geo_model.faults.faults_relations_df
@@ -60,8 +62,10 @@ gp.plot_2d(geo_model, cell_number=[25], show_data=True)
 
 
 # %%
-geo_model_graben = gp.load_model('Tutorial_ch1-9b_Fault_relations',
-                                 path=data_path + 'data/gempy_models', recompile=True)
+geo_model_graben = gp.load_model(r'Tutorial_ch1-9b_Fault_relations',
+                                 path=data_path + 'data/gempy_models/Tutorial_ch1-9b_Fault_relations', recompile=True)
+
+geo_model.meta.project_name = "Faults_relations"
 
 # %%
 geo_model_graben.surfaces
@@ -156,3 +160,5 @@ ax = gp.plot_2d(geo_model_graben,
 
 plt.imshow(intersection[:, 25, :].T, origin='lower', extent=(0, 1000, -1000, 0), alpha=.5)
 plt.show()
+
+gp.save_model(geo_model)

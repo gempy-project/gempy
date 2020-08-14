@@ -134,7 +134,8 @@ def test_masked_marching_cubes():
     cwd = os.path.dirname(__file__)
     data_path = cwd + '/../../../examples/'
     geo_model = gp.load_model(r'Tutorial_ch1-8_Onlap_relations',
-                              path=data_path + 'data/gempy_models', recompile=True)
+                              path=data_path + 'data/gempy_models/Tutorial_ch1-8_Onlap_relations',
+                              recompile=True)
 
     geo_model.set_regular_grid([-200, 1000, -500, 500, -1000, 0], [50, 50, 50])
    # geo_model.set_topography(d_z=np.array([-600, -100]))
