@@ -135,3 +135,5 @@ plot_pathdict(polygondict, cdict, extent)
 
 # %%
 plot_pathdict(polygondict, cdict, extent, surfaces=['basement', 'Main_Fault'])
+
+gp.save_model(geo_model)

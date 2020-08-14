@@ -25,7 +25,7 @@ if 'examples' not in cwd:
 else:
     data_path = cwd + '/../../'
 
-geo_model = gp.load_model('Greenstone', path=data_path + 'data/gempy_models')
+geo_model = gp.load_model('Greenstone', path=data_path + 'data/gempy_models/Greenstone')
 
 # %% 
 geo_model.stack

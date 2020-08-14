@@ -33,7 +33,7 @@ else:
     path_dir = cwd
 
 # %%
-geo_model = gp.load_model(r'/2-layers', path=path_dir, recompile=True)
+geo_model = gp.load_model(r'/2-layers', path=path_dir+'/2-layers', recompile=True)
 
 # %%
 geo_model.modify_surface_points(2, Z=1000)

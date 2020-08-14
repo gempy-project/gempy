@@ -43,7 +43,7 @@ install:
   - conda install -c anaconda libffi
 
   # Installs from pip
-  - pip install welly pymc3
+  - pip install welly pymc3 pooch
 
   # Install
   - pip install -e .

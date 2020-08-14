@@ -59,3 +59,5 @@ gp.plot_2d(geo_data, cell_number=[25],
 # sphinx_gallery_thumbnail_number = 2
 gp.plot_2d(geo_data, cell_number=[25],
            direction=['y'], show_data=True)
+
+gp.save_model(geo_data)
