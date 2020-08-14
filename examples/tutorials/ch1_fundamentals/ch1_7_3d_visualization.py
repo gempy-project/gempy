@@ -24,8 +24,10 @@ data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
 geo_model = gp.create_data('viz_3d',
                            [0, 2000, 0, 2000, 0, 1600],
                            [50, 50, 50],
-                           path_o=data_path + "data/input_data/lisa_models/foliations" + str(7) + ".csv",
-                           path_i=data_path + "data/input_data/lisa_models/interfaces" + str(7) + ".csv"
+                           path_o=data_path + "data/input_data/lisa_models/foliations" + str(
+                               7) + ".csv",
+                           path_i=data_path + "data/input_data/lisa_models/interfaces" + str(
+                               7) + ".csv"
                            )
 
 gp.map_stack_to_surfaces(
@@ -66,9 +68,10 @@ gp.plot_3d(geo_model, image=False)
 
 # sphinx_gallery_thumbnail_number = 2
 gpv = gp.plot.plot_3d(geo_model,
-                      plotter_type='basic',off_screen=False,
+                      plotter_type='basic', off_screen=False,
                       show_topography=True,
                       show_scalar=False,
                       show_lith=True,
                       kwargs_plot_structured_grid={'opacity': .5})
 
+gp.save_model(geo_model)

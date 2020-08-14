@@ -1,3 +1,4 @@
+import pooch
 import pytest
 import sys, os
 import numpy as np
@@ -25,7 +26,7 @@ class TestGemPyToRexClass:
         gempy_to_rex = GemPyToRex()
         surfaces = gempy_to_rex.grab_meshes(unconformity_model_topo)
 
-        gempy_to_rex.gempy_mesh_to_rex(surfaces)
+        gempy_to_rex.gempy_meshes_to_rex(surfaces)
 
     def test_gempy_to_rex(self, unconformity_model_topo):
         gempy_to_rex = GemPyToRex()
@@ -35,3 +36,12 @@ class TestGemPyToRexClass:
 
     def test_gempy_to_rex_old(self, unconformity_model_topo):
         bytes2 = geomodel_to_rex(unconformity_model_topo, False)
+
+    def test_gempy_to_rex_with_topo(self):
+        model_file = pooch.retrieve(url="https://github.com/cgre-aachen/gempy_data/raw/master/data/gempy_models/combination.zip",
+                                    known_hash=None)
+
+        geo_model = gempy.load_model(name='combination', path=model_file)
+        gempy_to_rex = GemPyToRex()
+        bytes = gempy_to_rex(geo_model)
+        print(bytes)

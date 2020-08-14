@@ -102,3 +102,4 @@ gp.plot_3d(geo_model)
 # %% 
 # gp.plot.plot_ar(geo_model)
 
+gp.save_model(geo_model)

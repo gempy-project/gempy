@@ -1,4 +1,5 @@
 import os
+import shutil
 import sys
 from abc import ABC
 
@@ -1556,13 +1557,14 @@ class Project(ImplicitCoKriging):
             model = pickle.load(f)
             return model
 
-    def save_model(self, name=None, path=None):
+    def save_model(self, name=None, path=None, compress=True):
         """
         Save model in new folder. Input data is saved as csv files. Solutions, extent and resolutions are saved as npy.
 
         Args:
             name (str): name of the newly created folder and the part of the files name
             path (str): path where save the model folder.
+            compress (bool): If true create a zip
 
         Returns:
             True
@@ -1594,15 +1596,12 @@ class Project(ImplicitCoKriging):
         np.save(f'{path}/{name}_extent.npy', self._grid.regular_grid.extent)
         np.save(f'{path}/{name}_resolution.npy', self._grid.regular_grid.resolution)
 
-        self._grid.topography.save(f'{path}/{name}_topography.npy')
+        if self._grid.topography is not None:
+            self._grid.topography.save(f'{path}/{name}_topography.npy')
 
-        # # save solutions as npy
-        # np.save(f'{path}/{name}_lith_block.npy' ,self.solutions.lith_block)
-        # np.save(f'{path}/{name}_scalar_field_lith.npy', self.solutions.scalar_field_matrix)
-        #
-        # np.save(f'{path}/{name}_gradient.npy', self.solutions.gradient)
-        # np.save(f'{path}/{name}_values_block.npy', self.solutions.matr)
-
+        if compress is True:
+            shutil.make_archive(name, 'zip', path)
+            shutil.rmtree(path)
         return True
 
     # @_setdoc([SurfacePoints.read_surface_points.__doc__, Orientations.read_orientations.__doc__])
