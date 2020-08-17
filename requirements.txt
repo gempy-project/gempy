@@ -1,4 +1,4 @@
-pandas
+pandas==1.0.5
 Theano>=1.0.4 # In windows use conda! This will install all the required compilers
 matplotlib
 numpy

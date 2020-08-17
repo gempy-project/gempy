@@ -1,5 +1,5 @@
 from setuptools import setup, find_packages
-version = '2.2.4'
+version = '2.2.5'
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -7,10 +7,10 @@ with open("README.md", "r") as fh:
 setup(
     name='gempy',
     version=version,
-    packages=find_packages(exclude=('test', 'docs')),
+    packages=find_packages(exclude=('test', 'docs', 'examples')),
     include_package_data=True,
     install_requires=[
-        'pandas',
+        'pandas==1.0.5',
         'Theano>=1.0.4',
         'matplotlib',
         'numpy',
