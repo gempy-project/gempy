@@ -109,9 +109,9 @@ software such as ParaView;
 meshing programs);
 - Export of images (e.g. geological maps) for
 
-We are also currently working on a tighter integration wtih several
+We are also currently working on a tighter integration with several
 meshing libraries, notably [`CGAL`](https://www.cgal.org) and
-[`gmesh`](https://gmsh.info). In addition, we have established
+[`gmsh`](https://gmsh.info). In addition, we have established
 links to several other open-source libraries, including [`pygimli`](https://www.pygimli.org)
 for geophysical modeling and inversion. In the current state, however, these
 links have to be considered as highly experimental and they are not yet

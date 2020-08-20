@@ -52,7 +52,8 @@ class Plot2D:
 
     def __init__(self, model, cmap=None, norm=None, **kwargs):
         self.model = model
-        self._color_lot = dict(zip(self.model._surfaces.df['surface'], self.model._surfaces.df['color']))
+        self._color_lot = dict(zip(self.model._surfaces.df['surface'],
+                                   self.model._surfaces.df['color']))
         self.axes = list()
 
         if cmap is None:
@@ -448,21 +449,25 @@ class Plot2D:
         select_projected_p = cartesian_point_dist < projection_distance
         select_projected_o = cartesian_ori_dist < projection_distance
 
-        if self.fig.is_legend is False and legend is True or legend == 'force':
-            make_legend = 'full'
-            self.fig.is_legend = True
-
-        else:
-            make_legend = None
-
         # Hack to keep the right X label:
         temp_label = copy.copy(ax.xaxis.label)
 
-        #points['surface'] = points['surface'].astype('category')
-        sns.scatterplot(data=points[select_projected_p], x=x, y=y, hue='surface',
-                        ax=ax, legend=make_legend,
-                        palette=self._color_lot, zorder=101)
+        points_df = points[select_projected_p]
+        points_df['colors'] = points_df['surface'].map(self._color_lot)
 
+        points_df.plot.scatter(x=x, y=y, ax=ax, c='colors', s=70,  zorder=102,
+                               edgecolors='white',
+                               colorbar=False)
+        # points_df.plot.scatter(x=x, y=y, ax=ax, c='white', s=80,  zorder=101,
+        #                        colorbar=False)
+
+        if self.fig.is_legend is False and legend is True or legend == 'force':
+
+            markers = [plt.Line2D([0, 0], [0, 0], color=color, marker='o',
+                                  linestyle='') for color in
+                       self._color_lot.values()]
+            ax.legend(markers, self._color_lot.keys(), numpoints=1)
+            self.fig.is_legend = True
         ax.xaxis.label = temp_label
 
         sel_ori = orientations[select_projected_o]
