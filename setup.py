@@ -10,7 +10,7 @@ setup(
     packages=find_packages(exclude=('test', 'docs')),
     include_package_data=True,
     install_requires=[
-        'pandas',
+        'pandas<=1.0.5',
         'Theano>=1.0.4',
         'matplotlib',
         'numpy',
