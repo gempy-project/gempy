@@ -9,6 +9,18 @@ def test_plot_2d_data_default(one_fault_model_no_interp):
     plt.show()
 
 
+def test_plot_2d_data_default_all_none(one_fault_model_no_interp):
+    gp.plot.plot_2d(one_fault_model_no_interp, show_data=True, show_results=False)
+    plt.show()
+
+
+def test_basic(one_fault_model_no_interp):
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax.imshow(np.arange(25).reshape(5,5))
+    fig.show()
+
+
 def test_plot_2d_test_labels(one_fault_model_no_interp):
     geo_model = one_fault_model_no_interp
     section_dict = {'section_SW-NE': ([250, 250], [1750, 1750], [100, 100]),
@@ -80,6 +92,14 @@ def test_topo_sections_iterp2(section_model):
 
     gp.plot.plot_section_traces(section_model)
     plt.show()
+
+
+def test_show_results(section_model):
+    p2d = gp.plot_2d(section_model,
+                     show_data=False,
+                     show_topography=False,
+                     show_results=True,
+                     show=True)
 
 
 def test_ve(section_model):

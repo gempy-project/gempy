@@ -255,7 +255,7 @@ def plot_2d(model, n_axis=None, section_names: list = None,
             p.plot_regular_grid(temp_ax, block=regular_grid, cell_number=cell_number[e2],
                                 direction=direction[e2], **kwargs_regular_grid)
 
-        temp_ax.set_aspect(ve)
+        # temp_ax.set_aspect(ve)
 
     if show is True:
         p.fig.show()
