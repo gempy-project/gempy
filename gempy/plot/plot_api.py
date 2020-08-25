@@ -568,7 +568,8 @@ def plot_ar(geo_model, path=None, project_name=None, api_token=None, secret=None
     project_name_ = project_name
     for i in range(40):
         try:
-            tag = upload_to_rexcloud(files_path, project_name=project_name_, api_token=api_token, secret=secret)
+            tag = upload_to_rexcloud(files_path, project_name=project_name_,
+                                     api_token=api_token, secret=secret)
             break
         except ConnectionError:
             project_name_ = project_name + str(i)
