@@ -61,7 +61,8 @@ class LoadDEMGDAL:
         if delete_temp is True:
             self.dem = None
             os.remove('topo.xyz')
-            os.remove('_cropped_DEM.tif')
+            if os.path.exists('_cropped_DEM.tif'):
+                os.remove('_cropped_DEM.tif')
 
     def _get_raster_dimensions(self):
         """calculates DEM extent, resolution, and max. z extent (d_z)"""
