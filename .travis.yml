@@ -47,8 +47,6 @@ install:
 
   # Install
   - pip install -e .
-  # foo
-  - pip install pyvista==0.24.3 --force-reinstall
 
   - python -c "import pyvista as pv;print(pv.Report())"
 
