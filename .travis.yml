@@ -44,12 +44,11 @@ install:
 
   # Installs from pip
   - pip install welly pymc3 pooch
-
+  - pip install git+https://github.com/pyvista/pyvista.git@master
+  
   # Install
   - pip install -e .
-  # foo
-  - pip install pyvista==0.24.3 --force-reinstall
-
+  
   - python -c "import pyvista as pv;print(pv.Report())"
 
 stages:
