@@ -1,12 +1,14 @@
 """
-Echo
-~~~~
+Hecho
+~~~~~
 
 """
 
 # %% 
 # These two lines are necessary only if gempy is not installed
 import sys, os
+import urllib
+
 os.environ["THEANO_FLAGS"] = "mode=FAST_RUN,device=cpu"
 # Importing gempy
 import gempy as gp
@@ -27,15 +29,19 @@ import matplotlib.pyplot as plt
 
 # %% 
 dfs = []
+data_amount = 'Full'
 
 # First stratigraphic data
 for letter in range(1, 10):
-    if letter == 3 or letter == 6 or letter == 8:
-        pass
-    else:
-        dfs.append(pn.read_csv('https://raw.githubusercontent.com/Loop3D/ImplicitBenchmark/master/Hecho/Sparse/H' +
+
+    try:
+        dfs.append(pn.read_csv('https://raw.githubusercontent.com/Loop3D/ImplicitBenchmark/master'
+                               f'/Hecho/{data_amount}/H' +
                                str(letter) + '.csv', sep=';',
                                names=['X', 'Y', 'Z', 'surface', '_'], header=0))
+    except urllib.error.HTTPError as e:
+        print(e, letter)
+
 # Also faults
 for f in range(1, 4):
     fault_df = pn.read_csv('https://raw.githubusercontent.com/Loop3D/ImplicitBenchmark/master/Hecho/F' +
@@ -147,7 +153,7 @@ geo_model.set_is_fault(['Fault1', 'Fault2', 'Fault3'])
 # 
 
 # %% 
-gp.set_interpolator(geo_model, theano_optimizer='fast_run', dtype='float32')
+gp.set_interpolator(geo_model, theano_optimizer='fast_run', dtype='float64')
 
 # %%
 # The default range is always the diagonal of the extent. Since in this
@@ -220,6 +226,8 @@ def write_property_to_gocad_voxet(propertyfilename, propertyvalues):
 
 
 # %%
-write_property_to_gocad_voxet('hecho_sf_gempy',
+write_property_to_gocad_voxet(f'hecho_sf_gempy_{data_amount}',
                               geo_model.solutions.scalar_field_matrix[3].reshape([321, 21, 91]).ravel('F'))
 
+# %%
+4
