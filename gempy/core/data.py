@@ -1121,7 +1121,9 @@ class KrigingParameters(object):
                            columns=['range', '$C_o$', 'drift equations',
                                     ])
 
-        self.df = df_.astype({'drift equations': object})
+        self.df = df_.astype({'drift equations': object,
+                              'range': object,
+                              '$C_o$': object})
         self.set_default_range()
         self.set_default_c_o()
         self.set_u_grade()
@@ -1165,7 +1167,11 @@ class KrigingParameters(object):
                 print('u_grade length must be the same as the number of series')
 
         else:
-            self.df.loc['values', attribute] = value
+            self.df = self.df.astype({'drift equations': object,
+                                  'range': object,
+                                  '$C_o$': object})
+
+            self.df.at['values', attribute] = value
 
     def str2int_u_grade(self, **kwargs):
         """
@@ -1214,11 +1220,12 @@ class KrigingParameters(object):
                 (extent[2] - extent[3]) ** 2 +
                 (extent[4] - extent[5]) ** 2)
         except TypeError:
-            warnings.warn('The extent passed or if None the extent of the grid object has some type of problem',
+            warnings.warn('The extent passed or if None the extent of the grid object has some '
+                          'type of problem',
                           TypeError)
-            range_var = np.nan
+            range_var = np.array(np.nan)
 
-        self.df['range'] = range_var
+        self.df['range'] = np.atleast_1d(range_var)
 
         return range_var
 

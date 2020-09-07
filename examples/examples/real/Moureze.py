@@ -114,7 +114,7 @@ gp.set_interpolator(geo_model,
 # %% 
 val = .1
 geo_model.interpolator.theano_graph.a_T.set_value(val)
-geo_model.interpolator.theano_graph.a_T_surface.set_value(val)
+geo_model.interpolator.theano_graph.a_T_scalar.set_value(val)
 
 # %%
 gp.compute_model(geo_model, set_solutions=True, sort_surfaces=False)

@@ -1,6 +1,7 @@
+from collections import Iterable
 from typing import Union
 from gempy.core.data import Grid, Surfaces, AdditionalData
-from gempy.core.data_modules.geometric_data import  SurfacePoints, Orientations
+from gempy.core.data_modules.geometric_data import SurfacePoints, Orientations
 from gempy.core.data_modules.stack import Faults, Series
 from gempy.utils.meta import _setdoc_pro, _setdoc
 import gempy.utils.docstring as ds
@@ -9,8 +10,9 @@ import numpy as np
 import theano
 
 
-@_setdoc_pro([SurfacePoints.__doc__, Orientations.__doc__, Grid.__doc__, Surfaces.__doc__, Series.__doc__,
-              Faults.__doc__, AdditionalData.__doc__])
+@_setdoc_pro(
+    [SurfacePoints.__doc__, Orientations.__doc__, Grid.__doc__, Surfaces.__doc__, Series.__doc__,
+     Faults.__doc__, AdditionalData.__doc__])
 class Interpolator(object):
     """Class that act as:
      1) linker between the data objects and the theano graph
@@ -40,10 +42,12 @@ class Interpolator(object):
         theano function: python function to call the theano code
 
     """
+
     # TODO assert passed data is rescaled
 
     def __init__(self, surface_points: "SurfacePoints", orientations: "Orientations", grid: "Grid",
-                 surfaces: "Surfaces", series: Series, faults: "Faults", additional_data: "AdditionalData", **kwargs):
+                 surfaces: "Surfaces", series: Series, faults: "Faults",
+                 additional_data: "AdditionalData", **kwargs):
         # Test
         self.surface_points = surface_points
         self.orientations = orientations
@@ -60,22 +64,27 @@ class Interpolator(object):
         self._compute_len_series()
 
     def _compute_len_series(self):
-        self.len_series_i = self.additional_data.structure_data.df.loc['values', 'len series surface_points'] - \
-                            self.additional_data.structure_data.df.loc['values', 'number surfaces per series']
+        self.len_series_i = self.additional_data.structure_data.df.loc[
+                                'values', 'len series surface_points'] - \
+                            self.additional_data.structure_data.df.loc[
+                                'values', 'number surfaces per series']
         if self.len_series_i.shape[0] == 0:
             self.len_series_i = np.zeros(1, dtype=int)
 
-        self.len_series_o = self.additional_data.structure_data.df.loc['values', 'len series orientations'].astype(
+        self.len_series_o = self.additional_data.structure_data.df.loc[
+            'values', 'len series orientations'].astype(
             'int32')
         if self.len_series_o.shape[0] == 0:
             self.len_series_o = np.zeros(1, dtype=int)
 
-        self.len_series_u = self.additional_data.kriging_data.df.loc['values', 'drift equations'].astype('int32')
+        self.len_series_u = self.additional_data.kriging_data.df.loc[
+            'values', 'drift equations'].astype('int32')
         if self.len_series_u.shape[0] == 0:
             self.len_series_u = np.zeros(1, dtype=int)
 
         self.len_series_f = self.faults.faults_relations_df.sum(axis=0).values.astype('int32')[
-                            :self.additional_data.get_additional_data()['values']['Structure', 'number series']]
+                            :self.additional_data.get_additional_data()['values'][
+                                'Structure', 'number series']]
         if self.len_series_f.shape[0] == 0:
             self.len_series_f = np.zeros(1, dtype=int)
 
@@ -106,10 +115,11 @@ class Interpolator(object):
 
         self.dtype = additional_data.options.df.loc['values', 'dtype']
 
-        graph = tg.TheanoGraphPro(optimizer=additional_data.options.df.loc['values', 'theano_optimizer'],
-                                  verbose=additional_data.options.df.loc['values', 'verbosity'],
-                                  output=output,
-                                  **kwargs)
+        graph = tg.TheanoGraphPro(
+            optimizer=additional_data.options.df.loc['values', 'theano_optimizer'],
+            verbose=additional_data.options.df.loc['values', 'verbosity'],
+            output=output,
+            **kwargs)
         if inplace is True:
             self.theano_graph = graph
         else:
@@ -138,20 +148,40 @@ class Interpolator(object):
             True
         """
         # Range
+        range_val = self.additional_data.kriging_data.df.loc['values', 'range']
+        range_res = range_val/self.additional_data.rescaling_data.df.loc['values', 'rescaling factor']
+
+        if type(range_res) is np.float or type(range_res) is np.float64:
+            range_list = range_res*np.ones(self.len_series_i.shape[0])
+        elif isinstance(range_res, Iterable):
+            range_list = range_res
+        else:
+            raise AttributeError('Range must be either int or Iterable')
+
         # TODO add rescaled range and co into the rescaling data df?
-        self.theano_graph.a_T.set_value(np.cast[self.dtype]
-                                        (self.additional_data.kriging_data.df.loc['values', 'range'] /
-                                         self.additional_data.rescaling_data.df.loc[
-                                             'values', 'rescaling factor']))
+        self.theano_graph.a_T.set_value(np.cast[self.dtype](range_list))
+
         # Covariance at 0
-        self.theano_graph.c_o_T.set_value(np.cast[self.dtype](
-            self.additional_data.kriging_data.df.loc['values', '$C_o$'] /
-            self.additional_data.rescaling_data.df.loc[
-                'values', 'rescaling factor']
-        ))
+
+        cov_val = self.additional_data.kriging_data.df.loc['values', '$C_o$']
+        cov_res = cov_val / self.additional_data.rescaling_data.df.loc[
+            'values', 'rescaling factor']
+
+        if type(cov_res) is np.float or type(cov_res) is np.float64:
+            cov_list = cov_res*np.ones(self.len_series_i.shape[0])
+        elif isinstance(cov_res, Iterable):
+            cov_list = cov_res
+        else:
+            raise AttributeError('Covariance at 0 must be either int or Iterable')
+
+        self.theano_graph.c_o_T.set_value(
+            np.cast[self.dtype](cov_list)
+        )
+
         # universal grades
         self.theano_graph.n_universal_eq_T.set_value(
-            list(self.additional_data.kriging_data.df.loc['values', 'drift equations'].astype('int32')[self.non_zero]))
+            list(self.additional_data.kriging_data.df.loc['values', 'drift equations'].astype(
+                'int32')[self.non_zero]))
 
         self.set_theano_shared_nuggets()
 
@@ -178,16 +208,19 @@ class Interpolator(object):
         Returns:
             True
         """
-        len_rest_form = (self.additional_data.structure_data.df.loc['values', 'len surfaces surface_points'] - 1)
+        len_rest_form = (self.additional_data.structure_data.df.loc[
+                             'values', 'len surfaces surface_points'] - 1)
         self.theano_graph.number_of_points_per_surface_T.set_value(len_rest_form.astype('int32'))
 
 
 class InterpolatorWeights(Interpolator):
 
     def __init__(self, surface_points: "SurfacePoints", orientations: "Orientations", grid: "Grid",
-                 surfaces: "Surfaces", series, faults: "Faults", additional_data: "AdditionalData", **kwargs):
+                 surfaces: "Surfaces", series, faults: "Faults", additional_data: "AdditionalData",
+                 **kwargs):
 
-        super(InterpolatorWeights, self).__init__(surface_points, orientations, grid, surfaces, series, faults,
+        super(InterpolatorWeights, self).__init__(surface_points, orientations, grid, surfaces,
+                                                  series, faults,
                                                   additional_data, **kwargs)
 
     def get_python_input_weights(self, fault_drift=None):
@@ -210,11 +243,12 @@ class InterpolatorWeights(Interpolator):
         if fault_drift is None:
             fault_drift = np.zeros((0, self.grid.values.shape[0] + 2 * self.len_series_i.sum()))
 
-          #  fault_drift = np.zeros((0, surface_points_coord.shape[0]))
+        #  fault_drift = np.zeros((0, surface_points_coord.shape[0]))
 
         # Set all in a list casting them in the chosen dtype
-        idl = [np.cast[self.dtype](xs) for xs in (dips_position, dip_angles, azimuth, polarity, surface_points_coord,
-                                                  fault_drift)]
+        idl = [np.cast[self.dtype](xs) for xs in
+               (dips_position, dip_angles, azimuth, polarity, surface_points_coord,
+                fault_drift)]
         return idl
 
     def compile_th_fn(self, inplace=False, debug=False):
@@ -238,7 +272,8 @@ class InterpolatorWeights(Interpolator):
             print('Level of Optimization: ', theano.config.optimizer)
             print('Device: ', theano.config.device)
             print('Precision: ', self.dtype)
-            print('Number of faults: ', self.additional_data.structure_data.df.loc['values', 'number faults'])
+            print('Number of faults: ',
+                  self.additional_data.structure_data.df.loc['values', 'number faults'])
         print('Compilation Done!')
         return th_fn
 
@@ -246,9 +281,11 @@ class InterpolatorWeights(Interpolator):
 class InterpolatorScalar(Interpolator):
 
     def __init__(self, surface_points: "SurfacePoints", orientations: "Orientations", grid: "Grid",
-                 surfaces: "Surfaces", series, faults: "Faults", additional_data: "AdditionalData", **kwargs):
+                 surfaces: "Surfaces", series, faults: "Faults", additional_data: "AdditionalData",
+                 **kwargs):
 
-        super(InterpolatorScalar, self).__init__(surface_points, orientations, grid, surfaces, series, faults,
+        super(InterpolatorScalar, self).__init__(surface_points, orientations, grid, surfaces,
+                                                 series, faults,
                                                  additional_data, **kwargs)
 
     def get_python_input_zx(self, fault_drift=None):
@@ -273,11 +310,12 @@ class InterpolatorScalar(Interpolator):
         if fault_drift is None:
             fault_drift = np.zeros((0, grid.shape[0] + 2 * self.len_series_i.sum()))
 
-      #      fault_drift = np.zeros((0, grid.shape[0] + surface_points_coord.shape[0]))
+        #      fault_drift = np.zeros((0, grid.shape[0] + surface_points_coord.shape[0]))
 
         # Set all in a list casting them in the chosen dtype
-        idl = [np.cast[self.dtype](xs) for xs in (dips_position, dip_angles, azimuth, polarity, surface_points_coord,
-                                                  fault_drift, grid)]
+        idl = [np.cast[self.dtype](xs) for xs in
+               (dips_position, dip_angles, azimuth, polarity, surface_points_coord,
+                fault_drift, grid)]
         return idl
 
     def compile_th_fn(self, weights=None, grid=None, inplace=False, debug=False):
@@ -322,7 +360,8 @@ class InterpolatorScalar(Interpolator):
             print('Level of Optimization: ', theano.config.optimizer)
             print('Device: ', theano.config.device)
             print('Precision: ', theano.config.floatX)
-            print('Number of faults: ', self.additional_data.structure_data.df.loc['values', 'number faults'])
+            print('Number of faults: ',
+                  self.additional_data.structure_data.df.loc['values', 'number faults'])
         print('Compilation Done!')
         return th_fn
 
@@ -330,9 +369,11 @@ class InterpolatorScalar(Interpolator):
 class InterpolatorBlock(Interpolator):
 
     def __init__(self, surface_points: "SurfacePoints", orientations: "Orientations", grid: "Grid",
-                 surfaces: "Surfaces", series: Series, faults: "Faults", additional_data: "AdditionalData", **kwargs):
+                 surfaces: "Surfaces", series: Series, faults: "Faults",
+                 additional_data: "AdditionalData", **kwargs):
 
-        super(InterpolatorBlock, self).__init__(surface_points, orientations, grid, surfaces, series,
+        super(InterpolatorBlock, self).__init__(surface_points, orientations, grid, surfaces,
+                                                series,
                                                 faults, additional_data, **kwargs)
         self.theano_function_formation = None
         self.theano_function_faults = None
@@ -358,15 +399,18 @@ class InterpolatorBlock(Interpolator):
         if fault_drift is None:
             fault_drift = np.zeros((0, grid.shape[0] + 2 * self.len_series_i.sum()))
 
-        values_properties = self.surfaces.df.iloc[:, self.surfaces._n_properties:].values.astype(self.dtype).T
+        values_properties = self.surfaces.df.iloc[:, self.surfaces._n_properties:].values.astype(
+            self.dtype).T
 
         # Set all in a list casting them in the chosen dtype
-        idl = [np.cast[self.dtype](xs) for xs in (dips_position, dip_angles, azimuth, polarity, surface_points_coord,
-                                                  fault_drift, grid, values_properties)]
+        idl = [np.cast[self.dtype](xs) for xs in
+               (dips_position, dip_angles, azimuth, polarity, surface_points_coord,
+                fault_drift, grid, values_properties)]
         return idl
 
-    def compile_th_fn_formation_block(self, Z_x=None, weights=None, grid=None, values_properties=None, inplace=False,
-                                  debug=False):
+    def compile_th_fn_formation_block(self, Z_x=None, weights=None, grid=None,
+                                      values_properties=None, inplace=False,
+                                      debug=False):
         """
 
         Args:
@@ -421,7 +465,8 @@ class InterpolatorBlock(Interpolator):
             print('Level of Optimization: ', theano.config.optimizer)
             print('Device: ', theano.config.device)
             print('Precision: ', self.dtype)
-            print('Number of faults: ', self.additional_data.structure_data.df.loc['values', 'number faults'])
+            print('Number of faults: ',
+                  self.additional_data.structure_data.df.loc['values', 'number faults'])
         print('Compilation Done!')
 
         return th_fn
@@ -473,7 +518,7 @@ class InterpolatorBlock(Interpolator):
                                     values_properties,
                                     0,
                                     grid
-                                 ),
+                                ),
                                 # mode=NanGuardMode(nan_is_error=True),
                                 on_unused_input='ignore',
                                 allow_input_downcast=False,
@@ -486,7 +531,8 @@ class InterpolatorBlock(Interpolator):
             print('Level of Optimization: ', theano.config.optimizer)
             print('Device: ', theano.config.device)
             print('Precision: ', self.dtype)
-            print('Number of faults: ', self.additional_data.structure_data.df.loc['values', 'number faults'])
+            print('Number of faults: ',
+                  self.additional_data.structure_data.df.loc['values', 'number faults'])
         print('Compilation Done!')
         return th_fn
 
@@ -565,6 +611,7 @@ class InterpolatorMagnetics:
         self.set_theano_shared_magnetic_cts(incl, decl, B_ext)
         self.set_theano_shared_l0_l1()
 
+
 @_setdoc_pro(ds.ctrl)
 @_setdoc([Interpolator.__doc__])
 class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics):
@@ -579,8 +626,10 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
 
     Interpolator Doc
     """
+
     def __init__(self, surface_points: "SurfacePoints", orientations: "Orientations", grid: "Grid",
-                 surfaces: "Surfaces", series, faults: "Faults", additional_data: "AdditionalData", **kwargs):
+                 surfaces: "Surfaces", series, faults: "Faults", additional_data: "AdditionalData",
+                 **kwargs):
 
         super().__init__(surface_points, orientations, grid, surfaces, series, faults,
                          additional_data, **kwargs)
@@ -598,7 +647,8 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
         self.compute_scalar_ctrl = np.ones(n_series, dtype=bool)
         self.compute_block_ctrl = np.ones(n_series, dtype=bool)
 
-    def reset_flow_control_initial_results(self, reset_weights=True, reset_scalar=True, reset_block=True):
+    def reset_flow_control_initial_results(self, reset_weights=True, reset_scalar=True,
+                                           reset_block=True):
         """
         Method to reset to the initial state all the recompute ctrl. After calling this method next time
          gp.compute_model is called, everything will be computed. Panic bottom.
@@ -611,12 +661,14 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
         Returns:
             True
         """
-        n_series = self.len_series_i.shape[0]#self.additional_data.get_additional_data()['values']['Structure', 'number series']
+        n_series = self.len_series_i.shape[
+            0]  # self.additional_data.get_additional_data()['values']['Structure', 'number series']
         x_to_interp_shape = self.grid.values_r.shape[0] + 2 * self.len_series_i.sum()
 
         if reset_weights is True:
             self.compute_weights_ctrl = np.ones(1000, dtype=bool)
-            self.theano_graph.weights_vector.set_value(np.zeros((self.len_series_w.sum()), dtype=self.dtype))
+            self.theano_graph.weights_vector.set_value(
+                np.zeros((self.len_series_w.sum()), dtype=self.dtype))
 
         if reset_scalar is True:
             self.compute_scalar_ctrl = np.ones(1000, dtype=bool)
@@ -625,9 +677,11 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
 
         if reset_block is True:
             self.compute_block_ctrl = np.ones(1000, dtype=bool)
-            self.theano_graph.mask_matrix.set_value(np.zeros((n_series, x_to_interp_shape), dtype='bool'))
+            self.theano_graph.mask_matrix.set_value(
+                np.zeros((n_series, x_to_interp_shape), dtype='bool'))
             self.theano_graph.block_matrix.set_value(
-                np.zeros((n_series, self.surfaces.df.iloc[:, self.surfaces._n_properties:].values.shape[1],
+                np.zeros((n_series,
+                          self.surfaces.df.iloc[:, self.surfaces._n_properties:].values.shape[1],
                           x_to_interp_shape), dtype=self.dtype))
         return True
 
@@ -673,7 +727,8 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
 
         self.theano_graph.max_lith.set_value(max_lith)
         self.theano_graph.regular_grid_res.set_value(self.grid.regular_grid.resolution)
-        self.theano_graph.dxdydz.set_value(np.array(self.grid.regular_grid.get_dx_dy_dz(), dtype=self.dtype))
+        self.theano_graph.dxdydz.set_value(
+            np.array(self.grid.regular_grid.get_dx_dy_dz(), dtype=self.dtype))
 
     @_setdoc_pro(reset_flow_control_initial_results.__doc__)
     def set_theano_shared_structure(self, reset_ctrl=False):
@@ -691,18 +746,21 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
         self.set_theano_shared_relations()
         self.set_theano_shared_structure_surfaces()
         # universal grades
-       # self.theano_graph.n_universal_eq_T.set_value(
-       #     list(self.additional_data.kriging_data.df.loc['values', 'drift equations'].astype('int32')))
+        # self.theano_graph.n_universal_eq_T.set_value(
+        #     list(self.additional_data.kriging_data.df.loc['values', 'drift equations'].astype('int32')))
 
         if reset_ctrl is True:
             self.reset_flow_control_initial_results()
         return True
 
     def remove_series_without_data(self):
-        len_series_i = self.additional_data.structure_data.df.loc['values', 'len series surface_points'] - \
-                            self.additional_data.structure_data.df.loc['values', 'number surfaces per series']
+        len_series_i = self.additional_data.structure_data.df.loc[
+                           'values', 'len series surface_points'] - \
+                       self.additional_data.structure_data.df.loc[
+                           'values', 'number surfaces per series']
 
-        len_series_o = self.additional_data.structure_data.df.loc['values', 'len series orientations'].astype(
+        len_series_o = self.additional_data.structure_data.df.loc[
+            'values', 'len series orientations'].astype(
             'int32')
 
         # Remove series without data
@@ -715,10 +773,13 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
 
     def _compute_len_series(self):
 
-        self.len_series_i = self.additional_data.structure_data.df.loc['values', 'len series surface_points'] - \
-                            self.additional_data.structure_data.df.loc['values', 'number surfaces per series']
+        self.len_series_i = self.additional_data.structure_data.df.loc[
+                                'values', 'len series surface_points'] - \
+                            self.additional_data.structure_data.df.loc[
+                                'values', 'number surfaces per series']
 
-        self.len_series_o = self.additional_data.structure_data.df.loc['values', 'len series orientations'].astype(
+        self.len_series_o = self.additional_data.structure_data.df.loc[
+            'values', 'len series orientations'].astype(
             'int32')
 
         # Remove series without data
@@ -728,21 +789,24 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
 
         self.non_zero = non_zero
 
-        self.len_series_u = self.additional_data.kriging_data.df.loc['values', 'drift equations'].astype('int32')
+        self.len_series_u = self.additional_data.kriging_data.df.loc[
+            'values', 'drift equations'].astype('int32')
         try:
-            len_series_f_ = self.faults.faults_relations_df.values[non_zero][:, non_zero].sum(axis=0)
+            len_series_f_ = self.faults.faults_relations_df.values[non_zero][:, non_zero].sum(
+                axis=0)
 
         except np.AxisError:
             print('np.axis error')
             len_series_f_ = self.faults.faults_relations_df.values.sum(axis=0)
 
-        self.len_series_f = np.atleast_1d(len_series_f_.astype('int32'))#[:self.additional_data.get_additional_data()['values']['Structure', 'number series']]
+        self.len_series_f = np.atleast_1d(len_series_f_.astype(
+            'int32'))  # [:self.additional_data.get_additional_data()['values']['Structure', 'number series']]
 
         self._old_len_series = self.len_series_i
 
         self.len_series_i = self.len_series_i[non_zero]
         self.len_series_o = self.len_series_o[non_zero]
-       # self.len_series_f = self.len_series_f[non_zero]
+        # self.len_series_f = self.len_series_f[non_zero]
         self.len_series_u = self.len_series_u[non_zero]
 
         if self.len_series_i.shape[0] == 0:
@@ -762,23 +826,29 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
         """Set the theano shared variables that are looped for each series."""
         self._compute_len_series()
 
-        self.theano_graph.len_series_i.set_value(np.insert(self.len_series_i.cumsum(), 0, 0).astype('int32'))
-        self.theano_graph.len_series_o.set_value(np.insert(self.len_series_o.cumsum(), 0, 0).astype('int32'))
-        self.theano_graph.len_series_w.set_value(np.insert(self.len_series_w.cumsum(), 0, 0).astype('int32'))
+        self.theano_graph.len_series_i.set_value(
+            np.insert(self.len_series_i.cumsum(), 0, 0).astype('int32'))
+        self.theano_graph.len_series_o.set_value(
+            np.insert(self.len_series_o.cumsum(), 0, 0).astype('int32'))
+        self.theano_graph.len_series_w.set_value(
+            np.insert(self.len_series_w.cumsum(), 0, 0).astype('int32'))
 
         # Number of surfaces per series. The function is not pretty but the result is quite clear
         n_surfaces_per_serie = np.insert(
-            self.additional_data.structure_data.df.loc['values', 'number surfaces per series'][self.non_zero].cumsum(), 0, 0). \
+            self.additional_data.structure_data.df.loc['values', 'number surfaces per series'][
+                self.non_zero].cumsum(), 0, 0). \
             astype('int32')
         self.theano_graph.n_surfaces_per_series.set_value(n_surfaces_per_serie)
         self.theano_graph.n_universal_eq_T.set_value(
-            list(self.additional_data.kriging_data.df.loc['values', 'drift equations'].astype('int32')[self.non_zero]))
+            list(self.additional_data.kriging_data.df.loc['values', 'drift equations'].astype(
+                'int32')[self.non_zero]))
 
     @_setdoc_pro(set_theano_shared_loop.__doc__)
     def set_theano_shared_weights(self):
         """Set the theano shared weights and [s0]"""
         self.set_theano_shared_loop()
-        self.theano_graph.weights_vector.set_value(np.zeros((self.len_series_w.sum()), dtype=self.dtype))
+        self.theano_graph.weights_vector.set_value(
+            np.zeros((self.len_series_w.sum()), dtype=self.dtype))
 
     def set_theano_shared_fault_relation(self):
         self.remove_series_without_data()
@@ -835,16 +905,20 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
         self._compute_len_series()
 
         x_to_interp_shape = self.grid.values_r.shape[0] + 2 * self.len_series_i.sum()
-        n_series = self.len_series_i.shape[0]#self.additional_data.structure_data.df.loc['values', 'number series']
+        n_series = self.len_series_i.shape[
+            0]  # self.additional_data.structure_data.df.loc['values', 'number series']
 
-        self.theano_graph.weights_vector.set_value(np.zeros((self.len_series_w.sum()), dtype=self.dtype))
+        self.theano_graph.weights_vector.set_value(
+            np.zeros((self.len_series_w.sum()), dtype=self.dtype))
         self.theano_graph.scalar_fields_matrix.set_value(
             np.zeros((n_series, x_to_interp_shape), dtype=self.dtype))
 
-        self.theano_graph.mask_matrix.set_value(np.zeros((n_series, x_to_interp_shape), dtype='bool'))
+        self.theano_graph.mask_matrix.set_value(
+            np.zeros((n_series, x_to_interp_shape), dtype='bool'))
         self.theano_graph.block_matrix.set_value(
-            np.zeros((n_series, self.surfaces.df.iloc[:, self.surfaces._n_properties:].values.shape[1],
-                      x_to_interp_shape), dtype=self.dtype))
+            np.zeros(
+                (n_series, self.surfaces.df.iloc[:, self.surfaces._n_properties:].values.shape[1],
+                 x_to_interp_shape), dtype=self.dtype))
         return True
 
     def set_initial_results_matrices(self):
@@ -859,22 +933,27 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
         self._compute_len_series()
 
         x_to_interp_shape = self.grid.values_r.shape[0] + 2 * self.len_series_i.sum()
-        n_series = self.len_series_i.shape[0]#self.additional_data.structure_data.df.loc['values', 'number series']
+        n_series = self.len_series_i.shape[
+            0]  # self.additional_data.structure_data.df.loc['values', 'number series']
 
         self.theano_graph.scalar_fields_matrix.set_value(
             np.zeros((n_series, x_to_interp_shape), dtype=self.dtype))
 
-        self.theano_graph.mask_matrix.set_value(np.zeros((n_series, x_to_interp_shape), dtype='bool'))
+        self.theano_graph.mask_matrix.set_value(
+            np.zeros((n_series, x_to_interp_shape), dtype='bool'))
         self.theano_graph.block_matrix.set_value(
-            np.zeros((n_series, self.surfaces.df.iloc[:, self.surfaces._n_properties:].values.shape[1],
-                      x_to_interp_shape), dtype=self.dtype))
+            np.zeros(
+                (n_series, self.surfaces.df.iloc[:, self.surfaces._n_properties:].values.shape[1],
+                 x_to_interp_shape), dtype=self.dtype))
 
     def set_theano_shared_grid(self, grid=None):
         if grid == 'shared':
             grid_sh = self.grid.values_r
-            self.theano_graph.grid_val_T = theano.shared(grid_sh.astype(self.dtype), 'Constant values to interpolate.')
+            self.theano_graph.grid_val_T = theano.shared(grid_sh.astype(self.dtype),
+                                                         'Constant values to interpolate.')
         elif grid is not None:
-            self.theano_graph.grid_val_T = theano.shared(grid.astype(self.dtype), 'Constant values to interpolate.')
+            self.theano_graph.grid_val_T = theano.shared(grid.astype(self.dtype),
+                                                         'Constant values to interpolate.')
 
     def modify_results_matrices_pro(self):
         """
@@ -882,8 +961,10 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
         to change the size of the results without having the recompute all series"""
 
         old_len_i = self._old_len_series
-        new_len_i = self.additional_data.structure_data.df.loc['values', 'len series surface_points'] - \
-            self.additional_data.structure_data.df.loc['values', 'number surfaces per series']
+        new_len_i = self.additional_data.structure_data.df.loc[
+                        'values', 'len series surface_points'] - \
+                    self.additional_data.structure_data.df.loc[
+                        'values', 'number surfaces per series']
         if new_len_i.shape[0] < old_len_i.shape[0]:
             self.set_initial_results()
             old_len_i = old_len_i[old_len_i != 0]
@@ -911,11 +992,11 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
 
                 else:
                     self.theano_graph.scalar_fields_matrix.set_value(
-                        np.delete(scalar_fields_matrix, np.arange(loc, loc+i, -1) - 1, axis=1))
+                        np.delete(scalar_fields_matrix, np.arange(loc, loc + i, -1) - 1, axis=1))
                     self.theano_graph.mask_matrix.set_value(
-                        np.delete(mask_matrix, np.arange(loc, loc+i, -1) - 1, axis=1))
+                        np.delete(mask_matrix, np.arange(loc, loc + i, -1) - 1, axis=1))
                     self.theano_graph.block_matrix.set_value(
-                        np.delete(block_matrix, np.arange(loc, loc+i, -1) - 1, axis=2))
+                        np.delete(block_matrix, np.arange(loc, loc + i, -1) - 1, axis=2))
 
         self.modify_results_weights()
 
@@ -931,15 +1012,16 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
             weights = self.theano_graph.weights_vector.get_value()
             len_w_diff = new_len_w - old_len_w
             for e, i in enumerate(len_w_diff):
-             #   print(len_w_diff, weights)
+                #   print(len_w_diff, weights)
                 if i == 0:
                     pass
                 elif i > 0:
-                    self.theano_graph.weights_vector.set_value(np.insert(weights, old_len_w[e], np.zeros(i)))
-                else:
-              #      print(np.delete(weights, np.arange(old_len_w[e],  old_len_w[e] + i, -1)-1))
                     self.theano_graph.weights_vector.set_value(
-                        np.delete(weights, np.arange(old_len_w[e],  old_len_w[e] + i, -1)-1))
+                        np.insert(weights, old_len_w[e], np.zeros(i)))
+                else:
+                    #      print(np.delete(weights, np.arange(old_len_w[e],  old_len_w[e] + i, -1)-1))
+                    self.theano_graph.weights_vector.set_value(
+                        np.delete(weights, np.arange(old_len_w[e], old_len_w[e] + i, -1) - 1))
 
     def get_python_input_block(self, append_control=True, fault_drift=None):
         """
@@ -974,7 +1056,7 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
         #                                   g.get_group(series_).iloc[:, self.surfaces._n_properties:].values.
         #                                   astype(self.dtype).T, axis=1)
 
-      #  values_properties = self.surfaces.df.iloc[:, self.surfaces._n_properties:].values.astype(self.dtype).T
+        #  values_properties = self.surfaces.df.iloc[:, self.surfaces._n_properties:].values.astype(self.dtype).T
 
         values_properties = self.surfaces.df.groupby('isActive').get_group(
             True).iloc[:, self.surfaces._n_properties:].values.astype(self.dtype).T
@@ -996,7 +1078,7 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
         print('len sereies o', self.theano_graph.len_series_o.get_value())
         print('len sereies w', self.theano_graph.len_series_w.get_value())
         print('n surfaces per series', self.theano_graph.n_surfaces_per_series.get_value())
-        print('n universal eq',self.theano_graph.n_universal_eq_T.get_value())
+        print('n universal eq', self.theano_graph.n_universal_eq_T.get_value())
         print('is finite', self.theano_graph.is_finite_ctrl.get_value())
         print('is erosion', self.theano_graph.is_erosion.get_value())
         print('is onlap', self.theano_graph.is_onlap.get_value())
@@ -1026,11 +1108,13 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
         th_fn = theano.function(input_data_T,
                                 self.theano_graph.theano_output(),
                                 updates=[
-                                        (self.theano_graph.block_matrix, self.theano_graph.new_block),
-                                        (self.theano_graph.weights_vector, self.theano_graph.new_weights),
-                                        (self.theano_graph.scalar_fields_matrix, self.theano_graph.new_scalar),
-                                        (self.theano_graph.mask_matrix, self.theano_graph.new_mask)
-                                       ],
+                                    (self.theano_graph.block_matrix, self.theano_graph.new_block),
+                                    (self.theano_graph.weights_vector,
+                                     self.theano_graph.new_weights),
+                                    (self.theano_graph.scalar_fields_matrix,
+                                     self.theano_graph.new_scalar),
+                                    (self.theano_graph.mask_matrix, self.theano_graph.new_mask)
+                                ],
                                 on_unused_input='ignore',
                                 allow_input_downcast=False,
                                 profile=False)
@@ -1042,8 +1126,8 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
             print('Level of Optimization: ', theano.config.optimizer)
             print('Device: ', theano.config.device)
             print('Precision: ', theano.config.floatX)
-            print('Number of faults: ', self.additional_data.structure_data.df.loc['values', 'number faults'])
+            print('Number of faults: ',
+                  self.additional_data.structure_data.df.loc['values', 'number faults'])
         print('Compilation Done!')
 
         return th_fn
-
