@@ -224,7 +224,7 @@ def create_grid():
 
 @pytest.fixture('module')
 def create_rescaling(create_surface_points, create_orientations, create_grid):
-    rescaling = gempy.core.data_modules.geometric_data.RescaledData(create_surface_points, create_orientations, create_grid)
+    rescaling = gempy.core.data_modules.geometric_data.ScalingSystem(create_surface_points, create_orientations, create_grid)
     return rescaling
 
 

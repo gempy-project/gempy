@@ -149,14 +149,22 @@ class Interpolator(object):
         """
         # Range
         range_val = self.additional_data.kriging_data.df.loc['values', 'range']
-        range_res = range_val/self.additional_data.rescaling_data.df.loc['values', 'rescaling factor']
+        range_res = range_val / self.additional_data.rescaling_data.df.loc[
+            'values', 'rescaling factor']
 
-        if type(range_res) is np.float or type(range_res) is np.float64:
-            range_list = range_res*np.ones(self.len_series_i.shape[0])
-        elif isinstance(range_res, Iterable):
-            range_list = range_res
-        else:
-            raise AttributeError('Range must be either int or Iterable')
+        range_list = range_res * np.ones(
+            self.additional_data.structure_data.df.loc['values',
+                                                       'number series'])
+        #
+        # if type(range_res) is np.float or type(range_res) is np.float64:
+        #     range_list = range_res * np.ones(
+        #         self.additional_data.structure_data.df.loc['values',
+        #                                                    'number series']
+        #     )
+        # elif isinstance(range_res, Iterable):
+        #     range_list = range_res
+        # else:
+        #     raise AttributeError('Range must be either int or Iterable')
 
         # TODO add rescaled range and co into the rescaling data df?
         self.theano_graph.a_T.set_value(np.cast[self.dtype](range_list))
@@ -166,13 +174,21 @@ class Interpolator(object):
         cov_val = self.additional_data.kriging_data.df.loc['values', '$C_o$']
         cov_res = cov_val / self.additional_data.rescaling_data.df.loc[
             'values', 'rescaling factor']
-
-        if type(cov_res) is np.float or type(cov_res) is np.float64:
-            cov_list = cov_res*np.ones(self.len_series_i.shape[0])
-        elif isinstance(cov_res, Iterable):
-            cov_list = cov_res
-        else:
-            raise AttributeError('Covariance at 0 must be either int or Iterable')
+        cov_list = cov_res * np.ones(
+            self.additional_data.structure_data.df.loc['values',
+                                                       'number series']
+        )
+        #
+        #
+        # if type(cov_res) is np.float or type(cov_res) is np.float64:
+        #     cov_list = cov_res * np.ones(
+        #         self.additional_data.structure_data.df.loc['values',
+        #                                                    'number series']
+        #     )
+        # elif isinstance(cov_res, Iterable):
+        #     cov_list = cov_res
+        # else:
+        #     raise AttributeError('Covariance at 0 must be either int or Iterable')
 
         self.theano_graph.c_o_T.set_value(
             np.cast[self.dtype](cov_list)
@@ -235,11 +251,11 @@ class InterpolatorWeights(Interpolator):
                  (list)
              """
         # orientations, this ones I tile them inside theano. PYTHON VAR
-        dips_position = self.orientations.df[['X_r', 'Y_r', 'Z_r']].values
+        dips_position = self.orientations.df[['X_c', 'Y_c', 'Z_c']].values
         dip_angles = self.orientations.df["dip"].values
         azimuth = self.orientations.df["azimuth"].values
         polarity = self.orientations.df["polarity"].values
-        surface_points_coord = self.surface_points.df[['X_r', 'Y_r', 'Z_r']].values
+        surface_points_coord = self.surface_points.df[['X_c', 'Y_c', 'Z_c']].values
         if fault_drift is None:
             fault_drift = np.zeros((0, self.grid.values.shape[0] + 2 * self.len_series_i.sum()))
 
@@ -300,12 +316,12 @@ class InterpolatorScalar(Interpolator):
                  (list)
              """
         # orientations, this ones I tile them inside theano. PYTHON VAR
-        dips_position = self.orientations.df[['X_r', 'Y_r', 'Z_r']].values
+        dips_position = self.orientations.df[['X_c', 'Y_c', 'Z_c']].values
         dip_angles = self.orientations.df["dip"].values
         azimuth = self.orientations.df["azimuth"].values
         polarity = self.orientations.df["polarity"].values
-        surface_points_coord = self.surface_points.df[['X_r', 'Y_r', 'Z_r']].values
-        grid = self.grid.values_r
+        surface_points_coord = self.surface_points.df[['X_c', 'Y_c', 'Z_c']].values
+        grid = self.grid.values_c
 
         if fault_drift is None:
             fault_drift = np.zeros((0, grid.shape[0] + 2 * self.len_series_i.sum()))
@@ -390,12 +406,12 @@ class InterpolatorBlock(Interpolator):
                  (list)
              """
         # orientations, this ones I tile them inside theano. PYTHON VAR
-        dips_position = self.orientations.df[['X_r', 'Y_r', 'Z_r']].values
+        dips_position = self.orientations.df[['X_c', 'Y_c', 'Z_c']].values
         dip_angles = self.orientations.df["dip"].values
         azimuth = self.orientations.df["azimuth"].values
         polarity = self.orientations.df["polarity"].values
-        surface_points_coord = self.surface_points.df[['X_r', 'Y_r', 'Z_r']].values
-        grid = self.grid.values_r
+        surface_points_coord = self.surface_points.df[['X_c', 'Y_c', 'Z_c']].values
+        grid = self.grid.values_c
         if fault_drift is None:
             fault_drift = np.zeros((0, grid.shape[0] + 2 * self.len_series_i.sum()))
 
@@ -663,7 +679,7 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
         """
         n_series = self.len_series_i.shape[
             0]  # self.additional_data.get_additional_data()['values']['Structure', 'number series']
-        x_to_interp_shape = self.grid.values_r.shape[0] + 2 * self.len_series_i.sum()
+        x_to_interp_shape = self.grid.values_c.shape[0] + 2 * self.len_series_i.sum()
 
         if reset_weights is True:
             self.compute_weights_ctrl = np.ones(1000, dtype=bool)
@@ -904,7 +920,7 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
         """
         self._compute_len_series()
 
-        x_to_interp_shape = self.grid.values_r.shape[0] + 2 * self.len_series_i.sum()
+        x_to_interp_shape = self.grid.values_c.shape[0] + 2 * self.len_series_i.sum()
         n_series = self.len_series_i.shape[
             0]  # self.additional_data.structure_data.df.loc['values', 'number series']
 
@@ -932,7 +948,7 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
         """
         self._compute_len_series()
 
-        x_to_interp_shape = self.grid.values_r.shape[0] + 2 * self.len_series_i.sum()
+        x_to_interp_shape = self.grid.values_c.shape[0] + 2 * self.len_series_i.sum()
         n_series = self.len_series_i.shape[
             0]  # self.additional_data.structure_data.df.loc['values', 'number series']
 
@@ -948,7 +964,7 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
 
     def set_theano_shared_grid(self, grid=None):
         if grid == 'shared':
-            grid_sh = self.grid.values_r
+            grid_sh = self.grid.values_c
             self.theano_graph.grid_val_T = theano.shared(grid_sh.astype(self.dtype),
                                                          'Constant values to interpolate.')
         elif grid is not None:
@@ -978,7 +994,7 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
 
             len_i_diff = new_len_i - old_len_i
             for e, i in enumerate(len_i_diff):
-                loc = self.grid.values_r.shape[0] + old_len_i[e]
+                loc = self.grid.values_c.shape[0] + old_len_i[e]
                 i *= 2
                 if i == 0:
                     pass
@@ -1040,12 +1056,12 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
             list: list of arrays with all the input parameters to the theano function
         """
         # orientations, this ones I tile them inside theano. PYTHON VAR
-        dips_position = self.orientations.df[['X_r', 'Y_r', 'Z_r']].values
+        dips_position = self.orientations.df[['X_c', 'Y_c', 'Z_c']].values
         dip_angles = self.orientations.df["dip"].values
         azimuth = self.orientations.df["azimuth"].values
         polarity = self.orientations.df["polarity"].values
-        surface_points_coord = self.surface_points.df[['X_r', 'Y_r', 'Z_r']].values
-        grid = self.grid.values_r
+        surface_points_coord = self.surface_points.df[['X_c', 'Y_c', 'Z_c']].values
+        grid = self.grid.values_c
         if fault_drift is None:
             fault_drift = np.zeros((0, grid.shape[0] + 2 * self.len_series_i.sum()))
 

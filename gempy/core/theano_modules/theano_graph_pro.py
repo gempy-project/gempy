@@ -1863,10 +1863,7 @@ class TheanoGraphPro(object):
             self.fault_matrix = theano.printing.Print('self fault matrix')(self.fault_matrix)
         # TODO this is wrong
 
-        interface_loc = grid.shape[0] # + self.shift#self.fault_matrix.shape[1] - 2 * self.len_points
-       # interface_loc = theano.printing.Print('interface_loc')(interface_loc)
-
-      #  self.len_points = theano.printing.Print('len_points')(self.len_points)
+        interface_loc = grid.shape[0]
 
         if 'len_i' in self.verbose:
             len_i_0 = theano.printing.Print('len_i_0')(len_i_0)

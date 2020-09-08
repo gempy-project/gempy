@@ -70,5 +70,5 @@ def modify_options(data: Union[Project, Options]):
 def modify_kriging_parameters(data: Union[Project, KrigingParameters]):
     pass
 
-def modify_rescaling_parametesr(data: Union[Project, RescaledData]):
+def modify_rescaling_parametesr(data: Union[Project, ScalingSystem]):
     pass

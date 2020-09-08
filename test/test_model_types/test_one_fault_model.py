@@ -31,11 +31,3 @@ class TestFabianModel:
 
        # plt.savefig(os.pardir+'/../figs/example1.png')
 
-    def test_compute_model_multiple_ranges(self, one_fault_model):
-        one_fault_model.modify_kriging_parameters('range', [500, 1000])
-        gp.compute_model(one_fault_model)
-
-        gp.plot.plot_2d(one_fault_model, cell_number=25,
-                        direction='y', show_data=True)
-
-

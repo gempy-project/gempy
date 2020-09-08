@@ -475,7 +475,7 @@ grid.values
 # 
 
 # %% 
-rescaling = gempy.core.data_modules.geometric_data.RescaledData(
+rescaling = gempy.core.data_modules.geometric_data.ScalingSystem(
     surface_points, orientations, grid)
 
 # %%
