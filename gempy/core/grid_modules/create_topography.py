@@ -82,7 +82,7 @@ class LoadDEMGDAL:
         if np.any(cornerpoints_geo[:2] - cornerpoints_dtm[:2]) != 0:
             new_bounds = self.regular_grid_extent[[0, 2, 1, 3]]
             self.dem = WarpedVRT(self.dem, resampling=Resampling.cubic, outputBounds=new_bounds)
-            self.dem_zval = self.dem.read(1)
+            self.dem_zval = self.dem.read()
             self._get_raster_dimensions()
         logger.info('Cropped raster to geo_model.grid.extent.')
 
