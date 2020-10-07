@@ -1,3 +1,4 @@
+import copy
 import sys
 import warnings
 from typing import Union, Iterable
@@ -372,7 +373,10 @@ class SurfacePoints(GeometricData):
             values = values.T
 
         # Selecting the properties passed to be modified
-        self.df.loc[idx, list(kwargs.keys())] = values
+        if values.shape == (1,):
+            self.df.loc[idx, list(kwargs.keys())] = values[0]
+        else:
+            self.df.loc[idx, list(kwargs.keys())] = values
 
         return self
 
@@ -973,6 +977,9 @@ class ScalingSystem(object):
                  rescaling_factor: float = None, centers: Union[list, pn.DataFrame] = None):
 
         self.axial_anisotropy = False
+        self.max_coord = np.zeros(3)
+        self.min_coord = np.zeros(3)
+        self.axial_anisotropy_type = 'data'
 
         self.surface_points = surface_points
         self.orientations = orientations
@@ -984,13 +991,16 @@ class ScalingSystem(object):
 
         self.rescale_data(rescaling_factor=rescaling_factor, centers=centers)
 
-
-
     def __repr__(self):
         return self.df.T.to_string()
 
     def _repr_html_(self):
         return self.df.T.to_html()
+
+    def toggle_axial_anisotropy(self, type='data'):
+        self.axial_anisotropy_type = type
+        self.axial_anisotropy = self.axial_anisotropy ^ True
+        self.rescale_data()
 
     @_setdoc_pro([ds.centers, ds.rescaling_factor])
     def modify_rescaling_parameters(self, attribute, value):
@@ -1025,8 +1035,11 @@ class ScalingSystem(object):
         return self
 
     @_setdoc_pro([ds.centers, ds.rescaling_factor])
-    def rescale_data(self, rescaling_factor=None, centers=None,
-                     axial_anisotropy=None):
+    def rescale_data(self,
+                     rescaling_factor=None,
+                     centers=None,
+                     axial_anisotropy=None
+                     ):
         """
         Rescale inplace: surface_points, orientations---adding columns in the categories_df---and grid---adding values_r
         attributes. The rescaled values will get stored on the linked objects.
@@ -1063,17 +1076,27 @@ class ScalingSystem(object):
         self.set_rescaled_grid(axial_anisotropy=axial_anisotropy)
         return True
 
-    def compute_axial_anisotropy(self, extent=None):
-        if extent is None:
-            extent = self.grid.regular_grid.extent
+    def compute_axial_anisotropy(self, type=None, extent=None):
+        if type is None:
+            type = self.axial_anisotropy_type
+
+        if type == 'data':
+            x1, y1, z1 = self.max_coord
+            x0, y0, z0 = self.min_coord
+        elif type == 'extent':
+            if extent is None:
+                extent = self.grid.regular_grid.extent
+
+            x0, x1, y0, y1, z0, z1 = extent
+        else:
+            raise AttributeError('Type must be either data or extent')
 
         # Calculate average
-
-        x_ext = np.linalg.norm(extent[0]-extent[1])
-        y_ext = np.linalg.norm(extent[2]-extent[3])
-        z_ext = np.linalg.norm(extent[4]-extent[5])
-        mean_extent = np.mean([x_ext, y_ext, z_ext])
-        return np.array([mean_extent/x_ext, mean_extent/y_ext, mean_extent/z_ext])
+        x_d = np.linalg.norm(x0-x1)
+        y_d = np.linalg.norm(y0-y1)
+        z_d = np.linalg.norm(z0-z1)
+        mean_d = np.mean([x_d, y_d, z_d])
+        return np.array([mean_d/x_d, mean_d/y_d, mean_d/z_d])
 
     def apply_axial_anisotropy(self, xyz, anisotropy):
         return xyz * anisotropy
@@ -1120,9 +1143,8 @@ class ScalingSystem(object):
                 df = pn.concat([orientations_xyz, surface_points_xyz], sort=False)
         return df
 
-    @staticmethod
     @_setdoc_pro([SurfacePoints.__doc__, Orientations.__doc__])
-    def max_min_coord(df):
+    def max_min_coord(self, df):
         """
         Find the maximum and minimum location of any input data in each cartesian coordinate
 
@@ -1133,9 +1155,10 @@ class ScalingSystem(object):
             tuple: max[XYZ], min[XYZ]
         """
 
-        max_coord = df.max()[['X', 'Y', 'Z']]
-        min_coord = df.min()[['X', 'Y', 'Z']]
-        return max_coord, min_coord
+        self.max_coord = df.max()[['X', 'Y', 'Z']]
+        self.min_coord = df.min()[['X', 'Y', 'Z']]
+
+        return self.max_coord, self.min_coord
 
     @_setdoc_pro([SurfacePoints.__doc__, Orientations.__doc__, ds.centers])
     def compute_data_center(self,
@@ -1249,7 +1272,7 @@ class ScalingSystem(object):
         else:
             axial_anisotropy_scale = self.compute_axial_anisotropy()
             surface_points_xyz = self.apply_axial_anisotropy(
-                self.surface_points.df['X', 'Y', 'Z'],
+                self.surface_points.df[['X', 'Y', 'Z']],
                 axial_anisotropy_scale)
 
         self.surface_points.df.loc[idx, ['X_c', 'Y_c', 'Z_c']] = self.rescale_surface_points(
@@ -1328,7 +1351,7 @@ class ScalingSystem(object):
         else:
             axial_anisotropy_scale = self.compute_axial_anisotropy()
             orientations_xyz = self.apply_axial_anisotropy(
-                self.orientations.df['X', 'Y', 'Z'],
+                self.orientations.df[['X', 'Y', 'Z']],
                 axial_anisotropy_scale)
 
         self.orientations.df.loc[idx, ['X_c', 'Y_c', 'Z_c']] = self.rescale_orientations(
@@ -1340,9 +1363,9 @@ class ScalingSystem(object):
         return self.orientations.df.loc[idx, ['X_c', 'Y_c', 'Z_c']]
 
     @staticmethod
-    def rescale_grid(grid, rescaling_factor, centers: pn.DataFrame):
-        new_grid_extent = (grid.regular_grid.extent - np.repeat(centers, 2)) / rescaling_factor + 0.5001
-        new_grid_values = (grid.values - centers) / rescaling_factor + 0.5001
+    def rescale_grid(grid_extent, grid_values, rescaling_factor, centers: pn.DataFrame):
+        new_grid_extent = (grid_extent - np.repeat(centers, 2)) / rescaling_factor + 0.5001
+        new_grid_values = (grid_values - centers) / rescaling_factor + 0.5001
         return new_grid_extent, new_grid_values,
 
     def set_rescaled_grid(self, axial_anisotropy=None):
@@ -1352,18 +1375,11 @@ class ScalingSystem(object):
         if axial_anisotropy is None:
             axial_anisotropy = self.axial_anisotropy
 
-        if axial_anisotropy is False:
-            grid_xyz = self.grid
-        else:
-            axial_anisotropy_scale = self.compute_axial_anisotropy()
-            grid_xyz = self.apply_axial_anisotropy(
-                self.grid.values['X', 'Y', 'Z'],
-                axial_anisotropy_scale)
-
         # The grid has to be rescaled for having the model in scaled coordinates
         # between 0 and 1 but with the actual proportions
         self.grid.extent_r, self.grid.values_r = self.rescale_grid(
-            self.grid,
+            self.grid.regular_grid.extent,
+            self.grid.values,
             self.df.loc['values', 'rescaling factor'],
             self.df.loc['values', 'centers']
         )
@@ -1371,10 +1387,41 @@ class ScalingSystem(object):
         self.grid.regular_grid.extent_r, self.grid.regular_grid.values_r = self.grid.extent_r, self.grid.values_r
 
         # For the grid
-        self.grid.extent_c, self.grid.values_c = self.rescale_grid(
-            grid_xyz,
-            self.df.loc['values', 'rescaling factor'],
-            self.df.loc['values', 'centers']
-        )
+
+        if axial_anisotropy is True:
+
+            axial_anisotropy_scale = self.compute_axial_anisotropy()
+
+            ani_grid_values = self.apply_axial_anisotropy(
+                self.grid.values,
+                axial_anisotropy_scale)
+
+            axis_extended_l = self.apply_axial_anisotropy(
+                self.grid.regular_grid.extent[[0, 2, 4]],
+                axial_anisotropy_scale)
+
+            axis_extended_r = self.apply_axial_anisotropy(
+                self.grid.regular_grid.extent[[1, 3, 5]],
+                axial_anisotropy_scale)
+
+            ani_grid_extent = np.array([axis_extended_l[0],
+                                        axis_extended_r[0],
+                                        axis_extended_l[1],
+                                        axis_extended_r[1],
+                                        axis_extended_l[2],
+                                        axis_extended_r[2]])
+
+            #ani_grid_extent = copy.copy(self.grid.regular_grid.extent)
+            # ani_grid_extent[[1, 3, 5]] = axis_extended
+
+            self.grid.extent_c, self.grid.values_c = self.rescale_grid(
+                ani_grid_extent,
+                ani_grid_values,
+                self.df.loc['values', 'rescaling factor'],
+                self.df.loc['values', 'centers']
+            )
+        else:
+            self.grid.values_c = self.grid.values_r
+            self.grid.extent_c = self.grid.extent_r
 
         return self.grid.values_c

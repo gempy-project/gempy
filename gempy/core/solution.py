@@ -271,7 +271,17 @@ class Solution(object):
         """
         self.vertices = []
         self.edges = []
-        self.padding_mask_matrix()
+        if 'mask_topography' in kwargs:
+            mask_topography = kwargs.pop('mask_topography')
+        else:
+            mask_topography = True
+
+        if 'masked_marching_cubes' in kwargs:
+            masked_marching_cubes = kwargs.pop('masked_marching_cubes')
+        else:
+            masked_marching_cubes = True
+
+        self.padding_mask_matrix(mask_topography=mask_topography)
         series_type = self.series.df['BottomRelation']
         s_n = 0
         active_indices = self.surfaces.df.groupby('isActive').groups[True]
@@ -296,10 +306,14 @@ class Solution(object):
             #     mask_array = np.invert(self.mask_matrix_pad[e])
             # else:
             #     mask_array = self.mask_matrix_pad[e]
-            if series_type[e-1] == 'Onlap':
-                mask_array = self.mask_matrix_pad[e-1]
+
+            if masked_marching_cubes is True:
+                if series_type[e-1] == 'Onlap':
+                    mask_array = self.mask_matrix_pad[e-1]
+                else:
+                    mask_array = self.mask_matrix_pad[e]
             else:
-                mask_array = self.mask_matrix_pad[e]
+                mask_array = None
 
             for level in sfas:
                 try:
