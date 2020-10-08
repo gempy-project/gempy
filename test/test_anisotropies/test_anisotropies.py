@@ -67,7 +67,7 @@ def test_axial_anisotropy_type_data(model):
     geo_model.set_regular_grid(geo_model._grid.extent_c, [50, 50, 50])
 
     gp.plot_3d(geo_model, ve=None, show_topography=False
-               ,image=False, show_lith=False,
+               ,image=True, show_lith=False,
                kwargs_plot_data={'arrow_size': 10})
 
 
@@ -89,7 +89,7 @@ def test_axial_anisotropy_type_extent(model):
     geo_model.set_regular_grid(geo_model._grid.extent_c, [50, 50, 50])
 
     gp.plot_3d(geo_model, ve=None, show_topography=False
-               , image=False, show_lith=False,
+               , image=True, show_lith=False,
                kwargs_plot_data={'arrow_size': 10})
 
 
@@ -127,6 +127,6 @@ def test_axial_anisotropy(model):
                )
     plt.show()
 
-    gp.plot_3d(geo_model, ve=None, show_topography=False, image=False, show_lith=False,
+    gp.plot_3d(geo_model, ve=None, show_topography=False, image=True, show_lith=False,
                kwargs_plot_data={'arrow_size': 10}
                )

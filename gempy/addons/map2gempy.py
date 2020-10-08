@@ -16,7 +16,7 @@ def loop2gempy(
         compute: bool = True,
         vtk: bool = False,
         vtk_path: str = None,
-
+        image_2d: bool = False
 ):
 
     contacts = []
@@ -135,7 +135,7 @@ def loop2gempy(
 
     if vtk is True:
         gp.plot_3d(geo_model, ve=10, show_topography=True,
-                   image=False,
+                   image=image_2d,
                    show_lith=False,
                    )
 
