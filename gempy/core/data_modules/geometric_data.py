@@ -372,6 +372,9 @@ class SurfacePoints(GeometricData):
             values = values.T
 
         # Selecting the properties passed to be modified
+        if values.shape[0] == 1:
+            values = np.repeat(values, idx.shape[0])
+
         self.df.loc[idx, list(kwargs.keys())] = values
 
         return self
@@ -684,6 +687,9 @@ class Orientations(GeometricData):
         # If we pass multiple index we need to transpose the numpy array
         if type(idx) is list or type(idx) is np.ndarray:
             values = values.T
+
+        if values.shape[0] == 1:
+            values = np.repeat(values, idx.shape[0])
 
         # Selecting the properties passed to be modified
         self.df.loc[idx, list(kwargs.keys())] = values.astype('float64')
