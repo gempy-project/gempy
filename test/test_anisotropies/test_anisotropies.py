@@ -67,12 +67,11 @@ def test_axial_anisotropy_type_data(model):
     geo_model.set_regular_grid(geo_model._grid.extent_c, [50, 50, 50])
 
     gp.plot_3d(geo_model, ve=None, show_topography=False
-               ,image=True, show_lith=False,
+               , image=True, show_lith=False,
                kwargs_plot_data={'arrow_size': 10})
 
 
 def test_axial_anisotropy_type_extent(model):
-
     geo_model = model
 
     geo_model._rescaling.toggle_axial_anisotropy(type='extent')
@@ -103,7 +102,7 @@ def test_axial_anisotropy(model):
     geo_model.surface_points.df[['X', 'Y', 'Z']] = geo_model.surface_points.df[['X_c', 'Y_c',
                                                                                 'Z_c']]
     geo_model.orientations.df[['X', 'Y', 'Z']] = geo_model.orientations.df[['X_c', 'Y_c',
-                                                                                'Z_c']]
+                                                                            'Z_c']]
 
     # This is a hack
     geo_model._grid.topography.extent = geo_model._grid.extent_c

@@ -1134,16 +1134,15 @@ class ScalingSystem(object):
         Returns:
 
         """
-        if surface_points_xyz is None:
-            if orientations_xyz is None:
-                raise AttributeError('You must pass at least one Data object')
-            else:
-                df = orientations_xyz
+
+        if surface_points_xyz is None and orientations_xyz is not None:
+            df = orientations_xyz
+        elif surface_points_xyz is not None and orientations_xyz is None:
+            df = surface_points_xyz
+        elif surface_points_xyz is not None and orientations_xyz is not None:
+            df = pn.concat([orientations_xyz, surface_points_xyz], sort=False)
         else:
-            if orientations_xyz is None:
-                df = surface_points_xyz
-            else:
-                df = pn.concat([orientations_xyz, surface_points_xyz], sort=False)
+            raise AttributeError('You must pass at least one Data object')
         return df
 
     @_setdoc_pro([SurfacePoints.__doc__, Orientations.__doc__])
