@@ -2,18 +2,20 @@ import gempy as gp
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import os
 
 # Input files
 from gempy.addons.map2gempy import loop2gempy
 
 root = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/data/input_data/turner_syncline/'
+path = os.path.dirname(__file__) + '/../input_data/'
 
 orientations_file = root + 'orientations_clean.csv'
 contacts_file = root + 'contacts_clean.csv'
 faults_contact = root + 'faults.csv'
 faults_orientations = root + 'fault_orientations.csv'
 
-fp = root + 'dtm_rp.tif'
+fp = path + 'dtm_rp.tif'
 series_file = root + 'all_sorts_clean.csv'
 
 faults_rel_matrix = root + 'fault-fault-relationships.csv'

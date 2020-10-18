@@ -3,13 +3,14 @@ import pytest
 
 import gempy as gp
 import matplotlib.pyplot as plt
+import os
 
 # Input files
 root = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/data/input_data/turner_syncline/'
-
+path = os.path.dirname(__file__) + '/../input_data/'
 orientations_file = root + 'orientations_clean.csv'
 contacts_file = root + 'contacts_clean.csv'
-fp = root + 'dtm_rp.tif'
+fp = path + 'dtm_rp.tif'
 series_file = root + 'all_sorts_clean.csv'
 
 bbox = (500000, 7490000, 545000, 7520000)
