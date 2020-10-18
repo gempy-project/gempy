@@ -22,6 +22,8 @@ import ctypes
 from numpy.ctypeslib import ndpointer
 # to create folder
 import os
+
+import pyvista as pv
 # read out and change xml file (here only used to read out model boundary information)
 import geomodeller_xml_obj as GO
 
@@ -220,7 +222,7 @@ class GeoGrid():
         # self.grid = np.swapaxes(self.grid, 0, 1)
 
 
-    def export_to_vtk(self, vtk_filename="geo_grid", real_coords = True, **kwds):
+    def export_to_vtk(self, vtk_filename="geo_grid.vtr", real_coords = True, **kwds):
         """Export grid to VTK for visualisation
         **Arguments**:
             - *vtk_filename* = string : vtk filename (obviously...)
@@ -228,13 +230,9 @@ class GeoGrid():
         **Optional Keywords**:
             - *grid* = numpy grid : grid to save to vtk (default: self.grid)
             - *var_name* = string : name of variable to plot (default: Geology)
-        Note: requires pyevtk, available at: https://bitbucket.org/pauloh/pyevtk
         """
         grid = kwds.get("grid", self.grid)
         var_name = kwds.get("var_name", "Geology")
-        #from evtk.hl import gridToVTK
-        import pyevtk
-        from pyevtk.hl import gridToVTK
         # define coordinates
         x = np.zeros(self.nx + 1)
         y = np.zeros(self.ny + 1)
@@ -243,17 +241,15 @@ class GeoGrid():
         y[1:] = np.cumsum(self.dely)
         z[1:] = np.cumsum(self.delz)
 
-
-
         # plot in coordinates
         if real_coords:
             x += self.xmin
             y += self.ymin
             z += self.zmin
-
-
-        gridToVTK(vtk_filename, x, y, z,
-                  cellData = {var_name: grid})
+            
+        out = pv.RectilinearGrid(x,y,z)
+        out['var_name'] = grid
+        out.save(vtk_filename)
 
     def export_to_csv(self, filename = "geo_grid.csv"):
         """Export grid to x,y,z,value pairs in a csv file
@@ -548,7 +544,6 @@ def combine_grids(G1, G2, direction, merge_type = 'keep_first', **kwds):
         # now: determine overlap mismatch
         G_overlap.grid = G_low.grid[:,G_low_ids,:] - G_high.grid[:,G_high_ids,:]
         # for some very strange reason, this next step is necessary to enable the VTK
-        # export with pyevtk - looks like a bug in pyevtk...
         G_overlap.grid = G_overlap.grid + np.zeros(G_overlap.grid.shape)
         #
 

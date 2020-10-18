@@ -56,6 +56,7 @@ try:
 except ImportError:
     IPV_IMPORT = False
 
+import pyvista as pv
 
 class vtkVisualization(object):
     """
@@ -1138,7 +1139,7 @@ class vtkVisualization(object):
         return True
 
     @staticmethod
-    def export_vtk_lith_block(geo_data, lith_block=None, path=None):
+    def export_vtk_lith_block(geo_data, lith_block=None, path="./default"):
         """
         Export data to a vtk file for posterior visualizations
 
@@ -1150,15 +1151,8 @@ class vtkVisualization(object):
         Returns:
             None
         """
-        try:
-            try:
-                from evtk.hl import gridToVTK
-            except ModuleNotFoundError:
-                from pyevtk.hl import gridToVTK
-        except ModuleNotFoundError:
-            raise ModuleNotFoundError('pyevtk is not installed. Grid export not available.')
 
-        import numpy as np
+
 
         # Dimensions
 
@@ -1184,13 +1178,9 @@ class vtkVisualization(object):
         if lith_block is None:
             lith_block = geo_data.solutions.lith_block
         lith = lith_block.reshape((nx, ny, nz))
-
-        # Variables
-
-        if not path:
-            path = "./default"
-
-        gridToVTK(path+'_lith_block', x, y, z, cellData={"Lithology": lith})
+        out = pv.RectilinearGrid(x,y,z)
+        out['Lithology'] = lith
+        out.save(path+'_lith_block.vtr')
 
     @staticmethod
     def export_vtk_surfaces(geo_model, vertices=None, simplices=None, path=None, name='_surfaces', alpha=1):
