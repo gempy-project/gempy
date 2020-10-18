@@ -1413,9 +1413,6 @@ class ScalingSystem(object):
                                         axis_extended_l[2],
                                         axis_extended_r[2]])
 
-            #ani_grid_extent = copy.copy(self.grid.regular_grid.extent)
-            # ani_grid_extent[[1, 3, 5]] = axis_extended
-
             self.grid.extent_c, self.grid.values_c = self.rescale_grid(
                 ani_grid_extent,
                 ani_grid_values,

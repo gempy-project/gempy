@@ -677,8 +677,7 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
         Returns:
             True
         """
-        n_series = self.len_series_i.shape[
-            0]  # self.additional_data.get_additional_data()['values']['Structure', 'number series']
+        n_series = self.len_series_i.shape[0]
         x_to_interp_shape = self.grid.values_c.shape[0] + 2 * self.len_series_i.sum()
 
         if reset_weights is True:

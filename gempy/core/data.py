@@ -1243,12 +1243,6 @@ class KrigingParameters(object):
         if range_var is None:
             range_var = self.df.loc['values', 'range']
 
-        # if type(range_var) is pn.Series:
-        #     self.df = self.df.astype({'$C_o$': object})
-        #     self.df.at['values', '$C_o$'] = np.atleast_1d(
-        #         range_var['values']) ** 2 / 14 / 3
-        # elif type(range_var) is float or np.float64:
-        #     self.df['$C_o$'] = range_var ** 2 / 14 / 3
         if type(range_var) is list:
             range_var = np.atleast_1d(range_var)
 
