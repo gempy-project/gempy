@@ -161,9 +161,10 @@ gp.set_interpolator(geo_model, theano_optimizer='fast_run', dtype='float64')
 # that value:
 # 
 
-# %% 
-geo_model._interpolator.theano_graph.a_T.get_value()
-geo_model._interpolator.theano_graph.a_T.set_value(np.array([.2], dtype='float64'))
+# %%
+new_range = geo_model.get_additional_data().loc[('Kriging', 'range'), 'values'] * 0.2
+geo_model.modify_kriging_parameters('range', new_range)
+
 
 # %% 
 gp.compute_model(geo_model, sort_surfaces=True, compute_mesh=False)
