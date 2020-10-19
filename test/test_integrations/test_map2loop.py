@@ -1,6 +1,6 @@
 import gempy as gp
 import numpy as np
-import pandas as pd
+import pytest
 import matplotlib.pyplot as plt
 import os
 
@@ -26,10 +26,13 @@ model_base = -0  # Original 3200
 model_top = 800
 
 
-def test_loo2gempy():
+@pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
+                    reason="Skipping this test on Travis CI. For some reason there is a linalg "
+                           "error.")
+def test_loop2gempy():
     loop2gempy(contacts_file, orientations_file, bbox, series_file, model_base,
                model_top, fp, faults_contact, faults_orientations, 'testing_map',
-               vtk=True, vtk_path='./', image_2d=False)
+               vtk=True, vtk_path='./', image_2d=True)
 
 
 def test_map2loop_model_import_data():

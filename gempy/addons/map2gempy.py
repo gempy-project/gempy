@@ -121,7 +121,7 @@ def loop2gempy(
         geo_model._surfaces.colors.make_faults_black(get_fault_names)
 
     if compute is True:
-        gp.set_interpolator(geo_model)
+        gp.set_interpolator(geo_model, dtype='float64')
 
         # Increasing nugget effect
         geo_model.modify_surface_points(
