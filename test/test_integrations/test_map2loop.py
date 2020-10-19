@@ -29,7 +29,7 @@ model_top = 800
 def test_loo2gempy():
     loop2gempy(contacts_file, orientations_file, bbox, series_file, model_base,
                model_top, fp, faults_contact, faults_orientations, 'testing_map',
-               vtk=True, vtk_path='./', image_2d=True)
+               vtk=True, vtk_path='./', image_2d=False)
 
 
 def test_map2loop_model_import_data():

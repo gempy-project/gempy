@@ -128,7 +128,13 @@ def loop2gempy(
             geo_model.surface_points.df.index,
             smooth=0.1
         )
-        new_range = geo_model.get_additional_data().loc[('Kriging', 'range'), 'values'] * 0.3
+
+        geo_model.modify_orientations(
+            geo_model.orientations.df.index,
+            smooth=0.01
+        )
+
+        new_range = geo_model.get_additional_data().loc[('Kriging', 'range'), 'values'] * 0.5
         geo_model.modify_kriging_parameters('range', new_range)
 
         gp.compute_model(geo_model)
