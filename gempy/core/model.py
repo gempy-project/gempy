@@ -390,6 +390,9 @@ class ImplicitCoKriging(object):
 
                 * filepath:   path to the .npy file that was created using the topography.save() function
 
+            source = 'numpy':
+                * array: numpy array containing the data
+
         Returns:
              :class:`gempy.core.data.Grid`
 

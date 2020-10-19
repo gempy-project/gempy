@@ -189,6 +189,9 @@ class Grid(object):
                 self.topography.load_from_saved(filepath)
             else:
                 print('path to .npy file must be provided')
+        elif source == 'numpy':
+            array = kwargs.get('array', None)
+            self.topography.set_values(array)
         else:
             raise AttributeError('source must be random, gdal or saved')
 
