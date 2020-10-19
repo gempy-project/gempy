@@ -103,7 +103,7 @@ gp.plot_2d(geo_model, direction='y')
 
 # %% 
 gp.set_interpolator(geo_model,
-                    theano_optimizer='fast_run', dtype='float32')
+                    theano_optimizer='fast_run', dtype='float64')
 
 # %%
 # The default range is always the diagonal of the extent. Since in this
@@ -112,9 +112,8 @@ gp.set_interpolator(geo_model,
 # 
 
 # %% 
-val = .1
+val = np.array([.2], dtype='float64')
 geo_model.interpolator.theano_graph.a_T.set_value(val)
-geo_model.interpolator.theano_graph.a_T_scalar.set_value(val)
 
 # %%
 gp.compute_model(geo_model, set_solutions=True, sort_surfaces=False)
