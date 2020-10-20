@@ -31,16 +31,25 @@ series_rel_matrix = root + 'group-fault-relationships.csv'
 series_rel_matrix2 = root2 + 'group-fault-relationships.csv'
 
 
+ff = root2 + 'fault-fault-relationships.csv'
+fg = root2 + 'group-fault-relationships.csv'
+
+
 fp = path + 'dtm_rp.tif'
-fp2 = pd.read_csv(root2 + 'dtm.csv', sep=' ', header=None, keep_default_na=True).dropna(inplace=False, axis=1)
+fp2 = path + 'dtm_rp2.tif'
+#fp2 = pd.read_csv(root2 + 'dtm.csv', sep=' ', header=None, keep_default_na=True).dropna(inplace=False, axis=1)
 
 
 bbox = (500000, 7490000, 545000, 7520000)
 model_base = -0  # Original 3200
 model_top = 800
-extent = [515687.3100586407, 562666.8601065436,
+extent_g = [515687.3100586407, 562666.8601065436,
           7473446.765934078, 7521273.574077863,
          -3200,1200.0]
+
+extent = [515687.3100586407, 7473446.765934078,
+          562666.8601065436, 7521273.574077863,
+         -3200, 1200.0]
 
 
 @pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
@@ -52,27 +61,53 @@ def test_loop2gempy():
                vtk=True, vtk_path='./', image_2d=True)
 
 
+def test_map2loop2relmatrix():
+    ff_ = pd.read_csv(ff).set_index('fault_id')
+    fg_ = pd.read_csv(fg).set_index('group')
+    p = pd.concat((ff_, fg_.T), axis=1)
+    print(p)
+
+
+def test_loop2gempy2():
+    # ff_ = pd.read_csv(ff).set_index('fault_id')
+    # fg_ = pd.read_csv(fg).set_index('group')
+    # p_ = pd.concat((ff_, fg_), axis=0, sort=True)
+    # p = pd.concat((p_, fg_.T), axis=1, sort=True).fillna(0)
+
+    loop2gempy(contacts_file2, orientations_file2, extent[:4], series_file2, extent[4],
+               extent[5],
+               dtm_reproj_file= None, # fp2,
+               faults_contact= faults_contact2,
+               faults_orientations= faults_orientations2,
+               faults_faults_rel = ff,
+               faults_groups_rel = fg,
+              # faults_rel_matrix = p.values,
+               model_name='testing_map',
+               compute=True,
+               vtk=True, vtk_path='./', image_2d=False)
+
+
 @pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
                     reason="Not finished")
 def test_map2loop_model_import_aus():
     geo_model = gp.create_model('test_map2Loop')
     gp.init_data(
         geo_model,
-        extent=extent,
+        extent=extent_g,
         resolution=[50, 50, 50],
-        path_o=orientations_file,
-        path_i=contacts_file
+        path_o=orientations_file2,
+        path_i=contacts_file2
     )
 
     # Load Topology
-    geo_model.set_topography(source='numpy', array=fp)
+    geo_model.set_topography(source='numpy', array=fp2.values)
 
     gp.plot_2d(geo_model, ve=10, show_topography=True)
     plt.show()
 
     # Plot in 3D
-    gp.plot_3d(geo_model, ve=None, show_topography=False, image=True,
-               kwargs_plot_data={'arrow_size': 400}
+    gp.plot_3d(geo_model, ve=None, show_topography=False, image=False,
+               kwargs_plot_data={'arrow_size': 40}
                )
     print(geo_model.orientations)
 

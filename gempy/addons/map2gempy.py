@@ -1,3 +1,5 @@
+from typing import Iterable
+
 import gempy as gp
 import pandas as pd
 import numpy as np
@@ -6,12 +8,15 @@ import numpy as np
 def loop2gempy(
         contacts_file: str,
         orientations_file: str,
-        bbox: tuple,
+        bbox: Iterable,
         groups_file: str,
         model_base: float,
         model_top: float, dtm_reproj_file: str = None,
         faults_contact: str = None,
         faults_orientations: str = None,
+        faults_faults_rel: str = None,
+        faults_groups_rel: str = None,
+        faults_rel_matrix = None,
         model_name: str = None,
         compute: bool = True,
         vtk: bool = False,
@@ -60,6 +65,12 @@ def loop2gempy(
             )
         )
 
+    if faults_faults_rel is not None and faults_groups_rel is not None:
+        ff_ = pd.read_csv(faults_faults_rel).set_index('fault_id')
+        fg_ = pd.read_csv(faults_groups_rel).set_index('group')
+        p_ = pd.concat((ff_, fg_), axis=0, sort=True)
+        faults_rel_matrix = pd.concat((p_, fg_.T), axis=1, sort=True).fillna(0).values
+
     surface_points_ready = pd.concat(contacts, sort=True)
     surface_points_ready.reset_index(inplace=True, drop=False)
     orientation_ready = pd.concat(orientations, sort=True)
@@ -79,10 +90,21 @@ def loop2gempy(
 
     # Load Topology
     if dtm_reproj_file is not None:
-        geo_model.set_topography(source='gdal', filepath=dtm_reproj_file)
+        if type(dtm_reproj_file) is str:
+            source = 'gdal'
+            topo_kwarg = {'filepath': dtm_reproj_file}
+        elif type(dtm_reproj_file) is np.ndarray:
+            source = 'numpy'
+            topo_kwarg = {'array': dtm_reproj_file}
+        else:
+            raise AttributeError('dtm_proj_file must be either a path to gdal or a'
+                                 'numpy array with values')
+        geo_model.set_topography(source=source, **topo_kwarg)
 
     # Stack Processing
     contents = np.genfromtxt(groups_file, delimiter=',', dtype='U100')[1:, 4:-1]
+    contents_pd = pd.read_csv(groups_file)
+
 
     map_series_to_surfaces = {}
     for pair in contents:
@@ -105,6 +127,9 @@ def loop2gempy(
         geo_model.reorder_features(ordered_features)
         geo_model.set_is_fault(faults_pair)
 
+        # Faults relation
+        geo_model.set_fault_relation(faults_rel_matrix)
+
     geo_model.add_surfaces('basement')
 
     # Check if there is features without data and delete it
@@ -120,13 +145,23 @@ def loop2gempy(
             (True, True)).index
         geo_model._surfaces.colors.make_faults_black(get_fault_names)
 
+    try:
+        colours = pd.read_csv(groups_file).set_index('code')['colour']
+        # Drop formations that do not exist in surfaces
+        colours = colours.loc[colours.index.isin(geo_model.surfaces.df['surface'])].to_dict()
+
+        geo_model._surfaces.colors.change_colors(colours)
+    except KeyError:
+        pass
+
     if compute is True:
-        gp.set_interpolator(geo_model, dtype='float64')
+        gp.set_interpolator(geo_model, dtype='float64',
+                            verbose=['solve_kriging'])
 
         # Increasing nugget effect
         geo_model.modify_surface_points(
             geo_model.surface_points.df.index,
-            smooth=0.1
+            smooth=0.0001
         )
 
         geo_model.modify_orientations(
@@ -137,12 +172,14 @@ def loop2gempy(
         new_range = geo_model.get_additional_data().loc[('Kriging', 'range'), 'values'] * 0.5
         geo_model.modify_kriging_parameters('range', new_range)
 
+        # geo_model._rescaling.toggle_axial_anisotropy(type='extent')
+
         gp.compute_model(geo_model)
 
     if vtk is True:
-        gp.plot_3d(geo_model, ve=10, show_topography=True,
+        gp.plot_3d(geo_model, ve=None, show_topography=True,
                    image=image_2d,
-                   show_lith=False,
+                   show_lith=True,
                    )
 
     if vtk_path is not None:
