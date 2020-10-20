@@ -76,7 +76,7 @@ def test_loop2gempy2():
 
     loop2gempy(contacts_file2, orientations_file2, extent[:4], series_file2, extent[4],
                extent[5],
-               dtm_reproj_file= None, # fp2,
+               dtm_reproj_file=  fp2,
                faults_contact= faults_contact2,
                faults_orientations= faults_orientations2,
                faults_faults_rel = ff,
@@ -84,7 +84,7 @@ def test_loop2gempy2():
               # faults_rel_matrix = p.values,
                model_name='testing_map',
                compute=True,
-               vtk=True, vtk_path='./', image_2d=False)
+               vtk=True, vtk_path='./', image_2d=True)
 
 
 @pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",

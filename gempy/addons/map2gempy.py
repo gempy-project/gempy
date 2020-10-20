@@ -161,7 +161,7 @@ def loop2gempy(
         # Increasing nugget effect
         geo_model.modify_surface_points(
             geo_model.surface_points.df.index,
-            smooth=0.0001
+            smooth=0.1
         )
 
         geo_model.modify_orientations(
@@ -177,7 +177,7 @@ def loop2gempy(
         gp.compute_model(geo_model)
 
     if vtk is True:
-        gp.plot_3d(geo_model, ve=None, show_topography=True,
+        gp.plot_3d(geo_model, ve=3, show_topography=True,
                    image=image_2d,
                    show_lith=True,
                    )
