@@ -156,7 +156,8 @@ def loop2gempy(
 
     if compute is True:
         gp.set_interpolator(geo_model, dtype='float64',
-                            verbose=['solve_kriging'])
+                            # verbose=['solve_kriging']
+                            )
 
         # Increasing nugget effect
         geo_model.modify_surface_points(

@@ -84,7 +84,7 @@ def test_loop2gempy2():
               # faults_rel_matrix = p.values,
                model_name='testing_map',
                compute=True,
-               vtk=True, vtk_path='./', image_2d=True)
+               vtk=True, vtk_path=None, image_2d=True)
 
 
 @pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
