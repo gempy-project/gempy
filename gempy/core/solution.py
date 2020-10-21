@@ -200,7 +200,7 @@ class Solution(object):
         rg = self.grid.regular_grid
         spacing = self.grid.regular_grid.get_dx_dy_dz(rescale=rescale)
         vertices, simplices, normals, values = measure.marching_cubes(
-            scalar_field.reshape(rg.resolution), 
+            scalar_field.reshape(rg.resolution),
             level, spacing=spacing, mask=mask_array, **kwargs)
         idx = [0, 2, 4]
         loc_0 = rg.extent_r[idx] if rescale else rg.extent[idx]
@@ -253,7 +253,17 @@ class Solution(object):
         """
         self.vertices = []
         self.edges = []
-        self.padding_mask_matrix()
+        if 'mask_topography' in kwargs:
+            mask_topography = kwargs.pop('mask_topography')
+        else:
+            mask_topography = True
+
+        if 'masked_marching_cubes' in kwargs:
+            masked_marching_cubes = kwargs.pop('masked_marching_cubes')
+        else:
+            masked_marching_cubes = True
+
+        self.padding_mask_matrix(mask_topography=mask_topography)
         series_type = self.series.df['BottomRelation']
         s_n = 0
         active_indices = self.surfaces.df.groupby('isActive').groups[True]
