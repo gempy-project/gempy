@@ -186,7 +186,7 @@ def test_map2loop_model_no_faults():
                              remove_unused_series=False)
 
     # Adding axial rescale
-    geo_model._rescaling.toggle_axial_anisotropy()
+    #geo_model._rescaling.toggle_axial_anisotropy()
 
     # Increasing nugget effect
     geo_model.modify_surface_points(
