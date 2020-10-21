@@ -644,6 +644,7 @@ class Plot2D:
                 for e, block in enumerate(scalar_fields):
                     level = self.model.solutions.scalar_field_at_surface_points[e][np.where(
                         self.model.solutions.scalar_field_at_surface_points[e] != 0)]
+
                     # Ignore warning about some scalars not being on the plot since it is very common
                     # that an interface does not exit for a given section
                     c_id2 = c_id + len(level)  # color id endpoint
