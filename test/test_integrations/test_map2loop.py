@@ -58,7 +58,7 @@ extent = [515687.3100586407, 7473446.765934078,
 def test_loop2gempy():
 
     topo = fp
-    topo = None
+   # topo = None
 
     loop2gempy(contacts_file, orientations_file, bbox, series_file, model_base,
                model_top, topo, faults_contact, faults_orientations, 'testing_map',
@@ -75,7 +75,7 @@ def test_map2loop2relmatrix():
 def test_loop2gempy2():
 
     topo = fp2
-    topo = None
+   # topo = None
 
     loop2gempy(contacts_file2, orientations_file2, extent[:4], series_file2, extent[4],
                extent[5],
