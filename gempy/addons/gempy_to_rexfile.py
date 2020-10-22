@@ -741,7 +741,7 @@ def geomodel_to_rex(geo_model, backside=True):
 
         # FOR REXView Saving each surface is a rexfile
         rex_bytes[surface_vals['surface']] = all_bytes
-    return all_bytes  # rex_bytes
+    return rex_bytes
 
 
 def mesh_preprocess(ver, tri):

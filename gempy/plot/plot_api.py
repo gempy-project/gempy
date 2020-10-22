@@ -255,7 +255,7 @@ def plot_2d(model, n_axis=None, section_names: list = None,
             p.plot_regular_grid(temp_ax, block=regular_grid, cell_number=cell_number[e2],
                                 direction=direction[e2], **kwargs_regular_grid)
 
-        # temp_ax.set_aspect(ve)
+        temp_ax.set_aspect(ve)
 
     if show is True:
         p.fig.show()
@@ -275,6 +275,7 @@ def plot_3d(model, plotter_type='basic',
             ve=None,
             kwargs_plot_structured_grid=None,
             kwargs_plot_topography=None,
+            kwargs_plot_data=None,
             image=False,
             off_screen=False, **kwargs) -> GemPyToVista:
     """foobar
@@ -315,6 +316,8 @@ def plot_3d(model, plotter_type='basic',
         kwargs_plot_topography = dict()
     if kwargs_plot_structured_grid is None:
         kwargs_plot_structured_grid = dict()
+    if kwargs_plot_data is None:
+        kwargs_plot_data = dict()
 
     fig_path: str = kwargs.get('fig_path', None)
 
@@ -327,7 +330,8 @@ def plot_3d(model, plotter_type='basic',
         gpv.plot_structured_grid("scalar", series=scalar_field)
 
     if show_data:
-        gpv.plot_data()
+        gpv.plot_data(**kwargs_plot_data)
+
     if show_topography and model._grid.topography is not None:
         gpv.plot_topography(**kwargs_plot_topography)
 
@@ -568,7 +572,8 @@ def plot_ar(geo_model, path=None, project_name=None, api_token=None, secret=None
     project_name_ = project_name
     for i in range(40):
         try:
-            tag = upload_to_rexcloud(files_path, project_name=project_name_, api_token=api_token, secret=secret)
+            tag = upload_to_rexcloud(files_path, project_name=project_name_,
+                                     api_token=api_token, secret=secret)
             break
         except ConnectionError:
             project_name_ = project_name + str(i)

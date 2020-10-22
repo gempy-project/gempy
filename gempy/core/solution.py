@@ -169,9 +169,9 @@ class Solution(object):
     def set_values_to_surface_points(self, values):
         x_to_intep_length = self.grid.length[-1]
         self.scalar_field_at_surface_points = values[5]
-
         self.values_at_surface_points = values[0][1:, x_to_intep_length:]
         self.block_at_surface_points = values[1][:, :, x_to_intep_length:]
+        # todo disambiguate below from self.scalar_field_at_surface_points
         self._scalar_field_at_surface = values[4][:, x_to_intep_length:]
         self.mask_at_surface_points = values[6][:, x_to_intep_length:]
         return self.scalar_field_at_surface_points
@@ -197,34 +197,18 @@ class Solution(object):
             :func:`skimage.measure.marching_cubes`
 
         """
-
+        rg = self.grid.regular_grid
+        spacing = self.grid.regular_grid.get_dx_dy_dz(rescale=rescale)
         vertices, simplices, normals, values = measure.marching_cubes(
-            scalar_field.reshape(self.grid.regular_grid.resolution[0],
-                                 self.grid.regular_grid.resolution[1],
-                                 self.grid.regular_grid.resolution[2]),
-            level,
-            spacing=self.grid.regular_grid.get_dx_dy_dz(rescale=rescale),
-            mask=mask_array,
-            **kwargs)
-
-        if rescale is True:
-            loc_0 = self.grid.regular_grid.extent_r[[0, 2, 4]] + \
-                    np.array(self.grid.regular_grid.get_dx_dy_dz(rescale=True)) / 2
-
-            vertices += np.array(loc_0).reshape(1, 3)
-
-        else:
-            loc_0 = self.grid.regular_grid.extent[[0, 2, 4]] + \
-                    np.array(self.grid.regular_grid.get_dx_dy_dz(rescale=False)) / 2
-            vertices += np.array(loc_0).reshape(1, 3)
+            scalar_field.reshape(rg.resolution),
+            level, spacing=spacing, mask=mask_array, **kwargs)
+        idx = [0, 2, 4]
+        loc_0 = rg.extent_r[idx] if rescale else rg.extent[idx]
+        loc_0 = loc_0 + np.array(spacing) / 2
+        vertices += np.array(loc_0).reshape(1, 3)
 
         return [vertices, simplices, normals, values]
 
-    # def mask_topo(self, mask_matrix):
-    #     """Add the masked elements of the topography to the masking matrix"""
-    #     x = ~self.grid.regular_grid.mask_topo
-    #     a = (np.swapaxes(x, 0, 1) * mask_matrix)
-    #     return a
 
     def padding_mask_matrix(self, mask_topography=True, shift=2):
         """Pad as many elements as in shift to the masking arrays. This is done
@@ -241,9 +225,7 @@ class Solution(object):
         self.mask_matrix_pad = []
         series_type = self.series.df['BottomRelation']
         for e, mask_series in enumerate(self.mask_matrix):
-            mask_series_reshape = mask_series.reshape((self.grid.regular_grid.resolution[0],
-                                                       self.grid.regular_grid.resolution[1],
-                                                       self.grid.regular_grid.resolution[2]))
+            mask_series_reshape = mask_series.reshape(self.grid.regular_grid.resolution)
 
             mask_pad = (mask_series_reshape + find_interfaces_from_block_bottoms(
                 mask_series_reshape, True, shift=shift))
@@ -271,47 +253,32 @@ class Solution(object):
         """
         self.vertices = []
         self.edges = []
-        self.padding_mask_matrix()
+        if 'mask_topography' in kwargs:
+            mask_topography = kwargs.pop('mask_topography')
+        else:
+            mask_topography = True
+
+        if 'masked_marching_cubes' in kwargs:
+            masked_marching_cubes = kwargs.pop('masked_marching_cubes')
+        else:
+            masked_marching_cubes = True
+
+        self.padding_mask_matrix(mask_topography=mask_topography)
         series_type = self.series.df['BottomRelation']
         s_n = 0
         active_indices = self.surfaces.df.groupby('isActive').groups[True]
-        if 'rescale' in kwargs:
-            rescale = kwargs.pop('rescale')
-        else:
-            rescale = False
+        rescale = kwargs.pop('rescale', False)
 
         # We loop the scalar fields
         for e, scalar_field in enumerate(self.scalar_field_matrix):
             sfas = self.scalar_field_at_surface_points[e]
             # Drop
             sfas = sfas[np.nonzero(sfas)]
-
-            # TODO: I think this condition is not necessary anymore
-
-            # #elif series_type[e] == 'Fault':
-            # #    mask_array = None
-            # else:
-            #     mask_array = self.mask_matrix_pad[e]
-            # if series_type[e] == 'Fault':
-            #     mask_array = np.invert(self.mask_matrix_pad[e])
-            # else:
-            #     mask_array = self.mask_matrix_pad[e]
-            if series_type[e-1] == 'Onlap':
-                mask_array = self.mask_matrix_pad[e-1]
-            else:
-                mask_array = self.mask_matrix_pad[e]
-
+            mask_array = self.mask_matrix_pad[e-1 if series_type[e-1] == 'Onlap' else e]
             for level in sfas:
                 try:
                     v, s, norm, val = self.compute_marching_cubes_regular_grid(
                         level, scalar_field, mask_array, rescale=rescale, **kwargs)
-                # except TypeError as e:
-                #     warnings.warn('Attribute error. Using non masked marching cubes' + str(e) + '.')
-                #     v, s, norm, val = self.compute_marching_cubes_regular_grid(
-                #         level, scalar_field, mask_array,
-                #         rescale=rescale,
-                #         classic=True, **kwargs)
-
                 except Exception as e:
                     warnings.warn('Surfaces not computed due to: ' + str(e) + '. The surface is: Series: ' + str(e) +
                                   '; Surface Number:' + str(s_n))
@@ -320,10 +287,7 @@ class Solution(object):
 
                 self.vertices.append(v)
                 self.edges.append(s)
-
                 idx = active_indices[s_n]
-
-                # TODO: Time this piece
                 self.surfaces.df.loc[idx, 'vertices'] = [v]
                 self.surfaces.df.loc[idx, 'edges'] = [s]
                 s_n += 1

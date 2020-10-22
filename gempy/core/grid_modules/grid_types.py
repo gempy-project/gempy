@@ -101,7 +101,8 @@ class RegularGrid:
         Returns:
 
         """
-        assert np.array_equal(topography.extent, self.extent), 'The extent of' \
+        assert np.array_equal(topography.extent,
+                              self.extent), 'The extent of' \
             'the topography must match to the extent of the regular grid.'
 
         # interpolate topography values to the regular grid

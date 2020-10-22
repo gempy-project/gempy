@@ -13,12 +13,13 @@ import matplotlib.colors as colors
 import matplotlib.cm as cmx
 import seaborn as sns
 from arviz.plots.jointplot import *
-from arviz.plots.plot_utils import make_label
+from arviz.plots.plot_utils import make_label, _scale_fig_size
 from arviz import plot_kde, plot_dist
-from arviz.plots.jointplot import _var_names, _scale_fig_size
+from arviz.plots.jointplot import _var_names
 from arviz.plots.kdeplot import _fast_kde_2d
 from arviz.stats import hpd
 import arviz
+
 
 # Seaborn style
 sns.set(style="white", rc={"axes.facecolor": (0, 0, 0, 0)})
