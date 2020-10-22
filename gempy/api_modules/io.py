@@ -3,6 +3,7 @@ The aim of this module is to encapsulate the loading functionality. Also this wi
  better error handling when some of the data files are missing
 """
 import os
+import pathlib
 import shutil
 
 import pandas as pn
@@ -67,10 +68,12 @@ def load_model(name=None, path=None, recompile=False):
     if path is None:
         path = f'./{name}'
 
-    # If the path includes .zip
-    if os.path.isfile(f'{path}'):
-        path = path[:-4]
+    p = pathlib.Path(path)
 
+    # If the path includes .zip
+    if p.suffix == '.zip':
+        path = path[:-4]
+        print("is path", path )
         try:
             shutil.unpack_archive(path + '.zip', extract_dir=path)
         except ValueError as e:
