@@ -1,5 +1,4 @@
 from typing import Iterable
-
 import gempy as gp
 import pandas as pd
 import numpy as np
@@ -21,8 +20,35 @@ def loop2gempy(
         compute: bool = True,
         vtk: bool = False,
         vtk_path: str = None,
-        image_2d: bool = False
+        image_2d: bool = False,
+        plot_3d_kwargs=None
 ):
+    """ Calculate the model using gempy as backend.
+
+        At the moment there is not support for finite faults since gempy does not
+         accept passing the ellipsoid parameters directly.
+
+        :param contacts_file (str): path of contacts file
+        :param orientations_file: path of orientations file
+        :param bbox: model bounding box
+        :param groups_file: path of groups file
+        :param model_base: z value of base of model
+        :param model_top: z value of top of model
+        :param dtm_reproj_file: path of dtm file
+        :param faults_contact: path of contacts file with fault data
+        :param faults_orientations: path of orientations file with fault data
+        :param faults_rel_matrix: bool matrix describing the interaction between groups. Rows offset columns
+        :param faults_groups_rel: bool matrix describing the interaction between faults and features
+        :param faults_faults_rel: bool matrix describing the interaction between faults and faults
+        :param model_name: name of the model
+        :param compute (bool): Default True. Whether or not compute the model
+        :param vtk (bool): Default False. Whether or not visualize the model
+        :param vtk_path (str): Default None. Path of vtk output directory
+        :param plot_3d_kwargs (dict): kwargs for `gempy.plot_3d`
+        :return: gempy.Project
+    """
+    if plot_3d_kwargs is None:
+        plot_3d_kwargs = {}
 
     contacts = []
     orientations = []
@@ -103,8 +129,6 @@ def loop2gempy(
 
     # Stack Processing
     contents = np.genfromtxt(groups_file, delimiter=',', dtype='U100')[1:, 4:-1]
-    contents_pd = pd.read_csv(groups_file)
-
 
     map_series_to_surfaces = {}
     for pair in contents:
@@ -173,14 +197,13 @@ def loop2gempy(
         new_range = geo_model.get_additional_data().loc[('Kriging', 'range'), 'values'] * 0.5
         geo_model.modify_kriging_parameters('range', new_range)
 
-        # geo_model._rescaling.toggle_axial_anisotropy(type='extent')
-
         gp.compute_model(geo_model)
 
     if vtk is True:
-        gp.plot_3d(geo_model, ve=3, show_topography=True,
+        gp.plot_3d(geo_model, show_topography=True,
                    image=image_2d,
                    show_lith=True,
+                   **plot_3d_kwargs
                    )
 
     if vtk_path is not None:
