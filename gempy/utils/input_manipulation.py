@@ -131,6 +131,8 @@ class VanMisesFisher:
         """van Mises-Fisher distribution for sampling vector components from n-dimensional spheres.
 
         Adapted from source: https://github.com/pymc-devs/pymc3/issues/2458
+        
+        a von Mises-Fisher distribution can be fit using scipy.stats.vonmises
 
         Args:
             mu (np.ndarray): Mean direction of vector [Gx, Gy, Gz]
@@ -173,7 +175,6 @@ class VanMisesFisher:
             w = (1. - (1. + b) * z) / (1. - (1. - b) * z)
             u = np.random.uniform(low=0, high=1)
             if self.kappa * w + dim * np.log(1. - x * w) - c >= np.log(u):
-                # print(w)
                 return w
 
     def _sample_orthonormal_to(self):
