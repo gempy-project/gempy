@@ -484,6 +484,12 @@ class Surfaces(object):
 
         return self.df[c_].style.applymap(self.background_color, subset=['color']).render()
 
+    @property
+    def properties_val(self):
+        all_col = self.df.columns
+        prop_cols = all_col.drop(self._columns)
+        return prop_cols.insert(0, 'id')
+
     def update_id(self, id_list: list = None):
         """
         Set id of the layers (1 based)
