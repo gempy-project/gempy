@@ -10,8 +10,11 @@ import gempy.utils.docstring as ds
 import xarray as xr
 
 
-@_setdoc_pro([Grid.__doc__, Surfaces.__doc__, Series.__doc__, ds.weights_vector, ds.sfai, ds.bai, ds.mai, ds.vai,
-              ds.lith_block, ds.sfm, ds.bm, ds.mm, ds.vm, ds.vertices, ds.edges, ds.geological_map])
+@_setdoc_pro(
+    [Grid.__doc__, Surfaces.__doc__, Series.__doc__, ds.weights_vector, ds.sfai,
+     ds.bai, ds.mai, ds.vai,
+     ds.lith_block, ds.sfm, ds.bm, ds.mm, ds.vm, ds.vertices, ds.edges,
+     ds.geological_map])
 class XSolution(object):
     """This class stores the output of the interpolation and the necessary objects
     to visualize and manipulate this data.
@@ -51,6 +54,7 @@ class XSolution(object):
                  stack: Stack = None,
                  ):
         # self.additional_data = additional_data
+
         self.grid = grid
         #  self.surface_points = surface_points
         self.stack = stack
@@ -62,13 +66,89 @@ class XSolution(object):
         self.s_regular_grid = xr.Dataset()
         self.s_custom_grid = xr.Dataset()
         self.s_topography = xr.Dataset()
+        self.s_at_surface_points = xr.Dataset()
         self.s_sections = dict()
         self.meshes = None
+
+    # Input data results
+    @property
+    def scalar_field_at_surface_points(self):
+        return
+
+    @property
+    def block_at_surface_points(self):
+        return
+
+    @property
+    def mask_at_surface_points(self):
+        return
+
+    @property
+    def values_at_surface_points(self):
+        return
+
+    @property
+    def lith_block(self):
+        return
+
+    @property
+    def scalar_field_matrix(self):
+        shape = self.s_regular_grid['scalar_field_matrix'].shape
+        return self.s_regular_grid['scalar_field_matrix'].values.reshape(shape[0], -1)
+
+    @property
+    def block_matrix(self):
+        return
+
+    @property
+    def mask_matrix(self):
+        return
+
+    @property
+    def mask_matrix_pad(self):
+        return
+
+    @property
+    def values_matrix(self):
+        return
+
+    @property
+    def gradient(self):
+        return
+
+    @property
+    def vertices(self):
+        return
+
+    @property
+    def edges(self):
+        return
+
+    @property
+    def geological_map(self):
+        return
+
+    @property
+    def sections(self):
+        return
+
+    @property
+    def custom(self):
+        return
+
+    @property
+    def fw_gravity(self):
+        return
+
+    @property
+    def fw_magnetics(self):
+        return
 
     def get_grid_args(self, grid_type: str) -> tuple:
         return self.grid.get_grid_args(grid_type)
 
-    def set_values(self, values: list,
+    def set_values(self,
+                   values: list,
                    active_features=None,
                    surf_properties=None,
                    attach_xyz=True):
@@ -84,29 +164,15 @@ class XSolution(object):
         # Get an array with all the indices for each grid
         l = self.grid.length
 
-        if active_features is None and self.stack is not None:
-            active_features = self.stack.df.groupby('isActive').get_group(True).index
-
-        if surf_properties is None and self.surfaces is not None:
-            surf_properties = self.surfaces.properties_val
-
-        coords_base = dict()
-
-        if active_features is not None:
-            coords_base['Features'] = active_features
-
-        if surf_properties is not None:
-            coords_base['Properties'] = surf_properties
-
-        if attach_xyz and self.grid.custom_grid is not None:
-            xyz = self.grid.custom_grid.values
-        else:
-            xyz = None
+        coords_base, xyz = self.prepare_common_args(active_features, attach_xyz,
+                                                    surf_properties)
+        self.weights_vector = values[3]
 
         if self.grid.active_grids[0]:
             self.set_values_to_regular_grid(values, l[0], l[1], coords_base.copy())
         if self.grid.active_grids[1]:
-            self.set_values_to_custom_grid(values, l[1], l[2], coords_base.copy(), xyz=xyz)
+            self.set_values_to_custom_grid(values, l[1], l[2], coords_base.copy(),
+                                           xyz=xyz)
         if self.grid.active_grids[2]:
             self.set_values_to_topography(values, l[2], l[3], coords_base.copy())
         if self.grid.active_grids[3]:
@@ -116,6 +182,22 @@ class XSolution(object):
 
         # TODO: Add xyz from surface points
         self.set_values_to_surface_points(values, l[-1], coords_base, xyz=None)
+
+    def prepare_common_args(self, active_features, attach_xyz, surf_properties):
+        if active_features is None and self.stack is not None:
+            active_features = self.stack.df.groupby('isActive').get_group(True).index
+        if surf_properties is None and self.surfaces is not None:
+            surf_properties = self.surfaces.properties_val
+        coords_base = dict()
+        if active_features is not None:
+            coords_base['Features'] = active_features
+        if surf_properties is not None:
+            coords_base['Properties'] = surf_properties
+        if attach_xyz and self.grid.custom_grid is not None:
+            xyz = self.grid.custom_grid.values
+        else:
+            xyz = None
+        return coords_base, xyz
 
     def set_values_to_centered(self):
         return
@@ -244,11 +326,7 @@ class XSolution(object):
     def set_values_to_regular_grid(self, values: list, l0, l1,
                                    coords_base: dict):
 
-        coords = coords_base
-
-        coords['X'] = self.grid.regular_grid.x
-        coords['Y'] = self.grid.regular_grid.y
-        coords['Z'] = self.grid.regular_grid.z
+        coords = self.add_cartesian_coords(coords_base)
 
         arrays = self.create_struc_xarrays(values, l0, l1,
                                            self.grid.regular_grid.resolution)
@@ -258,15 +336,21 @@ class XSolution(object):
             coords=coords
         )
 
+    def add_cartesian_coords(self, coords_base):
+        coords = coords_base
+        coords['X'] = self.grid.regular_grid.x
+        coords['Y'] = self.grid.regular_grid.y
+        coords['Z'] = self.grid.regular_grid.z
+        return coords
+
     def set_values_to_topography(self,
                                  values: list,
                                  l0, l1,
                                  coords_base):
         coords = coords_base
-        resolution = self.grid.topography.resolution
         coords['X'] = self.grid.topography.x
         coords['Y'] = self.grid.topography.y
-
+        resolution = self.grid.topography.resolution
         arrays = self.create_struc_xarrays(values, l0, l1, resolution)
 
         self.s_topography = xr.Dataset(
@@ -290,7 +374,8 @@ class XSolution(object):
             coords['X'] = xy[:, 0]
             coords['Y'] = xy[:, 1]
 
-            arrays = self.create_struc_xarrays(values, l0 + l0_s, l0 + l1_s, resolution)
+            arrays = self.create_struc_xarrays(values, l0 + l0_s, l0 + l1_s,
+                                               resolution)
 
             self.s_sections[name] = xr.Dataset(
                 data_vars=arrays,
@@ -299,8 +384,11 @@ class XSolution(object):
         return self.s_sections
 
 
-@_setdoc_pro([Grid.__doc__, Surfaces.__doc__, Series.__doc__, ds.weights_vector, ds.sfai, ds.bai, ds.mai, ds.vai,
-              ds.lith_block, ds.sfm, ds.bm, ds.mm, ds.vm, ds.vertices, ds.edges, ds.geological_map])
+@_setdoc_pro(
+    [Grid.__doc__, Surfaces.__doc__, Series.__doc__, ds.weights_vector, ds.sfai,
+     ds.bai, ds.mai, ds.vai,
+     ds.lith_block, ds.sfm, ds.bm, ds.mm, ds.vm, ds.vertices, ds.edges,
+     ds.geological_map])
 class Solution(object):
     """This class stores the output of the interpolation and the necessary objects
     to visualize and manipulate this data.
@@ -411,15 +499,18 @@ class Solution(object):
 
     def set_solution_to_custom(self, values: Union[list, np.ndarray]):
         l0, l1 = self.grid.get_grid_args('custom')
-        self.custom = np.array([values[0][:, l0: l1], values[4][:, l0: l1].astype(float)])
+        self.custom = np.array(
+            [values[0][:, l0: l1], values[4][:, l0: l1].astype(float)])
 
     def set_solution_to_topography(self, values: Union[list, np.ndarray]):
         l0, l1 = self.grid.get_grid_args('topography')
-        self.geological_map = np.array([values[0][:, l0: l1], values[4][:, l0: l1].astype(float)])
+        self.geological_map = np.array(
+            [values[0][:, l0: l1], values[4][:, l0: l1].astype(float)])
 
     def set_solution_to_sections(self, values: Union[list, np.ndarray]):
         l0, l1 = self.grid.get_grid_args('sections')
-        self.sections = np.array([values[0][:, l0: l1], values[4][:, l0: l1].astype(float)])
+        self.sections = np.array(
+            [values[0][:, l0: l1], values[4][:, l0: l1].astype(float)])
 
     def set_values_to_regular_grid(self, values: Union[list, np.ndarray]):
         """Set all solution values to the correspondent attribute.
@@ -432,25 +523,33 @@ class Solution(object):
             :class:`gempy.core.solutions.Solutions`
 
         """
-        regular_grid_length_l0, regular_grid_length_l1 = self.grid.get_grid_args('regular')
+        regular_grid_length_l0, regular_grid_length_l1 = self.grid.get_grid_args(
+            'regular')
 
         # Lithology final block
-        self.lith_block = values[0][0, regular_grid_length_l0: regular_grid_length_l1]
+        self.lith_block = values[0][0,
+                          regular_grid_length_l0: regular_grid_length_l1]
 
         # Properties
-        self.values_matrix = values[0][1:, regular_grid_length_l0: regular_grid_length_l1]
+        self.values_matrix = values[0][1:,
+                             regular_grid_length_l0: regular_grid_length_l1]
 
         # Axis 0 is the series. Axis 1 is the value
-        self.block_matrix = values[1][:, :, regular_grid_length_l0: regular_grid_length_l1]
+        self.block_matrix = values[1][:, :,
+                            regular_grid_length_l0: regular_grid_length_l1]
 
         self.fault_block = values[2]
+        # This here does not make any sense
         self.weights_vector = values[3]
 
-        self.scalar_field_matrix = values[4][:, regular_grid_length_l0: regular_grid_length_l1]
+        self.scalar_field_matrix = values[4][:,
+                                   regular_grid_length_l0: regular_grid_length_l1]
 
-        self.mask_matrix = values[6][:, regular_grid_length_l0: regular_grid_length_l1]
+        self.mask_matrix = values[6][:,
+                           regular_grid_length_l0: regular_grid_length_l1]
 
-        self.fault_mask = values[7][:, regular_grid_length_l0: regular_grid_length_l1]
+        self.fault_mask = values[7][:,
+                          regular_grid_length_l0: regular_grid_length_l1]
 
         # TODO add topology solutions
 
@@ -514,7 +613,8 @@ class Solution(object):
         self.mask_matrix_pad = []
         series_type = self.series.df['BottomRelation']
         for e, mask_series in enumerate(self.mask_matrix):
-            mask_series_reshape = mask_series.reshape(self.grid.regular_grid.resolution)
+            mask_series_reshape = mask_series.reshape(
+                self.grid.regular_grid.resolution)
 
             mask_pad = (mask_series_reshape + find_interfaces_from_block_bottoms(
                 mask_series_reshape, True, shift=shift))
@@ -563,13 +663,15 @@ class Solution(object):
             sfas = self.scalar_field_at_surface_points[e]
             # Drop
             sfas = sfas[np.nonzero(sfas)]
-            mask_array = self.mask_matrix_pad[e - 1 if series_type[e - 1] == 'Onlap' else e]
+            mask_array = self.mask_matrix_pad[
+                e - 1 if series_type[e - 1] == 'Onlap' else e]
             for level in sfas:
                 try:
                     v, s, norm, val = self.compute_marching_cubes_regular_grid(
                         level, scalar_field, mask_array, rescale=rescale, **kwargs)
                 except Exception as e:
-                    warnings.warn('Surfaces not computed due to: ' + str(e) + '. The surface is: Series: ' + str(e) +
+                    warnings.warn('Surfaces not computed due to: ' + str(
+                        e) + '. The surface is: Series: ' + str(e) +
                                   '; Surface Number:' + str(s_n))
                     v = np.nan
                     s = np.nan

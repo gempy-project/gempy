@@ -6,7 +6,7 @@ from gempy.core.data_modules.stack import Stack
 import gempy as gp
 import numpy as np
 
-from gempy.core.solution import XSolution
+from gempy.core.solution import XSolution, Solution
 
 
 @pytest.fixture(scope='module')
@@ -33,7 +33,6 @@ def a_grid():
 
 @pytest.fixture(scope='module')
 def stack_eg():
-
     series = Stack()
     series.set_series_index(['foo', 'foo2', 'foo5', 'foo7'])
     series.add_series('foo3')
@@ -58,7 +57,8 @@ def stack_eg():
 def surface_eg(stack_eg):
     surfaces = Surfaces(stack_eg)
     surfaces.set_surfaces_names(['foo', 'foo2', 'foo5', 'fee'])
-    surfaces.add_surfaces_values([[2, 2, 2, 6], [2, 2, 1, 8]], ['val_foo', 'val2_foo'])
+    surfaces.add_surfaces_values([[2, 2, 2, 6], [2, 2, 1, 8]],
+                                 ['val_foo', 'val2_foo'])
     return surfaces
 
 
@@ -69,7 +69,7 @@ def sol_values(a_grid):
     len_x = rg_s + n_input
 
     n_features = 5
-    n_properties = 2
+    n_properties = 3
     # Generate random solution
     values = list()
     values_matrix = np.random.random_integers(0, 10, (n_properties, len_x))
@@ -104,6 +104,31 @@ def test_xsol(sol_values, a_grid, stack_eg, surface_eg):
     print('\n custom2', sol.s_custom_grid)
 
 
+def test_scalar_field_matrix_property(sol_values, a_grid, stack_eg, surface_eg):
+    sol = XSolution(a_grid, stack=stack_eg, surfaces=surface_eg)
+    sol.set_values(sol_values)
+    print(sol.scalar_field_matrix)
+
+
+def test_scalar_field_matrix_property_full(model_horizontal_two_layers):
+    sol_vals = gp.compute_model(model_horizontal_two_layers, set_solutions=False)
+    sol = XSolution(
+        model_horizontal_two_layers._grid,
+        stack=model_horizontal_two_layers._stack,
+        surfaces=model_horizontal_two_layers._surfaces)
+    sol.set_values(sol_vals)
+    print(sol.scalar_field_matrix)
+
+    old_sol = Solution(model_horizontal_two_layers._grid,
+        series=model_horizontal_two_layers._stack,
+        surfaces=model_horizontal_two_layers._surfaces)
+    old_sol.set_solution_to_regular_grid(sol_vals, False, None)
+    print(old_sol.scalar_field_matrix)
+
+    np.testing.assert_array_almost_equal(sol.scalar_field_matrix,
+                                         old_sol.scalar_field_matrix)
+
+
 def test_xsol_full(model_horizontal_two_layers):
     vals = gp.compute_model(model_horizontal_two_layers, set_solutions=False)
     sol = XSolution(
@@ -114,4 +139,3 @@ def test_xsol_full(model_horizontal_two_layers):
     print('\n regular', sol.s_regular_grid)
     print('\n custom', sol.s_custom_grid)
     print('\n topo', sol.s_topography)
-
