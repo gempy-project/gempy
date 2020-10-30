@@ -104,6 +104,7 @@ def test_xsol(sol_values, a_grid, stack_eg, surface_eg):
     print('\n custom2', sol.s_custom_grid)
 
 
+@pytest.mark.skip('Test for gempy_lite')
 def test_property(sol_values, a_grid, stack_eg, surface_eg):
     sol = XSolution(a_grid, stack=stack_eg, surfaces=surface_eg)
     sol.set_values(sol_values)
@@ -114,6 +115,7 @@ def test_property(sol_values, a_grid, stack_eg, surface_eg):
     print('scalar_asp', sol.scalar_field_at_surface_points)
 
 
+@pytest.mark.skip('Test for gempy_lite')
 def test_scalar_field_matrix_property_full(model_horizontal_two_layers):
     sol_vals = gp.compute_model(model_horizontal_two_layers, set_solutions=False)
     sol = XSolution(
@@ -143,3 +145,7 @@ def test_xsol_full(model_horizontal_two_layers):
     print('\n regular', sol.s_regular_grid)
     print('\n custom', sol.s_custom_grid)
     print('\n topo', sol.s_topography)
+
+
+def test_xsol_inherit(model_horizontal_two_layers):
+    vals = gp.compute_model(model_horizontal_two_layers, set_solutions=True)

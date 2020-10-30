@@ -70,100 +70,6 @@ class XSolution(object):
         self.s_sections = dict()
         self.meshes = None
 
-    # Input data results
-    @property
-    def scalar_field_at_surface_points(self):
-        return self.s_at_surface_points['scalar_field_v3'].values
-
-    @property
-    def block_at_surface_points(self):
-        return self.s_at_surface_points['block_v3'].values
-
-    @property
-    def mask_at_surface_points(self):
-        return self.s_at_surface_points['mask_v3'].values
-
-    @property
-    def values_at_surface_points(self):
-        return self.s_at_surface_points['values_v3'].values
-
-    @property
-    def lith_block(self):
-        return self.s_regular_grid['property_matrix'].loc['id'].values.reshape(1, -1)
-
-    @property
-    def scalar_field_matrix(self):
-        shape = self.s_regular_grid['scalar_field_matrix'].shape
-        return self.s_regular_grid['scalar_field_matrix'].values.reshape(shape[0],
-                                                                         -1)
-
-    @property
-    def block_matrix(self):
-        shape = self.s_regular_grid['block_matrix'].shape
-        return self.s_regular_grid['block_matrix'].values.reshape(shape[0],
-                                                                  shape[1],
-                                                                  -1)
-
-    @property
-    def mask_matrix(self):
-        shape = self.s_regular_grid['mask_matrix'].shape
-        return self.s_regular_grid['mask_matrix'].values.reshape(shape[0], -1)
-
-    # This is should be private
-    # @property
-    # def mask_matrix_pad(self):
-    #     return
-
-    @property
-    def values_matrix(self):
-        prop = self.s_regular_grid['property_matrix'].Properties.values
-        sel = prop != 'id'
-        values_other_than_id = prop[sel]
-        array = self.s_regular_grid['property_matrix'].loc[
-            values_other_than_id].values
-        return array.reshape(len(values_other_than_id), -1)
-
-    @property
-    def gradient(self):
-        raise NotImplementedError
-
-    @property
-    def vertices(self):
-        return
-
-    @property
-    def edges(self):
-        return
-
-    @property
-    def geological_map(self):
-        shape = self.s_topography['scalar_field_matrix'].shape
-
-        p = self.s_topography['property_matrix'].values.reshape(shape[0], -1)
-        s = self.s_topography['scalar_field_matrix'].values.reshape(shape[0], -1)
-        return np.array([p, s])
-
-    @property
-    def sections(self):
-        return NotImplementedError
-        # shape = self.s_sections['scalar_field_matrix'].shape
-        #
-        # p = self.s_topography['property_matrix'].values.reshape(shape[0], -1)
-        # s = self.s_topography['scalar_field_matrix'].values.reshape(shape[0], -1)
-        # return np.array([p, s])
-
-    # @property
-    # def custom(self):
-    #     return
-    #
-    # @property
-    # def fw_gravity(self):
-    #     return
-    #
-    # @property
-    # def fw_magnetics(self):
-    #     return
-
     def set_values(self,
                    values: list,
                    active_features=None,
@@ -406,7 +312,7 @@ class XSolution(object):
      ds.bai, ds.mai, ds.vai,
      ds.lith_block, ds.sfm, ds.bm, ds.mm, ds.vm, ds.vertices, ds.edges,
      ds.geological_map])
-class Solution(object):
+class Solution(XSolution):
     """This class stores the output of the interpolation and the necessary objects
     to visualize and manipulate this data.
 
