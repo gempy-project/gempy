@@ -104,10 +104,14 @@ def test_xsol(sol_values, a_grid, stack_eg, surface_eg):
     print('\n custom2', sol.s_custom_grid)
 
 
-def test_scalar_field_matrix_property(sol_values, a_grid, stack_eg, surface_eg):
+def test_property(sol_values, a_grid, stack_eg, surface_eg):
     sol = XSolution(a_grid, stack=stack_eg, surfaces=surface_eg)
     sol.set_values(sol_values)
-    print(sol.scalar_field_matrix)
+    print('scalar', sol.scalar_field_matrix)
+    print('lith', sol.lith_block)
+    print('values', sol.values_matrix)
+
+    print('scalar_asp', sol.scalar_field_at_surface_points)
 
 
 def test_scalar_field_matrix_property_full(model_horizontal_two_layers):
@@ -117,7 +121,7 @@ def test_scalar_field_matrix_property_full(model_horizontal_two_layers):
         stack=model_horizontal_two_layers._stack,
         surfaces=model_horizontal_two_layers._surfaces)
     sol.set_values(sol_vals)
-    print(sol.scalar_field_matrix)
+    print('scalar', sol.scalar_field_matrix)
 
     old_sol = Solution(model_horizontal_two_layers._grid,
         series=model_horizontal_two_layers._stack,
