@@ -100,8 +100,20 @@ def test_xsol(sol_values, a_grid, stack_eg, surface_eg):
     print('\n sect', sol.s_sections['section_SW-NE'])
     print('\n sect', sol.s_sections['section_NW-SE'])
 
-    sol.set_values(sol_values, attach_xyz=False)
+    sol.set_values(sol_values)
     print('\n custom2', sol.s_custom_grid)
+
+
+def test_xsol_unstructured(sol_values, a_grid, stack_eg, surface_eg):
+    sol = XSolution(a_grid, stack=stack_eg, surfaces=surface_eg)
+    sol.set_values(sol_values)
+    print('\n custom', sol.s_custom_grid)
+
+
+def test_xsol_structured(sol_values, a_grid, stack_eg, surface_eg):
+    sol = XSolution(a_grid, stack=stack_eg, surfaces=surface_eg)
+    sol.set_values(sol_values)
+    print('\n custom', sol.s_regular_grid)
 
 
 @pytest.mark.skip('Test for gempy_lite')
