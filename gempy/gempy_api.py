@@ -305,7 +305,9 @@ def compute_model(model: Project, output=None, at: np.ndarray = None, compute_me
         model.solutions.set_values_to_surface_points(sol)
 
         if model._grid.active_grids[0] is np.True_:
-            model.solutions.set_solution_to_regular_grid(sol, compute_mesh=compute_mesh, **kwargs)
+            model.solutions.set_solution_to_regular_grid(sol,
+                                                         compute_mesh=compute_mesh,
+                                                         **kwargs)
         if model._grid.active_grids[1] is np.True_:
             model.solutions.set_solution_to_custom(sol)
         if model._grid.active_grids[2] is np.True_:
@@ -315,7 +317,8 @@ def compute_model(model: Project, output=None, at: np.ndarray = None, compute_me
         # Set gravity
         model.solutions.fw_gravity = sol[12]
 
-        # TODO: [X] Set magnetcs and [ ] set topology @A.Schaaf probably it should populate the topology object?
+        # TODO: [X] Set magnetcs and [ ] set topology @A.Schaaf probably it should
+        #  populate the topology object?
         model.solutions.fw_magnetics = sol[13]
 
         if sort_surfaces:
@@ -343,7 +346,7 @@ def compute_model_at(new_grid: Union[ndarray], model: Project, **kwargs):
     """
     # #TODO create backup of the mesh and a method to go back to it
     #     set_grid(model, Grid('custom_grid', custom_grid=new_grid))
-    warnings.warn('compute_model_at will be deprecated in GemPy 2.2.'
+    warnings.warn('compute_model_at will be deprecated.'
                   'Use argument `at` in compute_model instead', DeprecationWarning)
     model._grid.deactivate_all_grids()
     model.set_custom_grid(new_grid)

@@ -22,10 +22,6 @@ def save_model_to_pickle(model: Project, path=None):
 
 @_setdoc(Project.save_model.__doc__)
 def save_model(model: Project, name=None, path=None, compress=True):
-    # try:
-    #     model._grid.topography.topo = None
-    # except AttributeError:
-    #     pass
     model.save_model(name, path, compress)
     return True
 

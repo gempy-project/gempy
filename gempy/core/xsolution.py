@@ -5,6 +5,7 @@ from gempy.core.data import Grid, Surfaces
 import xarray as xr
 import subsurface
 import numpy as np
+import pandas as pd
 
 
 class XSolution(object):
@@ -60,8 +61,43 @@ class XSolution(object):
         self.s_sections = dict()
         self.meshes = xr.Dataset()
 
-    def set_meshes(self):
-        return
+    def set_meshes(self, surfaces: Surfaces = None):
+        """Create xarray from the Surfaces object. In GemPy Engine we will set
+         them directly.
+        """
+
+        surf_ver_sim = surfaces.df[['id', 'vertices', 'edges']]
+        vertex = []
+        simplex = []
+        ids = []
+        last_idx = 0
+        self.extract_each_surface_representations(ids, last_idx, simplex,
+                                                  surf_ver_sim, vertex)
+
+        vertex_array = np.concatenate(vertex)
+        simplex_array = np.concatenate(simplex)
+        ids_array = np.concatenate(ids)
+
+        self.meshes = subsurface.UnstructuredData(
+            vertex=vertex_array,
+            edges=simplex_array,
+            attributes=pd.DataFrame(ids_array, columns=['id'])
+        )
+
+        return self.meshes
+
+    @staticmethod
+    def extract_each_surface_representations(ids, last_idx, simplex,
+                                             surf_ver_sim, vertex):
+        for index, row in surf_ver_sim.iterrows():
+            v_ = row['vertices']
+            e_ = row['edges'] + last_idx
+            if v_ is not np.nan and e_ is not np.nan:
+                i_ = np.ones(e_.shape[0]) * row['id']
+                vertex.append(v_)
+                simplex.append(e_)
+                ids.append(i_)
+                last_idx = e_[-20:].max() + 1
 
     def set_values(self,
                    values: list,
@@ -85,7 +121,7 @@ class XSolution(object):
         self.weights_vector = values[3]
 
         if self.grid.active_grids[0]:
-            self.set_values_to_regular_grid(values, l[0], l[1], coords_base.copy())
+            self.set_values_to_regular_grid_(values, l[0], l[1], coords_base.copy())
         if self.grid.active_grids[1]:
             self.set_values_to_custom_grid(values, l[1], l[2], coords_base.copy(),
                                            xyz=xyz)
@@ -97,9 +133,9 @@ class XSolution(object):
             self.set_values_to_centered()
 
         # TODO: Add xyz from surface points
-        self.set_values_to_surface_points(values, l[-1], coords_base, xyz=None)
+        self.set_values_to_surface_points_(values, l[-1], coords_base, xyz=None)
 
-    def prepare_common_args(self, active_features,  surf_properties):
+    def prepare_common_args(self, active_features, surf_properties):
         if active_features is None and self.stack is not None:
             active_features = self.stack.df.groupby('isActive').get_group(True).index
         if surf_properties is None and self.surfaces is not None:
@@ -118,7 +154,7 @@ class XSolution(object):
     def set_values_to_centered(self):
         return
 
-    def set_values_to_surface_points(self, values, l0, coords_base, xyz=None):
+    def set_values_to_surface_points_(self, values, l0, coords_base, xyz=None):
         coords = coords_base
         l1 = values[0].shape[-1]
         arrays = self.create_unstruct_xarray(values, l0, l1, xyz)
@@ -240,8 +276,8 @@ class XSolution(object):
 
         return self.s_custom_grid
 
-    def set_values_to_regular_grid(self, values: list, l0, l1,
-                                   coords_base: dict):
+    def set_values_to_regular_grid_(self, values: list, l0, l1,
+                                    coords_base: dict):
 
         coords = self.add_cartesian_coords(coords_base)
 
@@ -288,5 +324,6 @@ class XSolution(object):
             arrays = self.create_struc_xarrays(values, l0 + l0_s, l0 + l1_s,
                                                resolution)
 
-            self.s_sections[name] = subsurface.StructuredData(data=arrays, coords=coords)
+            self.s_sections[name] = subsurface.StructuredData(data=arrays,
+                                                              coords=coords)
         return self.s_sections

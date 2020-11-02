@@ -10,9 +10,11 @@ import gempy.utils.docstring as ds
 
 try:
     from gempy.core.xsolution import XSolution
+    _xsolution_imported = True
     inheritance = XSolution
 except ImportError:
     inheritance = object
+    _xsolution_imported = False
 
 
 @_setdoc_pro(
@@ -277,7 +279,8 @@ class Solution(inheritance):
         mask_topography = kwargs.pop('mask_topography', True)
         masked_marching_cubes = kwargs.pop('masked_marching_cubes', True)
 
-        self. mask_matrix_pad = self.padding_mask_matrix(mask_topography=mask_topography)
+        self.mask_matrix_pad = self.padding_mask_matrix(
+            mask_topography=mask_topography)
         series_type = self.series.df['BottomRelation']
         s_n = 0
         active_indices = self.surfaces.df.groupby('isActive').groups[True]
@@ -291,17 +294,35 @@ class Solution(inheritance):
                                                                 masked_marching_cubes,
                                                                 series_type)
             for level in sfas:
-                try:
-                    v, s, norm, val = self.compute_marching_cubes_regular_grid(
-                        level, scalar_field, mask_array, rescale=rescale, **kwargs)
-                except Exception as e:
-                    warnings.warn('Surfaces not computed due to: ' + str(
-                        e) + '. The surface is: Series: ' + str(e) +
-                                  '; Surface Number:' + str(s_n))
-                    v = np.nan
-                    s = np.nan
+                s, v = self.try_compute_marching_cubes_on_the_regular_grid(
+                    level,
+                    mask_array,
+                    rescale,
+                    s_n,
+                    scalar_field,
+                    kwargs
+                )
                 s_n = self.set_vertices_edges(active_indices, s, s_n, v)
         return self.vertices, self.edges
+
+    def try_compute_marching_cubes_on_the_regular_grid(
+            self,
+            level,
+            mask_array,
+            rescale,
+            s_n,
+            scalar_field,
+            kwargs):
+        try:
+            v, s, norm, val = self.compute_marching_cubes_regular_grid(
+                level, scalar_field, mask_array, rescale=rescale, **kwargs)
+        except Exception as e:
+            warnings.warn('Surfaces not computed due to: ' + str(
+                e) + '. The surface is: Series: ' + str(e) +
+                          '; Surface Number:' + str(s_n))
+            v = np.nan
+            s = np.nan
+        return s, v
 
     def set_vertices_edges(self, active_indices, s, s_n, v):
         self.vertices.append(v)

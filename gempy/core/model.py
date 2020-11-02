@@ -1604,7 +1604,6 @@ class Project(ImplicitCoKriging):
             shutil.rmtree(path)
         return True
 
-    # @_setdoc([SurfacePoints.read_surface_points.__doc__, Orientations.read_orientations.__doc__])
     def read_data(self, source_i=None, source_o=None, add_basement=True, **kwargs):
         """
         Read data from a csv, or directly supplied dataframes

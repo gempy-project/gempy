@@ -161,3 +161,15 @@ def test_xsol_full(model_horizontal_two_layers):
 
 def test_xsol_inherit(model_horizontal_two_layers):
     vals = gp.compute_model(model_horizontal_two_layers, set_solutions=True)
+
+
+def test_set_meshes(model_horizontal_two_layers):
+    import subsurface
+    m = model_horizontal_two_layers
+    vals = gp.compute_model(m, set_solutions=True)
+    unstruct = m.solutions.set_meshes(m.surfaces)
+    ts = subsurface.TriSurf(unstruct)
+    s = subsurface.visualization.to_pyvista_mesh(ts)
+    subsurface.visualization.pv_plot([s], image_2d=True)
+
+    print(unstruct)
