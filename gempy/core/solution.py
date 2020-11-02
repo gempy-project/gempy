@@ -275,12 +275,11 @@ class Solution(inheritance):
         """
         self.vertices = []
         self.edges = []
-
         mask_topography = kwargs.pop('mask_topography', True)
         masked_marching_cubes = kwargs.pop('masked_marching_cubes', True)
-
         self.mask_matrix_pad = self.padding_mask_matrix(
-            mask_topography=mask_topography)
+            mask_topography=mask_topography
+        )
         series_type = self.series.df['BottomRelation']
         s_n = 0
         active_indices = self.surfaces.df.groupby('isActive').groups[True]
