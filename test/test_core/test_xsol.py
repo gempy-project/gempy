@@ -173,3 +173,8 @@ def test_set_meshes(model_horizontal_two_layers):
     subsurface.visualization.pv_plot([s], image_2d=True)
 
     print(unstruct)
+
+
+def test_save_solutions(model_horizontal_two_layers, tmpdir):
+    gp.save_model(model_horizontal_two_layers,
+                  path=tmpdir)

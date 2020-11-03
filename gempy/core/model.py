@@ -1579,7 +1579,7 @@ class Project(ImplicitCoKriging):
         if os.path.isdir(path):
             print("Directory already exists, files will be overwritten")
         else:
-            os.mkdir(f'{path}')
+            os.makedirs(f'{path}')
 
         # save dataframes as csv
         self._surface_points.df.to_csv(f'{path}/{name}_surface_points.csv')
@@ -1603,6 +1603,9 @@ class Project(ImplicitCoKriging):
             shutil.make_archive(name, 'zip', path)
             shutil.rmtree(path)
         return True
+
+    def save_solution(self):
+        pass
 
     def read_data(self, source_i=None, source_o=None, add_basement=True, **kwargs):
         """

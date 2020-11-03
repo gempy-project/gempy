@@ -231,7 +231,7 @@ class XSolution(object):
             # Values and lith block
             property_v3 = xr.DataArray(
                 data=values[0][:, l0:l1],
-                dims=['Properties', 'Point'],
+                dims=['attribute', 'cell'],
             )
 
             arrays['property_v3'] = property_v3
@@ -240,7 +240,7 @@ class XSolution(object):
             # block
             block_v3 = xr.DataArray(
                 data=values[1][:, :, l0:l1],
-                dims=['Features', 'Properties', 'Point'],
+                dims=['Features', 'attribute', 'cell'],
             )
 
             arrays['block_v3'] = block_v3
@@ -249,7 +249,7 @@ class XSolution(object):
             # Scalar field
             scalar_field_v3 = xr.DataArray(
                 data=values[4][:, l0:l1],
-                dims=['Features', 'Point'],
+                dims=['Features', 'cell'],
             )
             arrays['scalar_field_v3'] = scalar_field_v3
 
@@ -257,7 +257,7 @@ class XSolution(object):
             # Scalar field
             mask_v3 = xr.DataArray(
                 data=values[6][:, l0:l1],
-                dims=['Features', 'Point'],
+                dims=['Features', 'cell'],
             )
             arrays['mask_v3'] = mask_v3
 

@@ -10,6 +10,7 @@ import gempy.utils.docstring as ds
 
 try:
     from gempy.core.xsolution import XSolution
+
     _xsolution_imported = True
     inheritance = XSolution
 except ImportError:
@@ -64,7 +65,7 @@ class Solution(inheritance):
         # self.additional_data = additional_data
         self.grid = grid
         #  self.surface_points = surface_points
-        self.series = series
+        self.stack = series
         self.surfaces = surfaces
 
         # Input data results
@@ -127,6 +128,35 @@ class Solution(inheritance):
         self.set_values_to_regular_grid(values)
         if compute_mesh is True:
             self.compute_all_surfaces(**compute_mesh_options)
+
+        return self
+
+    def set_solutions(self, sol, compute_mesh, sort_surfaces,
+                      to_xsolution=True, **kwargs):
+
+        # Set geology:
+        self.set_values_to_surface_points(sol)
+
+        if self.grid.active_grids[0] is np.True_:
+            self.set_solution_to_regular_grid(sol,
+                                              compute_mesh=compute_mesh,
+                                              **kwargs)
+        if self.grid.active_grids[1] is np.True_:
+            self.set_solution_to_custom(sol)
+        if self.grid.active_grids[2] is np.True_:
+            self.set_solution_to_topography(sol)
+        if self.grid.active_grids[3] is np.True_:
+            self.set_solution_to_sections(sol)
+        # Set gravity
+        self.fw_gravity = sol[12]
+
+        # TODO: [X] Set magnetcs and [ ] set topology @A.Schaaf probably it should
+        #  populate the topology object?
+        self.fw_magnetics = sol[13]
+
+        if _xsolution_imported and to_xsolution is True:
+            self.set_values(sol)
+            self.set_meshes(self.surfaces)
 
         return self
 
@@ -244,7 +274,7 @@ class Solution(inheritance):
         """
 
         self.mask_matrix_pad = []
-        series_type = self.series.df['BottomRelation']
+        series_type = self.stack.df['BottomRelation']
         for e, mask_series in enumerate(self.mask_matrix):
             mask_series_reshape = mask_series.reshape(
                 self.grid.regular_grid.resolution)
@@ -280,7 +310,7 @@ class Solution(inheritance):
         self.mask_matrix_pad = self.padding_mask_matrix(
             mask_topography=mask_topography
         )
-        series_type = self.series.df['BottomRelation']
+        series_type = self.stack.df['BottomRelation']
         s_n = 0
         active_indices = self.surfaces.df.groupby('isActive').groups[True]
         rescale = kwargs.pop('rescale', False)
