@@ -21,9 +21,37 @@ def save_model_to_pickle(model: Project, path=None):
 
 
 @_setdoc(Project.save_model.__doc__)
-def save_model(model: Project, name=None, path=None, compress=True):
+def save_model(model: Project, name=None, path=None, compress=True,
+               solution=False, **kwargs):
+    name, path = default_path_and_name(model, name, path)
     model.save_model(name, path, compress)
+    if solution is True:
+        solution_to_netcdf(kwargs, model, name, path)
+    if compress is True:
+        shutil.make_archive(name, 'zip', path)
+        shutil.rmtree(path)
     return True
+
+
+def default_path_and_name(model, name, path):
+    if name is None:
+        name = model.meta.project_name
+    if not path:
+        path = './'
+    path = f'{path}/{name}'
+    if os.path.isdir(path):
+        print("Directory already exists, files will be overwritten")
+    else:
+        os.makedirs(f'{path}')
+    return name, path
+
+
+def solution_to_netcdf(kwargs, model, name, path):
+    try:
+        model.solutions.to_netcdf(path, name, **kwargs)
+    except AttributeError:
+        raise AttributeError('You need to install Subsurface to be able to '
+                             'write the solutions.')
 
 
 @_setdoc(Project.load_model_pickle.__doc__)

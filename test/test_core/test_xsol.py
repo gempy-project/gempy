@@ -116,6 +116,13 @@ def test_xsol_structured(sol_values, a_grid, stack_eg, surface_eg):
     print('\n custom', sol.s_regular_grid)
 
 
+def test_xsol_to_disk(sol_values, a_grid, stack_eg, surface_eg, tmpdir):
+    sol = XSolution(a_grid, stack=stack_eg, surfaces=surface_eg)
+    sol.set_values(sol_values)
+    print('\n custom', sol.s_regular_grid)
+    sol.to_netcdf(tmpdir, 'bar')
+
+
 @pytest.mark.skip('Test for gempy_lite')
 def test_property(sol_values, a_grid, stack_eg, surface_eg):
     sol = XSolution(a_grid, stack=stack_eg, surfaces=surface_eg)
@@ -176,5 +183,5 @@ def test_set_meshes(model_horizontal_two_layers):
 
 
 def test_save_solutions(model_horizontal_two_layers, tmpdir):
-    gp.save_model(model_horizontal_two_layers,
+    gp.save_model(model_horizontal_two_layers, solution=True, compress=False,
                   path=tmpdir)

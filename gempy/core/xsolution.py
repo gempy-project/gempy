@@ -54,12 +54,12 @@ class XSolution(object):
         # Define xarrays
         self.weights_vector = None
         self.at_surface_points = None
-        self.s_regular_grid = xr.Dataset()
-        self.s_custom_grid = xr.Dataset()
-        self.s_topography = xr.Dataset()
-        self.s_at_surface_points = xr.Dataset()
+        self.s_regular_grid = None  # xr.Dataset()
+        self.s_custom_grid = None  # xr.Dataset()
+        self.s_topography = None  # xr.Dataset()
+        self.s_at_surface_points = None  # xr.Dataset()
         self.s_sections = dict()
-        self.meshes = xr.Dataset()
+        self.meshes = None  # xr.Dataset()
 
     def set_meshes(self, surfaces: Surfaces = None):
         """Create xarray from the Surfaces object. In GemPy Engine we will set
@@ -327,3 +327,15 @@ class XSolution(object):
             self.s_sections[name] = subsurface.StructuredData(data=arrays,
                                                               coords=coords)
         return self.s_sections
+
+    @property
+    def data_structures(self):
+        # TODO: Add sections
+        args = [self.s_regular_grid, self.s_custom_grid, self.s_topography,  self.meshes]
+        names = ['regular_grid', 'custom_grid', 'topography', 'meshes']
+        return zip(args, names)
+
+    def to_netcdf(self, path, name, **kwargs):
+        for a, n in self.data_structures:
+            if a is not None:
+                a.to_netcdf(f'{path}/{name}_{n}.nc', **kwargs)

@@ -62,6 +62,7 @@ class Solution(inheritance):
                  series: Series = None,
                  ):
 
+        super().__init__(grid, surfaces, series)
         # self.additional_data = additional_data
         self.grid = grid
         #  self.surface_points = surface_points
