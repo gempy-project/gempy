@@ -52,6 +52,9 @@ install:
   # Arviz broke with xarray update
   - pip install git+https://github.com/arviz-devs/arviz --force-reinstall
 
+  # Install subsurface
+  - pip install git+https://github.com/softwareunderground/subsurface.git@mig_dev#egg=subsurface
+
   - python -c "import pyvista as pv;print(pv.Report())"
 
 stages:
