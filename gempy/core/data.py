@@ -667,7 +667,7 @@ class Surfaces(object):
         group = self.df.groupby('series').get_group(series_name)['order_surfaces']
         assert np.isin(new_value, group), 'new_value must exist already in the order_surfaces group.'
         old_value = group[idx]
-        self.df.loc[group.index, 'order_surfaces'] = group.replace([new_value, old_value], [old_value, new_value])
+        self.df.loc[group.index.astype('int'), 'order_surfaces'] = group.replace([new_value, old_value], [old_value, new_value])
         self.sort_surfaces()
         self.set_basement()
         return self
@@ -950,7 +950,7 @@ class Structure(object):
         # Array containing the size of every series. SurfacePoints.
         points_count = self.surface_points.df['order_series'].value_counts(sort=False)
         len_series_i = np.zeros(len_series, dtype=int)
-        len_series_i[points_count.index - 1] = points_count.values
+        len_series_i[points_count.index.astype('int') - 1] = points_count.values
 
         if len_series_i.shape[0] is 0:
             len_series_i = np.insert(len_series_i, 0, 0)
@@ -971,7 +971,7 @@ class Structure(object):
 
         len_series_o = np.zeros(self.surfaces.series.df.shape[0], dtype=int)
         ori_count = self.orientations.df['order_series'].value_counts(sort=False)
-        len_series_o[ori_count.index - 1] = ori_count.values
+        len_series_o[ori_count.index.astype('int') - 1] = ori_count.values
 
         self.df.at['values', 'len series orientations'] = len_series_o
 
@@ -989,7 +989,7 @@ class Structure(object):
         surf_count = self.surface_points.df.groupby('order_series'). \
             surface.nunique()
 
-        len_sps[surf_count.index - 1] = surf_count.values
+        len_sps[surf_count.index.astype('int') - 1] = surf_count.values
 
         self.df.at['values', 'number surfaces per series'] = len_sps
         return self.df
