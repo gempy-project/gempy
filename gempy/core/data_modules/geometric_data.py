@@ -214,11 +214,10 @@ class SurfacePoints(GeometricData):
         self._columns_rep = ['X', 'Y', 'Z', 'surface', 'series']
         self._columns_i_num = ['X', 'Y', 'Z', 'X_r', 'Y_r', 'Z_r']
         self._columns_rend = ['X', 'Y', 'Z', 'smooth', 'surface']
-
-        if (np.array(sys.version_info[:2]) <= np.array([3, 6])).all():
-            self.df: pn.DataFrame
-
         self.set_surface_points(coord, surface)
+
+        self.df['order_series'] = self.df['order_series'].astype('int')
+        self.df['id'] = self.df['id'].astype('int')
 
     @_setdoc_pro([ds.coord, ds.surface_sp])
     def set_surface_points(self, coord: np.ndarray = None, surface: list = None):

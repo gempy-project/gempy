@@ -233,7 +233,7 @@ class ImplicitCoKriging(object):
             unique_surf_points = np.unique(self._surface_points.df['id'])
             if len(unique_surf_points) != 0:
                 bool_surf_points = np.zeros_like(act_series, dtype=bool)
-                bool_surf_points[unique_surf_points - 1] = True
+                bool_surf_points[unique_surf_points.astype('int') - 1] = True
 
                 # This is necessary to find the intersection between orientations (series) and
                 # surface points
