@@ -155,6 +155,7 @@ def test_scalar_field_matrix_property_full(model_horizontal_two_layers):
 
 
 def test_xsol_full(model_horizontal_two_layers):
+    model_horizontal_two_layers.update_to_interpolator()
     vals = gp.compute_model(model_horizontal_two_layers, set_solutions=False)
     sol = XSolution(
         model_horizontal_two_layers._grid,

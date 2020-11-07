@@ -157,8 +157,11 @@ class Solution(inheritance):
 
         if _xsolution_imported and to_xsolution is True:
             self.set_values(sol)
-            self.set_meshes(self.surfaces)
-
+            if compute_mesh is True:
+                try:
+                    self.set_meshes(self.surfaces)
+                except ValueError:
+                    warnings.warn('Meshes are empty.')
         return self
 
     def set_solution_to_custom(self, values: Union[list, np.ndarray]):

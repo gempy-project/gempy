@@ -142,9 +142,9 @@ class XSolution(object):
             surf_properties = self.surfaces.properties_val
         coords_base = dict()
         if active_features is not None:
-            coords_base['Features'] = active_features
+            coords_base['Features'] = active_features.to_list()
         if surf_properties is not None:
-            coords_base['Properties'] = surf_properties
+            coords_base['Properties'] = surf_properties.to_list()
         if self.grid.custom_grid is not None:
             xyz = self.grid.custom_grid.values
         else:
