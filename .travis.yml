@@ -34,11 +34,11 @@ install:
 
   # Installs from conda-forge
   - conda install -c conda-forge python-graphviz emg3d==0.11
-  - conda install -c pip matplotlib ipython six pytest pytest-cov
-  - conda install -c pytest-mock pandas seaborn>=0.9 qgrid sphinx-gallery
-  - conda install -c  ipywidgets pyevtk dataclasses scikit-image>=0.17
-  - conda install -c  recommonmark networkx panel setuptools mkl-service
-  - conda install -c gdal
+  - conda install -c conda-forge pip matplotlib ipython six pytest pytest-cov
+  - conda install -c conda-forge pytest-mock pandas seaborn>=0.9 qgrid sphinx-gallery
+  - conda install -c conda-forge ipywidgets pyevtk dataclasses scikit-image>=0.17
+  - conda install -c conda-forge recommonmark networkx panel setuptools mkl-service
+  - conda install -c conda-forge gdal
   - conda install -c conda-forge discretize
 
   # Installs from anaconda
