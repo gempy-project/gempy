@@ -34,11 +34,12 @@ install:
 
   # Installs from conda-forge
   - conda install -c conda-forge python-graphviz emg3d==0.11
-  - conda install -c discretize==0.4.13 pip matplotlib ipython six pytest pytest-cov
+  - conda install -c pip matplotlib ipython six pytest pytest-cov
   - conda install -c pytest-mock pandas seaborn>=0.9 qgrid sphinx-gallery
   - conda install -c  ipywidgets pyevtk dataclasses scikit-image>=0.17
   - conda install -c  recommonmark networkx panel setuptools mkl-service
   - conda install -c gdal
+  - conda install -c conda-forge discretize
 
   # Installs from anaconda
   - conda install -c anaconda libffi
