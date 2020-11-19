@@ -5,6 +5,10 @@ Before a release.
 [ ] gempy.__init__
 # ~[ ] in the config for sphinx~ this is taken from gempy.__init__
 
+Requirements version
+--------------------
+- requirements.txt, optional_requirements.txt, dev_requirements.txt should either set minimum version and reject versions
+
 Github release
 --------------
     # add new tag
