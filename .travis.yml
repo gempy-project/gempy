@@ -35,10 +35,7 @@ install:
   # Installs from conda-forge
   - conda install -c conda-forge python-graphviz emg3d==0.11
   - conda install -c conda-forge pip matplotlib ipython six pytest pytest-cov
-  - conda install -c conda-forge pytest-mock pandas seaborn>=0.9 qgrid sphinx-gallery
-  - conda install -c conda-forge ipywidgets pyevtk dataclasses scikit-image>=0.17
   - conda install -c conda-forge recommonmark networkx panel setuptools mkl-service
-  - conda install -c conda-forge gdal
   - conda install -c conda-forge discretize
 
   # Installs from anaconda
@@ -47,12 +44,17 @@ install:
   # Installs from pip
   - pip install welly pymc3 pooch
 
+  - pip install scikit-image>=0.17
+
+  - pip install pandas seaborn>=0.9 sphinx-gallery
   # Install
   - pip install -e .
 
   # Pyvista should have been fixed- pip install pyvista
   # Arviz broke with xarray update
   - pip install git+https://github.com/arviz-devs/arviz --force-reinstall
+
+  - conda install -c conda-forge gdal
 
   - python -c "import pyvista as pv;print(pv.Report())"
 
