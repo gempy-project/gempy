@@ -36,7 +36,7 @@ install:
   - conda install -c conda-forge python-graphviz emg3d==0.11
   - conda install -c conda-forge pip matplotlib ipython six pytest pytest-cov ipywidgets
   - conda install -c conda-forge recommonmark networkx panel setuptools mkl-service
-  - conda install -c conda-forge discretize
+  - conda install -c conda-forge discretize==0.4.13
 
   # Installs from anaconda
   - conda install -c anaconda libffi
