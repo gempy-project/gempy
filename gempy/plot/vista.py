@@ -149,7 +149,7 @@ class GemPyToVista(WidgetsCallbacks, RenderChanges):
         """
         if lith_c is None:
             surf_df = self.model._surfaces.df.set_index(index)
-            unique_surf_points = np.unique(self.model._surface_points.df['id'])
+            unique_surf_points = np.unique(self.model._surface_points.df['id']).astype(int)
 
             if len(unique_surf_points) != 0:
                 bool_surf_points = np.zeros(surf_df.shape[0], dtype=bool)
