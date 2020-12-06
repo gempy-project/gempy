@@ -37,7 +37,6 @@ fg = root2 + 'group-fault-relationships.csv'
 
 fp = path + 'dtm_rp.tif'
 fp2 = path + 'dtm_rp2.tif'
-#fp2 = pd.read_csv(root2 + 'dtm.csv', sep=' ', header=None, keep_default_na=True).dropna(inplace=False, axis=1)
 
 
 bbox = (500000, 7490000, 545000, 7520000)
@@ -87,31 +86,6 @@ def test_loop2gempy2():
                model_name='testing_map',
                compute=True,
                vtk=True, vtk_path=None, image_2d=True)
-
-
-@pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
-                    reason="Not finished")
-def test_map2loop_model_import_aus():
-    geo_model = gp.create_model('test_map2Loop')
-    gp.init_data(
-        geo_model,
-        extent=extent_g,
-        resolution=[50, 50, 50],
-        path_o=orientations_file2,
-        path_i=contacts_file2
-    )
-
-    # Load Topology
-    geo_model.set_topography(source='gdal', array=fp2)
-
-    gp.plot_2d(geo_model, ve=10, show_topography=True)
-    plt.show()
-
-    # Plot in 3D
-    gp.plot_3d(geo_model, ve=None, show_topography=False, image=False,
-               kwargs_plot_data={'arrow_size': 40}
-               )
-    print(geo_model.orientations)
 
 
 def test_map2loop_model_import_data():

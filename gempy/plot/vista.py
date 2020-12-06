@@ -153,7 +153,7 @@ class GemPyToVista(WidgetsCallbacks, RenderChanges):
 
             if len(unique_surf_points) != 0:
                 bool_surf_points = np.zeros(surf_df.shape[0], dtype=bool)
-                bool_surf_points[unique_surf_points - 1] = True
+                bool_surf_points[unique_surf_points.astype('int') - 1] = True
 
                 surf_df['isActive'] = (surf_df['isActive'] | bool_surf_points)
 
@@ -768,7 +768,7 @@ class GemPyToVista(WidgetsCallbacks, RenderChanges):
             cmap = 'lith' if scalar_field == 'lith' else 'viridis'
             self.set_scalar_field_cmap(cmap=cmap)
             arr_ = regular_grid.get_array(scalar_field)
-            if scalar_field is not'lith':
+            if scalar_field != 'lith':
                 self.p.add_scalar_bar(title='values')
                 self.p.update_scalar_bar_range((arr_.min(), arr_.max()))
 

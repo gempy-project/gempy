@@ -495,7 +495,7 @@ class InterpolatorGravity:
     def set_theano_shared_tz_kernel(self, tz=None):
         """Set the theano component tz to each voxel"""
 
-        if tz is None or tz is 'auto':
+        if tz is None or tz == 'auto':
             try:
                 tz = self.calculate_tz(self.grid.centered_grid)
             except AttributeError:
@@ -525,7 +525,7 @@ class InterpolatorGravity:
 class InterpolatorMagnetics:
     def set_theano_shared_Vs_kernel(self, V=None):
 
-        if V is None or V is 'auto':
+        if V is None or V == 'auto':
             try:
                 V = self.calculate_V(self.grid.centered_grid)
             except AttributeError:
@@ -564,6 +564,7 @@ class InterpolatorMagnetics:
         self.set_theano_shared_pos_magnetics(pos_magnetics)
         self.set_theano_shared_magnetic_cts(incl, decl, B_ext)
         self.set_theano_shared_l0_l1()
+
 
 @_setdoc_pro(ds.ctrl)
 @_setdoc([Interpolator.__doc__])
