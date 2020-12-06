@@ -26,7 +26,7 @@ from gempy.api_modules.getters import *
 from gempy.api_modules.setters import *
 from gempy.api_modules.io import *
 from gempy.core.model import Project, ImplicitCoKriging, AdditionalData, Faults, Grid, \
-    Orientations, RescaledData, Series, SurfacePoints, \
+    Orientations, ScalingSystem, Series, SurfacePoints, \
     Surfaces, Options, Structure, KrigingParameters
 
 from gempy.core.solution import Solution

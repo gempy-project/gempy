@@ -124,7 +124,13 @@ class RegularGrid:
 
         # Reshape the Z values of the regular grid to 3d
         values_3d = self.values[:, 2].reshape(self.resolution)
-        mask = np.greater(values_3d[:, :, :], regular_grid_topo[:, :, [2]])
+        if regular_grid_topo.ndim == 3:
+            regular_grid_topo_z = regular_grid_topo[:, :, [2]]
+        elif regular_grid_topo.ndim == 2:
+            regular_grid_topo_z = regular_grid_topo
+        else:
+            raise ValueError()
+        mask = np.greater(values_3d[:, :, :], regular_grid_topo_z)
 
         self.mask_topo = mask
         return self.mask_topo

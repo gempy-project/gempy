@@ -9,7 +9,7 @@ from typing import Union, Iterable
 import warnings
 
 from gempy.core.data_modules.geometric_data import Orientations, SurfacePoints, \
-    RescaledData, Surfaces, Grid
+    ScalingSystem, Surfaces, Grid
 from gempy.core.data_modules.stack import Stack, Faults, Series
 from gempy.core.data import AdditionalData, MetaData, Options, Structure, KrigingParameters
 from gempy.core.solution import Solution
@@ -37,7 +37,7 @@ class RestrictingWrapper(object):
 
 
 @_setdoc_pro([Grid.__doc__, Faults.__doc__, Series.__doc__, Surfaces.__doc__, SurfacePoints.__doc__,
-              Orientations.__doc__, RescaledData.__doc__, AdditionalData.__doc__, InterpolatorModel.__doc__,
+              Orientations.__doc__, ScalingSystem.__doc__, AdditionalData.__doc__, InterpolatorModel.__doc__,
               Solution.__doc__])
 class ImplicitCoKriging(object):
     """This class handles all the mutation of the data objects of the model involved on the
@@ -74,7 +74,7 @@ class ImplicitCoKriging(object):
         self._surface_points = SurfacePoints(self._surfaces)
         self._orientations = Orientations(self._surfaces)
 
-        self._rescaling = RescaledData(self._surface_points, self._orientations, self._grid)
+        self._rescaling = ScalingSystem(self._surface_points, self._orientations, self._grid)
         self._additional_data = AdditionalData(self._surface_points, self._orientations, self._grid, self._faults,
                                                self._surfaces, self._rescaling)
 
@@ -141,7 +141,7 @@ class ImplicitCoKriging(object):
         return RestrictingWrapper(self._orientations,
                                   accepted_members=['__repr__', '_repr_html_', 'df'])
 
-    @_setdoc_pro(RescaledData.__doc__)
+    @_setdoc_pro(ScalingSystem.__doc__)
     @property
     def rescaling(self):
         """:class:`gempy.core.data_modules.geometric_data.Rescaling` [s0]"""
@@ -390,6 +390,9 @@ class ImplicitCoKriging(object):
 
                 * filepath:   path to the .npy file that was created using the topography.save() function
 
+            source = 'numpy':
+                * array: numpy array containing the data
+
         Returns:
              :class:`gempy.core.data.Grid`
 
@@ -491,7 +494,10 @@ class ImplicitCoKriging(object):
         self._surfaces.df['series'].cat.add_categories(features_list, inplace=True)
         self._surface_points.df['series'].cat.add_categories(features_list, inplace=True)
         self._orientations.df['series'].cat.add_categories(features_list, inplace=True)
+
+        self.update_structure()
         self._interpolator.set_flow_control()
+        self._interpolator.set_theano_shared_kriging()
         return self._stack
 
     @_setdoc(Series.add_series.__doc__, indent=False)
@@ -529,7 +535,9 @@ class ImplicitCoKriging(object):
         self.map_geometric_data_df(self._surface_points.df)
         self.map_geometric_data_df(self._orientations.df)
 
+        self.update_structure()
         self._interpolator.set_theano_shared_relations()
+        self._interpolator.set_theano_shared_kriging()
         self._interpolator.set_flow_control()
         return self._stack
 
@@ -1195,7 +1203,7 @@ class ImplicitCoKriging(object):
     # endregion
 
     # region rescaling
-    @_setdoc(RescaledData.modify_rescaling_parameters.__doc__, indent=False, position='beg')
+    @_setdoc(ScalingSystem.modify_rescaling_parameters.__doc__, indent=False, position='beg')
     def modify_rescaling_parameters(self, attribute, value):
         self._additional_data.rescaling_data.modify_rescaling_parameters(attribute, value)
         self._additional_data.rescaling_data.rescale_data()

@@ -103,8 +103,11 @@ def load_model(name=None, path=None, recompile=False):
 
     # create model with extent and resolution from csv - check
     geo_model = create_model()
-    init_data(geo_model, np.load(f'{path}/{name}_extent.npy'),
-              np.load(f'{path}/{name}_resolution.npy'))
+    init_data(
+        geo_model,
+        np.load(f'{path}/{name}_extent.npy'),
+        np.load(f'{path}/{name}_resolution.npy')
+    )
 
     _load_files_into_geo_model(geo_model, name, path)
 
