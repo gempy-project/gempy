@@ -6,7 +6,8 @@ from gempy.core.data_modules.stack import Stack
 import gempy as gp
 import numpy as np
 
-from gempy.core.solution import XSolution, Solution
+from gempy.core.solution import Solution
+from gempy.core.xsolution import XSolution
 
 
 @pytest.fixture(scope='module')
@@ -177,7 +178,7 @@ def test_set_meshes(model_horizontal_two_layers):
     vals = gp.compute_model(m, set_solutions=True)
     unstruct = m.solutions.set_meshes(m.surfaces)
     ts = subsurface.TriSurf(unstruct)
-    s = subsurface.visualization.to_pyvista_mesh(ts)
+    s, _ = subsurface.visualization.to_pyvista_mesh(ts)
     subsurface.visualization.pv_plot([s], image_2d=True)
 
     print(unstruct)

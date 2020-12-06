@@ -43,7 +43,7 @@ class MetaData(object):
         now = datetime.datetime.now()
         self.date = now.strftime(" %Y-%m-%d %H:%M")
 
-        if project_name is 'default_project':
+        if project_name == 'default_project':
             project_name += self.date
 
         self.project_name = project_name
@@ -958,7 +958,7 @@ class Structure(object):
         len_series_i = np.zeros(len_series, dtype=int)
         len_series_i[points_count.index.astype('int') - 1] = points_count.values
 
-        if len_series_i.shape[0] is 0:
+        if len_series_i.shape[0] == 0:
             len_series_i = np.insert(len_series_i, 0, 0)
 
         self.df.at['values', 'len series surface_points'] = len_series_i

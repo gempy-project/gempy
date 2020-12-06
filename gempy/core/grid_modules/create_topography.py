@@ -238,19 +238,19 @@ class LoadDEMArtificial:
             for j in range(int(n / 2) + 1):
                 phase = 2 * np.pi * np.random.rand()
 
-                if i is not 0 or j is not 0:
+                if i != 0 or j != 0:
                     rad = (i * i + j * j) ** powerr * np.random.normal()
                 else:
                     rad = 0.0
 
                 a[i, j] = complex(rad * np.cos(phase), rad * np.sin(phase))
 
-                if i is 0:
+                if i == 0:
                     i0 = 0
                 else:
                     i0 = n - i
 
-                if j is 0:
+                if j == 0:
                     j0 = 0
                 else:
                     j0 = n - j

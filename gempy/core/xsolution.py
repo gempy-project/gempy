@@ -80,7 +80,7 @@ class XSolution(object):
 
         self.meshes = subsurface.UnstructuredData(
             vertex=vertex_array,
-            edges=simplex_array,
+            cells=simplex_array,
             attributes=pd.DataFrame(ids_array, columns=['id'])
         )
 

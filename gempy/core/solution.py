@@ -133,7 +133,7 @@ class Solution(inheritance):
         return self
 
     def set_solutions(self, sol, compute_mesh, sort_surfaces,
-                      to_xsolution=True, **kwargs):
+                      to_xsolution=False, **kwargs):
 
         # Set geology:
         self.set_values_to_surface_points(sol)

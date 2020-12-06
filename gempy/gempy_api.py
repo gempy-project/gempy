@@ -306,24 +306,6 @@ def compute_model(model: Project, output=None, at: np.ndarray = None, compute_me
             compute_mesh,
             sort_surfaces,
             **kwargs)
-        # # Set geology:
-        # model.solutions.set_values_to_surface_points(sol)
-        #
-        # if model._grid.active_grids[0] is np.True_:
-        #     model.solutions.set_solution_to_regular_grid(sol,
-        #                                                  compute_mesh=compute_mesh,
-        #                                                  **kwargs)
-        # if model._grid.active_grids[1] is np.True_:
-        #     model.solutions.set_solution_to_custom(sol)
-        # if model._grid.active_grids[2] is np.True_:
-        #     model.solutions.set_solution_to_topography(sol)
-        # if model._grid.active_grids[3] is np.True_:
-        #     model.solutions.set_solution_to_sections(sol)
-        # # Set gravity
-        # model.solutions.fw_gravity = sol[12]
-        # # TODO: [X] Set magnetcs and [ ] set topology @A.Schaaf probably it should
-        # #  populate the topology object?
-        # model.solutions.fw_magnetics = sol[13]
 
         if sort_surfaces:
             model.set_surface_order_from_solution()
