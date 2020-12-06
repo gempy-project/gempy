@@ -1569,17 +1569,9 @@ class Project(ImplicitCoKriging):
         Returns:
             True
         """
-        if name is None:
-            name = self.meta.project_name
-
-        if not path:
-            path = './'
-        path = f'{path}/{name}'
-
-        if os.path.isdir(path):
-            print("Directory already exists, files will be overwritten")
-        else:
-            os.mkdir(f'{path}')
+        if name is None or path is None:
+            from gempy.api_modules.io import default_path_and_name
+            name, path = default_path_and_name(self, name, path)
 
         # save dataframes as csv
         self._surface_points.df.to_csv(f'{path}/{name}_surface_points.csv')
@@ -1599,12 +1591,14 @@ class Project(ImplicitCoKriging):
         if self._grid.topography is not None:
             self._grid.topography.save(f'{path}/{name}_topography.npy')
 
-        if compress is True:
-            shutil.make_archive(name, 'zip', path)
-            shutil.rmtree(path)
+        # if compress is True:
+        #     shutil.make_archive(name, 'zip', path)
+        #     shutil.rmtree(path)
         return True
 
-    # @_setdoc([SurfacePoints.read_surface_points.__doc__, Orientations.read_orientations.__doc__])
+    def save_solution(self):
+        pass
+
     def read_data(self, source_i=None, source_o=None, add_basement=True, **kwargs):
         """
         Read data from a csv, or directly supplied dataframes

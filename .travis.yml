@@ -55,6 +55,9 @@ install:
 
   - conda install -c conda-forge gdal
 
+  # Install subsurface
+  - pip install git+https://github.com/softwareunderground/subsurface.git@mig_dev#egg=subsurface
+
   - python -c "import pyvista as pv;print(pv.Report())"
 
 stages:

@@ -201,7 +201,6 @@ class LoadDEMArtificial:
 
         if d_z is None:
             self.d_z = np.array(
-
                 [self.extent[5] - (self.extent[5] - self.extent[4]) * 1 / 5,
                  self.extent[5]])
             print(self.d_z)
@@ -278,6 +277,8 @@ class LoadDEMArtificial:
         """for masking the lith block"""
         x = np.linspace(self.extent[0], self.extent[1], self.resolution[0])
         y = np.linspace(self.extent[2], self.extent[3], self.resolution[1])
+        self.x = x
+        self.y = y
         xx, yy = np.meshgrid(x, y, indexing='ij')
         self.values_2d = np.dstack([xx, yy, self.dem_zval])
 

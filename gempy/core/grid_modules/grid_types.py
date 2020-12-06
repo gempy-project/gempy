@@ -34,12 +34,26 @@ class RegularGrid:
         self.values = np.zeros((0, 3))
         self.values_r = np.zeros((0, 3))
         self.mask_topo = np.zeros((0, 3), dtype=bool)
+        self.x = None
+        self.y = None
+        self.z = None
+
         if extent is not None and resolution is not None:
             self.set_regular_grid(extent, resolution)
             self.dx, self.dy, self.dz = self.get_dx_dy_dz()
 
-    @staticmethod
-    def create_regular_grid_3d(extent, resolution):
+    def set_coord(self, extent, resolution):
+        dx = (extent[1] - extent[0]) / resolution[0]
+        dy = (extent[3] - extent[2]) / resolution[1]
+        dz = (extent[5] - extent[4]) / resolution[2]
+
+        self.x = np.linspace(extent[0] + dx / 2, extent[1] - dx / 2, resolution[0], dtype="float64")
+        self.y = np.linspace(extent[2] + dy / 2, extent[3] - dy / 2, resolution[1], dtype="float64")
+        self.z = np.linspace(extent[4] + dz / 2, extent[5] - dz / 2, resolution[2], dtype="float64")
+
+        return self.x, self.y, self.z
+
+    def create_regular_grid_3d(self, extent, resolution):
         """
         Method to create a 3D regular grid where is interpolated
 
@@ -52,19 +66,10 @@ class RegularGrid:
 
         """
 
-        dx = (extent[1] - extent[0]) / resolution[0]
-        dy = (extent[3] - extent[2]) / resolution[1]
-        dz = (extent[5] - extent[4]) / resolution[2]
-
-        g = np.meshgrid(
-            np.linspace(extent[0] + dx / 2, extent[1] - dx / 2, resolution[0], dtype="float64"),
-            np.linspace(extent[2] + dy / 2, extent[3] - dy / 2, resolution[1], dtype="float64"),
-            np.linspace(extent[4] + dz / 2, extent[5] - dz / 2, resolution[2], dtype="float64"), indexing="ij"
-        )
-
+        coords = self.set_coord(extent, resolution)
+        g = np.meshgrid(*coords, indexing="ij")
         values = np.vstack(tuple(map(np.ravel, g))).T.astype("float64")
         return values
-
     def get_dx_dy_dz(self, rescale=False):
         if rescale is True:
             dx = (self.extent_r[1] - self.extent_r[0]) / self.resolution[0]
@@ -206,6 +211,15 @@ class Sections:
                 self.values = xyz
             else:
                 self.values = np.vstack((self.values, xyz))
+
+    def generate_axis_coord(self):
+        for i, name in enumerate(self.names):
+            xy = self.calculate_line_coordinates_2points(
+                self.coordinates[i, :2],
+                self.coordinates[i, 2:],
+                self.resolution[i][0]
+            )
+            yield name, xy
 
     def calculate_line_coordinates_2points(self, p1, p2, res):
         if isinstance(p1, list):
