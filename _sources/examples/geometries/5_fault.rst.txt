@@ -494,7 +494,7 @@ Setting and ordering the units and series:
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7f01e015c4f0>
+    <gempy.plot.visualization_2d.Plot2D object at 0x7f8f58866d30>
 
 
 
@@ -570,7 +570,7 @@ sphinx_gallery_thumbnail_number = 2
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7f01c91d68b0>
+    <gempy.plot.visualization_2d.Plot2D object at 0x7f8f6e6cfbe0>
 
 
 
@@ -595,7 +595,7 @@ sphinx_gallery_thumbnail_number = 2
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7f01c91d62b0>
+    <gempy.plot.visualization_2d.Plot2D object at 0x7f8f98c440d0>
 
 
 
@@ -629,7 +629,7 @@ sphinx_gallery_thumbnail_number = 2
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  4.970 seconds)
+   **Total running time of the script:** ( 0 minutes  4.544 seconds)
 
 
 .. _sphx_glr_download_examples_geometries_5_fault.py:

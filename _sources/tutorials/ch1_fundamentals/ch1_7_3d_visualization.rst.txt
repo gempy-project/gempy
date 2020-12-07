@@ -127,7 +127,7 @@ Data plot
  .. code-block:: none
 
 
-    <gempy.plot.vista.GemPyToVista object at 0x7f01e3aaf760>
+    <gempy.plot.vista.GemPyToVista object at 0x7f8f6364ff10>
 
 
 
@@ -155,7 +155,7 @@ Geomodel plot
  .. code-block:: none
 
 
-    <gempy.plot.vista.GemPyToVista object at 0x7f01e02c9130>
+    <gempy.plot.vista.GemPyToVista object at 0x7f8f98568820>
 
 
 
@@ -194,7 +194,7 @@ Geomodel plot
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  6.839 seconds)
+   **Total running time of the script:** ( 0 minutes  7.434 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_7_3d_visualization.py:

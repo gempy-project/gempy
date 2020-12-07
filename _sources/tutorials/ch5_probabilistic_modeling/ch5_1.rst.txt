@@ -72,7 +72,7 @@ to keep the focus on the constraction of the probabilistic model.
 
     Active grids: ['regular']
 
-    2-layers  2020-12-07 13:09
+    2-layers  2020-12-07 16:45
 
 
 
@@ -94,42 +94,42 @@ to keep the focus on the constraction of the probabilistic model.
 .. raw:: html
 
     <style  type="text/css" >
-    #T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40row0_col3{
+    #T_2a5024de_38a3_11eb_afc4_b3a2b3eb1f40row0_col3{
                 background-color:  #015482;
-            }#T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40row1_col3{
+            }#T_2a5024de_38a3_11eb_afc4_b3a2b3eb1f40row1_col3{
                 background-color:  #9f0052;
-            }#T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40row2_col3{
+            }#T_2a5024de_38a3_11eb_afc4_b3a2b3eb1f40row2_col3{
                 background-color:  #ffbe00;
-            }</style><table id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>        <th class="col_heading level0 col5" >dz</th>        <th class="col_heading level0 col6" >density</th>    </tr></thead><tbody>
+            }</style><table id="T_2a5024de_38a3_11eb_afc4_b3a2b3eb1f40" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>        <th class="col_heading level0 col5" >dz</th>        <th class="col_heading level0 col6" >density</th>    </tr></thead><tbody>
                     <tr>
-                            <th id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40level0_row0" class="row_heading level0 row0" >0</th>
-                            <td id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40row0_col0" class="data row0 col0" >surface 1</td>
-                            <td id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40row0_col1" class="data row0 col1" >Default series</td>
-                            <td id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40row0_col2" class="data row0 col2" >1</td>
-                            <td id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40row0_col3" class="data row0 col3" >#015482</td>
-                            <td id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40row0_col4" class="data row0 col4" >1</td>
-                            <td id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40row0_col5" class="data row0 col5" >20.00</td>
-                            <td id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40row0_col6" class="data row0 col6" >2.60</td>
+                            <th id="T_2a5024de_38a3_11eb_afc4_b3a2b3eb1f40level0_row0" class="row_heading level0 row0" >0</th>
+                            <td id="T_2a5024de_38a3_11eb_afc4_b3a2b3eb1f40row0_col0" class="data row0 col0" >surface 1</td>
+                            <td id="T_2a5024de_38a3_11eb_afc4_b3a2b3eb1f40row0_col1" class="data row0 col1" >Default series</td>
+                            <td id="T_2a5024de_38a3_11eb_afc4_b3a2b3eb1f40row0_col2" class="data row0 col2" >1</td>
+                            <td id="T_2a5024de_38a3_11eb_afc4_b3a2b3eb1f40row0_col3" class="data row0 col3" >#015482</td>
+                            <td id="T_2a5024de_38a3_11eb_afc4_b3a2b3eb1f40row0_col4" class="data row0 col4" >1</td>
+                            <td id="T_2a5024de_38a3_11eb_afc4_b3a2b3eb1f40row0_col5" class="data row0 col5" >20.00</td>
+                            <td id="T_2a5024de_38a3_11eb_afc4_b3a2b3eb1f40row0_col6" class="data row0 col6" >2.60</td>
                 </tr>
                 <tr>
-                            <th id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40level0_row1" class="row_heading level0 row1" >1</th>
-                            <td id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40row1_col0" class="data row1 col0" >surface 2</td>
-                            <td id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40row1_col1" class="data row1 col1" >Default series</td>
-                            <td id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40row1_col2" class="data row1 col2" >2</td>
-                            <td id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40row1_col3" class="data row1 col3" >#9f0052</td>
-                            <td id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40row1_col4" class="data row1 col4" >2</td>
-                            <td id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40row1_col5" class="data row1 col5" >0.00</td>
-                            <td id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40row1_col6" class="data row1 col6" >2.40</td>
+                            <th id="T_2a5024de_38a3_11eb_afc4_b3a2b3eb1f40level0_row1" class="row_heading level0 row1" >1</th>
+                            <td id="T_2a5024de_38a3_11eb_afc4_b3a2b3eb1f40row1_col0" class="data row1 col0" >surface 2</td>
+                            <td id="T_2a5024de_38a3_11eb_afc4_b3a2b3eb1f40row1_col1" class="data row1 col1" >Default series</td>
+                            <td id="T_2a5024de_38a3_11eb_afc4_b3a2b3eb1f40row1_col2" class="data row1 col2" >2</td>
+                            <td id="T_2a5024de_38a3_11eb_afc4_b3a2b3eb1f40row1_col3" class="data row1 col3" >#9f0052</td>
+                            <td id="T_2a5024de_38a3_11eb_afc4_b3a2b3eb1f40row1_col4" class="data row1 col4" >2</td>
+                            <td id="T_2a5024de_38a3_11eb_afc4_b3a2b3eb1f40row1_col5" class="data row1 col5" >0.00</td>
+                            <td id="T_2a5024de_38a3_11eb_afc4_b3a2b3eb1f40row1_col6" class="data row1 col6" >2.40</td>
                 </tr>
                 <tr>
-                            <th id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40level0_row2" class="row_heading level0 row2" >2</th>
-                            <td id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40row2_col0" class="data row2 col0" >basement</td>
-                            <td id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40row2_col1" class="data row2 col1" >Default series</td>
-                            <td id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40row2_col2" class="data row2 col2" >3</td>
-                            <td id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40row2_col3" class="data row2 col3" >#ffbe00</td>
-                            <td id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40row2_col4" class="data row2 col4" >3</td>
-                            <td id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40row2_col5" class="data row2 col5" >0.00</td>
-                            <td id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40row2_col6" class="data row2 col6" >3.20</td>
+                            <th id="T_2a5024de_38a3_11eb_afc4_b3a2b3eb1f40level0_row2" class="row_heading level0 row2" >2</th>
+                            <td id="T_2a5024de_38a3_11eb_afc4_b3a2b3eb1f40row2_col0" class="data row2 col0" >basement</td>
+                            <td id="T_2a5024de_38a3_11eb_afc4_b3a2b3eb1f40row2_col1" class="data row2 col1" >Default series</td>
+                            <td id="T_2a5024de_38a3_11eb_afc4_b3a2b3eb1f40row2_col2" class="data row2 col2" >3</td>
+                            <td id="T_2a5024de_38a3_11eb_afc4_b3a2b3eb1f40row2_col3" class="data row2 col3" >#ffbe00</td>
+                            <td id="T_2a5024de_38a3_11eb_afc4_b3a2b3eb1f40row2_col4" class="data row2 col4" >3</td>
+                            <td id="T_2a5024de_38a3_11eb_afc4_b3a2b3eb1f40row2_col5" class="data row2 col5" >0.00</td>
+                            <td id="T_2a5024de_38a3_11eb_afc4_b3a2b3eb1f40row2_col6" class="data row2 col6" >3.20</td>
                 </tr>
         </tbody></table>
     <br />
@@ -316,7 +316,7 @@ Computing model
     $C_o$            4.2e+06
     drift equations      [3]
 
-    <gempy.core.interpolator.InterpolatorModel object at 0x7f01c6ab4a60>
+    <gempy.core.interpolator.InterpolatorModel object at 0x7f8f6545fd90>
 
 
 
@@ -480,7 +480,7 @@ sphinx_gallery_thumbnail_number = 6
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  16.718 seconds)
+   **Total running time of the script:** ( 0 minutes  17.781 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch5_probabilistic_modeling_ch5_1.py:

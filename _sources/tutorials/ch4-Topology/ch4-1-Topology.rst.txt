@@ -112,7 +112,7 @@ order the formations (stratigraphic pile).
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7f01c97f9700>
+    <gempy.plot.visualization_2d.Plot2D object at 0x7f8f661bbca0>
 
 
 
@@ -465,7 +465,7 @@ sphinx_gallery_thumbnail_number = 4
  .. code-block:: none
 
 
-    {('4_0', '6_1'), ('2_0', '4_1'), ('2_0', '2_1'), ('6_0', '6_1'), ('3_0', '4_1'), ('4_1', '5_1'), ('3_1', '4_1'), ('3_0', '5_1'), ('4_0', '5_0'), ('2_0', '3_1'), ('5_0', '6_1'), ('5_1', '6_1'), ('2_1', '3_1'), ('4_0', '5_1'), ('3_0', '4_0'), ('5_0', '6_0'), ('2_0', '3_0')}
+    {('3_0', '5_1'), ('3_0', '4_1'), ('2_0', '4_1'), ('5_1', '6_1'), ('5_0', '6_0'), ('2_0', '2_1'), ('2_0', '3_1'), ('4_0', '5_1'), ('3_0', '4_0'), ('2_0', '3_0'), ('4_0', '5_0'), ('6_0', '6_1'), ('3_1', '4_1'), ('2_1', '3_1'), ('4_0', '6_1'), ('5_0', '6_1'), ('4_1', '5_1')}
 
 
 
@@ -540,14 +540,14 @@ We can also check all geobodies that are adjacent to the purple layer
  .. code-block:: none
 
 
-    {'3_0', '6_1', '4_0', '4_1'}
+    {'4_1', '6_1', '4_0', '3_0'}
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  4.843 seconds)
+   **Total running time of the script:** ( 0 minutes  4.999 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch4-Topology_ch4-1-Topology.py:

@@ -84,7 +84,7 @@ Data Preparation
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7f01cf4cb0a0>
+    <gempy.plot.visualization_2d.Plot2D object at 0x7f8f64cbd0a0>
 
 
 
@@ -152,7 +152,7 @@ Data Preparation
 
     Active grids: ['regular' 'topography' 'sections']
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7f01cee3b730>
+    <gempy.plot.visualization_2d.Plot2D object at 0x7f8f65c89130>
 
 
 
@@ -233,7 +233,7 @@ Data Preparation
     $C_o$            7.1e+04
     drift equations   [3, 3]
 
-    <gempy.core.interpolator.InterpolatorModel object at 0x7f01c58fd160>
+    <gempy.core.interpolator.InterpolatorModel object at 0x7f8f64cbd940>
 
 
 
@@ -411,7 +411,7 @@ new plotting api
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7f01f9f15580>
+    <gempy.plot.visualization_2d.Plot2D object at 0x7f8f6ec7cca0>
 
 
 
@@ -437,7 +437,7 @@ or
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7f01c6d42190>
+    <gempy.plot.visualization_2d.Plot2D object at 0x7f8f6ece1220>
 
 
 
@@ -725,7 +725,7 @@ Plotting traces:
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7f01c6d42190>
+    <gempy.plot.visualization_2d.Plot2D object at 0x7f8f9859e3a0>
 
 
 
@@ -777,7 +777,7 @@ any combination of the above:
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7f01c6310ca0>
+    <gempy.plot.visualization_2d.Plot2D object at 0x7f8f6e994760>
 
 
 
@@ -801,7 +801,7 @@ any combination of the above:
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7f01e06cbc10>
+    <gempy.plot.visualization_2d.Plot2D object at 0x7f8f9859e3a0>
 
 
 
@@ -825,7 +825,7 @@ any combination of the above:
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7f01f99655e0>
+    <gempy.plot.visualization_2d.Plot2D object at 0x7f8f6a5322e0>
 
 
 
@@ -849,14 +849,14 @@ any combination of the above:
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7f01fa0eee80>
+    <gempy.plot.visualization_2d.Plot2D object at 0x7f8f92837a90>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  7.761 seconds)
+   **Total running time of the script:** ( 0 minutes  8.074 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_6_2d_visualization.py:

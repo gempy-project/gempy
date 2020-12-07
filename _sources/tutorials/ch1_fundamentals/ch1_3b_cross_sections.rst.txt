@@ -267,7 +267,7 @@ Active grids:
     $C_o$            2.9e+05
     drift equations   [3, 3]
 
-    <gempy.core.interpolator.InterpolatorModel object at 0x7f01e38d5d00>
+    <gempy.core.interpolator.InterpolatorModel object at 0x7f8f65d09970>
 
 
 
@@ -314,7 +314,7 @@ Active grids:
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7f01e11a5c10>
+    <gempy.plot.visualization_2d.Plot2D object at 0x7f8f64799790>
 
 
 
@@ -2048,7 +2048,7 @@ Look at resulting polygons:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  6.199 seconds)
+   **Total running time of the script:** ( 0 minutes  6.426 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_3b_cross_sections.py:

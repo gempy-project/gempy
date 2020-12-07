@@ -102,7 +102,7 @@ line at any point (before computing the model):
     $C_o$            23914.4
     drift equations      [3]
 
-    <gempy.core.interpolator.InterpolatorModel object at 0x7f01fb277160>
+    <gempy.core.interpolator.InterpolatorModel object at 0x7f8f994810d0>
 
 
 
@@ -222,7 +222,7 @@ bottom of a unit. By default GemPy surfaces are empty:
 .. raw:: html
 
     <style  type="text/css" >
-    </style><table id="T_d9436ef2_3884_11eb_afc4_b3a2b3eb1f40" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
+    </style><table id="T_e1a552cc_38a2_11eb_afc4_b3a2b3eb1f40" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
             </tbody></table>
     <br />
     <br />
@@ -246,26 +246,26 @@ Default surfaces:
 .. raw:: html
 
     <style  type="text/css" >
-    #T_d9436ef3_3884_11eb_afc4_b3a2b3eb1f40row0_col3{
+    #T_e1a552cd_38a2_11eb_afc4_b3a2b3eb1f40row0_col3{
                 background-color:  #015482;
-            }#T_d9436ef3_3884_11eb_afc4_b3a2b3eb1f40row1_col3{
+            }#T_e1a552cd_38a2_11eb_afc4_b3a2b3eb1f40row1_col3{
                 background-color:  #9f0052;
-            }</style><table id="T_d9436ef3_3884_11eb_afc4_b3a2b3eb1f40" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
+            }</style><table id="T_e1a552cd_38a2_11eb_afc4_b3a2b3eb1f40" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
                     <tr>
-                            <th id="T_d9436ef3_3884_11eb_afc4_b3a2b3eb1f40level0_row0" class="row_heading level0 row0" >0</th>
-                            <td id="T_d9436ef3_3884_11eb_afc4_b3a2b3eb1f40row0_col0" class="data row0 col0" >surface1</td>
-                            <td id="T_d9436ef3_3884_11eb_afc4_b3a2b3eb1f40row0_col1" class="data row0 col1" >Default series</td>
-                            <td id="T_d9436ef3_3884_11eb_afc4_b3a2b3eb1f40row0_col2" class="data row0 col2" >1</td>
-                            <td id="T_d9436ef3_3884_11eb_afc4_b3a2b3eb1f40row0_col3" class="data row0 col3" >#015482</td>
-                            <td id="T_d9436ef3_3884_11eb_afc4_b3a2b3eb1f40row0_col4" class="data row0 col4" >1</td>
+                            <th id="T_e1a552cd_38a2_11eb_afc4_b3a2b3eb1f40level0_row0" class="row_heading level0 row0" >0</th>
+                            <td id="T_e1a552cd_38a2_11eb_afc4_b3a2b3eb1f40row0_col0" class="data row0 col0" >surface1</td>
+                            <td id="T_e1a552cd_38a2_11eb_afc4_b3a2b3eb1f40row0_col1" class="data row0 col1" >Default series</td>
+                            <td id="T_e1a552cd_38a2_11eb_afc4_b3a2b3eb1f40row0_col2" class="data row0 col2" >1</td>
+                            <td id="T_e1a552cd_38a2_11eb_afc4_b3a2b3eb1f40row0_col3" class="data row0 col3" >#015482</td>
+                            <td id="T_e1a552cd_38a2_11eb_afc4_b3a2b3eb1f40row0_col4" class="data row0 col4" >1</td>
                 </tr>
                 <tr>
-                            <th id="T_d9436ef3_3884_11eb_afc4_b3a2b3eb1f40level0_row1" class="row_heading level0 row1" >1</th>
-                            <td id="T_d9436ef3_3884_11eb_afc4_b3a2b3eb1f40row1_col0" class="data row1 col0" >surface2</td>
-                            <td id="T_d9436ef3_3884_11eb_afc4_b3a2b3eb1f40row1_col1" class="data row1 col1" >Default series</td>
-                            <td id="T_d9436ef3_3884_11eb_afc4_b3a2b3eb1f40row1_col2" class="data row1 col2" >2</td>
-                            <td id="T_d9436ef3_3884_11eb_afc4_b3a2b3eb1f40row1_col3" class="data row1 col3" >#9f0052</td>
-                            <td id="T_d9436ef3_3884_11eb_afc4_b3a2b3eb1f40row1_col4" class="data row1 col4" >2</td>
+                            <th id="T_e1a552cd_38a2_11eb_afc4_b3a2b3eb1f40level0_row1" class="row_heading level0 row1" >1</th>
+                            <td id="T_e1a552cd_38a2_11eb_afc4_b3a2b3eb1f40row1_col0" class="data row1 col0" >surface2</td>
+                            <td id="T_e1a552cd_38a2_11eb_afc4_b3a2b3eb1f40row1_col1" class="data row1 col1" >Default series</td>
+                            <td id="T_e1a552cd_38a2_11eb_afc4_b3a2b3eb1f40row1_col2" class="data row1 col2" >2</td>
+                            <td id="T_e1a552cd_38a2_11eb_afc4_b3a2b3eb1f40row1_col3" class="data row1 col3" >#9f0052</td>
+                            <td id="T_e1a552cd_38a2_11eb_afc4_b3a2b3eb1f40row1_col4" class="data row1 col4" >2</td>
                 </tr>
         </tbody></table>
     <br />
@@ -309,7 +309,7 @@ Add a point
  .. code-block:: none
 
 
-    <gempy.plot.vista.GemPyToVista object at 0x7f01e388e220>
+    <gempy.plot.vista.GemPyToVista object at 0x7f8f98801bb0>
 
 
 
@@ -347,7 +347,7 @@ Add points
  .. code-block:: none
 
 
-    <gempy.plot.vista.GemPyToVista object at 0x7f01e39e0c40>
+    <gempy.plot.vista.GemPyToVista object at 0x7f8f928bb8e0>
 
 
 
@@ -385,7 +385,7 @@ Adding orientation
  .. code-block:: none
 
 
-    <gempy.plot.vista.GemPyToVista object at 0x7f01fb2a5bb0>
+    <gempy.plot.vista.GemPyToVista object at 0x7f8f98927520>
 
 
 
@@ -517,7 +517,7 @@ In 2D
  .. code-block:: none
 
 
-    <gempy.plot.vista.GemPyToVista object at 0x7f01f9d8a6d0>
+    <gempy.plot.vista.GemPyToVista object at 0x7f8f67a2dca0>
 
 
 
@@ -541,26 +541,26 @@ load have 4 however. Lets add two layers more:
 .. raw:: html
 
     <style  type="text/css" >
-    #T_dab4e860_3884_11eb_afc4_b3a2b3eb1f40row0_col3{
+    #T_e32787dc_38a2_11eb_afc4_b3a2b3eb1f40row0_col3{
                 background-color:  #015482;
-            }#T_dab4e860_3884_11eb_afc4_b3a2b3eb1f40row1_col3{
+            }#T_e32787dc_38a2_11eb_afc4_b3a2b3eb1f40row1_col3{
                 background-color:  #9f0052;
-            }</style><table id="T_dab4e860_3884_11eb_afc4_b3a2b3eb1f40" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
+            }</style><table id="T_e32787dc_38a2_11eb_afc4_b3a2b3eb1f40" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
                     <tr>
-                            <th id="T_dab4e860_3884_11eb_afc4_b3a2b3eb1f40level0_row0" class="row_heading level0 row0" >0</th>
-                            <td id="T_dab4e860_3884_11eb_afc4_b3a2b3eb1f40row0_col0" class="data row0 col0" >surface1</td>
-                            <td id="T_dab4e860_3884_11eb_afc4_b3a2b3eb1f40row0_col1" class="data row0 col1" >Default series</td>
-                            <td id="T_dab4e860_3884_11eb_afc4_b3a2b3eb1f40row0_col2" class="data row0 col2" >1</td>
-                            <td id="T_dab4e860_3884_11eb_afc4_b3a2b3eb1f40row0_col3" class="data row0 col3" >#015482</td>
-                            <td id="T_dab4e860_3884_11eb_afc4_b3a2b3eb1f40row0_col4" class="data row0 col4" >1</td>
+                            <th id="T_e32787dc_38a2_11eb_afc4_b3a2b3eb1f40level0_row0" class="row_heading level0 row0" >0</th>
+                            <td id="T_e32787dc_38a2_11eb_afc4_b3a2b3eb1f40row0_col0" class="data row0 col0" >surface1</td>
+                            <td id="T_e32787dc_38a2_11eb_afc4_b3a2b3eb1f40row0_col1" class="data row0 col1" >Default series</td>
+                            <td id="T_e32787dc_38a2_11eb_afc4_b3a2b3eb1f40row0_col2" class="data row0 col2" >1</td>
+                            <td id="T_e32787dc_38a2_11eb_afc4_b3a2b3eb1f40row0_col3" class="data row0 col3" >#015482</td>
+                            <td id="T_e32787dc_38a2_11eb_afc4_b3a2b3eb1f40row0_col4" class="data row0 col4" >1</td>
                 </tr>
                 <tr>
-                            <th id="T_dab4e860_3884_11eb_afc4_b3a2b3eb1f40level0_row1" class="row_heading level0 row1" >1</th>
-                            <td id="T_dab4e860_3884_11eb_afc4_b3a2b3eb1f40row1_col0" class="data row1 col0" >surface2</td>
-                            <td id="T_dab4e860_3884_11eb_afc4_b3a2b3eb1f40row1_col1" class="data row1 col1" >Default series</td>
-                            <td id="T_dab4e860_3884_11eb_afc4_b3a2b3eb1f40row1_col2" class="data row1 col2" >2</td>
-                            <td id="T_dab4e860_3884_11eb_afc4_b3a2b3eb1f40row1_col3" class="data row1 col3" >#9f0052</td>
-                            <td id="T_dab4e860_3884_11eb_afc4_b3a2b3eb1f40row1_col4" class="data row1 col4" >2</td>
+                            <th id="T_e32787dc_38a2_11eb_afc4_b3a2b3eb1f40level0_row1" class="row_heading level0 row1" >1</th>
+                            <td id="T_e32787dc_38a2_11eb_afc4_b3a2b3eb1f40row1_col0" class="data row1 col0" >surface2</td>
+                            <td id="T_e32787dc_38a2_11eb_afc4_b3a2b3eb1f40row1_col1" class="data row1 col1" >Default series</td>
+                            <td id="T_e32787dc_38a2_11eb_afc4_b3a2b3eb1f40row1_col2" class="data row1 col2" >2</td>
+                            <td id="T_e32787dc_38a2_11eb_afc4_b3a2b3eb1f40row1_col3" class="data row1 col3" >#9f0052</td>
+                            <td id="T_e32787dc_38a2_11eb_afc4_b3a2b3eb1f40row1_col4" class="data row1 col4" >2</td>
                 </tr>
         </tbody></table>
     <br />
@@ -616,46 +616,46 @@ load have 4 however. Lets add two layers more:
 .. raw:: html
 
     <style  type="text/css" >
-    #T_dab4e861_3884_11eb_afc4_b3a2b3eb1f40row0_col3{
+    #T_e32787dd_38a2_11eb_afc4_b3a2b3eb1f40row0_col3{
                 background-color:  #015482;
-            }#T_dab4e861_3884_11eb_afc4_b3a2b3eb1f40row1_col3{
+            }#T_e32787dd_38a2_11eb_afc4_b3a2b3eb1f40row1_col3{
                 background-color:  #9f0052;
-            }#T_dab4e861_3884_11eb_afc4_b3a2b3eb1f40row2_col3{
+            }#T_e32787dd_38a2_11eb_afc4_b3a2b3eb1f40row2_col3{
                 background-color:  #ffbe00;
-            }#T_dab4e861_3884_11eb_afc4_b3a2b3eb1f40row3_col3{
+            }#T_e32787dd_38a2_11eb_afc4_b3a2b3eb1f40row3_col3{
                 background-color:  #728f02;
-            }</style><table id="T_dab4e861_3884_11eb_afc4_b3a2b3eb1f40" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
+            }</style><table id="T_e32787dd_38a2_11eb_afc4_b3a2b3eb1f40" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
                     <tr>
-                            <th id="T_dab4e861_3884_11eb_afc4_b3a2b3eb1f40level0_row0" class="row_heading level0 row0" >0</th>
-                            <td id="T_dab4e861_3884_11eb_afc4_b3a2b3eb1f40row0_col0" class="data row0 col0" >surface1</td>
-                            <td id="T_dab4e861_3884_11eb_afc4_b3a2b3eb1f40row0_col1" class="data row0 col1" >Default series</td>
-                            <td id="T_dab4e861_3884_11eb_afc4_b3a2b3eb1f40row0_col2" class="data row0 col2" >1</td>
-                            <td id="T_dab4e861_3884_11eb_afc4_b3a2b3eb1f40row0_col3" class="data row0 col3" >#015482</td>
-                            <td id="T_dab4e861_3884_11eb_afc4_b3a2b3eb1f40row0_col4" class="data row0 col4" >1</td>
+                            <th id="T_e32787dd_38a2_11eb_afc4_b3a2b3eb1f40level0_row0" class="row_heading level0 row0" >0</th>
+                            <td id="T_e32787dd_38a2_11eb_afc4_b3a2b3eb1f40row0_col0" class="data row0 col0" >surface1</td>
+                            <td id="T_e32787dd_38a2_11eb_afc4_b3a2b3eb1f40row0_col1" class="data row0 col1" >Default series</td>
+                            <td id="T_e32787dd_38a2_11eb_afc4_b3a2b3eb1f40row0_col2" class="data row0 col2" >1</td>
+                            <td id="T_e32787dd_38a2_11eb_afc4_b3a2b3eb1f40row0_col3" class="data row0 col3" >#015482</td>
+                            <td id="T_e32787dd_38a2_11eb_afc4_b3a2b3eb1f40row0_col4" class="data row0 col4" >1</td>
                 </tr>
                 <tr>
-                            <th id="T_dab4e861_3884_11eb_afc4_b3a2b3eb1f40level0_row1" class="row_heading level0 row1" >1</th>
-                            <td id="T_dab4e861_3884_11eb_afc4_b3a2b3eb1f40row1_col0" class="data row1 col0" >surface2</td>
-                            <td id="T_dab4e861_3884_11eb_afc4_b3a2b3eb1f40row1_col1" class="data row1 col1" >Default series</td>
-                            <td id="T_dab4e861_3884_11eb_afc4_b3a2b3eb1f40row1_col2" class="data row1 col2" >2</td>
-                            <td id="T_dab4e861_3884_11eb_afc4_b3a2b3eb1f40row1_col3" class="data row1 col3" >#9f0052</td>
-                            <td id="T_dab4e861_3884_11eb_afc4_b3a2b3eb1f40row1_col4" class="data row1 col4" >2</td>
+                            <th id="T_e32787dd_38a2_11eb_afc4_b3a2b3eb1f40level0_row1" class="row_heading level0 row1" >1</th>
+                            <td id="T_e32787dd_38a2_11eb_afc4_b3a2b3eb1f40row1_col0" class="data row1 col0" >surface2</td>
+                            <td id="T_e32787dd_38a2_11eb_afc4_b3a2b3eb1f40row1_col1" class="data row1 col1" >Default series</td>
+                            <td id="T_e32787dd_38a2_11eb_afc4_b3a2b3eb1f40row1_col2" class="data row1 col2" >2</td>
+                            <td id="T_e32787dd_38a2_11eb_afc4_b3a2b3eb1f40row1_col3" class="data row1 col3" >#9f0052</td>
+                            <td id="T_e32787dd_38a2_11eb_afc4_b3a2b3eb1f40row1_col4" class="data row1 col4" >2</td>
                 </tr>
                 <tr>
-                            <th id="T_dab4e861_3884_11eb_afc4_b3a2b3eb1f40level0_row2" class="row_heading level0 row2" >2</th>
-                            <td id="T_dab4e861_3884_11eb_afc4_b3a2b3eb1f40row2_col0" class="data row2 col0" >surface3</td>
-                            <td id="T_dab4e861_3884_11eb_afc4_b3a2b3eb1f40row2_col1" class="data row2 col1" >Default series</td>
-                            <td id="T_dab4e861_3884_11eb_afc4_b3a2b3eb1f40row2_col2" class="data row2 col2" >3</td>
-                            <td id="T_dab4e861_3884_11eb_afc4_b3a2b3eb1f40row2_col3" class="data row2 col3" >#ffbe00</td>
-                            <td id="T_dab4e861_3884_11eb_afc4_b3a2b3eb1f40row2_col4" class="data row2 col4" >3</td>
+                            <th id="T_e32787dd_38a2_11eb_afc4_b3a2b3eb1f40level0_row2" class="row_heading level0 row2" >2</th>
+                            <td id="T_e32787dd_38a2_11eb_afc4_b3a2b3eb1f40row2_col0" class="data row2 col0" >surface3</td>
+                            <td id="T_e32787dd_38a2_11eb_afc4_b3a2b3eb1f40row2_col1" class="data row2 col1" >Default series</td>
+                            <td id="T_e32787dd_38a2_11eb_afc4_b3a2b3eb1f40row2_col2" class="data row2 col2" >3</td>
+                            <td id="T_e32787dd_38a2_11eb_afc4_b3a2b3eb1f40row2_col3" class="data row2 col3" >#ffbe00</td>
+                            <td id="T_e32787dd_38a2_11eb_afc4_b3a2b3eb1f40row2_col4" class="data row2 col4" >3</td>
                 </tr>
                 <tr>
-                            <th id="T_dab4e861_3884_11eb_afc4_b3a2b3eb1f40level0_row3" class="row_heading level0 row3" >3</th>
-                            <td id="T_dab4e861_3884_11eb_afc4_b3a2b3eb1f40row3_col0" class="data row3 col0" >basement</td>
-                            <td id="T_dab4e861_3884_11eb_afc4_b3a2b3eb1f40row3_col1" class="data row3 col1" >Default series</td>
-                            <td id="T_dab4e861_3884_11eb_afc4_b3a2b3eb1f40row3_col2" class="data row3 col2" >4</td>
-                            <td id="T_dab4e861_3884_11eb_afc4_b3a2b3eb1f40row3_col3" class="data row3 col3" >#728f02</td>
-                            <td id="T_dab4e861_3884_11eb_afc4_b3a2b3eb1f40row3_col4" class="data row3 col4" >4</td>
+                            <th id="T_e32787dd_38a2_11eb_afc4_b3a2b3eb1f40level0_row3" class="row_heading level0 row3" >3</th>
+                            <td id="T_e32787dd_38a2_11eb_afc4_b3a2b3eb1f40row3_col0" class="data row3 col0" >basement</td>
+                            <td id="T_e32787dd_38a2_11eb_afc4_b3a2b3eb1f40row3_col1" class="data row3 col1" >Default series</td>
+                            <td id="T_e32787dd_38a2_11eb_afc4_b3a2b3eb1f40row3_col2" class="data row3 col2" >4</td>
+                            <td id="T_e32787dd_38a2_11eb_afc4_b3a2b3eb1f40row3_col3" class="data row3 col3" >#728f02</td>
+                            <td id="T_e32787dd_38a2_11eb_afc4_b3a2b3eb1f40row3_col4" class="data row3 col4" >4</td>
                 </tr>
         </tbody></table>
     <br />
@@ -791,7 +791,7 @@ Compute model
  .. code-block:: none
 
 
-    <gempy.plot.vista.GemPyToVista object at 0x7f01cff66940>
+    <gempy.plot.vista.GemPyToVista object at 0x7f8f6e2dceb0>
 
 
 
@@ -927,7 +927,7 @@ Computing and plotting 3D
  .. code-block:: none
 
 
-    <gempy.plot.vista.GemPyToVista object at 0x7f01cc2d5850>
+    <gempy.plot.vista.GemPyToVista object at 0x7f8f6f6a2a90>
 
 
 
@@ -1109,56 +1109,56 @@ But we also need to add a new surface:
 .. raw:: html
 
     <style  type="text/css" >
-    #T_dbf5467a_3884_11eb_afc4_b3a2b3eb1f40row0_col3{
+    #T_e47d077e_38a2_11eb_afc4_b3a2b3eb1f40row0_col3{
                 background-color:  #015482;
-            }#T_dbf5467a_3884_11eb_afc4_b3a2b3eb1f40row1_col3{
+            }#T_e47d077e_38a2_11eb_afc4_b3a2b3eb1f40row1_col3{
                 background-color:  #9f0052;
-            }#T_dbf5467a_3884_11eb_afc4_b3a2b3eb1f40row2_col3{
+            }#T_e47d077e_38a2_11eb_afc4_b3a2b3eb1f40row2_col3{
                 background-color:  #ffbe00;
-            }#T_dbf5467a_3884_11eb_afc4_b3a2b3eb1f40row3_col3{
+            }#T_e47d077e_38a2_11eb_afc4_b3a2b3eb1f40row3_col3{
                 background-color:  #728f02;
-            }#T_dbf5467a_3884_11eb_afc4_b3a2b3eb1f40row4_col3{
+            }#T_e47d077e_38a2_11eb_afc4_b3a2b3eb1f40row4_col3{
                 background-color:  #443988;
-            }</style><table id="T_dbf5467a_3884_11eb_afc4_b3a2b3eb1f40" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
+            }</style><table id="T_e47d077e_38a2_11eb_afc4_b3a2b3eb1f40" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
                     <tr>
-                            <th id="T_dbf5467a_3884_11eb_afc4_b3a2b3eb1f40level0_row0" class="row_heading level0 row0" >0</th>
-                            <td id="T_dbf5467a_3884_11eb_afc4_b3a2b3eb1f40row0_col0" class="data row0 col0" >surface1</td>
-                            <td id="T_dbf5467a_3884_11eb_afc4_b3a2b3eb1f40row0_col1" class="data row0 col1" >Default series</td>
-                            <td id="T_dbf5467a_3884_11eb_afc4_b3a2b3eb1f40row0_col2" class="data row0 col2" >1</td>
-                            <td id="T_dbf5467a_3884_11eb_afc4_b3a2b3eb1f40row0_col3" class="data row0 col3" >#015482</td>
-                            <td id="T_dbf5467a_3884_11eb_afc4_b3a2b3eb1f40row0_col4" class="data row0 col4" >1</td>
+                            <th id="T_e47d077e_38a2_11eb_afc4_b3a2b3eb1f40level0_row0" class="row_heading level0 row0" >0</th>
+                            <td id="T_e47d077e_38a2_11eb_afc4_b3a2b3eb1f40row0_col0" class="data row0 col0" >surface1</td>
+                            <td id="T_e47d077e_38a2_11eb_afc4_b3a2b3eb1f40row0_col1" class="data row0 col1" >Default series</td>
+                            <td id="T_e47d077e_38a2_11eb_afc4_b3a2b3eb1f40row0_col2" class="data row0 col2" >1</td>
+                            <td id="T_e47d077e_38a2_11eb_afc4_b3a2b3eb1f40row0_col3" class="data row0 col3" >#015482</td>
+                            <td id="T_e47d077e_38a2_11eb_afc4_b3a2b3eb1f40row0_col4" class="data row0 col4" >1</td>
                 </tr>
                 <tr>
-                            <th id="T_dbf5467a_3884_11eb_afc4_b3a2b3eb1f40level0_row1" class="row_heading level0 row1" >1</th>
-                            <td id="T_dbf5467a_3884_11eb_afc4_b3a2b3eb1f40row1_col0" class="data row1 col0" >surface2</td>
-                            <td id="T_dbf5467a_3884_11eb_afc4_b3a2b3eb1f40row1_col1" class="data row1 col1" >Default series</td>
-                            <td id="T_dbf5467a_3884_11eb_afc4_b3a2b3eb1f40row1_col2" class="data row1 col2" >2</td>
-                            <td id="T_dbf5467a_3884_11eb_afc4_b3a2b3eb1f40row1_col3" class="data row1 col3" >#9f0052</td>
-                            <td id="T_dbf5467a_3884_11eb_afc4_b3a2b3eb1f40row1_col4" class="data row1 col4" >2</td>
+                            <th id="T_e47d077e_38a2_11eb_afc4_b3a2b3eb1f40level0_row1" class="row_heading level0 row1" >1</th>
+                            <td id="T_e47d077e_38a2_11eb_afc4_b3a2b3eb1f40row1_col0" class="data row1 col0" >surface2</td>
+                            <td id="T_e47d077e_38a2_11eb_afc4_b3a2b3eb1f40row1_col1" class="data row1 col1" >Default series</td>
+                            <td id="T_e47d077e_38a2_11eb_afc4_b3a2b3eb1f40row1_col2" class="data row1 col2" >2</td>
+                            <td id="T_e47d077e_38a2_11eb_afc4_b3a2b3eb1f40row1_col3" class="data row1 col3" >#9f0052</td>
+                            <td id="T_e47d077e_38a2_11eb_afc4_b3a2b3eb1f40row1_col4" class="data row1 col4" >2</td>
                 </tr>
                 <tr>
-                            <th id="T_dbf5467a_3884_11eb_afc4_b3a2b3eb1f40level0_row2" class="row_heading level0 row2" >2</th>
-                            <td id="T_dbf5467a_3884_11eb_afc4_b3a2b3eb1f40row2_col0" class="data row2 col0" >surface3</td>
-                            <td id="T_dbf5467a_3884_11eb_afc4_b3a2b3eb1f40row2_col1" class="data row2 col1" >Default series</td>
-                            <td id="T_dbf5467a_3884_11eb_afc4_b3a2b3eb1f40row2_col2" class="data row2 col2" >3</td>
-                            <td id="T_dbf5467a_3884_11eb_afc4_b3a2b3eb1f40row2_col3" class="data row2 col3" >#ffbe00</td>
-                            <td id="T_dbf5467a_3884_11eb_afc4_b3a2b3eb1f40row2_col4" class="data row2 col4" >3</td>
+                            <th id="T_e47d077e_38a2_11eb_afc4_b3a2b3eb1f40level0_row2" class="row_heading level0 row2" >2</th>
+                            <td id="T_e47d077e_38a2_11eb_afc4_b3a2b3eb1f40row2_col0" class="data row2 col0" >surface3</td>
+                            <td id="T_e47d077e_38a2_11eb_afc4_b3a2b3eb1f40row2_col1" class="data row2 col1" >Default series</td>
+                            <td id="T_e47d077e_38a2_11eb_afc4_b3a2b3eb1f40row2_col2" class="data row2 col2" >3</td>
+                            <td id="T_e47d077e_38a2_11eb_afc4_b3a2b3eb1f40row2_col3" class="data row2 col3" >#ffbe00</td>
+                            <td id="T_e47d077e_38a2_11eb_afc4_b3a2b3eb1f40row2_col4" class="data row2 col4" >3</td>
                 </tr>
                 <tr>
-                            <th id="T_dbf5467a_3884_11eb_afc4_b3a2b3eb1f40level0_row3" class="row_heading level0 row3" >3</th>
-                            <td id="T_dbf5467a_3884_11eb_afc4_b3a2b3eb1f40row3_col0" class="data row3 col0" >basement</td>
-                            <td id="T_dbf5467a_3884_11eb_afc4_b3a2b3eb1f40row3_col1" class="data row3 col1" >Default series</td>
-                            <td id="T_dbf5467a_3884_11eb_afc4_b3a2b3eb1f40row3_col2" class="data row3 col2" >4</td>
-                            <td id="T_dbf5467a_3884_11eb_afc4_b3a2b3eb1f40row3_col3" class="data row3 col3" >#728f02</td>
-                            <td id="T_dbf5467a_3884_11eb_afc4_b3a2b3eb1f40row3_col4" class="data row3 col4" >4</td>
+                            <th id="T_e47d077e_38a2_11eb_afc4_b3a2b3eb1f40level0_row3" class="row_heading level0 row3" >3</th>
+                            <td id="T_e47d077e_38a2_11eb_afc4_b3a2b3eb1f40row3_col0" class="data row3 col0" >basement</td>
+                            <td id="T_e47d077e_38a2_11eb_afc4_b3a2b3eb1f40row3_col1" class="data row3 col1" >Default series</td>
+                            <td id="T_e47d077e_38a2_11eb_afc4_b3a2b3eb1f40row3_col2" class="data row3 col2" >4</td>
+                            <td id="T_e47d077e_38a2_11eb_afc4_b3a2b3eb1f40row3_col3" class="data row3 col3" >#728f02</td>
+                            <td id="T_e47d077e_38a2_11eb_afc4_b3a2b3eb1f40row3_col4" class="data row3 col4" >4</td>
                 </tr>
                 <tr>
-                            <th id="T_dbf5467a_3884_11eb_afc4_b3a2b3eb1f40level0_row4" class="row_heading level0 row4" >4</th>
-                            <td id="T_dbf5467a_3884_11eb_afc4_b3a2b3eb1f40row4_col0" class="data row4 col0" >fault1</td>
-                            <td id="T_dbf5467a_3884_11eb_afc4_b3a2b3eb1f40row4_col1" class="data row4 col1" >Default series</td>
-                            <td id="T_dbf5467a_3884_11eb_afc4_b3a2b3eb1f40row4_col2" class="data row4 col2" >5</td>
-                            <td id="T_dbf5467a_3884_11eb_afc4_b3a2b3eb1f40row4_col3" class="data row4 col3" >#443988</td>
-                            <td id="T_dbf5467a_3884_11eb_afc4_b3a2b3eb1f40row4_col4" class="data row4 col4" >5</td>
+                            <th id="T_e47d077e_38a2_11eb_afc4_b3a2b3eb1f40level0_row4" class="row_heading level0 row4" >4</th>
+                            <td id="T_e47d077e_38a2_11eb_afc4_b3a2b3eb1f40row4_col0" class="data row4 col0" >fault1</td>
+                            <td id="T_e47d077e_38a2_11eb_afc4_b3a2b3eb1f40row4_col1" class="data row4 col1" >Default series</td>
+                            <td id="T_e47d077e_38a2_11eb_afc4_b3a2b3eb1f40row4_col2" class="data row4 col2" >5</td>
+                            <td id="T_e47d077e_38a2_11eb_afc4_b3a2b3eb1f40row4_col3" class="data row4 col3" >#443988</td>
+                            <td id="T_e47d077e_38a2_11eb_afc4_b3a2b3eb1f40row4_col4" class="data row4 col4" >5</td>
                 </tr>
         </tbody></table>
     <br />
@@ -1180,56 +1180,56 @@ And finally assign the new surface to the new series/fault
 .. raw:: html
 
     <style  type="text/css" >
-    #T_dbf5467b_3884_11eb_afc4_b3a2b3eb1f40row0_col3{
+    #T_e47d077f_38a2_11eb_afc4_b3a2b3eb1f40row0_col3{
                 background-color:  #443988;
-            }#T_dbf5467b_3884_11eb_afc4_b3a2b3eb1f40row1_col3{
+            }#T_e47d077f_38a2_11eb_afc4_b3a2b3eb1f40row1_col3{
                 background-color:  #015482;
-            }#T_dbf5467b_3884_11eb_afc4_b3a2b3eb1f40row2_col3{
+            }#T_e47d077f_38a2_11eb_afc4_b3a2b3eb1f40row2_col3{
                 background-color:  #9f0052;
-            }#T_dbf5467b_3884_11eb_afc4_b3a2b3eb1f40row3_col3{
+            }#T_e47d077f_38a2_11eb_afc4_b3a2b3eb1f40row3_col3{
                 background-color:  #ffbe00;
-            }#T_dbf5467b_3884_11eb_afc4_b3a2b3eb1f40row4_col3{
+            }#T_e47d077f_38a2_11eb_afc4_b3a2b3eb1f40row4_col3{
                 background-color:  #728f02;
-            }</style><table id="T_dbf5467b_3884_11eb_afc4_b3a2b3eb1f40" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
+            }</style><table id="T_e47d077f_38a2_11eb_afc4_b3a2b3eb1f40" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
                     <tr>
-                            <th id="T_dbf5467b_3884_11eb_afc4_b3a2b3eb1f40level0_row0" class="row_heading level0 row0" >4</th>
-                            <td id="T_dbf5467b_3884_11eb_afc4_b3a2b3eb1f40row0_col0" class="data row0 col0" >fault1</td>
-                            <td id="T_dbf5467b_3884_11eb_afc4_b3a2b3eb1f40row0_col1" class="data row0 col1" >Fault1</td>
-                            <td id="T_dbf5467b_3884_11eb_afc4_b3a2b3eb1f40row0_col2" class="data row0 col2" >1</td>
-                            <td id="T_dbf5467b_3884_11eb_afc4_b3a2b3eb1f40row0_col3" class="data row0 col3" >#443988</td>
-                            <td id="T_dbf5467b_3884_11eb_afc4_b3a2b3eb1f40row0_col4" class="data row0 col4" >1</td>
+                            <th id="T_e47d077f_38a2_11eb_afc4_b3a2b3eb1f40level0_row0" class="row_heading level0 row0" >4</th>
+                            <td id="T_e47d077f_38a2_11eb_afc4_b3a2b3eb1f40row0_col0" class="data row0 col0" >fault1</td>
+                            <td id="T_e47d077f_38a2_11eb_afc4_b3a2b3eb1f40row0_col1" class="data row0 col1" >Fault1</td>
+                            <td id="T_e47d077f_38a2_11eb_afc4_b3a2b3eb1f40row0_col2" class="data row0 col2" >1</td>
+                            <td id="T_e47d077f_38a2_11eb_afc4_b3a2b3eb1f40row0_col3" class="data row0 col3" >#443988</td>
+                            <td id="T_e47d077f_38a2_11eb_afc4_b3a2b3eb1f40row0_col4" class="data row0 col4" >1</td>
                 </tr>
                 <tr>
-                            <th id="T_dbf5467b_3884_11eb_afc4_b3a2b3eb1f40level0_row1" class="row_heading level0 row1" >0</th>
-                            <td id="T_dbf5467b_3884_11eb_afc4_b3a2b3eb1f40row1_col0" class="data row1 col0" >surface1</td>
-                            <td id="T_dbf5467b_3884_11eb_afc4_b3a2b3eb1f40row1_col1" class="data row1 col1" >Default series</td>
-                            <td id="T_dbf5467b_3884_11eb_afc4_b3a2b3eb1f40row1_col2" class="data row1 col2" >1</td>
-                            <td id="T_dbf5467b_3884_11eb_afc4_b3a2b3eb1f40row1_col3" class="data row1 col3" >#015482</td>
-                            <td id="T_dbf5467b_3884_11eb_afc4_b3a2b3eb1f40row1_col4" class="data row1 col4" >2</td>
+                            <th id="T_e47d077f_38a2_11eb_afc4_b3a2b3eb1f40level0_row1" class="row_heading level0 row1" >0</th>
+                            <td id="T_e47d077f_38a2_11eb_afc4_b3a2b3eb1f40row1_col0" class="data row1 col0" >surface1</td>
+                            <td id="T_e47d077f_38a2_11eb_afc4_b3a2b3eb1f40row1_col1" class="data row1 col1" >Default series</td>
+                            <td id="T_e47d077f_38a2_11eb_afc4_b3a2b3eb1f40row1_col2" class="data row1 col2" >1</td>
+                            <td id="T_e47d077f_38a2_11eb_afc4_b3a2b3eb1f40row1_col3" class="data row1 col3" >#015482</td>
+                            <td id="T_e47d077f_38a2_11eb_afc4_b3a2b3eb1f40row1_col4" class="data row1 col4" >2</td>
                 </tr>
                 <tr>
-                            <th id="T_dbf5467b_3884_11eb_afc4_b3a2b3eb1f40level0_row2" class="row_heading level0 row2" >1</th>
-                            <td id="T_dbf5467b_3884_11eb_afc4_b3a2b3eb1f40row2_col0" class="data row2 col0" >surface2</td>
-                            <td id="T_dbf5467b_3884_11eb_afc4_b3a2b3eb1f40row2_col1" class="data row2 col1" >Default series</td>
-                            <td id="T_dbf5467b_3884_11eb_afc4_b3a2b3eb1f40row2_col2" class="data row2 col2" >2</td>
-                            <td id="T_dbf5467b_3884_11eb_afc4_b3a2b3eb1f40row2_col3" class="data row2 col3" >#9f0052</td>
-                            <td id="T_dbf5467b_3884_11eb_afc4_b3a2b3eb1f40row2_col4" class="data row2 col4" >3</td>
+                            <th id="T_e47d077f_38a2_11eb_afc4_b3a2b3eb1f40level0_row2" class="row_heading level0 row2" >1</th>
+                            <td id="T_e47d077f_38a2_11eb_afc4_b3a2b3eb1f40row2_col0" class="data row2 col0" >surface2</td>
+                            <td id="T_e47d077f_38a2_11eb_afc4_b3a2b3eb1f40row2_col1" class="data row2 col1" >Default series</td>
+                            <td id="T_e47d077f_38a2_11eb_afc4_b3a2b3eb1f40row2_col2" class="data row2 col2" >2</td>
+                            <td id="T_e47d077f_38a2_11eb_afc4_b3a2b3eb1f40row2_col3" class="data row2 col3" >#9f0052</td>
+                            <td id="T_e47d077f_38a2_11eb_afc4_b3a2b3eb1f40row2_col4" class="data row2 col4" >3</td>
                 </tr>
                 <tr>
-                            <th id="T_dbf5467b_3884_11eb_afc4_b3a2b3eb1f40level0_row3" class="row_heading level0 row3" >2</th>
-                            <td id="T_dbf5467b_3884_11eb_afc4_b3a2b3eb1f40row3_col0" class="data row3 col0" >surface3</td>
-                            <td id="T_dbf5467b_3884_11eb_afc4_b3a2b3eb1f40row3_col1" class="data row3 col1" >Default series</td>
-                            <td id="T_dbf5467b_3884_11eb_afc4_b3a2b3eb1f40row3_col2" class="data row3 col2" >3</td>
-                            <td id="T_dbf5467b_3884_11eb_afc4_b3a2b3eb1f40row3_col3" class="data row3 col3" >#ffbe00</td>
-                            <td id="T_dbf5467b_3884_11eb_afc4_b3a2b3eb1f40row3_col4" class="data row3 col4" >4</td>
+                            <th id="T_e47d077f_38a2_11eb_afc4_b3a2b3eb1f40level0_row3" class="row_heading level0 row3" >2</th>
+                            <td id="T_e47d077f_38a2_11eb_afc4_b3a2b3eb1f40row3_col0" class="data row3 col0" >surface3</td>
+                            <td id="T_e47d077f_38a2_11eb_afc4_b3a2b3eb1f40row3_col1" class="data row3 col1" >Default series</td>
+                            <td id="T_e47d077f_38a2_11eb_afc4_b3a2b3eb1f40row3_col2" class="data row3 col2" >3</td>
+                            <td id="T_e47d077f_38a2_11eb_afc4_b3a2b3eb1f40row3_col3" class="data row3 col3" >#ffbe00</td>
+                            <td id="T_e47d077f_38a2_11eb_afc4_b3a2b3eb1f40row3_col4" class="data row3 col4" >4</td>
                 </tr>
                 <tr>
-                            <th id="T_dbf5467b_3884_11eb_afc4_b3a2b3eb1f40level0_row4" class="row_heading level0 row4" >3</th>
-                            <td id="T_dbf5467b_3884_11eb_afc4_b3a2b3eb1f40row4_col0" class="data row4 col0" >basement</td>
-                            <td id="T_dbf5467b_3884_11eb_afc4_b3a2b3eb1f40row4_col1" class="data row4 col1" >Default series</td>
-                            <td id="T_dbf5467b_3884_11eb_afc4_b3a2b3eb1f40row4_col2" class="data row4 col2" >4</td>
-                            <td id="T_dbf5467b_3884_11eb_afc4_b3a2b3eb1f40row4_col3" class="data row4 col3" >#728f02</td>
-                            <td id="T_dbf5467b_3884_11eb_afc4_b3a2b3eb1f40row4_col4" class="data row4 col4" >5</td>
+                            <th id="T_e47d077f_38a2_11eb_afc4_b3a2b3eb1f40level0_row4" class="row_heading level0 row4" >3</th>
+                            <td id="T_e47d077f_38a2_11eb_afc4_b3a2b3eb1f40row4_col0" class="data row4 col0" >basement</td>
+                            <td id="T_e47d077f_38a2_11eb_afc4_b3a2b3eb1f40row4_col1" class="data row4 col1" >Default series</td>
+                            <td id="T_e47d077f_38a2_11eb_afc4_b3a2b3eb1f40row4_col2" class="data row4 col2" >4</td>
+                            <td id="T_e47d077f_38a2_11eb_afc4_b3a2b3eb1f40row4_col3" class="data row4 col3" >#728f02</td>
+                            <td id="T_e47d077f_38a2_11eb_afc4_b3a2b3eb1f40row4_col4" class="data row4 col4" >5</td>
                 </tr>
         </tbody></table>
     <br />
@@ -1266,7 +1266,7 @@ Add input data of the fault
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7f01cc21f6d0>
+    <gempy.plot.visualization_2d.Plot2D object at 0x7f8f6f92e730>
 
 
 
@@ -1303,7 +1303,7 @@ Compute
  .. code-block:: none
 
 
-    <gempy.plot.vista.GemPyToVista object at 0x7f01c91d01f0>
+    <gempy.plot.vista.GemPyToVista object at 0x7f8f67a2ddf0>
 
 
 
@@ -1350,9 +1350,9 @@ Adding random topography
            [   3.955     ,   10.        , -573.27      ],
            [   3.955     ,   10.        , -567.45      ],
            ...,
-           [ 791.        ,  197.98994975, -127.99792609],
-           [ 791.        ,  198.99497487, -125.81816698],
-           [ 791.        ,  200.        , -123.36674889]])
+           [ 791.        ,  197.98994975, -117.59900254],
+           [ 791.        ,  198.99497487, -118.54700102],
+           [ 791.        ,  200.        , -118.80868754]])
 
 
 
@@ -1384,7 +1384,7 @@ The topography can we visualize in both renderers:
  .. code-block:: none
 
 
-    <gempy.plot.vista.GemPyToVista object at 0x7f01cc171bb0>
+    <gempy.plot.vista.GemPyToVista object at 0x7f8f67339880>
 
 
 
@@ -1416,7 +1416,7 @@ But also allows us to compute the geological map of an area:
     /home/miguel/PycharmProjects/gempy/gempy/core/solution.py:174: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify 'dtype=object' when creating the ndarray
       self.geological_map = np.array(
 
-    <gempy.plot.vista.GemPyToVista object at 0x7f01cfaaf040>
+    <gempy.plot.vista.GemPyToVista object at 0x7f8f98471be0>
 
 
 
@@ -1442,61 +1442,61 @@ The first thing to do is to assign densities to each of the units:
 .. raw:: html
 
     <style  type="text/css" >
-    #T_dea76ea2_3884_11eb_afc4_b3a2b3eb1f40row0_col3{
+    #T_e7375d20_38a2_11eb_afc4_b3a2b3eb1f40row0_col3{
                 background-color:  #443988;
-            }#T_dea76ea2_3884_11eb_afc4_b3a2b3eb1f40row1_col3{
+            }#T_e7375d20_38a2_11eb_afc4_b3a2b3eb1f40row1_col3{
                 background-color:  #015482;
-            }#T_dea76ea2_3884_11eb_afc4_b3a2b3eb1f40row2_col3{
+            }#T_e7375d20_38a2_11eb_afc4_b3a2b3eb1f40row2_col3{
                 background-color:  #9f0052;
-            }#T_dea76ea2_3884_11eb_afc4_b3a2b3eb1f40row3_col3{
+            }#T_e7375d20_38a2_11eb_afc4_b3a2b3eb1f40row3_col3{
                 background-color:  #ffbe00;
-            }#T_dea76ea2_3884_11eb_afc4_b3a2b3eb1f40row4_col3{
+            }#T_e7375d20_38a2_11eb_afc4_b3a2b3eb1f40row4_col3{
                 background-color:  #728f02;
-            }</style><table id="T_dea76ea2_3884_11eb_afc4_b3a2b3eb1f40" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>        <th class="col_heading level0 col5" >density</th>    </tr></thead><tbody>
+            }</style><table id="T_e7375d20_38a2_11eb_afc4_b3a2b3eb1f40" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>        <th class="col_heading level0 col5" >density</th>    </tr></thead><tbody>
                     <tr>
-                            <th id="T_dea76ea2_3884_11eb_afc4_b3a2b3eb1f40level0_row0" class="row_heading level0 row0" >4</th>
-                            <td id="T_dea76ea2_3884_11eb_afc4_b3a2b3eb1f40row0_col0" class="data row0 col0" >fault1</td>
-                            <td id="T_dea76ea2_3884_11eb_afc4_b3a2b3eb1f40row0_col1" class="data row0 col1" >Fault1</td>
-                            <td id="T_dea76ea2_3884_11eb_afc4_b3a2b3eb1f40row0_col2" class="data row0 col2" >1</td>
-                            <td id="T_dea76ea2_3884_11eb_afc4_b3a2b3eb1f40row0_col3" class="data row0 col3" >#443988</td>
-                            <td id="T_dea76ea2_3884_11eb_afc4_b3a2b3eb1f40row0_col4" class="data row0 col4" >1</td>
-                            <td id="T_dea76ea2_3884_11eb_afc4_b3a2b3eb1f40row0_col5" class="data row0 col5" >0.000000</td>
+                            <th id="T_e7375d20_38a2_11eb_afc4_b3a2b3eb1f40level0_row0" class="row_heading level0 row0" >4</th>
+                            <td id="T_e7375d20_38a2_11eb_afc4_b3a2b3eb1f40row0_col0" class="data row0 col0" >fault1</td>
+                            <td id="T_e7375d20_38a2_11eb_afc4_b3a2b3eb1f40row0_col1" class="data row0 col1" >Fault1</td>
+                            <td id="T_e7375d20_38a2_11eb_afc4_b3a2b3eb1f40row0_col2" class="data row0 col2" >1</td>
+                            <td id="T_e7375d20_38a2_11eb_afc4_b3a2b3eb1f40row0_col3" class="data row0 col3" >#443988</td>
+                            <td id="T_e7375d20_38a2_11eb_afc4_b3a2b3eb1f40row0_col4" class="data row0 col4" >1</td>
+                            <td id="T_e7375d20_38a2_11eb_afc4_b3a2b3eb1f40row0_col5" class="data row0 col5" >0.000000</td>
                 </tr>
                 <tr>
-                            <th id="T_dea76ea2_3884_11eb_afc4_b3a2b3eb1f40level0_row1" class="row_heading level0 row1" >0</th>
-                            <td id="T_dea76ea2_3884_11eb_afc4_b3a2b3eb1f40row1_col0" class="data row1 col0" >surface1</td>
-                            <td id="T_dea76ea2_3884_11eb_afc4_b3a2b3eb1f40row1_col1" class="data row1 col1" >Default series</td>
-                            <td id="T_dea76ea2_3884_11eb_afc4_b3a2b3eb1f40row1_col2" class="data row1 col2" >1</td>
-                            <td id="T_dea76ea2_3884_11eb_afc4_b3a2b3eb1f40row1_col3" class="data row1 col3" >#015482</td>
-                            <td id="T_dea76ea2_3884_11eb_afc4_b3a2b3eb1f40row1_col4" class="data row1 col4" >2</td>
-                            <td id="T_dea76ea2_3884_11eb_afc4_b3a2b3eb1f40row1_col5" class="data row1 col5" >2.600000</td>
+                            <th id="T_e7375d20_38a2_11eb_afc4_b3a2b3eb1f40level0_row1" class="row_heading level0 row1" >0</th>
+                            <td id="T_e7375d20_38a2_11eb_afc4_b3a2b3eb1f40row1_col0" class="data row1 col0" >surface1</td>
+                            <td id="T_e7375d20_38a2_11eb_afc4_b3a2b3eb1f40row1_col1" class="data row1 col1" >Default series</td>
+                            <td id="T_e7375d20_38a2_11eb_afc4_b3a2b3eb1f40row1_col2" class="data row1 col2" >1</td>
+                            <td id="T_e7375d20_38a2_11eb_afc4_b3a2b3eb1f40row1_col3" class="data row1 col3" >#015482</td>
+                            <td id="T_e7375d20_38a2_11eb_afc4_b3a2b3eb1f40row1_col4" class="data row1 col4" >2</td>
+                            <td id="T_e7375d20_38a2_11eb_afc4_b3a2b3eb1f40row1_col5" class="data row1 col5" >2.600000</td>
                 </tr>
                 <tr>
-                            <th id="T_dea76ea2_3884_11eb_afc4_b3a2b3eb1f40level0_row2" class="row_heading level0 row2" >1</th>
-                            <td id="T_dea76ea2_3884_11eb_afc4_b3a2b3eb1f40row2_col0" class="data row2 col0" >surface2</td>
-                            <td id="T_dea76ea2_3884_11eb_afc4_b3a2b3eb1f40row2_col1" class="data row2 col1" >Default series</td>
-                            <td id="T_dea76ea2_3884_11eb_afc4_b3a2b3eb1f40row2_col2" class="data row2 col2" >2</td>
-                            <td id="T_dea76ea2_3884_11eb_afc4_b3a2b3eb1f40row2_col3" class="data row2 col3" >#9f0052</td>
-                            <td id="T_dea76ea2_3884_11eb_afc4_b3a2b3eb1f40row2_col4" class="data row2 col4" >3</td>
-                            <td id="T_dea76ea2_3884_11eb_afc4_b3a2b3eb1f40row2_col5" class="data row2 col5" >2.400000</td>
+                            <th id="T_e7375d20_38a2_11eb_afc4_b3a2b3eb1f40level0_row2" class="row_heading level0 row2" >1</th>
+                            <td id="T_e7375d20_38a2_11eb_afc4_b3a2b3eb1f40row2_col0" class="data row2 col0" >surface2</td>
+                            <td id="T_e7375d20_38a2_11eb_afc4_b3a2b3eb1f40row2_col1" class="data row2 col1" >Default series</td>
+                            <td id="T_e7375d20_38a2_11eb_afc4_b3a2b3eb1f40row2_col2" class="data row2 col2" >2</td>
+                            <td id="T_e7375d20_38a2_11eb_afc4_b3a2b3eb1f40row2_col3" class="data row2 col3" >#9f0052</td>
+                            <td id="T_e7375d20_38a2_11eb_afc4_b3a2b3eb1f40row2_col4" class="data row2 col4" >3</td>
+                            <td id="T_e7375d20_38a2_11eb_afc4_b3a2b3eb1f40row2_col5" class="data row2 col5" >2.400000</td>
                 </tr>
                 <tr>
-                            <th id="T_dea76ea2_3884_11eb_afc4_b3a2b3eb1f40level0_row3" class="row_heading level0 row3" >2</th>
-                            <td id="T_dea76ea2_3884_11eb_afc4_b3a2b3eb1f40row3_col0" class="data row3 col0" >surface3</td>
-                            <td id="T_dea76ea2_3884_11eb_afc4_b3a2b3eb1f40row3_col1" class="data row3 col1" >Default series</td>
-                            <td id="T_dea76ea2_3884_11eb_afc4_b3a2b3eb1f40row3_col2" class="data row3 col2" >3</td>
-                            <td id="T_dea76ea2_3884_11eb_afc4_b3a2b3eb1f40row3_col3" class="data row3 col3" >#ffbe00</td>
-                            <td id="T_dea76ea2_3884_11eb_afc4_b3a2b3eb1f40row3_col4" class="data row3 col4" >4</td>
-                            <td id="T_dea76ea2_3884_11eb_afc4_b3a2b3eb1f40row3_col5" class="data row3 col5" >3.200000</td>
+                            <th id="T_e7375d20_38a2_11eb_afc4_b3a2b3eb1f40level0_row3" class="row_heading level0 row3" >2</th>
+                            <td id="T_e7375d20_38a2_11eb_afc4_b3a2b3eb1f40row3_col0" class="data row3 col0" >surface3</td>
+                            <td id="T_e7375d20_38a2_11eb_afc4_b3a2b3eb1f40row3_col1" class="data row3 col1" >Default series</td>
+                            <td id="T_e7375d20_38a2_11eb_afc4_b3a2b3eb1f40row3_col2" class="data row3 col2" >3</td>
+                            <td id="T_e7375d20_38a2_11eb_afc4_b3a2b3eb1f40row3_col3" class="data row3 col3" >#ffbe00</td>
+                            <td id="T_e7375d20_38a2_11eb_afc4_b3a2b3eb1f40row3_col4" class="data row3 col4" >4</td>
+                            <td id="T_e7375d20_38a2_11eb_afc4_b3a2b3eb1f40row3_col5" class="data row3 col5" >3.200000</td>
                 </tr>
                 <tr>
-                            <th id="T_dea76ea2_3884_11eb_afc4_b3a2b3eb1f40level0_row4" class="row_heading level0 row4" >3</th>
-                            <td id="T_dea76ea2_3884_11eb_afc4_b3a2b3eb1f40row4_col0" class="data row4 col0" >basement</td>
-                            <td id="T_dea76ea2_3884_11eb_afc4_b3a2b3eb1f40row4_col1" class="data row4 col1" >Default series</td>
-                            <td id="T_dea76ea2_3884_11eb_afc4_b3a2b3eb1f40row4_col2" class="data row4 col2" >4</td>
-                            <td id="T_dea76ea2_3884_11eb_afc4_b3a2b3eb1f40row4_col3" class="data row4 col3" >#728f02</td>
-                            <td id="T_dea76ea2_3884_11eb_afc4_b3a2b3eb1f40row4_col4" class="data row4 col4" >5</td>
-                            <td id="T_dea76ea2_3884_11eb_afc4_b3a2b3eb1f40row4_col5" class="data row4 col5" >3.600000</td>
+                            <th id="T_e7375d20_38a2_11eb_afc4_b3a2b3eb1f40level0_row4" class="row_heading level0 row4" >3</th>
+                            <td id="T_e7375d20_38a2_11eb_afc4_b3a2b3eb1f40row4_col0" class="data row4 col0" >basement</td>
+                            <td id="T_e7375d20_38a2_11eb_afc4_b3a2b3eb1f40row4_col1" class="data row4 col1" >Default series</td>
+                            <td id="T_e7375d20_38a2_11eb_afc4_b3a2b3eb1f40row4_col2" class="data row4 col2" >4</td>
+                            <td id="T_e7375d20_38a2_11eb_afc4_b3a2b3eb1f40row4_col3" class="data row4 col3" >#728f02</td>
+                            <td id="T_e7375d20_38a2_11eb_afc4_b3a2b3eb1f40row4_col4" class="data row4 col4" >5</td>
+                            <td id="T_e7375d20_38a2_11eb_afc4_b3a2b3eb1f40row4_col5" class="data row4 col5" >3.600000</td>
                 </tr>
         </tbody></table>
     <br />
@@ -1564,7 +1564,7 @@ We need to modify the compile code:
     $C_o$            23914.4
     drift equations   [3, 3]
 
-    <gempy.core.interpolator.InterpolatorModel object at 0x7f01fb277160>
+    <gempy.core.interpolator.InterpolatorModel object at 0x7f8f994810d0>
 
 
 
@@ -1595,7 +1595,7 @@ gravity of the model (at the point XYZ = 400, 0, 0)
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  24.465 seconds)
+   **Total running time of the script:** ( 0 minutes  25.436 seconds)
 
 
 .. _sphx_glr_download_getting_started_get_started.py:

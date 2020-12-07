@@ -5,26 +5,26 @@
 
 Computation times
 =================
-**01:07.933** total execution time for **tutorials_ch1_fundamentals** files:
+**01:12.898** total execution time for **tutorials_ch1_fundamentals** files:
 
 +------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_3c_topography.py` (``ch1_3c_topography.py``)                 | 00:13.604 | 0.0 MB |
+| :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_5_fault_relations.py` (``ch1_5_fault_relations.py``)         | 00:15.132 | 0.0 MB |
 +------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_5_fault_relations.py` (``ch1_5_fault_relations.py``)         | 00:13.577 | 0.0 MB |
+| :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_3c_topography.py` (``ch1_3c_topography.py``)                 | 00:14.739 | 0.0 MB |
 +------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_1_basics.py` (``ch1_1_basics.py``)                           | 00:09.522 | 0.0 MB |
+| :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_1_basics.py` (``ch1_1_basics.py``)                           | 00:10.161 | 0.0 MB |
 +------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_6_2d_visualization.py` (``ch1_6_2d_visualization.py``)       | 00:07.761 | 0.0 MB |
+| :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_6_2d_visualization.py` (``ch1_6_2d_visualization.py``)       | 00:08.074 | 0.0 MB |
 +------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_7_3d_visualization.py` (``ch1_7_3d_visualization.py``)       | 00:06.839 | 0.0 MB |
+| :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_7_3d_visualization.py` (``ch1_7_3d_visualization.py``)       | 00:07.434 | 0.0 MB |
 +------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_3b_cross_sections.py` (``ch1_3b_cross_sections.py``)         | 00:06.199 | 0.0 MB |
+| :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_3b_cross_sections.py` (``ch1_3b_cross_sections.py``)         | 00:06.426 | 0.0 MB |
 +------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_4_onlap_relations.py` (``ch1_4_onlap_relations.py``)         | 00:05.695 | 0.0 MB |
+| :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_4_onlap_relations.py` (``ch1_4_onlap_relations.py``)         | 00:06.344 | 0.0 MB |
 +------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_2a_data_manipulation.py` (``ch1_2a_data_manipulation.py``)   | 00:03.122 | 0.0 MB |
+| :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_2a_data_manipulation.py` (``ch1_2a_data_manipulation.py``)   | 00:03.221 | 0.0 MB |
 +------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_2b_implicit_cokriging.py` (``ch1_2b_implicit_cokriging.py``) | 00:01.301 | 0.0 MB |
+| :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_2b_implicit_cokriging.py` (``ch1_2b_implicit_cokriging.py``) | 00:01.055 | 0.0 MB |
 +------------------------------------------------------------------------------------------------------------+-----------+--------+
 | :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_3a_grids.py` (``ch1_3a_grids.py``)                           | 00:00.312 | 0.0 MB |
 +------------------------------------------------------------------------------------------------------------+-----------+--------+

@@ -316,7 +316,7 @@ activate them.
  .. code-block:: none
 
 
-    <gempy.core.grid_modules.grid_types.RegularGrid object at 0x7f01c71b25e0>
+    <gempy.core.grid_modules.grid_types.RegularGrid object at 0x7f8f65d20fa0>
 
 
 
