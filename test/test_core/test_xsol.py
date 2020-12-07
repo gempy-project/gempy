@@ -178,7 +178,7 @@ def test_set_meshes(model_horizontal_two_layers):
     vals = gp.compute_model(m, set_solutions=True)
     unstruct = m.solutions.set_meshes(m.surfaces)
     ts = subsurface.TriSurf(unstruct)
-    s, _ = subsurface.visualization.to_pyvista_mesh(ts)
+    s  = subsurface.visualization.to_pyvista_mesh(ts)
     subsurface.visualization.pv_plot([s], image_2d=True)
 
     print(unstruct)
