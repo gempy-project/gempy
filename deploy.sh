@@ -30,7 +30,7 @@ overridden by environment variables. Any environment variables are overridden
 by values set in a '.env' file (if it exists), and in turn by those set in a
 file specified by the '--config-file' option."
 
-echo "docs.gempy.org" > docs/build/html
+echo "docs.gempy.org" > docs/build/html/CNAME
 
 
 parse_args() {
