@@ -1,0 +1,249 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>gempy.core.data_modules.stack.Stack &#8212; GemPy 2.2.7 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="gempy.core.data_modules.stack.Series" href="gempy.core.data_modules.stack.Series.html" />
+    <link rel="prev" title="gempy.plot_3d" href="../Plot/gempy.plot_3d.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="gempy-core-data-modules-stack-stack">
+<h1>gempy.core.data_modules.stack.Stack<a class="headerlink" href="#gempy-core-data-modules-stack-stack" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="gempy.core.data_modules.stack.Stack">
+<em class="property">class </em><code class="sig-prename descclassname">gempy.core.data_modules.stack.</code><code class="sig-name descname">Stack</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">features_names</span><span class="p">:</span> <span class="n">Iterable</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fault_features</span><span class="p">:</span> <span class="n">Iterable</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">rel_matrix</span><span class="p">:</span> <span class="n">Iterable</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data_modules/stack.html#Stack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data_modules.stack.Stack" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Class that encapsulates all type of geological features. So far is Series and</dt><dd><p>Faults</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>features_names</strong> (<em>Iterable</em>) – Names of the features</p></li>
+<li><p><strong>fault_features</strong> (<em>Iterable</em>) – List of features that are faults</p></li>
+<li><p><strong>rel_matrix</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples using Stack</p>
+<div class="sphx-glr-clear"></div><p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data_modules.stack.Stack.__init__" title="gempy.core.data_modules.stack.Stack.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([features_names, fault_features, …])</p></td>
+<td><p>Initialize self.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_series</span></code>(series_list[, reset_order_series])</p></td>
+<td><p>Add series to the df</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">count_faults</span></code>(list_of_names)</p></td>
+<td><p>Read the string names of the surfaces to detect automatically the number of df if the name fault is on the name.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">delete_series</span></code>(indices[, reset_order_series])</p></td>
+<td><p>[s1]     Drop specified labels from rows or columns.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">modify_order_series</span></code>(new_value, series_name)</p></td>
+<td><p>Replace to the new location the old series</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rename_series</span></code>(new_categories)</p></td>
+<td><p>[s0]     Rename categories.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reorder_series</span></code>(new_categories)</p></td>
+<td><p>[s0]     Reorder categories as specified in new_categories.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset_order_series</span></code>()</p></td>
+<td><p>Reset the column order series to monotonic ascendant values.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_bottom_relation</span></code>(series_list, bottom_relation)</p></td>
+<td><p>Set the bottom relation between the series and the one below.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_default_faults_relations</span></code>([offset_faults])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_fault_relation</span></code>([rel_matrix])</p></td>
+<td><p>Method to set the df that offset a given sequence and therefore also another fault.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_is_fault</span></code>([series_fault, toggle, …])</p></td>
+<td><p>Set a flag to the series that are faults.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_is_finite_fault</span></code>([series_finite, toggle])</p></td>
+<td><p>Toggles given series’ finite fault property.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_series_index</span></code>(series_order[, …])</p></td>
+<td><p>Rewrite the index of the series df</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">sort_series</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_faults_index_rename</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_faults_index_reorder</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="gempy.core.data_modules.stack.Stack.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">features_names</span><span class="p">:</span> <span class="n">Iterable</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fault_features</span><span class="p">:</span> <span class="n">Iterable</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">rel_matrix</span><span class="p">:</span> <span class="n">Iterable</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data_modules/stack.html#Stack.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data_modules.stack.Stack.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/./logos/gempy.png" alt="Logo"/>
+    
+    <h1 class="logo logo-name">GemPy</h1>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a class="badge" href="https://travis-ci.org/cgre-aachen/gempy">
+    <img
+        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../projects.html">Additional projects</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">GemPy Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../integrations/index.html">Integrations</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../code.html">Code</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../code.html#gempy-api">GemPy API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#model">Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#plot">Plot</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../code.html#data">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#grids">Grids</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#geometric-data">Geometric Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#interpolator">Interpolator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#solution">Solution</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../code.html">Code</a><ul>
+      <li>Previous: <a href="../Plot/gempy.plot_3d.html" title="previous chapter">gempy.plot_3d</a></li>
+      <li>Next: <a href="gempy.core.data_modules.stack.Series.html" title="next chapter">gempy.core.data_modules.stack.Series</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017-2020, CGRE-Aachen Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/Data/gempy.core.data_modules.stack.Stack.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

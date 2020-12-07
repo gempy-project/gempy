@@ -1,0 +1,290 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>gempy.core.data.AdditionalData &#8212; GemPy 2.2.7 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="gempy.core.data.MetaData" href="gempy.core.data.MetaData.html" />
+    <link rel="prev" title="gempy.core.data.Options" href="gempy.core.data.Options.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="gempy-core-data-additionaldata">
+<h1>gempy.core.data.AdditionalData<a class="headerlink" href="#gempy-core-data-additionaldata" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="gempy.core.data.AdditionalData">
+<em class="property">class </em><code class="sig-prename descclassname">gempy.core.data.</code><code class="sig-name descname">AdditionalData</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">surface_points</span></em>, <em class="sig-param"><span class="n">orientations</span></em>, <em class="sig-param"><span class="n">grid</span><span class="p">:</span> <span class="n"><a class="reference internal" href="gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid">gempy.core.data.Grid</a></span></em>, <em class="sig-param"><span class="n">faults</span></em>, <em class="sig-param"><span class="n">surfaces</span><span class="p">:</span> <span class="n"><a class="reference internal" href="gempy.core.data.Surfaces.html#gempy.core.data.Surfaces" title="gempy.core.data.Surfaces">gempy.core.data.Surfaces</a></span></em>, <em class="sig-param"><span class="n">rescaling</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data.html#AdditionalData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data.AdditionalData" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Container class that encapsulate <a class="reference internal" href="gempy.core.data.Structure.html#gempy.core.data.Structure" title="gempy.core.data.Structure"><code class="xref py py-class docutils literal notranslate"><span class="pre">Structure</span></code></a>, <a class="reference internal" href="gempy.core.data.KrigingParameters.html#gempy.core.data.KrigingParameters" title="gempy.core.data.KrigingParameters"><code class="xref py py-class docutils literal notranslate"><span class="pre">KrigingParameters</span></code></a>, <a class="reference internal" href="gempy.core.data.Options.html#gempy.core.data.Options" title="gempy.core.data.Options"><code class="xref py py-class docutils literal notranslate"><span class="pre">Options</span></code></a> and</dt><dd><p>rescaling parameters</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>surface_points</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">SurfacePoints</span></code>) – [s0]</p></li>
+<li><p><strong>orientations</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Orientations</span></code>) – [s1]</p></li>
+<li><p><strong>grid</strong> (<a class="reference internal" href="gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid"><code class="xref py py-class docutils literal notranslate"><span class="pre">Grid</span></code></a>) – [s2]</p></li>
+<li><p><strong>faults</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Faults</span></code>) – [s4]</p></li>
+<li><p><strong>surfaces</strong> (<a class="reference internal" href="gempy.core.data.Surfaces.html#gempy.core.data.Surfaces" title="gempy.core.data.Surfaces"><code class="xref py py-class docutils literal notranslate"><span class="pre">Surfaces</span></code></a>) – [s3]</p></li>
+<li><p><strong>rescaling</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">RescaledData</span></code>) – [s5]</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="gempy.core.data.AdditionalData.structure_data">
+<code class="sig-name descname">structure_data</code><a class="headerlink" href="#gempy.core.data.AdditionalData.structure_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>[s6]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="gempy.core.data.Structure.html#gempy.core.data.Structure" title="gempy.core.data.Structure"><code class="xref py py-class docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="gempy.core.data.AdditionalData.options">
+<code class="sig-name descname">options</code><a class="headerlink" href="#gempy.core.data.AdditionalData.options" title="Permalink to this definition">¶</a></dt>
+<dd><p>[s8]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="gempy.core.data.Options.html#gempy.core.data.Options" title="gempy.core.data.Options"><code class="xref py py-class docutils literal notranslate"><span class="pre">Options</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="gempy.core.data.AdditionalData.kriging_data">
+<code class="sig-name descname">kriging_data</code><a class="headerlink" href="#gempy.core.data.AdditionalData.kriging_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>[s7]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="gempy.core.data.Structure.html#gempy.core.data.Structure" title="gempy.core.data.Structure"><code class="xref py py-class docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="gempy.core.data.AdditionalData.rescaling_data">
+<code class="sig-name descname">rescaling_data</code><a class="headerlink" href="#gempy.core.data.AdditionalData.rescaling_data" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">RescaledData</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Examples using AdditionalData</p>
+<div class="sphx-glr-thumbcontainer" tooltip="1.2: Data Structure and Manipulation"><div class="figure align-default" id="id1">
+<img alt="1.2: Data Structure and Manipulation" src="../_images/sphx_glr_ch1_2a_data_manipulation_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../tutorials/ch1_fundamentals/ch1_2a_data_manipulation.html#sphx-glr-tutorials-ch1-fundamentals-ch1-2a-data-manipulation-py"><span class="std std-ref">1.2: Data Structure and Manipulation</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="1.2b: The Implicit coKriging class"><div class="figure align-default" id="id2">
+<img alt="1.2b: The Implicit coKriging class" src="../_images/sphx_glr_ch1_2b_implicit_cokriging_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../tutorials/ch1_fundamentals/ch1_2b_implicit_cokriging.html#sphx-glr-tutorials-ch1-fundamentals-ch1-2b-implicit-cokriging-py"><span class="std std-ref">1.2b: The Implicit coKriging class</span></a></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-clear"></div><p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.AdditionalData.__init__" title="gempy.core.data.AdditionalData.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(surface_points, orientations, grid, …)</p></td>
+<td><p>Initialize self.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data.AdditionalData.get_additional_data" title="gempy.core.data.AdditionalData.get_additional_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_additional_data</span></code></a>()</p></td>
+<td><p>Concatenate all linked data frames and transpose them for a nice visualization.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.AdditionalData.update_default_kriging" title="gempy.core.data.AdditionalData.update_default_kriging"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_default_kriging</span></code></a>()</p></td>
+<td><p>Update default kriging values.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data.AdditionalData.update_structure" title="gempy.core.data.AdditionalData.update_structure"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_structure</span></code></a>()</p></td>
+<td><p>Update fields dependent on input data sucha as structure and universal kriging grade</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="gempy.core.data.AdditionalData.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">surface_points</span></em>, <em class="sig-param"><span class="n">orientations</span></em>, <em class="sig-param"><span class="n">grid</span><span class="p">:</span> <span class="n"><a class="reference internal" href="gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid">gempy.core.data.Grid</a></span></em>, <em class="sig-param"><span class="n">faults</span></em>, <em class="sig-param"><span class="n">surfaces</span><span class="p">:</span> <span class="n"><a class="reference internal" href="gempy.core.data.Surfaces.html#gempy.core.data.Surfaces" title="gempy.core.data.Surfaces">gempy.core.data.Surfaces</a></span></em>, <em class="sig-param"><span class="n">rescaling</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data.html#AdditionalData.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data.AdditionalData.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data.AdditionalData.get_additional_data">
+<code class="sig-name descname">get_additional_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data.html#AdditionalData.get_additional_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data.AdditionalData.get_additional_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Concatenate all linked data frames and transpose them for a nice visualization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>concatenated and transposed dataframe</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>pn.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data.AdditionalData.update_default_kriging">
+<code class="sig-name descname">update_default_kriging</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data.html#AdditionalData.update_default_kriging"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data.AdditionalData.update_default_kriging" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update default kriging values.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data.AdditionalData.update_structure">
+<code class="sig-name descname">update_structure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data.html#AdditionalData.update_structure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data.AdditionalData.update_structure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update fields dependent on input data sucha as structure and universal kriging grade</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/./logos/gempy.png" alt="Logo"/>
+    
+    <h1 class="logo logo-name">GemPy</h1>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a class="badge" href="https://travis-ci.org/cgre-aachen/gempy">
+    <img
+        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../projects.html">Additional projects</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">GemPy Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../integrations/index.html">Integrations</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../code.html">Code</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../code.html#gempy-api">GemPy API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#model">Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#plot">Plot</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../code.html#data">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#grids">Grids</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#geometric-data">Geometric Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#interpolator">Interpolator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#solution">Solution</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../code.html">Code</a><ul>
+      <li>Previous: <a href="gempy.core.data.Options.html" title="previous chapter">gempy.core.data.Options</a></li>
+      <li>Next: <a href="gempy.core.data.MetaData.html" title="next chapter">gempy.core.data.MetaData</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017-2020, CGRE-Aachen Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/Data/gempy.core.data.AdditionalData.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

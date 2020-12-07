@@ -1,0 +1,458 @@
+:orphan:
+
+
+
+.. _sphx_glr_tutorials:
+
+GemPy Tutorials
+===============
+
+Here you will find a selection of examples showing what can you do and how
+you can do it in GemPy
+
+
+
+.. raw:: html
+
+    <div class="sphx-glr-clear"></div>
+
+
+
+.. _sphx_glr_tutorials_ch1_fundamentals:
+
+Chapter 1: GemPy fundamentals
+-----------------------------
+
+These examples show the basic functionality to create geometries.
+
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="1.1 -Basics of geological modeling with GemPy">
+
+.. only:: html
+
+ .. figure:: /tutorials/ch1_fundamentals/images/thumb/sphx_glr_ch1_1_basics_thumb.png
+     :alt: 1.1 -Basics of geological modeling with GemPy
+
+     :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_1_basics.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /tutorials/ch1_fundamentals/ch1_1_basics
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="1.2: Data Structure and Manipulation">
+
+.. only:: html
+
+ .. figure:: /tutorials/ch1_fundamentals/images/thumb/sphx_glr_ch1_2a_data_manipulation_thumb.png
+     :alt: 1.2: Data Structure and Manipulation
+
+     :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_2a_data_manipulation.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /tutorials/ch1_fundamentals/ch1_2a_data_manipulation
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="1.2b: The Implicit coKriging class">
+
+.. only:: html
+
+ .. figure:: /tutorials/ch1_fundamentals/images/thumb/sphx_glr_ch1_2b_implicit_cokriging_thumb.png
+     :alt: 1.2b: The Implicit coKriging class
+
+     :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_2b_implicit_cokriging.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /tutorials/ch1_fundamentals/ch1_2b_implicit_cokriging
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="1.3a: Grids.">
+
+.. only:: html
+
+ .. figure:: /tutorials/ch1_fundamentals/images/thumb/sphx_glr_ch1_3a_grids_thumb.png
+     :alt: 1.3a: Grids.
+
+     :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_3a_grids.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /tutorials/ch1_fundamentals/ch1_3a_grids
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="1.3b: 2-D sections">
+
+.. only:: html
+
+ .. figure:: /tutorials/ch1_fundamentals/images/thumb/sphx_glr_ch1_3b_cross_sections_thumb.png
+     :alt: 1.3b: 2-D sections
+
+     :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_3b_cross_sections.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /tutorials/ch1_fundamentals/ch1_3b_cross_sections
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="1.3c: Adding topography to geological models">
+
+.. only:: html
+
+ .. figure:: /tutorials/ch1_fundamentals/images/thumb/sphx_glr_ch1_3c_topography_thumb.png
+     :alt: 1.3c: Adding topography to geological models
+
+     :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_3c_topography.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /tutorials/ch1_fundamentals/ch1_3c_topography
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="1.4: Unconformity relationships">
+
+.. only:: html
+
+ .. figure:: /tutorials/ch1_fundamentals/images/thumb/sphx_glr_ch1_4_onlap_relations_thumb.png
+     :alt: 1.4: Unconformity relationships
+
+     :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_4_onlap_relations.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /tutorials/ch1_fundamentals/ch1_4_onlap_relations
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="1.5: Fault relations">
+
+.. only:: html
+
+ .. figure:: /tutorials/ch1_fundamentals/images/thumb/sphx_glr_ch1_5_fault_relations_thumb.png
+     :alt: 1.5: Fault relations
+
+     :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_5_fault_relations.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /tutorials/ch1_fundamentals/ch1_5_fault_relations
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="1.6: 2D Visualization.">
+
+.. only:: html
+
+ .. figure:: /tutorials/ch1_fundamentals/images/thumb/sphx_glr_ch1_6_2d_visualization_thumb.png
+     :alt: 1.6: 2D Visualization.
+
+     :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_6_2d_visualization.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /tutorials/ch1_fundamentals/ch1_6_2d_visualization
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="1.7: 3-D Visualization">
+
+.. only:: html
+
+ .. figure:: /tutorials/ch1_fundamentals/images/thumb/sphx_glr_ch1_7_3d_visualization_thumb.png
+     :alt: 1.7: 3-D Visualization
+
+     :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_7_3d_visualization.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /tutorials/ch1_fundamentals/ch1_7_3d_visualization
+.. raw:: html
+
+    <div class="sphx-glr-clear"></div>
+
+
+
+.. _sphx_glr_tutorials_ch2-Geophysics:
+
+Chapter 2: GemPy Geophysics
+---------------------------
+
+These examples show how to use some of the in built functionality for
+forward geophysics. At this date GemPy is not meant to be a package
+for classical geophysical inversion rather to allow probabilistic inversion.
+This means that we need algorithms that can be fast, differentiable but still
+capable to estimate the right answer!
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="2.1 Forward Gravity: Simple example">
+
+.. only:: html
+
+ .. figure:: /tutorials/ch2-Geophysics/images/thumb/sphx_glr_ch2_1_gravity_thumb.png
+     :alt: 2.1 Forward Gravity: Simple example
+
+     :ref:`sphx_glr_tutorials_ch2-Geophysics_ch2_1_gravity.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /tutorials/ch2-Geophysics/ch2_1_gravity
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Geophysics Preprocessing builds on the centered grid (https://github.com/cgre-aachen/gempy/blob...">
+
+.. only:: html
+
+ .. figure:: /tutorials/ch2-Geophysics/images/thumb/sphx_glr_ch2_2_cell_selection_thumb.png
+     :alt: 2.2: Centered Grid.
+
+     :ref:`sphx_glr_tutorials_ch2-Geophysics_ch2_2_cell_selection.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /tutorials/ch2-Geophysics/ch2_2_cell_selection
+.. raw:: html
+
+    <div class="sphx-glr-clear"></div>
+
+
+
+.. _sphx_glr_tutorials_ch3-Interpolations:
+
+Chapter 3: Domain Kriging
+-------------------------
+
+GemPy uses Kriging to interpolate the scalar field to construct the
+structural model. However to populate petrophysical data within each domain
+we also provide functionality to interpolate data in 3D.
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="3.1: Simple example of kriging in gempy">
+
+.. only:: html
+
+ .. figure:: /tutorials/ch3-Interpolations/images/thumb/sphx_glr_ch3_1_kriging_interpolation_and_simulation_thumb.png
+     :alt: 3.1: Simple example of kriging in gempy
+
+     :ref:`sphx_glr_tutorials_ch3-Interpolations_ch3_1_kriging_interpolation_and_simulation.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /tutorials/ch3-Interpolations/ch3_1_kriging_interpolation_and_simulation
+.. raw:: html
+
+    <div class="sphx-glr-clear"></div>
+
+
+
+.. _sphx_glr_tutorials_ch4-Topology:
+
+Chapter 4: Topological analysis
+-------------------------------
+
+One of the reasons to perform structural modeling is to analyse the topology
+of the system, i.e. the connectivity between layers. GemPy provide built-in
+functionality to calculate and analyse this aspect of each geological modeling
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Chapter 4: Analyzing Geomodel Topology">
+
+.. only:: html
+
+ .. figure:: /tutorials/ch4-Topology/images/thumb/sphx_glr_ch4-1-Topology_thumb.png
+     :alt: Chapter 4: Analyzing Geomodel Topology
+
+     :ref:`sphx_glr_tutorials_ch4-Topology_ch4-1-Topology.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /tutorials/ch4-Topology/ch4-1-Topology
+.. raw:: html
+
+    <div class="sphx-glr-clear"></div>
+
+
+
+.. _sphx_glr_tutorials_ch5_probabilistic_modeling:
+
+Chapter 5: Probabilistic Modeling
+---------------------------------
+
+These examples introduce shortly some Bayesian statistics concepts and
+show how to build with GemPy stochastic structural models. This functionality
+is currently under active development and research. Much more to come soon.
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="In this example we will show how easy we can propagate uncertainty from GemPy parameters to fin...">
+
+.. only:: html
+
+ .. figure:: /tutorials/ch5_probabilistic_modeling/images/thumb/sphx_glr_ch5_1_thumb.png
+     :alt: 5.1 - Probabilistic Modeling: Error Propagation
+
+     :ref:`sphx_glr_tutorials_ch5_probabilistic_modeling_ch5_1.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /tutorials/ch5_probabilistic_modeling/ch5_1
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="5 2 - Introduction PyMC3.">
+
+.. only:: html
+
+ .. figure:: /tutorials/ch5_probabilistic_modeling/images/thumb/sphx_glr_ch5_2_introduction_pymc3_thumb.png
+     :alt: 5 2 - Introduction PyMC3.
+
+     :ref:`sphx_glr_tutorials_ch5_probabilistic_modeling_ch5_2_introduction_pymc3.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /tutorials/ch5_probabilistic_modeling/ch5_2_introduction_pymc3
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="5.3 - Probability Density Transformation.">
+
+.. only:: html
+
+ .. figure:: /tutorials/ch5_probabilistic_modeling/images/thumb/sphx_glr_ch5_3_probability_density_transformation_thumb.png
+     :alt: 5.3 - Probability Density Transformation.
+
+     :ref:`sphx_glr_tutorials_ch5_probabilistic_modeling_ch5_3_probability_density_transformation.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /tutorials/ch5_probabilistic_modeling/ch5_3_probability_density_transformation
+.. raw:: html
+
+    <div class="sphx-glr-clear"></div>
+
+
+
+.. only:: html
+
+ .. rst-class:: sphx-glr-signature
+
+    `Gallery generated by Sphinx-Gallery <https://sphinx-gallery.github.io>`_

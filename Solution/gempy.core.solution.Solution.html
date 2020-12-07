@@ -1,0 +1,657 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>gempy.core.solution.Solution &#8212; GemPy 2.2.7 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="gempy.core.interpolator.InterpolatorGravity" href="../Interpolator/gempy.core.interpolator.InterpolatorGravity.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="gempy-core-solution-solution">
+<h1>gempy.core.solution.Solution<a class="headerlink" href="#gempy-core-solution-solution" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="gempy.core.solution.Solution">
+<em class="property">class </em><code class="sig-prename descclassname">gempy.core.solution.</code><code class="sig-name descname">Solution</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">grid</span><span class="p">:</span> <span class="n"><a class="reference internal" href="../Data/gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid">gempy.core.data.Grid</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">surfaces</span><span class="p">:</span> <span class="n"><a class="reference internal" href="../Data/gempy.core.data.Surfaces.html#gempy.core.data.Surfaces" title="gempy.core.data.Surfaces">gempy.core.data.Surfaces</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">series</span><span class="p">:</span> <span class="n"><a class="reference internal" href="../Data/gempy.core.data_modules.stack.Series.html#gempy.core.data_modules.stack.Series" title="gempy.core.data_modules.stack.Series">gempy.core.data_modules.stack.Series</a></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/solution.html#Solution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.solution.Solution" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class stores the output of the interpolation and the necessary objects
+to visualize and manipulate this data.</p>
+<dl class="simple">
+<dt>Depending on the activated grid (see <code class="xref py py-class docutils literal notranslate"><span class="pre">Grid</span></code>) a different number of</dt><dd><p>properties are returned returned:</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>grid</strong> (<a class="reference internal" href="../Data/gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid"><em>Grid</em></a>) – [s0]  Class to generate grids.</p></li>
+<li><p><strong>surfaces</strong> (<a class="reference internal" href="../Data/gempy.core.data.Surfaces.html#gempy.core.data.Surfaces" title="gempy.core.data.Surfaces"><em>Surfaces</em></a>) – [s1] Class that contains the surfaces of the model and the values of each of them.</p></li>
+<li><p><strong>series</strong> (<a class="reference internal" href="../Data/gempy.core.data_modules.stack.Series.html#gempy.core.data_modules.stack.Series" title="gempy.core.data_modules.stack.Series"><em>Series</em></a>) – [s2]  Class that contains the functionality and attributes related to the series. Notice that series does not onlyrefers to stratigraphic series but to any set of surfaces which will be interpolated together (comfortably).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="gempy.core.solution.Solution.grid">
+<code class="sig-name descname">grid</code><a class="headerlink" href="#gempy.core.solution.Solution.grid" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../Data/gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid">Grid</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="gempy.core.solution.Solution.surfaces">
+<code class="sig-name descname">surfaces</code><a class="headerlink" href="#gempy.core.solution.Solution.surfaces" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../Data/gempy.core.data.Surfaces.html#gempy.core.data.Surfaces" title="gempy.core.data.Surfaces">Surfaces</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="gempy.core.solution.Solution.series">
+<code class="sig-name descname">series</code><a class="headerlink" href="#gempy.core.solution.Solution.series" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../Data/gempy.core.data_modules.stack.Series.html#gempy.core.data_modules.stack.Series" title="gempy.core.data_modules.stack.Series">Series</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="gempy.core.solution.Solution.weights_vector">
+<code class="sig-name descname">weights_vector</code><a class="headerlink" href="#gempy.core.solution.Solution.weights_vector" title="Permalink to this definition">¶</a></dt>
+<dd><p>[s3] Numpy array that containing the kriging weights for each input data sorted by series</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="gempy.core.solution.Solution.scalar_field_at_surface_points">
+<code class="sig-name descname">scalar_field_at_surface_points</code><a class="headerlink" href="#gempy.core.solution.Solution.scalar_field_at_surface_points" title="Permalink to this definition">¶</a></dt>
+<dd><p>[s4] Value of the scalar field at each interface. Axis 0 is each series and axis 1 contain each surface in orde</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="gempy.core.solution.Solution.block_at_surface_points">
+<code class="sig-name descname">block_at_surface_points</code><a class="headerlink" href="#gempy.core.solution.Solution.block_at_surface_points" title="Permalink to this definition">¶</a></dt>
+<dd><p>[s5] 3D array with all interpolated values for a given series and at the interface</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="gempy.core.solution.Solution.mask_at_surface_points">
+<code class="sig-name descname">mask_at_surface_points</code><a class="headerlink" href="#gempy.core.solution.Solution.mask_at_surface_points" title="Permalink to this definition">¶</a></dt>
+<dd><p>[s6] Boolean array containing the logic to combine multiple series to obtain the final model at each interface</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="gempy.core.solution.Solution.values_at_surface_points">
+<code class="sig-name descname">values_at_surface_points</code><a class="headerlink" href="#gempy.core.solution.Solution.values_at_surface_points" title="Permalink to this definition">¶</a></dt>
+<dd><p>[s7] 2D array with the final values once the superposition of series has been carried out at each interface</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="gempy.core.solution.Solution.lith_block">
+<code class="sig-name descname">lith_block</code><a class="headerlink" href="#gempy.core.solution.Solution.lith_block" title="Permalink to this definition">¶</a></dt>
+<dd><p>[s8]  Array with the id of each layer evaluated in each point of the regular grid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="gempy.core.solution.Solution.scalar_field_matrix">
+<code class="sig-name descname">scalar_field_matrix</code><a class="headerlink" href="#gempy.core.solution.Solution.scalar_field_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>[s9] Value of the scalar field at each value of the regular grid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="gempy.core.solution.Solution.block_matrix">
+<code class="sig-name descname">block_matrix</code><a class="headerlink" href="#gempy.core.solution.Solution.block_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>[s10] 3D array with all interpolated values for a given series and at each value of the regular grid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="gempy.core.solution.Solution.mask_matrix">
+<code class="sig-name descname">mask_matrix</code><a class="headerlink" href="#gempy.core.solution.Solution.mask_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>[s11] Boolean array containing the logic to combine multiple series to obtain the final model at each value of the regular grid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="gempy.core.solution.Solution.mask_matrix_pad">
+<code class="sig-name descname">mask_matrix_pad</code><a class="headerlink" href="#gempy.core.solution.Solution.mask_matrix_pad" title="Permalink to this definition">¶</a></dt>
+<dd><p>mask matrix padded 2 block in order to guarantee that the layers intersect each
+other after marching cubes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="gempy.core.solution.Solution.values_matrix">
+<code class="sig-name descname">values_matrix</code><a class="headerlink" href="#gempy.core.solution.Solution.values_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>[s12] 2D array with the final values once the superposition of series has been carried out at each value of the regular grid</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="gempy.core.solution.Solution.vertices">
+<code class="sig-name descname">vertices</code><a class="headerlink" href="#gempy.core.solution.Solution.vertices" title="Permalink to this definition">¶</a></dt>
+<dd><p>[s13] List of numpy arrays containing the XYZ coordinates of each triangle vertex</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a>[numpy.array]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="gempy.core.solution.Solution.edges">
+<code class="sig-name descname">edges</code><a class="headerlink" href="#gempy.core.solution.Solution.edges" title="Permalink to this definition">¶</a></dt>
+<dd><p>[s14] List of numpy arrays containing the indices of the vertices numpy arrays that compose each individual triangle.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a>[numpy.array]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="gempy.core.solution.Solution.geological_map">
+<code class="sig-name descname">geological_map</code><a class="headerlink" href="#gempy.core.solution.Solution.geological_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>[s15] 2D array containing the lithologies at the surfaces.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>numpy.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Examples using Solution</p>
+<div class="sphx-glr-thumbcontainer" tooltip="1.1 -Basics of geological modeling with GemPy"><div class="figure align-default" id="id1">
+<img alt="1.1 -Basics of geological modeling with GemPy" src="../_images/sphx_glr_ch1_1_basics_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../tutorials/ch1_fundamentals/ch1_1_basics.html#sphx-glr-tutorials-ch1-fundamentals-ch1-1-basics-py"><span class="std std-ref">1.1 -Basics of geological modeling with GemPy</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="1.3b: 2-D sections"><div class="figure align-default" id="id2">
+<img alt="1.3b: 2-D sections" src="../_images/sphx_glr_ch1_3b_cross_sections_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../tutorials/ch1_fundamentals/ch1_3b_cross_sections.html#sphx-glr-tutorials-ch1-fundamentals-ch1-3b-cross-sections-py"><span class="std std-ref">1.3b: 2-D sections</span></a></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="1.4: Unconformity relationships"><div class="figure align-default" id="id3">
+<img alt="1.4: Unconformity relationships" src="../_images/sphx_glr_ch1_4_onlap_relations_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../tutorials/ch1_fundamentals/ch1_4_onlap_relations.html#sphx-glr-tutorials-ch1-fundamentals-ch1-4-onlap-relations-py"><span class="std std-ref">1.4: Unconformity relationships</span></a></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="2.1 Forward Gravity: Simple example"><div class="figure align-default" id="id4">
+<img alt="2.1 Forward Gravity: Simple example" src="../_images/sphx_glr_ch2_1_gravity_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../tutorials/ch2-Geophysics/ch2_1_gravity.html#sphx-glr-tutorials-ch2-geophysics-ch2-1-gravity-py"><span class="std std-ref">2.1 Forward Gravity: Simple example</span></a></span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="3.1: Simple example of kriging in gempy"><div class="figure align-default" id="id5">
+<img alt="3.1: Simple example of kriging in gempy" src="../_images/sphx_glr_ch3_1_kriging_interpolation_and_simulation_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../tutorials/ch3-Interpolations/ch3_1_kriging_interpolation_and_simulation.html#sphx-glr-tutorials-ch3-interpolations-ch3-1-kriging-interpolation-and-simulation-py"><span class="std std-ref">3.1: Simple example of kriging in gempy</span></a></span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Chapter 4: Analyzing Geomodel Topology"><div class="figure align-default" id="id6">
+<img alt="Chapter 4: Analyzing Geomodel Topology" src="../_images/sphx_glr_ch4-1-Topology_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../tutorials/ch4-Topology/ch4-1-Topology.html#sphx-glr-tutorials-ch4-topology-ch4-1-topology-py"><span class="std std-ref">Chapter 4: Analyzing Geomodel Topology</span></a></span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Model 1 - Horizontal stratigraphic"><div class="figure align-default" id="id7">
+<img alt="Model 1 - Horizontal stratigraphic" src="../_images/sphx_glr_1_horizontal_stratigraphic_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/geometries/1_horizontal_stratigraphic.html#sphx-glr-examples-geometries-1-horizontal-stratigraphic-py"><span class="std std-ref">Model 1 - Horizontal stratigraphic</span></a></span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Model 2 - Anticline"><div class="figure align-default" id="id8">
+<img alt="Model 2 - Anticline" src="../_images/sphx_glr_2_fold_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/geometries/2_fold.html#sphx-glr-examples-geometries-2-fold-py"><span class="std std-ref">Model 2 - Anticline</span></a></span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Model 3 - Recumbent Fold"><div class="figure align-default" id="id9">
+<img alt="Model 3 - Recumbent Fold" src="../_images/sphx_glr_3_recumbent_fold_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/geometries/3_recumbent_fold.html#sphx-glr-examples-geometries-3-recumbent-fold-py"><span class="std std-ref">Model 3 - Recumbent Fold</span></a></span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Model 4 - Pinchout"><div class="figure align-default" id="id10">
+<img alt="Model 4 - Pinchout" src="../_images/sphx_glr_4_pinchout_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/geometries/4_pinchout.html#sphx-glr-examples-geometries-4-pinchout-py"><span class="std std-ref">Model 4 - Pinchout</span></a></span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Model 5 - Fault"><div class="figure align-default" id="id11">
+<img alt="Model 5 - Fault" src="../_images/sphx_glr_5_fault_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/geometries/5_fault.html#sphx-glr-examples-geometries-5-fault-py"><span class="std std-ref">Model 5 - Fault</span></a></span><a class="headerlink" href="#id11" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Model 6 - Unconformity"><div class="figure align-default" id="id12">
+<img alt="Model 6 - Unconformity" src="../_images/sphx_glr_6_unconformity_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/geometries/6_unconformity.html#sphx-glr-examples-geometries-6-unconformity-py"><span class="std std-ref">Model 6 - Unconformity</span></a></span><a class="headerlink" href="#id12" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Model 7 - Combination"><div class="figure align-default" id="id13">
+<img alt="Model 7 - Combination" src="../_images/sphx_glr_7_combination_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/geometries/7_combination.html#sphx-glr-examples-geometries-7-combination-py"><span class="std std-ref">Model 7 - Combination</span></a></span><a class="headerlink" href="#id13" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Alesmodel: Plotting sections and maps."><div class="figure align-default" id="id14">
+<img alt="Alesmodel: Plotting sections and maps." src="../_images/sphx_glr_Alesmodel_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/real/Alesmodel.html#sphx-glr-examples-real-alesmodel-py"><span class="std std-ref">Alesmodel: Plotting sections and maps.</span></a></span><a class="headerlink" href="#id14" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-clear"></div><p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.solution.Solution.__init__" title="gempy.core.solution.Solution.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([grid, surfaces, series])</p></td>
+<td><p>Initialize self.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_cartesian_coords</span></code>(coords_base)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.solution.Solution.compute_all_surfaces" title="gempy.core.solution.Solution.compute_all_surfaces"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_all_surfaces</span></code></a>(**kwargs)</p></td>
+<td><p>Compute all surfaces of the model given the geological features rules.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.solution.Solution.compute_marching_cubes_regular_grid" title="gempy.core.solution.Solution.compute_marching_cubes_regular_grid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_marching_cubes_regular_grid</span></code></a>(level, …)</p></td>
+<td><p>Compute the surface (vertices and edges) of a given surface by computing</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_struc_xarrays</span></code>(values, l0, l1, res)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_unstruct_xarray</span></code>(values, l0, l1, xyz)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_each_surface_representations</span></code>(ids, …)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.solution.Solution.padding_mask_matrix" title="gempy.core.solution.Solution.padding_mask_matrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">padding_mask_matrix</span></code></a>([mask_topography, shift])</p></td>
+<td><p>Pad as many elements as in shift to the masking arrays. This is done</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_common_args</span></code>(active_features, …)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_marching_cubes_args</span></code>(e, …)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_meshes</span></code>([surfaces])</p></td>
+<td><p>Create xarray from the Surfaces object.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_solution_to_custom</span></code>(values)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.solution.Solution.set_solution_to_regular_grid" title="gempy.core.solution.Solution.set_solution_to_regular_grid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_solution_to_regular_grid</span></code></a>(values[, …])</p></td>
+<td><p>If regular grid is active set all the solution objects dependent on them and compute mesh.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_solution_to_sections</span></code>(values)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_solution_to_topography</span></code>(values)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_solutions</span></code>(sol, compute_mesh, sort_surfaces)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_values</span></code>(values[, active_features, …])</p></td>
+<td><p>At this stage we should split values into the different grids</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_values_to_centered</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_values_to_custom_grid</span></code>(values, l0, l1, …)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.solution.Solution.set_values_to_regular_grid" title="gempy.core.solution.Solution.set_values_to_regular_grid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_values_to_regular_grid</span></code></a>(values)</p></td>
+<td><p>Set all solution values to the correspondent attribute.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_values_to_regular_grid_</span></code>(values, l0, l1, …)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_values_to_sections</span></code>(values, l0, l1, …)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_values_to_surface_points</span></code>(values)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_values_to_surface_points_</span></code>(values, l0, …)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_values_to_topography</span></code>(values, l0, l1, …)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_vertices_edges</span></code>(active_indices, s, s_n, v)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_netcdf</span></code>(path, name, **kwargs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">try_compute_marching_cubes_on_the_regular_grid</span></code>(…)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">data_structures</span></code></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="gempy.core.solution.Solution.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">grid</span><span class="p">:</span> <span class="n"><a class="reference internal" href="../Data/gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid">gempy.core.data.Grid</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">surfaces</span><span class="p">:</span> <span class="n"><a class="reference internal" href="../Data/gempy.core.data.Surfaces.html#gempy.core.data.Surfaces" title="gempy.core.data.Surfaces">gempy.core.data.Surfaces</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">series</span><span class="p">:</span> <span class="n"><a class="reference internal" href="../Data/gempy.core.data_modules.stack.Series.html#gempy.core.data_modules.stack.Series" title="gempy.core.data_modules.stack.Series">gempy.core.data_modules.stack.Series</a></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/solution.html#Solution.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.solution.Solution.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.solution.Solution.set_solution_to_regular_grid">
+<code class="sig-name descname">set_solution_to_regular_grid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">values</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><span class="p">, </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)">numpy.ndarray</a><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">compute_mesh</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">compute_mesh_options</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/solution.html#Solution.set_solution_to_regular_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.solution.Solution.set_solution_to_regular_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>If regular grid is active set all the solution objects dependent on them and compute mesh.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>values</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>[</em><em>np.array</em><em>]</em>) – <p>list with result of the theano evaluation (values returned by
+<a class="reference internal" href="../GemPy%20API/gempy.compute_model.html#gempy.compute_model" title="gempy.compute_model"><code class="xref py py-func docutils literal notranslate"><span class="pre">gempy.compute_model()</span></code></a> function):</p>
+<blockquote>
+<div><ul>
+<li><p>block_matrix</p></li>
+<li><p>weights_vector</p></li>
+<li><p>scalar_field_matrix</p></li>
+<li><p>scalar field at interfaces</p></li>
+<li><p>mask_matrix</p></li>
+</ul>
+</div></blockquote>
+</p></li>
+<li><p><strong>compute_mesh</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – if True perform marching cubes algorithm to recover the surface mesh from the
+implicit model.</p></li>
+<li><p><strong>compute_mesh_options</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – options for the marching cube function.
+- rescale: True</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.solutions.Solutions</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.solution.Solution.set_values_to_regular_grid">
+<code class="sig-name descname">set_values_to_regular_grid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">values</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><span class="p">, </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)">numpy.ndarray</a><span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/solution.html#Solution.set_values_to_regular_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.solution.Solution.set_values_to_regular_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set all solution values to the correspondent attribute.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>values</strong> (<em>np.ndarray</em>) – values returned by <cite>function: gempy.compute_model</cite> function</p></li>
+<li><p><strong>compute_mesh</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – if true compute automatically the grid</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.solutions.Solutions</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.solution.Solution.compute_marching_cubes_regular_grid">
+<code class="sig-name descname">compute_marching_cubes_regular_grid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">level</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)">float</a></span></em>, <em class="sig-param"><span class="n">scalar_field</span></em>, <em class="sig-param"><span class="n">mask_array</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">rescale</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/solution.html#Solution.compute_marching_cubes_regular_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.solution.Solution.compute_marching_cubes_regular_grid" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Compute the surface (vertices and edges) of a given surface by computing</dt><dd><p>marching cubes (by skimage)</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>level</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – value of the scalar field at the surface</p></li>
+<li><p><strong>scalar_field</strong> (<em>np.array</em>) – scalar_field vector objects</p></li>
+<li><p><strong>mask_array</strong> (<em>np.array</em>) – mask vector with trues where marching cubes has to be performed</p></li>
+<li><p><strong>rescale</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – if True surfaces will be located between 0 and 1</p></li>
+<li><p><strong>**kwargs</strong> – skimage.measure.marching_cubes_lewiner args (see below)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>vertices, simplices, normals, values</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference external" href="https://scikit-image.org/docs/dev/api/skimage.measure.html#skimage.measure.marching_cubes" title="(in skimage v0.18.0.dev0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">skimage.measure.marching_cubes()</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.solution.Solution.padding_mask_matrix">
+<code class="sig-name descname">padding_mask_matrix</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mask_topography</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">shift</span><span class="o">=</span><span class="default_value">2</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/solution.html#Solution.padding_mask_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.solution.Solution.padding_mask_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Pad as many elements as in shift to the masking arrays. This is done</dt><dd><p>to guarantee intersection of layers if masked marching cubes are done</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mask_topography</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – if True mask also the topography. Default True</p></li>
+<li><p><strong>shift</strong> – Number of voxels shifted for the topology. Default 1.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>masked regular grid</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)">numpy.ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.solution.Solution.compute_all_surfaces">
+<code class="sig-name descname">compute_all_surfaces</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/solution.html#Solution.compute_all_surfaces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.solution.Solution.compute_all_surfaces" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute all surfaces of the model given the geological features rules.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> – <a class="reference external" href="https://scikit-image.org/docs/dev/api/skimage.measure.html#skimage.measure.marching_cubes" title="(in skimage v0.18.0.dev0)"><code class="xref any docutils literal notranslate"><span class="pre">skimage.measure.marching_cubes</span></code></a> args (see below)</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>vertices and edges</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#gempy.core.solution.Solution.compute_marching_cubes_regular_grid" title="gempy.core.solution.Solution.compute_marching_cubes_regular_grid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">gempy.core.solution.Solution.compute_marching_cubes_regular_grid()</span></code></a></p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/./logos/gempy.png" alt="Logo"/>
+    
+    <h1 class="logo logo-name">GemPy</h1>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a class="badge" href="https://travis-ci.org/cgre-aachen/gempy">
+    <img
+        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../projects.html">Additional projects</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">GemPy Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../integrations/index.html">Integrations</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../code.html">Code</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../code.html#gempy-api">GemPy API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#model">Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#plot">Plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#data">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#grids">Grids</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#geometric-data">Geometric Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#interpolator">Interpolator</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../code.html#solution">Solution</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../code.html">Code</a><ul>
+      <li>Previous: <a href="../Interpolator/gempy.core.interpolator.InterpolatorGravity.html" title="previous chapter">gempy.core.interpolator.InterpolatorGravity</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017-2020, CGRE-Aachen Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/Solution/gempy.core.solution.Solution.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

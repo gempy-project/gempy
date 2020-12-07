@@ -1,0 +1,773 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>gempy.core.grid_modules.grid_types &#8212; GemPy 2.2.7 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for gempy.core.grid_modules.grid_types</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">gempy.core.grid_modules.create_topography</span> <span class="kn">import</span> <span class="n">LoadDEMArtificial</span><span class="p">,</span> <span class="n">LoadDEMGDAL</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">skimage.transform</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">scipy.constants</span> <span class="kn">import</span> <span class="n">G</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">interpolate</span>
+<span class="kn">from</span> <span class="nn">gempy.utils.meta</span> <span class="kn">import</span> <span class="n">_setdoc_pro</span>
+<span class="kn">import</span> <span class="nn">gempy.utils.docstring</span> <span class="k">as</span> <span class="nn">ds</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pn</span>
+
+
+<div class="viewcode-block" id="RegularGrid"><a class="viewcode-back" href="../../../../Data/Grid/gempy.core.grid_modules.grid_types.RegularGrid.html#gempy.core.grid_modules.grid_types.RegularGrid">[docs]</a><span class="k">class</span> <span class="nc">RegularGrid</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class with the methods and properties to manage 3D regular grids where the model will be interpolated.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        extent (np.ndarray):  [x_min, x_max, y_min, y_max, z_min, z_max]</span>
+<span class="sd">        resolution (np.ndarray): [nx, ny, nz]</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        extent (np.ndarray):  [x_min, x_max, y_min, y_max, z_min, z_max]</span>
+<span class="sd">        resolution (np.ndarray): [nx, ny, nz]</span>
+<span class="sd">        values (np.ndarray): XYZ coordinates</span>
+<span class="sd">        mask_topo (np.ndarray, dtype=bool): same shape as values. Values above the topography are False</span>
+<span class="sd">        dx (float): size of the cells on x</span>
+<span class="sd">        dy (float): size of the cells on y</span>
+<span class="sd">        dz (float): size of the cells on z</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="RegularGrid.__init__"><a class="viewcode-back" href="../../../../Data/Grid/gempy.core.grid_modules.grid_types.RegularGrid.html#gempy.core.grid_modules.grid_types.RegularGrid.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;int64&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">extent</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float64&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">extent_r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float64&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">values_r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mask_topo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">extent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">resolution</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_regular_grid</span><span class="p">(</span><span class="n">extent</span><span class="p">,</span> <span class="n">resolution</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_dx_dy_dz</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">set_coord</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">extent</span><span class="p">,</span> <span class="n">resolution</span><span class="p">):</span>
+        <span class="n">dx</span> <span class="o">=</span> <span class="p">(</span><span class="n">extent</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">extent</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="n">resolution</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">dy</span> <span class="o">=</span> <span class="p">(</span><span class="n">extent</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">extent</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">/</span> <span class="n">resolution</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">dz</span> <span class="o">=</span> <span class="p">(</span><span class="n">extent</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">-</span> <span class="n">extent</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span> <span class="o">/</span> <span class="n">resolution</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">extent</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">dx</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">extent</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">dx</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">resolution</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                             <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float64&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">extent</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">dy</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">extent</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">dy</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">resolution</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                             <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float64&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">extent</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="n">dz</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">extent</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">-</span> <span class="n">dz</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">resolution</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                             <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float64&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">z</span>
+
+<div class="viewcode-block" id="RegularGrid.create_regular_grid_3d"><a class="viewcode-back" href="../../../../Data/Grid/gempy.core.grid_modules.grid_types.RegularGrid.html#gempy.core.grid_modules.grid_types.RegularGrid.create_regular_grid_3d">[docs]</a>    <span class="k">def</span> <span class="nf">create_regular_grid_3d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">extent</span><span class="p">,</span> <span class="n">resolution</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method to create a 3D regular grid where is interpolated</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            extent (list):  [x_min, x_max, y_min, y_max, z_min, z_max]</span>
+<span class="sd">            resolution (list): [nx, ny, nz].</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            numpy.ndarray: Unraveled 3D numpy array where every row correspond to the xyz coordinates of a regular grid</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_coord</span><span class="p">(</span><span class="n">extent</span><span class="p">,</span> <span class="n">resolution</span><span class="p">)</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="o">*</span><span class="n">coords</span><span class="p">,</span> <span class="n">indexing</span><span class="o">=</span><span class="s2">&quot;ij&quot;</span><span class="p">)</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">,</span> <span class="n">g</span><span class="p">)))</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;float64&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">values</span></div>
+
+    <span class="k">def</span> <span class="nf">get_dx_dy_dz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rescale</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">rescale</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">dx</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">extent_r</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">extent_r</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">dy</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">extent_r</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">extent_r</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">dz</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">extent_r</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">extent_r</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dx</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">dy</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">dz</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">dz</span>
+
+<div class="viewcode-block" id="RegularGrid.set_regular_grid"><a class="viewcode-back" href="../../../../Data/Grid/gempy.core.grid_modules.grid_types.RegularGrid.html#gempy.core.grid_modules.grid_types.RegularGrid.set_regular_grid">[docs]</a>    <span class="k">def</span> <span class="nf">set_regular_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">extent</span><span class="p">,</span> <span class="n">resolution</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set a regular grid into the values parameters for further computations</span>
+<span class="sd">        Args:</span>
+<span class="sd">             extent (list, np.ndarry):  [x_min, x_max, y_min, y_max, z_min, z_max]</span>
+<span class="sd">            resolution (list, np.ndarray): [nx, ny, nz]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">extent</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">extent</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float64&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">resolution</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_regular_grid_3d</span><span class="p">(</span><span class="n">extent</span><span class="p">,</span> <span class="n">resolution</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_dx_dy_dz</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span></div>
+
+<div class="viewcode-block" id="RegularGrid.set_topography_mask"><a class="viewcode-back" href="../../../../Data/Grid/gempy.core.grid_modules.grid_types.RegularGrid.html#gempy.core.grid_modules.grid_types.RegularGrid.set_topography_mask">[docs]</a>    <span class="k">def</span> <span class="nf">set_topography_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">topography</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This method takes a topography grid of the same extent as the regular</span>
+<span class="sd">         grid and creates a mask of voxels</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            topography (:class:`gempy.core.grid_modules.topography.Topography`):</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">topography</span><span class="o">.</span><span class="n">extent</span><span class="p">,</span>
+                              <span class="bp">self</span><span class="o">.</span><span class="n">extent</span><span class="p">),</span> <span class="s1">&#39;The extent of&#39;</span> \
+                                            <span class="s1">&#39;the topography must match to the extent of the regular grid.&#39;</span>
+
+        <span class="c1"># interpolate topography values to the regular grid</span>
+        <span class="n">regular_grid_topo</span> <span class="o">=</span> <span class="n">skimage</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span>
+            <span class="n">topography</span><span class="o">.</span><span class="n">values_2d</span><span class="p">,</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resolution</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+            <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;constant&#39;</span><span class="p">,</span>
+            <span class="n">anti_aliasing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">preserve_range</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Reshape the Z values of the regular grid to 3d</span>
+        <span class="n">values_3d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resolution</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">regular_grid_topo</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">regular_grid_topo_z</span> <span class="o">=</span> <span class="n">regular_grid_topo</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">[</span><span class="mi">2</span><span class="p">]]</span>
+        <span class="k">elif</span> <span class="n">regular_grid_topo</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">regular_grid_topo_z</span> <span class="o">=</span> <span class="n">regular_grid_topo</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">()</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">greater</span><span class="p">(</span><span class="n">values_3d</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="n">regular_grid_topo_z</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mask_topo</span> <span class="o">=</span> <span class="n">mask</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask_topo</span></div></div>
+
+
+<div class="viewcode-block" id="Sections"><a class="viewcode-back" href="../../../../Data/Grid/gempy.core.grid_modules.grid_types.Sections.html#gempy.core.grid_modules.grid_types.Sections">[docs]</a><span class="k">class</span> <span class="nc">Sections</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Object that creates a grid of cross sections between two points.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        regular_grid: Model.grid.regular_grid</span>
+<span class="sd">        section_dict: {&#39;section name&#39;: ([p1_x, p1_y], [p2_x, p2_y], [xyres, zres])}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Sections.__init__"><a class="viewcode-back" href="../../../../Data/Grid/gempy.core.grid_modules.grid_types.Sections.html#gempy.core.grid_modules.grid_types.Sections.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">regular_grid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">z_ext</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">section_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">regular_grid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">z_ext</span> <span class="o">=</span> <span class="n">regular_grid</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">4</span><span class="p">:]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">z_ext</span> <span class="o">=</span> <span class="n">z_ext</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">section_dict</span> <span class="o">=</span> <span class="n">section_dict</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">names</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">length</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dist</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;dist&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dist</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">extent</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">section_dict</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_sections</span><span class="p">(</span><span class="n">section_dict</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_repr_html_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">to_html</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">set_sections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section_dict</span><span class="p">,</span> <span class="n">regular_grid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">z_ext</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">section_dict</span> <span class="o">=</span> <span class="n">section_dict</span>
+        <span class="k">if</span> <span class="n">regular_grid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">z_ext</span> <span class="o">=</span> <span class="n">regular_grid</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">4</span><span class="p">:]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">names</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">section_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_section_params</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calculate_all_distances</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">section_dict</span><span class="p">,</span> <span class="n">orient</span><span class="o">=</span><span class="s1">&#39;index&#39;</span><span class="p">,</span>
+                                         <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">,</span> <span class="s1">&#39;stop&#39;</span><span class="p">,</span> <span class="s1">&#39;resolution&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;dist&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dist</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">compute_section_coordinates</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">get_section_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">length</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">section</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">):</span>
+            <span class="n">points</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">section_dict</span><span class="p">[</span><span class="n">section</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_dict</span><span class="p">[</span><span class="n">section</span><span class="p">][</span><span class="mi">1</span><span class="p">]]</span>
+            <span class="k">assert</span> <span class="n">points</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">points</span><span class="p">[</span>
+                <span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;The start and end points of the section must not be identical.&#39;</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">section_dict</span><span class="p">[</span><span class="n">section</span><span class="p">][</span><span class="mi">2</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">length</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">length</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_dict</span><span class="p">[</span><span class="n">section</span><span class="p">][</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">section_dict</span><span class="p">[</span><span class="n">section</span><span class="p">][</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">length</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">length</span><span class="p">)</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">calculate_all_distances</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+                                                                 <span class="mi">4</span><span class="p">)</span>  <span class="c1"># axis are x1,y1,x2,y2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="p">[:,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]])</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="p">[:,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">]])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">distance_2_points</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">((</span><span class="n">p1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">p2</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">((</span><span class="n">p1</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">p2</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">compute_section_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">)):</span>
+            <span class="n">xy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_line_coordinates_2points</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:</span><span class="mi">2</span><span class="p">],</span>
+                                                         <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">2</span><span class="p">:],</span>
+                                                         <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">zaxis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">z_ext</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">z_ext</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
+                                <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float64&quot;</span><span class="p">)</span>
+            <span class="n">X</span><span class="p">,</span> <span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">xy</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">zaxis</span><span class="p">,</span> <span class="n">indexing</span><span class="o">=</span><span class="s1">&#39;ij&#39;</span><span class="p">)</span>
+            <span class="n">Y</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">xy</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">zaxis</span><span class="p">,</span> <span class="n">indexing</span><span class="o">=</span><span class="s1">&#39;ij&#39;</span><span class="p">)</span>
+            <span class="n">xyz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">X</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">Y</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">Z</span><span class="o">.</span><span class="n">flatten</span><span class="p">()))</span><span class="o">.</span><span class="n">T</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">xyz</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">xyz</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">generate_axis_coord</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">):</span>
+            <span class="n">xy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_line_coordinates_2points</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:</span><span class="mi">2</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">2</span><span class="p">:],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="k">yield</span> <span class="n">name</span><span class="p">,</span> <span class="n">xy</span>
+
+    <span class="k">def</span> <span class="nf">calculate_line_coordinates_2points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">res</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">p1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">p1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p2</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">p2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">p2</span><span class="p">)</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">p2</span> <span class="o">-</span> <span class="n">p1</span>  <span class="c1"># vector pointing from p1 to p2</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="n">v</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>  <span class="c1"># normalize it</span>
+        <span class="n">distance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">distance_2_points</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">)</span>
+        <span class="n">steps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">distance</span><span class="p">,</span> <span class="n">res</span><span class="p">)</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">p1</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">u</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">steps</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">values</span><span class="o">.</span><span class="n">T</span>
+
+    <span class="k">def</span> <span class="nf">get_section_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">where</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span> <span class="o">==</span> <span class="n">section_name</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">length</span><span class="p">[</span><span class="n">where</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">length</span><span class="p">[</span><span class="n">where</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">get_section_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">l0</span><span class="p">,</span> <span class="n">l1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_section_args</span><span class="p">(</span><span class="n">section_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">l0</span><span class="p">:</span><span class="n">l1</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Sections.interpolate_zvals_at_xy"><a class="viewcode-back" href="../../../../Data/Grid/gempy.core.grid_modules.grid_types.Sections.html#gempy.core.grid_modules.grid_types.Sections.interpolate_zvals_at_xy">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">interpolate_zvals_at_xy</span><span class="p">(</span><span class="n">xy</span><span class="p">,</span> <span class="n">topography</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;interp2d&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Interpolates DEM values on a defined section</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            xy: x (EW) and y (NS) coordinates of the profile</span>
+<span class="sd">            topography (:class:`gempy.core.grid_modules.topography.Topography`)</span>
+<span class="sd">            method: interpolation method, &#39;interp2d&#39; for cubic scipy.interpolate.interp2d</span>
+<span class="sd">                                             &#39;spline&#39; for scipy.interpolate.RectBivariateSpline</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            numpy.ndarray: z values, i.e. topography along the profile</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">xj</span> <span class="o">=</span> <span class="n">topography</span><span class="o">.</span><span class="n">values_2d</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">yj</span> <span class="o">=</span> <span class="n">topography</span><span class="o">.</span><span class="n">values_2d</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">zj</span> <span class="o">=</span> <span class="n">topography</span><span class="o">.</span><span class="n">values_2d</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">2</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;interp2d&#39;</span><span class="p">:</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">interp2d</span><span class="p">(</span><span class="n">xj</span><span class="p">,</span> <span class="n">yj</span><span class="p">,</span> <span class="n">zj</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;cubic&#39;</span><span class="p">)</span>
+            <span class="n">zi</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">xy</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">xy</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">xy</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">xy</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">xy</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">xy</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">zi</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">flipud</span><span class="p">(</span><span class="n">zi</span><span class="p">)</span><span class="o">.</span><span class="n">diagonal</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">xy</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">xy</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">][</span>
+                <span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;The xy values of the first point must be smaller than second.&#39;</span> \
+                     <span class="s1">&#39;Please use interp2d as method argument. Will be fixed.&#39;</span>
+            <span class="k">assert</span> <span class="n">xy</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">xy</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">][</span>
+                <span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;The xy values of the first point must be smaller than second.&#39;</span> \
+                     <span class="s1">&#39;Please use interp2d as method argument. Will be fixed.&#39;</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">RectBivariateSpline</span><span class="p">(</span><span class="n">xj</span><span class="p">,</span> <span class="n">yj</span><span class="p">,</span> <span class="n">zj</span><span class="p">)</span>
+            <span class="n">zi</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">xy</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">xy</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">flipud</span><span class="p">(</span><span class="n">zi</span><span class="p">)</span><span class="o">.</span><span class="n">diagonal</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="CustomGrid"><a class="viewcode-back" href="../../../../Data/Grid/gempy.core.grid_modules.grid_types.CustomGrid.html#gempy.core.grid_modules.grid_types.CustomGrid">[docs]</a><span class="k">class</span> <span class="nc">CustomGrid</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Object that contains arbitrary XYZ coordinates.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        custom_grid (numpy.ndarray like): XYZ (in columns) of the desired coordinates</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        values (np.ndarray): XYZ coordinates</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="CustomGrid.__init__"><a class="viewcode-back" href="../../../../Data/Grid/gempy.core.grid_modules.grid_types.CustomGrid.html#gempy.core.grid_modules.grid_types.CustomGrid.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">custom_grid</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_custom_grid</span><span class="p">(</span><span class="n">custom_grid</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CustomGrid.set_custom_grid"><a class="viewcode-back" href="../../../../Data/Grid/gempy.core.grid_modules.grid_types.CustomGrid.html#gempy.core.grid_modules.grid_types.CustomGrid.set_custom_grid">[docs]</a>    <span class="k">def</span> <span class="nf">set_custom_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">custom_grid</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Give the coordinates of an external generated grid</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            custom_grid (numpy.ndarray like): XYZ (in columns) of the desired coordinates</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">              numpy.ndarray: Unraveled 3D numpy array where every row correspond to the xyz coordinates of a regular</span>
+<span class="sd">               grid</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">custom_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">custom_grid</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">custom_grid</span><span class="p">)</span> <span class="ow">is</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="ow">and</span> <span class="n">custom_grid</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> \
+            <span class="s1">&#39;The shape of new grid must be (n,3)  where n is the number of&#39;</span> \
+            <span class="s1">&#39; points of the grid&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">custom_grid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span></div></div>
+
+
+<div class="viewcode-block" id="CenteredGrid"><a class="viewcode-back" href="../../../../Data/Grid/gempy.core.grid_modules.grid_types.CenteredGrid.html#gempy.core.grid_modules.grid_types.CenteredGrid">[docs]</a><span class="k">class</span> <span class="nc">CenteredGrid</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Logarithmic spaced grid.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="CenteredGrid.__init__"><a class="viewcode-back" href="../../../../Data/Grid/gempy.core.grid_modules.grid_types.CenteredGrid.html#gempy.core.grid_modules.grid_types.CenteredGrid.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">centers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid_type</span> <span class="o">=</span> <span class="s1">&#39;centered_grid&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span> <span class="o">=</span> <span class="n">resolution</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kernel_centers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kernel_dxyz_left</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kernel_dxyz_right</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">centers</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">radius</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">resolution</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">resolution</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">]</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_centered_grid</span><span class="p">(</span><span class="n">centers</span><span class="o">=</span><span class="n">centers</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="n">radius</span><span class="p">,</span>
+                                   <span class="n">resolution</span><span class="o">=</span><span class="n">resolution</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CenteredGrid.create_irregular_grid_kernel"><a class="viewcode-back" href="../../../../Data/Grid/gempy.core.grid_modules.grid_types.CenteredGrid.html#gempy.core.grid_modules.grid_types.CenteredGrid.create_irregular_grid_kernel">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="nd">@_setdoc_pro</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">resolution</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">create_irregular_grid_kernel</span><span class="p">(</span><span class="n">resolution</span><span class="p">,</span> <span class="n">radius</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create an isometric grid kernel (centered at 0)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            resolution: [s0]</span>
+<span class="sd">            radius (float): Maximum distance of the kernel</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple: center of the voxel, left edge of each voxel (for xyz), right edge of each voxel (for xyz).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">radius</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">list</span> <span class="ow">or</span> <span class="n">radius</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+            <span class="n">radius</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">radius</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+
+        <span class="n">g_</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">g_2</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">d_</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">xyz</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]:</span>
+
+            <span class="k">if</span> <span class="n">xyz</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="c1"># Make the grid only negative for the z axis</span>
+
+                <span class="n">g_</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">geomspace</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">resolution</span><span class="p">[</span><span class="n">xyz</span><span class="p">])))</span>
+                <span class="n">g_2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(([</span><span class="mi">0</span><span class="p">],</span> <span class="n">g_</span><span class="p">[</span><span class="n">xyz</span><span class="p">]))</span> <span class="o">+</span> <span class="mf">0.05</span><span class="p">)</span> <span class="o">*</span> <span class="o">-</span> <span class="n">radius</span><span class="p">[</span><span class="n">xyz</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1.2</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">g_</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">geomspace</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">resolution</span><span class="p">[</span><span class="n">xyz</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)))</span>
+                <span class="n">g_2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="o">-</span><span class="n">g_</span><span class="p">[</span><span class="n">xyz</span><span class="p">][::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">g_</span><span class="p">[</span><span class="n">xyz</span><span class="p">]))</span> <span class="o">*</span> <span class="n">radius</span><span class="p">[</span><span class="n">xyz</span><span class="p">])</span>
+            <span class="n">d_</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">g_2</span><span class="p">[</span><span class="n">xyz</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;reflect&#39;</span><span class="p">,</span> <span class="n">reflect_type</span><span class="o">=</span><span class="s1">&#39;odd&#39;</span><span class="p">)))</span>
+
+        <span class="n">g</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="o">*</span><span class="n">g_2</span><span class="p">)</span>
+        <span class="n">d_left</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">d_</span><span class="p">[</span><span class="mi">0</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">d_</span><span class="p">[</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">d_</span><span class="p">[</span><span class="mi">2</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">d_right</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">d_</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">:]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">d_</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">:]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">d_</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">:]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">kernel_g</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">,</span> <span class="n">g</span><span class="p">)))</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;float64&quot;</span><span class="p">)</span>
+        <span class="n">kernel_d_left</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">,</span> <span class="n">d_left</span><span class="p">)))</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;float64&quot;</span><span class="p">)</span>
+        <span class="n">kernel_d_right</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">,</span> <span class="n">d_right</span><span class="p">)))</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;float64&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">kernel_g</span><span class="p">,</span> <span class="n">kernel_d_left</span><span class="p">,</span> <span class="n">kernel_d_right</span></div>
+
+<div class="viewcode-block" id="CenteredGrid.set_centered_kernel"><a class="viewcode-back" href="../../../../Data/Grid/gempy.core.grid_modules.grid_types.CenteredGrid.html#gempy.core.grid_modules.grid_types.CenteredGrid.set_centered_kernel">[docs]</a>    <span class="nd">@_setdoc_pro</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">resolution</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">set_centered_kernel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resolution</span><span class="p">,</span> <span class="n">radius</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set a centered</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            resolution: [s0]</span>
+<span class="sd">            radius (float): Maximum distance of the kernel</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kernel_centers</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel_dxyz_left</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel_dxyz_right</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_irregular_grid_kernel</span><span class="p">(</span>
+            <span class="n">resolution</span><span class="p">,</span> <span class="n">radius</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel_centers</span></div>
+
+<div class="viewcode-block" id="CenteredGrid.set_centered_grid"><a class="viewcode-back" href="../../../../Data/Grid/gempy.core.grid_modules.grid_types.CenteredGrid.html#gempy.core.grid_modules.grid_types.CenteredGrid.set_centered_grid">[docs]</a>    <span class="nd">@_setdoc_pro</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">resolution</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">set_centered_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">centers</span><span class="p">,</span> <span class="n">kernel_centers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Main method of the class, set the XYZ values around centers using a kernel.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            centers (np.array): XYZ array with the centers of where we want to create a grid around</span>
+<span class="sd">            kernel_centers (Optional[np.array]): center of the voxels of a desired kernel.</span>
+<span class="sd">            **kwargs:</span>
+<span class="sd">                * resolution: [s0]</span>
+<span class="sd">                * radius (float): Maximum distance of the kernel</span>
+<span class="sd">        Returns:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="n">centers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">centers</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">kernel_centers</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">kernel_centers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_centered_kernel</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">centers</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span>
+                   <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;Centers must be a numpy array that contains the coordinates XYZ&#39;</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">centers</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="n">kernel_centers</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+    <span class="k">def</span> <span class="nf">set_tz_kernel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel_centers</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_centered_kernel</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="n">grid_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel_centers</span>
+
+        <span class="n">s_gr_x</span> <span class="o">=</span> <span class="n">grid_values</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">s_gr_y</span> <span class="o">=</span> <span class="n">grid_values</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">s_gr_z</span> <span class="o">=</span> <span class="n">grid_values</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>
+
+        <span class="c1"># getting the coordinates of the corners of the voxel...</span>
+        <span class="n">x_cor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">((</span><span class="n">s_gr_x</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel_dxyz_left</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span>
+                          <span class="n">s_gr_x</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel_dxyz_right</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">y_cor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">((</span><span class="n">s_gr_y</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel_dxyz_left</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
+                          <span class="n">s_gr_y</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel_dxyz_right</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">z_cor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">((</span><span class="n">s_gr_z</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel_dxyz_left</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span>
+                          <span class="n">s_gr_z</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel_dxyz_right</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># ...and prepare them for a vectorial op</span>
+        <span class="n">x_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">x_cor</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">y_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">y_cor</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="n">z_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">z_cor</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+
+        <span class="n">s_r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x_matrix</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">y_matrix</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">z_matrix</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="c1"># This is the vector that determines the sign of the corner of the voxel</span>
+        <span class="n">mu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">tz</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span> <span class="mi">1</span> <span class="o">*</span>
+                   <span class="n">G</span> <span class="o">*</span>
+                   <span class="n">mu</span> <span class="o">*</span> <span class="p">(</span>
+                           <span class="n">x_matrix</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">y_matrix</span> <span class="o">+</span> <span class="n">s_r</span><span class="p">)</span> <span class="o">+</span>
+                           <span class="n">y_matrix</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">x_matrix</span> <span class="o">+</span> <span class="n">s_r</span><span class="p">)</span> <span class="o">-</span>
+                           <span class="n">z_matrix</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan</span><span class="p">(</span>
+                       <span class="n">x_matrix</span> <span class="o">*</span> <span class="n">y_matrix</span> <span class="o">/</span> <span class="p">(</span><span class="n">z_matrix</span> <span class="o">*</span> <span class="n">s_r</span><span class="p">))),</span>
+                   <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tz</span></div>
+
+<span class="c1"># class Topography:</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     Object to include topography in the model.</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     def __init__(self, regular_grid):</span>
+<span class="c1">#         self.regular_grid = regular_grid</span>
+<span class="c1">#         self.values = np.zeros((0, 3))</span>
+<span class="c1">#</span>
+<span class="c1">#         self.topo = None</span>
+<span class="c1">#         self.values_3D = np.zeros((0, 0, 0))</span>
+<span class="c1">#         self.extent = None</span>
+<span class="c1">#         self.resolution = None</span>
+<span class="c1">#</span>
+<span class="c1">#         self.type = None</span>
+<span class="c1">#</span>
+<span class="c1">#     def load_from_gdal(self, filepath):</span>
+<span class="c1">#         self.topo = Load_DEM_GDAL(filepath, self.regular_grid)</span>
+<span class="c1">#         self._create_init()</span>
+<span class="c1">#         self._fit2model()</span>
+<span class="c1">#         self.type = &#39;real&#39;</span>
+<span class="c1">#</span>
+<span class="c1">#     def load_random_hills(self, **kwargs):</span>
+<span class="c1">#         self.topo = LoadDEMArtificial(self.regular_grid, **kwargs)</span>
+<span class="c1">#         self._create_init()</span>
+<span class="c1">#         self._fit2model()</span>
+<span class="c1">#         self.type = &#39;artificial&#39;</span>
+<span class="c1">#</span>
+<span class="c1">#     def load_from_saved(self, filepath):</span>
+<span class="c1">#         assert filepath[-4:] == &#39;.npy&#39;, &#39;The file must end on .npy&#39;</span>
+<span class="c1">#         topo = np.load(filepath, allow_pickle=True)</span>
+<span class="c1">#         self.values_3D = topo[0]</span>
+<span class="c1">#         self.extent = topo[1]</span>
+<span class="c1">#         self.resolution = topo[2]</span>
+<span class="c1">#         self._fit2model()</span>
+<span class="c1">#         self.type = &#39;real&#39;</span>
+<span class="c1">#</span>
+<span class="c1">#     def _create_init(self):</span>
+<span class="c1">#         self.values_3D = self.topo.values_3D</span>
+<span class="c1">#         self.extent = self.topo.extent</span>
+<span class="c1">#         self.resolution = self.topo.resolution</span>
+<span class="c1">#</span>
+<span class="c1">#     # These two methods makes more sense in regular grid passing a topography</span>
+<span class="c1">#     # object.</span>
+<span class="c1">#     def _fit2model(self):</span>
+<span class="c1">#         self.values = np.vstack((</span>
+<span class="c1">#             self.values_3D[:, :, 0].ravel(), self.values_3D[:, :, 1].ravel(),</span>
+<span class="c1">#             self.values_3D[:, :, 2].ravel())).T.astype(&quot;float64&quot;)</span>
+<span class="c1">#</span>
+<span class="c1">#         if np.any(self.regular_grid.extent[:4] - self.extent) != 0:</span>
+<span class="c1">#             print(&#39;obacht&#39;)</span>
+<span class="c1">#             # todo if grid extent bigger fill missing values with nans for chloe</span>
+<span class="c1">#             self._crop()</span>
+<span class="c1">#</span>
+<span class="c1">#         if np.any(self.regular_grid.resolution[:2] - self.resolution) != 0:</span>
+<span class="c1">#             self._resize()</span>
+<span class="c1">#         else:</span>
+<span class="c1">#             self.values_3D_res = self.values_3D</span>
+<span class="c1">#</span>
+<span class="c1">#         self.regular_grid.mask_topo = self._create_grid_mask()</span>
+<span class="c1">#</span>
+<span class="c1">#     def _crop(self):</span>
+<span class="c1">#         pass</span>
+<span class="c1">#</span>
+<span class="c1">#     def _resize(self):</span>
+<span class="c1">#         self.values_3D_res = skimage.transform.resize(self.values_3D,</span>
+<span class="c1">#                                                       (self.regular_grid.resolution[0], self.regular_grid.resolution[1]),</span>
+<span class="c1">#                                                       mode=&#39;constant&#39;,</span>
+<span class="c1">#                                                       anti_aliasing=False, preserve_range=True)</span>
+<span class="c1">#</span>
+<span class="c1">#     def show(self):</span>
+<span class="c1">#         from gempy.plot.helpers import add_colorbar</span>
+<span class="c1">#         if self.type == &#39;artificial&#39;:</span>
+<span class="c1">#             fig, ax = plt.subplots()</span>
+<span class="c1">#             CS= ax.contour(self.values_3D[:, :, 2], extent=(self.extent[:4]), colors=&#39;k&#39;, linestyles=&#39;solid&#39;)</span>
+<span class="c1">#             ax.clabel(CS, inline=1, fontsize=10, fmt=&#39;%d&#39;)</span>
+<span class="c1">#             CS2 = ax.contourf(self.values_3D[:, :, 2], extent=(self.extent[:4]), cmap=&#39;terrain&#39;)</span>
+<span class="c1">#             add_colorbar(axes=ax, label=&#39;elevation [m]&#39;, cs=CS2)</span>
+<span class="c1">#         else:</span>
+<span class="c1">#             im = plt.imshow(np.flipud(self.values_3D[:,:,2]), extent=(self.extent[:4]))</span>
+<span class="c1">#             add_colorbar(im=im, label=&#39;elevation [m]&#39;)</span>
+<span class="c1">#         plt.axis(&#39;scaled&#39;)</span>
+<span class="c1">#         plt.xlabel(&#39;X&#39;)</span>
+<span class="c1">#         plt.ylabel(&#39;Y&#39;)</span>
+<span class="c1">#         plt.title(&#39;Model topography&#39;)</span>
+<span class="c1">#</span>
+<span class="c1">#     def save(self, filepath):</span>
+<span class="c1">#         &quot;&quot;&quot;</span>
+<span class="c1">#         Save the topography file in a numpy array which can be loaded later, to avoid the gdal process.</span>
+<span class="c1">#         Args:</span>
+<span class="c1">#             filepath (str): path where the array should be stored.</span>
+<span class="c1">#</span>
+<span class="c1">#         Returns:</span>
+<span class="c1">#</span>
+<span class="c1">#         &quot;&quot;&quot;</span>
+<span class="c1">#         np.save(filepath, np.array([self.values_3D, self.extent, self.resolution]))</span>
+<span class="c1">#         print(&#39;saved&#39;)</span>
+<span class="c1">#</span>
+<span class="c1">#     def _create_grid_mask(self):</span>
+<span class="c1">#         ind = self._find_indices()</span>
+<span class="c1">#         gridz = self.regular_grid.values[:, 2].reshape(*self.regular_grid.resolution).copy()</span>
+<span class="c1">#         for x in range(self.regular_grid.resolution[0]):</span>
+<span class="c1">#             for y in range(self.regular_grid.resolution[1]):</span>
+<span class="c1">#                 z = ind[x, y]</span>
+<span class="c1">#                 gridz[x, y, z:] = 99999</span>
+<span class="c1">#         mask = (gridz == 99999)</span>
+<span class="c1">#         return mask# np.multiply(np.full(self.regular_grid.values.shape, True).T, mask.ravel()).T</span>
+<span class="c1">#</span>
+<span class="c1">#     def _find_indices(self):</span>
+<span class="c1">#         zs = np.linspace(self.regular_grid.extent[4], self.regular_grid.extent[5], self.regular_grid.resolution[2])</span>
+<span class="c1">#         dz = (zs[-1] - zs[0]) / len(zs)</span>
+<span class="c1">#         return ((self.values_3D_res[:, :, 2] - zs[0]) / dz + 1).astype(int)</span>
+<span class="c1">#</span>
+<span class="c1">#     def interpolate_zvals_at_xy(self, xy, method=&#39;interp2d&#39;):</span>
+<span class="c1">#         &quot;&quot;&quot;</span>
+<span class="c1">#         Interpolates DEM values on a defined section</span>
+<span class="c1">#</span>
+<span class="c1">#         Args:</span>
+<span class="c1">#             :param xy: x (EW) and y (NS) coordinates of the profile</span>
+<span class="c1">#             :param method: interpolation method, &#39;interp2d&#39; for cubic scipy.interpolate.interp2d</span>
+<span class="c1">#                                              &#39;spline&#39; for scipy.interpolate.RectBivariateSpline</span>
+<span class="c1">#         Returns:</span>
+<span class="c1">#             :return: z values, i.e. topography along the profile</span>
+<span class="c1">#         &quot;&quot;&quot;</span>
+<span class="c1">#         xj = self.values_3D[:, :, 0][0, :]</span>
+<span class="c1">#         yj = self.values_3D[:, :, 1][:, 0]</span>
+<span class="c1">#         zj = self.values_3D[:, :, 2]</span>
+<span class="c1">#</span>
+<span class="c1">#         if method == &#39;interp2d&#39;:</span>
+<span class="c1">#             f = interpolate.interp2d(xj, yj, zj, kind=&#39;cubic&#39;)</span>
+<span class="c1">#             zi = f(xy[:, 0], xy[:, 1])</span>
+<span class="c1">#             if xy[:, 0][0] &lt;= xy[:, 0][-1] and xy[:, 1][0] &lt;= xy[:, 1][-1]:</span>
+<span class="c1">#                 return np.diag(zi)</span>
+<span class="c1">#             else:</span>
+<span class="c1">#                 return np.flipud(zi).diagonal()</span>
+<span class="c1">#         else:</span>
+<span class="c1">#             assert xy[:, 0][0] &lt;= xy[:, 0][-1], &#39;The xy values of the first point must be smaller than second.&#39; \</span>
+<span class="c1">#                                                &#39;Please use interp2d as method argument. Will be fixed.&#39;</span>
+<span class="c1">#             assert xy[:, 1][0] &lt;= xy[:, 1][-1], &#39;The xy values of the first point must be smaller than second.&#39; \</span>
+<span class="c1">#                                                &#39;Please use interp2d as method argument. Will be fixed.&#39;</span>
+<span class="c1">#             f = interpolate.RectBivariateSpline(xj, yj, zj)</span>
+<span class="c1">#             zi = f(xy[:, 0], xy[:, 1])</span>
+<span class="c1">#             return np.flipud(zi).diagonal()</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../../index.html">
+    <img class="logo" src="../../../../_static/./logos/gempy.png" alt="Logo"/>
+    
+    <h1 class="logo logo-name">GemPy</h1>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a class="badge" href="https://travis-ci.org/cgre-aachen/gempy">
+    <img
+        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../index.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../projects.html">Additional projects</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/index.html">GemPy Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../integrations/index.html">Integrations</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code.html">Code</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017-2020, CGRE-Aachen Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

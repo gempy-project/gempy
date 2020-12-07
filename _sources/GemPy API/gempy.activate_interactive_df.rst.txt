@@ -1,0 +1,11 @@
+﻿gempy.activate\_interactive\_df
+===============================
+
+.. currentmodule:: gempy
+
+.. autofunction:: activate_interactive_df
+
+.. include:: ../gen_modules/backreferences/gempy.activate_interactive_df.examples
+.. raw:: html
+
+   <div class="sphx-glr-clear"></div>

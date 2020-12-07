@@ -1,0 +1,11 @@
+﻿gempy.init\_data
+================
+
+.. currentmodule:: gempy
+
+.. autofunction:: init_data
+
+.. include:: ../gen_modules/backreferences/gempy.init_data.examples
+.. raw:: html
+
+   <div class="sphx-glr-clear"></div>

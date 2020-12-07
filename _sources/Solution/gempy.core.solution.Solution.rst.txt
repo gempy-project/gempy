@@ -1,0 +1,63 @@
+﻿gempy.core.solution.Solution
+============================
+
+.. currentmodule:: gempy.core.solution
+
+
+.. autoclass:: Solution
+   :no-undoc-members:
+
+   
+   .. rubric:: Examples using Solution
+   .. include:: ../gen_modules/backreferences/gempy.core.solution.Solution.examples
+   .. raw:: html
+
+       <div class="sphx-glr-clear"></div>
+   
+   
+   
+   .. rubric:: Methods
+   .. autosummary::
+   
+      ~Solution.__init__
+      ~Solution.add_cartesian_coords
+      ~Solution.compute_all_surfaces
+      ~Solution.compute_marching_cubes_regular_grid
+      ~Solution.create_struc_xarrays
+      ~Solution.create_unstruct_xarray
+      ~Solution.extract_each_surface_representations
+      ~Solution.padding_mask_matrix
+      ~Solution.prepare_common_args
+      ~Solution.prepare_marching_cubes_args
+      ~Solution.set_meshes
+      ~Solution.set_solution_to_custom
+      ~Solution.set_solution_to_regular_grid
+      ~Solution.set_solution_to_sections
+      ~Solution.set_solution_to_topography
+      ~Solution.set_solutions
+      ~Solution.set_values
+      ~Solution.set_values_to_centered
+      ~Solution.set_values_to_custom_grid
+      ~Solution.set_values_to_regular_grid
+      ~Solution.set_values_to_regular_grid_
+      ~Solution.set_values_to_sections
+      ~Solution.set_values_to_surface_points
+      ~Solution.set_values_to_surface_points_
+      ~Solution.set_values_to_topography
+      ~Solution.set_vertices_edges
+      ~Solution.to_netcdf
+      ~Solution.try_compute_marching_cubes_on_the_regular_grid
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~Solution.data_structures
+   
+   
+
+

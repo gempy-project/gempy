@@ -1,0 +1,12 @@
+
+:orphan:
+
+.. _sphx_glr_tutorials_ch3-Interpolations_sg_execution_times:
+
+Computation times
+=================
+**00:05.359** total execution time for **tutorials_ch3-Interpolations** files:
+
++------------------------------------------------------------------------------------------------------------------------------------------------+-----------+--------+
+| :ref:`sphx_glr_tutorials_ch3-Interpolations_ch3_1_kriging_interpolation_and_simulation.py` (``ch3_1_kriging_interpolation_and_simulation.py``) | 00:05.359 | 0.0 MB |
++------------------------------------------------------------------------------------------------------------------------------------------------+-----------+--------+

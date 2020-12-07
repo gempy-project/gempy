@@ -1,0 +1,402 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>gempy.core.data.Structure &#8212; GemPy 2.2.7 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="gempy.core.data.KrigingParameters" href="gempy.core.data.KrigingParameters.html" />
+    <link rel="prev" title="gempy.core.data.Surfaces" href="gempy.core.data.Surfaces.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="gempy-core-data-structure">
+<h1>gempy.core.data.Structure<a class="headerlink" href="#gempy-core-data-structure" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="gempy.core.data.Structure">
+<em class="property">class </em><code class="sig-prename descclassname">gempy.core.data.</code><code class="sig-name descname">Structure</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">surface_points</span></em>, <em class="sig-param"><span class="n">orientations</span></em>, <em class="sig-param"><span class="n">surfaces</span><span class="p">:</span> <span class="n"><a class="reference internal" href="gempy.core.data.Surfaces.html#gempy.core.data.Surfaces" title="gempy.core.data.Surfaces">gempy.core.data.Surfaces</a></span></em>, <em class="sig-param"><span class="n">faults</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data.html#Structure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data.Structure" title="Permalink to this definition">¶</a></dt>
+<dd><p>The structure_data class analyse the different lengths of subset in the interface and orientations categories_df
+to pass them to the theano function.</p>
+<dl class="py attribute">
+<dt id="gempy.core.data.Structure.surface_points">
+<code class="sig-name descname">surface_points</code><a class="headerlink" href="#gempy.core.data.Structure.surface_points" title="Permalink to this definition">¶</a></dt>
+<dd><p>[s0]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">SurfacePoints</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="gempy.core.data.Structure.orientations">
+<code class="sig-name descname">orientations</code><a class="headerlink" href="#gempy.core.data.Structure.orientations" title="Permalink to this definition">¶</a></dt>
+<dd><p>[s1]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Orientations</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="gempy.core.data.Structure.surfaces">
+<code class="sig-name descname">surfaces</code><a class="headerlink" href="#gempy.core.data.Structure.surfaces" title="Permalink to this definition">¶</a></dt>
+<dd><p>[s2]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="gempy.core.data.Surfaces.html#gempy.core.data.Surfaces" title="gempy.core.data.Surfaces"><code class="xref py py-class docutils literal notranslate"><span class="pre">Surfaces</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="gempy.core.data.Structure.faults">
+<code class="sig-name descname">faults</code><a class="headerlink" href="#gempy.core.data.Structure.faults" title="Permalink to this definition">¶</a></dt>
+<dd><p>[s3]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Faults</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="gempy.core.data.Structure.df">
+<code class="sig-name descname">df</code><a class="headerlink" href="#gempy.core.data.Structure.df" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><p>len surfaces surface_points (list): length of each surface/fault in surface_points</p></li>
+<li><p>len series surface_points (list) : length of each series in surface_points</p></li>
+<li><p>len series orientations (list) : length of each series in orientations</p></li>
+<li><p>number surfaces per series (list): number of surfaces per series</p></li>
+<li><p>…</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">pn.DataFrame</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>surface_points</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">SurfacePoints</span></code>) – [s0]</p></li>
+<li><p><strong>orientations</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Orientations</span></code>) – [s1]</p></li>
+<li><p><strong>surfaces</strong> (<a class="reference internal" href="gempy.core.data.Surfaces.html#gempy.core.data.Surfaces" title="gempy.core.data.Surfaces"><code class="xref py py-class docutils literal notranslate"><span class="pre">Surfaces</span></code></a>) – [s2]</p></li>
+<li><p><strong>faults</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Faults</span></code>) – [s3]</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples using Structure</p>
+<div class="sphx-glr-thumbcontainer" tooltip="1.2: Data Structure and Manipulation"><div class="figure align-default" id="id1">
+<img alt="1.2: Data Structure and Manipulation" src="../_images/sphx_glr_ch1_2a_data_manipulation_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../tutorials/ch1_fundamentals/ch1_2a_data_manipulation.html#sphx-glr-tutorials-ch1-fundamentals-ch1-2a-data-manipulation-py"><span class="std std-ref">1.2: Data Structure and Manipulation</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-clear"></div><p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.Structure.__init__" title="gempy.core.data.Structure.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(surface_points, orientations, …)</p></td>
+<td><p>Initialize self.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data.Structure.set_is_lith_is_fault" title="gempy.core.data.Structure.set_is_lith_is_fault"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_is_lith_is_fault</span></code></a>()</p></td>
+<td><p>Check if there is lithologies in the data and/or df.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.Structure.set_length_series_o" title="gempy.core.data.Structure.set_length_series_o"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_length_series_o</span></code></a>()</p></td>
+<td><p>Set the length of each <strong>series</strong> on <cite>Orientations</cite> i.e. how many orientations are for each series.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data.Structure.set_length_surfaces_i" title="gempy.core.data.Structure.set_length_surfaces_i"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_length_surfaces_i</span></code></a>()</p></td>
+<td><p>Set the length of each <strong>surface</strong> on <cite>SurfacePoints</cite> i.e. how many data points are for each surface.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.Structure.set_number_of_faults" title="gempy.core.data.Structure.set_number_of_faults"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_number_of_faults</span></code></a>()</p></td>
+<td><p>Set number of faults series.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data.Structure.set_number_of_surfaces" title="gempy.core.data.Structure.set_number_of_surfaces"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_number_of_surfaces</span></code></a>()</p></td>
+<td><p>Set the number of total surfaces</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.Structure.set_number_of_surfaces_per_series" title="gempy.core.data.Structure.set_number_of_surfaces_per_series"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_number_of_surfaces_per_series</span></code></a>()</p></td>
+<td><p>Set number of surfaces for each series</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data.Structure.set_series_and_length_series_i" title="gempy.core.data.Structure.set_series_and_length_series_i"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_series_and_length_series_i</span></code></a>()</p></td>
+<td><p>Set the length of each <strong>series</strong> on <cite>SurfacePoints</cite> i.e. how many data points are for each series.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.Structure.update_structure_from_input" title="gempy.core.data.Structure.update_structure_from_input"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_structure_from_input</span></code></a>()</p></td>
+<td><p>Update all fields dependent on the linked Data objects.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="gempy.core.data.Structure.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">surface_points</span></em>, <em class="sig-param"><span class="n">orientations</span></em>, <em class="sig-param"><span class="n">surfaces</span><span class="p">:</span> <span class="n"><a class="reference internal" href="gempy.core.data.Surfaces.html#gempy.core.data.Surfaces" title="gempy.core.data.Surfaces">gempy.core.data.Surfaces</a></span></em>, <em class="sig-param"><span class="n">faults</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data.html#Structure.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data.Structure.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data.Structure.update_structure_from_input">
+<code class="sig-name descname">update_structure_from_input</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data.html#Structure.update_structure_from_input"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data.Structure.update_structure_from_input" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update all fields dependent on the linked Data objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data.Structure.set_length_surfaces_i">
+<code class="sig-name descname">set_length_surfaces_i</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data.html#Structure.set_length_surfaces_i"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data.Structure.set_length_surfaces_i" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the length of each <strong>surface</strong> on <cite>SurfacePoints</cite> i.e. how many data points are for each surface</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>df where Structural data is stored</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">pn.DataFrame</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data.Structure.set_series_and_length_series_i">
+<code class="sig-name descname">set_series_and_length_series_i</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data.html#Structure.set_series_and_length_series_i"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data.Structure.set_series_and_length_series_i" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the length of each <strong>series</strong> on <cite>SurfacePoints</cite> i.e. how many data points are for each series. Also
+sets the number of series itself.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>df where Structural data is stored</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">pn.DataFrame</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data.Structure.set_length_series_o">
+<code class="sig-name descname">set_length_series_o</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data.html#Structure.set_length_series_o"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data.Structure.set_length_series_o" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the length of each <strong>series</strong> on <cite>Orientations</cite> i.e. how many orientations are for each series.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>df where Structural data is stored</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">pn.DataFrame</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data.Structure.set_number_of_surfaces_per_series">
+<code class="sig-name descname">set_number_of_surfaces_per_series</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data.html#Structure.set_number_of_surfaces_per_series"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data.Structure.set_number_of_surfaces_per_series" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set number of surfaces for each series</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>df where Structural data is stored</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">pn.DataFrame</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data.Structure.set_number_of_faults">
+<code class="sig-name descname">set_number_of_faults</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data.html#Structure.set_number_of_faults"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data.Structure.set_number_of_faults" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set number of faults series. This method in gempy v2 is simply informative</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>df where Structural data is stored</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">pn.DataFrame</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data.Structure.set_number_of_surfaces">
+<code class="sig-name descname">set_number_of_surfaces</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data.html#Structure.set_number_of_surfaces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data.Structure.set_number_of_surfaces" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the number of total surfaces</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>df where Structural data is stored</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">pn.DataFrame</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data.Structure.set_is_lith_is_fault">
+<code class="sig-name descname">set_is_lith_is_fault</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data.html#Structure.set_is_lith_is_fault"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data.Structure.set_is_lith_is_fault" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if there is lithologies in the data and/or df. This method in gempy v2 is simply informative</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>df where Structural data is stored</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">pn.DataFrame</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/./logos/gempy.png" alt="Logo"/>
+    
+    <h1 class="logo logo-name">GemPy</h1>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a class="badge" href="https://travis-ci.org/cgre-aachen/gempy">
+    <img
+        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../projects.html">Additional projects</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">GemPy Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../integrations/index.html">Integrations</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../code.html">Code</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../code.html#gempy-api">GemPy API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#model">Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#plot">Plot</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../code.html#data">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#grids">Grids</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#geometric-data">Geometric Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#interpolator">Interpolator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#solution">Solution</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../code.html">Code</a><ul>
+      <li>Previous: <a href="gempy.core.data.Surfaces.html" title="previous chapter">gempy.core.data.Surfaces</a></li>
+      <li>Next: <a href="gempy.core.data.KrigingParameters.html" title="next chapter">gempy.core.data.KrigingParameters</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017-2020, CGRE-Aachen Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/Data/gempy.core.data.Structure.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

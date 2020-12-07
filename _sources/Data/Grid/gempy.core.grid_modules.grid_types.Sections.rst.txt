@@ -1,0 +1,41 @@
+﻿gempy.core.grid\_modules.grid\_types.Sections
+=============================================
+
+.. currentmodule:: gempy.core.grid_modules.grid_types
+
+
+.. autoclass:: Sections
+   :no-undoc-members:
+
+   
+   .. rubric:: Examples using Sections
+   .. include:: ../gen_modules/backreferences/gempy.core.grid_modules.grid_types.Sections.examples
+   .. raw:: html
+
+       <div class="sphx-glr-clear"></div>
+   
+   
+   
+   .. rubric:: Methods
+   .. autosummary::
+   
+      ~Sections.__init__
+      ~Sections.calculate_all_distances
+      ~Sections.calculate_line_coordinates_2points
+      ~Sections.compute_section_coordinates
+      ~Sections.distance_2_points
+      ~Sections.generate_axis_coord
+      ~Sections.get_section_args
+      ~Sections.get_section_grid
+      ~Sections.get_section_params
+      ~Sections.interpolate_zvals_at_xy
+      ~Sections.set_sections
+      ~Sections.show
+   
+   
+
+   
+   
+   
+
+

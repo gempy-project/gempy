@@ -1,0 +1,550 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>gempy.core.data.Surfaces &#8212; GemPy 2.2.7 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="gempy.core.data.Structure" href="gempy.core.data.Structure.html" />
+    <link rel="prev" title="gempy.core.data_modules.stack.Faults" href="gempy.core.data_modules.stack.Faults.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="gempy-core-data-surfaces">
+<h1>gempy.core.data.Surfaces<a class="headerlink" href="#gempy-core-data-surfaces" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="gempy.core.data.Surfaces">
+<em class="property">class </em><code class="sig-prename descclassname">gempy.core.data.</code><code class="sig-name descname">Surfaces</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">series</span></em>, <em class="sig-param"><span class="n">surface_names</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">values_array</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">properties_names</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data.html#Surfaces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data.Surfaces" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class that contains the surfaces of the model and the values of each of them.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>surface_names</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em> or </em><em>np.ndarray</em>) – list containing the names of the surfaces</p></li>
+<li><p><strong>series</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Series</span></code>) – [s0]</p></li>
+<li><p><strong>values_array</strong> (<em>np.ndarray</em>) – 2D array with the values of each surface</p></li>
+<li><p><strong>names</strong> (<em>properties</em>) – list containing the names of each properties</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="gempy.core.data.Surfaces.df">
+<code class="sig-name descname">df</code><a class="headerlink" href="#gempy.core.data.Surfaces.df" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pandas data frame containing the surfaces names mapped to series and
+the value used for each voxel in the final model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">pn.core.frame.DataFrames</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="gempy.core.data.Surfaces.series">
+<code class="sig-name descname">series</code><a class="headerlink" href="#gempy.core.data.Surfaces.series" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Series</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="gempy.core.data.Surfaces.colors">
+<code class="sig-name descname">colors</code><a class="headerlink" href="#gempy.core.data.Surfaces.colors" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Colors</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Examples using Surfaces</p>
+<div class="sphx-glr-thumbcontainer" tooltip="1.2: Data Structure and Manipulation"><div class="figure align-default" id="id1">
+<img alt="1.2: Data Structure and Manipulation" src="../_images/sphx_glr_ch1_2a_data_manipulation_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../tutorials/ch1_fundamentals/ch1_2a_data_manipulation.html#sphx-glr-tutorials-ch1-fundamentals-ch1-2a-data-manipulation-py"><span class="std std-ref">1.2: Data Structure and Manipulation</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-clear"></div><p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.Surfaces.__init__" title="gempy.core.data.Surfaces.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(series[, surface_names, …])</p></td>
+<td><p>Initialize self.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data.Surfaces.add_surface" title="gempy.core.data.Surfaces.add_surface"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_surface</span></code></a>(surface_list[, update_df])</p></td>
+<td><p>Add surface to the df.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.Surfaces.add_surfaces_values" title="gempy.core.data.Surfaces.add_surfaces_values"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_surfaces_values</span></code></a>(values_array[, …])</p></td>
+<td><p>Add values to be interpolated for each surfaces.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">background_color</span></code>(value)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.Surfaces.delete_surface" title="gempy.core.data.Surfaces.delete_surface"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delete_surface</span></code></a>(indices[, update_id])</p></td>
+<td><p>[s1]     Drop specified labels from rows or columns.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data.Surfaces.delete_surface_values" title="gempy.core.data.Surfaces.delete_surface_values"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delete_surface_values</span></code></a>(properties_names)</p></td>
+<td><p>Delete a property or several properties column.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">map_faults</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data.Surfaces.map_series" title="gempy.core.data.Surfaces.map_series"><code class="xref py py-obj docutils literal notranslate"><span class="pre">map_series</span></code></a>([mapping_object])</p></td>
+<td><p>Method to map to which series every surface belongs to.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.Surfaces.modify_order_surfaces" title="gempy.core.data.Surfaces.modify_order_surfaces"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modify_order_surfaces</span></code></a>(new_value, idx[, …])</p></td>
+<td><p>Replace to the new location the old series</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data.Surfaces.modify_surface_values" title="gempy.core.data.Surfaces.modify_surface_values"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modify_surface_values</span></code></a>(idx, properties_names, …)</p></td>
+<td><p>Method to modify values using loc of pandas.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.Surfaces.rename_surfaces" title="gempy.core.data.Surfaces.rename_surfaces"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rename_surfaces</span></code></a>(to_replace, **kwargs)</p></td>
+<td><p>Replace values given in to_replace with value.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset_order_surfaces</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.Surfaces.set_basement" title="gempy.core.data.Surfaces.set_basement"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_basement</span></code></a>()</p></td>
+<td><p>Set isBasement property to true to the last series of the df.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data.Surfaces.set_default_surface_name" title="gempy.core.data.Surfaces.set_default_surface_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_default_surface_name</span></code></a>()</p></td>
+<td><p>Set the minimum number of surfaces to compute a model i.e. surfaces_names: surface1 and basement.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.Surfaces.set_surfaces_names" title="gempy.core.data.Surfaces.set_surfaces_names"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_surfaces_names</span></code></a>(surfaces_list[, update_df])</p></td>
+<td><p>Method to set the names of the surfaces in order.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data.Surfaces.set_surfaces_names_from_surface_points" title="gempy.core.data.Surfaces.set_surfaces_names_from_surface_points"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_surfaces_names_from_surface_points</span></code></a>(…)</p></td>
+<td><p>Set surfaces names from a <code class="xref py py-class docutils literal notranslate"><span class="pre">Surface_points</span></code> object.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.Surfaces.set_surfaces_values" title="gempy.core.data.Surfaces.set_surfaces_values"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_surfaces_values</span></code></a>(values_array[, …])</p></td>
+<td><p>Set values to be interpolated for each surfaces.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data.Surfaces.sort_surfaces" title="gempy.core.data.Surfaces.sort_surfaces"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sort_surfaces</span></code></a>()</p></td>
+<td><p>Sort surfaces by series and order_surfaces</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.Surfaces.update_id" title="gempy.core.data.Surfaces.update_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_id</span></code></a>([id_list])</p></td>
+<td><p>Set id of the layers (1 based) :param id_list: :type id_list: list</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">properties_val</span></code></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="gempy.core.data.Surfaces.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">series</span></em>, <em class="sig-param"><span class="n">surface_names</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">values_array</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">properties_names</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data.html#Surfaces.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data.Surfaces.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data.Surfaces.update_id">
+<code class="sig-name descname">update_id</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">id_list</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data.html#Surfaces.update_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data.Surfaces.update_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set id of the layers (1 based)
+:param id_list:
+:type id_list: list</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gempy.core.data.Surfaces" title="gempy.core.data.Surfaces"><code class="xref py py-class docutils literal notranslate"><span class="pre">Surfaces</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data.Surfaces.set_surfaces_names">
+<code class="sig-name descname">set_surfaces_names</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">surfaces_list</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a></span></em>, <em class="sig-param"><span class="n">update_df</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data.html#Surfaces.set_surfaces_names"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data.Surfaces.set_surfaces_names" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to set the names of the surfaces in order. This applies in the surface column of the df</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>surfaces_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – list of names of surfaces. They are ordered.</p></li>
+<li><p><strong>update_df</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Update Surfaces.df columns with the default values</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gempy.core.data.Surfaces" title="gempy.core.data.Surfaces"><code class="xref py py-class docutils literal notranslate"><span class="pre">Surfaces</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data.Surfaces.set_default_surface_name">
+<code class="sig-name descname">set_default_surface_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data.html#Surfaces.set_default_surface_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data.Surfaces.set_default_surface_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the minimum number of surfaces to compute a model i.e. surfaces_names: surface1 and basement</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gempy.core.data.Surfaces" title="gempy.core.data.Surfaces"><code class="xref py py-class docutils literal notranslate"><span class="pre">Surfaces</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data.Surfaces.set_surfaces_names_from_surface_points">
+<code class="sig-name descname">set_surfaces_names_from_surface_points</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">surface_points</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data.html#Surfaces.set_surfaces_names_from_surface_points"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data.Surfaces.set_surfaces_names_from_surface_points" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set surfaces names from a <code class="xref py py-class docutils literal notranslate"><span class="pre">Surface_points</span></code> object. This can be useful if the surface points are imported
+from a table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>surface_points</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Surface_points</span></code>) – </p>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data.Surfaces.add_surface">
+<code class="sig-name descname">add_surface</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">surface_list</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">update_df</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data.html#Surfaces.add_surface"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data.Surfaces.add_surface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add surface to the df.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>surface_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – name or list of names of the surfaces to apply the functionality</p></li>
+<li><p><strong>update_df</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Update Surfaces.df columns with the default values</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gempy.core.data.Surfaces" title="gempy.core.data.Surfaces"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data.Surfaces</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data.Surfaces.delete_surface">
+<code class="sig-name descname">delete_surface</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">indices</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><span class="p">, </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)">numpy.ndarray</a><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">update_id</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data.html#Surfaces.delete_surface"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data.Surfaces.delete_surface" title="Permalink to this definition">¶</a></dt>
+<dd><p>[s1]     Drop specified labels from rows or columns.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>indices</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – name or list of names of the series to apply the functionality</p></li>
+<li><p><strong>update_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – if true [s0]     Set id of the layers (1 based)    Args:        id_list (list):</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gempy.core.data.Surfaces" title="gempy.core.data.Surfaces"><code class="xref py py-class docutils literal notranslate"><span class="pre">Surfaces</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data.Surfaces.rename_surfaces">
+<code class="sig-name descname">rename_surfaces</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">to_replace</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a><span class="p">]</span></span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data.html#Surfaces.rename_surfaces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data.Surfaces.rename_surfaces" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replace values given in to_replace with value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>to_replace</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>regex</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a><em>, </em><a class="reference internal" href="gempy.core.data_modules.stack.Series.html#gempy.core.data_modules.stack.Series" title="gempy.core.data_modules.stack.Series"><em>Series</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a>) – How to find the values that will be replaced.</p></li>
+<li><p><strong>**kwargs</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gempy.core.data.Surfaces" title="gempy.core.data.Surfaces"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data.Surfaces</span></code></a></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.replace.html#pandas.Series.replace" title="(in pandas v1.1.4)"><code class="xref any docutils literal notranslate"><span class="pre">pandas.Series.replace</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data.Surfaces.modify_order_surfaces">
+<code class="sig-name descname">modify_order_surfaces</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_value</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span></em>, <em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span></em>, <em class="sig-param"><span class="n">series_name</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data.html#Surfaces.modify_order_surfaces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data.Surfaces.modify_order_surfaces" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replace to the new location the old series</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>new_value</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – New location</p></li>
+<li><p><strong>idx</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Index of the surface to be moved</p></li>
+<li><p><strong>series_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – name of the series to be moved</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gempy.core.data.Surfaces" title="gempy.core.data.Surfaces"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data.Surfaces</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data.Surfaces.sort_surfaces">
+<code class="sig-name descname">sort_surfaces</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data.html#Surfaces.sort_surfaces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data.Surfaces.sort_surfaces" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sort surfaces by series and order_surfaces</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data.Surfaces.set_basement">
+<code class="sig-name descname">set_basement</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data.html#Surfaces.set_basement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data.Surfaces.set_basement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set isBasement property to true to the last series of the df.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gempy.core.data.Surfaces" title="gempy.core.data.Surfaces"><code class="xref py py-class docutils literal notranslate"><span class="pre">Surfaces</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data.Surfaces.map_series">
+<code class="sig-name descname">map_series</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mapping_object</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a><span class="p">, </span>pandas.core.frame.DataFrame<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data.html#Surfaces.map_series"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data.Surfaces.map_series" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to map to which series every surface belongs to. This step is necessary to assign differenct tectonics
+such as unconformities or faults.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>mapping_object</strong> (dict, <code class="xref py py-class docutils literal notranslate"><span class="pre">pn.DataFrame</span></code>) – <ul class="simple">
+<li><p>dict: keys are the series and values the surfaces belonging to that series</p></li>
+<li><p>pn.DataFrame: Dataframe with surfaces as index and a column series with the correspondent series name
+of each surface</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gempy.core.data.Surfaces" title="gempy.core.data.Surfaces"><code class="xref py py-class docutils literal notranslate"><span class="pre">Surfaces</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data.Surfaces.add_surfaces_values">
+<code class="sig-name descname">add_surfaces_values</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">values_array</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)">numpy.ndarray</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">properties_names</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a></span> <span class="o">=</span> <span class="default_value">array([], dtype=float64)</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data.html#Surfaces.add_surfaces_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data.Surfaces.add_surfaces_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add values to be interpolated for each surfaces.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>values_array</strong> (<em>np.ndarray</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – array-like of the same length as number of surfaces. This functionality
+can be used to assign different geophysical properties to each layer</p></li>
+<li><p><strong>properties_names</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – list of names for each values_array columns. This must be of same size as
+values_array axis 1. By default properties will take the column name: ‘value_X’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gempy.core.data.Surfaces" title="gempy.core.data.Surfaces"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data.Surfaces</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data.Surfaces.delete_surface_values">
+<code class="sig-name descname">delete_surface_values</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">properties_names</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data.html#Surfaces.delete_surface_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data.Surfaces.delete_surface_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete a property or several properties column.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>properties_names</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – Name of the property to delete</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gempy.core.data.Surfaces" title="gempy.core.data.Surfaces"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data.Surfaces</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data.Surfaces.set_surfaces_values">
+<code class="sig-name descname">set_surfaces_values</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">values_array</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)">numpy.ndarray</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">properties_names</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a></span> <span class="o">=</span> <span class="default_value">array([], dtype=float64)</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data.html#Surfaces.set_surfaces_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data.Surfaces.set_surfaces_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set values to be interpolated for each surfaces. This method will delete the previous values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>values_array</strong> (<em>np.ndarray</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – array-like of the same length as number of surfaces. This functionality
+can be used to assign different geophysical properties to each layer</p></li>
+<li><p><strong>properties_names</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – list of names for each values_array columns. This must be of same size as
+values_array axis 1. By default properties will take the column name: ‘value_X’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gempy.core.data.Surfaces" title="gempy.core.data.Surfaces"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data.Surfaces</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data.Surfaces.modify_surface_values">
+<code class="sig-name descname">modify_surface_values</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span></em>, <em class="sig-param"><span class="n">properties_names</span></em>, <em class="sig-param"><span class="n">values</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data.html#Surfaces.modify_surface_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data.Surfaces.modify_surface_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to modify values using loc of pandas.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>idx</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em>) – </p></li>
+<li><p><strong>properties_names</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – </p></li>
+<li><p><strong>values</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><em>np.ndarray</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gempy.core.data.Surfaces" title="gempy.core.data.Surfaces"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data.Surfaces</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/./logos/gempy.png" alt="Logo"/>
+    
+    <h1 class="logo logo-name">GemPy</h1>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a class="badge" href="https://travis-ci.org/cgre-aachen/gempy">
+    <img
+        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../projects.html">Additional projects</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">GemPy Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../integrations/index.html">Integrations</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../code.html">Code</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../code.html#gempy-api">GemPy API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#model">Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#plot">Plot</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../code.html#data">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#grids">Grids</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#geometric-data">Geometric Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#interpolator">Interpolator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#solution">Solution</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../code.html">Code</a><ul>
+      <li>Previous: <a href="gempy.core.data_modules.stack.Faults.html" title="previous chapter">gempy.core.data_modules.stack.Faults</a></li>
+      <li>Next: <a href="gempy.core.data.Structure.html" title="next chapter">gempy.core.data.Structure</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017-2020, CGRE-Aachen Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/Data/gempy.core.data.Surfaces.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

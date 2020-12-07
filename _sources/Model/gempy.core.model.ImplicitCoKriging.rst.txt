@@ -1,0 +1,108 @@
+﻿gempy.core.model.ImplicitCoKriging
+==================================
+
+.. currentmodule:: gempy.core.model
+
+
+.. autoclass:: ImplicitCoKriging
+   :no-undoc-members:
+
+   
+   .. rubric:: Examples using ImplicitCoKriging
+   .. include:: ../gen_modules/backreferences/gempy.core.model.ImplicitCoKriging.examples
+   .. raw:: html
+
+       <div class="sphx-glr-clear"></div>
+   
+   
+   
+   .. rubric:: Methods
+   .. autosummary::
+   
+      ~ImplicitCoKriging.__init__
+      ~ImplicitCoKriging.add_features
+      ~ImplicitCoKriging.add_orientations
+      ~ImplicitCoKriging.add_series
+      ~ImplicitCoKriging.add_surface_points
+      ~ImplicitCoKriging.add_surface_values
+      ~ImplicitCoKriging.add_surfaces
+      ~ImplicitCoKriging.delete_features
+      ~ImplicitCoKriging.delete_orientations
+      ~ImplicitCoKriging.delete_series
+      ~ImplicitCoKriging.delete_surface_points
+      ~ImplicitCoKriging.delete_surface_points_basement
+      ~ImplicitCoKriging.delete_surface_values
+      ~ImplicitCoKriging.delete_surfaces
+      ~ImplicitCoKriging.get_active_grids
+      ~ImplicitCoKriging.map_geometric_data_df
+      ~ImplicitCoKriging.map_series_to_surfaces
+      ~ImplicitCoKriging.map_stack_to_surfaces
+      ~ImplicitCoKriging.modify_kriging_parameters
+      ~ImplicitCoKriging.modify_options
+      ~ImplicitCoKriging.modify_order_features
+      ~ImplicitCoKriging.modify_order_series
+      ~ImplicitCoKriging.modify_order_surfaces
+      ~ImplicitCoKriging.modify_orientations
+      ~ImplicitCoKriging.modify_rescaling_parameters
+      ~ImplicitCoKriging.modify_surface_points
+      ~ImplicitCoKriging.modify_surface_values
+      ~ImplicitCoKriging.rename_features
+      ~ImplicitCoKriging.rename_series
+      ~ImplicitCoKriging.rename_surfaces
+      ~ImplicitCoKriging.reorder_features
+      ~ImplicitCoKriging.reorder_series
+      ~ImplicitCoKriging.set_active_grid
+      ~ImplicitCoKriging.set_bottom_relation
+      ~ImplicitCoKriging.set_centered_grid
+      ~ImplicitCoKriging.set_custom_grid
+      ~ImplicitCoKriging.set_default_orientation
+      ~ImplicitCoKriging.set_default_surface_point
+      ~ImplicitCoKriging.set_default_surfaces
+      ~ImplicitCoKriging.set_extent
+      ~ImplicitCoKriging.set_fault_object
+      ~ImplicitCoKriging.set_fault_relation
+      ~ImplicitCoKriging.set_grid_object
+      ~ImplicitCoKriging.set_is_fault
+      ~ImplicitCoKriging.set_is_finite_fault
+      ~ImplicitCoKriging.set_orientations
+      ~ImplicitCoKriging.set_orientations_object
+      ~ImplicitCoKriging.set_regular_grid
+      ~ImplicitCoKriging.set_section_grid
+      ~ImplicitCoKriging.set_series_object
+      ~ImplicitCoKriging.set_surface_order_from_solution
+      ~ImplicitCoKriging.set_surface_points
+      ~ImplicitCoKriging.set_surface_points_object
+      ~ImplicitCoKriging.set_surface_values
+      ~ImplicitCoKriging.set_surfaces_object
+      ~ImplicitCoKriging.set_theano_function
+      ~ImplicitCoKriging.set_theano_graph
+      ~ImplicitCoKriging.set_topography
+      ~ImplicitCoKriging.update_additional_data
+      ~ImplicitCoKriging.update_from_grid
+      ~ImplicitCoKriging.update_from_series
+      ~ImplicitCoKriging.update_from_surfaces
+      ~ImplicitCoKriging.update_structure
+      ~ImplicitCoKriging.update_to_interpolator
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~ImplicitCoKriging.additional_data
+      ~ImplicitCoKriging.faults
+      ~ImplicitCoKriging.grid
+      ~ImplicitCoKriging.interpolator
+      ~ImplicitCoKriging.orientations
+      ~ImplicitCoKriging.rescaling
+      ~ImplicitCoKriging.series
+      ~ImplicitCoKriging.stack
+      ~ImplicitCoKriging.surface_points
+      ~ImplicitCoKriging.surfaces
+   
+   
+
+

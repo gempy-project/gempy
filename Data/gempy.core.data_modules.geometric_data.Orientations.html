@@ -1,0 +1,456 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>gempy.core.data_modules.geometric_data.Orientations &#8212; GemPy 2.2.7 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="gempy.core.interpolator.InterpolatorModel" href="../Interpolator/gempy.core.interpolator.InterpolatorModel.html" />
+    <link rel="prev" title="gempy.core.data_modules.geometric_data.SurfacePoints" href="gempy.core.data_modules.geometric_data.SurfacePoints.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="gempy-core-data-modules-geometric-data-orientations">
+<h1>gempy.core.data_modules.geometric_data.Orientations<a class="headerlink" href="#gempy-core-data-modules-geometric-data-orientations" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="gempy.core.data_modules.geometric_data.Orientations">
+<em class="property">class </em><code class="sig-prename descclassname">gempy.core.data_modules.geometric_data.</code><code class="sig-name descname">Orientations</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">surfaces</span><span class="p">:</span> <span class="n"><a class="reference internal" href="gempy.core.data.Surfaces.html#gempy.core.data.Surfaces" title="gempy.core.data.Surfaces">gempy.core.data.Surfaces</a></span></em>, <em class="sig-param"><span class="n">coord</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">pole_vector</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">orientation</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">surface</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data_modules/geometric_data.html#Orientations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data_modules.geometric_data.Orientations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Data child with specific methods to manipulate orientation data. It is initialize without arguments to give
+flexibility to the origin of the data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>surfaces</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Surfaces</span></code>) – [s0] Class that contains the surfaces of the model and the values of each of them.</p></li>
+<li><p><strong>coord</strong> (<em>np.ndarray</em>) – [s1] (numpy.ndarray[float, 3]): XYZ 2D array. Axis 1 is the coordinates while axis 0 is n number of input Notice that orientations may be place anywhere in the 3D space</p></li>
+<li><p><strong>pole_vector</strong> (<em>np.ndarray</em>) – [s3] (numpy.ndarray[float, 3]): 2D numpy array where axis 1 is the gradient values G_x, G_y, G_z of the pole while axis 0 is n number of orientations</p></li>
+<li><p><strong>orientation</strong> (<em>np.ndarray</em>) – [s4] (numpy.ndarray[float, 3]): 2D numpy array where axis 1 is are orientation values [dip, azimuth, polarity] of the pole while axis 0 is n number of orientations. — <em>Dip</em> is the inclination angle of 0 to 90 degrees measured from the horizontal plane downwards. <em>Azimuth</em> is the dip direction defined by a 360 degrees clockwise rotation, i.e. 0 = North, 90 = East, 180 = South, and 270 = West.*Polarity* defines where the upper (geologically younger) side of the orientation plane is and can be declared to be either normal (1) or reversed (-1).The orientation plane is perpendicular to the gradient</p></li>
+<li><p><strong>surface</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – [s2] (str, Iterable[str]): list with the surface names for each input point. They must exist in the surfaces object linked to SurfacePoints</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="gempy.core.data_modules.geometric_data.Orientations.df">
+<code class="sig-name descname">df</code><a class="headerlink" href="#gempy.core.data_modules.geometric_data.Orientations.df" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pandas data frame containing the necessary information respect
+the orientations of the model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">pn.core.frame.DataFrames</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Examples using Orientations</p>
+<div class="sphx-glr-thumbcontainer" tooltip="1.2: Data Structure and Manipulation"><div class="figure align-default" id="id1">
+<img alt="1.2: Data Structure and Manipulation" src="../_images/sphx_glr_ch1_2a_data_manipulation_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../tutorials/ch1_fundamentals/ch1_2a_data_manipulation.html#sphx-glr-tutorials-ch1-fundamentals-ch1-2a-data-manipulation-py"><span class="std std-ref">1.2: Data Structure and Manipulation</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-clear"></div><p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data_modules.geometric_data.Orientations.__init__" title="gempy.core.data_modules.geometric_data.Orientations.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(surfaces[, coord, pole_vector, …])</p></td>
+<td><p>Initialize self.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data_modules.geometric_data.Orientations.add_orientation" title="gempy.core.data_modules.geometric_data.Orientations.add_orientation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_orientation</span></code></a>(x, y, z, surface[, …])</p></td>
+<td><p>Add orientation.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data_modules.geometric_data.Orientations.calculate_gradient" title="gempy.core.data_modules.geometric_data.Orientations.calculate_gradient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_gradient</span></code></a>([idx])</p></td>
+<td><p>Calculate the gradient vector of module 1 given dip and azimuth to be able to plot the orientations</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data_modules.geometric_data.Orientations.calculate_orientations" title="gempy.core.data_modules.geometric_data.Orientations.calculate_orientations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_orientations</span></code></a>([idx])</p></td>
+<td><p>Calculate and update the orientation data (azimuth and dip) from gradients in the data frame.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data_modules.geometric_data.Orientations.create_orientation_from_surface_points" title="gempy.core.data_modules.geometric_data.Orientations.create_orientation_from_surface_points"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_orientation_from_surface_points</span></code></a>(…)</p></td>
+<td><p>Create and set orientations from at least 3 points categories_df</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data_modules.geometric_data.Orientations.del_orientation" title="gempy.core.data_modules.geometric_data.Orientations.del_orientation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">del_orientation</span></code></a>(idx)</p></td>
+<td><p>Delete orientation</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data_modules.geometric_data.Orientations.get_orientation" title="gempy.core.data_modules.geometric_data.Orientations.get_orientation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_orientation</span></code></a>(normal)</p></td>
+<td><p>Get orientation (dip, azimuth, polarity ) for points in all point set</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_dependent_properties</span></code>()</p></td>
+<td><p>Set the defaults values to the columns before gets mapped with the the <code class="xref py py-class docutils literal notranslate"><span class="pre">Surfaces</span></code> attribute.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">map_data_from_series</span></code>(series, attribute[, idx])</p></td>
+<td><p>Map columns from the <code class="xref py py-class docutils literal notranslate"><span class="pre">Series</span></code> data frame to a <code class="xref py py-class docutils literal notranslate"><span class="pre">GeometricData</span></code> data frame.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">map_data_from_surfaces</span></code>(surfaces, attribute)</p></td>
+<td><p>Map columns from the <code class="xref py py-class docutils literal notranslate"><span class="pre">Series</span></code> data frame to a <code class="xref py py-class docutils literal notranslate"><span class="pre">GeometricData</span></code> data frame.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data_modules.geometric_data.Orientations.modify_orientations" title="gempy.core.data_modules.geometric_data.Orientations.modify_orientations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modify_orientations</span></code></a>(idx, **kwargs)</p></td>
+<td><p>Allows modification of any of an orientation column at a given index.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data_modules.geometric_data.Orientations.plane_fit" title="gempy.core.data_modules.geometric_data.Orientations.plane_fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plane_fit</span></code></a>(point_list)</p></td>
+<td><p>Fit plane to points in PointSet Fit an d-dimensional plane to the points in a point set.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_data</span></code>(file_path, **kwargs)</p></td>
+<td><p>Read a comma-separated values (csv) file into DataFrame.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data_modules.geometric_data.Orientations.read_orientations" title="gempy.core.data_modules.geometric_data.Orientations.read_orientations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_orientations</span></code></a>(table_source[, debug, …])</p></td>
+<td><p>Read tabular using pandas tools and if inplace set it properly to the surface points object.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data_modules.geometric_data.Orientations.set_default_orientation" title="gempy.core.data_modules.geometric_data.Orientations.set_default_orientation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_default_orientation</span></code></a>()</p></td>
+<td><p>Set a default point at the middle of the extent area to be able to start making the model</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data_modules.geometric_data.Orientations.set_orientations" title="gempy.core.data_modules.geometric_data.Orientations.set_orientations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_orientations</span></code></a>([coord, pole_vector, …])</p></td>
+<td><p>Set coordinates, surface and orientation data.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_series_categories_from_series</span></code>(series)</p></td>
+<td><p>set the series categorical columns with the series index of the passed <code class="xref py py-class docutils literal notranslate"><span class="pre">Series</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_surface_categories_from_surfaces</span></code>(surfaces)</p></td>
+<td><p>set the series categorical columns with the series index of the passed <code class="xref py py-class docutils literal notranslate"><span class="pre">Series</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">sort_table</span></code>()</p></td>
+<td><p>First we sort the dataframes by the series age.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data_modules.geometric_data.Orientations.update_annotations" title="gempy.core.data_modules.geometric_data.Orientations.update_annotations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_annotations</span></code></a>()</p></td>
+<td><p>Add a column in the Dataframes with latex names for each input_data paramenter.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_series_category</span></code>()</p></td>
+<td><p>Update the series categorical columns with the series categories of the <code class="xref py py-class docutils literal notranslate"><span class="pre">Surfaces</span></code> attribute.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="gempy.core.data_modules.geometric_data.Orientations.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">surfaces</span><span class="p">:</span> <span class="n"><a class="reference internal" href="gempy.core.data.Surfaces.html#gempy.core.data.Surfaces" title="gempy.core.data.Surfaces">gempy.core.data.Surfaces</a></span></em>, <em class="sig-param"><span class="n">coord</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">pole_vector</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">orientation</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">surface</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data_modules/geometric_data.html#Orientations.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data_modules.geometric_data.Orientations.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data_modules.geometric_data.Orientations.set_orientations">
+<code class="sig-name descname">set_orientations</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">coord</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)">numpy.ndarray</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">pole_vector</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)">numpy.ndarray</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">orientation</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)">numpy.ndarray</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">surface</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data_modules/geometric_data.html#Orientations.set_orientations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data_modules.geometric_data.Orientations.set_orientations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set coordinates, surface and orientation data.</p>
+<p>If both are passed pole vector has priority over orientation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>coord</strong> (<em>np.ndarray</em>) – [s0] (numpy.ndarray[float, 3]): XYZ 2D array. Axis 1 is the coordinates while axis 0 is n number of input Notice that orientations may be place anywhere in the 3D space</p></li>
+<li><p><strong>pole_vector</strong> (<em>np.ndarray</em>) – [s2] (numpy.ndarray[float, 3]): 2D numpy array where axis 1 is the gradient values G_x, G_y, G_z of the pole while axis 0 is n number of orientations</p></li>
+<li><p><strong>orientation</strong> (<em>np.ndarray</em>) – [s3] (numpy.ndarray[float, 3]): 2D numpy array where axis 1 is are orientation values [dip, azimuth, polarity] of the pole while axis 0 is n number of orientations. — <em>Dip</em> is the inclination angle of 0 to 90 degrees measured from the horizontal plane downwards. <em>Azimuth</em> is the dip direction defined by a 360 degrees clockwise rotation, i.e. 0 = North, 90 = East, 180 = South, and 270 = West.*Polarity* defines where the upper (geologically younger) side of the orientation plane is and can be declared to be either normal (1) or reversed (-1).The orientation plane is perpendicular to the gradient</p></li>
+<li><p><strong>surface</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – [s1] (str, Iterable[str]): list with the surface names for each input point. They must exist in the surfaces object linked to SurfacePoints</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data_modules.geometric_data.Orientations.add_orientation">
+<code class="sig-name descname">add_orientation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">z</span></em>, <em class="sig-param"><span class="n">surface</span></em>, <em class="sig-param"><span class="n">pole_vector</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.9)">tuple</a><span class="p">, </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)">numpy.ndarray</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">orientation</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><span class="p">, </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)">numpy.ndarray</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">idx</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data_modules/geometric_data.html#Orientations.add_orientation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data_modules.geometric_data.Orientations.add_orientation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add orientation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><em>np.ndarray</em>) – [s0] (float, Iterable[float]): values or list of values for the x coordinate</p></li>
+<li><p><strong>y</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><em>np.ndarray</em>) – [s1] (float, Iterable[float]): values or list of values for the y coordinate</p></li>
+<li><p><strong>z</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><em>np.ndarray</em>) – [s2] (float, Iterable[float]): values or list of values for the z coordinate</p></li>
+<li><p><strong>surface</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – [s3] (str, Iterable[str]): list with the surface names for each input point. They must exist in the surfaces object linked to SurfacePoints</p></li>
+<li><p><strong>pole_vector</strong> (<em>np.ndarray</em>) – [s4] (numpy.ndarray[float, 3]): 2D numpy array where axis 1 is the gradient values G_x, G_y, G_z of the pole while axis 0 is n number of orientations</p></li>
+<li><p><strong>orientation</strong> (<em>np.ndarray</em>) – [s5] (numpy.ndarray[float, 3]): 2D numpy array where axis 1 is are orientation values [dip, azimuth, polarity] of the pole while axis 0 is n number of orientations. — <em>Dip</em> is the inclination angle of 0 to 90 degrees measured from the horizontal plane downwards. <em>Azimuth</em> is the dip direction defined by a 360 degrees clockwise rotation, i.e. 0 = North, 90 = East, 180 = South, and 270 = West.*Polarity* defines where the upper (geologically younger) side of the orientation plane is and can be declared to be either normal (1) or reversed (-1).The orientation plane is perpendicular to the gradient</p></li>
+<li><p><strong>idx</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em>) – [s6] (int, list, numpy.ndarray): If passed, list of indices where the function will be applied</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Orientations</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data_modules.geometric_data.Orientations.del_orientation">
+<code class="sig-name descname">del_orientation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data_modules/geometric_data.html#Orientations.del_orientation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data_modules.geometric_data.Orientations.del_orientation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete orientation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>idx</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>, </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><em>numpy.ndarray</em></a>) – If passed, list of indices where the function will be applied.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gempy.core.data_modules.geometric_data.Orientations" title="gempy.core.data_modules.geometric_data.Orientations"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.geometric_data.Orientations</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data_modules.geometric_data.Orientations.modify_orientations">
+<code class="sig-name descname">modify_orientations</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data_modules/geometric_data.html#Orientations.modify_orientations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data_modules.geometric_data.Orientations.modify_orientations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allows modification of any of an orientation column at a given index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>idx</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em>) – [s0] (int, list, numpy.ndarray): If passed, list of indices where the function will be applied</p>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>X</strong> (<em>*</em>) – </p></li>
+<li><p><strong>Y</strong> (<em>*</em>) – </p></li>
+<li><p><strong>Z</strong> (<em>*</em>) – </p></li>
+<li><p><strong>G_x</strong> (<em>*</em>) – </p></li>
+<li><p><strong>G_y</strong> (<em>*</em>) – </p></li>
+<li><p><strong>G_z</strong> (<em>*</em>) – </p></li>
+<li><p><strong>dip</strong> (<em>*</em>) – </p></li>
+<li><p><strong>azimuth</strong> (<em>*</em>) – </p></li>
+<li><p><strong>polarity</strong> (<em>*</em>) – </p></li>
+<li><p><strong>surface</strong> (<em>*</em>) – [s1] (str, Iterable[str]): list with the surface names for each input point. They must exist in the surfaces object linked to SurfacePoints</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data_modules.geometric_data.Orientations.calculate_gradient">
+<code class="sig-name descname">calculate_gradient</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data_modules/geometric_data.html#Orientations.calculate_gradient"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data_modules.geometric_data.Orientations.calculate_gradient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the gradient vector of module 1 given dip and azimuth to be able to plot the orientations</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data_modules.geometric_data.Orientations.calculate_orientations">
+<code class="sig-name descname">calculate_orientations</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data_modules/geometric_data.html#Orientations.calculate_orientations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data_modules.geometric_data.Orientations.calculate_orientations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate and update the orientation data (azimuth and dip) from gradients in the data frame.</p>
+<p>Authors: Elisa Heim, Miguel de la Varga</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data_modules.geometric_data.Orientations.create_orientation_from_surface_points">
+<code class="sig-name descname">create_orientation_from_surface_points</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">surface_points</span><span class="p">:</span> <span class="n"><a class="reference internal" href="gempy.core.data_modules.geometric_data.SurfacePoints.html#gempy.core.data_modules.geometric_data.SurfacePoints" title="gempy.core.data_modules.geometric_data.SurfacePoints">gempy.core.data_modules.geometric_data.SurfacePoints</a></span></em>, <em class="sig-param"><span class="n">indices</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data_modules/geometric_data.html#Orientations.create_orientation_from_surface_points"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data_modules.geometric_data.Orientations.create_orientation_from_surface_points" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create and set orientations from at least 3 points categories_df</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>surface_points</strong> (<a class="reference internal" href="gempy.core.data_modules.geometric_data.SurfacePoints.html#gempy.core.data_modules.geometric_data.SurfacePoints" title="gempy.core.data_modules.geometric_data.SurfacePoints"><code class="xref py py-class docutils literal notranslate"><span class="pre">SurfacePoints</span></code></a>) – [s0] Data child with specific methods to manipulate interface data. It is initialize without arguments to giveflexibility to the origin of the data.</p></li>
+<li><p><strong>indices</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em>) – indices of the surface point used to generate the orientation. At least
+3 independent points will need to be passed.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data_modules.geometric_data.Orientations.set_default_orientation">
+<code class="sig-name descname">set_default_orientation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data_modules/geometric_data.html#Orientations.set_default_orientation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data_modules.geometric_data.Orientations.set_default_orientation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a default point at the middle of the extent area to be able to start making the model</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data_modules.geometric_data.Orientations.read_orientations">
+<code class="sig-name descname">read_orientations</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">table_source</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">kwargs_pandas</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data_modules/geometric_data.html#Orientations.read_orientations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data_modules.geometric_data.Orientations.read_orientations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read tabular using pandas tools and if inplace set it properly to the surface points object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table_source</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>path object</em><em>, </em><em>file-like object</em><em>, or </em><em>direct data frame</em>) – [s0] Any valid string path is acceptable. The string could be a URL. Valid URL schemes include http, ftp, s3, and file. For file URLs, a host is expected. A local file could be: <a class="reference external" href="file://localhost/path/to/table.csv">file://localhost/path/to/table.csv</a>. If you want to pass in a path object, pandas accepts either pathlib.Path or py._path.local.LocalPath. By file-like object, we refer to objects with a read() method, such as a file handler (e.g. via builtin open function) or StringIO</p></li>
+<li><p><strong>debug</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – [s1] of debug is True the method will return the result without modify any related objec</p></li>
+<li><p><strong>inplace</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – [s2] if True, perform operation in-plac</p></li>
+<li><p><strong>kwargs_pandas</strong> – kwargs for the panda function <code class="xref py py-func docutils literal notranslate"><span class="pre">pn.read_csv()</span></code></p></li>
+<li><p><strong>**kwargs</strong> – <ul>
+<li><p>update_surfaces (bool): If True add to the linked <cite>Surfaces</cite> object unique surface names read on
+the csv file</p></li>
+<li><p>coord_x_name (str): Name of the header on the csv for this attribute, e.g for coord_x. Default X</p></li>
+<li><p>coord_y_name (str): Name of the header on the csv for this attribute. Default Y</p></li>
+<li><p>coord_z_name (str): Name of the header on the csv for this attribute. Default Z</p></li>
+<li><p>coord_x_name (str): Name of the header on the csv for this attribute. Default G_x</p></li>
+<li><p>coord_y_name (str): Name of the header on the csv for this attribute. Default G_y</p></li>
+<li><p>coord_z_name (str): Name of the header on the csv for this attribute. Default G_z</p></li>
+<li><p>azimuth_name (str): Name of the header on the csv for this attribute. Default azimuth</p></li>
+<li><p>dip_name     (str): Name of the header on the csv for this attribute. Default dip</p></li>
+<li><p>polarity_name (str): Name of the header on the csv for this attribute. Default polarity</p></li>
+<li><p>surface_name (str): Name of the header on the csv for this attribute. Default formation</p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns:</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-meth docutils literal notranslate"><span class="pre">GeometricData.read_data()</span></code></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data_modules.geometric_data.Orientations.update_annotations">
+<code class="sig-name descname">update_annotations</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data_modules/geometric_data.html#Orientations.update_annotations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data_modules.geometric_data.Orientations.update_annotations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a column in the Dataframes with latex names for each input_data paramenter.</p>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data_modules.geometric_data.Orientations.get_orientation">
+<em class="property">static </em><code class="sig-name descname">get_orientation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">normal</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data_modules/geometric_data.html#Orientations.get_orientation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data_modules.geometric_data.Orientations.get_orientation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get orientation (dip, azimuth, polarity ) for points in all point set</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data_modules.geometric_data.Orientations.plane_fit">
+<em class="property">static </em><code class="sig-name descname">plane_fit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">point_list</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data_modules/geometric_data.html#Orientations.plane_fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data_modules.geometric_data.Orientations.plane_fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit plane to points in PointSet
+Fit an d-dimensional plane to the points in a point set.
+adjusted from: <a class="reference external" href="http://stackoverflow.com/questions/12299540/plane-fitting-to-4-or-more-xyz-points">http://stackoverflow.com/questions/12299540/plane-fitting-to-4-or-more-xyz-points</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>point_list</strong> (<em>array_like</em>) – array of points XYZ</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Return a point, p, on the plane (the point-cloud centroid),
+and the normal, n.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/./logos/gempy.png" alt="Logo"/>
+    
+    <h1 class="logo logo-name">GemPy</h1>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a class="badge" href="https://travis-ci.org/cgre-aachen/gempy">
+    <img
+        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../projects.html">Additional projects</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">GemPy Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../integrations/index.html">Integrations</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../code.html">Code</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../code.html#gempy-api">GemPy API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#model">Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#plot">Plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#data">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#grids">Grids</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../code.html#geometric-data">Geometric Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#interpolator">Interpolator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#solution">Solution</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../code.html">Code</a><ul>
+      <li>Previous: <a href="gempy.core.data_modules.geometric_data.SurfacePoints.html" title="previous chapter">gempy.core.data_modules.geometric_data.SurfacePoints</a></li>
+      <li>Next: <a href="../Interpolator/gempy.core.interpolator.InterpolatorModel.html" title="next chapter">gempy.core.interpolator.InterpolatorModel</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017-2020, CGRE-Aachen Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/Data/gempy.core.data_modules.geometric_data.Orientations.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

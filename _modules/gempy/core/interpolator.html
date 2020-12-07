@@ -1,0 +1,1293 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>gempy.core.interpolator &#8212; GemPy 2.2.7 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for gempy.core.interpolator</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Iterable</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">gempy.core.data</span> <span class="kn">import</span> <span class="n">Grid</span><span class="p">,</span> <span class="n">Surfaces</span><span class="p">,</span> <span class="n">AdditionalData</span>
+<span class="kn">from</span> <span class="nn">gempy.core.data_modules.geometric_data</span> <span class="kn">import</span> <span class="n">SurfacePoints</span><span class="p">,</span> <span class="n">Orientations</span>
+<span class="kn">from</span> <span class="nn">gempy.core.data_modules.stack</span> <span class="kn">import</span> <span class="n">Faults</span><span class="p">,</span> <span class="n">Series</span>
+<span class="kn">from</span> <span class="nn">gempy.utils.meta</span> <span class="kn">import</span> <span class="n">_setdoc_pro</span><span class="p">,</span> <span class="n">_setdoc</span>
+<span class="kn">import</span> <span class="nn">gempy.utils.docstring</span> <span class="k">as</span> <span class="nn">ds</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">theano</span>
+
+
+<span class="nd">@_setdoc_pro</span><span class="p">(</span>
+    <span class="p">[</span><span class="n">SurfacePoints</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">,</span> <span class="n">Orientations</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">,</span> <span class="n">Grid</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">,</span> <span class="n">Surfaces</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">,</span> <span class="n">Series</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">,</span>
+     <span class="n">Faults</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">,</span> <span class="n">AdditionalData</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">])</span>
+<span class="k">class</span> <span class="nc">Interpolator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class that act as:</span>
+<span class="sd">     1) linker between the data objects and the theano graph</span>
+<span class="sd">     2) container of theano graphs + shared variables</span>
+<span class="sd">     3) container of theano function</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        surface_points (SurfacePoints): [s0]</span>
+<span class="sd">        orientations (Orientations): [s1]</span>
+<span class="sd">        grid (Grid): [s2]</span>
+<span class="sd">        surfaces (Surfaces): [s3]</span>
+<span class="sd">        series (Series): [s4]</span>
+<span class="sd">        faults (Faults): [s5]</span>
+<span class="sd">        additional_data (AdditionalData): [s6]</span>
+<span class="sd">        kwargs:</span>
+<span class="sd">            - compile_theano: if true, the function is compile at the creation of the class</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        surface_points (SurfacePoints)</span>
+<span class="sd">        orientations (Orientations)</span>
+<span class="sd">        grid (Grid)</span>
+<span class="sd">        surfaces (Surfaces)</span>
+<span class="sd">        faults (Faults)</span>
+<span class="sd">        additional_data (AdditionalData)</span>
+<span class="sd">        dtype ([&#39;float32&#39;, &#39;float64&#39;]): float precision</span>
+<span class="sd">        theano_graph: theano graph object with the properties from AdditionalData -&gt; Options</span>
+<span class="sd">        theano function: python function to call the theano code</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># TODO assert passed data is rescaled</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface_points</span><span class="p">:</span> <span class="s2">&quot;SurfacePoints&quot;</span><span class="p">,</span> <span class="n">orientations</span><span class="p">:</span> <span class="s2">&quot;Orientations&quot;</span><span class="p">,</span> <span class="n">grid</span><span class="p">:</span> <span class="s2">&quot;Grid&quot;</span><span class="p">,</span>
+                 <span class="n">surfaces</span><span class="p">:</span> <span class="s2">&quot;Surfaces&quot;</span><span class="p">,</span> <span class="n">series</span><span class="p">:</span> <span class="n">Series</span><span class="p">,</span> <span class="n">faults</span><span class="p">:</span> <span class="s2">&quot;Faults&quot;</span><span class="p">,</span>
+                 <span class="n">additional_data</span><span class="p">:</span> <span class="s2">&quot;AdditionalData&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># Test</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">surface_points</span> <span class="o">=</span> <span class="n">surface_points</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span> <span class="o">=</span> <span class="n">orientations</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">grid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">additional_data</span> <span class="o">=</span> <span class="n">additional_data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">surfaces</span> <span class="o">=</span> <span class="n">surfaces</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">series</span> <span class="o">=</span> <span class="n">series</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">faults</span> <span class="o">=</span> <span class="n">faults</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">additional_data</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;values&#39;</span><span class="p">,</span> <span class="s1">&#39;dtype&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_theano_graph</span><span class="p">(</span><span class="n">additional_data</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">theano_function</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_compute_len_series</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_compute_len_series</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">len_series_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">additional_data</span><span class="o">.</span><span class="n">structure_data</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+                                <span class="s1">&#39;values&#39;</span><span class="p">,</span> <span class="s1">&#39;len series surface_points&#39;</span><span class="p">]</span> <span class="o">-</span> \
+                            <span class="bp">self</span><span class="o">.</span><span class="n">additional_data</span><span class="o">.</span><span class="n">structure_data</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+                                <span class="s1">&#39;values&#39;</span><span class="p">,</span> <span class="s1">&#39;number surfaces per series&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_series_i</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">len_series_i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">len_series_o</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">additional_data</span><span class="o">.</span><span class="n">structure_data</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+            <span class="s1">&#39;values&#39;</span><span class="p">,</span> <span class="s1">&#39;len series orientations&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
+            <span class="s1">&#39;int32&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_series_o</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">len_series_o</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">len_series_u</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">additional_data</span><span class="o">.</span><span class="n">kriging_data</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+            <span class="s1">&#39;values&#39;</span><span class="p">,</span> <span class="s1">&#39;drift equations&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;int32&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_series_u</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">len_series_u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">len_series_f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">faults</span><span class="o">.</span><span class="n">faults_relations_df</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;int32&#39;</span><span class="p">)[</span>
+                            <span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">additional_data</span><span class="o">.</span><span class="n">get_additional_data</span><span class="p">()[</span><span class="s1">&#39;values&#39;</span><span class="p">][</span>
+                                <span class="s1">&#39;Structure&#39;</span><span class="p">,</span> <span class="s1">&#39;number series&#39;</span><span class="p">]]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_series_f</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">len_series_f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">len_series_w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_series_i</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_series_o</span> <span class="o">*</span> <span class="mi">3</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_series_u</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_series_f</span>
+
+    <span class="nd">@_setdoc_pro</span><span class="p">([</span><span class="n">AdditionalData</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">,</span> <span class="n">ds</span><span class="o">.</span><span class="n">inplace</span><span class="p">,</span> <span class="n">ds</span><span class="o">.</span><span class="n">theano_graph_pro</span><span class="p">])</span>
+    <span class="k">def</span> <span class="nf">create_theano_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">additional_data</span><span class="p">:</span> <span class="s2">&quot;AdditionalData&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                            <span class="n">output</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create the graph accordingly to the options in the AdditionalData object</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            additional_data (AdditionalData): [s0]</span>
+<span class="sd">            inplace (bool): [s1]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            TheanoGraphPro: [s2]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">output</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;geology&#39;</span><span class="p">]</span>
+
+        <span class="kn">import</span> <span class="nn">gempy.core.theano_modules.theano_graph_pro</span> <span class="k">as</span> <span class="nn">tg</span>
+        <span class="kn">import</span> <span class="nn">importlib</span>
+        <span class="n">importlib</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">tg</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">additional_data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">additional_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">additional_data</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">additional_data</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;values&#39;</span><span class="p">,</span> <span class="s1">&#39;dtype&#39;</span><span class="p">]</span>
+
+        <span class="n">graph</span> <span class="o">=</span> <span class="n">tg</span><span class="o">.</span><span class="n">TheanoGraphPro</span><span class="p">(</span>
+            <span class="n">optimizer</span><span class="o">=</span><span class="n">additional_data</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;values&#39;</span><span class="p">,</span> <span class="s1">&#39;theano_optimizer&#39;</span><span class="p">],</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">additional_data</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;values&#39;</span><span class="p">,</span> <span class="s1">&#39;verbosity&#39;</span><span class="p">],</span>
+            <span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">inplace</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span> <span class="o">=</span> <span class="n">graph</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">graph</span>
+
+    <span class="nd">@_setdoc_pro</span><span class="p">([</span><span class="n">ds</span><span class="o">.</span><span class="n">theano_graph_pro</span><span class="p">])</span>
+    <span class="k">def</span> <span class="nf">set_theano_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">th_graph</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Attach an already create theano graph.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            th_graph (TheanoGraphPro): [s0]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span> <span class="o">=</span> <span class="n">th_graph</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">set_theano_shared_kriging</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set to the theano_graph attribute the shared variables of kriging values from the linked</span>
+<span class="sd">         :class:`AdditionalData`.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Range</span>
+        <span class="n">range_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">additional_data</span><span class="o">.</span><span class="n">kriging_data</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;values&#39;</span><span class="p">,</span> <span class="s1">&#39;range&#39;</span><span class="p">]</span>
+        <span class="n">range_res</span> <span class="o">=</span> <span class="n">range_val</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">additional_data</span><span class="o">.</span><span class="n">rescaling_data</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+            <span class="s1">&#39;values&#39;</span><span class="p">,</span> <span class="s1">&#39;rescaling factor&#39;</span><span class="p">]</span>
+
+        <span class="n">range_list</span> <span class="o">=</span> <span class="n">range_res</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">additional_data</span><span class="o">.</span><span class="n">structure_data</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;values&#39;</span><span class="p">,</span>
+                                                       <span class="s1">&#39;number series&#39;</span><span class="p">])</span>
+        <span class="c1">#</span>
+        <span class="c1"># if type(range_res) is np.float or type(range_res) is np.float64:</span>
+        <span class="c1">#     range_list = range_res * np.ones(</span>
+        <span class="c1">#         self.additional_data.structure_data.df.loc[&#39;values&#39;,</span>
+        <span class="c1">#                                                    &#39;number series&#39;]</span>
+        <span class="c1">#     )</span>
+        <span class="c1"># elif isinstance(range_res, Iterable):</span>
+        <span class="c1">#     range_list = range_res</span>
+        <span class="c1"># else:</span>
+        <span class="c1">#     raise AttributeError(&#39;Range must be either int or Iterable&#39;)</span>
+
+        <span class="c1"># TODO add rescaled range and co into the rescaling data df?</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">a_T</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cast</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">](</span><span class="n">range_list</span><span class="p">))</span>
+
+        <span class="c1"># Covariance at 0</span>
+
+        <span class="n">cov_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">additional_data</span><span class="o">.</span><span class="n">kriging_data</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;values&#39;</span><span class="p">,</span> <span class="s1">&#39;$C_o$&#39;</span><span class="p">]</span>
+        <span class="n">cov_res</span> <span class="o">=</span> <span class="n">cov_val</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">additional_data</span><span class="o">.</span><span class="n">rescaling_data</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+            <span class="s1">&#39;values&#39;</span><span class="p">,</span> <span class="s1">&#39;rescaling factor&#39;</span><span class="p">]</span>
+        <span class="n">cov_list</span> <span class="o">=</span> <span class="n">cov_res</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">additional_data</span><span class="o">.</span><span class="n">structure_data</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;values&#39;</span><span class="p">,</span>
+                                                       <span class="s1">&#39;number series&#39;</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="c1">#</span>
+        <span class="c1">#</span>
+        <span class="c1"># if type(cov_res) is np.float or type(cov_res) is np.float64:</span>
+        <span class="c1">#     cov_list = cov_res * np.ones(</span>
+        <span class="c1">#         self.additional_data.structure_data.df.loc[&#39;values&#39;,</span>
+        <span class="c1">#                                                    &#39;number series&#39;]</span>
+        <span class="c1">#     )</span>
+        <span class="c1"># elif isinstance(cov_res, Iterable):</span>
+        <span class="c1">#     cov_list = cov_res</span>
+        <span class="c1"># else:</span>
+        <span class="c1">#     raise AttributeError(&#39;Covariance at 0 must be either int or Iterable&#39;)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">c_o_T</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">cast</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">](</span><span class="n">cov_list</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="c1"># universal grades</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">n_universal_eq_T</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span>
+            <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">additional_data</span><span class="o">.</span><span class="n">kriging_data</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;values&#39;</span><span class="p">,</span> <span class="s1">&#39;drift equations&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
+                <span class="s1">&#39;int32&#39;</span><span class="p">)[</span><span class="bp">self</span><span class="o">.</span><span class="n">non_zero</span><span class="p">]))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_theano_shared_nuggets</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">set_theano_shared_nuggets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># nugget effect</span>
+        <span class="c1"># len_orientations = self.additional_data.structure_data.df.loc[&#39;values&#39;, &#39;len series orientations&#39;]</span>
+        <span class="c1"># len_orientations_len = np.sum(len_orientations)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">nugget_effect_grad_T</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">cast</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">](</span><span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;smooth&#39;</span><span class="p">],</span> <span class="mi">3</span><span class="p">)))</span>
+
+        <span class="c1"># len_rest_form = (self.additional_data.structure_data.df.loc[&#39;values&#39;, &#39;len surfaces surface_points&#39;])</span>
+        <span class="c1"># len_rest_len = np.sum(len_rest_form)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">nugget_effect_scalar_T</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">cast</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">](</span><span class="bp">self</span><span class="o">.</span><span class="n">surface_points</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;smooth&#39;</span><span class="p">]))</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">set_theano_shared_structure_surfaces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set to the theano_graph attribute the shared variables of structure from the linked</span>
+<span class="sd">         :class:`AdditionalData`.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">len_rest_form</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">additional_data</span><span class="o">.</span><span class="n">structure_data</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+                             <span class="s1">&#39;values&#39;</span><span class="p">,</span> <span class="s1">&#39;len surfaces surface_points&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">number_of_points_per_surface_T</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">len_rest_form</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;int32&#39;</span><span class="p">))</span>
+
+
+<span class="k">class</span> <span class="nc">InterpolatorWeights</span><span class="p">(</span><span class="n">Interpolator</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface_points</span><span class="p">:</span> <span class="s2">&quot;SurfacePoints&quot;</span><span class="p">,</span> <span class="n">orientations</span><span class="p">:</span> <span class="s2">&quot;Orientations&quot;</span><span class="p">,</span> <span class="n">grid</span><span class="p">:</span> <span class="s2">&quot;Grid&quot;</span><span class="p">,</span>
+                 <span class="n">surfaces</span><span class="p">:</span> <span class="s2">&quot;Surfaces&quot;</span><span class="p">,</span> <span class="n">series</span><span class="p">,</span> <span class="n">faults</span><span class="p">:</span> <span class="s2">&quot;Faults&quot;</span><span class="p">,</span> <span class="n">additional_data</span><span class="p">:</span> <span class="s2">&quot;AdditionalData&quot;</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">InterpolatorWeights</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">surface_points</span><span class="p">,</span> <span class="n">orientations</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">surfaces</span><span class="p">,</span>
+                                                  <span class="n">series</span><span class="p">,</span> <span class="n">faults</span><span class="p">,</span>
+                                                  <span class="n">additional_data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_python_input_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fault_drift</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">             Get values from the data objects used during the interpolation:</span>
+<span class="sd">                 - dip positions XYZ</span>
+<span class="sd">                 - dip angles</span>
+<span class="sd">                 - azimuth</span>
+<span class="sd">                 - polarity</span>
+<span class="sd">                 - surface_points coordinates XYZ</span>
+<span class="sd">             Returns:</span>
+<span class="sd">                 (list)</span>
+<span class="sd">             &quot;&quot;&quot;</span>
+        <span class="c1"># orientations, this ones I tile them inside theano. PYTHON VAR</span>
+        <span class="n">dips_position</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="o">.</span><span class="n">df</span><span class="p">[[</span><span class="s1">&#39;X_c&#39;</span><span class="p">,</span> <span class="s1">&#39;Y_c&#39;</span><span class="p">,</span> <span class="s1">&#39;Z_c&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">dip_angles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;dip&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">azimuth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;azimuth&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">polarity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;polarity&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">surface_points_coord</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">surface_points</span><span class="o">.</span><span class="n">df</span><span class="p">[[</span><span class="s1">&#39;X_c&#39;</span><span class="p">,</span> <span class="s1">&#39;Y_c&#39;</span><span class="p">,</span> <span class="s1">&#39;Z_c&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span>
+        <span class="k">if</span> <span class="n">fault_drift</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fault_drift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_series_i</span><span class="o">.</span><span class="n">sum</span><span class="p">()))</span>
+
+        <span class="c1">#  fault_drift = np.zeros((0, surface_points_coord.shape[0]))</span>
+
+        <span class="c1"># Set all in a list casting them in the chosen dtype</span>
+        <span class="n">idl</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">cast</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">](</span><span class="n">xs</span><span class="p">)</span> <span class="k">for</span> <span class="n">xs</span> <span class="ow">in</span>
+               <span class="p">(</span><span class="n">dips_position</span><span class="p">,</span> <span class="n">dip_angles</span><span class="p">,</span> <span class="n">azimuth</span><span class="p">,</span> <span class="n">polarity</span><span class="p">,</span> <span class="n">surface_points_coord</span><span class="p">,</span>
+                <span class="n">fault_drift</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="n">idl</span>
+
+    <span class="k">def</span> <span class="nf">compile_th_fn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_theano_shared_kriging</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_theano_shared_structure_surfaces</span><span class="p">()</span>
+        <span class="c1"># This are the shared parameters and the compilation of the function. This will be hidden as well at some point</span>
+        <span class="n">input_data_T</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">input_parameters_kriging</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Compiling theano function...&#39;</span><span class="p">)</span>
+
+        <span class="n">th_fn</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">function</span><span class="p">(</span><span class="n">input_data_T</span><span class="p">,</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">compute_weights</span><span class="p">(),</span>
+                                <span class="c1"># mode=NanGuardMode(nan_is_error=True),</span>
+                                <span class="n">on_unused_input</span><span class="o">=</span><span class="s1">&#39;warn&#39;</span><span class="p">,</span>
+                                <span class="n">allow_input_downcast</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                <span class="n">profile</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">inplace</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">theano_function</span> <span class="o">=</span> <span class="n">th_fn</span>
+
+        <span class="k">if</span> <span class="n">debug</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Level of Optimization: &#39;</span><span class="p">,</span> <span class="n">theano</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">optimizer</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Device: &#39;</span><span class="p">,</span> <span class="n">theano</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Precision: &#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Number of faults: &#39;</span><span class="p">,</span>
+                  <span class="bp">self</span><span class="o">.</span><span class="n">additional_data</span><span class="o">.</span><span class="n">structure_data</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;values&#39;</span><span class="p">,</span> <span class="s1">&#39;number faults&#39;</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Compilation Done!&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">th_fn</span>
+
+
+<span class="k">class</span> <span class="nc">InterpolatorScalar</span><span class="p">(</span><span class="n">Interpolator</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface_points</span><span class="p">:</span> <span class="s2">&quot;SurfacePoints&quot;</span><span class="p">,</span> <span class="n">orientations</span><span class="p">:</span> <span class="s2">&quot;Orientations&quot;</span><span class="p">,</span> <span class="n">grid</span><span class="p">:</span> <span class="s2">&quot;Grid&quot;</span><span class="p">,</span>
+                 <span class="n">surfaces</span><span class="p">:</span> <span class="s2">&quot;Surfaces&quot;</span><span class="p">,</span> <span class="n">series</span><span class="p">,</span> <span class="n">faults</span><span class="p">:</span> <span class="s2">&quot;Faults&quot;</span><span class="p">,</span> <span class="n">additional_data</span><span class="p">:</span> <span class="s2">&quot;AdditionalData&quot;</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">InterpolatorScalar</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">surface_points</span><span class="p">,</span> <span class="n">orientations</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">surfaces</span><span class="p">,</span>
+                                                 <span class="n">series</span><span class="p">,</span> <span class="n">faults</span><span class="p">,</span>
+                                                 <span class="n">additional_data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_python_input_zx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fault_drift</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">             Get values from the data objects used during the interpolation:</span>
+<span class="sd">                 - dip positions XYZ</span>
+<span class="sd">                 - dip angles</span>
+<span class="sd">                 - azimuth</span>
+<span class="sd">                 - polarity</span>
+<span class="sd">                 - surface_points coordinates XYZ</span>
+<span class="sd">             Returns:</span>
+<span class="sd">                 (list)</span>
+<span class="sd">             &quot;&quot;&quot;</span>
+        <span class="c1"># orientations, this ones I tile them inside theano. PYTHON VAR</span>
+        <span class="n">dips_position</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="o">.</span><span class="n">df</span><span class="p">[[</span><span class="s1">&#39;X_c&#39;</span><span class="p">,</span> <span class="s1">&#39;Y_c&#39;</span><span class="p">,</span> <span class="s1">&#39;Z_c&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">dip_angles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;dip&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">azimuth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;azimuth&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">polarity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;polarity&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">surface_points_coord</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">surface_points</span><span class="o">.</span><span class="n">df</span><span class="p">[[</span><span class="s1">&#39;X_c&#39;</span><span class="p">,</span> <span class="s1">&#39;Y_c&#39;</span><span class="p">,</span> <span class="s1">&#39;Z_c&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">grid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">values_c</span>
+
+        <span class="k">if</span> <span class="n">fault_drift</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fault_drift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_series_i</span><span class="o">.</span><span class="n">sum</span><span class="p">()))</span>
+
+        <span class="c1">#      fault_drift = np.zeros((0, grid.shape[0] + surface_points_coord.shape[0]))</span>
+
+        <span class="c1"># Set all in a list casting them in the chosen dtype</span>
+        <span class="n">idl</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">cast</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">](</span><span class="n">xs</span><span class="p">)</span> <span class="k">for</span> <span class="n">xs</span> <span class="ow">in</span>
+               <span class="p">(</span><span class="n">dips_position</span><span class="p">,</span> <span class="n">dip_angles</span><span class="p">,</span> <span class="n">azimuth</span><span class="p">,</span> <span class="n">polarity</span><span class="p">,</span> <span class="n">surface_points_coord</span><span class="p">,</span>
+                <span class="n">fault_drift</span><span class="p">,</span> <span class="n">grid</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="n">idl</span>
+
+    <span class="k">def</span> <span class="nf">compile_th_fn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            weights: Constant weights</span>
+<span class="sd">            grid:  Constant grids</span>
+<span class="sd">            inplace:</span>
+<span class="sd">            debug:</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_theano_shared_kriging</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_theano_shared_structure_surfaces</span><span class="p">()</span>
+        <span class="c1"># This are the shared parameters and the compilation of the function. This will be hidden as well at some point</span>
+        <span class="n">input_data_T</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">input_parameters_kriging_export</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Compiling theano function...&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">weights</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">compute_weights</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">weights</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">shared</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">grid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">grid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">grid_val_T</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">grid</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">shared</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span>
+
+        <span class="n">th_fn</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">function</span><span class="p">(</span><span class="n">input_data_T</span><span class="p">,</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">compute_scalar_field</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">grid</span><span class="p">),</span>
+                                <span class="c1"># mode=NanGuardMode(nan_is_error=True),</span>
+                                <span class="n">on_unused_input</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">,</span>
+                                <span class="n">allow_input_downcast</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                <span class="n">profile</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">inplace</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">theano_function</span> <span class="o">=</span> <span class="n">th_fn</span>
+
+        <span class="k">if</span> <span class="n">debug</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Level of Optimization: &#39;</span><span class="p">,</span> <span class="n">theano</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">optimizer</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Device: &#39;</span><span class="p">,</span> <span class="n">theano</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Precision: &#39;</span><span class="p">,</span> <span class="n">theano</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">floatX</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Number of faults: &#39;</span><span class="p">,</span>
+                  <span class="bp">self</span><span class="o">.</span><span class="n">additional_data</span><span class="o">.</span><span class="n">structure_data</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;values&#39;</span><span class="p">,</span> <span class="s1">&#39;number faults&#39;</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Compilation Done!&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">th_fn</span>
+
+
+<span class="k">class</span> <span class="nc">InterpolatorBlock</span><span class="p">(</span><span class="n">Interpolator</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface_points</span><span class="p">:</span> <span class="s2">&quot;SurfacePoints&quot;</span><span class="p">,</span> <span class="n">orientations</span><span class="p">:</span> <span class="s2">&quot;Orientations&quot;</span><span class="p">,</span> <span class="n">grid</span><span class="p">:</span> <span class="s2">&quot;Grid&quot;</span><span class="p">,</span>
+                 <span class="n">surfaces</span><span class="p">:</span> <span class="s2">&quot;Surfaces&quot;</span><span class="p">,</span> <span class="n">series</span><span class="p">:</span> <span class="n">Series</span><span class="p">,</span> <span class="n">faults</span><span class="p">:</span> <span class="s2">&quot;Faults&quot;</span><span class="p">,</span>
+                 <span class="n">additional_data</span><span class="p">:</span> <span class="s2">&quot;AdditionalData&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">InterpolatorBlock</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">surface_points</span><span class="p">,</span> <span class="n">orientations</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">surfaces</span><span class="p">,</span>
+                                                <span class="n">series</span><span class="p">,</span>
+                                                <span class="n">faults</span><span class="p">,</span> <span class="n">additional_data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">theano_function_formation</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">theano_function_faults</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">get_python_input_block</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fault_drift</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">             Get values from the data objects used during the interpolation:</span>
+<span class="sd">                 - dip positions XYZ</span>
+<span class="sd">                 - dip angles</span>
+<span class="sd">                 - azimuth</span>
+<span class="sd">                 - polarity</span>
+<span class="sd">                 - surface_points coordinates XYZ</span>
+<span class="sd">             Returns:</span>
+<span class="sd">                 (list)</span>
+<span class="sd">             &quot;&quot;&quot;</span>
+        <span class="c1"># orientations, this ones I tile them inside theano. PYTHON VAR</span>
+        <span class="n">dips_position</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="o">.</span><span class="n">df</span><span class="p">[[</span><span class="s1">&#39;X_c&#39;</span><span class="p">,</span> <span class="s1">&#39;Y_c&#39;</span><span class="p">,</span> <span class="s1">&#39;Z_c&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">dip_angles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;dip&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">azimuth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;azimuth&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">polarity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;polarity&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">surface_points_coord</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">surface_points</span><span class="o">.</span><span class="n">df</span><span class="p">[[</span><span class="s1">&#39;X_c&#39;</span><span class="p">,</span> <span class="s1">&#39;Y_c&#39;</span><span class="p">,</span> <span class="s1">&#39;Z_c&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">grid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">values_c</span>
+        <span class="k">if</span> <span class="n">fault_drift</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fault_drift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_series_i</span><span class="o">.</span><span class="n">sum</span><span class="p">()))</span>
+
+        <span class="n">values_properties</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">surfaces</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">surfaces</span><span class="o">.</span><span class="n">_n_properties</span><span class="p">:]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+
+        <span class="c1"># Set all in a list casting them in the chosen dtype</span>
+        <span class="n">idl</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">cast</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">](</span><span class="n">xs</span><span class="p">)</span> <span class="k">for</span> <span class="n">xs</span> <span class="ow">in</span>
+               <span class="p">(</span><span class="n">dips_position</span><span class="p">,</span> <span class="n">dip_angles</span><span class="p">,</span> <span class="n">azimuth</span><span class="p">,</span> <span class="n">polarity</span><span class="p">,</span> <span class="n">surface_points_coord</span><span class="p">,</span>
+                <span class="n">fault_drift</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">values_properties</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="n">idl</span>
+
+    <span class="k">def</span> <span class="nf">compile_th_fn_formation_block</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Z_x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                      <span class="n">values_properties</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                      <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            weights: Constant weights</span>
+<span class="sd">            grid:  Constant grids</span>
+<span class="sd">            inplace:</span>
+<span class="sd">            debug:</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_theano_shared_kriging</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_theano_shared_structure_surfaces</span><span class="p">()</span>
+        <span class="c1"># This are the shared parameters and the compilation of the function. This will be hidden as well at some point</span>
+        <span class="n">input_data_T</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">input_parameters_block</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Compiling theano function...&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">weights</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">compute_weights</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">weights</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">shared</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">grid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">grid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">grid_val_T</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">grid</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">shared</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">values_properties</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">values_properties</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">values_properties_op</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">values_properties</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">shared</span><span class="p">(</span><span class="n">values_properties</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">Z_x</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">Z_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">compute_scalar_field</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">grid</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">Z_x</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">shared</span><span class="p">(</span><span class="n">Z_x</span><span class="p">)</span>
+
+        <span class="n">th_fn</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">function</span><span class="p">(</span><span class="n">input_data_T</span><span class="p">,</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">compute_formation_block</span><span class="p">(</span>
+                                    <span class="n">Z_x</span><span class="p">,</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">get_scalar_field_at_surface_points</span><span class="p">(</span><span class="n">Z_x</span><span class="p">),</span>
+                                    <span class="n">values_properties</span>
+                                <span class="p">),</span>
+                                <span class="n">on_unused_input</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">,</span>
+                                <span class="n">allow_input_downcast</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                <span class="n">profile</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">inplace</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">theano_function_formation</span> <span class="o">=</span> <span class="n">th_fn</span>
+
+        <span class="k">if</span> <span class="n">debug</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Level of Optimization: &#39;</span><span class="p">,</span> <span class="n">theano</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">optimizer</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Device: &#39;</span><span class="p">,</span> <span class="n">theano</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Precision: &#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Number of faults: &#39;</span><span class="p">,</span>
+                  <span class="bp">self</span><span class="o">.</span><span class="n">additional_data</span><span class="o">.</span><span class="n">structure_data</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;values&#39;</span><span class="p">,</span> <span class="s1">&#39;number faults&#39;</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Compilation Done!&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">th_fn</span>
+
+    <span class="k">def</span> <span class="nf">compile_th_fn_fault_block</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Z_x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">values_properties</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                  <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            weights: Constant weights</span>
+<span class="sd">            grid:  Constant grids</span>
+<span class="sd">            inplace:</span>
+<span class="sd">            debug:</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_theano_shared_kriging</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_theano_shared_structure_surfaces</span><span class="p">()</span>
+
+        <span class="c1"># This are the shared parameters and the compilation of the function. This will be hidden as well at some point</span>
+        <span class="n">input_data_T</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">input_parameters_block</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Compiling theano function...&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">weights</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">compute_weights</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">weights</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">shared</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">grid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">grid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">grid_val_T</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">grid</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">shared</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">values_properties</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">values_properties</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">values_properties_op</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">values_properties</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">shared</span><span class="p">(</span><span class="n">values_properties</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">Z_x</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">Z_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">compute_scalar_field</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">grid</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">Z_x</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">shared</span><span class="p">(</span><span class="n">Z_x</span><span class="p">)</span>
+
+        <span class="n">th_fn</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">function</span><span class="p">(</span><span class="n">input_data_T</span><span class="p">,</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">compute_fault_block</span><span class="p">(</span>
+                                    <span class="n">Z_x</span><span class="p">,</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">get_scalar_field_at_surface_points</span><span class="p">(</span><span class="n">Z_x</span><span class="p">),</span>
+                                    <span class="n">values_properties</span><span class="p">,</span>
+                                    <span class="mi">0</span><span class="p">,</span>
+                                    <span class="n">grid</span>
+                                <span class="p">),</span>
+                                <span class="c1"># mode=NanGuardMode(nan_is_error=True),</span>
+                                <span class="n">on_unused_input</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">,</span>
+                                <span class="n">allow_input_downcast</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                <span class="n">profile</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">inplace</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">theano_function_faults</span> <span class="o">=</span> <span class="n">th_fn</span>
+
+        <span class="k">if</span> <span class="n">debug</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Level of Optimization: &#39;</span><span class="p">,</span> <span class="n">theano</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">optimizer</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Device: &#39;</span><span class="p">,</span> <span class="n">theano</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Precision: &#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Number of faults: &#39;</span><span class="p">,</span>
+                  <span class="bp">self</span><span class="o">.</span><span class="n">additional_data</span><span class="o">.</span><span class="n">structure_data</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;values&#39;</span><span class="p">,</span> <span class="s1">&#39;number faults&#39;</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Compilation Done!&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">th_fn</span>
+
+
+<div class="viewcode-block" id="InterpolatorGravity"><a class="viewcode-back" href="../../../Interpolator/gempy.core.interpolator.InterpolatorGravity.html#gempy.core.interpolator.InterpolatorGravity">[docs]</a><span class="k">class</span> <span class="nc">InterpolatorGravity</span><span class="p">:</span>
+<div class="viewcode-block" id="InterpolatorGravity.set_theano_shared_tz_kernel"><a class="viewcode-back" href="../../../Interpolator/gempy.core.interpolator.InterpolatorGravity.html#gempy.core.interpolator.InterpolatorGravity.set_theano_shared_tz_kernel">[docs]</a>    <span class="k">def</span> <span class="nf">set_theano_shared_tz_kernel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tz</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set the theano component tz to each voxel&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">tz</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">tz</span> <span class="o">==</span> <span class="s1">&#39;auto&#39;</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">tz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_tz</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">centered_grid</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;You need to calculate or pass tz first.&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">tz</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">tz</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span></div>
+
+    <span class="k">def</span> <span class="nf">calculate_tz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">centered_grid</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">gempy.assets.geophysics</span> <span class="kn">import</span> <span class="n">GravityPreprocessing</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="n">GravityPreprocessing</span><span class="p">(</span><span class="n">centered_grid</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">g</span><span class="o">.</span><span class="n">set_tz_kernel</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">set_theano_shared_pos_density</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos_density</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">pos_density</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">pos_density</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">set_theano_shared_l0_l1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">lg0</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">get_grid_args</span><span class="p">(</span><span class="s1">&#39;centered&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">lg1</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">get_grid_args</span><span class="p">(</span><span class="s1">&#39;centered&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">set_theano_shared_gravity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tz</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">pos_density</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_theano_shared_tz_kernel</span><span class="p">(</span><span class="n">tz</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_theano_shared_pos_density</span><span class="p">(</span><span class="n">pos_density</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_theano_shared_l0_l1</span><span class="p">()</span></div>
+
+
+<span class="k">class</span> <span class="nc">InterpolatorMagnetics</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">set_theano_shared_Vs_kernel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">V</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">V</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">V</span> <span class="o">==</span> <span class="s1">&#39;auto&#39;</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">V</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_V</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">centered_grid</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;You need to calculate or pass V first.&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">V</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">V</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">calculate_V</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">centered_grid</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">gempy.assets.geophysics</span> <span class="kn">import</span> <span class="n">MagneticsPreprocessing</span>
+        <span class="n">Vmodel</span> <span class="o">=</span> <span class="n">MagneticsPreprocessing</span><span class="p">(</span><span class="n">centered_grid</span><span class="p">)</span><span class="o">.</span><span class="n">set_Vs_kernel</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">Vmodel</span>
+
+    <span class="k">def</span> <span class="nf">set_theano_shared_pos_magnetics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos_magnetics</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">pos_magnetics</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">pos_magnetics</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">set_theano_shared_magnetic_cts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">incl</span><span class="p">,</span> <span class="n">decl</span><span class="p">,</span> <span class="n">B_ext</span><span class="o">=</span><span class="mf">52819.8506939139e-9</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            B_ext : External magnetic field in [T], in magnetic surveys this is the geomagnetic field - varies temporaly</span>
+<span class="sd">            incl  : Dip of the geomagnetic field in degrees- varies spatially</span>
+<span class="sd">            decl  : Angle between magnetic and true North in degrees - varies spatially</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">incl</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">incl</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">decl</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">decl</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">B_ext</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">B_ext</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">set_theano_shared_l0_l1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">lg0</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">get_grid_args</span><span class="p">(</span><span class="s1">&#39;centered&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">lg1</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">get_grid_args</span><span class="p">(</span><span class="s1">&#39;centered&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">set_theano_shared_magnetics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">V</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">pos_magnetics</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                    <span class="n">incl</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">decl</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">B_ext</span><span class="o">=</span><span class="mf">52819.8506939139e-9</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_theano_shared_Vs_kernel</span><span class="p">(</span><span class="n">V</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_theano_shared_pos_magnetics</span><span class="p">(</span><span class="n">pos_magnetics</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_theano_shared_magnetic_cts</span><span class="p">(</span><span class="n">incl</span><span class="p">,</span> <span class="n">decl</span><span class="p">,</span> <span class="n">B_ext</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_theano_shared_l0_l1</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="InterpolatorModel"><a class="viewcode-back" href="../../../Interpolator/gempy.core.interpolator.InterpolatorModel.html#gempy.core.interpolator.InterpolatorModel">[docs]</a><span class="nd">@_setdoc_pro</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">ctrl</span><span class="p">)</span>
+<span class="nd">@_setdoc</span><span class="p">([</span><span class="n">Interpolator</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">])</span>
+<span class="k">class</span> <span class="nc">InterpolatorModel</span><span class="p">(</span><span class="n">Interpolator</span><span class="p">,</span> <span class="n">InterpolatorGravity</span><span class="p">,</span> <span class="n">InterpolatorMagnetics</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Child class of :class:`Interpolator` which set the shared variables and compiles the theano</span>
+<span class="sd">    graph to compute the geological model, i.e. lithologies.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        compute_weights_ctrl (list[bool]): [s0]</span>
+<span class="sd">        compute_scalar_ctrl (list[bool]):</span>
+<span class="sd">        compute_block_ctrl (list[bool]):</span>
+
+<span class="sd">    Interpolator Doc</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="InterpolatorModel.__init__"><a class="viewcode-back" href="../../../Interpolator/gempy.core.interpolator.InterpolatorModel.html#gempy.core.interpolator.InterpolatorModel.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface_points</span><span class="p">:</span> <span class="s2">&quot;SurfacePoints&quot;</span><span class="p">,</span> <span class="n">orientations</span><span class="p">:</span> <span class="s2">&quot;Orientations&quot;</span><span class="p">,</span> <span class="n">grid</span><span class="p">:</span> <span class="s2">&quot;Grid&quot;</span><span class="p">,</span>
+                 <span class="n">surfaces</span><span class="p">:</span> <span class="s2">&quot;Surfaces&quot;</span><span class="p">,</span> <span class="n">series</span><span class="p">,</span> <span class="n">faults</span><span class="p">:</span> <span class="s2">&quot;Faults&quot;</span><span class="p">,</span> <span class="n">additional_data</span><span class="p">:</span> <span class="s2">&quot;AdditionalData&quot;</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">surface_points</span><span class="p">,</span> <span class="n">orientations</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">surfaces</span><span class="p">,</span> <span class="n">series</span><span class="p">,</span> <span class="n">faults</span><span class="p">,</span>
+                         <span class="n">additional_data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">len_series_i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">len_series_o</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">len_series_u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">len_series_f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">len_series_w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_initial_results</span><span class="p">()</span>
+
+        <span class="n">n_series</span> <span class="o">=</span> <span class="mi">1000</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">compute_weights_ctrl</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n_series</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">compute_scalar_ctrl</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n_series</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">compute_block_ctrl</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n_series</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="InterpolatorModel.reset_flow_control_initial_results"><a class="viewcode-back" href="../../../Interpolator/gempy.core.interpolator.InterpolatorModel.html#gempy.core.interpolator.InterpolatorModel.reset_flow_control_initial_results">[docs]</a>    <span class="k">def</span> <span class="nf">reset_flow_control_initial_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reset_weights</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">reset_scalar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                           <span class="n">reset_block</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method to reset to the initial state all the recompute ctrl. After calling this method next time</span>
+<span class="sd">         gp.compute_model is called, everything will be computed. Panic bottom.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            reset_weights (bool):</span>
+<span class="sd">            reset_scalar (bool):</span>
+<span class="sd">            reset_block (bool):</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">n_series</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_series_i</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">x_to_interp_shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">values_c</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_series_i</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">reset_weights</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">compute_weights_ctrl</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">weights_vector</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">len_series_w</span><span class="o">.</span><span class="n">sum</span><span class="p">()),</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">reset_scalar</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">compute_scalar_ctrl</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">scalar_fields_matrix</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_series</span><span class="p">,</span> <span class="n">x_to_interp_shape</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">reset_block</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">compute_block_ctrl</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">mask_matrix</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_series</span><span class="p">,</span> <span class="n">x_to_interp_shape</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;bool&#39;</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">block_matrix</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_series</span><span class="p">,</span>
+                          <span class="bp">self</span><span class="o">.</span><span class="n">surfaces</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">surfaces</span><span class="o">.</span><span class="n">_n_properties</span><span class="p">:]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                          <span class="n">x_to_interp_shape</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="InterpolatorModel.set_flow_control"><a class="viewcode-back" href="../../../Interpolator/gempy.core.interpolator.InterpolatorModel.html#gempy.core.interpolator.InterpolatorModel.set_flow_control">[docs]</a>    <span class="k">def</span> <span class="nf">set_flow_control</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the ctrl vectors to the number of series size.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">n_series</span> <span class="o">=</span> <span class="mi">1000</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">compute_weights_ctrl</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n_series</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">compute_scalar_ctrl</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n_series</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">compute_block_ctrl</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n_series</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="InterpolatorModel.set_all_shared_parameters"><a class="viewcode-back" href="../../../Interpolator/gempy.core.interpolator.InterpolatorModel.html#gempy.core.interpolator.InterpolatorModel.set_all_shared_parameters">[docs]</a>    <span class="nd">@_setdoc_pro</span><span class="p">(</span><span class="n">reset_flow_control_initial_results</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">set_all_shared_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reset_ctrl</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set all theano shared parameters required for the computation of lithology</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            reset_ctrl (bool): If true, [s0]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_theano_shared_loop</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_theano_shared_relations</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_theano_shared_kriging</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_theano_shared_structure_surfaces</span><span class="p">()</span>
+        <span class="c1"># self.set_theano_shared_topology()</span>
+        <span class="k">if</span> <span class="n">reset_ctrl</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reset_flow_control_initial_results</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+    <span class="k">def</span> <span class="nf">set_theano_shared_topology</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">max_lith</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">surfaces</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;isFault&#39;</span><span class="p">)[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">count</span><span class="p">()[</span><span class="kc">False</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">max_lith</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">int</span><span class="p">:</span>
+            <span class="n">max_lith</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">max_lith</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">max_lith</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">regular_grid_res</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">regular_grid</span><span class="o">.</span><span class="n">resolution</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">dxdydz</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">regular_grid</span><span class="o">.</span><span class="n">get_dx_dy_dz</span><span class="p">(),</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span>
+
+<div class="viewcode-block" id="InterpolatorModel.set_theano_shared_structure"><a class="viewcode-back" href="../../../Interpolator/gempy.core.interpolator.InterpolatorModel.html#gempy.core.interpolator.InterpolatorModel.set_theano_shared_structure">[docs]</a>    <span class="nd">@_setdoc_pro</span><span class="p">(</span><span class="n">reset_flow_control_initial_results</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">set_theano_shared_structure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reset_ctrl</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set all theano shared variable dependent on :class:`Structure`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            reset_ctrl (bool): If true, [s0]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_theano_shared_loop</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_theano_shared_relations</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_theano_shared_structure_surfaces</span><span class="p">()</span>
+        <span class="c1"># universal grades</span>
+        <span class="c1"># self.theano_graph.n_universal_eq_T.set_value(</span>
+        <span class="c1">#     list(self.additional_data.kriging_data.df.loc[&#39;values&#39;, &#39;drift equations&#39;].astype(&#39;int32&#39;)))</span>
+
+        <span class="k">if</span> <span class="n">reset_ctrl</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reset_flow_control_initial_results</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+    <span class="k">def</span> <span class="nf">remove_series_without_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">len_series_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">additional_data</span><span class="o">.</span><span class="n">structure_data</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+                           <span class="s1">&#39;values&#39;</span><span class="p">,</span> <span class="s1">&#39;len series surface_points&#39;</span><span class="p">]</span> <span class="o">-</span> \
+                       <span class="bp">self</span><span class="o">.</span><span class="n">additional_data</span><span class="o">.</span><span class="n">structure_data</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+                           <span class="s1">&#39;values&#39;</span><span class="p">,</span> <span class="s1">&#39;number surfaces per series&#39;</span><span class="p">]</span>
+
+        <span class="n">len_series_o</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">additional_data</span><span class="o">.</span><span class="n">structure_data</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+            <span class="s1">&#39;values&#39;</span><span class="p">,</span> <span class="s1">&#39;len series orientations&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
+            <span class="s1">&#39;int32&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Remove series without data</span>
+        <span class="n">non_zero_i</span> <span class="o">=</span> <span class="n">len_series_i</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">non_zero_o</span> <span class="o">=</span> <span class="n">len_series_o</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">non_zero</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">non_zero_i</span><span class="p">,</span> <span class="n">non_zero_o</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">non_zero</span> <span class="o">=</span> <span class="n">non_zero</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">non_zero</span>
+
+    <span class="k">def</span> <span class="nf">_compute_len_series</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">len_series_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">additional_data</span><span class="o">.</span><span class="n">structure_data</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+                                <span class="s1">&#39;values&#39;</span><span class="p">,</span> <span class="s1">&#39;len series surface_points&#39;</span><span class="p">]</span> <span class="o">-</span> \
+                            <span class="bp">self</span><span class="o">.</span><span class="n">additional_data</span><span class="o">.</span><span class="n">structure_data</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+                                <span class="s1">&#39;values&#39;</span><span class="p">,</span> <span class="s1">&#39;number surfaces per series&#39;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">len_series_o</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">additional_data</span><span class="o">.</span><span class="n">structure_data</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+            <span class="s1">&#39;values&#39;</span><span class="p">,</span> <span class="s1">&#39;len series orientations&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
+            <span class="s1">&#39;int32&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Remove series without data</span>
+        <span class="n">non_zero_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_series_i</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">non_zero_o</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_series_o</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">non_zero</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">non_zero_i</span><span class="p">,</span> <span class="n">non_zero_o</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">non_zero</span> <span class="o">=</span> <span class="n">non_zero</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">len_series_u</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">additional_data</span><span class="o">.</span><span class="n">kriging_data</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+            <span class="s1">&#39;values&#39;</span><span class="p">,</span> <span class="s1">&#39;drift equations&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;int32&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">len_series_f_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">faults</span><span class="o">.</span><span class="n">faults_relations_df</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">non_zero</span><span class="p">][:,</span> <span class="n">non_zero</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
+                <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="n">np</span><span class="o">.</span><span class="n">AxisError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;np.axis error&#39;</span><span class="p">)</span>
+            <span class="n">len_series_f_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">faults</span><span class="o">.</span><span class="n">faults_relations_df</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">len_series_f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">len_series_f_</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
+            <span class="s1">&#39;int32&#39;</span><span class="p">))</span>  <span class="c1"># [:self.additional_data.get_additional_data()[&#39;values&#39;][&#39;Structure&#39;, &#39;number series&#39;]]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_old_len_series</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_series_i</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">len_series_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_series_i</span><span class="p">[</span><span class="n">non_zero</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">len_series_o</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_series_o</span><span class="p">[</span><span class="n">non_zero</span><span class="p">]</span>
+        <span class="c1"># self.len_series_f = self.len_series_f[non_zero]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">len_series_u</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_series_u</span><span class="p">[</span><span class="n">non_zero</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_series_i</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">len_series_i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_old_len_series</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_series_i</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_series_o</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">len_series_o</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_series_u</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">len_series_u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_series_f</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">len_series_f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">len_series_w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_series_i</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_series_o</span> <span class="o">*</span> <span class="mi">3</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_series_u</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_series_f</span>
+
+<div class="viewcode-block" id="InterpolatorModel.set_theano_shared_loop"><a class="viewcode-back" href="../../../Interpolator/gempy.core.interpolator.InterpolatorModel.html#gempy.core.interpolator.InterpolatorModel.set_theano_shared_loop">[docs]</a>    <span class="k">def</span> <span class="nf">set_theano_shared_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set the theano shared variables that are looped for each series.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_compute_len_series</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">len_series_i</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">len_series_i</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;int32&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">len_series_o</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">len_series_o</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;int32&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">len_series_w</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">len_series_w</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;int32&#39;</span><span class="p">))</span>
+
+        <span class="c1"># Number of surfaces per series. The function is not pretty but the result is quite clear</span>
+        <span class="n">n_surfaces_per_serie</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">additional_data</span><span class="o">.</span><span class="n">structure_data</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;values&#39;</span><span class="p">,</span> <span class="s1">&#39;number surfaces per series&#39;</span><span class="p">][</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">non_zero</span><span class="p">]</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span> \
+            <span class="n">astype</span><span class="p">(</span><span class="s1">&#39;int32&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">n_surfaces_per_series</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">n_surfaces_per_serie</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">n_universal_eq_T</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span>
+            <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">additional_data</span><span class="o">.</span><span class="n">kriging_data</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;values&#39;</span><span class="p">,</span> <span class="s1">&#39;drift equations&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
+                <span class="s1">&#39;int32&#39;</span><span class="p">)[</span><span class="bp">self</span><span class="o">.</span><span class="n">non_zero</span><span class="p">]))</span></div>
+
+<div class="viewcode-block" id="InterpolatorModel.set_theano_shared_weights"><a class="viewcode-back" href="../../../Interpolator/gempy.core.interpolator.InterpolatorModel.html#gempy.core.interpolator.InterpolatorModel.set_theano_shared_weights">[docs]</a>    <span class="nd">@_setdoc_pro</span><span class="p">(</span><span class="n">set_theano_shared_loop</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">set_theano_shared_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set the theano shared weights and [s0]&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_theano_shared_loop</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">weights_vector</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">len_series_w</span><span class="o">.</span><span class="n">sum</span><span class="p">()),</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span></div>
+
+    <span class="k">def</span> <span class="nf">set_theano_shared_fault_relation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">remove_series_without_data</span><span class="p">()</span>
+        <span class="sd">&quot;&quot;&quot;Set the theano shared variable with the fault relation&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">fault_relation</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">faults</span><span class="o">.</span><span class="n">faults_relations_df</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">non_zero</span><span class="p">][:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">non_zero</span><span class="p">])</span>
+
+<div class="viewcode-block" id="InterpolatorModel.set_theano_shared_is_fault"><a class="viewcode-back" href="../../../Interpolator/gempy.core.interpolator.InterpolatorModel.html#gempy.core.interpolator.InterpolatorModel.set_theano_shared_is_fault">[docs]</a>    <span class="k">def</span> <span class="nf">set_theano_shared_is_fault</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set theano shared variable which controls if a series is fault or not&quot;&quot;&quot;</span>
+        <span class="n">is_fault_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">faults</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;isFault&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">non_zero</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">is_fault</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">is_fault_</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="InterpolatorModel.set_theano_shared_is_finite"><a class="viewcode-back" href="../../../Interpolator/gempy.core.interpolator.InterpolatorModel.html#gempy.core.interpolator.InterpolatorModel.set_theano_shared_is_finite">[docs]</a>    <span class="k">def</span> <span class="nf">set_theano_shared_is_finite</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set theano shared variable which controls if a fault is finite or not&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">is_finite_ctrl</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">faults</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;isFinite&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="InterpolatorModel.set_theano_shared_onlap_erode"><a class="viewcode-back" href="../../../Interpolator/gempy.core.interpolator.InterpolatorModel.html#gempy.core.interpolator.InterpolatorModel.set_theano_shared_onlap_erode">[docs]</a>    <span class="k">def</span> <span class="nf">set_theano_shared_onlap_erode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set the theano variables which control the masking patterns according to the uncomformity relation&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">remove_series_without_data</span><span class="p">()</span>
+
+        <span class="n">is_erosion</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;BottomRelation&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">non_zero</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Erosion&#39;</span>
+        <span class="n">is_onlap</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;BottomRelation&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">non_zero</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Onlap&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">is_erosion</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">is_erosion</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="c1"># this comes from the series df</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">is_erosion</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">is_erosion</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">is_onlap</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">is_onlap</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="InterpolatorModel.set_theano_shared_faults"><a class="viewcode-back" href="../../../Interpolator/gempy.core.interpolator.InterpolatorModel.html#gempy.core.interpolator.InterpolatorModel.set_theano_shared_faults">[docs]</a>    <span class="k">def</span> <span class="nf">set_theano_shared_faults</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set all theano shared variables wich controls the faults behaviour&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_theano_shared_fault_relation</span><span class="p">()</span>
+        <span class="c1"># This comes from the faults df</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_theano_shared_is_fault</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_theano_shared_is_finite</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="InterpolatorModel.set_theano_shared_relations"><a class="viewcode-back" href="../../../Interpolator/gempy.core.interpolator.InterpolatorModel.html#gempy.core.interpolator.InterpolatorModel.set_theano_shared_relations">[docs]</a>    <span class="k">def</span> <span class="nf">set_theano_shared_relations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set all theano shared variables that control all the series interactions with each other&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_theano_shared_fault_relation</span><span class="p">()</span>
+        <span class="c1"># This comes from the faults df</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_theano_shared_is_fault</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_theano_shared_is_finite</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_theano_shared_onlap_erode</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="InterpolatorModel.set_initial_results"><a class="viewcode-back" href="../../../Interpolator/gempy.core.interpolator.InterpolatorModel.html#gempy.core.interpolator.InterpolatorModel.set_initial_results">[docs]</a>    <span class="k">def</span> <span class="nf">set_initial_results</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize all the theano shared variables where we store the final results of the interpolation.</span>
+<span class="sd">        This function must be called always after set_theano_shared_loop</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_compute_len_series</span><span class="p">()</span>
+
+        <span class="n">x_to_interp_shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">values_c</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_series_i</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">n_series</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_series_i</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span>
+            <span class="mi">0</span><span class="p">]</span>  <span class="c1"># self.additional_data.structure_data.df.loc[&#39;values&#39;, &#39;number series&#39;]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">weights_vector</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">len_series_w</span><span class="o">.</span><span class="n">sum</span><span class="p">()),</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">scalar_fields_matrix</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_series</span><span class="p">,</span> <span class="n">x_to_interp_shape</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">mask_matrix</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_series</span><span class="p">,</span> <span class="n">x_to_interp_shape</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;bool&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">block_matrix</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">n_series</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">surfaces</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">surfaces</span><span class="o">.</span><span class="n">_n_properties</span><span class="p">:]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                 <span class="n">x_to_interp_shape</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="InterpolatorModel.set_initial_results_matrices"><a class="viewcode-back" href="../../../Interpolator/gempy.core.interpolator.InterpolatorModel.html#gempy.core.interpolator.InterpolatorModel.set_initial_results_matrices">[docs]</a>    <span class="k">def</span> <span class="nf">set_initial_results_matrices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize all the theano shared variables where we store the final results of the interpolation except the</span>
+<span class="sd">        kriging weights vector.</span>
+
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_compute_len_series</span><span class="p">()</span>
+
+        <span class="n">x_to_interp_shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">values_c</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_series_i</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">n_series</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_series_i</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span>
+            <span class="mi">0</span><span class="p">]</span>  <span class="c1"># self.additional_data.structure_data.df.loc[&#39;values&#39;, &#39;number series&#39;]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">scalar_fields_matrix</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_series</span><span class="p">,</span> <span class="n">x_to_interp_shape</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">mask_matrix</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_series</span><span class="p">,</span> <span class="n">x_to_interp_shape</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;bool&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">block_matrix</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">n_series</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">surfaces</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">surfaces</span><span class="o">.</span><span class="n">_n_properties</span><span class="p">:]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                 <span class="n">x_to_interp_shape</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span></div>
+
+    <span class="k">def</span> <span class="nf">set_theano_shared_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">grid</span> <span class="o">==</span> <span class="s1">&#39;shared&#39;</span><span class="p">:</span>
+            <span class="n">grid_sh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">values_c</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">grid_val_T</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">shared</span><span class="p">(</span><span class="n">grid_sh</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">),</span>
+                                                         <span class="s1">&#39;Constant values to interpolate.&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">grid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">grid_val_T</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">shared</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">),</span>
+                                                         <span class="s1">&#39;Constant values to interpolate.&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="InterpolatorModel.modify_results_matrices_pro"><a class="viewcode-back" href="../../../Interpolator/gempy.core.interpolator.InterpolatorModel.html#gempy.core.interpolator.InterpolatorModel.modify_results_matrices_pro">[docs]</a>    <span class="k">def</span> <span class="nf">modify_results_matrices_pro</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Modify all theano shared matrices to the right size according to the structure data. This method allows</span>
+<span class="sd">        to change the size of the results without having the recompute all series&quot;&quot;&quot;</span>
+
+        <span class="n">old_len_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_old_len_series</span>
+        <span class="n">new_len_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">additional_data</span><span class="o">.</span><span class="n">structure_data</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+                        <span class="s1">&#39;values&#39;</span><span class="p">,</span> <span class="s1">&#39;len series surface_points&#39;</span><span class="p">]</span> <span class="o">-</span> \
+                    <span class="bp">self</span><span class="o">.</span><span class="n">additional_data</span><span class="o">.</span><span class="n">structure_data</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+                        <span class="s1">&#39;values&#39;</span><span class="p">,</span> <span class="s1">&#39;number surfaces per series&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">new_len_i</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">old_len_i</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_initial_results</span><span class="p">()</span>
+            <span class="n">old_len_i</span> <span class="o">=</span> <span class="n">old_len_i</span><span class="p">[</span><span class="n">old_len_i</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">new_len_i</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">old_len_i</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_initial_results</span><span class="p">()</span>
+            <span class="n">new_len_i</span> <span class="o">=</span> <span class="n">new_len_i</span><span class="p">[</span><span class="n">new_len_i</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">scalar_fields_matrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">scalar_fields_matrix</span><span class="o">.</span><span class="n">get_value</span><span class="p">()</span>
+            <span class="n">mask_matrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">mask_matrix</span><span class="o">.</span><span class="n">get_value</span><span class="p">()</span>
+            <span class="n">block_matrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">block_matrix</span><span class="o">.</span><span class="n">get_value</span><span class="p">()</span>
+
+            <span class="n">len_i_diff</span> <span class="o">=</span> <span class="n">new_len_i</span> <span class="o">-</span> <span class="n">old_len_i</span>
+            <span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">len_i_diff</span><span class="p">):</span>
+                <span class="n">loc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">values_c</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">old_len_i</span><span class="p">[</span><span class="n">e</span><span class="p">]</span>
+                <span class="n">i</span> <span class="o">*=</span> <span class="mi">2</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">pass</span>
+                <span class="k">elif</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">scalar_fields_matrix</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span>
+                        <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">scalar_fields_matrix</span><span class="p">,</span> <span class="p">[</span><span class="n">loc</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">mask_matrix</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span>
+                        <span class="n">mask_matrix</span><span class="p">,</span> <span class="p">[</span><span class="n">loc</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">block_matrix</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span>
+                        <span class="n">block_matrix</span><span class="p">,</span> <span class="p">[</span><span class="n">loc</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">scalar_fields_matrix</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span>
+                        <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">scalar_fields_matrix</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">loc</span><span class="p">,</span> <span class="n">loc</span> <span class="o">+</span> <span class="n">i</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">mask_matrix</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span>
+                        <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">mask_matrix</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">loc</span><span class="p">,</span> <span class="n">loc</span> <span class="o">+</span> <span class="n">i</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">block_matrix</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span>
+                        <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">block_matrix</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">loc</span><span class="p">,</span> <span class="n">loc</span> <span class="o">+</span> <span class="n">i</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">modify_results_weights</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="InterpolatorModel.modify_results_weights"><a class="viewcode-back" href="../../../Interpolator/gempy.core.interpolator.InterpolatorModel.html#gempy.core.interpolator.InterpolatorModel.modify_results_weights">[docs]</a>    <span class="k">def</span> <span class="nf">modify_results_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Modify the theano shared weights vector according to the structure.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">old_len_w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_series_w</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_compute_len_series</span><span class="p">()</span>
+        <span class="n">new_len_w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_series_w</span>
+        <span class="k">if</span> <span class="n">new_len_w</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">old_len_w</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_initial_results</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">weights</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">weights_vector</span><span class="o">.</span><span class="n">get_value</span><span class="p">()</span>
+            <span class="n">len_w_diff</span> <span class="o">=</span> <span class="n">new_len_w</span> <span class="o">-</span> <span class="n">old_len_w</span>
+            <span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">len_w_diff</span><span class="p">):</span>
+                <span class="c1">#   print(len_w_diff, weights)</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">pass</span>
+                <span class="k">elif</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">weights_vector</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span>
+                        <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">old_len_w</span><span class="p">[</span><span class="n">e</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">i</span><span class="p">)))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1">#      print(np.delete(weights, np.arange(old_len_w[e],  old_len_w[e] + i, -1)-1))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">weights_vector</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span>
+                        <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">old_len_w</span><span class="p">[</span><span class="n">e</span><span class="p">],</span> <span class="n">old_len_w</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">+</span> <span class="n">i</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="InterpolatorModel.get_python_input_block"><a class="viewcode-back" href="../../../Interpolator/gempy.core.interpolator.InterpolatorModel.html#gempy.core.interpolator.InterpolatorModel.get_python_input_block">[docs]</a>    <span class="k">def</span> <span class="nf">get_python_input_block</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">append_control</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fault_drift</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get values from the data objects used during the interpolation:</span>
+<span class="sd">             - dip positions XYZ</span>
+<span class="sd">             - dip angles</span>
+<span class="sd">             - azimuth</span>
+<span class="sd">             - polarity</span>
+<span class="sd">             - surface_points coordinates XYZ</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            append_control (bool): If true append the ctrl vectors to the input list</span>
+<span class="sd">            fault_drift (Optional[np.array]): matrix with per computed faults to drift the model</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: list of arrays with all the input parameters to the theano function</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># orientations, this ones I tile them inside theano. PYTHON VAR</span>
+        <span class="n">dips_position</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="o">.</span><span class="n">df</span><span class="p">[[</span><span class="s1">&#39;X_c&#39;</span><span class="p">,</span> <span class="s1">&#39;Y_c&#39;</span><span class="p">,</span> <span class="s1">&#39;Z_c&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">dip_angles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;dip&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">azimuth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;azimuth&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">polarity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;polarity&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">surface_points_coord</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">surface_points</span><span class="o">.</span><span class="n">df</span><span class="p">[[</span><span class="s1">&#39;X_c&#39;</span><span class="p">,</span> <span class="s1">&#39;Y_c&#39;</span><span class="p">,</span> <span class="s1">&#39;Z_c&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">grid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">values_c</span>
+        <span class="k">if</span> <span class="n">fault_drift</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fault_drift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_series_i</span><span class="o">.</span><span class="n">sum</span><span class="p">()))</span>
+
+        <span class="c1"># values_properties = np.array([[]], dtype=&#39;float32&#39;)</span>
+        <span class="c1"># g = self.surfaces.df.groupby(&#39;series&#39;)</span>
+        <span class="c1"># for series_ in self.series.df.index.values[self.non_zero]:</span>
+        <span class="c1">#     values_properties = np.append(values_properties,</span>
+        <span class="c1">#                                   g.get_group(series_).iloc[:, self.surfaces._n_properties:].values.</span>
+        <span class="c1">#                                   astype(self.dtype).T, axis=1)</span>
+
+        <span class="c1">#  values_properties = self.surfaces.df.iloc[:, self.surfaces._n_properties:].values.astype(self.dtype).T</span>
+
+        <span class="n">values_properties</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">surfaces</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;isActive&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get_group</span><span class="p">(</span>
+            <span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">surfaces</span><span class="o">.</span><span class="n">_n_properties</span><span class="p">:]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+        <span class="c1"># Set all in a list casting them in the chosen dtype</span>
+        <span class="n">idl</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">cast</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">](</span><span class="n">xs</span><span class="p">)</span> <span class="k">for</span> <span class="n">xs</span> <span class="ow">in</span> <span class="p">(</span><span class="n">dips_position</span><span class="p">,</span> <span class="n">dip_angles</span><span class="p">,</span> <span class="n">azimuth</span><span class="p">,</span> <span class="n">polarity</span><span class="p">,</span>
+                                                  <span class="n">surface_points_coord</span><span class="p">,</span>
+                                                  <span class="n">fault_drift</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">values_properties</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="n">append_control</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">idl</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">compute_weights_ctrl</span><span class="p">)</span>
+            <span class="n">idl</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">compute_scalar_ctrl</span><span class="p">)</span>
+            <span class="n">idl</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">compute_block_ctrl</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">idl</span></div>
+
+<div class="viewcode-block" id="InterpolatorModel.print_theano_shared"><a class="viewcode-back" href="../../../Interpolator/gempy.core.interpolator.InterpolatorModel.html#gempy.core.interpolator.InterpolatorModel.print_theano_shared">[docs]</a>    <span class="k">def</span> <span class="nf">print_theano_shared</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Print many of the theano shared variables&quot;&quot;&quot;</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;len sereies i&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">len_series_i</span><span class="o">.</span><span class="n">get_value</span><span class="p">())</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;len sereies o&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">len_series_o</span><span class="o">.</span><span class="n">get_value</span><span class="p">())</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;len sereies w&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">len_series_w</span><span class="o">.</span><span class="n">get_value</span><span class="p">())</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;n surfaces per series&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">n_surfaces_per_series</span><span class="o">.</span><span class="n">get_value</span><span class="p">())</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;n universal eq&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">n_universal_eq_T</span><span class="o">.</span><span class="n">get_value</span><span class="p">())</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;is finite&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">is_finite_ctrl</span><span class="o">.</span><span class="n">get_value</span><span class="p">())</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;is erosion&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">is_erosion</span><span class="o">.</span><span class="n">get_value</span><span class="p">())</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;is onlap&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">is_onlap</span><span class="o">.</span><span class="n">get_value</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="InterpolatorModel.compile_th_fn_geo"><a class="viewcode-back" href="../../../Interpolator/gempy.core.interpolator.InterpolatorModel.html#gempy.core.interpolator.InterpolatorModel.compile_th_fn_geo">[docs]</a>    <span class="k">def</span> <span class="nf">compile_th_fn_geo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">grid</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compile and create the theano function which can be evaluated to compute the geological models</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">            inplace (bool): If true add the attribute theano.function to the object inplace</span>
+<span class="sd">            debug (bool): If true print some of the theano flags</span>
+<span class="sd">            grid: If None, grid will be passed as variable. If shared or np.ndarray the grid will be treated as</span>
+<span class="sd">             constant (if shared the grid will be taken of grid)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            theano.function: function that computes the whole interpolation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_all_shared_parameters</span><span class="p">(</span><span class="n">reset_ctrl</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="c1"># This are the shared parameters and the compilation of the function. This will be hidden as well at some point</span>
+        <span class="n">input_data_T</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">input_parameters_loop</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Compiling theano function...&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">grid</span> <span class="o">==</span> <span class="s1">&#39;shared&#39;</span> <span class="ow">or</span> <span class="n">grid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_theano_shared_grid</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span>
+
+        <span class="n">th_fn</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">function</span><span class="p">(</span><span class="n">input_data_T</span><span class="p">,</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">theano_output</span><span class="p">(),</span>
+                                <span class="n">updates</span><span class="o">=</span><span class="p">[</span>
+                                    <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">block_matrix</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">new_block</span><span class="p">),</span>
+                                    <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">weights_vector</span><span class="p">,</span>
+                                     <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">new_weights</span><span class="p">),</span>
+                                    <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">scalar_fields_matrix</span><span class="p">,</span>
+                                     <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">new_scalar</span><span class="p">),</span>
+                                    <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">mask_matrix</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">theano_graph</span><span class="o">.</span><span class="n">new_mask</span><span class="p">)</span>
+                                <span class="p">],</span>
+                                <span class="n">on_unused_input</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">,</span>
+                                <span class="n">allow_input_downcast</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                <span class="n">profile</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">inplace</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">theano_function</span> <span class="o">=</span> <span class="n">th_fn</span>
+
+        <span class="k">if</span> <span class="n">debug</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Level of Optimization: &#39;</span><span class="p">,</span> <span class="n">theano</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">optimizer</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Device: &#39;</span><span class="p">,</span> <span class="n">theano</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Precision: &#39;</span><span class="p">,</span> <span class="n">theano</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">floatX</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Number of faults: &#39;</span><span class="p">,</span>
+                  <span class="bp">self</span><span class="o">.</span><span class="n">additional_data</span><span class="o">.</span><span class="n">structure_data</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;values&#39;</span><span class="p">,</span> <span class="s1">&#39;number faults&#39;</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Compilation Done!&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">th_fn</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../index.html">
+    <img class="logo" src="../../../_static/./logos/gempy.png" alt="Logo"/>
+    
+    <h1 class="logo logo-name">GemPy</h1>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a class="badge" href="https://travis-ci.org/cgre-aachen/gempy">
+    <img
+        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../projects.html">Additional projects</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/index.html">GemPy Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../integrations/index.html">Integrations</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../code.html">Code</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017-2020, CGRE-Aachen Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

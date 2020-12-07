@@ -1,0 +1,32 @@
+﻿gempy.core.data.Options
+=======================
+
+.. currentmodule:: gempy.core.data
+
+
+.. autoclass:: Options
+   :no-undoc-members:
+
+   
+   .. rubric:: Examples using Options
+   .. include:: ../gen_modules/backreferences/gempy.core.data.Options.examples
+   .. raw:: html
+
+       <div class="sphx-glr-clear"></div>
+   
+   
+   
+   .. rubric:: Methods
+   .. autosummary::
+   
+      ~Options.__init__
+      ~Options.default_options
+      ~Options.modify_options
+   
+   
+
+   
+   
+   
+
+

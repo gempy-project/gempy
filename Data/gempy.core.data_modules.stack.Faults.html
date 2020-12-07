@@ -1,0 +1,309 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>gempy.core.data_modules.stack.Faults &#8212; GemPy 2.2.7 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="gempy.core.data.Surfaces" href="gempy.core.data.Surfaces.html" />
+    <link rel="prev" title="gempy.core.data_modules.stack.Series" href="gempy.core.data_modules.stack.Series.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="gempy-core-data-modules-stack-faults">
+<h1>gempy.core.data_modules.stack.Faults<a class="headerlink" href="#gempy-core-data-modules-stack-faults" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="gempy.core.data_modules.stack.Faults">
+<em class="property">class </em><code class="sig-prename descclassname">gempy.core.data_modules.stack.</code><code class="sig-name descname">Faults</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">series_fault</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">rel_matrix</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data_modules/stack.html#Faults"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data_modules.stack.Faults" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class that encapsulate faulting related content. Mainly, which surfaces/surfaces are faults. The fault network
+—i.e. which faults offset other faults—and fault types—finite vs infinite.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>series_fault</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – Name of the series which are faults</p></li>
+<li><p><strong>rel_matrix</strong> (<em>numpy.array</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>]</em>) – 2D Boolean array with boolean logic. Rows affect (offset) columns</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="gempy.core.data_modules.stack.Faults.df">
+<code class="sig-name descname">df</code><a class="headerlink" href="#gempy.core.data_modules.stack.Faults.df" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pandas data frame containing the series as index and if they are faults
+or not (otherwise they are lithologies) and in case of being fault if is finite</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">pn.core.frame.DataFrames</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="gempy.core.data_modules.stack.Faults.faults_relations_df">
+<code class="sig-name descname">faults_relations_df</code><a class="headerlink" href="#gempy.core.data_modules.stack.Faults.faults_relations_df" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pandas data frame containing the offsetting relations
+between each fault and the rest of the series (either other faults or lithologies)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">pn.core.frame.DataFrames</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="gempy.core.data_modules.stack.Faults.n_faults">
+<code class="sig-name descname">n_faults</code><a class="headerlink" href="#gempy.core.data_modules.stack.Faults.n_faults" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of faults in the object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Examples using Faults</p>
+<div class="sphx-glr-thumbcontainer" tooltip="1.2: Data Structure and Manipulation"><div class="figure align-default" id="id1">
+<img alt="1.2: Data Structure and Manipulation" src="../_images/sphx_glr_ch1_2a_data_manipulation_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../tutorials/ch1_fundamentals/ch1_2a_data_manipulation.html#sphx-glr-tutorials-ch1-fundamentals-ch1-2a-data-manipulation-py"><span class="std std-ref">1.2: Data Structure and Manipulation</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-clear"></div><p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data_modules.stack.Faults.__init__" title="gempy.core.data_modules.stack.Faults.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([series_fault, rel_matrix])</p></td>
+<td><p>Initialize self.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data_modules.stack.Faults.count_faults" title="gempy.core.data_modules.stack.Faults.count_faults"><code class="xref py py-obj docutils literal notranslate"><span class="pre">count_faults</span></code></a>(list_of_names)</p></td>
+<td><p>Read the string names of the surfaces to detect automatically the number of df if the name fault is on the name.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_default_faults_relations</span></code>([offset_faults])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data_modules.stack.Faults.set_fault_relation" title="gempy.core.data_modules.stack.Faults.set_fault_relation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_fault_relation</span></code></a>([rel_matrix])</p></td>
+<td><p>Method to set the df that offset a given sequence and therefore also another fault.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data_modules.stack.Faults.set_is_fault" title="gempy.core.data_modules.stack.Faults.set_is_fault"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_is_fault</span></code></a>([series_fault, toggle, …])</p></td>
+<td><p>Set a flag to the series that are faults.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data_modules.stack.Faults.set_is_finite_fault" title="gempy.core.data_modules.stack.Faults.set_is_finite_fault"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_is_finite_fault</span></code></a>([series_finite, toggle])</p></td>
+<td><p>Toggles given series’ finite fault property.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="gempy.core.data_modules.stack.Faults.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">series_fault</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">rel_matrix</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data_modules/stack.html#Faults.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data_modules.stack.Faults.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data_modules.stack.Faults.set_is_fault">
+<code class="sig-name descname">set_is_fault</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">series_fault</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><span class="p">, </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)">numpy.ndarray</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">toggle</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">offset_faults</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data_modules/stack.html#Faults.set_is_fault"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data_modules.stack.Faults.set_is_fault" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a flag to the series that are faults.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>series_fault</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – Name of the series which are faults</p></li>
+<li><p><strong>toggle</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – if True, passing a name which is already True will set it False.</p></li>
+<li><p><strong>offset_faults</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – If True by default faults offset other faults</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gempy.core.data_modules.stack.Faults" title="gempy.core.data_modules.stack.Faults"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.stack.Faults</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data_modules.stack.Faults.set_is_finite_fault">
+<code class="sig-name descname">set_is_finite_fault</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">series_finite</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><span class="p">, </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)">numpy.ndarray</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">toggle</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data_modules/stack.html#Faults.set_is_finite_fault"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data_modules.stack.Faults.set_is_finite_fault" title="Permalink to this definition">¶</a></dt>
+<dd><p>Toggles given series’ finite fault property.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>series_finite</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – Name of the series which are finite</p></li>
+<li><p><strong>toggle</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – if True, passing a name which is already True will set it False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gempy.core.data_modules.stack.Faults" title="gempy.core.data_modules.stack.Faults"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.stack.Faults</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data_modules.stack.Faults.set_fault_relation">
+<code class="sig-name descname">set_fault_relation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rel_matrix</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data_modules/stack.html#Faults.set_fault_relation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data_modules.stack.Faults.set_fault_relation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to set the df that offset a given sequence and therefore also another fault.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>rel_matrix</strong> (<em>numpy.array</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>]</em>) – 2D Boolean array with boolean logic.
+Rows affect (offset) columns</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#gempy.core.data_modules.stack.Faults.faults_relations_df" title="gempy.core.data_modules.stack.Faults.faults_relations_df"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.stack.Faults.faults_relations_df</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data_modules.stack.Faults.count_faults">
+<em class="property">static </em><code class="sig-name descname">count_faults</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">list_of_names</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data_modules/stack.html#Faults.count_faults"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data_modules.stack.Faults.count_faults" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read the string names of the surfaces to detect automatically the number of df if the name
+fault is on the name.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/./logos/gempy.png" alt="Logo"/>
+    
+    <h1 class="logo logo-name">GemPy</h1>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a class="badge" href="https://travis-ci.org/cgre-aachen/gempy">
+    <img
+        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../projects.html">Additional projects</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">GemPy Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../integrations/index.html">Integrations</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../code.html">Code</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../code.html#gempy-api">GemPy API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#model">Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#plot">Plot</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../code.html#data">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#grids">Grids</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#geometric-data">Geometric Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#interpolator">Interpolator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#solution">Solution</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../code.html">Code</a><ul>
+      <li>Previous: <a href="gempy.core.data_modules.stack.Series.html" title="previous chapter">gempy.core.data_modules.stack.Series</a></li>
+      <li>Next: <a href="gempy.core.data.Surfaces.html" title="next chapter">gempy.core.data.Surfaces</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017-2020, CGRE-Aachen Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/Data/gempy.core.data_modules.stack.Faults.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

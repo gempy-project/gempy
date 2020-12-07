@@ -1,0 +1,523 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>gempy.core.solution &#8212; GemPy 2.2.7 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for gempy.core.solution</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">skimage</span> <span class="kn">import</span> <span class="n">measure</span>
+<span class="kn">from</span> <span class="nn">gempy.utils.input_manipulation</span> <span class="kn">import</span> <span class="n">find_interfaces_from_block_bottoms</span>
+<span class="kn">from</span> <span class="nn">gempy.core.data</span> <span class="kn">import</span> <span class="n">Grid</span><span class="p">,</span> <span class="n">Surfaces</span>
+<span class="kn">from</span> <span class="nn">gempy.core.data_modules.stack</span> <span class="kn">import</span> <span class="n">Series</span><span class="p">,</span> <span class="n">Stack</span>
+<span class="kn">from</span> <span class="nn">gempy.utils.meta</span> <span class="kn">import</span> <span class="n">_setdoc_pro</span>
+<span class="kn">import</span> <span class="nn">gempy.utils.docstring</span> <span class="k">as</span> <span class="nn">ds</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">gempy.core.xsolution</span> <span class="kn">import</span> <span class="n">XSolution</span>
+
+    <span class="n">_xsolution_imported</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">inheritance</span> <span class="o">=</span> <span class="n">XSolution</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">inheritance</span> <span class="o">=</span> <span class="nb">object</span>
+    <span class="n">_xsolution_imported</span> <span class="o">=</span> <span class="kc">False</span>
+
+
+<div class="viewcode-block" id="Solution"><a class="viewcode-back" href="../../../Solution/gempy.core.solution.Solution.html#gempy.core.solution.Solution">[docs]</a><span class="nd">@_setdoc_pro</span><span class="p">(</span>
+    <span class="p">[</span><span class="n">Grid</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">,</span> <span class="n">Surfaces</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">,</span> <span class="n">Series</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">,</span> <span class="n">ds</span><span class="o">.</span><span class="n">weights_vector</span><span class="p">,</span> <span class="n">ds</span><span class="o">.</span><span class="n">sfai</span><span class="p">,</span>
+     <span class="n">ds</span><span class="o">.</span><span class="n">bai</span><span class="p">,</span> <span class="n">ds</span><span class="o">.</span><span class="n">mai</span><span class="p">,</span> <span class="n">ds</span><span class="o">.</span><span class="n">vai</span><span class="p">,</span>
+     <span class="n">ds</span><span class="o">.</span><span class="n">lith_block</span><span class="p">,</span> <span class="n">ds</span><span class="o">.</span><span class="n">sfm</span><span class="p">,</span> <span class="n">ds</span><span class="o">.</span><span class="n">bm</span><span class="p">,</span> <span class="n">ds</span><span class="o">.</span><span class="n">mm</span><span class="p">,</span> <span class="n">ds</span><span class="o">.</span><span class="n">vm</span><span class="p">,</span> <span class="n">ds</span><span class="o">.</span><span class="n">vertices</span><span class="p">,</span> <span class="n">ds</span><span class="o">.</span><span class="n">edges</span><span class="p">,</span>
+     <span class="n">ds</span><span class="o">.</span><span class="n">geological_map</span><span class="p">])</span>
+<span class="k">class</span> <span class="nc">Solution</span><span class="p">(</span><span class="n">inheritance</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This class stores the output of the interpolation and the necessary objects</span>
+<span class="sd">    to visualize and manipulate this data.</span>
+
+<span class="sd">    Depending on the activated grid (see :class:`Grid`) a different number of</span>
+<span class="sd">     properties are returned returned:</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        grid (Grid): [s0]</span>
+<span class="sd">        surfaces (Surfaces): [s1]</span>
+<span class="sd">        series (Series): [s2]</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        grid (Grid)</span>
+<span class="sd">        surfaces (Surfaces)</span>
+<span class="sd">        series (Series)</span>
+<span class="sd">        weights_vector (numpy.array): [s3]</span>
+<span class="sd">        scalar_field_at_surface_points (numpy.array): [s4]</span>
+<span class="sd">        block_at_surface_points (numpy.array): [s5]</span>
+<span class="sd">        mask_at_surface_points (numpy.array): [s6]</span>
+<span class="sd">        values_at_surface_points (numpy.array): [s7]</span>
+<span class="sd">        lith_block (numpy.array): [s8]</span>
+<span class="sd">        scalar_field_matrix (numpy.array): [s9]</span>
+<span class="sd">        block_matrix (numpy.array): [s10]</span>
+<span class="sd">        mask_matrix (numpy.array): [s11]</span>
+<span class="sd">        mask_matrix_pad (numpy.array): mask matrix padded 2 block in order to guarantee that the layers intersect each</span>
+<span class="sd">         other after marching cubes</span>
+<span class="sd">        values_matrix (numpy.array): [s12]</span>
+<span class="sd">        vertices (list[numpy.array]): [s13]</span>
+<span class="sd">        edges (list[numpy.array]): [s14]</span>
+<span class="sd">        geological_map (numpy.array): [s15]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Solution.__init__"><a class="viewcode-back" href="../../../Solution/gempy.core.solution.Solution.html#gempy.core.solution.Solution.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid</span><span class="p">:</span> <span class="n">Grid</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">surfaces</span><span class="p">:</span> <span class="n">Surfaces</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">series</span><span class="p">:</span> <span class="n">Series</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">surfaces</span><span class="p">,</span> <span class="n">series</span><span class="p">)</span>
+        <span class="c1"># self.additional_data = additional_data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">grid</span>
+        <span class="c1">#  self.surface_points = surface_points</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stack</span> <span class="o">=</span> <span class="n">series</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">surfaces</span> <span class="o">=</span> <span class="n">surfaces</span>
+
+        <span class="c1"># Input data results</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weights_vector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scalar_field_at_surface_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">block_at_surface_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mask_at_surface_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">values_at_surface_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+
+        <span class="c1"># Regular Grid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lith_block</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scalar_field_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">block_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mask_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mask_matrix_pad</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">values_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gradient</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edges</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">geological_map</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sections</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">custom</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Center Grid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fw_gravity</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fw_magnetics</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Lithology ids </span><span class="se">\n</span><span class="s1">  </span><span class="si">%s</span><span class="s1"> </span><span class="se">\n</span><span class="s1">&#39;</span> \
+               <span class="o">%</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array2string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lith_block</span><span class="p">))</span>
+
+<div class="viewcode-block" id="Solution.set_solution_to_regular_grid"><a class="viewcode-back" href="../../../Solution/gempy.core.solution.Solution.html#gempy.core.solution.Solution.set_solution_to_regular_grid">[docs]</a>    <span class="k">def</span> <span class="nf">set_solution_to_regular_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+                                     <span class="n">compute_mesh</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                                     <span class="n">compute_mesh_options</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;If regular grid is active set all the solution objects dependent on them and compute mesh.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            values (list[np.array]): list with result of the theano evaluation (values returned by</span>
+<span class="sd">             :func:`gempy.compute_model` function):</span>
+
+<span class="sd">                 - block_matrix</span>
+<span class="sd">                 - weights_vector</span>
+<span class="sd">                 - scalar_field_matrix</span>
+<span class="sd">                 - scalar field at interfaces</span>
+<span class="sd">                 - mask_matrix</span>
+
+<span class="sd">            compute_mesh (bool): if True perform marching cubes algorithm to recover the surface mesh from the</span>
+<span class="sd">             implicit model.</span>
+<span class="sd">            compute_mesh_options (dict): options for the marching cube function.</span>
+<span class="sd">                - rescale: True</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            :class:`gempy.core.solutions.Solutions`</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">compute_mesh_options</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">compute_mesh_options</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_values_to_regular_grid</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">compute_mesh</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">compute_all_surfaces</span><span class="p">(</span><span class="o">**</span><span class="n">compute_mesh_options</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+    <span class="k">def</span> <span class="nf">set_solutions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sol</span><span class="p">,</span> <span class="n">compute_mesh</span><span class="p">,</span> <span class="n">sort_surfaces</span><span class="p">,</span>
+                      <span class="n">to_xsolution</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="c1"># Set geology:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_values_to_surface_points</span><span class="p">(</span><span class="n">sol</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">active_grids</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="n">np</span><span class="o">.</span><span class="n">True_</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_solution_to_regular_grid</span><span class="p">(</span><span class="n">sol</span><span class="p">,</span>
+                                              <span class="n">compute_mesh</span><span class="o">=</span><span class="n">compute_mesh</span><span class="p">,</span>
+                                              <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">active_grids</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="n">np</span><span class="o">.</span><span class="n">True_</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_solution_to_custom</span><span class="p">(</span><span class="n">sol</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">active_grids</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="ow">is</span> <span class="n">np</span><span class="o">.</span><span class="n">True_</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_solution_to_topography</span><span class="p">(</span><span class="n">sol</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">active_grids</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="ow">is</span> <span class="n">np</span><span class="o">.</span><span class="n">True_</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_solution_to_sections</span><span class="p">(</span><span class="n">sol</span><span class="p">)</span>
+        <span class="c1"># Set gravity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fw_gravity</span> <span class="o">=</span> <span class="n">sol</span><span class="p">[</span><span class="mi">12</span><span class="p">]</span>
+
+        <span class="c1"># TODO: [X] Set magnetcs and [ ] set topology @A.Schaaf probably it should</span>
+        <span class="c1">#  populate the topology object?</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fw_magnetics</span> <span class="o">=</span> <span class="n">sol</span><span class="p">[</span><span class="mi">13</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">_xsolution_imported</span> <span class="ow">and</span> <span class="n">to_xsolution</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_values</span><span class="p">(</span><span class="n">sol</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">compute_mesh</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">set_meshes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">surfaces</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Meshes are empty.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">set_solution_to_custom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]):</span>
+        <span class="n">l0</span><span class="p">,</span> <span class="n">l1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">get_grid_args</span><span class="p">(</span><span class="s1">&#39;custom&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">custom</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">][:,</span> <span class="n">l0</span><span class="p">:</span> <span class="n">l1</span><span class="p">],</span> <span class="n">values</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span> <span class="n">l0</span><span class="p">:</span> <span class="n">l1</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)])</span>
+
+    <span class="k">def</span> <span class="nf">set_solution_to_topography</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]):</span>
+        <span class="n">l0</span><span class="p">,</span> <span class="n">l1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">get_grid_args</span><span class="p">(</span><span class="s1">&#39;topography&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">geological_map</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">][:,</span> <span class="n">l0</span><span class="p">:</span> <span class="n">l1</span><span class="p">],</span> <span class="n">values</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span> <span class="n">l0</span><span class="p">:</span> <span class="n">l1</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)])</span>
+
+    <span class="k">def</span> <span class="nf">set_solution_to_sections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]):</span>
+        <span class="n">l0</span><span class="p">,</span> <span class="n">l1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">get_grid_args</span><span class="p">(</span><span class="s1">&#39;sections&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sections</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">][:,</span> <span class="n">l0</span><span class="p">:</span> <span class="n">l1</span><span class="p">],</span> <span class="n">values</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span> <span class="n">l0</span><span class="p">:</span> <span class="n">l1</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)])</span>
+
+<div class="viewcode-block" id="Solution.set_values_to_regular_grid"><a class="viewcode-back" href="../../../Solution/gempy.core.solution.Solution.html#gempy.core.solution.Solution.set_values_to_regular_grid">[docs]</a>    <span class="k">def</span> <span class="nf">set_values_to_regular_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]):</span>
+        <span class="sd">&quot;&quot;&quot;Set all solution values to the correspondent attribute.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            values (np.ndarray): values returned by `function: gempy.compute_model` function</span>
+<span class="sd">            compute_mesh (bool): if true compute automatically the grid</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            :class:`gempy.core.solutions.Solutions`</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">regular_grid_length_l0</span><span class="p">,</span> <span class="n">regular_grid_length_l1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">get_grid_args</span><span class="p">(</span>
+            <span class="s1">&#39;regular&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Lithology final block</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lith_block</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span>
+                          <span class="n">regular_grid_length_l0</span><span class="p">:</span> <span class="n">regular_grid_length_l1</span><span class="p">]</span>
+
+        <span class="c1"># Properties</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">values_matrix</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">:,</span>
+                             <span class="n">regular_grid_length_l0</span><span class="p">:</span> <span class="n">regular_grid_length_l1</span><span class="p">]</span>
+
+        <span class="c1"># Axis 0 is the series. Axis 1 is the value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">block_matrix</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="mi">1</span><span class="p">][:,</span> <span class="p">:,</span>
+                            <span class="n">regular_grid_length_l0</span><span class="p">:</span> <span class="n">regular_grid_length_l1</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fault_block</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="c1"># This here does not make any sense</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weights_vector</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">scalar_field_matrix</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span>
+                                   <span class="n">regular_grid_length_l0</span><span class="p">:</span> <span class="n">regular_grid_length_l1</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mask_matrix</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="mi">6</span><span class="p">][:,</span>
+                           <span class="n">regular_grid_length_l0</span><span class="p">:</span> <span class="n">regular_grid_length_l1</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fault_mask</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="mi">7</span><span class="p">][:,</span>
+                          <span class="n">regular_grid_length_l0</span><span class="p">:</span> <span class="n">regular_grid_length_l1</span><span class="p">]</span>
+
+        <span class="c1"># TODO add topology solutions</span>
+
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+    <span class="k">def</span> <span class="nf">set_values_to_surface_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+        <span class="n">x_to_intep_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">length</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scalar_field_at_surface_points</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">values_at_surface_points</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">:,</span> <span class="n">x_to_intep_length</span><span class="p">:]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">block_at_surface_points</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="mi">1</span><span class="p">][:,</span> <span class="p">:,</span> <span class="n">x_to_intep_length</span><span class="p">:]</span>
+        <span class="c1"># todo disambiguate below from self.scalar_field_at_surface_points</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scalar_field_at_surface</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span> <span class="n">x_to_intep_length</span><span class="p">:]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mask_at_surface_points</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="mi">6</span><span class="p">][:,</span> <span class="n">x_to_intep_length</span><span class="p">:]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">scalar_field_at_surface_points</span>
+
+<div class="viewcode-block" id="Solution.compute_marching_cubes_regular_grid"><a class="viewcode-back" href="../../../Solution/gempy.core.solution.Solution.html#gempy.core.solution.Solution.compute_marching_cubes_regular_grid">[docs]</a>    <span class="k">def</span> <span class="nf">compute_marching_cubes_regular_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">scalar_field</span><span class="p">,</span>
+                                            <span class="n">mask_array</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                            <span class="n">rescale</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compute the surface (vertices and edges) of a given surface by computing</span>
+<span class="sd">         marching cubes (by skimage)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            level (float): value of the scalar field at the surface</span>
+<span class="sd">            scalar_field (np.array): scalar_field vector objects</span>
+<span class="sd">            mask_array (np.array): mask vector with trues where marching cubes has to be performed</span>
+<span class="sd">            rescale (bool): if True surfaces will be located between 0 and 1</span>
+<span class="sd">            **kwargs: skimage.measure.marching_cubes_lewiner args (see below)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: vertices, simplices, normals, values</span>
+
+<span class="sd">        See Also:</span>
+
+<span class="sd">            :func:`skimage.measure.marching_cubes`</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">regular_grid</span>
+        <span class="n">spacing</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">regular_grid</span><span class="o">.</span><span class="n">get_dx_dy_dz</span><span class="p">(</span><span class="n">rescale</span><span class="o">=</span><span class="n">rescale</span><span class="p">)</span>
+        <span class="n">vertices</span><span class="p">,</span> <span class="n">simplices</span><span class="p">,</span> <span class="n">normals</span><span class="p">,</span> <span class="n">values</span> <span class="o">=</span> <span class="n">measure</span><span class="o">.</span><span class="n">marching_cubes</span><span class="p">(</span>
+            <span class="n">scalar_field</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">rg</span><span class="o">.</span><span class="n">resolution</span><span class="p">),</span>
+            <span class="n">level</span><span class="p">,</span> <span class="n">spacing</span><span class="o">=</span><span class="n">spacing</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">mask_array</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+        <span class="n">loc_0</span> <span class="o">=</span> <span class="n">rg</span><span class="o">.</span><span class="n">extent_r</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="k">if</span> <span class="n">rescale</span> <span class="k">else</span> <span class="n">rg</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        <span class="n">loc_0</span> <span class="o">=</span> <span class="n">loc_0</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">spacing</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="n">vertices</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">loc_0</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">vertices</span><span class="p">,</span> <span class="n">simplices</span><span class="p">,</span> <span class="n">normals</span><span class="p">,</span> <span class="n">values</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Solution.padding_mask_matrix"><a class="viewcode-back" href="../../../Solution/gempy.core.solution.Solution.html#gempy.core.solution.Solution.padding_mask_matrix">[docs]</a>    <span class="k">def</span> <span class="nf">padding_mask_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mask_topography</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">shift</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Pad as many elements as in shift to the masking arrays. This is done</span>
+<span class="sd">         to guarantee intersection of layers if masked marching cubes are done</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            mask_topography (bool): if True mask also the topography. Default True</span>
+<span class="sd">            shift: Number of voxels shifted for the topology. Default 1.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">              numpy.ndarray: masked regular grid</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mask_matrix_pad</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">series_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stack</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;BottomRelation&#39;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">mask_series</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mask_matrix</span><span class="p">):</span>
+            <span class="n">mask_series_reshape</span> <span class="o">=</span> <span class="n">mask_series</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">regular_grid</span><span class="o">.</span><span class="n">resolution</span><span class="p">)</span>
+
+            <span class="n">mask_pad</span> <span class="o">=</span> <span class="p">(</span><span class="n">mask_series_reshape</span> <span class="o">+</span> <span class="n">find_interfaces_from_block_bottoms</span><span class="p">(</span>
+                <span class="n">mask_series_reshape</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">shift</span><span class="o">=</span><span class="n">shift</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="n">series_type</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Fault&#39;</span><span class="p">:</span>
+                <span class="n">mask_pad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">invert</span><span class="p">(</span><span class="n">mask_pad</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">mask_topography</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">regular_grid</span><span class="o">.</span><span class="n">mask_topo</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">mask_pad</span> <span class="o">*=</span> <span class="n">np</span><span class="o">.</span><span class="n">invert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">regular_grid</span><span class="o">.</span><span class="n">mask_topo</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mask_matrix_pad</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mask_pad</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask_matrix_pad</span></div>
+
+<div class="viewcode-block" id="Solution.compute_all_surfaces"><a class="viewcode-back" href="../../../Solution/gempy.core.solution.Solution.html#gempy.core.solution.Solution.compute_all_surfaces">[docs]</a>    <span class="k">def</span> <span class="nf">compute_all_surfaces</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compute all surfaces of the model given the geological features rules.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            **kwargs: :any:`skimage.measure.marching_cubes` args (see below)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: vertices and edges</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            :meth:`gempy.core.solution.Solution.compute_marching_cubes_regular_grid`</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edges</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">mask_topography</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;mask_topography&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">masked_marching_cubes</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;masked_marching_cubes&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mask_matrix_pad</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">padding_mask_matrix</span><span class="p">(</span>
+            <span class="n">mask_topography</span><span class="o">=</span><span class="n">mask_topography</span>
+        <span class="p">)</span>
+        <span class="n">series_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stack</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;BottomRelation&#39;</span><span class="p">]</span>
+        <span class="n">s_n</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">active_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">surfaces</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;isActive&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">groups</span><span class="p">[</span><span class="kc">True</span><span class="p">]</span>
+        <span class="n">rescale</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;rescale&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># We loop the scalar fields</span>
+        <span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">scalar_field</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scalar_field_matrix</span><span class="p">):</span>
+
+            <span class="c1"># Drop</span>
+            <span class="n">mask_array</span><span class="p">,</span> <span class="n">sfas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepare_marching_cubes_args</span><span class="p">(</span><span class="n">e</span><span class="p">,</span>
+                                                                <span class="n">masked_marching_cubes</span><span class="p">,</span>
+                                                                <span class="n">series_type</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">level</span> <span class="ow">in</span> <span class="n">sfas</span><span class="p">:</span>
+                <span class="n">s</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">try_compute_marching_cubes_on_the_regular_grid</span><span class="p">(</span>
+                    <span class="n">level</span><span class="p">,</span>
+                    <span class="n">mask_array</span><span class="p">,</span>
+                    <span class="n">rescale</span><span class="p">,</span>
+                    <span class="n">s_n</span><span class="p">,</span>
+                    <span class="n">scalar_field</span><span class="p">,</span>
+                    <span class="n">kwargs</span>
+                <span class="p">)</span>
+                <span class="n">s_n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_vertices_edges</span><span class="p">(</span><span class="n">active_indices</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">s_n</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges</span></div>
+
+    <span class="k">def</span> <span class="nf">try_compute_marching_cubes_on_the_regular_grid</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">level</span><span class="p">,</span>
+            <span class="n">mask_array</span><span class="p">,</span>
+            <span class="n">rescale</span><span class="p">,</span>
+            <span class="n">s_n</span><span class="p">,</span>
+            <span class="n">scalar_field</span><span class="p">,</span>
+            <span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">v</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">norm</span><span class="p">,</span> <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_marching_cubes_regular_grid</span><span class="p">(</span>
+                <span class="n">level</span><span class="p">,</span> <span class="n">scalar_field</span><span class="p">,</span> <span class="n">mask_array</span><span class="p">,</span> <span class="n">rescale</span><span class="o">=</span><span class="n">rescale</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Surfaces not computed due to: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span>
+                <span class="n">e</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;. The surface is: Series: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="o">+</span>
+                          <span class="s1">&#39;; Surface Number:&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">s_n</span><span class="p">))</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="k">return</span> <span class="n">s</span><span class="p">,</span> <span class="n">v</span>
+
+    <span class="k">def</span> <span class="nf">set_vertices_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">active_indices</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">s_n</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">active_indices</span><span class="p">[</span><span class="n">s_n</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">surfaces</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="s1">&#39;vertices&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">surfaces</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="s1">&#39;edges&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="p">]</span>
+        <span class="n">s_n</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">s_n</span>
+
+    <span class="k">def</span> <span class="nf">prepare_marching_cubes_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">masked_marching_cubes</span><span class="p">,</span> <span class="n">series_type</span><span class="p">):</span>
+
+        <span class="n">sfas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scalar_field_at_surface_points</span><span class="p">[</span><span class="n">e</span><span class="p">]</span>
+        <span class="n">sfas</span> <span class="o">=</span> <span class="n">sfas</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">sfas</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="n">masked_marching_cubes</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">mask_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask_matrix_pad</span><span class="p">[</span>
+                <span class="n">e</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">series_type</span><span class="p">[</span><span class="n">e</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Onlap&#39;</span> <span class="k">else</span> <span class="n">e</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mask_array</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">mask_array</span><span class="p">,</span> <span class="n">sfas</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../index.html">
+    <img class="logo" src="../../../_static/./logos/gempy.png" alt="Logo"/>
+    
+    <h1 class="logo logo-name">GemPy</h1>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a class="badge" href="https://travis-ci.org/cgre-aachen/gempy">
+    <img
+        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../projects.html">Additional projects</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/index.html">GemPy Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../integrations/index.html">Integrations</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../code.html">Code</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017-2020, CGRE-Aachen Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

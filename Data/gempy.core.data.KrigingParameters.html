@@ -1,0 +1,327 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>gempy.core.data.KrigingParameters &#8212; GemPy 2.2.7 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="gempy.core.data.Options" href="gempy.core.data.Options.html" />
+    <link rel="prev" title="gempy.core.data.Structure" href="gempy.core.data.Structure.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="gempy-core-data-krigingparameters">
+<h1>gempy.core.data.KrigingParameters<a class="headerlink" href="#gempy-core-data-krigingparameters" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="gempy.core.data.KrigingParameters">
+<em class="property">class </em><code class="sig-prename descclassname">gempy.core.data.</code><code class="sig-name descname">KrigingParameters</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">grid</span><span class="p">:</span> <span class="n"><a class="reference internal" href="gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid">gempy.core.data.Grid</a></span></em>, <em class="sig-param"><span class="n">structure</span><span class="p">:</span> <span class="n"><a class="reference internal" href="gempy.core.data.Structure.html#gempy.core.data.Structure" title="gempy.core.data.Structure">gempy.core.data.Structure</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data.html#KrigingParameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data.KrigingParameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class that stores and computes the default values for the kriging parameters used during the interpolation.
+The default values will be computed from the <a class="reference internal" href="gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid"><code class="xref py py-class docutils literal notranslate"><span class="pre">Grid</span></code></a> and <a class="reference internal" href="gempy.core.data.Structure.html#gempy.core.data.Structure" title="gempy.core.data.Structure"><code class="xref py py-class docutils literal notranslate"><span class="pre">Structure</span></code></a> linked objects</p>
+<dl class="py attribute">
+<dt id="gempy.core.data.KrigingParameters.grid">
+<code class="sig-name descname">grid</code><a class="headerlink" href="#gempy.core.data.KrigingParameters.grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>[s0]  Class to generate grids.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid"><code class="xref py py-class docutils literal notranslate"><span class="pre">Grid</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="gempy.core.data.KrigingParameters.structure">
+<code class="sig-name descname">structure</code><a class="headerlink" href="#gempy.core.data.KrigingParameters.structure" title="Permalink to this definition">¶</a></dt>
+<dd><p>[s1] The structure_data class analyse the different lengths of subset in the interface and orientations categories_dfto pass them to the theano function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="gempy.core.data.Structure.html#gempy.core.data.Structure" title="gempy.core.data.Structure"><code class="xref py py-class docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="gempy.core.data.KrigingParameters.df">
+<code class="sig-name descname">df</code><a class="headerlink" href="#gempy.core.data.KrigingParameters.df" title="Permalink to this definition">¶</a></dt>
+<dd><p>df containing the kriging parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">pn.DataFrame</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>grid</strong> (<a class="reference internal" href="gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid"><code class="xref py py-class docutils literal notranslate"><span class="pre">Grid</span></code></a>) – [s0]</p></li>
+<li><p><strong>structure</strong> (<a class="reference internal" href="gempy.core.data.Structure.html#gempy.core.data.Structure" title="gempy.core.data.Structure"><code class="xref py py-class docutils literal notranslate"><span class="pre">Structure</span></code></a>) – [s1]</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples using KrigingParameters</p>
+<div class="sphx-glr-thumbcontainer" tooltip="1.2: Data Structure and Manipulation"><div class="figure align-default" id="id1">
+<img alt="1.2: Data Structure and Manipulation" src="../_images/sphx_glr_ch1_2a_data_manipulation_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../tutorials/ch1_fundamentals/ch1_2a_data_manipulation.html#sphx-glr-tutorials-ch1-fundamentals-ch1-2a-data-manipulation-py"><span class="std std-ref">1.2: Data Structure and Manipulation</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-clear"></div><p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.KrigingParameters.__init__" title="gempy.core.data.KrigingParameters.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(grid, structure)</p></td>
+<td><p>Initialize self.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data.KrigingParameters.modify_kriging_parameters" title="gempy.core.data.KrigingParameters.modify_kriging_parameters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modify_kriging_parameters</span></code></a>(attribute, value, …)</p></td>
+<td><p>Method to modify a given field</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.KrigingParameters.set_default_c_o" title="gempy.core.data.KrigingParameters.set_default_c_o"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_default_c_o</span></code></a>([range_var])</p></td>
+<td><p>Set default covariance at 0.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data.KrigingParameters.set_default_range" title="gempy.core.data.KrigingParameters.set_default_range"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_default_range</span></code></a>([extent])</p></td>
+<td><p>Set default kriging_data range</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.KrigingParameters.set_u_grade" title="gempy.core.data.KrigingParameters.set_u_grade"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_u_grade</span></code></a>([u_grade])</p></td>
+<td><p>Set default universal grade.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data.KrigingParameters.str2int_u_grade" title="gempy.core.data.KrigingParameters.str2int_u_grade"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str2int_u_grade</span></code></a>(**kwargs)</p></td>
+<td><p>Convert u_grade to ints</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="gempy.core.data.KrigingParameters.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">grid</span><span class="p">:</span> <span class="n"><a class="reference internal" href="gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid">gempy.core.data.Grid</a></span></em>, <em class="sig-param"><span class="n">structure</span><span class="p">:</span> <span class="n"><a class="reference internal" href="gempy.core.data.Structure.html#gempy.core.data.Structure" title="gempy.core.data.Structure">gempy.core.data.Structure</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data.html#KrigingParameters.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data.KrigingParameters.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data.KrigingParameters.modify_kriging_parameters">
+<code class="sig-name descname">modify_kriging_parameters</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attribute</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em>, <em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data.html#KrigingParameters.modify_kriging_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data.KrigingParameters.modify_kriging_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to modify a given field</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>attribute</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Name of the field to modify</p></li>
+<li><p><strong>value</strong> – new value of the field. It will have to exist in the category in order for pandas to modify it.</p></li>
+<li><p><strong>kwargs</strong> – <ul>
+<li><p>u_grade_sep (str): If drift equations values are <cite>str</cite>, symbol that separates the values.</p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>df where options data is stored</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.1.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data.KrigingParameters.str2int_u_grade">
+<code class="sig-name descname">str2int_u_grade</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data.html#KrigingParameters.str2int_u_grade"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data.KrigingParameters.str2int_u_grade" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert u_grade to ints</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> – <ul class="simple">
+<li><p>u_grade_sep (str): If drift equations values are <cite>str</cite>, symbol that separates the values.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data.KrigingParameters.set_default_range">
+<code class="sig-name descname">set_default_range</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">extent</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data.html#KrigingParameters.set_default_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data.KrigingParameters.set_default_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set default kriging_data range</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>extent</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><em>np.array</em><em>]</em>) – extent used to compute the default range–i.e. largest diagonal. If None
+extent of the linked <a class="reference internal" href="gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid"><code class="xref py py-class docutils literal notranslate"><span class="pre">Grid</span></code></a> will be used.</p>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data.KrigingParameters.set_default_c_o">
+<code class="sig-name descname">set_default_c_o</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">range_var</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data.html#KrigingParameters.set_default_c_o"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data.KrigingParameters.set_default_c_o" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set default covariance at 0.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>range_var</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><em>np.array</em><em>]</em>) – range used to compute the default c_0–i.e. largest diagonal. If None
+the already computed range will be used.</p>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data.KrigingParameters.set_u_grade">
+<code class="sig-name descname">set_u_grade</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">u_grade</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data.html#KrigingParameters.set_u_grade"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data.KrigingParameters.set_u_grade" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set default universal grade. Transform polynomial grades to number of equations</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>u_grade</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – </p>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/./logos/gempy.png" alt="Logo"/>
+    
+    <h1 class="logo logo-name">GemPy</h1>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a class="badge" href="https://travis-ci.org/cgre-aachen/gempy">
+    <img
+        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../projects.html">Additional projects</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">GemPy Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../integrations/index.html">Integrations</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../code.html">Code</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../code.html#gempy-api">GemPy API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#model">Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#plot">Plot</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../code.html#data">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#grids">Grids</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#geometric-data">Geometric Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#interpolator">Interpolator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#solution">Solution</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../code.html">Code</a><ul>
+      <li>Previous: <a href="gempy.core.data.Structure.html" title="previous chapter">gempy.core.data.Structure</a></li>
+      <li>Next: <a href="gempy.core.data.Options.html" title="next chapter">gempy.core.data.Options</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017-2020, CGRE-Aachen Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/Data/gempy.core.data.KrigingParameters.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,11 @@
+﻿gempy.update\_additional\_data
+==============================
+
+.. currentmodule:: gempy
+
+.. autofunction:: update_additional_data
+
+.. include:: ../gen_modules/backreferences/gempy.update_additional_data.examples
+.. raw:: html
+
+   <div class="sphx-glr-clear"></div>

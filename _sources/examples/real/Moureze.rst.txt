@@ -1,0 +1,754 @@
+.. only:: html
+
+    .. note::
+        :class: sphx-glr-download-link-note
+
+        Click :ref:`here <sphx_glr_download_examples_real_Moureze.py>`     to download the full example code
+    .. rst-class:: sphx-glr-example-title
+
+    .. _sphx_glr_examples_real_Moureze.py:
+
+
+Moureze
+~~~~~~~
+
+These two lines are necessary only if gempy is not installed
+
+
+.. code-block:: python3
+
+    import sys, os
+    os.environ["THEANO_FLAGS"] = "mode=FAST_RUN,device=cpu"
+
+    # Importing gempy
+    import gempy as gp
+
+    # Aux imports
+    import numpy as np
+    import pandas as pn
+    import matplotlib.pyplot as plt
+
+
+
+
+
+
+
+
+
+Loading surface points from repository:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+With pandas we can do it directly from the web and with the right args
+we can directly tidy the data in gempy style:
+
+
+
+.. code-block:: python3
+
+    Moureze_points = pn.read_csv(
+        'https://raw.githubusercontent.com/Loop3D/ImplicitBenchmark/master/Moureze/Moureze_Points.csv', sep=';',
+        names=['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', '_'], header=0, )
+    Sections_EW = pn.read_csv('https://raw.githubusercontent.com/Loop3D/ImplicitBenchmark/master/Moureze/Sections_EW.csv',
+                              sep=';',
+                              names=['X', 'Y', 'Z', 'ID', '_'], header=1).dropna()
+    Sections_NS = pn.read_csv('https://raw.githubusercontent.com/Loop3D/ImplicitBenchmark/master/Moureze/Sections_NS.csv',
+                              sep=';',
+                              names=['X', 'Y', 'Z', 'ID', '_'], header=1).dropna()
+
+
+
+
+
+
+
+
+Extracting the orientatins:
+
+
+
+.. code-block:: python3
+
+    mask_surfpoints = Moureze_points['G_x'] < -9999
+    surfpoints = Moureze_points[mask_surfpoints]
+    orientations = Moureze_points[~mask_surfpoints]
+
+
+
+
+
+
+
+
+Giving an arbitrary value name to the surface
+
+
+
+.. code-block:: python3
+
+    surfpoints['surface'] = '0'
+    orientations['surface'] = '0'
+
+
+
+
+
+
+
+
+
+.. code-block:: python3
+
+    surfpoints.tail()
+
+
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>X</th>
+          <th>Y</th>
+          <th>Z</th>
+          <th>G_x</th>
+          <th>G_y</th>
+          <th>G_z</th>
+          <th>_</th>
+          <th>surface</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>3425</th>
+          <td>177.43</td>
+          <td>155.90</td>
+          <td>-152.01</td>
+          <td>-99999.0</td>
+          <td>-99999.0</td>
+          <td>-99999.0</td>
+          <td>0.05</td>
+          <td>0</td>
+        </tr>
+        <tr>
+          <th>3426</th>
+          <td>89.92</td>
+          <td>86.35</td>
+          <td>-120.03</td>
+          <td>-99999.0</td>
+          <td>-99999.0</td>
+          <td>-99999.0</td>
+          <td>0.07</td>
+          <td>0</td>
+        </tr>
+        <tr>
+          <th>3427</th>
+          <td>75.94</td>
+          <td>116.72</td>
+          <td>-140.02</td>
+          <td>-99999.0</td>
+          <td>-99999.0</td>
+          <td>-99999.0</td>
+          <td>0.78</td>
+          <td>0</td>
+        </tr>
+        <tr>
+          <th>3428</th>
+          <td>177.96</td>
+          <td>233.83</td>
+          <td>-148.83</td>
+          <td>-99999.0</td>
+          <td>-99999.0</td>
+          <td>-99999.0</td>
+          <td>0.52</td>
+          <td>0</td>
+        </tr>
+        <tr>
+          <th>3429</th>
+          <td>46.49</td>
+          <td>17.74</td>
+          <td>-148.02</td>
+          <td>-99999.0</td>
+          <td>-99999.0</td>
+          <td>-99999.0</td>
+          <td>0.11</td>
+          <td>0</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+    <br />
+    <br />
+
+
+.. code-block:: python3
+
+    orientations.tail()
+
+
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>X</th>
+          <th>Y</th>
+          <th>Z</th>
+          <th>G_x</th>
+          <th>G_y</th>
+          <th>G_z</th>
+          <th>_</th>
+          <th>surface</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>3409</th>
+          <td>47.97</td>
+          <td>129.89</td>
+          <td>-132.01</td>
+          <td>-0.45</td>
+          <td>-0.85</td>
+          <td>0.27</td>
+          <td>0.02</td>
+          <td>0</td>
+        </tr>
+        <tr>
+          <th>3420</th>
+          <td>175.94</td>
+          <td>293.73</td>
+          <td>-138.02</td>
+          <td>0.22</td>
+          <td>-0.88</td>
+          <td>0.41</td>
+          <td>0.44</td>
+          <td>0</td>
+        </tr>
+        <tr>
+          <th>3421</th>
+          <td>203.97</td>
+          <td>367.73</td>
+          <td>-150.01</td>
+          <td>0.22</td>
+          <td>-0.97</td>
+          <td>-0.10</td>
+          <td>0.71</td>
+          <td>0</td>
+        </tr>
+        <tr>
+          <th>3422</th>
+          <td>133.93</td>
+          <td>225.62</td>
+          <td>-146.76</td>
+          <td>0.32</td>
+          <td>-0.87</td>
+          <td>-0.37</td>
+          <td>0.13</td>
+          <td>0</td>
+        </tr>
+        <tr>
+          <th>3430</th>
+          <td>290.00</td>
+          <td>180.00</td>
+          <td>-103.54</td>
+          <td>0.13</td>
+          <td>-0.19</td>
+          <td>0.97</td>
+          <td>0.68</td>
+          <td>0</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+    <br />
+    <br />
+
+Data initialization:
+~~~~~~~~~~~~~~~~~~~~
+
+Suggested size of the axis-aligned modeling box:
+
+Origin: -5 -5 -200
+
+Maximum: 305 405 -50
+
+Suggested resolution: 2m (grid size 156 x 206 x 76)
+
+
+Only using one orientation because otherwhise it gets a mess
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Number voxels
+
+
+.. code-block:: python3
+
+    np.array([156, 206, 76]).prod()
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    2442336
+
+
+
+
+.. code-block:: python3
+
+    resolution_requ = [156, 206, 76]
+    resolution = [77, 103, 38]
+    resolution_low = [45, 51, 38]
+    geo_model = gp.create_model('Moureze')
+    geo_model = gp.init_data(geo_model,
+                             extent=[-5, 305, -5, 405, -200, -50], resolution=resolution_low,
+                             surface_points_df=surfpoints, orientations_df=orientations,
+                             surface_name='surface',
+                             add_basement=True)
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Active grids: ['regular']
+
+
+
+
+Now we can see how the data looks so far:
+
+
+
+.. code-block:: python3
+
+    gp.plot_2d(geo_model, direction='y')
+
+
+
+
+.. image:: /examples/real/images/sphx_glr_Moureze_001.png
+    :alt: Cell Number: mid Direction: y
+    :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    <gempy.plot.visualization_2d.Plot2D object at 0x7f01e129be80>
+
+
+
+
+.. code-block:: python3
+
+    gp.set_interpolator(geo_model,
+                        theano_optimizer='fast_run', dtype='float64')
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Setting kriging parameters to their default values.
+    Compiling theano function...
+    Level of Optimization:  fast_run
+    Device:  cpu
+    Precision:  float64
+    Number of faults:  0
+    Compilation Done!
+    Kriging values: 
+                       values
+    range            5.4e+02
+    $C_o$            6.8e+03
+    drift equations   [3, 3]
+
+    <gempy.core.interpolator.InterpolatorModel object at 0x7f01b9c9d610>
+
+
+
+The default range is always the diagonal of the extent. Since in this
+model data is very close we will need to reduce the range to 5-10% of
+that value:
+
+
+
+.. code-block:: python3
+
+
+    new_range = geo_model.get_additional_data().loc[('Kriging', 'range'), 'values'] * 0.2
+    geo_model.modify_kriging_parameters('range', new_range)
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>values</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>range</th>
+          <td>1.1e+02</td>
+        </tr>
+        <tr>
+          <th>$C_o$</th>
+          <td>6.8e+03</td>
+        </tr>
+        <tr>
+          <th>drift equations</th>
+          <td>[3, 3]</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+
+.. code-block:: python3
+
+    gp.compute_model(geo_model, set_solutions=True, sort_surfaces=False)
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+
+    Lithology ids 
+      [2. 2. 2. ... 1. 1. 1.] 
+
+
+
+
+Time
+~~~~
+
+300k voxels 3.5k points
+^^^^^^^^^^^^^^^^^^^^^^^
+
+-  Nvidia 2080: 500 ms ± 1.3 ms per loop (mean ± std. dev. of 7 runs, 1
+   loop each), Memory 1 Gb
+-  CPU 14.2 s ± 82.4 ms per loop (mean ± std. dev. of 7 runs, 1 loop
+   each), Memory: 1.3 Gb
+
+2.4 M voxels, 3.5k points
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+-  CPU 2min 33s ± 216 ms per loop (mean ± std. dev. of 7 runs, 1 loop
+   each) Memory: 1.3 GB
+-  Nvidia 2080: 1.92 s ± 6.74 ms per loop (mean ± std. dev. of 7 runs, 1
+   loop each) 1 Gb
+
+2.4 M voxels, 3.5k points 3.5 k orientations
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+-  Nvidia 2080: 2.53 s ± 1.31 ms per loop (mean ± std. dev. of 7 runs, 1
+   loop each)
+
+
+
+.. code-block:: python3
+
+
+    gp.plot_2d(geo_model, cell_number=[16], series_n=0, show_scalar=True)
+
+
+
+.. image:: /examples/real/images/sphx_glr_Moureze_002.png
+    :alt: Cell Number: 16 Direction: y
+    :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    <gempy.plot.visualization_2d.Plot2D object at 0x7f01cf21e700>
+
+
+
+
+.. code-block:: python3
+
+    gp.plot_2d(geo_model, cell_number=16, show_data=True, direction='y')
+
+
+
+
+.. image:: /examples/real/images/sphx_glr_Moureze_003.png
+    :alt: Cell Number: 16 Direction: y
+    :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    <gempy.plot.visualization_2d.Plot2D object at 0x7f01c798fb80>
+
+
+
+sphinx_gallery_thumbnail_number = 4
+
+
+.. code-block:: python3
+
+    gp.plot_3d(geo_model)
+
+
+
+
+
+.. image:: /examples/real/images/sphx_glr_Moureze_004.png
+    :alt: Moureze
+    :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    <gempy.plot.vista.GemPyToVista object at 0x7f01c6f12940>
+
+
+
+|image0|
+
+.. |image0| image:: ./Moureze.png
+
+
+
+Export data:
+~~~~~~~~~~~~
+
+The solution is stored in a numpy array of the following shape. Axis 0
+are the scalar fields of each correspondent series/faults in the
+following order (except basement):
+
+
+
+.. code-block:: python3
+
+    geo_model.series
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>order_series</th>
+          <th>BottomRelation</th>
+          <th>isActive</th>
+          <th>isFault</th>
+          <th>isFinite</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>Default series</th>
+          <td>1</td>
+          <td>Erosion</td>
+          <td>True</td>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>Basement</th>
+          <td>2</td>
+          <td>Erosion</td>
+          <td>False</td>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+For the surfaces, there are two numpy arrays, one with vertices and the
+other with triangles. Axis 0 is each surface in the order:
+
+
+
+.. code-block:: python3
+
+    geo_model.surfaces
+
+
+
+
+
+
+
+.. raw:: html
+
+    <style  type="text/css" >
+    #T_0624cb86_3886_11eb_afc4_b3a2b3eb1f40row0_col3{
+                background-color:  #015482;
+            }#T_0624cb86_3886_11eb_afc4_b3a2b3eb1f40row1_col3{
+                background-color:  #9f0052;
+            }</style><table id="T_0624cb86_3886_11eb_afc4_b3a2b3eb1f40" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
+                    <tr>
+                            <th id="T_0624cb86_3886_11eb_afc4_b3a2b3eb1f40level0_row0" class="row_heading level0 row0" >0</th>
+                            <td id="T_0624cb86_3886_11eb_afc4_b3a2b3eb1f40row0_col0" class="data row0 col0" >0</td>
+                            <td id="T_0624cb86_3886_11eb_afc4_b3a2b3eb1f40row0_col1" class="data row0 col1" >Default series</td>
+                            <td id="T_0624cb86_3886_11eb_afc4_b3a2b3eb1f40row0_col2" class="data row0 col2" >1</td>
+                            <td id="T_0624cb86_3886_11eb_afc4_b3a2b3eb1f40row0_col3" class="data row0 col3" >#015482</td>
+                            <td id="T_0624cb86_3886_11eb_afc4_b3a2b3eb1f40row0_col4" class="data row0 col4" >1</td>
+                </tr>
+                <tr>
+                            <th id="T_0624cb86_3886_11eb_afc4_b3a2b3eb1f40level0_row1" class="row_heading level0 row1" >1</th>
+                            <td id="T_0624cb86_3886_11eb_afc4_b3a2b3eb1f40row1_col0" class="data row1 col0" >basement</td>
+                            <td id="T_0624cb86_3886_11eb_afc4_b3a2b3eb1f40row1_col1" class="data row1 col1" >Basement</td>
+                            <td id="T_0624cb86_3886_11eb_afc4_b3a2b3eb1f40row1_col2" class="data row1 col2" >1</td>
+                            <td id="T_0624cb86_3886_11eb_afc4_b3a2b3eb1f40row1_col3" class="data row1 col3" >#9f0052</td>
+                            <td id="T_0624cb86_3886_11eb_afc4_b3a2b3eb1f40row1_col4" class="data row1 col4" >2</td>
+                </tr>
+        </tbody></table>
+    <br />
+    <br />
+
+np.save('Moureze_scalar', geo_model.solutions.scalar_field_matrix)
+np.save('Moureze_ver', geo_model.solutions.vertices)
+np.save('Moureze_edges', geo_model.solutions.edges)
+gp.plot.export_to_vtk(geo_model, 'Moureze')
+
+
+.. code-block:: python3
+
+
+    gp.save_model(geo_model)
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    True
+
+
+
+
+.. rst-class:: sphx-glr-timing
+
+   **Total running time of the script:** ( 1 minutes  10.052 seconds)
+
+
+.. _sphx_glr_download_examples_real_Moureze.py:
+
+
+.. only :: html
+
+ .. container:: sphx-glr-footer
+    :class: sphx-glr-footer-example
+
+
+
+  .. container:: sphx-glr-download sphx-glr-download-python
+
+     :download:`Download Python source code: Moureze.py <Moureze.py>`
+
+
+
+  .. container:: sphx-glr-download sphx-glr-download-jupyter
+
+     :download:`Download Jupyter notebook: Moureze.ipynb <Moureze.ipynb>`
+
+
+.. only:: html
+
+ .. rst-class:: sphx-glr-signature
+
+    `Gallery generated by Sphinx-Gallery <https://sphinx-gallery.github.io>`_

@@ -1,0 +1,511 @@
+.. only:: html
+
+    .. note::
+        :class: sphx-glr-download-link-note
+
+        Click :ref:`here <sphx_glr_download_tutorials_ch5_probabilistic_modeling_ch5_1.py>`     to download the full example code
+    .. rst-class:: sphx-glr-example-title
+
+    .. _sphx_glr_tutorials_ch5_probabilistic_modeling_ch5_1.py:
+
+
+5.1 - Probabilistic Modeling: Error Propagation
+================================================
+
+In this example we will show how easy we can propagate uncertainty from
+GemPy parameters to final structural models.
+
+
+.. code-block:: python3
+
+    import sys, os
+    sys.path.append("../../gempy")
+    os.environ["THEANO_FLAGS"] = "mode=FAST_RUN,device=cuda"
+
+
+    import gempy as gp
+    from gempy.bayesian.fields import compute_prob, calculate_ie_masked
+    import numpy as np
+    import matplotlib.pyplot as plt
+
+    np.random.seed(1234)
+
+
+
+
+
+
+
+
+Model definition
+----------------
+
+In the previous example we assume constant thickness to be able to
+reduce the problem to one dimension. This keeps the probabilistic model
+fairly simple since we do not need to deel with complex geometric
+structures. Unfortunaly, geology is all about dealing with complex three
+dimensional structures. In the moment data spread across the physical
+space, the probabilistic model will have to expand to relate data from
+different locations. In other words, the model will need to include
+either interpolations, regressions or some other sort of spatial
+functions. In this paper, we use an advance universal co-kriging
+interpolator. Further implications of using this method will be discuss
+below but for this lets treat is a simple spatial interpolation in order
+to keep the focus on the constraction of the probabilistic model.
+
+
+
+.. code-block:: python3
+
+    geo_model = gp.create_model('2-layers')
+    gp.init_data(geo_model, extent=[0, 12e3, -2e3, 2e3, 0, 4e3], resolution=[100, 10, 200])
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Active grids: ['regular']
+
+    2-layers  2020-12-07 13:09
+
+
+
+
+.. code-block:: python3
+
+    geo_model.add_surfaces('surface 1')
+    geo_model.add_surfaces('surface 2')
+    geo_model.add_surfaces('basement')
+    dz = geo_model._grid.regular_grid.dz
+    geo_model.add_surface_values([dz, 0, 0], ['dz'])
+    geo_model.add_surface_values(np.array([2.6, 2.4, 3.2]), ['density'])
+
+
+
+
+
+
+.. raw:: html
+
+    <style  type="text/css" >
+    #T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40row0_col3{
+                background-color:  #015482;
+            }#T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40row1_col3{
+                background-color:  #9f0052;
+            }#T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40row2_col3{
+                background-color:  #ffbe00;
+            }</style><table id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>        <th class="col_heading level0 col5" >dz</th>        <th class="col_heading level0 col6" >density</th>    </tr></thead><tbody>
+                    <tr>
+                            <th id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40level0_row0" class="row_heading level0 row0" >0</th>
+                            <td id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40row0_col0" class="data row0 col0" >surface 1</td>
+                            <td id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40row0_col1" class="data row0 col1" >Default series</td>
+                            <td id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40row0_col2" class="data row0 col2" >1</td>
+                            <td id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40row0_col3" class="data row0 col3" >#015482</td>
+                            <td id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40row0_col4" class="data row0 col4" >1</td>
+                            <td id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40row0_col5" class="data row0 col5" >20.00</td>
+                            <td id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40row0_col6" class="data row0 col6" >2.60</td>
+                </tr>
+                <tr>
+                            <th id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40level0_row1" class="row_heading level0 row1" >1</th>
+                            <td id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40row1_col0" class="data row1 col0" >surface 2</td>
+                            <td id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40row1_col1" class="data row1 col1" >Default series</td>
+                            <td id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40row1_col2" class="data row1 col2" >2</td>
+                            <td id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40row1_col3" class="data row1 col3" >#9f0052</td>
+                            <td id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40row1_col4" class="data row1 col4" >2</td>
+                            <td id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40row1_col5" class="data row1 col5" >0.00</td>
+                            <td id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40row1_col6" class="data row1 col6" >2.40</td>
+                </tr>
+                <tr>
+                            <th id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40level0_row2" class="row_heading level0 row2" >2</th>
+                            <td id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40row2_col0" class="data row2 col0" >basement</td>
+                            <td id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40row2_col1" class="data row2 col1" >Default series</td>
+                            <td id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40row2_col2" class="data row2 col2" >3</td>
+                            <td id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40row2_col3" class="data row2 col3" >#ffbe00</td>
+                            <td id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40row2_col4" class="data row2 col4" >3</td>
+                            <td id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40row2_col5" class="data row2 col5" >0.00</td>
+                            <td id="T_1e2bfea8_3885_11eb_afc4_b3a2b3eb1f40row2_col6" class="data row2 col6" >3.20</td>
+                </tr>
+        </tbody></table>
+    <br />
+    <br />
+
+
+.. code-block:: python3
+
+    geo_model.add_surface_points(3e3, 0, 3.05e3, 'surface 1')
+    geo_model.add_surface_points(9e3, 0, 3.05e3, 'surface 1')
+
+    geo_model.add_surface_points(3e3, 0, 1.02e3, 'surface 2')
+    geo_model.add_surface_points(9e3, 0, 1.02e3, 'surface 2')
+
+    geo_model.add_orientations(6e3, 0, 4e3, 'surface 1', [0, 0, 1])
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>X</th>
+          <th>Y</th>
+          <th>Z</th>
+          <th>G_x</th>
+          <th>G_y</th>
+          <th>G_z</th>
+          <th>smooth</th>
+          <th>surface</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>6000.0</td>
+          <td>0.0</td>
+          <td>4000.0</td>
+          <td>0.0</td>
+          <td>0.0</td>
+          <td>1.0</td>
+          <td>0.01</td>
+          <td>surface 1</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+
+.. code-block:: python3
+
+    gp.plot_2d(geo_model)
+    plt.show()
+
+
+
+
+.. image:: /tutorials/ch5_probabilistic_modeling/images/sphx_glr_ch5_1_001.png
+    :alt: Cell Number: mid Direction: y
+    :class: sphx-glr-single-img
+
+
+
+
+
+Adding topography
+-----------------
+
+
+.. code-block:: python3
+
+    geo_model.set_topography()
+
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    [3200. 4000.]
+    Active grids: ['regular' 'topography']
+
+    Grid Object. Values: 
+    array([[ 6.00000000e+01, -1.80000000e+03,  1.00000000e+01],
+           [ 6.00000000e+01, -1.80000000e+03,  3.00000000e+01],
+           [ 6.00000000e+01, -1.80000000e+03,  5.00000000e+01],
+           ...,
+           [ 1.20000000e+04,  1.11111111e+03,  3.38961579e+03],
+           [ 1.20000000e+04,  1.55555556e+03,  3.40343266e+03],
+           [ 1.20000000e+04,  2.00000000e+03,  3.41755449e+03]])
+
+
+
+Setting up our area
+-------------------
+Lets imagine we have two boreholes and 1 gravity device. From the boreholes
+we can estimate the location of the interfaces of our layers. That will be
+enough to create the first model.
+
+
+.. code-block:: python3
+
+    def plot_geo_setting():
+        device_loc = np.array([[6e3, 0, 3700]])
+        p2d = gp.plot_2d(geo_model, show_topography=True)
+
+        well_1 = 3.5e3
+        well_2 = 3.62e3
+        p2d.axes[0].scatter([3e3], [well_1], marker='^', s=400, c='#71a4b3', zorder=10)
+        p2d.axes[0].scatter([9e3], [well_2], marker='^', s=400, c='#71a4b3', zorder=10)
+        p2d.axes[0].scatter(device_loc[:, 0], device_loc[:, 2], marker='x', s=400, c='#DA8886', zorder=10)
+
+        p2d.axes[0].vlines(3e3, .5e3, well_1, linewidth=4, color='gray')
+        p2d.axes[0].vlines(9e3, .5e3, well_2, linewidth=4, color='gray')
+        p2d.axes[0].vlines(3e3, .5e3, well_1)
+        p2d.axes[0].vlines(9e3, .5e3, well_2)
+        plt.savefig('model.svg')
+        plt.show()
+
+
+
+
+
+
+
+
+
+.. code-block:: python3
+
+
+    plot_geo_setting()
+
+
+
+
+
+.. image:: /tutorials/ch5_probabilistic_modeling/images/sphx_glr_ch5_1_002.png
+    :alt: Cell Number: mid Direction: y
+    :class: sphx-glr-single-img
+
+
+
+
+
+Computing model
+---------------
+
+
+.. code-block:: python3
+
+    gp.set_interpolator(geo_model)
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Setting kriging parameters to their default values.
+    Compiling theano function...
+    Level of Optimization:  fast_compile
+    Device:  cpu
+    Precision:  float64
+    Number of faults:  0
+    Compilation Done!
+    Kriging values: 
+                       values
+    range            1.3e+04
+    $C_o$            4.2e+06
+    drift equations      [3]
+
+    <gempy.core.interpolator.InterpolatorModel object at 0x7f01c6ab4a60>
+
+
+
+
+.. code-block:: python3
+
+    gp.compute_model(geo_model)
+    plot_geo_setting()
+
+
+
+
+
+
+.. image:: /tutorials/ch5_probabilistic_modeling/images/sphx_glr_ch5_1_003.png
+    :alt: Cell Number: mid Direction: y
+    :class: sphx-glr-single-img
+
+
+
+
+
+Adding Random variables
+-----------------------
+Although that can work as a good approximation, the truth is that modelling
+hundreds of meters underground is not specially precise. That's why in many
+cases we would like to model our input data as probability distributions
+instead deterministic values. GemPy is specially efficiency for these type of
+tasks:
+
+
+.. code-block:: python3
+
+    geo_model.modify_surface_points(2, Z=500)
+    gp.compute_model(geo_model)
+    plot_geo_setting()
+
+    Z = np.random.normal(1000, 500, size=2)
+    geo_model.modify_surface_points([2, 3], Z=Z)
+    gp.compute_model(geo_model)
+    plot_geo_setting()
+
+
+
+
+.. rst-class:: sphx-glr-horizontal
+
+
+    *
+
+      .. image:: /tutorials/ch5_probabilistic_modeling/images/sphx_glr_ch5_1_004.png
+          :alt: Cell Number: mid Direction: y
+          :class: sphx-glr-multi-img
+
+    *
+
+      .. image:: /tutorials/ch5_probabilistic_modeling/images/sphx_glr_ch5_1_005.png
+          :alt: Cell Number: mid Direction: y
+          :class: sphx-glr-multi-img
+
+
+
+
+
+Now we just sample from a random variable and loop it as much as we want:
+
+
+.. code-block:: python3
+
+    lith_blocks = np.array([])
+    n_iterations = 50
+    for i in range(n_iterations):
+        Z = np.random.normal(1000, 500, size=2)
+        geo_model.modify_surface_points([2, 3], Z=Z)
+        gp.compute_model(geo_model)
+        lith_blocks = np.append(lith_blocks, geo_model.solutions.lith_block)
+
+    lith_blocks = lith_blocks.reshape(n_iterations, -1)
+
+
+
+
+
+
+
+
+
+.. code-block:: python3
+
+    prob_block = compute_prob(lith_blocks)
+
+
+
+
+
+
+
+
+
+.. code-block:: python3
+
+    p2dp = gp.plot_2d(geo_model,
+                      show_lith=False, show_boundaries=False, show_data=False,
+                      regular_grid=prob_block[2],
+                      kwargs_regular_grid={'cmap': 'viridis',
+                                            'norm': None}
+                      )
+    plt.show()
+
+
+
+
+.. image:: /tutorials/ch5_probabilistic_modeling/images/sphx_glr_ch5_1_006.png
+    :alt: Cell Number: mid Direction: y
+    :class: sphx-glr-single-img
+
+
+
+
+
+
+.. code-block:: python3
+
+    entropy_block = calculate_ie_masked(prob_block)
+
+
+
+
+
+
+
+
+sphinx_gallery_thumbnail_number = 6
+
+
+.. code-block:: python3
+
+    p2dp = gp.plot_2d(geo_model,
+                      show_lith=False, show_boundaries=False, show_data=False,
+                      regular_grid=entropy_block,
+                      kwargs_regular_grid={'cmap': 'viridis',
+                                            'norm': None}
+                      )
+
+
+
+
+
+
+
+
+
+.. image:: /tutorials/ch5_probabilistic_modeling/images/sphx_glr_ch5_1_007.png
+    :alt: Cell Number: mid Direction: y
+    :class: sphx-glr-single-img
+
+
+
+
+
+
+.. rst-class:: sphx-glr-timing
+
+   **Total running time of the script:** ( 0 minutes  16.718 seconds)
+
+
+.. _sphx_glr_download_tutorials_ch5_probabilistic_modeling_ch5_1.py:
+
+
+.. only :: html
+
+ .. container:: sphx-glr-footer
+    :class: sphx-glr-footer-example
+
+
+
+  .. container:: sphx-glr-download sphx-glr-download-python
+
+     :download:`Download Python source code: ch5_1.py <ch5_1.py>`
+
+
+
+  .. container:: sphx-glr-download sphx-glr-download-jupyter
+
+     :download:`Download Jupyter notebook: ch5_1.ipynb <ch5_1.ipynb>`
+
+
+.. only:: html
+
+ .. rst-class:: sphx-glr-signature
+
+    `Gallery generated by Sphinx-Gallery <https://sphinx-gallery.github.io>`_

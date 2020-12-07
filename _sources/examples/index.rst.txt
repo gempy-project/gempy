@@ -1,0 +1,324 @@
+:orphan:
+
+
+
+.. _sphx_glr_examples:
+
+Examples
+========
+
+This examples intend to be a gallery of what other people has done with GemPy.
+Hopefully with the help of the community we can create a complete library of
+structures that can serve as template for new users.
+
+
+.. raw:: html
+
+    <div class="sphx-glr-clear"></div>
+
+
+
+.. _sphx_glr_examples_geometries:
+
+Simple geometries
+-----------------
+Some simple geometries.
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Model 1 - Horizontal stratigraphic">
+
+.. only:: html
+
+ .. figure:: /examples/geometries/images/thumb/sphx_glr_1_horizontal_stratigraphic_thumb.png
+     :alt: Model 1 - Horizontal stratigraphic
+
+     :ref:`sphx_glr_examples_geometries_1_horizontal_stratigraphic.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /examples/geometries/1_horizontal_stratigraphic
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Model 2 - Anticline">
+
+.. only:: html
+
+ .. figure:: /examples/geometries/images/thumb/sphx_glr_2_fold_thumb.png
+     :alt: Model 2 - Anticline
+
+     :ref:`sphx_glr_examples_geometries_2_fold.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /examples/geometries/2_fold
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Model 3 - Recumbent Fold">
+
+.. only:: html
+
+ .. figure:: /examples/geometries/images/thumb/sphx_glr_3_recumbent_fold_thumb.png
+     :alt: Model 3 - Recumbent Fold
+
+     :ref:`sphx_glr_examples_geometries_3_recumbent_fold.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /examples/geometries/3_recumbent_fold
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Model 4 - Pinchout">
+
+.. only:: html
+
+ .. figure:: /examples/geometries/images/thumb/sphx_glr_4_pinchout_thumb.png
+     :alt: Model 4 - Pinchout
+
+     :ref:`sphx_glr_examples_geometries_4_pinchout.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /examples/geometries/4_pinchout
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Model 5 - Fault">
+
+.. only:: html
+
+ .. figure:: /examples/geometries/images/thumb/sphx_glr_5_fault_thumb.png
+     :alt: Model 5 - Fault
+
+     :ref:`sphx_glr_examples_geometries_5_fault.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /examples/geometries/5_fault
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Model 6 - Unconformity">
+
+.. only:: html
+
+ .. figure:: /examples/geometries/images/thumb/sphx_glr_6_unconformity_thumb.png
+     :alt: Model 6 - Unconformity
+
+     :ref:`sphx_glr_examples_geometries_6_unconformity.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /examples/geometries/6_unconformity
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Model 7 - Combination">
+
+.. only:: html
+
+ .. figure:: /examples/geometries/images/thumb/sphx_glr_7_combination_thumb.png
+     :alt: Model 7 - Combination
+
+     :ref:`sphx_glr_examples_geometries_7_combination.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /examples/geometries/7_combination
+.. raw:: html
+
+    <div class="sphx-glr-clear"></div>
+
+
+
+.. _sphx_glr_examples_real:
+
+Real case studies
+-----------------
+
+These models are built with real data
+
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Alesmodel: Plotting sections and maps.">
+
+.. only:: html
+
+ .. figure:: /examples/real/images/thumb/sphx_glr_Alesmodel_thumb.png
+     :alt: Alesmodel: Plotting sections and maps.
+
+     :ref:`sphx_glr_examples_real_Alesmodel.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /examples/real/Alesmodel
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Claudius">
+
+.. only:: html
+
+ .. figure:: /examples/real/images/thumb/sphx_glr_Claudius_thumb.png
+     :alt: Claudius
+
+     :ref:`sphx_glr_examples_real_Claudius.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /examples/real/Claudius
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Greenstone.">
+
+.. only:: html
+
+ .. figure:: /examples/real/images/thumb/sphx_glr_Greenstone_thumb.png
+     :alt: Greenstone.
+
+     :ref:`sphx_glr_examples_real_Greenstone.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /examples/real/Greenstone
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Hecho">
+
+.. only:: html
+
+ .. figure:: /examples/real/images/thumb/sphx_glr_Hecho_thumb.png
+     :alt: Hecho
+
+     :ref:`sphx_glr_examples_real_Hecho.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /examples/real/Hecho
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Moureze">
+
+.. only:: html
+
+ .. figure:: /examples/real/images/thumb/sphx_glr_Moureze_thumb.png
+     :alt: Moureze
+
+     :ref:`sphx_glr_examples_real_Moureze.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /examples/real/Moureze
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Perth basin.">
+
+.. only:: html
+
+ .. figure:: /examples/real/images/thumb/sphx_glr_Perth_basin_thumb.png
+     :alt: Perth basin.
+
+     :ref:`sphx_glr_examples_real_Perth_basin.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /examples/real/Perth_basin
+.. raw:: html
+
+    <div class="sphx-glr-clear"></div>
+
+
+
+.. only:: html
+
+ .. rst-class:: sphx-glr-signature
+
+    `Gallery generated by Sphinx-Gallery <https://sphinx-gallery.github.io>`_

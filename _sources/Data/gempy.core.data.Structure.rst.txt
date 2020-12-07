@@ -1,0 +1,38 @@
+﻿gempy.core.data.Structure
+=========================
+
+.. currentmodule:: gempy.core.data
+
+
+.. autoclass:: Structure
+   :no-undoc-members:
+
+   
+   .. rubric:: Examples using Structure
+   .. include:: ../gen_modules/backreferences/gempy.core.data.Structure.examples
+   .. raw:: html
+
+       <div class="sphx-glr-clear"></div>
+   
+   
+   
+   .. rubric:: Methods
+   .. autosummary::
+   
+      ~Structure.__init__
+      ~Structure.set_is_lith_is_fault
+      ~Structure.set_length_series_o
+      ~Structure.set_length_surfaces_i
+      ~Structure.set_number_of_faults
+      ~Structure.set_number_of_surfaces
+      ~Structure.set_number_of_surfaces_per_series
+      ~Structure.set_series_and_length_series_i
+      ~Structure.update_structure_from_input
+   
+   
+
+   
+   
+   
+
+

@@ -1,0 +1,67 @@
+﻿gempy.core.interpolator.InterpolatorModel
+=========================================
+
+.. currentmodule:: gempy.core.interpolator
+
+
+.. autoclass:: InterpolatorModel
+   :no-undoc-members:
+
+   
+   .. rubric:: Examples using InterpolatorModel
+   .. include:: ../gen_modules/backreferences/gempy.core.interpolator.InterpolatorModel.examples
+   .. raw:: html
+
+       <div class="sphx-glr-clear"></div>
+   
+   
+   
+   .. rubric:: Methods
+   .. autosummary::
+   
+      ~InterpolatorModel.__init__
+      ~InterpolatorModel.calculate_V
+      ~InterpolatorModel.calculate_tz
+      ~InterpolatorModel.compile_th_fn_geo
+      ~InterpolatorModel.create_theano_graph
+      ~InterpolatorModel.get_python_input_block
+      ~InterpolatorModel.modify_results_matrices_pro
+      ~InterpolatorModel.modify_results_weights
+      ~InterpolatorModel.print_theano_shared
+      ~InterpolatorModel.remove_series_without_data
+      ~InterpolatorModel.reset_flow_control_initial_results
+      ~InterpolatorModel.set_all_shared_parameters
+      ~InterpolatorModel.set_flow_control
+      ~InterpolatorModel.set_initial_results
+      ~InterpolatorModel.set_initial_results_matrices
+      ~InterpolatorModel.set_theano_graph
+      ~InterpolatorModel.set_theano_shared_Vs_kernel
+      ~InterpolatorModel.set_theano_shared_fault_relation
+      ~InterpolatorModel.set_theano_shared_faults
+      ~InterpolatorModel.set_theano_shared_gravity
+      ~InterpolatorModel.set_theano_shared_grid
+      ~InterpolatorModel.set_theano_shared_is_fault
+      ~InterpolatorModel.set_theano_shared_is_finite
+      ~InterpolatorModel.set_theano_shared_kriging
+      ~InterpolatorModel.set_theano_shared_l0_l1
+      ~InterpolatorModel.set_theano_shared_loop
+      ~InterpolatorModel.set_theano_shared_magnetic_cts
+      ~InterpolatorModel.set_theano_shared_magnetics
+      ~InterpolatorModel.set_theano_shared_nuggets
+      ~InterpolatorModel.set_theano_shared_onlap_erode
+      ~InterpolatorModel.set_theano_shared_pos_density
+      ~InterpolatorModel.set_theano_shared_pos_magnetics
+      ~InterpolatorModel.set_theano_shared_relations
+      ~InterpolatorModel.set_theano_shared_structure
+      ~InterpolatorModel.set_theano_shared_structure_surfaces
+      ~InterpolatorModel.set_theano_shared_topology
+      ~InterpolatorModel.set_theano_shared_tz_kernel
+      ~InterpolatorModel.set_theano_shared_weights
+   
+   
+
+   
+   
+   
+
+

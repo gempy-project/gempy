@@ -1,0 +1,494 @@
+.. only:: html
+
+    .. note::
+        :class: sphx-glr-download-link-note
+
+        Click :ref:`here <sphx_glr_download_examples_geometries_7_combination.py>`     to download the full example code
+    .. rst-class:: sphx-glr-example-title
+
+    .. _sphx_glr_examples_geometries_7_combination.py:
+
+
+Model 7 - Combination
+======================
+
+A folded domain featuring an unconformity and a fault. We start by importing
+the necessary dependencies:
+
+
+Importing GemPy
+
+
+.. code-block:: python3
+
+    import gempy as gp
+
+    import pandas as pd
+    pd.set_option('precision', 2)
+
+
+
+
+
+
+
+
+Creating the model by importing the input data and displaying it:
+
+
+
+.. code-block:: python3
+
+    data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
+    path_to_data = data_path + "/data/input_data/jan_models/"
+
+    geo_data = gp.create_data('combination',
+                              extent=[0, 2500, 0, 1000, 0, 1000],
+                              resolution=[125, 50, 50],
+                              path_o=path_to_data + "model7_orientations.csv",
+                              path_i=path_to_data + "model7_surface_points.csv")
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Active grids: ['regular']
+
+
+
+
+
+.. code-block:: python3
+
+    geo_data.get_data()
+
+
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th></th>
+          <th>X</th>
+          <th>Y</th>
+          <th>Z</th>
+          <th>smooth</th>
+          <th>surface</th>
+          <th>G_x</th>
+          <th>G_y</th>
+          <th>G_z</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th rowspan="5" valign="top">surface_points</th>
+          <th>0</th>
+          <td>0</td>
+          <td>0</td>
+          <td>800</td>
+          <td>2.00e-06</td>
+          <td>rock3</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>0</td>
+          <td>500</td>
+          <td>800</td>
+          <td>2.00e-06</td>
+          <td>rock3</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>0</td>
+          <td>1000</td>
+          <td>800</td>
+          <td>2.00e-06</td>
+          <td>rock3</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>500</td>
+          <td>0</td>
+          <td>800</td>
+          <td>2.00e-06</td>
+          <td>rock3</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>500</td>
+          <td>500</td>
+          <td>800</td>
+          <td>2.00e-06</td>
+          <td>rock3</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+        </tr>
+        <tr>
+          <th>...</th>
+          <th>...</th>
+          <td>...</td>
+          <td>...</td>
+          <td>...</td>
+          <td>...</td>
+          <td>...</td>
+          <td>...</td>
+          <td>...</td>
+          <td>...</td>
+        </tr>
+        <tr>
+          <th rowspan="5" valign="top">orientations</th>
+          <th>4</th>
+          <td>0</td>
+          <td>1000</td>
+          <td>450</td>
+          <td>1.00e-02</td>
+          <td>rock2</td>
+          <td>-0.42</td>
+          <td>1.00e-12</td>
+          <td>0.91</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>0</td>
+          <td>500</td>
+          <td>250</td>
+          <td>1.00e-02</td>
+          <td>rock1</td>
+          <td>-0.42</td>
+          <td>1.00e-12</td>
+          <td>0.91</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>0</td>
+          <td>0</td>
+          <td>250</td>
+          <td>1.00e-02</td>
+          <td>rock1</td>
+          <td>-0.42</td>
+          <td>1.00e-12</td>
+          <td>0.91</td>
+        </tr>
+        <tr>
+          <th>5</th>
+          <td>0</td>
+          <td>1000</td>
+          <td>250</td>
+          <td>1.00e-02</td>
+          <td>rock1</td>
+          <td>-0.42</td>
+          <td>1.00e-12</td>
+          <td>0.91</td>
+        </tr>
+        <tr>
+          <th>7</th>
+          <td>2000</td>
+          <td>500</td>
+          <td>400</td>
+          <td>1.00e-02</td>
+          <td>fault</td>
+          <td>0.82</td>
+          <td>1.00e-12</td>
+          <td>0.57</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>110 rows × 8 columns</p>
+    </div>
+    <br />
+    <br />
+
+Setting and ordering the units and series:
+
+
+
+.. code-block:: python3
+
+    gp.map_stack_to_surfaces(geo_data, {"Fault_Series": ('fault'), "Strat_Series1": ('rock3'),
+                                         "Strat_Series2": ('rock2','rock1'),
+                                         "Basement_Series":('basement')})
+
+    geo_data.set_is_fault(['Fault_Series'])
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Fault colors changed. If you do not like this behavior, set change_color to False.
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>order_series</th>
+          <th>BottomRelation</th>
+          <th>isActive</th>
+          <th>isFault</th>
+          <th>isFinite</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>Fault_Series</th>
+          <td>1</td>
+          <td>Fault</td>
+          <td>True</td>
+          <td>True</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>Strat_Series1</th>
+          <td>2</td>
+          <td>Erosion</td>
+          <td>True</td>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>Strat_Series2</th>
+          <td>3</td>
+          <td>Erosion</td>
+          <td>True</td>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>Basement_Series</th>
+          <td>4</td>
+          <td>Erosion</td>
+          <td>False</td>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+
+.. code-block:: python3
+
+    gp.plot_2d(geo_data, direction='y')
+
+
+
+
+.. image:: /examples/geometries/images/sphx_glr_7_combination_001.png
+    :alt: Cell Number: mid Direction: y
+    :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    <gempy.plot.visualization_2d.Plot2D object at 0x7f01cebd0c40>
+
+
+
+Calculating the model:
+
+
+
+.. code-block:: python3
+
+    interp_data = gp.set_interpolator(geo_data, theano_optimizer='fast_compile')
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Setting kriging parameters to their default values.
+    Compiling theano function...
+    Level of Optimization:  fast_compile
+    Device:  cpu
+    Precision:  float64
+    Number of faults:  1
+    Compilation Done!
+    Kriging values: 
+                            values
+    range                 2.9e+03
+    $C_o$                   2e+05
+    drift equations  [3, 3, 3, 3]
+
+
+
+
+
+.. code-block:: python3
+
+    sol = gp.compute_model(geo_data)
+
+
+
+
+
+
+
+
+Displaying the result in x and y direction:
+
+
+
+.. code-block:: python3
+
+    gp.plot_2d(geo_data, cell_number=5,
+               direction='y', show_data=False, show_boundaries=True)
+
+
+
+
+.. image:: /examples/geometries/images/sphx_glr_7_combination_002.png
+    :alt: Cell Number: 5 Direction: y
+    :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    <gempy.plot.visualization_2d.Plot2D object at 0x7f01e3880a00>
+
+
+
+sphinx_gallery_thumbnail_number = 2
+
+
+.. code-block:: python3
+
+    gp.plot_2d(geo_data, cell_number=5,
+               direction='x', show_data=True)
+
+
+
+
+.. image:: /examples/geometries/images/sphx_glr_7_combination_003.png
+    :alt: Cell Number: 5 Direction: x
+    :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    <gempy.plot.visualization_2d.Plot2D object at 0x7f01e03e2ca0>
+
+
+
+
+.. code-block:: python3
+
+    gp.plot_3d(geo_data)
+    gp.save_model(geo_data)
+
+
+.. image:: /examples/geometries/images/sphx_glr_7_combination_004.png
+    :alt: 7 combination
+    :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    True
+
+
+
+
+.. rst-class:: sphx-glr-timing
+
+   **Total running time of the script:** ( 0 minutes  10.782 seconds)
+
+
+.. _sphx_glr_download_examples_geometries_7_combination.py:
+
+
+.. only :: html
+
+ .. container:: sphx-glr-footer
+    :class: sphx-glr-footer-example
+
+
+
+  .. container:: sphx-glr-download sphx-glr-download-python
+
+     :download:`Download Python source code: 7_combination.py <7_combination.py>`
+
+
+
+  .. container:: sphx-glr-download sphx-glr-download-jupyter
+
+     :download:`Download Jupyter notebook: 7_combination.ipynb <7_combination.ipynb>`
+
+
+.. only:: html
+
+ .. rst-class:: sphx-glr-signature
+
+    `Gallery generated by Sphinx-Gallery <https://sphinx-gallery.github.io>`_

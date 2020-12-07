@@ -1,0 +1,335 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>gempy.core.grid_modules.grid_types.RegularGrid &#8212; GemPy 2.2.7 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="gempy.core.grid_modules.grid_types.CustomGrid" href="gempy.core.grid_modules.grid_types.CustomGrid.html" />
+    <link rel="prev" title="gempy.core.data.Grid" href="../gempy.core.data.Grid.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="gempy-core-grid-modules-grid-types-regulargrid">
+<h1>gempy.core.grid_modules.grid_types.RegularGrid<a class="headerlink" href="#gempy-core-grid-modules-grid-types-regulargrid" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="gempy.core.grid_modules.grid_types.RegularGrid">
+<em class="property">class </em><code class="sig-prename descclassname">gempy.core.grid_modules.grid_types.</code><code class="sig-name descname">RegularGrid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">extent</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">resolution</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gempy/core/grid_modules/grid_types.html#RegularGrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.grid_modules.grid_types.RegularGrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class with the methods and properties to manage 3D regular grids where the model will be interpolated.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>extent</strong> (<em>np.ndarray</em>) – [x_min, x_max, y_min, y_max, z_min, z_max]</p></li>
+<li><p><strong>resolution</strong> (<em>np.ndarray</em>) – [nx, ny, nz]</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="gempy.core.grid_modules.grid_types.RegularGrid.extent">
+<code class="sig-name descname">extent</code><a class="headerlink" href="#gempy.core.grid_modules.grid_types.RegularGrid.extent" title="Permalink to this definition">¶</a></dt>
+<dd><p>[x_min, x_max, y_min, y_max, z_min, z_max]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="gempy.core.grid_modules.grid_types.RegularGrid.resolution">
+<code class="sig-name descname">resolution</code><a class="headerlink" href="#gempy.core.grid_modules.grid_types.RegularGrid.resolution" title="Permalink to this definition">¶</a></dt>
+<dd><p>[nx, ny, nz]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="gempy.core.grid_modules.grid_types.RegularGrid.values">
+<code class="sig-name descname">values</code><a class="headerlink" href="#gempy.core.grid_modules.grid_types.RegularGrid.values" title="Permalink to this definition">¶</a></dt>
+<dd><p>XYZ coordinates</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="gempy.core.grid_modules.grid_types.RegularGrid.mask_topo">
+<code class="sig-name descname">mask_topo</code><a class="headerlink" href="#gempy.core.grid_modules.grid_types.RegularGrid.mask_topo" title="Permalink to this definition">¶</a></dt>
+<dd><p>same shape as values. Values above the topography are False</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.ndarray, dtype=bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="gempy.core.grid_modules.grid_types.RegularGrid.dx">
+<code class="sig-name descname">dx</code><a class="headerlink" href="#gempy.core.grid_modules.grid_types.RegularGrid.dx" title="Permalink to this definition">¶</a></dt>
+<dd><p>size of the cells on x</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="gempy.core.grid_modules.grid_types.RegularGrid.dy">
+<code class="sig-name descname">dy</code><a class="headerlink" href="#gempy.core.grid_modules.grid_types.RegularGrid.dy" title="Permalink to this definition">¶</a></dt>
+<dd><p>size of the cells on y</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="gempy.core.grid_modules.grid_types.RegularGrid.dz">
+<code class="sig-name descname">dz</code><a class="headerlink" href="#gempy.core.grid_modules.grid_types.RegularGrid.dz" title="Permalink to this definition">¶</a></dt>
+<dd><p>size of the cells on z</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Examples using RegularGrid</p>
+<div class="sphx-glr-clear"></div><p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.grid_modules.grid_types.RegularGrid.__init__" title="gempy.core.grid_modules.grid_types.RegularGrid.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([extent, resolution])</p></td>
+<td><p>Initialize self.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.grid_modules.grid_types.RegularGrid.create_regular_grid_3d" title="gempy.core.grid_modules.grid_types.RegularGrid.create_regular_grid_3d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_regular_grid_3d</span></code></a>(extent, resolution)</p></td>
+<td><p>Method to create a 3D regular grid where is interpolated</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_dx_dy_dz</span></code>([rescale])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_coord</span></code>(extent, resolution)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.grid_modules.grid_types.RegularGrid.set_regular_grid" title="gempy.core.grid_modules.grid_types.RegularGrid.set_regular_grid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_regular_grid</span></code></a>(extent, resolution)</p></td>
+<td><p>Set a regular grid into the values parameters for further computations :param extent: [x_min, x_max, y_min, y_max, z_min, z_max] :type extent: list, np.ndarry</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.grid_modules.grid_types.RegularGrid.set_topography_mask" title="gempy.core.grid_modules.grid_types.RegularGrid.set_topography_mask"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_topography_mask</span></code></a>(topography)</p></td>
+<td><p>This method takes a topography grid of the same extent as the regular</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="gempy.core.grid_modules.grid_types.RegularGrid.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">extent</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">resolution</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gempy/core/grid_modules/grid_types.html#RegularGrid.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.grid_modules.grid_types.RegularGrid.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.grid_modules.grid_types.RegularGrid.create_regular_grid_3d">
+<code class="sig-name descname">create_regular_grid_3d</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">extent</span></em>, <em class="sig-param"><span class="n">resolution</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gempy/core/grid_modules/grid_types.html#RegularGrid.create_regular_grid_3d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.grid_modules.grid_types.RegularGrid.create_regular_grid_3d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to create a 3D regular grid where is interpolated</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>extent</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – [x_min, x_max, y_min, y_max, z_min, z_max]</p></li>
+<li><p><strong>resolution</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – [nx, ny, nz].</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Unraveled 3D numpy array where every row correspond to the xyz coordinates of a regular grid</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)">numpy.ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.grid_modules.grid_types.RegularGrid.set_regular_grid">
+<code class="sig-name descname">set_regular_grid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">extent</span></em>, <em class="sig-param"><span class="n">resolution</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gempy/core/grid_modules/grid_types.html#RegularGrid.set_regular_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.grid_modules.grid_types.RegularGrid.set_regular_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a regular grid into the values parameters for further computations
+:param extent: [x_min, x_max, y_min, y_max, z_min, z_max]
+:type extent: list, np.ndarry</p>
+<blockquote>
+<div><p>resolution (list, np.ndarray): [nx, ny, nz]</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.grid_modules.grid_types.RegularGrid.set_topography_mask">
+<code class="sig-name descname">set_topography_mask</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">topography</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gempy/core/grid_modules/grid_types.html#RegularGrid.set_topography_mask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.grid_modules.grid_types.RegularGrid.set_topography_mask" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>This method takes a topography grid of the same extent as the regular</dt><dd><p>grid and creates a mask of voxels</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>topography</strong> (<a class="reference internal" href="gempy.core.grid_modules.topography.Topography.html#gempy.core.grid_modules.topography.Topography" title="gempy.core.grid_modules.topography.Topography"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.grid_modules.topography.Topography</span></code></a>) – </p>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../index.html">
+    <img class="logo" src="../../_static/./logos/gempy.png" alt="Logo"/>
+    
+    <h1 class="logo logo-name">GemPy</h1>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a class="badge" href="https://travis-ci.org/cgre-aachen/gempy">
+    <img
+        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../projects.html">Additional projects</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">GemPy Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../integrations/index.html">Integrations</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../code.html">Code</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../code.html#gempy-api">GemPy API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../code.html#model">Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../code.html#plot">Plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../code.html#data">Data</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../code.html#grids">Grids</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../code.html#geometric-data">Geometric Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../code.html#interpolator">Interpolator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../code.html#solution">Solution</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../../code.html">Code</a><ul>
+      <li>Previous: <a href="../gempy.core.data.Grid.html" title="previous chapter">gempy.core.data.Grid</a></li>
+      <li>Next: <a href="gempy.core.grid_modules.grid_types.CustomGrid.html" title="next chapter">gempy.core.grid_modules.grid_types.CustomGrid</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017-2020, CGRE-Aachen Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../_sources/Data/Grid/gempy.core.grid_modules.grid_types.RegularGrid.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

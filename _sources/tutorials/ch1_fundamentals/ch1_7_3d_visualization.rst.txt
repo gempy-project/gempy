@@ -1,0 +1,225 @@
+.. only:: html
+
+    .. note::
+        :class: sphx-glr-download-link-note
+
+        Click :ref:`here <sphx_glr_download_tutorials_ch1_fundamentals_ch1_7_3d_visualization.py>`     to download the full example code
+    .. rst-class:: sphx-glr-example-title
+
+    .. _sphx_glr_tutorials_ch1_fundamentals_ch1_7_3d_visualization.py:
+
+
+1.7: 3-D Visualization
+======================
+
+Importing GemPy
+
+
+.. code-block:: python3
+
+    import gempy as gp
+
+    # Importing auxiliary libraries
+    import numpy as np
+    import matplotlib.pyplot as plt
+
+
+
+
+
+
+
+
+Loading an example geomodel
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+.. code-block:: python3
+
+
+    data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
+
+    geo_model = gp.create_data('viz_3d',
+                               [0, 2000, 0, 2000, 0, 1600],
+                               [50, 50, 50],
+                               path_o=data_path + "data/input_data/lisa_models/foliations" + str(
+                                   7) + ".csv",
+                               path_i=data_path + "data/input_data/lisa_models/interfaces" + str(
+                                   7) + ".csv"
+                               )
+
+    gp.map_stack_to_surfaces(
+        geo_model,
+        {"Fault_1": 'Fault_1', "Fault_2": 'Fault_2',
+         "Strat_Series": ('Sandstone', 'Siltstone', 'Shale', 'Sandstone_2', 'Schist', 'Gneiss')}
+    )
+
+    geo_model.set_is_fault(['Fault_1', 'Fault_2'])
+    geo_model.set_topography()
+
+    gp.set_interpolator(geo_model)
+    gp.compute_model(geo_model, compute_mesh=True)
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Active grids: ['regular']
+    /home/miguel/PycharmProjects/gempy/gempy/core/data_modules/geometric_data.py:537: UserWarning: If pole_vector and orientation are passed pole_vector is used/
+      warnings.warn('If pole_vector and orientation are passed pole_vector is used/')
+    Fault colors changed. If you do not like this behavior, set change_color to False.
+    [1280. 1600.]
+    Active grids: ['regular' 'topography']
+    Setting kriging parameters to their default values.
+    Compiling theano function...
+    Level of Optimization:  fast_compile
+    Device:  cpu
+    Precision:  float64
+    Number of faults:  2
+    Compilation Done!
+    Kriging values: 
+                            values
+    range                 3.2e+03
+    $C_o$                 2.5e+05
+    drift equations  [3, 3, 3, 3]
+    /home/miguel/PycharmProjects/gempy/gempy/core/solution.py:174: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify 'dtype=object' when creating the ndarray
+      self.geological_map = np.array(
+
+
+    Lithology ids 
+      [9. 9. 9. ... 3. 3. 3.] 
+
+
+
+
+Basic plotting API
+------------------
+
+
+Data plot
+~~~~~~~~~
+
+
+
+.. code-block:: python3
+
+    gp.plot_3d(geo_model, show_surfaces=False, show_data=True, show_lith=False, image=False)
+
+
+
+
+.. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_7_3d_visualization_001.png
+    :alt: ch1 7 3d visualization
+    :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    <gempy.plot.vista.GemPyToVista object at 0x7f01e3aaf760>
+
+
+
+Geomodel plot
+~~~~~~~~~~~~~
+
+
+
+.. code-block:: python3
+
+    gp.plot_3d(geo_model, image=False)
+
+
+
+
+.. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_7_3d_visualization_002.png
+    :alt: ch1 7 3d visualization
+    :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    <gempy.plot.vista.GemPyToVista object at 0x7f01e02c9130>
+
+
+
+
+.. code-block:: python3
+
+
+    # sphinx_gallery_thumbnail_number = 2
+    gpv = gp.plot.plot_3d(geo_model,
+                          plotter_type='basic', off_screen=False,
+                          show_topography=True,
+                          show_scalar=False,
+                          show_lith=True,
+                          kwargs_plot_structured_grid={'opacity': .5})
+
+    gp.save_model(geo_model)
+
+
+
+.. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_7_3d_visualization_003.png
+    :alt: ch1 7 3d visualization
+    :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    True
+
+
+
+
+.. rst-class:: sphx-glr-timing
+
+   **Total running time of the script:** ( 0 minutes  6.839 seconds)
+
+
+.. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_7_3d_visualization.py:
+
+
+.. only :: html
+
+ .. container:: sphx-glr-footer
+    :class: sphx-glr-footer-example
+
+
+
+  .. container:: sphx-glr-download sphx-glr-download-python
+
+     :download:`Download Python source code: ch1_7_3d_visualization.py <ch1_7_3d_visualization.py>`
+
+
+
+  .. container:: sphx-glr-download sphx-glr-download-jupyter
+
+     :download:`Download Jupyter notebook: ch1_7_3d_visualization.ipynb <ch1_7_3d_visualization.ipynb>`
+
+
+.. only:: html
+
+ .. rst-class:: sphx-glr-signature
+
+    `Gallery generated by Sphinx-Gallery <https://sphinx-gallery.github.io>`_

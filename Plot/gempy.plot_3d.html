@@ -1,0 +1,258 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>gempy.plot_3d &#8212; GemPy 2.2.7 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="gempy.core.data_modules.stack.Stack" href="../Data/gempy.core.data_modules.stack.Stack.html" />
+    <link rel="prev" title="gempy.plot_2d" href="gempy.plot_2d.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="gempy-plot-3d">
+<h1>gempy.plot_3d<a class="headerlink" href="#gempy-plot-3d" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="gempy.plot_3d">
+<code class="sig-prename descclassname">gempy.</code><code class="sig-name descname">plot_3d</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">plotter_type</span><span class="o">=</span><span class="default_value">'basic'</span></em>, <em class="sig-param"><span class="n">show_data</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">show_results</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">show_surfaces</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">show_lith</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">show_scalar</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">show_boundaries</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">show_topography</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">scalar_field</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ve</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">kwargs_plot_structured_grid</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">kwargs_plot_topography</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">kwargs_plot_data</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">image</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">off_screen</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; gempy.plot.vista.GemPyToVista<a class="reference internal" href="../_modules/gempy/plot/plot_api.html#plot_3d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.plot_3d" title="Permalink to this definition">¶</a></dt>
+<dd><p>foobar</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<a class="reference internal" href="../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.model.Project</span></code></a>) – Container class of all
+objects that constitute a GemPy model.</p></li>
+<li><p><strong>plotter_type</strong> – PyVista plotter types. Supported plotters are:
+‘basic’, ‘background’, and ‘notebook’.</p></li>
+<li><p><strong>show_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Show original input data. Defaults to True.</p></li>
+<li><p><strong>show_results</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – If False, override show lith, show_scalar, show_values</p></li>
+<li><p><strong>show_lith</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Show lithological block volumes. Defaults to True.</p></li>
+<li><p><strong>show_scalar</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Show scalar field isolines. Defaults to False.</p></li>
+<li><p><strong>show_boundaries</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Show surface boundaries as lines. Defaults to True.</p></li>
+<li><p><strong>show_topography</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Show topography on plot. Defaults to False.</p></li>
+<li><p><strong>scalar_field</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Name of the field to be activated</p></li>
+<li><p><strong>series_n</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – number of the scalar field.</p></li>
+<li><p><strong>ve</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – Vertical Exaggeration</p></li>
+<li><p><strong>kwargs_plot_structured_grid</strong> – </p></li>
+<li><p><strong>kwargs_plot_topography</strong> – </p></li>
+<li><p><strong>**kwargs</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.plot.vista.GemPyToVista</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<div class="section" id="examples-using-gempy-plot-3d">
+<h2>Examples using <code class="docutils literal notranslate"><span class="pre">gempy.plot_3d</span></code><a class="headerlink" href="#examples-using-gempy-plot-3d" title="Permalink to this headline">¶</a></h2>
+<div class="sphx-glr-thumbcontainer" tooltip="Getting Started"><div class="figure align-default" id="id1">
+<img alt="Getting Started" src="../_images/sphx_glr_get_started_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../getting_started/get_started.html#sphx-glr-getting-started-get-started-py"><span class="std std-ref">Getting Started</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="1.1 -Basics of geological modeling with GemPy"><div class="figure align-default" id="id2">
+<img alt="1.1 -Basics of geological modeling with GemPy" src="../_images/sphx_glr_ch1_1_basics_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../tutorials/ch1_fundamentals/ch1_1_basics.html#sphx-glr-tutorials-ch1-fundamentals-ch1-1-basics-py"><span class="std std-ref">1.1 -Basics of geological modeling with GemPy</span></a></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="1.3c: Adding topography to geological models"><div class="figure align-default" id="id3">
+<img alt="1.3c: Adding topography to geological models" src="../_images/sphx_glr_ch1_3c_topography_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../tutorials/ch1_fundamentals/ch1_3c_topography.html#sphx-glr-tutorials-ch1-fundamentals-ch1-3c-topography-py"><span class="std std-ref">1.3c: Adding topography to geological models</span></a></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="1.4: Unconformity relationships"><div class="figure align-default" id="id4">
+<img alt="1.4: Unconformity relationships" src="../_images/sphx_glr_ch1_4_onlap_relations_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../tutorials/ch1_fundamentals/ch1_4_onlap_relations.html#sphx-glr-tutorials-ch1-fundamentals-ch1-4-onlap-relations-py"><span class="std std-ref">1.4: Unconformity relationships</span></a></span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="1.5: Fault relations"><div class="figure align-default" id="id5">
+<img alt="1.5: Fault relations" src="../_images/sphx_glr_ch1_5_fault_relations_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../tutorials/ch1_fundamentals/ch1_5_fault_relations.html#sphx-glr-tutorials-ch1-fundamentals-ch1-5-fault-relations-py"><span class="std std-ref">1.5: Fault relations</span></a></span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="1.7: 3-D Visualization"><div class="figure align-default" id="id6">
+<img alt="1.7: 3-D Visualization" src="../_images/sphx_glr_ch1_7_3d_visualization_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../tutorials/ch1_fundamentals/ch1_7_3d_visualization.html#sphx-glr-tutorials-ch1-fundamentals-ch1-7-3d-visualization-py"><span class="std std-ref">1.7: 3-D Visualization</span></a></span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Model 7 - Combination"><div class="figure align-default" id="id7">
+<img alt="Model 7 - Combination" src="../_images/sphx_glr_7_combination_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/geometries/7_combination.html#sphx-glr-examples-geometries-7-combination-py"><span class="std std-ref">Model 7 - Combination</span></a></span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Alesmodel: Plotting sections and maps."><div class="figure align-default" id="id8">
+<img alt="Alesmodel: Plotting sections and maps." src="../_images/sphx_glr_Alesmodel_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/real/Alesmodel.html#sphx-glr-examples-real-alesmodel-py"><span class="std std-ref">Alesmodel: Plotting sections and maps.</span></a></span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Claudius"><div class="figure align-default" id="id9">
+<img alt="Claudius" src="../_images/sphx_glr_Claudius_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/real/Claudius.html#sphx-glr-examples-real-claudius-py"><span class="std std-ref">Claudius</span></a></span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Greenstone."><div class="figure align-default" id="id10">
+<img alt="Greenstone." src="../_images/sphx_glr_Greenstone_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/real/Greenstone.html#sphx-glr-examples-real-greenstone-py"><span class="std std-ref">Greenstone.</span></a></span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Hecho"><div class="figure align-default" id="id11">
+<img alt="Hecho" src="../_images/sphx_glr_Hecho_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/real/Hecho.html#sphx-glr-examples-real-hecho-py"><span class="std std-ref">Hecho</span></a></span><a class="headerlink" href="#id11" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Moureze"><div class="figure align-default" id="id12">
+<img alt="Moureze" src="../_images/sphx_glr_Moureze_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/real/Moureze.html#sphx-glr-examples-real-moureze-py"><span class="std std-ref">Moureze</span></a></span><a class="headerlink" href="#id12" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Perth basin."><div class="figure align-default" id="id13">
+<img alt="Perth basin." src="../_images/sphx_glr_Perth_basin_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/real/Perth_basin.html#sphx-glr-examples-real-perth-basin-py"><span class="std std-ref">Perth basin.</span></a></span><a class="headerlink" href="#id13" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Export a geological model from GemPy to use in MOOSE"><div class="figure align-default" id="id14">
+<img alt="Export a geological model from GemPy to use in MOOSE" src="../_images/sphx_glr_gempy_export_MOOSE_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../integrations/gempy_export_MOOSE.html#sphx-glr-integrations-gempy-export-moose-py"><span class="std std-ref">Export a geological model from GemPy to use in MOOSE</span></a></span><a class="headerlink" href="#id14" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Transform 2019: Integrating Striplog and GemPy"><div class="figure align-default" id="id15">
+<img alt="Transform 2019: Integrating Striplog and GemPy" src="../_images/sphx_glr_gempy_striplog_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../integrations/gempy_striplog.html#sphx-glr-integrations-gempy-striplog-py"><span class="std std-ref">Transform 2019: Integrating Striplog and GemPy</span></a></span><a class="headerlink" href="#id15" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-clear"></div></div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/./logos/gempy.png" alt="Logo"/>
+    
+    <h1 class="logo logo-name">GemPy</h1>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a class="badge" href="https://travis-ci.org/cgre-aachen/gempy">
+    <img
+        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../projects.html">Additional projects</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">GemPy Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../integrations/index.html">Integrations</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../code.html">Code</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../code.html#gempy-api">GemPy API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#model">Model</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../code.html#plot">Plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#data">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#grids">Grids</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#geometric-data">Geometric Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#interpolator">Interpolator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#solution">Solution</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../code.html">Code</a><ul>
+      <li>Previous: <a href="gempy.plot_2d.html" title="previous chapter">gempy.plot_2d</a></li>
+      <li>Next: <a href="../Data/gempy.core.data_modules.stack.Stack.html" title="next chapter">gempy.core.data_modules.stack.Stack</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017-2020, CGRE-Aachen Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/Plot/gempy.plot_3d.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

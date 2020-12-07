@@ -1,0 +1,4492 @@
+.. only:: html
+
+    .. note::
+        :class: sphx-glr-download-link-note
+
+        Click :ref:`here <sphx_glr_download_tutorials_ch1_fundamentals_ch1_2a_data_manipulation.py>`     to download the full example code
+    .. rst-class:: sphx-glr-example-title
+
+    .. _sphx_glr_tutorials_ch1_fundamentals_ch1_2a_data_manipulation.py:
+
+
+1.2: Data Structure and Manipulation
+------------------------------------
+
+
+.. code-block:: python3
+
+    # Importing GemPy
+    import gempy as gp
+    import gempy
+
+    # Importing auxiliary libraries
+    import numpy as np
+    import pandas as pd
+    pd.set_option('precision', 2)
+
+
+
+
+
+
+
+
+Series
+~~~~~~
+
+Series is the object that contains the properties associated with each
+independent scalar field. Right now it is simply the order of the series
+(which is inferred by the index order). But in the future will be add the
+unconformity relation or perhaps the type of interpolator
+
+Series and Faults classes are quite entangled since fault are a view of
+series
+
+
+
+.. code-block:: python3
+
+    faults = gp.Faults()
+    series = gp.Series(faults)
+    series.df
+
+
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>order_series</th>
+          <th>BottomRelation</th>
+          <th>isActive</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>Default series</th>
+          <td>1</td>
+          <td>Erosion</td>
+          <td>False</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+    <br />
+    <br />
+
+We can modify the series bt using ``set_series_index``:
+
+
+
+.. code-block:: python3
+
+    series.set_series_index(['foo', 'foo2', 'foo5', 'foo7'])
+    series
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>order_series</th>
+          <th>BottomRelation</th>
+          <th>isActive</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>foo</th>
+          <td>1</td>
+          <td>Erosion</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo2</th>
+          <td>2</td>
+          <td>Erosion</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo5</th>
+          <td>3</td>
+          <td>Erosion</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo7</th>
+          <td>4</td>
+          <td>Erosion</td>
+          <td>False</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+The index of series are pandas categories. These provides quite handy
+backend functionality (see pandas.Categorical).
+
+
+
+.. code-block:: python3
+
+    series.df.index
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    CategoricalIndex(['foo', 'foo2', 'foo5', 'foo7'], categories=['foo', 'foo2', 'foo5', 'foo7'], ordered=False, dtype='category')
+
+
+
+For adding new series:
+
+
+
+.. code-block:: python3
+
+    series.add_series('foo3')
+    series
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>order_series</th>
+          <th>BottomRelation</th>
+          <th>isActive</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>foo</th>
+          <td>1</td>
+          <td>Erosion</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo2</th>
+          <td>2</td>
+          <td>Erosion</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo5</th>
+          <td>3</td>
+          <td>Erosion</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo7</th>
+          <td>4</td>
+          <td>Erosion</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo3</th>
+          <td>5</td>
+          <td>Erosion</td>
+          <td>False</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+Delete series
+
+
+
+.. code-block:: python3
+
+    series.delete_series('foo3')
+    series
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>order_series</th>
+          <th>BottomRelation</th>
+          <th>isActive</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>foo</th>
+          <td>1</td>
+          <td>Erosion</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo2</th>
+          <td>2</td>
+          <td>Erosion</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo5</th>
+          <td>3</td>
+          <td>Erosion</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo7</th>
+          <td>4</td>
+          <td>Erosion</td>
+          <td>False</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+Rename series:
+
+
+
+.. code-block:: python3
+
+    series.rename_series({'foo': 'boo'})
+    series
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>order_series</th>
+          <th>BottomRelation</th>
+          <th>isActive</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>boo</th>
+          <td>1</td>
+          <td>Erosion</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo2</th>
+          <td>2</td>
+          <td>Erosion</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo5</th>
+          <td>3</td>
+          <td>Erosion</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo7</th>
+          <td>4</td>
+          <td>Erosion</td>
+          <td>False</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+Reorder series:
+
+
+
+.. code-block:: python3
+
+    series.reorder_series(['foo2', 'boo', 'foo7', 'foo5'])
+    series
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>order_series</th>
+          <th>BottomRelation</th>
+          <th>isActive</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>foo2</th>
+          <td>1</td>
+          <td>Erosion</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>boo</th>
+          <td>2</td>
+          <td>Erosion</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo7</th>
+          <td>3</td>
+          <td>Erosion</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo5</th>
+          <td>4</td>
+          <td>Erosion</td>
+          <td>False</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+Faults
+~~~~~~
+
+The *df faults* is used to characterize which *mathematical series*
+behave as fault and if mentioned faults are finite or infinite. Both dataframes
+get updated automatically as we modify the series object linked
+to the fault object (by passing it when a Series object is created).
+
+
+
+.. code-block:: python3
+
+    faults
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>isFault</th>
+          <th>isFinite</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>foo2</th>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>boo</th>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo7</th>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo5</th>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+Finally we have the *faults relations df* which captures which
+*mathematical series* a given fault offset in order to reproduce complex
+faulting networks
+
+
+
+.. code-block:: python3
+
+    faults.faults_relations_df
+
+
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>foo2</th>
+          <th>boo</th>
+          <th>foo7</th>
+          <th>foo5</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>foo2</th>
+          <td>False</td>
+          <td>False</td>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>boo</th>
+          <td>False</td>
+          <td>False</td>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo7</th>
+          <td>False</td>
+          <td>False</td>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo5</th>
+          <td>False</td>
+          <td>False</td>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+    <br />
+    <br />
+
+We can use ``set_is_fault`` to choose which of our series are faults:
+
+
+
+.. code-block:: python3
+
+    faults.set_is_fault(['boo'])
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>isFault</th>
+          <th>isFinite</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>foo2</th>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>boo</th>
+          <td>True</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo7</th>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo5</th>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+Similar thing for the fault relations:
+
+
+
+.. code-block:: python3
+
+    fr = np.zeros((4, 4))
+    fr[2, 2] = True
+    fr[1, 2] = True
+
+    faults.set_fault_relation(fr)
+
+
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>foo2</th>
+          <th>boo</th>
+          <th>foo7</th>
+          <th>foo5</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>foo2</th>
+          <td>False</td>
+          <td>False</td>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>boo</th>
+          <td>False</td>
+          <td>False</td>
+          <td>True</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo7</th>
+          <td>False</td>
+          <td>False</td>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo5</th>
+          <td>False</td>
+          <td>False</td>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+    <br />
+    <br />
+
+Now if we change the series df and we update the series already defined
+will conserve their values while the new ones will be set to false:
+
+
+
+.. code-block:: python3
+
+    series.add_series('foo20')
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>order_series</th>
+          <th>BottomRelation</th>
+          <th>isActive</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>foo2</th>
+          <td>1</td>
+          <td>Erosion</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>boo</th>
+          <td>2</td>
+          <td>Erosion</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo7</th>
+          <td>3</td>
+          <td>Erosion</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo5</th>
+          <td>4</td>
+          <td>Erosion</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo20</th>
+          <td>5</td>
+          <td>Erosion</td>
+          <td>False</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+
+.. code-block:: python3
+
+    series
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>order_series</th>
+          <th>BottomRelation</th>
+          <th>isActive</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>foo2</th>
+          <td>1</td>
+          <td>Erosion</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>boo</th>
+          <td>2</td>
+          <td>Erosion</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo7</th>
+          <td>3</td>
+          <td>Erosion</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo5</th>
+          <td>4</td>
+          <td>Erosion</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo20</th>
+          <td>5</td>
+          <td>Erosion</td>
+          <td>False</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+
+.. code-block:: python3
+
+    faults
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>isFault</th>
+          <th>isFinite</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>foo2</th>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>boo</th>
+          <td>True</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo7</th>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo5</th>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo20</th>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+
+.. code-block:: python3
+
+    faults.faults_relations_df
+
+
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>foo2</th>
+          <th>boo</th>
+          <th>foo7</th>
+          <th>foo5</th>
+          <th>foo20</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>foo2</th>
+          <td>False</td>
+          <td>False</td>
+          <td>False</td>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>boo</th>
+          <td>False</td>
+          <td>False</td>
+          <td>True</td>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo7</th>
+          <td>False</td>
+          <td>False</td>
+          <td>False</td>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo5</th>
+          <td>False</td>
+          <td>False</td>
+          <td>False</td>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo20</th>
+          <td>False</td>
+          <td>False</td>
+          <td>False</td>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+    <br />
+    <br />
+
+When we add new series the values switch to NaN. We will be careful not
+having any NaNs in the DataFrames or we will raise errors down the line.
+
+
+
+.. code-block:: python3
+
+    faults.set_is_fault()
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>isFault</th>
+          <th>isFinite</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>foo2</th>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>boo</th>
+          <td>True</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo7</th>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo5</th>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo20</th>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+
+.. code-block:: python3
+
+    faults.set_fault_relation()
+
+
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>foo2</th>
+          <th>boo</th>
+          <th>foo7</th>
+          <th>foo5</th>
+          <th>foo20</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>foo2</th>
+          <td>False</td>
+          <td>False</td>
+          <td>False</td>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>boo</th>
+          <td>False</td>
+          <td>False</td>
+          <td>False</td>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo7</th>
+          <td>False</td>
+          <td>False</td>
+          <td>False</td>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo5</th>
+          <td>False</td>
+          <td>False</td>
+          <td>False</td>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo20</th>
+          <td>False</td>
+          <td>False</td>
+          <td>False</td>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+    <br />
+    <br />
+
+Surfaces:
+~~~~~~~~~
+
+The *df surfaces* contains three properties. *id* refers to the order of
+the surfaces on the sequential pile, i.e. the strict order of
+computation. *values* on the other hand is the final value that each
+voxel will have after discretization. This may be useful for example in
+the case we want to map a specific geophysical property (such as
+density) to a given unit. By default both are the same since to
+discretize lithological units the value is arbitrary.
+
+
+From an empty df
+^^^^^^^^^^^^^^^^
+
+The Surfaces class needs to have an associate series object. This will
+limit the name of the series since they are a ``pandas.Categorical``\ .
+
+
+
+.. code-block:: python3
+
+    surfaces = gp.Surfaces(series)
+
+
+
+
+
+
+
+
+We can set any number of formations by passing a list with the names. By
+default they will take the name or the first series.
+
+
+
+.. code-block:: python3
+
+    surfaces.set_surfaces_names(['foo', 'foo2', 'foo5'])
+
+
+
+
+
+
+.. raw:: html
+
+    <style  type="text/css" >
+    #T_e6b2711e_3884_11eb_afc4_b3a2b3eb1f40row0_col3{
+                background-color:  #015482;
+            }#T_e6b2711e_3884_11eb_afc4_b3a2b3eb1f40row1_col3{
+                background-color:  #9f0052;
+            }#T_e6b2711e_3884_11eb_afc4_b3a2b3eb1f40row2_col3{
+                background-color:  #ffbe00;
+            }</style><table id="T_e6b2711e_3884_11eb_afc4_b3a2b3eb1f40" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
+                    <tr>
+                            <th id="T_e6b2711e_3884_11eb_afc4_b3a2b3eb1f40level0_row0" class="row_heading level0 row0" >0</th>
+                            <td id="T_e6b2711e_3884_11eb_afc4_b3a2b3eb1f40row0_col0" class="data row0 col0" >foo</td>
+                            <td id="T_e6b2711e_3884_11eb_afc4_b3a2b3eb1f40row0_col1" class="data row0 col1" >foo20</td>
+                            <td id="T_e6b2711e_3884_11eb_afc4_b3a2b3eb1f40row0_col2" class="data row0 col2" >1</td>
+                            <td id="T_e6b2711e_3884_11eb_afc4_b3a2b3eb1f40row0_col3" class="data row0 col3" >#015482</td>
+                            <td id="T_e6b2711e_3884_11eb_afc4_b3a2b3eb1f40row0_col4" class="data row0 col4" >1</td>
+                </tr>
+                <tr>
+                            <th id="T_e6b2711e_3884_11eb_afc4_b3a2b3eb1f40level0_row1" class="row_heading level0 row1" >1</th>
+                            <td id="T_e6b2711e_3884_11eb_afc4_b3a2b3eb1f40row1_col0" class="data row1 col0" >foo2</td>
+                            <td id="T_e6b2711e_3884_11eb_afc4_b3a2b3eb1f40row1_col1" class="data row1 col1" >foo20</td>
+                            <td id="T_e6b2711e_3884_11eb_afc4_b3a2b3eb1f40row1_col2" class="data row1 col2" >2</td>
+                            <td id="T_e6b2711e_3884_11eb_afc4_b3a2b3eb1f40row1_col3" class="data row1 col3" >#9f0052</td>
+                            <td id="T_e6b2711e_3884_11eb_afc4_b3a2b3eb1f40row1_col4" class="data row1 col4" >2</td>
+                </tr>
+                <tr>
+                            <th id="T_e6b2711e_3884_11eb_afc4_b3a2b3eb1f40level0_row2" class="row_heading level0 row2" >2</th>
+                            <td id="T_e6b2711e_3884_11eb_afc4_b3a2b3eb1f40row2_col0" class="data row2 col0" >foo5</td>
+                            <td id="T_e6b2711e_3884_11eb_afc4_b3a2b3eb1f40row2_col1" class="data row2 col1" >foo20</td>
+                            <td id="T_e6b2711e_3884_11eb_afc4_b3a2b3eb1f40row2_col2" class="data row2 col2" >3</td>
+                            <td id="T_e6b2711e_3884_11eb_afc4_b3a2b3eb1f40row2_col3" class="data row2 col3" >#ffbe00</td>
+                            <td id="T_e6b2711e_3884_11eb_afc4_b3a2b3eb1f40row2_col4" class="data row2 col4" >3</td>
+                </tr>
+        </tbody></table>
+    <br />
+    <br />
+
+
+.. code-block:: python3
+
+    series
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>order_series</th>
+          <th>BottomRelation</th>
+          <th>isActive</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>foo2</th>
+          <td>1</td>
+          <td>Erosion</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>boo</th>
+          <td>2</td>
+          <td>Erosion</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo7</th>
+          <td>3</td>
+          <td>Erosion</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo5</th>
+          <td>4</td>
+          <td>Erosion</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo20</th>
+          <td>5</td>
+          <td>Erosion</td>
+          <td>False</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+We can add new formations:
+
+
+
+.. code-block:: python3
+
+    surfaces.add_surface(['feeeee'])
+    surfaces
+
+
+
+
+
+
+.. raw:: html
+
+    <style  type="text/css" >
+    #T_e6b2711f_3884_11eb_afc4_b3a2b3eb1f40row0_col3{
+                background-color:  #015482;
+            }#T_e6b2711f_3884_11eb_afc4_b3a2b3eb1f40row1_col3{
+                background-color:  #9f0052;
+            }#T_e6b2711f_3884_11eb_afc4_b3a2b3eb1f40row2_col3{
+                background-color:  #ffbe00;
+            }#T_e6b2711f_3884_11eb_afc4_b3a2b3eb1f40row3_col3{
+                background-color:  #728f02;
+            }</style><table id="T_e6b2711f_3884_11eb_afc4_b3a2b3eb1f40" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
+                    <tr>
+                            <th id="T_e6b2711f_3884_11eb_afc4_b3a2b3eb1f40level0_row0" class="row_heading level0 row0" >0</th>
+                            <td id="T_e6b2711f_3884_11eb_afc4_b3a2b3eb1f40row0_col0" class="data row0 col0" >foo</td>
+                            <td id="T_e6b2711f_3884_11eb_afc4_b3a2b3eb1f40row0_col1" class="data row0 col1" >foo20</td>
+                            <td id="T_e6b2711f_3884_11eb_afc4_b3a2b3eb1f40row0_col2" class="data row0 col2" >1</td>
+                            <td id="T_e6b2711f_3884_11eb_afc4_b3a2b3eb1f40row0_col3" class="data row0 col3" >#015482</td>
+                            <td id="T_e6b2711f_3884_11eb_afc4_b3a2b3eb1f40row0_col4" class="data row0 col4" >1</td>
+                </tr>
+                <tr>
+                            <th id="T_e6b2711f_3884_11eb_afc4_b3a2b3eb1f40level0_row1" class="row_heading level0 row1" >1</th>
+                            <td id="T_e6b2711f_3884_11eb_afc4_b3a2b3eb1f40row1_col0" class="data row1 col0" >foo2</td>
+                            <td id="T_e6b2711f_3884_11eb_afc4_b3a2b3eb1f40row1_col1" class="data row1 col1" >foo20</td>
+                            <td id="T_e6b2711f_3884_11eb_afc4_b3a2b3eb1f40row1_col2" class="data row1 col2" >2</td>
+                            <td id="T_e6b2711f_3884_11eb_afc4_b3a2b3eb1f40row1_col3" class="data row1 col3" >#9f0052</td>
+                            <td id="T_e6b2711f_3884_11eb_afc4_b3a2b3eb1f40row1_col4" class="data row1 col4" >2</td>
+                </tr>
+                <tr>
+                            <th id="T_e6b2711f_3884_11eb_afc4_b3a2b3eb1f40level0_row2" class="row_heading level0 row2" >2</th>
+                            <td id="T_e6b2711f_3884_11eb_afc4_b3a2b3eb1f40row2_col0" class="data row2 col0" >foo5</td>
+                            <td id="T_e6b2711f_3884_11eb_afc4_b3a2b3eb1f40row2_col1" class="data row2 col1" >foo20</td>
+                            <td id="T_e6b2711f_3884_11eb_afc4_b3a2b3eb1f40row2_col2" class="data row2 col2" >3</td>
+                            <td id="T_e6b2711f_3884_11eb_afc4_b3a2b3eb1f40row2_col3" class="data row2 col3" >#ffbe00</td>
+                            <td id="T_e6b2711f_3884_11eb_afc4_b3a2b3eb1f40row2_col4" class="data row2 col4" >3</td>
+                </tr>
+                <tr>
+                            <th id="T_e6b2711f_3884_11eb_afc4_b3a2b3eb1f40level0_row3" class="row_heading level0 row3" >3</th>
+                            <td id="T_e6b2711f_3884_11eb_afc4_b3a2b3eb1f40row3_col0" class="data row3 col0" >feeeee</td>
+                            <td id="T_e6b2711f_3884_11eb_afc4_b3a2b3eb1f40row3_col1" class="data row3 col1" >foo20</td>
+                            <td id="T_e6b2711f_3884_11eb_afc4_b3a2b3eb1f40row3_col2" class="data row3 col2" >4</td>
+                            <td id="T_e6b2711f_3884_11eb_afc4_b3a2b3eb1f40row3_col3" class="data row3 col3" >#728f02</td>
+                            <td id="T_e6b2711f_3884_11eb_afc4_b3a2b3eb1f40row3_col4" class="data row3 col4" >4</td>
+                </tr>
+        </tbody></table>
+    <br />
+    <br />
+
+The column formation is also a ''pandas.Categorical''\ . This will be important
+for the Data classes (surface\_points and Orientations)
+
+
+
+.. code-block:: python3
+
+    surfaces.df['surface']
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    0       foo
+    1      foo2
+    2      foo5
+    3    feeeee
+    Name: surface, dtype: object
+
+
+
+
+.. code-block:: python3
+
+    surfaces
+
+
+
+
+
+
+.. raw:: html
+
+    <style  type="text/css" >
+    #T_e6b27120_3884_11eb_afc4_b3a2b3eb1f40row0_col3{
+                background-color:  #015482;
+            }#T_e6b27120_3884_11eb_afc4_b3a2b3eb1f40row1_col3{
+                background-color:  #9f0052;
+            }#T_e6b27120_3884_11eb_afc4_b3a2b3eb1f40row2_col3{
+                background-color:  #ffbe00;
+            }#T_e6b27120_3884_11eb_afc4_b3a2b3eb1f40row3_col3{
+                background-color:  #728f02;
+            }</style><table id="T_e6b27120_3884_11eb_afc4_b3a2b3eb1f40" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
+                    <tr>
+                            <th id="T_e6b27120_3884_11eb_afc4_b3a2b3eb1f40level0_row0" class="row_heading level0 row0" >0</th>
+                            <td id="T_e6b27120_3884_11eb_afc4_b3a2b3eb1f40row0_col0" class="data row0 col0" >foo</td>
+                            <td id="T_e6b27120_3884_11eb_afc4_b3a2b3eb1f40row0_col1" class="data row0 col1" >foo20</td>
+                            <td id="T_e6b27120_3884_11eb_afc4_b3a2b3eb1f40row0_col2" class="data row0 col2" >1</td>
+                            <td id="T_e6b27120_3884_11eb_afc4_b3a2b3eb1f40row0_col3" class="data row0 col3" >#015482</td>
+                            <td id="T_e6b27120_3884_11eb_afc4_b3a2b3eb1f40row0_col4" class="data row0 col4" >1</td>
+                </tr>
+                <tr>
+                            <th id="T_e6b27120_3884_11eb_afc4_b3a2b3eb1f40level0_row1" class="row_heading level0 row1" >1</th>
+                            <td id="T_e6b27120_3884_11eb_afc4_b3a2b3eb1f40row1_col0" class="data row1 col0" >foo2</td>
+                            <td id="T_e6b27120_3884_11eb_afc4_b3a2b3eb1f40row1_col1" class="data row1 col1" >foo20</td>
+                            <td id="T_e6b27120_3884_11eb_afc4_b3a2b3eb1f40row1_col2" class="data row1 col2" >2</td>
+                            <td id="T_e6b27120_3884_11eb_afc4_b3a2b3eb1f40row1_col3" class="data row1 col3" >#9f0052</td>
+                            <td id="T_e6b27120_3884_11eb_afc4_b3a2b3eb1f40row1_col4" class="data row1 col4" >2</td>
+                </tr>
+                <tr>
+                            <th id="T_e6b27120_3884_11eb_afc4_b3a2b3eb1f40level0_row2" class="row_heading level0 row2" >2</th>
+                            <td id="T_e6b27120_3884_11eb_afc4_b3a2b3eb1f40row2_col0" class="data row2 col0" >foo5</td>
+                            <td id="T_e6b27120_3884_11eb_afc4_b3a2b3eb1f40row2_col1" class="data row2 col1" >foo20</td>
+                            <td id="T_e6b27120_3884_11eb_afc4_b3a2b3eb1f40row2_col2" class="data row2 col2" >3</td>
+                            <td id="T_e6b27120_3884_11eb_afc4_b3a2b3eb1f40row2_col3" class="data row2 col3" >#ffbe00</td>
+                            <td id="T_e6b27120_3884_11eb_afc4_b3a2b3eb1f40row2_col4" class="data row2 col4" >3</td>
+                </tr>
+                <tr>
+                            <th id="T_e6b27120_3884_11eb_afc4_b3a2b3eb1f40level0_row3" class="row_heading level0 row3" >3</th>
+                            <td id="T_e6b27120_3884_11eb_afc4_b3a2b3eb1f40row3_col0" class="data row3 col0" >feeeee</td>
+                            <td id="T_e6b27120_3884_11eb_afc4_b3a2b3eb1f40row3_col1" class="data row3 col1" >foo20</td>
+                            <td id="T_e6b27120_3884_11eb_afc4_b3a2b3eb1f40row3_col2" class="data row3 col2" >4</td>
+                            <td id="T_e6b27120_3884_11eb_afc4_b3a2b3eb1f40row3_col3" class="data row3 col3" >#728f02</td>
+                            <td id="T_e6b27120_3884_11eb_afc4_b3a2b3eb1f40row3_col4" class="data row3 col4" >4</td>
+                </tr>
+        </tbody></table>
+    <br />
+    <br />
+
+Set values
+~~~~~~~~~~
+
+To set the values we do it with the following method
+
+
+
+.. code-block:: python3
+
+    surfaces.set_surfaces_values([2, 2, 2, 5])
+
+
+
+
+
+
+.. raw:: html
+
+    <style  type="text/css" >
+    #T_e6b27121_3884_11eb_afc4_b3a2b3eb1f40row0_col3{
+                background-color:  #015482;
+            }#T_e6b27121_3884_11eb_afc4_b3a2b3eb1f40row1_col3{
+                background-color:  #9f0052;
+            }#T_e6b27121_3884_11eb_afc4_b3a2b3eb1f40row2_col3{
+                background-color:  #ffbe00;
+            }#T_e6b27121_3884_11eb_afc4_b3a2b3eb1f40row3_col3{
+                background-color:  #728f02;
+            }</style><table id="T_e6b27121_3884_11eb_afc4_b3a2b3eb1f40" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>        <th class="col_heading level0 col5" >value_0</th>    </tr></thead><tbody>
+                    <tr>
+                            <th id="T_e6b27121_3884_11eb_afc4_b3a2b3eb1f40level0_row0" class="row_heading level0 row0" >0</th>
+                            <td id="T_e6b27121_3884_11eb_afc4_b3a2b3eb1f40row0_col0" class="data row0 col0" >foo</td>
+                            <td id="T_e6b27121_3884_11eb_afc4_b3a2b3eb1f40row0_col1" class="data row0 col1" >foo20</td>
+                            <td id="T_e6b27121_3884_11eb_afc4_b3a2b3eb1f40row0_col2" class="data row0 col2" >1</td>
+                            <td id="T_e6b27121_3884_11eb_afc4_b3a2b3eb1f40row0_col3" class="data row0 col3" >#015482</td>
+                            <td id="T_e6b27121_3884_11eb_afc4_b3a2b3eb1f40row0_col4" class="data row0 col4" >1</td>
+                            <td id="T_e6b27121_3884_11eb_afc4_b3a2b3eb1f40row0_col5" class="data row0 col5" >2</td>
+                </tr>
+                <tr>
+                            <th id="T_e6b27121_3884_11eb_afc4_b3a2b3eb1f40level0_row1" class="row_heading level0 row1" >1</th>
+                            <td id="T_e6b27121_3884_11eb_afc4_b3a2b3eb1f40row1_col0" class="data row1 col0" >foo2</td>
+                            <td id="T_e6b27121_3884_11eb_afc4_b3a2b3eb1f40row1_col1" class="data row1 col1" >foo20</td>
+                            <td id="T_e6b27121_3884_11eb_afc4_b3a2b3eb1f40row1_col2" class="data row1 col2" >2</td>
+                            <td id="T_e6b27121_3884_11eb_afc4_b3a2b3eb1f40row1_col3" class="data row1 col3" >#9f0052</td>
+                            <td id="T_e6b27121_3884_11eb_afc4_b3a2b3eb1f40row1_col4" class="data row1 col4" >2</td>
+                            <td id="T_e6b27121_3884_11eb_afc4_b3a2b3eb1f40row1_col5" class="data row1 col5" >2</td>
+                </tr>
+                <tr>
+                            <th id="T_e6b27121_3884_11eb_afc4_b3a2b3eb1f40level0_row2" class="row_heading level0 row2" >2</th>
+                            <td id="T_e6b27121_3884_11eb_afc4_b3a2b3eb1f40row2_col0" class="data row2 col0" >foo5</td>
+                            <td id="T_e6b27121_3884_11eb_afc4_b3a2b3eb1f40row2_col1" class="data row2 col1" >foo20</td>
+                            <td id="T_e6b27121_3884_11eb_afc4_b3a2b3eb1f40row2_col2" class="data row2 col2" >3</td>
+                            <td id="T_e6b27121_3884_11eb_afc4_b3a2b3eb1f40row2_col3" class="data row2 col3" >#ffbe00</td>
+                            <td id="T_e6b27121_3884_11eb_afc4_b3a2b3eb1f40row2_col4" class="data row2 col4" >3</td>
+                            <td id="T_e6b27121_3884_11eb_afc4_b3a2b3eb1f40row2_col5" class="data row2 col5" >2</td>
+                </tr>
+                <tr>
+                            <th id="T_e6b27121_3884_11eb_afc4_b3a2b3eb1f40level0_row3" class="row_heading level0 row3" >3</th>
+                            <td id="T_e6b27121_3884_11eb_afc4_b3a2b3eb1f40row3_col0" class="data row3 col0" >feeeee</td>
+                            <td id="T_e6b27121_3884_11eb_afc4_b3a2b3eb1f40row3_col1" class="data row3 col1" >foo20</td>
+                            <td id="T_e6b27121_3884_11eb_afc4_b3a2b3eb1f40row3_col2" class="data row3 col2" >4</td>
+                            <td id="T_e6b27121_3884_11eb_afc4_b3a2b3eb1f40row3_col3" class="data row3 col3" >#728f02</td>
+                            <td id="T_e6b27121_3884_11eb_afc4_b3a2b3eb1f40row3_col4" class="data row3 col4" >4</td>
+                            <td id="T_e6b27121_3884_11eb_afc4_b3a2b3eb1f40row3_col5" class="data row3 col5" >5</td>
+                </tr>
+        </tbody></table>
+    <br />
+    <br />
+
+
+.. code-block:: python3
+
+    surfaces
+
+
+
+
+
+
+.. raw:: html
+
+    <style  type="text/css" >
+    #T_e6b27122_3884_11eb_afc4_b3a2b3eb1f40row0_col3{
+                background-color:  #015482;
+            }#T_e6b27122_3884_11eb_afc4_b3a2b3eb1f40row1_col3{
+                background-color:  #9f0052;
+            }#T_e6b27122_3884_11eb_afc4_b3a2b3eb1f40row2_col3{
+                background-color:  #ffbe00;
+            }#T_e6b27122_3884_11eb_afc4_b3a2b3eb1f40row3_col3{
+                background-color:  #728f02;
+            }</style><table id="T_e6b27122_3884_11eb_afc4_b3a2b3eb1f40" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>        <th class="col_heading level0 col5" >value_0</th>    </tr></thead><tbody>
+                    <tr>
+                            <th id="T_e6b27122_3884_11eb_afc4_b3a2b3eb1f40level0_row0" class="row_heading level0 row0" >0</th>
+                            <td id="T_e6b27122_3884_11eb_afc4_b3a2b3eb1f40row0_col0" class="data row0 col0" >foo</td>
+                            <td id="T_e6b27122_3884_11eb_afc4_b3a2b3eb1f40row0_col1" class="data row0 col1" >foo20</td>
+                            <td id="T_e6b27122_3884_11eb_afc4_b3a2b3eb1f40row0_col2" class="data row0 col2" >1</td>
+                            <td id="T_e6b27122_3884_11eb_afc4_b3a2b3eb1f40row0_col3" class="data row0 col3" >#015482</td>
+                            <td id="T_e6b27122_3884_11eb_afc4_b3a2b3eb1f40row0_col4" class="data row0 col4" >1</td>
+                            <td id="T_e6b27122_3884_11eb_afc4_b3a2b3eb1f40row0_col5" class="data row0 col5" >2</td>
+                </tr>
+                <tr>
+                            <th id="T_e6b27122_3884_11eb_afc4_b3a2b3eb1f40level0_row1" class="row_heading level0 row1" >1</th>
+                            <td id="T_e6b27122_3884_11eb_afc4_b3a2b3eb1f40row1_col0" class="data row1 col0" >foo2</td>
+                            <td id="T_e6b27122_3884_11eb_afc4_b3a2b3eb1f40row1_col1" class="data row1 col1" >foo20</td>
+                            <td id="T_e6b27122_3884_11eb_afc4_b3a2b3eb1f40row1_col2" class="data row1 col2" >2</td>
+                            <td id="T_e6b27122_3884_11eb_afc4_b3a2b3eb1f40row1_col3" class="data row1 col3" >#9f0052</td>
+                            <td id="T_e6b27122_3884_11eb_afc4_b3a2b3eb1f40row1_col4" class="data row1 col4" >2</td>
+                            <td id="T_e6b27122_3884_11eb_afc4_b3a2b3eb1f40row1_col5" class="data row1 col5" >2</td>
+                </tr>
+                <tr>
+                            <th id="T_e6b27122_3884_11eb_afc4_b3a2b3eb1f40level0_row2" class="row_heading level0 row2" >2</th>
+                            <td id="T_e6b27122_3884_11eb_afc4_b3a2b3eb1f40row2_col0" class="data row2 col0" >foo5</td>
+                            <td id="T_e6b27122_3884_11eb_afc4_b3a2b3eb1f40row2_col1" class="data row2 col1" >foo20</td>
+                            <td id="T_e6b27122_3884_11eb_afc4_b3a2b3eb1f40row2_col2" class="data row2 col2" >3</td>
+                            <td id="T_e6b27122_3884_11eb_afc4_b3a2b3eb1f40row2_col3" class="data row2 col3" >#ffbe00</td>
+                            <td id="T_e6b27122_3884_11eb_afc4_b3a2b3eb1f40row2_col4" class="data row2 col4" >3</td>
+                            <td id="T_e6b27122_3884_11eb_afc4_b3a2b3eb1f40row2_col5" class="data row2 col5" >2</td>
+                </tr>
+                <tr>
+                            <th id="T_e6b27122_3884_11eb_afc4_b3a2b3eb1f40level0_row3" class="row_heading level0 row3" >3</th>
+                            <td id="T_e6b27122_3884_11eb_afc4_b3a2b3eb1f40row3_col0" class="data row3 col0" >feeeee</td>
+                            <td id="T_e6b27122_3884_11eb_afc4_b3a2b3eb1f40row3_col1" class="data row3 col1" >foo20</td>
+                            <td id="T_e6b27122_3884_11eb_afc4_b3a2b3eb1f40row3_col2" class="data row3 col2" >4</td>
+                            <td id="T_e6b27122_3884_11eb_afc4_b3a2b3eb1f40row3_col3" class="data row3 col3" >#728f02</td>
+                            <td id="T_e6b27122_3884_11eb_afc4_b3a2b3eb1f40row3_col4" class="data row3 col4" >4</td>
+                            <td id="T_e6b27122_3884_11eb_afc4_b3a2b3eb1f40row3_col5" class="data row3 col5" >5</td>
+                </tr>
+        </tbody></table>
+    <br />
+    <br />
+
+Set values with a given name:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+We can give specific names to the properties (i.e. density)
+
+
+
+.. code-block:: python3
+
+    surfaces.add_surfaces_values([[2, 2, 2, 6], [2, 2, 1, 8]], ['val_foo', 'val2_foo'])
+
+
+
+
+
+
+.. raw:: html
+
+    <style  type="text/css" >
+    #T_e6b27123_3884_11eb_afc4_b3a2b3eb1f40row0_col3{
+                background-color:  #015482;
+            }#T_e6b27123_3884_11eb_afc4_b3a2b3eb1f40row1_col3{
+                background-color:  #9f0052;
+            }#T_e6b27123_3884_11eb_afc4_b3a2b3eb1f40row2_col3{
+                background-color:  #ffbe00;
+            }#T_e6b27123_3884_11eb_afc4_b3a2b3eb1f40row3_col3{
+                background-color:  #728f02;
+            }</style><table id="T_e6b27123_3884_11eb_afc4_b3a2b3eb1f40" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>        <th class="col_heading level0 col5" >value_0</th>        <th class="col_heading level0 col6" >val_foo</th>        <th class="col_heading level0 col7" >val2_foo</th>    </tr></thead><tbody>
+                    <tr>
+                            <th id="T_e6b27123_3884_11eb_afc4_b3a2b3eb1f40level0_row0" class="row_heading level0 row0" >0</th>
+                            <td id="T_e6b27123_3884_11eb_afc4_b3a2b3eb1f40row0_col0" class="data row0 col0" >foo</td>
+                            <td id="T_e6b27123_3884_11eb_afc4_b3a2b3eb1f40row0_col1" class="data row0 col1" >foo20</td>
+                            <td id="T_e6b27123_3884_11eb_afc4_b3a2b3eb1f40row0_col2" class="data row0 col2" >1</td>
+                            <td id="T_e6b27123_3884_11eb_afc4_b3a2b3eb1f40row0_col3" class="data row0 col3" >#015482</td>
+                            <td id="T_e6b27123_3884_11eb_afc4_b3a2b3eb1f40row0_col4" class="data row0 col4" >1</td>
+                            <td id="T_e6b27123_3884_11eb_afc4_b3a2b3eb1f40row0_col5" class="data row0 col5" >2</td>
+                            <td id="T_e6b27123_3884_11eb_afc4_b3a2b3eb1f40row0_col6" class="data row0 col6" >2</td>
+                            <td id="T_e6b27123_3884_11eb_afc4_b3a2b3eb1f40row0_col7" class="data row0 col7" >2</td>
+                </tr>
+                <tr>
+                            <th id="T_e6b27123_3884_11eb_afc4_b3a2b3eb1f40level0_row1" class="row_heading level0 row1" >1</th>
+                            <td id="T_e6b27123_3884_11eb_afc4_b3a2b3eb1f40row1_col0" class="data row1 col0" >foo2</td>
+                            <td id="T_e6b27123_3884_11eb_afc4_b3a2b3eb1f40row1_col1" class="data row1 col1" >foo20</td>
+                            <td id="T_e6b27123_3884_11eb_afc4_b3a2b3eb1f40row1_col2" class="data row1 col2" >2</td>
+                            <td id="T_e6b27123_3884_11eb_afc4_b3a2b3eb1f40row1_col3" class="data row1 col3" >#9f0052</td>
+                            <td id="T_e6b27123_3884_11eb_afc4_b3a2b3eb1f40row1_col4" class="data row1 col4" >2</td>
+                            <td id="T_e6b27123_3884_11eb_afc4_b3a2b3eb1f40row1_col5" class="data row1 col5" >2</td>
+                            <td id="T_e6b27123_3884_11eb_afc4_b3a2b3eb1f40row1_col6" class="data row1 col6" >2</td>
+                            <td id="T_e6b27123_3884_11eb_afc4_b3a2b3eb1f40row1_col7" class="data row1 col7" >2</td>
+                </tr>
+                <tr>
+                            <th id="T_e6b27123_3884_11eb_afc4_b3a2b3eb1f40level0_row2" class="row_heading level0 row2" >2</th>
+                            <td id="T_e6b27123_3884_11eb_afc4_b3a2b3eb1f40row2_col0" class="data row2 col0" >foo5</td>
+                            <td id="T_e6b27123_3884_11eb_afc4_b3a2b3eb1f40row2_col1" class="data row2 col1" >foo20</td>
+                            <td id="T_e6b27123_3884_11eb_afc4_b3a2b3eb1f40row2_col2" class="data row2 col2" >3</td>
+                            <td id="T_e6b27123_3884_11eb_afc4_b3a2b3eb1f40row2_col3" class="data row2 col3" >#ffbe00</td>
+                            <td id="T_e6b27123_3884_11eb_afc4_b3a2b3eb1f40row2_col4" class="data row2 col4" >3</td>
+                            <td id="T_e6b27123_3884_11eb_afc4_b3a2b3eb1f40row2_col5" class="data row2 col5" >2</td>
+                            <td id="T_e6b27123_3884_11eb_afc4_b3a2b3eb1f40row2_col6" class="data row2 col6" >2</td>
+                            <td id="T_e6b27123_3884_11eb_afc4_b3a2b3eb1f40row2_col7" class="data row2 col7" >1</td>
+                </tr>
+                <tr>
+                            <th id="T_e6b27123_3884_11eb_afc4_b3a2b3eb1f40level0_row3" class="row_heading level0 row3" >3</th>
+                            <td id="T_e6b27123_3884_11eb_afc4_b3a2b3eb1f40row3_col0" class="data row3 col0" >feeeee</td>
+                            <td id="T_e6b27123_3884_11eb_afc4_b3a2b3eb1f40row3_col1" class="data row3 col1" >foo20</td>
+                            <td id="T_e6b27123_3884_11eb_afc4_b3a2b3eb1f40row3_col2" class="data row3 col2" >4</td>
+                            <td id="T_e6b27123_3884_11eb_afc4_b3a2b3eb1f40row3_col3" class="data row3 col3" >#728f02</td>
+                            <td id="T_e6b27123_3884_11eb_afc4_b3a2b3eb1f40row3_col4" class="data row3 col4" >4</td>
+                            <td id="T_e6b27123_3884_11eb_afc4_b3a2b3eb1f40row3_col5" class="data row3 col5" >5</td>
+                            <td id="T_e6b27123_3884_11eb_afc4_b3a2b3eb1f40row3_col6" class="data row3 col6" >6</td>
+                            <td id="T_e6b27123_3884_11eb_afc4_b3a2b3eb1f40row3_col7" class="data row3 col7" >8</td>
+                </tr>
+        </tbody></table>
+    <br />
+    <br />
+
+
+.. code-block:: python3
+
+    surfaces
+
+
+
+
+
+
+.. raw:: html
+
+    <style  type="text/css" >
+    #T_e6b27124_3884_11eb_afc4_b3a2b3eb1f40row0_col3{
+                background-color:  #015482;
+            }#T_e6b27124_3884_11eb_afc4_b3a2b3eb1f40row1_col3{
+                background-color:  #9f0052;
+            }#T_e6b27124_3884_11eb_afc4_b3a2b3eb1f40row2_col3{
+                background-color:  #ffbe00;
+            }#T_e6b27124_3884_11eb_afc4_b3a2b3eb1f40row3_col3{
+                background-color:  #728f02;
+            }</style><table id="T_e6b27124_3884_11eb_afc4_b3a2b3eb1f40" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>        <th class="col_heading level0 col5" >value_0</th>        <th class="col_heading level0 col6" >val_foo</th>        <th class="col_heading level0 col7" >val2_foo</th>    </tr></thead><tbody>
+                    <tr>
+                            <th id="T_e6b27124_3884_11eb_afc4_b3a2b3eb1f40level0_row0" class="row_heading level0 row0" >0</th>
+                            <td id="T_e6b27124_3884_11eb_afc4_b3a2b3eb1f40row0_col0" class="data row0 col0" >foo</td>
+                            <td id="T_e6b27124_3884_11eb_afc4_b3a2b3eb1f40row0_col1" class="data row0 col1" >foo20</td>
+                            <td id="T_e6b27124_3884_11eb_afc4_b3a2b3eb1f40row0_col2" class="data row0 col2" >1</td>
+                            <td id="T_e6b27124_3884_11eb_afc4_b3a2b3eb1f40row0_col3" class="data row0 col3" >#015482</td>
+                            <td id="T_e6b27124_3884_11eb_afc4_b3a2b3eb1f40row0_col4" class="data row0 col4" >1</td>
+                            <td id="T_e6b27124_3884_11eb_afc4_b3a2b3eb1f40row0_col5" class="data row0 col5" >2</td>
+                            <td id="T_e6b27124_3884_11eb_afc4_b3a2b3eb1f40row0_col6" class="data row0 col6" >2</td>
+                            <td id="T_e6b27124_3884_11eb_afc4_b3a2b3eb1f40row0_col7" class="data row0 col7" >2</td>
+                </tr>
+                <tr>
+                            <th id="T_e6b27124_3884_11eb_afc4_b3a2b3eb1f40level0_row1" class="row_heading level0 row1" >1</th>
+                            <td id="T_e6b27124_3884_11eb_afc4_b3a2b3eb1f40row1_col0" class="data row1 col0" >foo2</td>
+                            <td id="T_e6b27124_3884_11eb_afc4_b3a2b3eb1f40row1_col1" class="data row1 col1" >foo20</td>
+                            <td id="T_e6b27124_3884_11eb_afc4_b3a2b3eb1f40row1_col2" class="data row1 col2" >2</td>
+                            <td id="T_e6b27124_3884_11eb_afc4_b3a2b3eb1f40row1_col3" class="data row1 col3" >#9f0052</td>
+                            <td id="T_e6b27124_3884_11eb_afc4_b3a2b3eb1f40row1_col4" class="data row1 col4" >2</td>
+                            <td id="T_e6b27124_3884_11eb_afc4_b3a2b3eb1f40row1_col5" class="data row1 col5" >2</td>
+                            <td id="T_e6b27124_3884_11eb_afc4_b3a2b3eb1f40row1_col6" class="data row1 col6" >2</td>
+                            <td id="T_e6b27124_3884_11eb_afc4_b3a2b3eb1f40row1_col7" class="data row1 col7" >2</td>
+                </tr>
+                <tr>
+                            <th id="T_e6b27124_3884_11eb_afc4_b3a2b3eb1f40level0_row2" class="row_heading level0 row2" >2</th>
+                            <td id="T_e6b27124_3884_11eb_afc4_b3a2b3eb1f40row2_col0" class="data row2 col0" >foo5</td>
+                            <td id="T_e6b27124_3884_11eb_afc4_b3a2b3eb1f40row2_col1" class="data row2 col1" >foo20</td>
+                            <td id="T_e6b27124_3884_11eb_afc4_b3a2b3eb1f40row2_col2" class="data row2 col2" >3</td>
+                            <td id="T_e6b27124_3884_11eb_afc4_b3a2b3eb1f40row2_col3" class="data row2 col3" >#ffbe00</td>
+                            <td id="T_e6b27124_3884_11eb_afc4_b3a2b3eb1f40row2_col4" class="data row2 col4" >3</td>
+                            <td id="T_e6b27124_3884_11eb_afc4_b3a2b3eb1f40row2_col5" class="data row2 col5" >2</td>
+                            <td id="T_e6b27124_3884_11eb_afc4_b3a2b3eb1f40row2_col6" class="data row2 col6" >2</td>
+                            <td id="T_e6b27124_3884_11eb_afc4_b3a2b3eb1f40row2_col7" class="data row2 col7" >1</td>
+                </tr>
+                <tr>
+                            <th id="T_e6b27124_3884_11eb_afc4_b3a2b3eb1f40level0_row3" class="row_heading level0 row3" >3</th>
+                            <td id="T_e6b27124_3884_11eb_afc4_b3a2b3eb1f40row3_col0" class="data row3 col0" >feeeee</td>
+                            <td id="T_e6b27124_3884_11eb_afc4_b3a2b3eb1f40row3_col1" class="data row3 col1" >foo20</td>
+                            <td id="T_e6b27124_3884_11eb_afc4_b3a2b3eb1f40row3_col2" class="data row3 col2" >4</td>
+                            <td id="T_e6b27124_3884_11eb_afc4_b3a2b3eb1f40row3_col3" class="data row3 col3" >#728f02</td>
+                            <td id="T_e6b27124_3884_11eb_afc4_b3a2b3eb1f40row3_col4" class="data row3 col4" >4</td>
+                            <td id="T_e6b27124_3884_11eb_afc4_b3a2b3eb1f40row3_col5" class="data row3 col5" >5</td>
+                            <td id="T_e6b27124_3884_11eb_afc4_b3a2b3eb1f40row3_col6" class="data row3 col6" >6</td>
+                            <td id="T_e6b27124_3884_11eb_afc4_b3a2b3eb1f40row3_col7" class="data row3 col7" >8</td>
+                </tr>
+        </tbody></table>
+    <br />
+    <br />
+
+Delete formations values
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+To delete a full property:
+
+
+
+.. code-block:: python3
+
+    surfaces.delete_surface_values(['val_foo', 'value_0'])
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    True
+
+
+
+One of the formations must be set be the basement:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+
+.. code-block:: python3
+
+    surfaces.set_basement()
+    surfaces
+
+
+
+
+
+
+.. raw:: html
+
+    <style  type="text/css" >
+    #T_e6b27125_3884_11eb_afc4_b3a2b3eb1f40row0_col3{
+                background-color:  #015482;
+            }#T_e6b27125_3884_11eb_afc4_b3a2b3eb1f40row1_col3{
+                background-color:  #9f0052;
+            }#T_e6b27125_3884_11eb_afc4_b3a2b3eb1f40row2_col3{
+                background-color:  #ffbe00;
+            }#T_e6b27125_3884_11eb_afc4_b3a2b3eb1f40row3_col3{
+                background-color:  #728f02;
+            }</style><table id="T_e6b27125_3884_11eb_afc4_b3a2b3eb1f40" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>        <th class="col_heading level0 col5" >val2_foo</th>    </tr></thead><tbody>
+                    <tr>
+                            <th id="T_e6b27125_3884_11eb_afc4_b3a2b3eb1f40level0_row0" class="row_heading level0 row0" >0</th>
+                            <td id="T_e6b27125_3884_11eb_afc4_b3a2b3eb1f40row0_col0" class="data row0 col0" >foo</td>
+                            <td id="T_e6b27125_3884_11eb_afc4_b3a2b3eb1f40row0_col1" class="data row0 col1" >foo20</td>
+                            <td id="T_e6b27125_3884_11eb_afc4_b3a2b3eb1f40row0_col2" class="data row0 col2" >1</td>
+                            <td id="T_e6b27125_3884_11eb_afc4_b3a2b3eb1f40row0_col3" class="data row0 col3" >#015482</td>
+                            <td id="T_e6b27125_3884_11eb_afc4_b3a2b3eb1f40row0_col4" class="data row0 col4" >1</td>
+                            <td id="T_e6b27125_3884_11eb_afc4_b3a2b3eb1f40row0_col5" class="data row0 col5" >2</td>
+                </tr>
+                <tr>
+                            <th id="T_e6b27125_3884_11eb_afc4_b3a2b3eb1f40level0_row1" class="row_heading level0 row1" >1</th>
+                            <td id="T_e6b27125_3884_11eb_afc4_b3a2b3eb1f40row1_col0" class="data row1 col0" >foo2</td>
+                            <td id="T_e6b27125_3884_11eb_afc4_b3a2b3eb1f40row1_col1" class="data row1 col1" >foo20</td>
+                            <td id="T_e6b27125_3884_11eb_afc4_b3a2b3eb1f40row1_col2" class="data row1 col2" >2</td>
+                            <td id="T_e6b27125_3884_11eb_afc4_b3a2b3eb1f40row1_col3" class="data row1 col3" >#9f0052</td>
+                            <td id="T_e6b27125_3884_11eb_afc4_b3a2b3eb1f40row1_col4" class="data row1 col4" >2</td>
+                            <td id="T_e6b27125_3884_11eb_afc4_b3a2b3eb1f40row1_col5" class="data row1 col5" >2</td>
+                </tr>
+                <tr>
+                            <th id="T_e6b27125_3884_11eb_afc4_b3a2b3eb1f40level0_row2" class="row_heading level0 row2" >2</th>
+                            <td id="T_e6b27125_3884_11eb_afc4_b3a2b3eb1f40row2_col0" class="data row2 col0" >foo5</td>
+                            <td id="T_e6b27125_3884_11eb_afc4_b3a2b3eb1f40row2_col1" class="data row2 col1" >foo20</td>
+                            <td id="T_e6b27125_3884_11eb_afc4_b3a2b3eb1f40row2_col2" class="data row2 col2" >3</td>
+                            <td id="T_e6b27125_3884_11eb_afc4_b3a2b3eb1f40row2_col3" class="data row2 col3" >#ffbe00</td>
+                            <td id="T_e6b27125_3884_11eb_afc4_b3a2b3eb1f40row2_col4" class="data row2 col4" >3</td>
+                            <td id="T_e6b27125_3884_11eb_afc4_b3a2b3eb1f40row2_col5" class="data row2 col5" >1</td>
+                </tr>
+                <tr>
+                            <th id="T_e6b27125_3884_11eb_afc4_b3a2b3eb1f40level0_row3" class="row_heading level0 row3" >3</th>
+                            <td id="T_e6b27125_3884_11eb_afc4_b3a2b3eb1f40row3_col0" class="data row3 col0" >feeeee</td>
+                            <td id="T_e6b27125_3884_11eb_afc4_b3a2b3eb1f40row3_col1" class="data row3 col1" >foo20</td>
+                            <td id="T_e6b27125_3884_11eb_afc4_b3a2b3eb1f40row3_col2" class="data row3 col2" >4</td>
+                            <td id="T_e6b27125_3884_11eb_afc4_b3a2b3eb1f40row3_col3" class="data row3 col3" >#728f02</td>
+                            <td id="T_e6b27125_3884_11eb_afc4_b3a2b3eb1f40row3_col4" class="data row3 col4" >4</td>
+                            <td id="T_e6b27125_3884_11eb_afc4_b3a2b3eb1f40row3_col5" class="data row3 col5" >8</td>
+                </tr>
+        </tbody></table>
+    <br />
+    <br />
+
+Set formation values
+^^^^^^^^^^^^^^^^^^^^
+
+We can also use ``set_surface_values`` instead adding. This will delete the previous
+properties and add the new one
+
+
+
+.. code-block:: python3
+
+    surfaces.set_surfaces_values([[2, 2, 2, 6], [2, 2, 1, 8]], ['val_foo', 'val2_foo'])
+    surfaces
+
+
+
+
+
+
+.. raw:: html
+
+    <style  type="text/css" >
+    #T_e6b27126_3884_11eb_afc4_b3a2b3eb1f40row0_col3{
+                background-color:  #015482;
+            }#T_e6b27126_3884_11eb_afc4_b3a2b3eb1f40row1_col3{
+                background-color:  #9f0052;
+            }#T_e6b27126_3884_11eb_afc4_b3a2b3eb1f40row2_col3{
+                background-color:  #ffbe00;
+            }#T_e6b27126_3884_11eb_afc4_b3a2b3eb1f40row3_col3{
+                background-color:  #728f02;
+            }</style><table id="T_e6b27126_3884_11eb_afc4_b3a2b3eb1f40" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>        <th class="col_heading level0 col5" >val_foo</th>        <th class="col_heading level0 col6" >val2_foo</th>    </tr></thead><tbody>
+                    <tr>
+                            <th id="T_e6b27126_3884_11eb_afc4_b3a2b3eb1f40level0_row0" class="row_heading level0 row0" >0</th>
+                            <td id="T_e6b27126_3884_11eb_afc4_b3a2b3eb1f40row0_col0" class="data row0 col0" >foo</td>
+                            <td id="T_e6b27126_3884_11eb_afc4_b3a2b3eb1f40row0_col1" class="data row0 col1" >foo20</td>
+                            <td id="T_e6b27126_3884_11eb_afc4_b3a2b3eb1f40row0_col2" class="data row0 col2" >1</td>
+                            <td id="T_e6b27126_3884_11eb_afc4_b3a2b3eb1f40row0_col3" class="data row0 col3" >#015482</td>
+                            <td id="T_e6b27126_3884_11eb_afc4_b3a2b3eb1f40row0_col4" class="data row0 col4" >1</td>
+                            <td id="T_e6b27126_3884_11eb_afc4_b3a2b3eb1f40row0_col5" class="data row0 col5" >2</td>
+                            <td id="T_e6b27126_3884_11eb_afc4_b3a2b3eb1f40row0_col6" class="data row0 col6" >2</td>
+                </tr>
+                <tr>
+                            <th id="T_e6b27126_3884_11eb_afc4_b3a2b3eb1f40level0_row1" class="row_heading level0 row1" >1</th>
+                            <td id="T_e6b27126_3884_11eb_afc4_b3a2b3eb1f40row1_col0" class="data row1 col0" >foo2</td>
+                            <td id="T_e6b27126_3884_11eb_afc4_b3a2b3eb1f40row1_col1" class="data row1 col1" >foo20</td>
+                            <td id="T_e6b27126_3884_11eb_afc4_b3a2b3eb1f40row1_col2" class="data row1 col2" >2</td>
+                            <td id="T_e6b27126_3884_11eb_afc4_b3a2b3eb1f40row1_col3" class="data row1 col3" >#9f0052</td>
+                            <td id="T_e6b27126_3884_11eb_afc4_b3a2b3eb1f40row1_col4" class="data row1 col4" >2</td>
+                            <td id="T_e6b27126_3884_11eb_afc4_b3a2b3eb1f40row1_col5" class="data row1 col5" >2</td>
+                            <td id="T_e6b27126_3884_11eb_afc4_b3a2b3eb1f40row1_col6" class="data row1 col6" >2</td>
+                </tr>
+                <tr>
+                            <th id="T_e6b27126_3884_11eb_afc4_b3a2b3eb1f40level0_row2" class="row_heading level0 row2" >2</th>
+                            <td id="T_e6b27126_3884_11eb_afc4_b3a2b3eb1f40row2_col0" class="data row2 col0" >foo5</td>
+                            <td id="T_e6b27126_3884_11eb_afc4_b3a2b3eb1f40row2_col1" class="data row2 col1" >foo20</td>
+                            <td id="T_e6b27126_3884_11eb_afc4_b3a2b3eb1f40row2_col2" class="data row2 col2" >3</td>
+                            <td id="T_e6b27126_3884_11eb_afc4_b3a2b3eb1f40row2_col3" class="data row2 col3" >#ffbe00</td>
+                            <td id="T_e6b27126_3884_11eb_afc4_b3a2b3eb1f40row2_col4" class="data row2 col4" >3</td>
+                            <td id="T_e6b27126_3884_11eb_afc4_b3a2b3eb1f40row2_col5" class="data row2 col5" >2</td>
+                            <td id="T_e6b27126_3884_11eb_afc4_b3a2b3eb1f40row2_col6" class="data row2 col6" >1</td>
+                </tr>
+                <tr>
+                            <th id="T_e6b27126_3884_11eb_afc4_b3a2b3eb1f40level0_row3" class="row_heading level0 row3" >3</th>
+                            <td id="T_e6b27126_3884_11eb_afc4_b3a2b3eb1f40row3_col0" class="data row3 col0" >feeeee</td>
+                            <td id="T_e6b27126_3884_11eb_afc4_b3a2b3eb1f40row3_col1" class="data row3 col1" >foo20</td>
+                            <td id="T_e6b27126_3884_11eb_afc4_b3a2b3eb1f40row3_col2" class="data row3 col2" >4</td>
+                            <td id="T_e6b27126_3884_11eb_afc4_b3a2b3eb1f40row3_col3" class="data row3 col3" >#728f02</td>
+                            <td id="T_e6b27126_3884_11eb_afc4_b3a2b3eb1f40row3_col4" class="data row3 col4" >4</td>
+                            <td id="T_e6b27126_3884_11eb_afc4_b3a2b3eb1f40row3_col5" class="data row3 col5" >6</td>
+                            <td id="T_e6b27126_3884_11eb_afc4_b3a2b3eb1f40row3_col6" class="data row3 col6" >8</td>
+                </tr>
+        </tbody></table>
+    <br />
+    <br />
+
+The last property is the correspondant series that each formation belong
+to. ``series`` and ``formation`` are pandas categories. To get a
+overview of what this mean check
+https://pandas.pydata.org/pandas-docs/stable/categorical.html.
+
+
+
+.. code-block:: python3
+
+    surfaces.df['series']
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    0    foo20
+    1    foo20
+    2    foo20
+    3    foo20
+    Name: series, dtype: category
+    Categories (5, object): ['foo2', 'boo', 'foo7', 'foo5', 'foo20']
+
+
+
+
+.. code-block:: python3
+
+    surfaces.df['surface']
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    0       foo
+    1      foo2
+    2      foo5
+    3    feeeee
+    Name: surface, dtype: object
+
+
+
+Map series to formation
+~~~~~~~~~~~~~~~~~~~~~~~
+
+
+To map a series to a formation we can do it by passing a dict:
+
+
+
+.. code-block:: python3
+
+    surfaces
+
+
+
+
+
+
+.. raw:: html
+
+    <style  type="text/css" >
+    #T_e6b27127_3884_11eb_afc4_b3a2b3eb1f40row0_col3{
+                background-color:  #015482;
+            }#T_e6b27127_3884_11eb_afc4_b3a2b3eb1f40row1_col3{
+                background-color:  #9f0052;
+            }#T_e6b27127_3884_11eb_afc4_b3a2b3eb1f40row2_col3{
+                background-color:  #ffbe00;
+            }#T_e6b27127_3884_11eb_afc4_b3a2b3eb1f40row3_col3{
+                background-color:  #728f02;
+            }</style><table id="T_e6b27127_3884_11eb_afc4_b3a2b3eb1f40" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>        <th class="col_heading level0 col5" >val_foo</th>        <th class="col_heading level0 col6" >val2_foo</th>    </tr></thead><tbody>
+                    <tr>
+                            <th id="T_e6b27127_3884_11eb_afc4_b3a2b3eb1f40level0_row0" class="row_heading level0 row0" >0</th>
+                            <td id="T_e6b27127_3884_11eb_afc4_b3a2b3eb1f40row0_col0" class="data row0 col0" >foo</td>
+                            <td id="T_e6b27127_3884_11eb_afc4_b3a2b3eb1f40row0_col1" class="data row0 col1" >foo20</td>
+                            <td id="T_e6b27127_3884_11eb_afc4_b3a2b3eb1f40row0_col2" class="data row0 col2" >1</td>
+                            <td id="T_e6b27127_3884_11eb_afc4_b3a2b3eb1f40row0_col3" class="data row0 col3" >#015482</td>
+                            <td id="T_e6b27127_3884_11eb_afc4_b3a2b3eb1f40row0_col4" class="data row0 col4" >1</td>
+                            <td id="T_e6b27127_3884_11eb_afc4_b3a2b3eb1f40row0_col5" class="data row0 col5" >2</td>
+                            <td id="T_e6b27127_3884_11eb_afc4_b3a2b3eb1f40row0_col6" class="data row0 col6" >2</td>
+                </tr>
+                <tr>
+                            <th id="T_e6b27127_3884_11eb_afc4_b3a2b3eb1f40level0_row1" class="row_heading level0 row1" >1</th>
+                            <td id="T_e6b27127_3884_11eb_afc4_b3a2b3eb1f40row1_col0" class="data row1 col0" >foo2</td>
+                            <td id="T_e6b27127_3884_11eb_afc4_b3a2b3eb1f40row1_col1" class="data row1 col1" >foo20</td>
+                            <td id="T_e6b27127_3884_11eb_afc4_b3a2b3eb1f40row1_col2" class="data row1 col2" >2</td>
+                            <td id="T_e6b27127_3884_11eb_afc4_b3a2b3eb1f40row1_col3" class="data row1 col3" >#9f0052</td>
+                            <td id="T_e6b27127_3884_11eb_afc4_b3a2b3eb1f40row1_col4" class="data row1 col4" >2</td>
+                            <td id="T_e6b27127_3884_11eb_afc4_b3a2b3eb1f40row1_col5" class="data row1 col5" >2</td>
+                            <td id="T_e6b27127_3884_11eb_afc4_b3a2b3eb1f40row1_col6" class="data row1 col6" >2</td>
+                </tr>
+                <tr>
+                            <th id="T_e6b27127_3884_11eb_afc4_b3a2b3eb1f40level0_row2" class="row_heading level0 row2" >2</th>
+                            <td id="T_e6b27127_3884_11eb_afc4_b3a2b3eb1f40row2_col0" class="data row2 col0" >foo5</td>
+                            <td id="T_e6b27127_3884_11eb_afc4_b3a2b3eb1f40row2_col1" class="data row2 col1" >foo20</td>
+                            <td id="T_e6b27127_3884_11eb_afc4_b3a2b3eb1f40row2_col2" class="data row2 col2" >3</td>
+                            <td id="T_e6b27127_3884_11eb_afc4_b3a2b3eb1f40row2_col3" class="data row2 col3" >#ffbe00</td>
+                            <td id="T_e6b27127_3884_11eb_afc4_b3a2b3eb1f40row2_col4" class="data row2 col4" >3</td>
+                            <td id="T_e6b27127_3884_11eb_afc4_b3a2b3eb1f40row2_col5" class="data row2 col5" >2</td>
+                            <td id="T_e6b27127_3884_11eb_afc4_b3a2b3eb1f40row2_col6" class="data row2 col6" >1</td>
+                </tr>
+                <tr>
+                            <th id="T_e6b27127_3884_11eb_afc4_b3a2b3eb1f40level0_row3" class="row_heading level0 row3" >3</th>
+                            <td id="T_e6b27127_3884_11eb_afc4_b3a2b3eb1f40row3_col0" class="data row3 col0" >feeeee</td>
+                            <td id="T_e6b27127_3884_11eb_afc4_b3a2b3eb1f40row3_col1" class="data row3 col1" >foo20</td>
+                            <td id="T_e6b27127_3884_11eb_afc4_b3a2b3eb1f40row3_col2" class="data row3 col2" >4</td>
+                            <td id="T_e6b27127_3884_11eb_afc4_b3a2b3eb1f40row3_col3" class="data row3 col3" >#728f02</td>
+                            <td id="T_e6b27127_3884_11eb_afc4_b3a2b3eb1f40row3_col4" class="data row3 col4" >4</td>
+                            <td id="T_e6b27127_3884_11eb_afc4_b3a2b3eb1f40row3_col5" class="data row3 col5" >6</td>
+                            <td id="T_e6b27127_3884_11eb_afc4_b3a2b3eb1f40row3_col6" class="data row3 col6" >8</td>
+                </tr>
+        </tbody></table>
+    <br />
+    <br />
+
+
+.. code-block:: python3
+
+    series
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>order_series</th>
+          <th>BottomRelation</th>
+          <th>isActive</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>foo2</th>
+          <td>1</td>
+          <td>Erosion</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>boo</th>
+          <td>2</td>
+          <td>Erosion</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo7</th>
+          <td>3</td>
+          <td>Erosion</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo5</th>
+          <td>4</td>
+          <td>Erosion</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo20</th>
+          <td>5</td>
+          <td>Erosion</td>
+          <td>False</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+If a series does not exist in the ``Series`` object, we rise a warning
+and we set those formations to nans
+
+
+
+.. code-block:: python3
+
+    d = {"foo7": 'foo', "booX": ('foo2', 'foo5', 'fee')}
+
+
+
+
+
+
+
+
+
+.. code-block:: python3
+
+    surfaces.map_series(d)
+
+
+
+
+
+
+.. raw:: html
+
+    <style  type="text/css" >
+    #T_e6b27128_3884_11eb_afc4_b3a2b3eb1f40row0_col3{
+                background-color:  #015482;
+            }#T_e6b27128_3884_11eb_afc4_b3a2b3eb1f40row1_col3{
+                background-color:  #9f0052;
+            }#T_e6b27128_3884_11eb_afc4_b3a2b3eb1f40row2_col3{
+                background-color:  #ffbe00;
+            }#T_e6b27128_3884_11eb_afc4_b3a2b3eb1f40row3_col3{
+                background-color:  #728f02;
+            }</style><table id="T_e6b27128_3884_11eb_afc4_b3a2b3eb1f40" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>        <th class="col_heading level0 col5" >val_foo</th>        <th class="col_heading level0 col6" >val2_foo</th>    </tr></thead><tbody>
+                    <tr>
+                            <th id="T_e6b27128_3884_11eb_afc4_b3a2b3eb1f40level0_row0" class="row_heading level0 row0" >0</th>
+                            <td id="T_e6b27128_3884_11eb_afc4_b3a2b3eb1f40row0_col0" class="data row0 col0" >foo</td>
+                            <td id="T_e6b27128_3884_11eb_afc4_b3a2b3eb1f40row0_col1" class="data row0 col1" >foo7</td>
+                            <td id="T_e6b27128_3884_11eb_afc4_b3a2b3eb1f40row0_col2" class="data row0 col2" >1</td>
+                            <td id="T_e6b27128_3884_11eb_afc4_b3a2b3eb1f40row0_col3" class="data row0 col3" >#015482</td>
+                            <td id="T_e6b27128_3884_11eb_afc4_b3a2b3eb1f40row0_col4" class="data row0 col4" >1</td>
+                            <td id="T_e6b27128_3884_11eb_afc4_b3a2b3eb1f40row0_col5" class="data row0 col5" >2</td>
+                            <td id="T_e6b27128_3884_11eb_afc4_b3a2b3eb1f40row0_col6" class="data row0 col6" >2</td>
+                </tr>
+                <tr>
+                            <th id="T_e6b27128_3884_11eb_afc4_b3a2b3eb1f40level0_row1" class="row_heading level0 row1" >1</th>
+                            <td id="T_e6b27128_3884_11eb_afc4_b3a2b3eb1f40row1_col0" class="data row1 col0" >foo2</td>
+                            <td id="T_e6b27128_3884_11eb_afc4_b3a2b3eb1f40row1_col1" class="data row1 col1" >foo20</td>
+                            <td id="T_e6b27128_3884_11eb_afc4_b3a2b3eb1f40row1_col2" class="data row1 col2" >1</td>
+                            <td id="T_e6b27128_3884_11eb_afc4_b3a2b3eb1f40row1_col3" class="data row1 col3" >#9f0052</td>
+                            <td id="T_e6b27128_3884_11eb_afc4_b3a2b3eb1f40row1_col4" class="data row1 col4" >2</td>
+                            <td id="T_e6b27128_3884_11eb_afc4_b3a2b3eb1f40row1_col5" class="data row1 col5" >2</td>
+                            <td id="T_e6b27128_3884_11eb_afc4_b3a2b3eb1f40row1_col6" class="data row1 col6" >2</td>
+                </tr>
+                <tr>
+                            <th id="T_e6b27128_3884_11eb_afc4_b3a2b3eb1f40level0_row2" class="row_heading level0 row2" >2</th>
+                            <td id="T_e6b27128_3884_11eb_afc4_b3a2b3eb1f40row2_col0" class="data row2 col0" >foo5</td>
+                            <td id="T_e6b27128_3884_11eb_afc4_b3a2b3eb1f40row2_col1" class="data row2 col1" >foo20</td>
+                            <td id="T_e6b27128_3884_11eb_afc4_b3a2b3eb1f40row2_col2" class="data row2 col2" >2</td>
+                            <td id="T_e6b27128_3884_11eb_afc4_b3a2b3eb1f40row2_col3" class="data row2 col3" >#ffbe00</td>
+                            <td id="T_e6b27128_3884_11eb_afc4_b3a2b3eb1f40row2_col4" class="data row2 col4" >3</td>
+                            <td id="T_e6b27128_3884_11eb_afc4_b3a2b3eb1f40row2_col5" class="data row2 col5" >2</td>
+                            <td id="T_e6b27128_3884_11eb_afc4_b3a2b3eb1f40row2_col6" class="data row2 col6" >1</td>
+                </tr>
+                <tr>
+                            <th id="T_e6b27128_3884_11eb_afc4_b3a2b3eb1f40level0_row3" class="row_heading level0 row3" >3</th>
+                            <td id="T_e6b27128_3884_11eb_afc4_b3a2b3eb1f40row3_col0" class="data row3 col0" >feeeee</td>
+                            <td id="T_e6b27128_3884_11eb_afc4_b3a2b3eb1f40row3_col1" class="data row3 col1" >foo20</td>
+                            <td id="T_e6b27128_3884_11eb_afc4_b3a2b3eb1f40row3_col2" class="data row3 col2" >3</td>
+                            <td id="T_e6b27128_3884_11eb_afc4_b3a2b3eb1f40row3_col3" class="data row3 col3" >#728f02</td>
+                            <td id="T_e6b27128_3884_11eb_afc4_b3a2b3eb1f40row3_col4" class="data row3 col4" >4</td>
+                            <td id="T_e6b27128_3884_11eb_afc4_b3a2b3eb1f40row3_col5" class="data row3 col5" >6</td>
+                            <td id="T_e6b27128_3884_11eb_afc4_b3a2b3eb1f40row3_col6" class="data row3 col6" >8</td>
+                </tr>
+        </tbody></table>
+    <br />
+    <br />
+
+
+.. code-block:: python3
+
+    surfaces.map_series({"foo7": 'foo', "boo": ('foo2', 'foo5', 'fee')})
+
+
+
+
+
+
+.. raw:: html
+
+    <style  type="text/css" >
+    #T_e6b27129_3884_11eb_afc4_b3a2b3eb1f40row0_col3{
+                background-color:  #9f0052;
+            }#T_e6b27129_3884_11eb_afc4_b3a2b3eb1f40row1_col3{
+                background-color:  #ffbe00;
+            }#T_e6b27129_3884_11eb_afc4_b3a2b3eb1f40row2_col3{
+                background-color:  #015482;
+            }#T_e6b27129_3884_11eb_afc4_b3a2b3eb1f40row3_col3{
+                background-color:  #728f02;
+            }</style><table id="T_e6b27129_3884_11eb_afc4_b3a2b3eb1f40" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>        <th class="col_heading level0 col5" >val_foo</th>        <th class="col_heading level0 col6" >val2_foo</th>    </tr></thead><tbody>
+                    <tr>
+                            <th id="T_e6b27129_3884_11eb_afc4_b3a2b3eb1f40level0_row0" class="row_heading level0 row0" >1</th>
+                            <td id="T_e6b27129_3884_11eb_afc4_b3a2b3eb1f40row0_col0" class="data row0 col0" >foo2</td>
+                            <td id="T_e6b27129_3884_11eb_afc4_b3a2b3eb1f40row0_col1" class="data row0 col1" >boo</td>
+                            <td id="T_e6b27129_3884_11eb_afc4_b3a2b3eb1f40row0_col2" class="data row0 col2" >1</td>
+                            <td id="T_e6b27129_3884_11eb_afc4_b3a2b3eb1f40row0_col3" class="data row0 col3" >#9f0052</td>
+                            <td id="T_e6b27129_3884_11eb_afc4_b3a2b3eb1f40row0_col4" class="data row0 col4" >1</td>
+                            <td id="T_e6b27129_3884_11eb_afc4_b3a2b3eb1f40row0_col5" class="data row0 col5" >2</td>
+                            <td id="T_e6b27129_3884_11eb_afc4_b3a2b3eb1f40row0_col6" class="data row0 col6" >2</td>
+                </tr>
+                <tr>
+                            <th id="T_e6b27129_3884_11eb_afc4_b3a2b3eb1f40level0_row1" class="row_heading level0 row1" >2</th>
+                            <td id="T_e6b27129_3884_11eb_afc4_b3a2b3eb1f40row1_col0" class="data row1 col0" >foo5</td>
+                            <td id="T_e6b27129_3884_11eb_afc4_b3a2b3eb1f40row1_col1" class="data row1 col1" >boo</td>
+                            <td id="T_e6b27129_3884_11eb_afc4_b3a2b3eb1f40row1_col2" class="data row1 col2" >2</td>
+                            <td id="T_e6b27129_3884_11eb_afc4_b3a2b3eb1f40row1_col3" class="data row1 col3" >#ffbe00</td>
+                            <td id="T_e6b27129_3884_11eb_afc4_b3a2b3eb1f40row1_col4" class="data row1 col4" >2</td>
+                            <td id="T_e6b27129_3884_11eb_afc4_b3a2b3eb1f40row1_col5" class="data row1 col5" >2</td>
+                            <td id="T_e6b27129_3884_11eb_afc4_b3a2b3eb1f40row1_col6" class="data row1 col6" >1</td>
+                </tr>
+                <tr>
+                            <th id="T_e6b27129_3884_11eb_afc4_b3a2b3eb1f40level0_row2" class="row_heading level0 row2" >0</th>
+                            <td id="T_e6b27129_3884_11eb_afc4_b3a2b3eb1f40row2_col0" class="data row2 col0" >foo</td>
+                            <td id="T_e6b27129_3884_11eb_afc4_b3a2b3eb1f40row2_col1" class="data row2 col1" >foo7</td>
+                            <td id="T_e6b27129_3884_11eb_afc4_b3a2b3eb1f40row2_col2" class="data row2 col2" >1</td>
+                            <td id="T_e6b27129_3884_11eb_afc4_b3a2b3eb1f40row2_col3" class="data row2 col3" >#015482</td>
+                            <td id="T_e6b27129_3884_11eb_afc4_b3a2b3eb1f40row2_col4" class="data row2 col4" >3</td>
+                            <td id="T_e6b27129_3884_11eb_afc4_b3a2b3eb1f40row2_col5" class="data row2 col5" >2</td>
+                            <td id="T_e6b27129_3884_11eb_afc4_b3a2b3eb1f40row2_col6" class="data row2 col6" >2</td>
+                </tr>
+                <tr>
+                            <th id="T_e6b27129_3884_11eb_afc4_b3a2b3eb1f40level0_row3" class="row_heading level0 row3" >3</th>
+                            <td id="T_e6b27129_3884_11eb_afc4_b3a2b3eb1f40row3_col0" class="data row3 col0" >feeeee</td>
+                            <td id="T_e6b27129_3884_11eb_afc4_b3a2b3eb1f40row3_col1" class="data row3 col1" >foo20</td>
+                            <td id="T_e6b27129_3884_11eb_afc4_b3a2b3eb1f40row3_col2" class="data row3 col2" >1</td>
+                            <td id="T_e6b27129_3884_11eb_afc4_b3a2b3eb1f40row3_col3" class="data row3 col3" >#728f02</td>
+                            <td id="T_e6b27129_3884_11eb_afc4_b3a2b3eb1f40row3_col4" class="data row3 col4" >4</td>
+                            <td id="T_e6b27129_3884_11eb_afc4_b3a2b3eb1f40row3_col5" class="data row3 col5" >6</td>
+                            <td id="T_e6b27129_3884_11eb_afc4_b3a2b3eb1f40row3_col6" class="data row3 col6" >8</td>
+                </tr>
+        </tbody></table>
+    <br />
+    <br />
+
+
+.. code-block:: python3
+
+    surfaces
+
+
+
+
+
+
+.. raw:: html
+
+    <style  type="text/css" >
+    #T_e6b2712a_3884_11eb_afc4_b3a2b3eb1f40row0_col3{
+                background-color:  #9f0052;
+            }#T_e6b2712a_3884_11eb_afc4_b3a2b3eb1f40row1_col3{
+                background-color:  #ffbe00;
+            }#T_e6b2712a_3884_11eb_afc4_b3a2b3eb1f40row2_col3{
+                background-color:  #015482;
+            }#T_e6b2712a_3884_11eb_afc4_b3a2b3eb1f40row3_col3{
+                background-color:  #728f02;
+            }</style><table id="T_e6b2712a_3884_11eb_afc4_b3a2b3eb1f40" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>        <th class="col_heading level0 col5" >val_foo</th>        <th class="col_heading level0 col6" >val2_foo</th>    </tr></thead><tbody>
+                    <tr>
+                            <th id="T_e6b2712a_3884_11eb_afc4_b3a2b3eb1f40level0_row0" class="row_heading level0 row0" >1</th>
+                            <td id="T_e6b2712a_3884_11eb_afc4_b3a2b3eb1f40row0_col0" class="data row0 col0" >foo2</td>
+                            <td id="T_e6b2712a_3884_11eb_afc4_b3a2b3eb1f40row0_col1" class="data row0 col1" >boo</td>
+                            <td id="T_e6b2712a_3884_11eb_afc4_b3a2b3eb1f40row0_col2" class="data row0 col2" >1</td>
+                            <td id="T_e6b2712a_3884_11eb_afc4_b3a2b3eb1f40row0_col3" class="data row0 col3" >#9f0052</td>
+                            <td id="T_e6b2712a_3884_11eb_afc4_b3a2b3eb1f40row0_col4" class="data row0 col4" >1</td>
+                            <td id="T_e6b2712a_3884_11eb_afc4_b3a2b3eb1f40row0_col5" class="data row0 col5" >2</td>
+                            <td id="T_e6b2712a_3884_11eb_afc4_b3a2b3eb1f40row0_col6" class="data row0 col6" >2</td>
+                </tr>
+                <tr>
+                            <th id="T_e6b2712a_3884_11eb_afc4_b3a2b3eb1f40level0_row1" class="row_heading level0 row1" >2</th>
+                            <td id="T_e6b2712a_3884_11eb_afc4_b3a2b3eb1f40row1_col0" class="data row1 col0" >foo5</td>
+                            <td id="T_e6b2712a_3884_11eb_afc4_b3a2b3eb1f40row1_col1" class="data row1 col1" >boo</td>
+                            <td id="T_e6b2712a_3884_11eb_afc4_b3a2b3eb1f40row1_col2" class="data row1 col2" >2</td>
+                            <td id="T_e6b2712a_3884_11eb_afc4_b3a2b3eb1f40row1_col3" class="data row1 col3" >#ffbe00</td>
+                            <td id="T_e6b2712a_3884_11eb_afc4_b3a2b3eb1f40row1_col4" class="data row1 col4" >2</td>
+                            <td id="T_e6b2712a_3884_11eb_afc4_b3a2b3eb1f40row1_col5" class="data row1 col5" >2</td>
+                            <td id="T_e6b2712a_3884_11eb_afc4_b3a2b3eb1f40row1_col6" class="data row1 col6" >1</td>
+                </tr>
+                <tr>
+                            <th id="T_e6b2712a_3884_11eb_afc4_b3a2b3eb1f40level0_row2" class="row_heading level0 row2" >0</th>
+                            <td id="T_e6b2712a_3884_11eb_afc4_b3a2b3eb1f40row2_col0" class="data row2 col0" >foo</td>
+                            <td id="T_e6b2712a_3884_11eb_afc4_b3a2b3eb1f40row2_col1" class="data row2 col1" >foo7</td>
+                            <td id="T_e6b2712a_3884_11eb_afc4_b3a2b3eb1f40row2_col2" class="data row2 col2" >1</td>
+                            <td id="T_e6b2712a_3884_11eb_afc4_b3a2b3eb1f40row2_col3" class="data row2 col3" >#015482</td>
+                            <td id="T_e6b2712a_3884_11eb_afc4_b3a2b3eb1f40row2_col4" class="data row2 col4" >3</td>
+                            <td id="T_e6b2712a_3884_11eb_afc4_b3a2b3eb1f40row2_col5" class="data row2 col5" >2</td>
+                            <td id="T_e6b2712a_3884_11eb_afc4_b3a2b3eb1f40row2_col6" class="data row2 col6" >2</td>
+                </tr>
+                <tr>
+                            <th id="T_e6b2712a_3884_11eb_afc4_b3a2b3eb1f40level0_row3" class="row_heading level0 row3" >3</th>
+                            <td id="T_e6b2712a_3884_11eb_afc4_b3a2b3eb1f40row3_col0" class="data row3 col0" >feeeee</td>
+                            <td id="T_e6b2712a_3884_11eb_afc4_b3a2b3eb1f40row3_col1" class="data row3 col1" >foo20</td>
+                            <td id="T_e6b2712a_3884_11eb_afc4_b3a2b3eb1f40row3_col2" class="data row3 col2" >1</td>
+                            <td id="T_e6b2712a_3884_11eb_afc4_b3a2b3eb1f40row3_col3" class="data row3 col3" >#728f02</td>
+                            <td id="T_e6b2712a_3884_11eb_afc4_b3a2b3eb1f40row3_col4" class="data row3 col4" >4</td>
+                            <td id="T_e6b2712a_3884_11eb_afc4_b3a2b3eb1f40row3_col5" class="data row3 col5" >6</td>
+                            <td id="T_e6b2712a_3884_11eb_afc4_b3a2b3eb1f40row3_col6" class="data row3 col6" >8</td>
+                </tr>
+        </tbody></table>
+    <br />
+    <br />
+
+An advantage of categories is that they are order so no we can tidy the
+df by series and formation
+
+
+Modify surface name
+~~~~~~~~~~~~~~~~~~~
+
+
+
+.. code-block:: python3
+
+    surfaces.rename_surfaces({'foo2': 'lala'})
+
+
+
+
+
+
+.. raw:: html
+
+    <style  type="text/css" >
+    #T_e6b2712b_3884_11eb_afc4_b3a2b3eb1f40row0_col3{
+                background-color:  #9f0052;
+            }#T_e6b2712b_3884_11eb_afc4_b3a2b3eb1f40row1_col3{
+                background-color:  #ffbe00;
+            }#T_e6b2712b_3884_11eb_afc4_b3a2b3eb1f40row2_col3{
+                background-color:  #015482;
+            }#T_e6b2712b_3884_11eb_afc4_b3a2b3eb1f40row3_col3{
+                background-color:  #728f02;
+            }</style><table id="T_e6b2712b_3884_11eb_afc4_b3a2b3eb1f40" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>        <th class="col_heading level0 col5" >val_foo</th>        <th class="col_heading level0 col6" >val2_foo</th>    </tr></thead><tbody>
+                    <tr>
+                            <th id="T_e6b2712b_3884_11eb_afc4_b3a2b3eb1f40level0_row0" class="row_heading level0 row0" >1</th>
+                            <td id="T_e6b2712b_3884_11eb_afc4_b3a2b3eb1f40row0_col0" class="data row0 col0" >lala</td>
+                            <td id="T_e6b2712b_3884_11eb_afc4_b3a2b3eb1f40row0_col1" class="data row0 col1" >boo</td>
+                            <td id="T_e6b2712b_3884_11eb_afc4_b3a2b3eb1f40row0_col2" class="data row0 col2" >1</td>
+                            <td id="T_e6b2712b_3884_11eb_afc4_b3a2b3eb1f40row0_col3" class="data row0 col3" >#9f0052</td>
+                            <td id="T_e6b2712b_3884_11eb_afc4_b3a2b3eb1f40row0_col4" class="data row0 col4" >1</td>
+                            <td id="T_e6b2712b_3884_11eb_afc4_b3a2b3eb1f40row0_col5" class="data row0 col5" >2</td>
+                            <td id="T_e6b2712b_3884_11eb_afc4_b3a2b3eb1f40row0_col6" class="data row0 col6" >2</td>
+                </tr>
+                <tr>
+                            <th id="T_e6b2712b_3884_11eb_afc4_b3a2b3eb1f40level0_row1" class="row_heading level0 row1" >2</th>
+                            <td id="T_e6b2712b_3884_11eb_afc4_b3a2b3eb1f40row1_col0" class="data row1 col0" >foo5</td>
+                            <td id="T_e6b2712b_3884_11eb_afc4_b3a2b3eb1f40row1_col1" class="data row1 col1" >boo</td>
+                            <td id="T_e6b2712b_3884_11eb_afc4_b3a2b3eb1f40row1_col2" class="data row1 col2" >2</td>
+                            <td id="T_e6b2712b_3884_11eb_afc4_b3a2b3eb1f40row1_col3" class="data row1 col3" >#ffbe00</td>
+                            <td id="T_e6b2712b_3884_11eb_afc4_b3a2b3eb1f40row1_col4" class="data row1 col4" >2</td>
+                            <td id="T_e6b2712b_3884_11eb_afc4_b3a2b3eb1f40row1_col5" class="data row1 col5" >2</td>
+                            <td id="T_e6b2712b_3884_11eb_afc4_b3a2b3eb1f40row1_col6" class="data row1 col6" >1</td>
+                </tr>
+                <tr>
+                            <th id="T_e6b2712b_3884_11eb_afc4_b3a2b3eb1f40level0_row2" class="row_heading level0 row2" >0</th>
+                            <td id="T_e6b2712b_3884_11eb_afc4_b3a2b3eb1f40row2_col0" class="data row2 col0" >foo</td>
+                            <td id="T_e6b2712b_3884_11eb_afc4_b3a2b3eb1f40row2_col1" class="data row2 col1" >foo7</td>
+                            <td id="T_e6b2712b_3884_11eb_afc4_b3a2b3eb1f40row2_col2" class="data row2 col2" >1</td>
+                            <td id="T_e6b2712b_3884_11eb_afc4_b3a2b3eb1f40row2_col3" class="data row2 col3" >#015482</td>
+                            <td id="T_e6b2712b_3884_11eb_afc4_b3a2b3eb1f40row2_col4" class="data row2 col4" >3</td>
+                            <td id="T_e6b2712b_3884_11eb_afc4_b3a2b3eb1f40row2_col5" class="data row2 col5" >2</td>
+                            <td id="T_e6b2712b_3884_11eb_afc4_b3a2b3eb1f40row2_col6" class="data row2 col6" >2</td>
+                </tr>
+                <tr>
+                            <th id="T_e6b2712b_3884_11eb_afc4_b3a2b3eb1f40level0_row3" class="row_heading level0 row3" >3</th>
+                            <td id="T_e6b2712b_3884_11eb_afc4_b3a2b3eb1f40row3_col0" class="data row3 col0" >feeeee</td>
+                            <td id="T_e6b2712b_3884_11eb_afc4_b3a2b3eb1f40row3_col1" class="data row3 col1" >foo20</td>
+                            <td id="T_e6b2712b_3884_11eb_afc4_b3a2b3eb1f40row3_col2" class="data row3 col2" >1</td>
+                            <td id="T_e6b2712b_3884_11eb_afc4_b3a2b3eb1f40row3_col3" class="data row3 col3" >#728f02</td>
+                            <td id="T_e6b2712b_3884_11eb_afc4_b3a2b3eb1f40row3_col4" class="data row3 col4" >4</td>
+                            <td id="T_e6b2712b_3884_11eb_afc4_b3a2b3eb1f40row3_col5" class="data row3 col5" >6</td>
+                            <td id="T_e6b2712b_3884_11eb_afc4_b3a2b3eb1f40row3_col6" class="data row3 col6" >8</td>
+                </tr>
+        </tbody></table>
+    <br />
+    <br />
+
+
+.. code-block:: python3
+
+    surfaces
+
+
+
+
+
+
+.. raw:: html
+
+    <style  type="text/css" >
+    #T_e6b2712c_3884_11eb_afc4_b3a2b3eb1f40row0_col3{
+                background-color:  #9f0052;
+            }#T_e6b2712c_3884_11eb_afc4_b3a2b3eb1f40row1_col3{
+                background-color:  #ffbe00;
+            }#T_e6b2712c_3884_11eb_afc4_b3a2b3eb1f40row2_col3{
+                background-color:  #015482;
+            }#T_e6b2712c_3884_11eb_afc4_b3a2b3eb1f40row3_col3{
+                background-color:  #728f02;
+            }</style><table id="T_e6b2712c_3884_11eb_afc4_b3a2b3eb1f40" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>        <th class="col_heading level0 col5" >val_foo</th>        <th class="col_heading level0 col6" >val2_foo</th>    </tr></thead><tbody>
+                    <tr>
+                            <th id="T_e6b2712c_3884_11eb_afc4_b3a2b3eb1f40level0_row0" class="row_heading level0 row0" >1</th>
+                            <td id="T_e6b2712c_3884_11eb_afc4_b3a2b3eb1f40row0_col0" class="data row0 col0" >lala</td>
+                            <td id="T_e6b2712c_3884_11eb_afc4_b3a2b3eb1f40row0_col1" class="data row0 col1" >boo</td>
+                            <td id="T_e6b2712c_3884_11eb_afc4_b3a2b3eb1f40row0_col2" class="data row0 col2" >1</td>
+                            <td id="T_e6b2712c_3884_11eb_afc4_b3a2b3eb1f40row0_col3" class="data row0 col3" >#9f0052</td>
+                            <td id="T_e6b2712c_3884_11eb_afc4_b3a2b3eb1f40row0_col4" class="data row0 col4" >1</td>
+                            <td id="T_e6b2712c_3884_11eb_afc4_b3a2b3eb1f40row0_col5" class="data row0 col5" >2</td>
+                            <td id="T_e6b2712c_3884_11eb_afc4_b3a2b3eb1f40row0_col6" class="data row0 col6" >2</td>
+                </tr>
+                <tr>
+                            <th id="T_e6b2712c_3884_11eb_afc4_b3a2b3eb1f40level0_row1" class="row_heading level0 row1" >2</th>
+                            <td id="T_e6b2712c_3884_11eb_afc4_b3a2b3eb1f40row1_col0" class="data row1 col0" >foo5</td>
+                            <td id="T_e6b2712c_3884_11eb_afc4_b3a2b3eb1f40row1_col1" class="data row1 col1" >boo</td>
+                            <td id="T_e6b2712c_3884_11eb_afc4_b3a2b3eb1f40row1_col2" class="data row1 col2" >2</td>
+                            <td id="T_e6b2712c_3884_11eb_afc4_b3a2b3eb1f40row1_col3" class="data row1 col3" >#ffbe00</td>
+                            <td id="T_e6b2712c_3884_11eb_afc4_b3a2b3eb1f40row1_col4" class="data row1 col4" >2</td>
+                            <td id="T_e6b2712c_3884_11eb_afc4_b3a2b3eb1f40row1_col5" class="data row1 col5" >2</td>
+                            <td id="T_e6b2712c_3884_11eb_afc4_b3a2b3eb1f40row1_col6" class="data row1 col6" >1</td>
+                </tr>
+                <tr>
+                            <th id="T_e6b2712c_3884_11eb_afc4_b3a2b3eb1f40level0_row2" class="row_heading level0 row2" >0</th>
+                            <td id="T_e6b2712c_3884_11eb_afc4_b3a2b3eb1f40row2_col0" class="data row2 col0" >foo</td>
+                            <td id="T_e6b2712c_3884_11eb_afc4_b3a2b3eb1f40row2_col1" class="data row2 col1" >foo7</td>
+                            <td id="T_e6b2712c_3884_11eb_afc4_b3a2b3eb1f40row2_col2" class="data row2 col2" >1</td>
+                            <td id="T_e6b2712c_3884_11eb_afc4_b3a2b3eb1f40row2_col3" class="data row2 col3" >#015482</td>
+                            <td id="T_e6b2712c_3884_11eb_afc4_b3a2b3eb1f40row2_col4" class="data row2 col4" >3</td>
+                            <td id="T_e6b2712c_3884_11eb_afc4_b3a2b3eb1f40row2_col5" class="data row2 col5" >2</td>
+                            <td id="T_e6b2712c_3884_11eb_afc4_b3a2b3eb1f40row2_col6" class="data row2 col6" >2</td>
+                </tr>
+                <tr>
+                            <th id="T_e6b2712c_3884_11eb_afc4_b3a2b3eb1f40level0_row3" class="row_heading level0 row3" >3</th>
+                            <td id="T_e6b2712c_3884_11eb_afc4_b3a2b3eb1f40row3_col0" class="data row3 col0" >feeeee</td>
+                            <td id="T_e6b2712c_3884_11eb_afc4_b3a2b3eb1f40row3_col1" class="data row3 col1" >foo20</td>
+                            <td id="T_e6b2712c_3884_11eb_afc4_b3a2b3eb1f40row3_col2" class="data row3 col2" >1</td>
+                            <td id="T_e6b2712c_3884_11eb_afc4_b3a2b3eb1f40row3_col3" class="data row3 col3" >#728f02</td>
+                            <td id="T_e6b2712c_3884_11eb_afc4_b3a2b3eb1f40row3_col4" class="data row3 col4" >4</td>
+                            <td id="T_e6b2712c_3884_11eb_afc4_b3a2b3eb1f40row3_col5" class="data row3 col5" >6</td>
+                            <td id="T_e6b2712c_3884_11eb_afc4_b3a2b3eb1f40row3_col6" class="data row3 col6" >8</td>
+                </tr>
+        </tbody></table>
+    <br />
+    <br />
+
+
+.. code-block:: python3
+
+    surfaces.df.loc[2, 'val_foo'] = 22
+
+
+
+
+
+
+
+
+
+.. code-block:: python3
+
+    surfaces
+
+
+
+
+
+
+.. raw:: html
+
+    <style  type="text/css" >
+    #T_e6b2712d_3884_11eb_afc4_b3a2b3eb1f40row0_col3{
+                background-color:  #9f0052;
+            }#T_e6b2712d_3884_11eb_afc4_b3a2b3eb1f40row1_col3{
+                background-color:  #ffbe00;
+            }#T_e6b2712d_3884_11eb_afc4_b3a2b3eb1f40row2_col3{
+                background-color:  #015482;
+            }#T_e6b2712d_3884_11eb_afc4_b3a2b3eb1f40row3_col3{
+                background-color:  #728f02;
+            }</style><table id="T_e6b2712d_3884_11eb_afc4_b3a2b3eb1f40" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>        <th class="col_heading level0 col5" >val_foo</th>        <th class="col_heading level0 col6" >val2_foo</th>    </tr></thead><tbody>
+                    <tr>
+                            <th id="T_e6b2712d_3884_11eb_afc4_b3a2b3eb1f40level0_row0" class="row_heading level0 row0" >1</th>
+                            <td id="T_e6b2712d_3884_11eb_afc4_b3a2b3eb1f40row0_col0" class="data row0 col0" >lala</td>
+                            <td id="T_e6b2712d_3884_11eb_afc4_b3a2b3eb1f40row0_col1" class="data row0 col1" >boo</td>
+                            <td id="T_e6b2712d_3884_11eb_afc4_b3a2b3eb1f40row0_col2" class="data row0 col2" >1</td>
+                            <td id="T_e6b2712d_3884_11eb_afc4_b3a2b3eb1f40row0_col3" class="data row0 col3" >#9f0052</td>
+                            <td id="T_e6b2712d_3884_11eb_afc4_b3a2b3eb1f40row0_col4" class="data row0 col4" >1</td>
+                            <td id="T_e6b2712d_3884_11eb_afc4_b3a2b3eb1f40row0_col5" class="data row0 col5" >2</td>
+                            <td id="T_e6b2712d_3884_11eb_afc4_b3a2b3eb1f40row0_col6" class="data row0 col6" >2</td>
+                </tr>
+                <tr>
+                            <th id="T_e6b2712d_3884_11eb_afc4_b3a2b3eb1f40level0_row1" class="row_heading level0 row1" >2</th>
+                            <td id="T_e6b2712d_3884_11eb_afc4_b3a2b3eb1f40row1_col0" class="data row1 col0" >foo5</td>
+                            <td id="T_e6b2712d_3884_11eb_afc4_b3a2b3eb1f40row1_col1" class="data row1 col1" >boo</td>
+                            <td id="T_e6b2712d_3884_11eb_afc4_b3a2b3eb1f40row1_col2" class="data row1 col2" >2</td>
+                            <td id="T_e6b2712d_3884_11eb_afc4_b3a2b3eb1f40row1_col3" class="data row1 col3" >#ffbe00</td>
+                            <td id="T_e6b2712d_3884_11eb_afc4_b3a2b3eb1f40row1_col4" class="data row1 col4" >2</td>
+                            <td id="T_e6b2712d_3884_11eb_afc4_b3a2b3eb1f40row1_col5" class="data row1 col5" >22</td>
+                            <td id="T_e6b2712d_3884_11eb_afc4_b3a2b3eb1f40row1_col6" class="data row1 col6" >1</td>
+                </tr>
+                <tr>
+                            <th id="T_e6b2712d_3884_11eb_afc4_b3a2b3eb1f40level0_row2" class="row_heading level0 row2" >0</th>
+                            <td id="T_e6b2712d_3884_11eb_afc4_b3a2b3eb1f40row2_col0" class="data row2 col0" >foo</td>
+                            <td id="T_e6b2712d_3884_11eb_afc4_b3a2b3eb1f40row2_col1" class="data row2 col1" >foo7</td>
+                            <td id="T_e6b2712d_3884_11eb_afc4_b3a2b3eb1f40row2_col2" class="data row2 col2" >1</td>
+                            <td id="T_e6b2712d_3884_11eb_afc4_b3a2b3eb1f40row2_col3" class="data row2 col3" >#015482</td>
+                            <td id="T_e6b2712d_3884_11eb_afc4_b3a2b3eb1f40row2_col4" class="data row2 col4" >3</td>
+                            <td id="T_e6b2712d_3884_11eb_afc4_b3a2b3eb1f40row2_col5" class="data row2 col5" >2</td>
+                            <td id="T_e6b2712d_3884_11eb_afc4_b3a2b3eb1f40row2_col6" class="data row2 col6" >2</td>
+                </tr>
+                <tr>
+                            <th id="T_e6b2712d_3884_11eb_afc4_b3a2b3eb1f40level0_row3" class="row_heading level0 row3" >3</th>
+                            <td id="T_e6b2712d_3884_11eb_afc4_b3a2b3eb1f40row3_col0" class="data row3 col0" >feeeee</td>
+                            <td id="T_e6b2712d_3884_11eb_afc4_b3a2b3eb1f40row3_col1" class="data row3 col1" >foo20</td>
+                            <td id="T_e6b2712d_3884_11eb_afc4_b3a2b3eb1f40row3_col2" class="data row3 col2" >1</td>
+                            <td id="T_e6b2712d_3884_11eb_afc4_b3a2b3eb1f40row3_col3" class="data row3 col3" >#728f02</td>
+                            <td id="T_e6b2712d_3884_11eb_afc4_b3a2b3eb1f40row3_col4" class="data row3 col4" >4</td>
+                            <td id="T_e6b2712d_3884_11eb_afc4_b3a2b3eb1f40row3_col5" class="data row3 col5" >6</td>
+                            <td id="T_e6b2712d_3884_11eb_afc4_b3a2b3eb1f40row3_col6" class="data row3 col6" >8</td>
+                </tr>
+        </tbody></table>
+    <br />
+    <br />
+
+Modify surface color
+~~~~~~~~~~~~~~~~~~~~
+
+
+The surfaces DataFrame also contains a column for the color in which the
+surfaces are displayed. To change the color, call
+
+
+
+.. code-block:: python3
+
+    surfaces.colors.change_colors()
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Click to select new colors.
+    VBox(children=(ColorPicker(value='#015482', description='foo'), ColorPicker(value='#9f0052', description='foo2'), ColorPicker(value='#ffbe00', description='foo5'), ColorPicker(value='#728f02', description='feeeee')))
+
+
+
+
+This allow to change the colors interactively. If you already know which
+colors you want to use, you can also update them with a dictionary
+mapping the surface name to a hex color string:
+
+
+
+.. code-block:: python3
+
+    new_colors = {'foo': '#ff8000', 'foo5': '#4741be'}
+    surfaces.colors.change_colors(new_colors)
+
+
+
+
+
+
+
+
+Data
+~~~~
+
+surface\_points
+^^^^^^^^^^^^^^^
+
+These two DataFrames (*df* from now on) will contain the individual
+information of each point at an interface or orientation. Some
+properties of this table are mapped from the *df* below.
+
+
+
+.. code-block:: python3
+
+    surface_points = gempy.core.data_modules.geometric_data.SurfacePoints(surfaces)
+
+
+
+
+
+
+
+
+
+.. code-block:: python3
+
+    surface_points
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>X</th>
+          <th>Y</th>
+          <th>Z</th>
+          <th>smooth</th>
+          <th>surface</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+
+.. code-block:: python3
+
+    surface_points.set_surface_points(pd.DataFrame(np.random.rand(6, 3)),
+                                      ['foo', 'foo5', 'lala', 'foo5', 'lala', 'feeeee'])
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>X</th>
+          <th>Y</th>
+          <th>Z</th>
+          <th>smooth</th>
+          <th>surface</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>0.39</td>
+          <td>0.41</td>
+          <td>0.82</td>
+          <td>2.00e-06</td>
+          <td>foo</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>0.69</td>
+          <td>0.89</td>
+          <td>0.06</td>
+          <td>2.00e-06</td>
+          <td>foo5</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>0.53</td>
+          <td>0.55</td>
+          <td>0.03</td>
+          <td>2.00e-06</td>
+          <td>lala</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>0.02</td>
+          <td>0.23</td>
+          <td>0.55</td>
+          <td>2.00e-06</td>
+          <td>foo5</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>0.95</td>
+          <td>0.83</td>
+          <td>0.94</td>
+          <td>2.00e-06</td>
+          <td>lala</td>
+        </tr>
+        <tr>
+          <th>5</th>
+          <td>0.45</td>
+          <td>0.66</td>
+          <td>0.41</td>
+          <td>2.00e-06</td>
+          <td>feeeee</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+
+.. code-block:: python3
+
+    surface_points
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>X</th>
+          <th>Y</th>
+          <th>Z</th>
+          <th>smooth</th>
+          <th>surface</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>0.39</td>
+          <td>0.41</td>
+          <td>0.82</td>
+          <td>2.00e-06</td>
+          <td>foo</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>0.69</td>
+          <td>0.89</td>
+          <td>0.06</td>
+          <td>2.00e-06</td>
+          <td>foo5</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>0.53</td>
+          <td>0.55</td>
+          <td>0.03</td>
+          <td>2.00e-06</td>
+          <td>lala</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>0.02</td>
+          <td>0.23</td>
+          <td>0.55</td>
+          <td>2.00e-06</td>
+          <td>foo5</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>0.95</td>
+          <td>0.83</td>
+          <td>0.94</td>
+          <td>2.00e-06</td>
+          <td>lala</td>
+        </tr>
+        <tr>
+          <th>5</th>
+          <td>0.45</td>
+          <td>0.66</td>
+          <td>0.41</td>
+          <td>2.00e-06</td>
+          <td>feeeee</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+
+.. code-block:: python3
+
+    surface_points.map_data_from_surfaces(surfaces, 'series')
+    surface_points
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>X</th>
+          <th>Y</th>
+          <th>Z</th>
+          <th>smooth</th>
+          <th>surface</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>0.39</td>
+          <td>0.41</td>
+          <td>0.82</td>
+          <td>2.00e-06</td>
+          <td>foo</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>0.69</td>
+          <td>0.89</td>
+          <td>0.06</td>
+          <td>2.00e-06</td>
+          <td>foo5</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>0.53</td>
+          <td>0.55</td>
+          <td>0.03</td>
+          <td>2.00e-06</td>
+          <td>lala</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>0.02</td>
+          <td>0.23</td>
+          <td>0.55</td>
+          <td>2.00e-06</td>
+          <td>foo5</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>0.95</td>
+          <td>0.83</td>
+          <td>0.94</td>
+          <td>2.00e-06</td>
+          <td>lala</td>
+        </tr>
+        <tr>
+          <th>5</th>
+          <td>0.45</td>
+          <td>0.66</td>
+          <td>0.41</td>
+          <td>2.00e-06</td>
+          <td>feeeee</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+
+.. code-block:: python3
+
+    surface_points.map_data_from_surfaces(surfaces, 'id')
+    surface_points
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>X</th>
+          <th>Y</th>
+          <th>Z</th>
+          <th>smooth</th>
+          <th>surface</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>0.39</td>
+          <td>0.41</td>
+          <td>0.82</td>
+          <td>2.00e-06</td>
+          <td>foo</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>0.69</td>
+          <td>0.89</td>
+          <td>0.06</td>
+          <td>2.00e-06</td>
+          <td>foo5</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>0.53</td>
+          <td>0.55</td>
+          <td>0.03</td>
+          <td>2.00e-06</td>
+          <td>lala</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>0.02</td>
+          <td>0.23</td>
+          <td>0.55</td>
+          <td>2.00e-06</td>
+          <td>foo5</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>0.95</td>
+          <td>0.83</td>
+          <td>0.94</td>
+          <td>2.00e-06</td>
+          <td>lala</td>
+        </tr>
+        <tr>
+          <th>5</th>
+          <td>0.45</td>
+          <td>0.66</td>
+          <td>0.41</td>
+          <td>2.00e-06</td>
+          <td>feeeee</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+
+.. code-block:: python3
+
+    series
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>order_series</th>
+          <th>BottomRelation</th>
+          <th>isActive</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>foo2</th>
+          <td>1</td>
+          <td>Erosion</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>boo</th>
+          <td>2</td>
+          <td>Erosion</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo7</th>
+          <td>3</td>
+          <td>Erosion</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo5</th>
+          <td>4</td>
+          <td>Erosion</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo20</th>
+          <td>5</td>
+          <td>Erosion</td>
+          <td>False</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+
+.. code-block:: python3
+
+    surface_points.map_data_from_series(series, 'order_series')
+    surface_points
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>X</th>
+          <th>Y</th>
+          <th>Z</th>
+          <th>smooth</th>
+          <th>surface</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>0.39</td>
+          <td>0.41</td>
+          <td>0.82</td>
+          <td>2.00e-06</td>
+          <td>foo</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>0.69</td>
+          <td>0.89</td>
+          <td>0.06</td>
+          <td>2.00e-06</td>
+          <td>foo5</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>0.53</td>
+          <td>0.55</td>
+          <td>0.03</td>
+          <td>2.00e-06</td>
+          <td>lala</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>0.02</td>
+          <td>0.23</td>
+          <td>0.55</td>
+          <td>2.00e-06</td>
+          <td>foo5</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>0.95</td>
+          <td>0.83</td>
+          <td>0.94</td>
+          <td>2.00e-06</td>
+          <td>lala</td>
+        </tr>
+        <tr>
+          <th>5</th>
+          <td>0.45</td>
+          <td>0.66</td>
+          <td>0.41</td>
+          <td>2.00e-06</td>
+          <td>feeeee</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+
+.. code-block:: python3
+
+    surface_points.sort_table()
+    surface_points
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>X</th>
+          <th>Y</th>
+          <th>Z</th>
+          <th>smooth</th>
+          <th>surface</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>2</th>
+          <td>0.53</td>
+          <td>0.55</td>
+          <td>0.03</td>
+          <td>2.00e-06</td>
+          <td>lala</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>0.95</td>
+          <td>0.83</td>
+          <td>0.94</td>
+          <td>2.00e-06</td>
+          <td>lala</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>0.69</td>
+          <td>0.89</td>
+          <td>0.06</td>
+          <td>2.00e-06</td>
+          <td>foo5</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>0.02</td>
+          <td>0.23</td>
+          <td>0.55</td>
+          <td>2.00e-06</td>
+          <td>foo5</td>
+        </tr>
+        <tr>
+          <th>0</th>
+          <td>0.39</td>
+          <td>0.41</td>
+          <td>0.82</td>
+          <td>2.00e-06</td>
+          <td>foo</td>
+        </tr>
+        <tr>
+          <th>5</th>
+          <td>0.45</td>
+          <td>0.66</td>
+          <td>0.41</td>
+          <td>2.00e-06</td>
+          <td>feeeee</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+
+.. code-block:: python3
+
+    faults
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>isFault</th>
+          <th>isFinite</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>foo2</th>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>boo</th>
+          <td>True</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo7</th>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo5</th>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>foo20</th>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+Orientations
+~~~~~~~~~~~~
+
+
+
+.. code-block:: python3
+
+    orientations = gempy.core.data_modules.geometric_data.Orientations(surfaces)
+
+
+
+
+
+
+
+
+
+.. code-block:: python3
+
+    orientations
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>X</th>
+          <th>Y</th>
+          <th>Z</th>
+          <th>G_x</th>
+          <th>G_y</th>
+          <th>G_z</th>
+          <th>smooth</th>
+          <th>surface</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+Set values passing pole vectors:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+.. code-block:: python3
+
+    orientations.set_orientations(np.random.rand(6, 3) * 10,
+                                  np.random.rand(6, 3),
+                                  surface=['foo', 'foo5', 'lala', 'foo5',
+                                           'lala', 'feeeee'])
+
+
+
+
+
+
+
+
+
+.. code-block:: python3
+
+    orientations
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>X</th>
+          <th>Y</th>
+          <th>Z</th>
+          <th>G_x</th>
+          <th>G_y</th>
+          <th>G_z</th>
+          <th>smooth</th>
+          <th>surface</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>8.48</td>
+          <td>3.08</td>
+          <td>8.24</td>
+          <td>0.40</td>
+          <td>0.06</td>
+          <td>0.37</td>
+          <td>0.01</td>
+          <td>foo</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>6.87</td>
+          <td>0.41</td>
+          <td>8.03</td>
+          <td>0.84</td>
+          <td>0.27</td>
+          <td>0.31</td>
+          <td>0.01</td>
+          <td>foo5</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>8.21</td>
+          <td>3.42</td>
+          <td>1.50</td>
+          <td>0.89</td>
+          <td>0.56</td>
+          <td>0.38</td>
+          <td>0.01</td>
+          <td>lala</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>9.39</td>
+          <td>9.91</td>
+          <td>0.13</td>
+          <td>0.72</td>
+          <td>0.84</td>
+          <td>0.38</td>
+          <td>0.01</td>
+          <td>foo5</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>2.07</td>
+          <td>8.72</td>
+          <td>3.94</td>
+          <td>0.36</td>
+          <td>0.70</td>
+          <td>0.93</td>
+          <td>0.01</td>
+          <td>lala</td>
+        </tr>
+        <tr>
+          <th>5</th>
+          <td>2.60</td>
+          <td>0.10</td>
+          <td>4.96</td>
+          <td>1.00</td>
+          <td>0.75</td>
+          <td>0.97</td>
+          <td>0.01</td>
+          <td>feeeee</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+Set values pasing orientation data: azimuth, dip, pole (dip direction)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+.. code-block:: python3
+
+    orientations.set_orientations(np.random.rand(6, 3) * 10,
+                                  orientation=np.random.rand(6, 3) * 20,
+                                  surface=['foo', 'foo5', 'lala', 'foo5',
+                                           'lala', 'feeeee'])
+
+
+
+
+
+
+
+
+
+.. code-block:: python3
+
+    orientations
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>X</th>
+          <th>Y</th>
+          <th>Z</th>
+          <th>G_x</th>
+          <th>G_y</th>
+          <th>G_z</th>
+          <th>smooth</th>
+          <th>surface</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>8.33</td>
+          <td>8.79</td>
+          <td>5.68</td>
+          <td>0.43</td>
+          <td>4.03</td>
+          <td>12.22</td>
+          <td>0.01</td>
+          <td>foo</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>8.25</td>
+          <td>6.22</td>
+          <td>5.13</td>
+          <td>0.02</td>
+          <td>0.06</td>
+          <td>7.72</td>
+          <td>0.01</td>
+          <td>foo5</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>3.37</td>
+          <td>6.46</td>
+          <td>0.18</td>
+          <td>0.69</td>
+          <td>5.60</td>
+          <td>16.39</td>
+          <td>0.01</td>
+          <td>lala</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>3.82</td>
+          <td>1.27</td>
+          <td>8.42</td>
+          <td>0.15</td>
+          <td>4.21</td>
+          <td>13.70</td>
+          <td>0.01</td>
+          <td>foo5</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>5.79</td>
+          <td>9.10</td>
+          <td>0.89</td>
+          <td>0.54</td>
+          <td>6.43</td>
+          <td>18.63</td>
+          <td>0.01</td>
+          <td>lala</td>
+        </tr>
+        <tr>
+          <th>5</th>
+          <td>2.46</td>
+          <td>3.97</td>
+          <td>8.81</td>
+          <td>0.02</td>
+          <td>0.33</td>
+          <td>4.14</td>
+          <td>0.01</td>
+          <td>feeeee</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+Mapping data from the other df
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+.. code-block:: python3
+
+    orientations.map_data_from_surfaces(surfaces, 'series')
+    orientations
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>X</th>
+          <th>Y</th>
+          <th>Z</th>
+          <th>G_x</th>
+          <th>G_y</th>
+          <th>G_z</th>
+          <th>smooth</th>
+          <th>surface</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>8.33</td>
+          <td>8.79</td>
+          <td>5.68</td>
+          <td>0.43</td>
+          <td>4.03</td>
+          <td>12.22</td>
+          <td>0.01</td>
+          <td>foo</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>8.25</td>
+          <td>6.22</td>
+          <td>5.13</td>
+          <td>0.02</td>
+          <td>0.06</td>
+          <td>7.72</td>
+          <td>0.01</td>
+          <td>foo5</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>3.37</td>
+          <td>6.46</td>
+          <td>0.18</td>
+          <td>0.69</td>
+          <td>5.60</td>
+          <td>16.39</td>
+          <td>0.01</td>
+          <td>lala</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>3.82</td>
+          <td>1.27</td>
+          <td>8.42</td>
+          <td>0.15</td>
+          <td>4.21</td>
+          <td>13.70</td>
+          <td>0.01</td>
+          <td>foo5</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>5.79</td>
+          <td>9.10</td>
+          <td>0.89</td>
+          <td>0.54</td>
+          <td>6.43</td>
+          <td>18.63</td>
+          <td>0.01</td>
+          <td>lala</td>
+        </tr>
+        <tr>
+          <th>5</th>
+          <td>2.46</td>
+          <td>3.97</td>
+          <td>8.81</td>
+          <td>0.02</td>
+          <td>0.33</td>
+          <td>4.14</td>
+          <td>0.01</td>
+          <td>feeeee</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+
+.. code-block:: python3
+
+    orientations.map_data_from_surfaces(surfaces, 'id')
+    orientations
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>X</th>
+          <th>Y</th>
+          <th>Z</th>
+          <th>G_x</th>
+          <th>G_y</th>
+          <th>G_z</th>
+          <th>smooth</th>
+          <th>surface</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>8.33</td>
+          <td>8.79</td>
+          <td>5.68</td>
+          <td>0.43</td>
+          <td>4.03</td>
+          <td>12.22</td>
+          <td>0.01</td>
+          <td>foo</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>8.25</td>
+          <td>6.22</td>
+          <td>5.13</td>
+          <td>0.02</td>
+          <td>0.06</td>
+          <td>7.72</td>
+          <td>0.01</td>
+          <td>foo5</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>3.37</td>
+          <td>6.46</td>
+          <td>0.18</td>
+          <td>0.69</td>
+          <td>5.60</td>
+          <td>16.39</td>
+          <td>0.01</td>
+          <td>lala</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>3.82</td>
+          <td>1.27</td>
+          <td>8.42</td>
+          <td>0.15</td>
+          <td>4.21</td>
+          <td>13.70</td>
+          <td>0.01</td>
+          <td>foo5</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>5.79</td>
+          <td>9.10</td>
+          <td>0.89</td>
+          <td>0.54</td>
+          <td>6.43</td>
+          <td>18.63</td>
+          <td>0.01</td>
+          <td>lala</td>
+        </tr>
+        <tr>
+          <th>5</th>
+          <td>2.46</td>
+          <td>3.97</td>
+          <td>8.81</td>
+          <td>0.02</td>
+          <td>0.33</td>
+          <td>4.14</td>
+          <td>0.01</td>
+          <td>feeeee</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+
+.. code-block:: python3
+
+    orientations.map_data_from_series(series, 'order_series')
+    orientations
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>X</th>
+          <th>Y</th>
+          <th>Z</th>
+          <th>G_x</th>
+          <th>G_y</th>
+          <th>G_z</th>
+          <th>smooth</th>
+          <th>surface</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>8.33</td>
+          <td>8.79</td>
+          <td>5.68</td>
+          <td>0.43</td>
+          <td>4.03</td>
+          <td>12.22</td>
+          <td>0.01</td>
+          <td>foo</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>8.25</td>
+          <td>6.22</td>
+          <td>5.13</td>
+          <td>0.02</td>
+          <td>0.06</td>
+          <td>7.72</td>
+          <td>0.01</td>
+          <td>foo5</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>3.37</td>
+          <td>6.46</td>
+          <td>0.18</td>
+          <td>0.69</td>
+          <td>5.60</td>
+          <td>16.39</td>
+          <td>0.01</td>
+          <td>lala</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>3.82</td>
+          <td>1.27</td>
+          <td>8.42</td>
+          <td>0.15</td>
+          <td>4.21</td>
+          <td>13.70</td>
+          <td>0.01</td>
+          <td>foo5</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>5.79</td>
+          <td>9.10</td>
+          <td>0.89</td>
+          <td>0.54</td>
+          <td>6.43</td>
+          <td>18.63</td>
+          <td>0.01</td>
+          <td>lala</td>
+        </tr>
+        <tr>
+          <th>5</th>
+          <td>2.46</td>
+          <td>3.97</td>
+          <td>8.81</td>
+          <td>0.02</td>
+          <td>0.33</td>
+          <td>4.14</td>
+          <td>0.01</td>
+          <td>feeeee</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+
+.. code-block:: python3
+
+    orientations.update_annotations()
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>X</th>
+          <th>Y</th>
+          <th>Z</th>
+          <th>G_x</th>
+          <th>G_y</th>
+          <th>G_z</th>
+          <th>smooth</th>
+          <th>surface</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>8.33</td>
+          <td>8.79</td>
+          <td>5.68</td>
+          <td>0.43</td>
+          <td>4.03</td>
+          <td>12.22</td>
+          <td>0.01</td>
+          <td>foo</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>8.25</td>
+          <td>6.22</td>
+          <td>5.13</td>
+          <td>0.02</td>
+          <td>0.06</td>
+          <td>7.72</td>
+          <td>0.01</td>
+          <td>foo5</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>3.37</td>
+          <td>6.46</td>
+          <td>0.18</td>
+          <td>0.69</td>
+          <td>5.60</td>
+          <td>16.39</td>
+          <td>0.01</td>
+          <td>lala</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>3.82</td>
+          <td>1.27</td>
+          <td>8.42</td>
+          <td>0.15</td>
+          <td>4.21</td>
+          <td>13.70</td>
+          <td>0.01</td>
+          <td>foo5</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>5.79</td>
+          <td>9.10</td>
+          <td>0.89</td>
+          <td>0.54</td>
+          <td>6.43</td>
+          <td>18.63</td>
+          <td>0.01</td>
+          <td>lala</td>
+        </tr>
+        <tr>
+          <th>5</th>
+          <td>2.46</td>
+          <td>3.97</td>
+          <td>8.81</td>
+          <td>0.02</td>
+          <td>0.33</td>
+          <td>4.14</td>
+          <td>0.01</td>
+          <td>feeeee</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+Grid
+~~~~
+
+
+
+.. code-block:: python3
+
+    grid = gp.Grid()
+    grid.create_regular_grid([0, 10, 0, 10, 0, 10], [50, 50, 50])
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    <gempy.core.grid_modules.grid_types.RegularGrid object at 0x7f01c6c8d670>
+
+
+
+
+.. code-block:: python3
+
+    grid.values
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    array([[0.1, 0.1, 0.1],
+           [0.1, 0.1, 0.3],
+           [0.1, 0.1, 0.5],
+           ...,
+           [9.9, 9.9, 9.5],
+           [9.9, 9.9, 9.7],
+           [9.9, 9.9, 9.9]])
+
+
+
+Rescaling Data
+^^^^^^^^^^^^^^
+
+
+
+.. code-block:: python3
+
+    rescaling = gempy.core.data_modules.geometric_data.ScalingSystem(
+        surface_points, orientations, grid)
+
+
+
+
+
+
+
+
+
+.. code-block:: python3
+
+    surface_points
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>X</th>
+          <th>Y</th>
+          <th>Z</th>
+          <th>smooth</th>
+          <th>surface</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>2</th>
+          <td>0.53</td>
+          <td>0.55</td>
+          <td>0.03</td>
+          <td>2.00e-06</td>
+          <td>lala</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>0.95</td>
+          <td>0.83</td>
+          <td>0.94</td>
+          <td>2.00e-06</td>
+          <td>lala</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>0.69</td>
+          <td>0.89</td>
+          <td>0.06</td>
+          <td>2.00e-06</td>
+          <td>foo5</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>0.02</td>
+          <td>0.23</td>
+          <td>0.55</td>
+          <td>2.00e-06</td>
+          <td>foo5</td>
+        </tr>
+        <tr>
+          <th>0</th>
+          <td>0.39</td>
+          <td>0.41</td>
+          <td>0.82</td>
+          <td>2.00e-06</td>
+          <td>foo</td>
+        </tr>
+        <tr>
+          <th>5</th>
+          <td>0.45</td>
+          <td>0.66</td>
+          <td>0.41</td>
+          <td>2.00e-06</td>
+          <td>feeeee</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+
+.. code-block:: python3
+
+    orientations
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>X</th>
+          <th>Y</th>
+          <th>Z</th>
+          <th>G_x</th>
+          <th>G_y</th>
+          <th>G_z</th>
+          <th>smooth</th>
+          <th>surface</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>8.33</td>
+          <td>8.79</td>
+          <td>5.68</td>
+          <td>0.43</td>
+          <td>4.03</td>
+          <td>12.22</td>
+          <td>0.01</td>
+          <td>foo</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>8.25</td>
+          <td>6.22</td>
+          <td>5.13</td>
+          <td>0.02</td>
+          <td>0.06</td>
+          <td>7.72</td>
+          <td>0.01</td>
+          <td>foo5</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>3.37</td>
+          <td>6.46</td>
+          <td>0.18</td>
+          <td>0.69</td>
+          <td>5.60</td>
+          <td>16.39</td>
+          <td>0.01</td>
+          <td>lala</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>3.82</td>
+          <td>1.27</td>
+          <td>8.42</td>
+          <td>0.15</td>
+          <td>4.21</td>
+          <td>13.70</td>
+          <td>0.01</td>
+          <td>foo5</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>5.79</td>
+          <td>9.10</td>
+          <td>0.89</td>
+          <td>0.54</td>
+          <td>6.43</td>
+          <td>18.63</td>
+          <td>0.01</td>
+          <td>lala</td>
+        </tr>
+        <tr>
+          <th>5</th>
+          <td>2.46</td>
+          <td>3.97</td>
+          <td>8.81</td>
+          <td>0.02</td>
+          <td>0.33</td>
+          <td>4.14</td>
+          <td>0.01</td>
+          <td>feeeee</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+Additional Data
+~~~~~~~~~~~~~~~
+
+
+
+.. code-block:: python3
+
+    ad = gp.AdditionalData(surface_points, orientations, grid, faults, surfaces, rescaling)
+
+
+
+
+
+
+
+
+
+.. code-block:: python3
+
+    ad
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th></th>
+          <th>values</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th rowspan="9" valign="top">Structure</th>
+          <th>isLith</th>
+          <td>True</td>
+        </tr>
+        <tr>
+          <th>isFault</th>
+          <td>True</td>
+        </tr>
+        <tr>
+          <th>number faults</th>
+          <td>1</td>
+        </tr>
+        <tr>
+          <th>number surfaces</th>
+          <td>4</td>
+        </tr>
+        <tr>
+          <th>number series</th>
+          <td>5</td>
+        </tr>
+        <tr>
+          <th>number surfaces per series</th>
+          <td>[0, 2, 1, 0, 1]</td>
+        </tr>
+        <tr>
+          <th>len surfaces surface_points</th>
+          <td>[2, 2, 1, 1]</td>
+        </tr>
+        <tr>
+          <th>len series surface_points</th>
+          <td>[0, 4, 1, 0, 1]</td>
+        </tr>
+        <tr>
+          <th>len series orientations</th>
+          <td>[0, 4, 1, 0, 1]</td>
+        </tr>
+        <tr>
+          <th rowspan="5" valign="top">Options</th>
+          <th>dtype</th>
+          <td>float64</td>
+        </tr>
+        <tr>
+          <th>output</th>
+          <td>geology</td>
+        </tr>
+        <tr>
+          <th>theano_optimizer</th>
+          <td>fast_compile</td>
+        </tr>
+        <tr>
+          <th>device</th>
+          <td>cpu</td>
+        </tr>
+        <tr>
+          <th>verbosity</th>
+          <td>None</td>
+        </tr>
+        <tr>
+          <th rowspan="3" valign="top">Kriging</th>
+          <th>range</th>
+          <td>17</td>
+        </tr>
+        <tr>
+          <th>$C_o$</th>
+          <td>7.1</td>
+        </tr>
+        <tr>
+          <th>drift equations</th>
+          <td>[3, 3, 3, 3, 3]</td>
+        </tr>
+        <tr>
+          <th rowspan="2" valign="top">Rescaling</th>
+          <th>rescaling factor</th>
+          <td>18</td>
+        </tr>
+        <tr>
+          <th>centers</th>
+          <td>[4.1742456039270355, 4.664036206917114, 4.423674404271726]</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+
+.. code-block:: python3
+
+    ad.structure_data
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>values</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>isLith</th>
+          <td>True</td>
+        </tr>
+        <tr>
+          <th>isFault</th>
+          <td>True</td>
+        </tr>
+        <tr>
+          <th>number faults</th>
+          <td>1</td>
+        </tr>
+        <tr>
+          <th>number surfaces</th>
+          <td>4</td>
+        </tr>
+        <tr>
+          <th>number series</th>
+          <td>5</td>
+        </tr>
+        <tr>
+          <th>number surfaces per series</th>
+          <td>[0, 2, 1, 0, 1]</td>
+        </tr>
+        <tr>
+          <th>len surfaces surface_points</th>
+          <td>[2, 2, 1, 1]</td>
+        </tr>
+        <tr>
+          <th>len series surface_points</th>
+          <td>[0, 4, 1, 0, 1]</td>
+        </tr>
+        <tr>
+          <th>len series orientations</th>
+          <td>[0, 4, 1, 0, 1]</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+
+.. code-block:: python3
+
+    ad.options
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>values</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>dtype</th>
+          <td>float64</td>
+        </tr>
+        <tr>
+          <th>output</th>
+          <td>geology</td>
+        </tr>
+        <tr>
+          <th>theano_optimizer</th>
+          <td>fast_compile</td>
+        </tr>
+        <tr>
+          <th>device</th>
+          <td>cpu</td>
+        </tr>
+        <tr>
+          <th>verbosity</th>
+          <td>None</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+
+.. code-block:: python3
+
+    ad.options.df
+
+
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>dtype</th>
+          <th>output</th>
+          <th>theano_optimizer</th>
+          <th>device</th>
+          <th>verbosity</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>values</th>
+          <td>float64</td>
+          <td>geology</td>
+          <td>fast_compile</td>
+          <td>cpu</td>
+          <td>None</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+    <br />
+    <br />
+
+
+.. code-block:: python3
+
+    ad.options.df.dtypes
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    dtype               category
+    output              category
+    theano_optimizer    category
+    device              category
+    verbosity             object
+    dtype: object
+
+
+
+
+.. code-block:: python3
+
+    ad.kriging_data
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>values</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>range</th>
+          <td>17</td>
+        </tr>
+        <tr>
+          <th>$C_o$</th>
+          <td>7.1</td>
+        </tr>
+        <tr>
+          <th>drift equations</th>
+          <td>[3, 3, 3, 3, 3]</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+
+.. code-block:: python3
+
+    ad.rescaling_data
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>values</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>rescaling factor</th>
+          <td>18</td>
+        </tr>
+        <tr>
+          <th>centers</th>
+          <td>[4.1742456039270355, 4.664036206917114, 4.423674404271726]</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+Interpolator
+~~~~~~~~~~~~
+
+
+
+.. code-block:: python3
+
+
+    faults.df['isFault'].values
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    array([False,  True, False, False, False])
+
+
+
+
+.. code-block:: python3
+
+    interp = gp.InterpolatorModel(surface_points, orientations, grid, surfaces, series, faults, ad)
+
+
+
+
+
+
+
+
+
+.. code-block:: python3
+
+    interp.compile_th_fn_geo()
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Compiling theano function...
+    Level of Optimization:  fast_compile
+    Device:  cpu
+    Precision:  float64
+    Number of faults:  1
+    Compilation Done!
+
+    <theano.compile.function_module.Function object at 0x7f01f9ddfca0>
+
+
+
+
+.. code-block:: python3
+
+    interp.print_theano_shared()
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    len sereies i [0 2]
+    len sereies o [0 4]
+    len sereies w [ 0 17]
+    n surfaces per series [0 2]
+    n universal eq [3]
+    is finite [0 0 0 0 0]
+    is erosion [0]
+    is onlap [0]
+
+
+
+
+
+.. rst-class:: sphx-glr-timing
+
+   **Total running time of the script:** ( 0 minutes  3.122 seconds)
+
+
+.. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_2a_data_manipulation.py:
+
+
+.. only :: html
+
+ .. container:: sphx-glr-footer
+    :class: sphx-glr-footer-example
+
+
+
+  .. container:: sphx-glr-download sphx-glr-download-python
+
+     :download:`Download Python source code: ch1_2a_data_manipulation.py <ch1_2a_data_manipulation.py>`
+
+
+
+  .. container:: sphx-glr-download sphx-glr-download-jupyter
+
+     :download:`Download Jupyter notebook: ch1_2a_data_manipulation.ipynb <ch1_2a_data_manipulation.ipynb>`
+
+
+.. only:: html
+
+ .. rst-class:: sphx-glr-signature
+
+    `Gallery generated by Sphinx-Gallery <https://sphinx-gallery.github.io>`_

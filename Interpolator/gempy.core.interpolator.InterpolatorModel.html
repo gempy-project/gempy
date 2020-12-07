@@ -1,0 +1,617 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>gempy.core.interpolator.InterpolatorModel &#8212; GemPy 2.2.7 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="gempy.core.interpolator.InterpolatorGravity" href="gempy.core.interpolator.InterpolatorGravity.html" />
+    <link rel="prev" title="gempy.core.data_modules.geometric_data.Orientations" href="../Data/gempy.core.data_modules.geometric_data.Orientations.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="gempy-core-interpolator-interpolatormodel">
+<h1>gempy.core.interpolator.InterpolatorModel<a class="headerlink" href="#gempy-core-interpolator-interpolatormodel" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="gempy.core.interpolator.InterpolatorModel">
+<em class="property">class </em><code class="sig-prename descclassname">gempy.core.interpolator.</code><code class="sig-name descname">InterpolatorModel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">surface_points</span><span class="p">:</span> <span class="n"><a class="reference internal" href="../Data/gempy.core.data_modules.geometric_data.SurfacePoints.html#gempy.core.data_modules.geometric_data.SurfacePoints" title="gempy.core.data_modules.geometric_data.SurfacePoints">gempy.core.data_modules.geometric_data.SurfacePoints</a></span></em>, <em class="sig-param"><span class="n">orientations</span><span class="p">:</span> <span class="n"><a class="reference internal" href="../Data/gempy.core.data_modules.geometric_data.Orientations.html#gempy.core.data_modules.geometric_data.Orientations" title="gempy.core.data_modules.geometric_data.Orientations">gempy.core.data_modules.geometric_data.Orientations</a></span></em>, <em class="sig-param"><span class="n">grid</span><span class="p">:</span> <span class="n"><a class="reference internal" href="../Data/gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid">gempy.core.data.Grid</a></span></em>, <em class="sig-param"><span class="n">surfaces</span><span class="p">:</span> <span class="n"><a class="reference internal" href="../Data/gempy.core.data.Surfaces.html#gempy.core.data.Surfaces" title="gempy.core.data.Surfaces">gempy.core.data.Surfaces</a></span></em>, <em class="sig-param"><span class="n">series</span></em>, <em class="sig-param"><span class="n">faults</span><span class="p">:</span> <span class="n"><a class="reference internal" href="../Data/gempy.core.data_modules.stack.Faults.html#gempy.core.data_modules.stack.Faults" title="gempy.core.data_modules.stack.Faults">gempy.core.data_modules.stack.Faults</a></span></em>, <em class="sig-param"><span class="n">additional_data</span><span class="p">:</span> <span class="n"><a class="reference internal" href="../Data/gempy.core.data.AdditionalData.html#gempy.core.data.AdditionalData" title="gempy.core.data.AdditionalData">gempy.core.data.AdditionalData</a></span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/interpolator.html#InterpolatorModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.interpolator.InterpolatorModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Child class of <code class="xref py py-class docutils literal notranslate"><span class="pre">Interpolator</span></code> which set the shared variables and compiles the theano
+graph to compute the geological model, i.e. lithologies.</p>
+<dl class="py attribute">
+<dt id="gempy.core.interpolator.InterpolatorModel.compute_weights_ctrl">
+<code class="sig-name descname">compute_weights_ctrl</code><a class="headerlink" href="#gempy.core.interpolator.InterpolatorModel.compute_weights_ctrl" title="Permalink to this definition">¶</a></dt>
+<dd><p>[s0] List that controls what parts of the graph for each series have to be recomputed</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="gempy.core.interpolator.InterpolatorModel.compute_scalar_ctrl">
+<code class="sig-name descname">compute_scalar_ctrl</code><a class="headerlink" href="#gempy.core.interpolator.InterpolatorModel.compute_scalar_ctrl" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="gempy.core.interpolator.InterpolatorModel.compute_block_ctrl">
+<code class="sig-name descname">compute_block_ctrl</code><a class="headerlink" href="#gempy.core.interpolator.InterpolatorModel.compute_block_ctrl" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl>
+<dt>Interpolator Doc</dt><dd><dl>
+<dt>(inserted)</dt><dd><p>Class that act as:</p>
+<blockquote>
+<div><blockquote>
+<div><ol class="arabic simple">
+<li><p>linker between the data objects and the theano graph</p></li>
+<li><p>container of theano graphs + shared variables</p></li>
+<li><p>container of theano function</p></li>
+</ol>
+</div></blockquote>
+<p>Args:</p>
+<blockquote>
+<div><p>surface_points (SurfacePoints): [s0] Data child with specific methods to manipulate interface data. It is initialize without arguments to giveflexibility to the origin of the data.</p>
+<p>orientations (Orientations): [s1] Data child with specific methods to manipulate orientation data. It is initialize without arguments to giveflexibility to the origin of the data.</p>
+<p>grid (Grid): [s2]  Class to generate grids.</p>
+<p>surfaces (Surfaces): [s3] Class that contains the surfaces of the model and the values of each of them.</p>
+<p>series (Series): [s4]  Class that contains the functionality and attributes related to the series. Notice that series does not onlyrefers to stratigraphic series but to any set of surfaces which will be interpolated together (comfortably).</p>
+<p>faults (Faults): [s5] Class that encapsulate faulting related content. Mainly, which surfaces/surfaces are faults. The fault network—i.e. which faults offset other faults—and fault types—finite vs infinite.</p>
+<p>additional_data (AdditionalData): [s6] Container class that encapsulate <code class="xref py py-class docutils literal notranslate"><span class="pre">Structure</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">KrigingParameters</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Options</span></code> and rescaling parameters</p>
+<p>kwargs:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>compile_theano: if true, the function is compile at the creation of the class</p></li>
+</ul>
+</div></blockquote>
+</div></blockquote>
+<p>Attributes:</p>
+<blockquote>
+<div><p>surface_points (SurfacePoints)</p>
+<p>orientations (Orientations)</p>
+<p>grid (Grid)</p>
+<p>surfaces (Surfaces)</p>
+<p>faults (Faults)</p>
+<p>additional_data (AdditionalData)</p>
+<p>dtype ([‘float32’, ‘float64’]): float precision</p>
+<p>theano_graph: theano graph object with the properties from AdditionalData -&gt; Options</p>
+<p>theano function: python function to call the theano code</p>
+</div></blockquote>
+</div></blockquote>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples using InterpolatorModel</p>
+<div class="sphx-glr-thumbcontainer" tooltip="1.2: Data Structure and Manipulation"><div class="figure align-default" id="id1">
+<img alt="1.2: Data Structure and Manipulation" src="../_images/sphx_glr_ch1_2a_data_manipulation_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../tutorials/ch1_fundamentals/ch1_2a_data_manipulation.html#sphx-glr-tutorials-ch1-fundamentals-ch1-2a-data-manipulation-py"><span class="std std-ref">1.2: Data Structure and Manipulation</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="3.1: Simple example of kriging in gempy"><div class="figure align-default" id="id2">
+<img alt="3.1: Simple example of kriging in gempy" src="../_images/sphx_glr_ch3_1_kriging_interpolation_and_simulation_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../tutorials/ch3-Interpolations/ch3_1_kriging_interpolation_and_simulation.html#sphx-glr-tutorials-ch3-interpolations-ch3-1-kriging-interpolation-and-simulation-py"><span class="std std-ref">3.1: Simple example of kriging in gempy</span></a></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Model 1 - Horizontal stratigraphic"><div class="figure align-default" id="id3">
+<img alt="Model 1 - Horizontal stratigraphic" src="../_images/sphx_glr_1_horizontal_stratigraphic_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/geometries/1_horizontal_stratigraphic.html#sphx-glr-examples-geometries-1-horizontal-stratigraphic-py"><span class="std std-ref">Model 1 - Horizontal stratigraphic</span></a></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Model 2 - Anticline"><div class="figure align-default" id="id4">
+<img alt="Model 2 - Anticline" src="../_images/sphx_glr_2_fold_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/geometries/2_fold.html#sphx-glr-examples-geometries-2-fold-py"><span class="std std-ref">Model 2 - Anticline</span></a></span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Model 3 - Recumbent Fold"><div class="figure align-default" id="id5">
+<img alt="Model 3 - Recumbent Fold" src="../_images/sphx_glr_3_recumbent_fold_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/geometries/3_recumbent_fold.html#sphx-glr-examples-geometries-3-recumbent-fold-py"><span class="std std-ref">Model 3 - Recumbent Fold</span></a></span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Model 4 - Pinchout"><div class="figure align-default" id="id6">
+<img alt="Model 4 - Pinchout" src="../_images/sphx_glr_4_pinchout_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/geometries/4_pinchout.html#sphx-glr-examples-geometries-4-pinchout-py"><span class="std std-ref">Model 4 - Pinchout</span></a></span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Model 5 - Fault"><div class="figure align-default" id="id7">
+<img alt="Model 5 - Fault" src="../_images/sphx_glr_5_fault_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/geometries/5_fault.html#sphx-glr-examples-geometries-5-fault-py"><span class="std std-ref">Model 5 - Fault</span></a></span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Model 6 - Unconformity"><div class="figure align-default" id="id8">
+<img alt="Model 6 - Unconformity" src="../_images/sphx_glr_6_unconformity_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/geometries/6_unconformity.html#sphx-glr-examples-geometries-6-unconformity-py"><span class="std std-ref">Model 6 - Unconformity</span></a></span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Model 7 - Combination"><div class="figure align-default" id="id9">
+<img alt="Model 7 - Combination" src="../_images/sphx_glr_7_combination_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/geometries/7_combination.html#sphx-glr-examples-geometries-7-combination-py"><span class="std std-ref">Model 7 - Combination</span></a></span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Perth basin."><div class="figure align-default" id="id10">
+<img alt="Perth basin." src="../_images/sphx_glr_Perth_basin_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/real/Perth_basin.html#sphx-glr-examples-real-perth-basin-py"><span class="std std-ref">Perth basin.</span></a></span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-clear"></div><p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.interpolator.InterpolatorModel.__init__" title="gempy.core.interpolator.InterpolatorModel.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(surface_points, orientations, grid, …)</p></td>
+<td><p>Initialize self.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_V</span></code>(centered_grid)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_tz</span></code>(centered_grid)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.interpolator.InterpolatorModel.compile_th_fn_geo" title="gempy.core.interpolator.InterpolatorModel.compile_th_fn_geo"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compile_th_fn_geo</span></code></a>([inplace, debug, grid])</p></td>
+<td><p>Compile and create the theano function which can be evaluated to compute the geological models</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_theano_graph</span></code>([additional_data, …])</p></td>
+<td><p>Create the graph accordingly to the options in the AdditionalData object</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.interpolator.InterpolatorModel.get_python_input_block" title="gempy.core.interpolator.InterpolatorModel.get_python_input_block"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_python_input_block</span></code></a>([append_control, …])</p></td>
+<td><p>Get values from the data objects used during the interpolation:</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.interpolator.InterpolatorModel.modify_results_matrices_pro" title="gempy.core.interpolator.InterpolatorModel.modify_results_matrices_pro"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modify_results_matrices_pro</span></code></a>()</p></td>
+<td><p>Modify all theano shared matrices to the right size according to the structure data.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.interpolator.InterpolatorModel.modify_results_weights" title="gempy.core.interpolator.InterpolatorModel.modify_results_weights"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modify_results_weights</span></code></a>()</p></td>
+<td><p>Modify the theano shared weights vector according to the structure.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.interpolator.InterpolatorModel.print_theano_shared" title="gempy.core.interpolator.InterpolatorModel.print_theano_shared"><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_theano_shared</span></code></a>()</p></td>
+<td><p>Print many of the theano shared variables</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_series_without_data</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.interpolator.InterpolatorModel.reset_flow_control_initial_results" title="gempy.core.interpolator.InterpolatorModel.reset_flow_control_initial_results"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset_flow_control_initial_results</span></code></a>([…])</p></td>
+<td><p>Method to reset to the initial state all the recompute ctrl. After calling this method next time</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.interpolator.InterpolatorModel.set_all_shared_parameters" title="gempy.core.interpolator.InterpolatorModel.set_all_shared_parameters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_all_shared_parameters</span></code></a>([reset_ctrl])</p></td>
+<td><p>Set all theano shared parameters required for the computation of lithology</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.interpolator.InterpolatorModel.set_flow_control" title="gempy.core.interpolator.InterpolatorModel.set_flow_control"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_flow_control</span></code></a>()</p></td>
+<td><p>Initialize the ctrl vectors to the number of series size.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.interpolator.InterpolatorModel.set_initial_results" title="gempy.core.interpolator.InterpolatorModel.set_initial_results"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_initial_results</span></code></a>()</p></td>
+<td><p>Initialize all the theano shared variables where we store the final results of the interpolation.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.interpolator.InterpolatorModel.set_initial_results_matrices" title="gempy.core.interpolator.InterpolatorModel.set_initial_results_matrices"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_initial_results_matrices</span></code></a>()</p></td>
+<td><p>Initialize all the theano shared variables where we store the final results of the interpolation except the kriging weights vector.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_theano_graph</span></code>(th_graph)</p></td>
+<td><p>Attach an already create theano graph.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_theano_shared_Vs_kernel</span></code>([V])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_theano_shared_fault_relation</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.interpolator.InterpolatorModel.set_theano_shared_faults" title="gempy.core.interpolator.InterpolatorModel.set_theano_shared_faults"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_theano_shared_faults</span></code></a>()</p></td>
+<td><p>Set all theano shared variables wich controls the faults behaviour</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_theano_shared_gravity</span></code>([tz, pos_density])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_theano_shared_grid</span></code>([grid])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.interpolator.InterpolatorModel.set_theano_shared_is_fault" title="gempy.core.interpolator.InterpolatorModel.set_theano_shared_is_fault"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_theano_shared_is_fault</span></code></a>()</p></td>
+<td><p>Set theano shared variable which controls if a series is fault or not</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.interpolator.InterpolatorModel.set_theano_shared_is_finite" title="gempy.core.interpolator.InterpolatorModel.set_theano_shared_is_finite"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_theano_shared_is_finite</span></code></a>()</p></td>
+<td><p>Set theano shared variable which controls if a fault is finite or not</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_theano_shared_kriging</span></code>()</p></td>
+<td><p>Set to the theano_graph attribute the shared variables of kriging values from the linked</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_theano_shared_l0_l1</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.interpolator.InterpolatorModel.set_theano_shared_loop" title="gempy.core.interpolator.InterpolatorModel.set_theano_shared_loop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_theano_shared_loop</span></code></a>()</p></td>
+<td><p>Set the theano shared variables that are looped for each series.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_theano_shared_magnetic_cts</span></code>(incl, decl[, …])</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param B_ext</dt>
+<dd class="field-odd"><p>External magnetic field in [T], in magnetic surveys this is the geomagnetic field - varies temporaly</p>
+</dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_theano_shared_magnetics</span></code>([V, …])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_theano_shared_nuggets</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.interpolator.InterpolatorModel.set_theano_shared_onlap_erode" title="gempy.core.interpolator.InterpolatorModel.set_theano_shared_onlap_erode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_theano_shared_onlap_erode</span></code></a>()</p></td>
+<td><p>Set the theano variables which control the masking patterns according to the uncomformity relation</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_theano_shared_pos_density</span></code>(pos_density)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_theano_shared_pos_magnetics</span></code>(pos_magnetics)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.interpolator.InterpolatorModel.set_theano_shared_relations" title="gempy.core.interpolator.InterpolatorModel.set_theano_shared_relations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_theano_shared_relations</span></code></a>()</p></td>
+<td><p>Set all theano shared variables that control all the series interactions with each other</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.interpolator.InterpolatorModel.set_theano_shared_structure" title="gempy.core.interpolator.InterpolatorModel.set_theano_shared_structure"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_theano_shared_structure</span></code></a>([reset_ctrl])</p></td>
+<td><p>Set all theano shared variable dependent on <code class="xref py py-class docutils literal notranslate"><span class="pre">Structure</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_theano_shared_structure_surfaces</span></code>()</p></td>
+<td><p>Set to the theano_graph attribute the shared variables of structure from the linked</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_theano_shared_topology</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_theano_shared_tz_kernel</span></code>([tz])</p></td>
+<td><p>Set the theano component tz to each voxel</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.interpolator.InterpolatorModel.set_theano_shared_weights" title="gempy.core.interpolator.InterpolatorModel.set_theano_shared_weights"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_theano_shared_weights</span></code></a>()</p></td>
+<td><p>Set the theano shared weights and [s0] Set the theano shared variables that are looped for each series</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="gempy.core.interpolator.InterpolatorModel.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">surface_points</span><span class="p">:</span> <span class="n"><a class="reference internal" href="../Data/gempy.core.data_modules.geometric_data.SurfacePoints.html#gempy.core.data_modules.geometric_data.SurfacePoints" title="gempy.core.data_modules.geometric_data.SurfacePoints">gempy.core.data_modules.geometric_data.SurfacePoints</a></span></em>, <em class="sig-param"><span class="n">orientations</span><span class="p">:</span> <span class="n"><a class="reference internal" href="../Data/gempy.core.data_modules.geometric_data.Orientations.html#gempy.core.data_modules.geometric_data.Orientations" title="gempy.core.data_modules.geometric_data.Orientations">gempy.core.data_modules.geometric_data.Orientations</a></span></em>, <em class="sig-param"><span class="n">grid</span><span class="p">:</span> <span class="n"><a class="reference internal" href="../Data/gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid">gempy.core.data.Grid</a></span></em>, <em class="sig-param"><span class="n">surfaces</span><span class="p">:</span> <span class="n"><a class="reference internal" href="../Data/gempy.core.data.Surfaces.html#gempy.core.data.Surfaces" title="gempy.core.data.Surfaces">gempy.core.data.Surfaces</a></span></em>, <em class="sig-param"><span class="n">series</span></em>, <em class="sig-param"><span class="n">faults</span><span class="p">:</span> <span class="n"><a class="reference internal" href="../Data/gempy.core.data_modules.stack.Faults.html#gempy.core.data_modules.stack.Faults" title="gempy.core.data_modules.stack.Faults">gempy.core.data_modules.stack.Faults</a></span></em>, <em class="sig-param"><span class="n">additional_data</span><span class="p">:</span> <span class="n"><a class="reference internal" href="../Data/gempy.core.data.AdditionalData.html#gempy.core.data.AdditionalData" title="gempy.core.data.AdditionalData">gempy.core.data.AdditionalData</a></span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/interpolator.html#InterpolatorModel.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.interpolator.InterpolatorModel.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.interpolator.InterpolatorModel.reset_flow_control_initial_results">
+<code class="sig-name descname">reset_flow_control_initial_results</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">reset_weights</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">reset_scalar</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">reset_block</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/interpolator.html#InterpolatorModel.reset_flow_control_initial_results"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.interpolator.InterpolatorModel.reset_flow_control_initial_results" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Method to reset to the initial state all the recompute ctrl. After calling this method next time</dt><dd><p>gp.compute_model is called, everything will be computed. Panic bottom.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reset_weights</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – </p></li>
+<li><p><strong>reset_scalar</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – </p></li>
+<li><p><strong>reset_block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.interpolator.InterpolatorModel.set_flow_control">
+<code class="sig-name descname">set_flow_control</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/interpolator.html#InterpolatorModel.set_flow_control"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.interpolator.InterpolatorModel.set_flow_control" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize the ctrl vectors to the number of series size.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.interpolator.InterpolatorModel.set_all_shared_parameters">
+<code class="sig-name descname">set_all_shared_parameters</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">reset_ctrl</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/interpolator.html#InterpolatorModel.set_all_shared_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.interpolator.InterpolatorModel.set_all_shared_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set all theano shared parameters required for the computation of lithology</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>reset_ctrl</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – If true, [s0]     Method to reset to the initial state all the recompute ctrl. After calling this method next time     gp.compute_model is called, everything will be computed. Panic bottom.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.interpolator.InterpolatorModel.set_theano_shared_structure">
+<code class="sig-name descname">set_theano_shared_structure</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">reset_ctrl</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/interpolator.html#InterpolatorModel.set_theano_shared_structure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.interpolator.InterpolatorModel.set_theano_shared_structure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set all theano shared variable dependent on <code class="xref py py-class docutils literal notranslate"><span class="pre">Structure</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>reset_ctrl</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – If true, [s0]     Method to reset to the initial state all the recompute ctrl. After calling this method next time     gp.compute_model is called, everything will be computed. Panic bottom.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.interpolator.InterpolatorModel.set_theano_shared_loop">
+<code class="sig-name descname">set_theano_shared_loop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/interpolator.html#InterpolatorModel.set_theano_shared_loop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.interpolator.InterpolatorModel.set_theano_shared_loop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the theano shared variables that are looped for each series.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.interpolator.InterpolatorModel.set_theano_shared_weights">
+<code class="sig-name descname">set_theano_shared_weights</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/interpolator.html#InterpolatorModel.set_theano_shared_weights"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.interpolator.InterpolatorModel.set_theano_shared_weights" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the theano shared weights and [s0] Set the theano shared variables that are looped for each series</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.interpolator.InterpolatorModel.set_theano_shared_is_fault">
+<code class="sig-name descname">set_theano_shared_is_fault</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/interpolator.html#InterpolatorModel.set_theano_shared_is_fault"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.interpolator.InterpolatorModel.set_theano_shared_is_fault" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set theano shared variable which controls if a series is fault or not</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.interpolator.InterpolatorModel.set_theano_shared_is_finite">
+<code class="sig-name descname">set_theano_shared_is_finite</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/interpolator.html#InterpolatorModel.set_theano_shared_is_finite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.interpolator.InterpolatorModel.set_theano_shared_is_finite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set theano shared variable which controls if a fault is finite or not</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.interpolator.InterpolatorModel.set_theano_shared_onlap_erode">
+<code class="sig-name descname">set_theano_shared_onlap_erode</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/interpolator.html#InterpolatorModel.set_theano_shared_onlap_erode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.interpolator.InterpolatorModel.set_theano_shared_onlap_erode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the theano variables which control the masking patterns according to the uncomformity relation</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.interpolator.InterpolatorModel.set_theano_shared_faults">
+<code class="sig-name descname">set_theano_shared_faults</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/interpolator.html#InterpolatorModel.set_theano_shared_faults"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.interpolator.InterpolatorModel.set_theano_shared_faults" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set all theano shared variables wich controls the faults behaviour</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.interpolator.InterpolatorModel.set_theano_shared_relations">
+<code class="sig-name descname">set_theano_shared_relations</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/interpolator.html#InterpolatorModel.set_theano_shared_relations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.interpolator.InterpolatorModel.set_theano_shared_relations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set all theano shared variables that control all the series interactions with each other</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.interpolator.InterpolatorModel.set_initial_results">
+<code class="sig-name descname">set_initial_results</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/interpolator.html#InterpolatorModel.set_initial_results"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.interpolator.InterpolatorModel.set_initial_results" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize all the theano shared variables where we store the final results of the interpolation.
+This function must be called always after set_theano_shared_loop</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.interpolator.InterpolatorModel.set_initial_results_matrices">
+<code class="sig-name descname">set_initial_results_matrices</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/interpolator.html#InterpolatorModel.set_initial_results_matrices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.interpolator.InterpolatorModel.set_initial_results_matrices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize all the theano shared variables where we store the final results of the interpolation except the
+kriging weights vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.interpolator.InterpolatorModel.modify_results_matrices_pro">
+<code class="sig-name descname">modify_results_matrices_pro</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/interpolator.html#InterpolatorModel.modify_results_matrices_pro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.interpolator.InterpolatorModel.modify_results_matrices_pro" title="Permalink to this definition">¶</a></dt>
+<dd><p>Modify all theano shared matrices to the right size according to the structure data. This method allows
+to change the size of the results without having the recompute all series</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.interpolator.InterpolatorModel.modify_results_weights">
+<code class="sig-name descname">modify_results_weights</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/interpolator.html#InterpolatorModel.modify_results_weights"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.interpolator.InterpolatorModel.modify_results_weights" title="Permalink to this definition">¶</a></dt>
+<dd><p>Modify the theano shared weights vector according to the structure.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.interpolator.InterpolatorModel.get_python_input_block">
+<code class="sig-name descname">get_python_input_block</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">append_control</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">fault_drift</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/interpolator.html#InterpolatorModel.get_python_input_block"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.interpolator.InterpolatorModel.get_python_input_block" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Get values from the data objects used during the interpolation:</dt><dd><ul class="simple">
+<li><p>dip positions XYZ</p></li>
+<li><p>dip angles</p></li>
+<li><p>azimuth</p></li>
+<li><p>polarity</p></li>
+<li><p>surface_points coordinates XYZ</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>append_control</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – If true append the ctrl vectors to the input list</p></li>
+<li><p><strong>fault_drift</strong> (<em>Optional</em><em>[</em><em>np.array</em><em>]</em>) – matrix with per computed faults to drift the model</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of arrays with all the input parameters to the theano function</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.interpolator.InterpolatorModel.print_theano_shared">
+<code class="sig-name descname">print_theano_shared</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/interpolator.html#InterpolatorModel.print_theano_shared"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.interpolator.InterpolatorModel.print_theano_shared" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print many of the theano shared variables</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.interpolator.InterpolatorModel.compile_th_fn_geo">
+<code class="sig-name descname">compile_th_fn_geo</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">grid</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">, </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)">numpy.ndarray</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/interpolator.html#InterpolatorModel.compile_th_fn_geo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.interpolator.InterpolatorModel.compile_th_fn_geo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compile and create the theano function which can be evaluated to compute the geological models</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>inplace</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – If true add the attribute theano.function to the object inplace</p></li>
+<li><p><strong>debug</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – If true print some of the theano flags</p></li>
+<li><p><strong>grid</strong> – If None, grid will be passed as variable. If shared or np.ndarray the grid will be treated as
+constant (if shared the grid will be taken of grid)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>function that computes the whole interpolation</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>theano.function</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/./logos/gempy.png" alt="Logo"/>
+    
+    <h1 class="logo logo-name">GemPy</h1>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a class="badge" href="https://travis-ci.org/cgre-aachen/gempy">
+    <img
+        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../projects.html">Additional projects</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">GemPy Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../integrations/index.html">Integrations</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../code.html">Code</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../code.html#gempy-api">GemPy API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#model">Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#plot">Plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#data">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#grids">Grids</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#geometric-data">Geometric Data</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../code.html#interpolator">Interpolator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#solution">Solution</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../code.html">Code</a><ul>
+      <li>Previous: <a href="../Data/gempy.core.data_modules.geometric_data.Orientations.html" title="previous chapter">gempy.core.data_modules.geometric_data.Orientations</a></li>
+      <li>Next: <a href="gempy.core.interpolator.InterpolatorGravity.html" title="next chapter">gempy.core.interpolator.InterpolatorGravity</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017-2020, CGRE-Aachen Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/Interpolator/gempy.core.interpolator.InterpolatorModel.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

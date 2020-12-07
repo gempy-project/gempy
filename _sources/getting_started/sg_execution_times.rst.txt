@@ -1,0 +1,12 @@
+
+:orphan:
+
+.. _sphx_glr_getting_started_sg_execution_times:
+
+Computation times
+=================
+**00:24.465** total execution time for **getting_started** files:
+
++---------------------------------------------------------------------+-----------+--------+
+| :ref:`sphx_glr_getting_started_get_started.py` (``get_started.py``) | 00:24.465 | 0.0 MB |
++---------------------------------------------------------------------+-----------+--------+

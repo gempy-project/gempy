@@ -1,0 +1,633 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>gempy.core.data_modules.stack &#8212; GemPy 2.2.7 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for gempy.core.data_modules.stack</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Iterable</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pn</span>
+
+<span class="kn">from</span> <span class="nn">gempy.utils.meta</span> <span class="kn">import</span> <span class="n">_setdoc_pro</span>
+
+
+<div class="viewcode-block" id="Faults"><a class="viewcode-back" href="../../../../Data/gempy.core.data_modules.stack.Faults.html#gempy.core.data_modules.stack.Faults">[docs]</a><span class="k">class</span> <span class="nc">Faults</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class that encapsulate faulting related content. Mainly, which surfaces/surfaces are faults. The fault network</span>
+<span class="sd">    ---i.e. which faults offset other faults---and fault types---finite vs infinite.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        series_fault(str, list[str]): Name of the series which are faults</span>
+<span class="sd">        rel_matrix (numpy.array[bool]): 2D Boolean array with boolean logic. Rows affect (offset) columns</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">       df (:class:`pn.core.frame.DataFrames`): Pandas data frame containing the series as index and if they are faults</span>
+<span class="sd">        or not (otherwise they are lithologies) and in case of being fault if is finite</span>
+<span class="sd">       faults_relations_df (:class:`pn.core.frame.DataFrames`): Pandas data frame containing the offsetting relations</span>
+<span class="sd">        between each fault and the rest of the series (either other faults or lithologies)</span>
+<span class="sd">       n_faults (int): Number of faults in the object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Faults.__init__"><a class="viewcode-back" href="../../../../Data/gempy.core.data_modules.stack.Faults.html#gempy.core.data_modules.stack.Faults.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">series_fault</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rel_matrix</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">]]),</span> <span class="n">index</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">CategoricalIndex</span><span class="p">([</span><span class="s1">&#39;Default series&#39;</span><span class="p">]),</span>
+                               <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;isFault&#39;</span><span class="p">,</span> <span class="s1">&#39;isFinite&#39;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">faults_relations_df</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">CategoricalIndex</span><span class="p">([</span><span class="s1">&#39;Default series&#39;</span><span class="p">]),</span>
+                                                <span class="n">columns</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">CategoricalIndex</span><span class="p">([</span><span class="s1">&#39;Default series&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;bool&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_is_fault</span><span class="p">(</span><span class="n">series_fault</span><span class="o">=</span><span class="n">series_fault</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_fault_relation</span><span class="p">(</span><span class="n">rel_matrix</span><span class="o">=</span><span class="n">rel_matrix</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_faults</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_offset_faults</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_repr_html_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">to_html</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Faults.set_is_fault"><a class="viewcode-back" href="../../../../Data/gempy.core.data_modules.stack.Faults.html#gempy.core.data_modules.stack.Faults.set_is_fault">[docs]</a>    <span class="k">def</span> <span class="nf">set_is_fault</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">series_fault</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                     <span class="n">toggle</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">offset_faults</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set a flag to the series that are faults.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            series_fault(str, list[str]): Name of the series which are faults</span>
+<span class="sd">            toggle (bool): if True, passing a name which is already True will set it False.</span>
+<span class="sd">            offset_faults (bool): If True by default faults offset other faults</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            :class:`gempy.core.data_modules.stack.Faults`</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">series_fault</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">series_fault</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;isFault&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">series_fault</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">series_fault</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">count_faults</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">series_fault</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">series_fault</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">(),</span> <span class="s1">&#39;series_faults must already &#39;</span> \
+                                                                                      <span class="s1">&#39;exist in the the series df.&#39;</span>
+            <span class="k">if</span> <span class="n">toggle</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">series_fault</span><span class="p">,</span> <span class="s1">&#39;isFault&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">series_fault</span><span class="p">,</span> <span class="s1">&#39;isFault&#39;</span><span class="p">]</span> <span class="o">^</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">series_fault</span><span class="p">,</span> <span class="s1">&#39;isFault&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;isFinite&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">bitwise_and</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;isFault&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;isFinite&#39;</span><span class="p">])</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_default_faults_relations</span><span class="p">(</span><span class="n">offset_faults</span><span class="p">)</span>
+            <span class="c1"># Update default fault relations</span>
+            <span class="k">for</span> <span class="n">a_series</span> <span class="ow">in</span> <span class="n">series_fault</span><span class="p">:</span>
+                <span class="n">col_pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">faults_relations_df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">get_loc</span><span class="p">(</span><span class="n">a_series</span><span class="p">)</span>
+                <span class="c1"># set the faults offset all younger</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">faults_relations_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">col_pos</span><span class="p">,</span> <span class="n">col_pos</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="kc">True</span>
+
+                <span class="k">if</span> <span class="n">offset_faults</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+                    <span class="c1"># set the faults does not offset the younger faults</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">faults_relations_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">col_pos</span><span class="p">]</span> <span class="o">=</span> <span class="o">~</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;isFault&#39;</span><span class="p">]</span> <span class="o">&amp;</span> \
+                                                             <span class="bp">self</span><span class="o">.</span><span class="n">faults_relations_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">col_pos</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_faults</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;isFault&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+    <span class="k">def</span> <span class="nf">set_default_faults_relations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">offset_faults</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">offset_faults</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_offset_faults</span> <span class="o">=</span> <span class="n">offset_faults</span>
+
+        <span class="n">offset_faults</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_offset_faults</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Update default fault relations</span>
+            <span class="k">for</span> <span class="n">a_series</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;isFault&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get_group</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+                <span class="n">col_pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">faults_relations_df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">get_loc</span><span class="p">(</span><span class="n">a_series</span><span class="p">)</span>
+                <span class="c1"># set the faults offset all younger</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">faults_relations_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">col_pos</span><span class="p">,</span> <span class="n">col_pos</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="kc">True</span>
+
+                <span class="k">if</span> <span class="n">offset_faults</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+                    <span class="c1"># set the faults does not offset the younger faults</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">faults_relations_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">col_pos</span><span class="p">]</span> <span class="o">=</span> <span class="o">~</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;isFault&#39;</span><span class="p">]</span> <span class="o">&amp;</span> \
+                                                             <span class="bp">self</span><span class="o">.</span><span class="n">faults_relations_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">col_pos</span><span class="p">]</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="Faults.set_is_finite_fault"><a class="viewcode-back" href="../../../../Data/gempy.core.data_modules.stack.Faults.html#gempy.core.data_modules.stack.Faults.set_is_finite_fault">[docs]</a>    <span class="k">def</span> <span class="nf">set_is_finite_fault</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">series_finite</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">toggle</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Toggles given series&#39; finite fault property.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            series_finite (str, list[str]): Name of the series which are finite</span>
+<span class="sd">            toggle (bool): if True, passing a name which is already True will set it False.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            :class:`gempy.core.data_modules.stack.Faults`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">series_finite</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># check if given series is/are in dataframe</span>
+            <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">series_finite</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">(),</span> <span class="s2">&quot;series_fault must already exist&quot;</span> \
+                                                                <span class="s2">&quot;in the series DataFrame.&quot;</span>
+            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">series_finite</span><span class="p">]</span><span class="o">.</span><span class="n">isFault</span><span class="o">.</span><span class="n">all</span><span class="p">(),</span> <span class="s2">&quot;series_fault contains non-fault series&quot;</span> \
+                                                             <span class="s2">&quot;, which can&#39;t be set as finite faults.&quot;</span>
+            <span class="c1"># if so, toggle True/False for given series or list of series</span>
+            <span class="k">if</span> <span class="n">toggle</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">series_finite</span><span class="p">,</span> <span class="s1">&#39;isFinite&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">series_finite</span><span class="p">,</span> <span class="s1">&#39;isFinite&#39;</span><span class="p">]</span> <span class="o">^</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">series_finite</span><span class="p">,</span> <span class="s1">&#39;isFinite&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="Faults.set_fault_relation"><a class="viewcode-back" href="../../../../Data/gempy.core.data_modules.stack.Faults.html#gempy.core.data_modules.stack.Faults.set_fault_relation">[docs]</a>    <span class="k">def</span> <span class="nf">set_fault_relation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rel_matrix</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Method to set the df that offset a given sequence and therefore also another fault.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            rel_matrix (numpy.array[bool]): 2D Boolean array with boolean logic.</span>
+<span class="sd">             Rows affect (offset) columns</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            :class:`gempy.core.data_modules.stack.Faults.faults_relations_df`</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: block the lower triangular matrix of being changed</span>
+        <span class="k">if</span> <span class="n">rel_matrix</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">rel_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                   <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">rel_matrix</span><span class="p">)</span> <span class="ow">is</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="s1">&#39;rel_matrix muxt be a 2D numpy array&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">faults_relations_df</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rel_matrix</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
+                                                <span class="n">columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;bool&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">faults_relations_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">tril</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">faults_relations_df</span></div>
+
+<div class="viewcode-block" id="Faults.count_faults"><a class="viewcode-back" href="../../../../Data/gempy.core.data_modules.stack.Faults.html#gempy.core.data_modules.stack.Faults.count_faults">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">count_faults</span><span class="p">(</span><span class="n">list_of_names</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read the string names of the surfaces to detect automatically the number of df if the name</span>
+<span class="sd">        fault is on the name.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">faults_series</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">list_of_names</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;fault&#39;</span> <span class="ow">in</span> <span class="n">i</span> <span class="ow">or</span> <span class="s1">&#39;Fault&#39;</span> <span class="ow">in</span> <span class="n">i</span><span class="p">)</span> <span class="ow">and</span> <span class="s1">&#39;Default&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">i</span><span class="p">:</span>
+                    <span class="n">faults_series</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                <span class="k">pass</span>
+        <span class="k">return</span> <span class="n">faults_series</span></div></div>
+
+
+<div class="viewcode-block" id="Series"><a class="viewcode-back" href="../../../../Data/gempy.core.data_modules.stack.Series.html#gempy.core.data_modules.stack.Series">[docs]</a><span class="nd">@_setdoc_pro</span><span class="p">(</span><span class="n">Faults</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">Series</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Class that contains the functionality and attributes related to the series. Notice that series does not only</span>
+<span class="sd">    refers to stratigraphic series but to any set of surfaces which will be interpolated together (comfortably).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        faults (:class:`Faults`): [s0]</span>
+<span class="sd">        series_names(Optional[list]): name of the series. They are also ordered</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        df (:class:`pn.core.frame.DataFrames`): Pandas data frame containing the series and the surfaces contained</span>
+<span class="sd">            on them. TODO describe df columns</span>
+<span class="sd">        faults (:class:`Faults`)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Series.__init__"><a class="viewcode-back" href="../../../../Data/gempy.core.data_modules.stack.Series.html#gempy.core.data_modules.stack.Series.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">faults</span><span class="p">,</span> <span class="n">series_names</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">faults</span> <span class="o">=</span> <span class="n">faults</span>
+
+        <span class="k">if</span> <span class="n">series_names</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">series_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Default series&#39;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">]]),</span> <span class="n">index</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">CategoricalIndex</span><span class="p">(</span><span class="n">series_names</span><span class="p">,</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+                               <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;order_series&#39;</span><span class="p">,</span> <span class="s1">&#39;BottomRelation&#39;</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;order_series&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;order_series&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;BottomRelation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">Categorical</span><span class="p">([</span><span class="s1">&#39;Erosion&#39;</span><span class="p">],</span> <span class="n">categories</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Erosion&#39;</span><span class="p">,</span> <span class="s1">&#39;Onlap&#39;</span><span class="p">,</span> <span class="s1">&#39;Fault&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;isActive&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_repr_html_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">to_html</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Series.reset_order_series"><a class="viewcode-back" href="../../../../Data/gempy.core.data_modules.stack.Series.html#gempy.core.data_modules.stack.Series.reset_order_series">[docs]</a>    <span class="k">def</span> <span class="nf">reset_order_series</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reset the column order series to monotonic ascendant values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">at</span><span class="p">[:,</span> <span class="s1">&#39;order_series&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">RangeIndex</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Series.set_series_index"><a class="viewcode-back" href="../../../../Data/gempy.core.data_modules.stack.Series.html#gempy.core.data_modules.stack.Series.set_series_index">[docs]</a>    <span class="nd">@_setdoc_pro</span><span class="p">(</span><span class="n">reset_order_series</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">set_series_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">series_order</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">reset_order_series</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Rewrite the index of the series df</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            series_order (list): List with names and order of series.</span>
+<span class="sd">            reset_order_series (bool): if true [s0]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">             :class:`Series`: Series</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">series_order</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">series_order</span><span class="p">)</span> <span class="ow">is</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+            <span class="n">list_of_series</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">series_order</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;series_order is not neither list or SurfacePoints object.&#39;</span><span class="p">)</span>
+
+        <span class="n">series_idx</span> <span class="o">=</span> <span class="n">list_of_series</span>
+
+        <span class="c1"># Categorical index does not have inplace</span>
+        <span class="c1"># This update the categories</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">set_categories</span><span class="p">(</span><span class="n">series_idx</span><span class="p">,</span> <span class="n">rename</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">faults</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">faults</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">set_categories</span><span class="p">(</span><span class="n">series_idx</span><span class="p">,</span> <span class="n">rename</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">faults</span><span class="o">.</span><span class="n">faults_relations_df</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">faults</span><span class="o">.</span><span class="n">faults_relations_df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">set_categories</span><span class="p">(</span>
+            <span class="n">series_idx</span><span class="p">,</span> <span class="n">rename</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">faults</span><span class="o">.</span><span class="n">faults_relations_df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">faults</span><span class="o">.</span><span class="n">faults_relations_df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">set_categories</span><span class="p">(</span>
+            <span class="n">series_idx</span><span class="p">,</span> <span class="n">rename</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># But we need to update the values too</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">series_order</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;Erosion&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">]</span>
+            <span class="c1"># This is in case someone use the old series</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;Erosion&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">faults</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">c</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;isFault&#39;</span><span class="p">,</span> <span class="s1">&#39;isFinite&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">faults</span><span class="o">.</span><span class="n">faults_relations_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">c</span><span class="p">,</span> <span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">faults</span><span class="o">.</span><span class="n">faults_relations_df</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">reset_order_series</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reset_order_series</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="Series.set_bottom_relation"><a class="viewcode-back" href="../../../../Data/gempy.core.data_modules.stack.Series.html#gempy.core.data_modules.stack.Series.set_bottom_relation">[docs]</a>    <span class="k">def</span> <span class="nf">set_bottom_relation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">series_list</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span> <span class="n">bottom_relation</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">]):</span>
+        <span class="sd">&quot;&quot;&quot;Set the bottom relation between the series and the one below.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            series_list (str, list): name or list of names of the series to apply the functionality</span>
+<span class="sd">            bottom_relation (str{Onlap, Erode, Fault}, list[str]):</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            :class:`gempy.core.data_modules.stack.Stack`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">series_list</span><span class="p">,</span> <span class="s1">&#39;BottomRelation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bottom_relation</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">faults</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">series_list</span><span class="p">,</span> <span class="s1">&#39;isFault&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">faults</span><span class="o">.</span><span class="n">set_is_fault</span><span class="p">(</span><span class="n">series_list</span><span class="p">,</span> <span class="n">toggle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">bottom_relation</span> <span class="o">==</span> <span class="s1">&#39;Fault&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">faults</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">series_list</span><span class="p">,</span> <span class="s1">&#39;isFault&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="Series.add_series"><a class="viewcode-back" href="../../../../Data/gempy.core.data_modules.stack.Series.html#gempy.core.data_modules.stack.Series.add_series">[docs]</a>    <span class="nd">@_setdoc_pro</span><span class="p">(</span><span class="n">reset_order_series</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">add_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">series_list</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span> <span class="n">reset_order_series</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Add series to the df</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            series_list (str, list): name or list of names of the series to apply the functionality</span>
+<span class="sd">            reset_order_series (bool): if true [s0]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Series</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">series_list</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">series_list</span><span class="p">)</span>
+
+        <span class="c1"># Remove from the list categories that already exist</span>
+        <span class="n">series_list</span> <span class="o">=</span> <span class="n">series_list</span><span class="p">[</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">in1d</span><span class="p">(</span><span class="n">series_list</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">categories</span><span class="p">)]</span>
+
+        <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">add_categories</span><span class="p">(</span><span class="n">series_list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">idx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_faults_index_rename</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">series_list</span><span class="p">:</span>
+            <span class="c1"># This is in case someone wants to run the old series</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;Erosion&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;Erosion&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">faults</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">c</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;isFault&#39;</span><span class="p">,</span> <span class="s1">&#39;isFinite&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">faults</span><span class="o">.</span><span class="n">faults_relations_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">c</span><span class="p">,</span> <span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">faults</span><span class="o">.</span><span class="n">faults_relations_df</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">reset_order_series</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reset_order_series</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="Series.delete_series"><a class="viewcode-back" href="../../../../Data/gempy.core.data_modules.stack.Series.html#gempy.core.data_modules.stack.Series.delete_series">[docs]</a>    <span class="nd">@_setdoc_pro</span><span class="p">([</span><span class="n">reset_order_series</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">,</span> <span class="n">pn</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">drop</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">])</span>
+    <span class="k">def</span> <span class="nf">delete_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indices</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">],</span> <span class="n">reset_order_series</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[s1]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            indices (str, list): name or list of names of the series to apply the functionality</span>
+<span class="sd">            reset_order_series (bool): if true [s0]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Series</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># If we are using the Stack class it is just one elemnt in memory</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">faults</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">faults</span><span class="o">.</span><span class="n">faults_relations_df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">faults</span><span class="o">.</span><span class="n">faults_relations_df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">remove_unused_categories</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">idx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_faults_index_rename</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">reset_order_series</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reset_order_series</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="Series.rename_series"><a class="viewcode-back" href="../../../../Data/gempy.core.data_modules.stack.Series.html#gempy.core.data_modules.stack.Series.rename_series">[docs]</a>    <span class="nd">@_setdoc_pro</span><span class="p">(</span><span class="n">pn</span><span class="o">.</span><span class="n">CategoricalIndex</span><span class="o">.</span><span class="n">rename_categories</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">rename_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_categories</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">list</span><span class="p">]):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        [s0]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            new_categories (list, dict):</span>
+<span class="sd">                * list-like: all items must be unique and the number of items in the new categories must match the</span>
+<span class="sd">                  existing number of categories.</span>
+
+<span class="sd">                * dict-like: specifies a mapping from old categories to new. Categories not contained in the mapping are</span>
+<span class="sd">                  passed through and extra categories in the mapping are ignored.</span>
+<span class="sd">        Returns:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">rename_categories</span><span class="p">(</span><span class="n">new_categories</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">idx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_faults_index_rename</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="Series.reorder_series"><a class="viewcode-back" href="../../../../Data/gempy.core.data_modules.stack.Series.html#gempy.core.data_modules.stack.Series.reorder_series">[docs]</a>    <span class="nd">@_setdoc_pro</span><span class="p">([</span><span class="n">pn</span><span class="o">.</span><span class="n">CategoricalIndex</span><span class="o">.</span><span class="n">reorder_categories</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">,</span> <span class="n">pn</span><span class="o">.</span><span class="n">CategoricalIndex</span><span class="o">.</span><span class="n">sort_values</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">])</span>
+    <span class="k">def</span> <span class="nf">reorder_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_categories</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]):</span>
+        <span class="sd">&quot;&quot;&quot;[s0] [s1]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            new_categories (list): list with all series names in the desired order.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Series</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">reorder_categories</span><span class="p">(</span><span class="n">new_categories</span><span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_order_series</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_faults_index_reorder</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="Series.modify_order_series"><a class="viewcode-back" href="../../../../Data/gempy.core.data_modules.stack.Series.html#gempy.core.data_modules.stack.Series.modify_order_series">[docs]</a>    <span class="k">def</span> <span class="nf">modify_order_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_value</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">series_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Replace to the new location the old series</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            new_value (int): New location</span>
+<span class="sd">            series_name (str): name of the series to be moved</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Series</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;order_series&#39;</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">new_value</span><span class="p">,</span> <span class="n">group</span><span class="p">),</span> <span class="s1">&#39;new_value must exist already in the order_surfaces group.&#39;</span>
+        <span class="n">old_value</span> <span class="o">=</span> <span class="n">group</span><span class="p">[</span><span class="n">series_name</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;order_series&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">group</span><span class="o">.</span><span class="n">replace</span><span class="p">([</span><span class="n">new_value</span><span class="p">,</span> <span class="n">old_value</span><span class="p">],</span> <span class="p">[</span><span class="n">old_value</span><span class="p">,</span> <span class="n">new_value</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sort_series</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_faults_index_reorder</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+    <span class="k">def</span> <span class="nf">sort_series</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">&#39;order_series&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">reorder_categories</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">update_faults_index_rename</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">faults</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">idx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">faults</span><span class="o">.</span><span class="n">faults_relations_df</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">idx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">faults</span><span class="o">.</span><span class="n">faults_relations_df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">idx</span>
+
+        <span class="c1">#  This is a hack for qgrid</span>
+        <span class="c1">#  We need to add the qgrid special columns to categories</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">faults</span><span class="o">.</span><span class="n">faults_relations_df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">faults</span><span class="o">.</span><span class="n">faults_relations_df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">add_categories</span><span class="p">(</span>
+            <span class="p">[</span><span class="s1">&#39;index&#39;</span><span class="p">,</span> <span class="s1">&#39;qgrid_unfiltered_index&#39;</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">update_faults_index_reorder</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">faults</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">faults</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">faults</span><span class="o">.</span><span class="n">faults_relations_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">faults</span><span class="o">.</span><span class="n">faults_relations_df</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">faults</span><span class="o">.</span><span class="n">faults_relations_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">faults</span><span class="o">.</span><span class="n">faults_relations_df</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">faults</span><span class="o">.</span><span class="n">faults_relations_df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">faults</span><span class="o">.</span><span class="n">faults_relations_df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">add_categories</span><span class="p">(</span>
+            <span class="p">[</span><span class="s1">&#39;index&#39;</span><span class="p">,</span> <span class="s1">&#39;qgrid_unfiltered_index&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">faults</span><span class="o">.</span><span class="n">set_default_faults_relations</span><span class="p">()</span></div>
+
+
+<span class="k">class</span> <span class="nc">MockFault</span><span class="p">:</span>
+    <span class="k">pass</span>
+
+
+<div class="viewcode-block" id="Stack"><a class="viewcode-back" href="../../../../Data/gempy.core.data_modules.stack.Stack.html#gempy.core.data_modules.stack.Stack">[docs]</a><span class="k">class</span> <span class="nc">Stack</span><span class="p">(</span><span class="n">Series</span><span class="p">,</span> <span class="n">Faults</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class that encapsulates all type of geological features. So far is Series and</span>
+<span class="sd">          Faults</span>
+
+<span class="sd">         Args:</span>
+<span class="sd">             features_names (Iterable): Names of the features</span>
+<span class="sd">             fault_features (Iterable): List of features that are faults</span>
+<span class="sd">             rel_matrix:</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Stack.__init__"><a class="viewcode-back" href="../../../../Data/gempy.core.data_modules.stack.Stack.html#gempy.core.data_modules.stack.Stack.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">features_names</span><span class="p">:</span> <span class="n">Iterable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">fault_features</span><span class="p">:</span> <span class="n">Iterable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">rel_matrix</span><span class="p">:</span> <span class="n">Iterable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">features_names</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">features_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Default series&#39;</span><span class="p">]</span>
+
+        <span class="c1"># Set unique df</span>
+        <span class="n">df_</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">]]),</span>
+                               <span class="n">index</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">CategoricalIndex</span><span class="p">(</span><span class="n">features_names</span><span class="p">,</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+                               <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;order_series&#39;</span><span class="p">,</span> <span class="s1">&#39;BottomRelation&#39;</span><span class="p">,</span> <span class="s1">&#39;isActive&#39;</span><span class="p">,</span> <span class="s1">&#39;isFault&#39;</span><span class="p">,</span> <span class="s1">&#39;isFinite&#39;</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="n">df_</span><span class="o">.</span><span class="n">astype</span><span class="p">({</span><span class="s1">&#39;order_series&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                              <span class="s1">&#39;BottomRelation&#39;</span><span class="p">:</span> <span class="s1">&#39;category&#39;</span><span class="p">,</span>
+                              <span class="s1">&#39;isActive&#39;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+                              <span class="s1">&#39;isFault&#39;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+                              <span class="s1">&#39;isFinite&#39;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">})</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;order_series&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;order_series&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;BottomRelation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">Categorical</span><span class="p">([</span><span class="s1">&#39;Erosion&#39;</span><span class="p">],</span> <span class="n">categories</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Erosion&#39;</span><span class="p">,</span> <span class="s1">&#39;Onlap&#39;</span><span class="p">,</span> <span class="s1">&#39;Fault&#39;</span><span class="p">])</span>
+        <span class="c1"># self.df[&#39;isActive&#39;] = False</span>
+        <span class="c1"># self.df[&#39;isFault&#39;] = False</span>
+        <span class="c1"># self.df[&#39;isFinite&#39;] = False</span>
+        <span class="c1"># self.faults = MockFault()</span>
+        <span class="c1"># self.faults.df = self.df</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">faults</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">faults_relations_df</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">CategoricalIndex</span><span class="p">([</span><span class="s1">&#39;Default series&#39;</span><span class="p">]),</span>
+                                                <span class="n">columns</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">CategoricalIndex</span><span class="p">([</span><span class="s1">&#39;Default series&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;bool&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_is_fault</span><span class="p">(</span><span class="n">series_fault</span><span class="o">=</span><span class="n">fault_features</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_fault_relation</span><span class="p">(</span><span class="n">rel_matrix</span><span class="o">=</span><span class="n">rel_matrix</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_faults</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_offset_faults</span> <span class="o">=</span> <span class="kc">False</span></div></div>
+
+
+
+
+
+
+
+
+
+
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../../index.html">
+    <img class="logo" src="../../../../_static/./logos/gempy.png" alt="Logo"/>
+    
+    <h1 class="logo logo-name">GemPy</h1>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a class="badge" href="https://travis-ci.org/cgre-aachen/gempy">
+    <img
+        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../index.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../projects.html">Additional projects</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/index.html">GemPy Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../integrations/index.html">Integrations</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code.html">Code</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017-2020, CGRE-Aachen Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

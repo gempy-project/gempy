@@ -1,0 +1,981 @@
+.. only:: html
+
+    .. note::
+        :class: sphx-glr-download-link-note
+
+        Click :ref:`here <sphx_glr_download_tutorials_ch1_fundamentals_ch1_3a_grids.py>`     to download the full example code
+    .. rst-class:: sphx-glr-example-title
+
+    .. _sphx_glr_tutorials_ch1_fundamentals_ch1_3a_grids.py:
+
+
+1.3a: Grids.
+============
+
+
+.. code-block:: python3
+
+
+    import numpy as np
+    import pandas as pd
+    from gempy.core.data import Grid
+    from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 unused import
+    import matplotlib.pyplot as plt
+
+    pd.set_option('precision', 2)
+    np.random.seed(55500)
+
+
+
+
+
+
+
+
+The Grid Class
+--------------
+
+The grid class will interact with the rest of data classes and grid
+subclasses. Its main purpose is to feed coordinates XYZ to the
+interpolator.
+
+
+
+.. code-block:: python3
+
+    grid = Grid()
+
+
+
+
+
+
+
+
+The most important attribute of Grid is ``values`` (and ``values_r``
+which are the values rescaled) which are the 3D points in space that
+kriging will be evaluated on. This array will be feed by "grid types" on
+a **composition** relation with Grid:
+
+
+.. image:: /../../_static/grids.jpg
+
+
+
+.. code-block:: python3
+
+    grid.values, grid.values_r
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    (array([], shape=(0, 3), dtype=float64), array([], shape=(0, 3), dtype=float64))
+
+
+
+At the moment of writing this tutorial, there is 5 grid types. The
+number of grid types is scalable and down the road we aim to connect
+other grid packages (like `Discretize <https://pypi.org/project/discretize/>`_) as an extra Grid type
+
+
+
+.. code-block:: python3
+
+    grid.grid_types
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    array(['regular', 'custom', 'topography', 'sections', 'centered'],
+          dtype='<U10')
+
+
+
+Each grid contains its own ``values`` attribute as well as other
+methods to manipulate them depending on the type of grid.
+
+
+
+.. code-block:: python3
+
+    grid.regular_grid.values
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    array([], shape=(0, 3), dtype=float64)
+
+
+
+We can see what grids are activated (i.e. they are going to be
+interpolated and therefore will live on ``Grid().values``) by:
+
+
+
+.. code-block:: python3
+
+    grid.active_grids
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    array([False, False, False, False, False])
+
+
+
+By default only the *regular grid* (``grid.regular_grid``\ ) is active. However, since the regular
+grid is still empty ``Grid().values`` is empty too.
+
+
+
+.. code-block:: python3
+
+    grid.values
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    array([], shape=(0, 3), dtype=float64)
+
+
+
+The last important attribute of Grid is the length:
+
+
+
+.. code-block:: python3
+
+    grid.length
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    array([0, 0, 0, 0, 0, 0])
+
+
+
+Length gives back the interface indices between grids on the
+``Grid().values`` attribute. This can be used after interpolation to
+know which interpolated values and coordinates correspond to each grid
+type. You can use the method get\_grid\_args to return the indices by
+name:
+
+
+
+.. code-block:: python3
+
+    grid.get_grid_args('topography')
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    (0, 0)
+
+
+
+By now all is a bit confusing because we have no values. Lets start
+adding values to the different grids:
+
+
+Regular grid
+~~~~~~~~~~~~
+
+The ``Grid`` class has a bunch of methods to set each grid type and
+activate them.
+
+
+
+.. code-block:: python3
+
+    help(grid.create_regular_grid)
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Help on method create_regular_grid in module gempy.core.data:
+
+    create_regular_grid(extent=None, resolution=None, set_active=True, *args, **kwargs) method of gempy.core.data.Grid instance
+        Set a new regular grid and activate it.
+    
+        Args:
+            extent (np.ndarray): [x_min, x_max, y_min, y_max, z_min, z_max]
+            resolution (np.ndarray): [nx, ny, nz]
+    
+        RegularGrid Docs
+         (inserted) 
+    
+    
+            Class with the methods and properties to manage 3D regular grids where the model will be interpolated.
+    
+    
+    
+            Args:
+    
+                extent (np.ndarray):  [x_min, x_max, y_min, y_max, z_min, z_max]
+    
+                resolution (np.ndarray): [nx, ny, nz]
+    
+    
+    
+            Attributes:
+    
+                extent (np.ndarray):  [x_min, x_max, y_min, y_max, z_min, z_max]
+    
+                resolution (np.ndarray): [nx, ny, nz]
+    
+                values (np.ndarray): XYZ coordinates
+    
+                mask_topo (np.ndarray, dtype=bool): same shape as values. Values above the topography are False
+    
+                dx (float): size of the cells on x
+    
+                dy (float): size of the cells on y
+    
+                dz (float): size of the cells on z
+
+
+
+
+
+
+.. code-block:: python3
+
+    grid.create_regular_grid(extent=[0, 100, 0, 100, -100, 0], resolution=[20, 20, 20])
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    <gempy.core.grid_modules.grid_types.RegularGrid object at 0x7f01c71b25e0>
+
+
+
+Now the regular grid object composed on ``Grid`` has been filled:
+
+
+
+.. code-block:: python3
+
+    grid.regular_grid.values
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    array([[  2.5,   2.5, -97.5],
+           [  2.5,   2.5, -92.5],
+           [  2.5,   2.5, -87.5],
+           ...,
+           [ 97.5,  97.5, -12.5],
+           [ 97.5,  97.5,  -7.5],
+           [ 97.5,  97.5,  -2.5]])
+
+
+
+And the regular grid has been set active (it was already active in any
+case):
+
+
+
+.. code-block:: python3
+
+    grid.active_grids
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    array([ True, False, False, False, False])
+
+
+
+Therefore the grid values will be equal to the regular grid:
+
+
+
+.. code-block:: python3
+
+    grid.values
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    array([[  2.5,   2.5, -97.5],
+           [  2.5,   2.5, -92.5],
+           [  2.5,   2.5, -87.5],
+           ...,
+           [ 97.5,  97.5, -12.5],
+           [ 97.5,  97.5,  -7.5],
+           [ 97.5,  97.5,  -2.5]])
+
+
+
+And the indices to extract the different arrays:
+
+
+
+.. code-block:: python3
+
+    grid.length
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    array([   0, 8000, 8000, 8000, 8000, 8000])
+
+
+
+Custom grid
+~~~~~~~~~~~
+
+Completely free XYZ values.
+
+
+
+.. code-block:: python3
+
+    grid.create_custom_grid(np.array([[1, 2, 3],
+                                      [4, 5, 6],
+                                      [7, 8, 9]]))
+
+
+
+
+
+
+
+
+Again ``set_any_grid`` will create a grid and activate it. So now the
+compose object will contain values:
+
+
+
+.. code-block:: python3
+
+    grid.custom_grid.values
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    array([[1, 2, 3],
+           [4, 5, 6],
+           [7, 8, 9]])
+
+
+
+and since it is active, will be added to the grid.values stack:
+
+
+
+.. code-block:: python3
+
+    grid.active_grids
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    array([ True,  True, False, False, False])
+
+
+
+
+.. code-block:: python3
+
+    grid.values.shape
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    (8003, 3)
+
+
+
+We can still recover those values with ``get_grid`` or by getting the
+slicing args:
+
+
+
+.. code-block:: python3
+
+    grid.get_grid('custom')
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    array([[1., 2., 3.],
+           [4., 5., 6.],
+           [7., 8., 9.]])
+
+
+
+
+.. code-block:: python3
+
+    l0, l1 = grid.get_grid_args('custom')
+    l0, l1
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    (8000, 8003)
+
+
+
+
+.. code-block:: python3
+
+    grid.values[l0:l1]
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    array([[1., 2., 3.],
+           [4., 5., 6.],
+           [7., 8., 9.]])
+
+
+
+Topography
+~~~~~~~~~~
+
+Now we can set the topography. :class:`Topography <gempy.core.grid_modules.topography.Topography>`
+contains methods to create manual topographies as well as gdal for
+dealing with raster data. By default we will create a random topography:
+
+
+
+.. code-block:: python3
+
+    grid.create_topography()
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    [-20.   0.]
+
+
+
+
+
+.. code-block:: python3
+
+    grid.active_grids
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    array([ True,  True,  True, False, False])
+
+
+
+Now the grid values will contain both the regular grid and topography:
+
+
+
+.. code-block:: python3
+
+    grid.values, grid.length
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    (array([[  2.5       ,   2.5       , -97.5       ],
+           [  2.5       ,   2.5       , -92.5       ],
+           [  2.5       ,   2.5       , -87.5       ],
+           ...,
+           [100.        ,  89.47368421, -14.13839552],
+           [100.        ,  94.73684211, -16.12793911],
+           [100.        , 100.        , -16.21462612]]), array([   0, 8000, 8003, 8403, 8403, 8403]))
+
+
+
+The topography args are got as follows:
+
+
+
+.. code-block:: python3
+
+    l0, l1 = grid.get_grid_args('topography')
+    l0, l1
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    (8003, 8403)
+
+
+
+And we can slice the values array as any other numpy array:
+
+
+
+.. code-block:: python3
+
+    grid.values[l0: l1]
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    array([[  0.        ,   0.        , -14.23224119],
+           [  0.        ,   5.26315789, -14.18893341],
+           [  0.        ,  10.52631579, -13.54018217],
+           ...,
+           [100.        ,  89.47368421, -14.13839552],
+           [100.        ,  94.73684211, -16.12793911],
+           [100.        , 100.        , -16.21462612]])
+
+
+
+We can compare it to the topography.values:
+
+
+
+.. code-block:: python3
+
+    grid.topography.values
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    array([[  0.        ,   0.        , -14.23224119],
+           [  0.        ,   5.26315789, -14.18893341],
+           [  0.        ,  10.52631579, -13.54018217],
+           ...,
+           [100.        ,  89.47368421, -14.13839552],
+           [100.        ,  94.73684211, -16.12793911],
+           [100.        , 100.        , -16.21462612]])
+
+
+
+Now that we have more than one grid we can activate and deactivate any
+of them in real time:
+
+
+
+.. code-block:: python3
+
+    grid.set_inactive('topography')
+    grid.set_inactive('regular')
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    array([False,  True, False, False, False])
+
+
+
+Since now all grids are deactivated the values will be empty:
+
+
+
+.. code-block:: python3
+
+    grid.values
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    array([[1., 2., 3.],
+           [4., 5., 6.],
+           [7., 8., 9.]])
+
+
+
+
+.. code-block:: python3
+
+    grid.set_active('topography')
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    array([False,  True,  True, False, False])
+
+
+
+
+.. code-block:: python3
+
+    grid.values, grid.values.shape
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    (array([[  1.        ,   2.        ,   3.        ],
+           [  4.        ,   5.        ,   6.        ],
+           [  7.        ,   8.        ,   9.        ],
+           ...,
+           [100.        ,  89.47368421, -14.13839552],
+           [100.        ,  94.73684211, -16.12793911],
+           [100.        , 100.        , -16.21462612]]), (403, 3))
+
+
+
+
+.. code-block:: python3
+
+    grid.set_active('regular')
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    array([ True,  True,  True, False, False])
+
+
+
+
+.. code-block:: python3
+
+    grid.values
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    array([[  2.5       ,   2.5       , -97.5       ],
+           [  2.5       ,   2.5       , -92.5       ],
+           [  2.5       ,   2.5       , -87.5       ],
+           ...,
+           [100.        ,  89.47368421, -14.13839552],
+           [100.        ,  94.73684211, -16.12793911],
+           [100.        , 100.        , -16.21462612]])
+
+
+
+Centered Grid
+~~~~~~~~~~~~~
+
+This grid contains an irregular grid where the majority of voxels are
+centered around a value (or values). This type of grid is usually used
+to compute certain types of forward physics where the influence
+decreases with distance (e.g. gravity: Check `tutorial 2.2-Cell-selection <https://github.com/cgre-aachen/gempy/blob/master/examples/tutorials/ch2-Geophysics/ch2_2_cell_selection.py>`_
+)
+
+
+
+.. code-block:: python3
+
+    grid.create_centered_grid(centers=np.array([[300, 0, 0], [0, 0, 0]]),
+                              resolution=[10, 10, 20], radius=100)
+
+
+
+
+
+
+
+
+Resolution and radius create a geometric spaced kernel (blue dots) which
+will be use to create a grid around each of the center points (red
+dots):
+
+
+
+.. code-block:: python3
+
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+
+    ax.scatter(grid.values[:, 0], grid.values[:, 1], grid.values[:, 2], '.', alpha=.2)
+    ax.scatter(np.array([[300, 0, 0], [0, 0, 0]])[:, 0],
+               np.array([[300, 0, 0], [0, 0, 0]])[:, 1],
+               np.array([[300, 0, 0], [0, 0, 0]])[:, 2], c='r', alpha=1, s=30)
+
+    ax.set_xlim(-100, 400)
+    ax.set_xlabel('X Label')
+    ax.set_ylabel('Y Label')
+    ax.set_zlabel('Z Label')
+    plt.show()
+
+
+
+
+.. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_3a_grids_001.png
+    :alt: ch1 3a grids
+    :class: sphx-glr-single-img
+
+
+
+
+
+Section Grid
+~~~~~~~~~~~~
+
+This grid type has its own tutorial. See ch1-3b
+
+
+
+.. rst-class:: sphx-glr-timing
+
+   **Total running time of the script:** ( 0 minutes  0.312 seconds)
+
+
+.. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_3a_grids.py:
+
+
+.. only :: html
+
+ .. container:: sphx-glr-footer
+    :class: sphx-glr-footer-example
+
+
+
+  .. container:: sphx-glr-download sphx-glr-download-python
+
+     :download:`Download Python source code: ch1_3a_grids.py <ch1_3a_grids.py>`
+
+
+
+  .. container:: sphx-glr-download sphx-glr-download-jupyter
+
+     :download:`Download Jupyter notebook: ch1_3a_grids.ipynb <ch1_3a_grids.ipynb>`
+
+
+.. only:: html
+
+ .. rst-class:: sphx-glr-signature
+
+    `Gallery generated by Sphinx-Gallery <https://sphinx-gallery.github.io>`_

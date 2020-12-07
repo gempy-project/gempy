@@ -1,0 +1,11 @@
+﻿gempy.read\_csv
+===============
+
+.. currentmodule:: gempy
+
+.. autofunction:: read_csv
+
+.. include:: ../gen_modules/backreferences/gempy.read_csv.examples
+.. raw:: html
+
+   <div class="sphx-glr-clear"></div>

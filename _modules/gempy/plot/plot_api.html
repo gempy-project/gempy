@@ -1,0 +1,727 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>gempy.plot.plot_api &#8212; GemPy 2.2.7 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for gempy.plot.plot_api</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This file is part of gempy.</span>
+
+<span class="sd">    gempy is free software: you can redistribute it and/or modify</span>
+<span class="sd">    it under the terms of the GNU General Public License as published by</span>
+<span class="sd">    the Free Software Foundation, either version 3 of the License, or</span>
+<span class="sd">    (at your option) any later version.</span>
+
+<span class="sd">    gempy is distributed in the hope that it will be useful,</span>
+<span class="sd">    but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="sd">    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="sd">    GNU General Public License for more details.</span>
+
+<span class="sd">    You should have received a copy of the GNU General Public License</span>
+<span class="sd">    along with gempy.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+
+<span class="sd">    Module with classes and methods to perform implicit regional modelling based on</span>
+<span class="sd">    the potential field method.</span>
+<span class="sd">    Tested on Ubuntu 16</span>
+
+<span class="sd">    Created on 10/11/2019</span>
+
+<span class="sd">    @author: Alex Schaaf, Elisa Heim, Miguel de la Varga</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># This is for sphenix to find the packages</span>
+<span class="c1"># sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Any</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="c1"># from .vista import Vista</span>
+<span class="c1"># import gempy as _gempy</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pn</span>
+<span class="kn">from</span> <span class="nn">gempy.plot.vista</span> <span class="kn">import</span> <span class="n">GemPyToVista</span>
+
+<span class="c1"># Keep Alex code hidden until we merge it properly</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">pyvista</span> <span class="k">as</span> <span class="nn">pv</span>
+    <span class="kn">from</span> <span class="nn">._vista</span> <span class="kn">import</span> <span class="n">Vista</span> <span class="k">as</span> <span class="n">Vista</span>
+
+    <span class="n">PYVISTA_IMPORT</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">PYVISTA_IMPORT</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="kn">from</span> <span class="nn">.visualization_2d</span> <span class="kn">import</span> <span class="n">Plot2D</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">mplstereonet</span>
+
+    <span class="n">mplstereonet_import</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">mplstereonet_import</span> <span class="o">=</span> <span class="kc">False</span>
+
+
+<div class="viewcode-block" id="plot_2d"><a class="viewcode-back" href="../../../Plot/gempy.plot_2d.html#gempy.plot_2d">[docs]</a><span class="k">def</span> <span class="nf">plot_2d</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">n_axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">section_names</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">cell_number</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">direction</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span>
+            <span class="n">show_data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">show_results</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">show_lith</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">show_values</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">show_block</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">show_scalar</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">show_boundaries</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">show_topography</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">show_section_traces</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">series_n</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="n">ve</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">block</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">regular_grid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">kwargs_topography</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">kwargs_regular_grid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Plot 2-D sections of geomodel.</span>
+
+<span class="sd">    Plot cross sections either based on custom section traces or cell number in xyz direction.</span>
+<span class="sd">    Options to plot lithology block, scalar field or rendered surface lines.</span>
+<span class="sd">    Input data and topography can be included.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        show_block (bool): If True and model has been computed, plot cross section</span>
+<span class="sd">         of the final model.</span>
+<span class="sd">        show_values (bool): If True and model has been computed, plot cross section</span>
+<span class="sd">         of the value... TODO need to add attribute to choose which value to be plot</span>
+<span class="sd">        model: Geomodel object with solutions.</span>
+<span class="sd">        n_axis (int): Subplot axis for multiple sections</span>
+<span class="sd">        section_names (list): Names of predefined custom section traces</span>
+<span class="sd">        cell_number (list): Position of the array to plot</span>
+<span class="sd">        direction (str): Cartesian direction to be plotted (xyz)</span>
+<span class="sd">        show_data (bool): Show original input data. Defaults to True.</span>
+<span class="sd">        show_results (bool): If False, override show lith, show_calar, show_values</span>
+<span class="sd">        show_lith (bool): Show lithological block volumes. Defaults to True.</span>
+<span class="sd">        show_scalar (bool): Show scalar field isolines. Defaults to False.</span>
+<span class="sd">        show_boundaries (bool): Show surface boundaries as lines. Defaults to True.</span>
+<span class="sd">        show_topography (bool): Show topography on plot. Defaults to False.</span>
+<span class="sd">        series_n (int): number of the scalar field.</span>
+<span class="sd">        ve (float): vertical exageration</span>
+<span class="sd">        regular_grid (numpy.ndarray): Numpy array of the size of model.grid.regular_grid</span>
+<span class="sd">        kwargs_topography (dict):</span>
+<span class="sd">            * fill_contour</span>
+<span class="sd">            * hillshade (bool): Calculate and add hillshading using elevation data</span>
+<span class="sd">            * azdeg (float): azimuth of sun for hillshade</span>
+<span class="sd">            * altdeg (float): altitude in degrees of sun for hillshade</span>
+
+
+<span class="sd">    Keyword Args:</span>
+<span class="sd">        legend (bool): If True plot legend. Default True</span>
+<span class="sd">        show (bool): Call matplotlib show</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        :class:`gempy.plot.visualization_2d.Plot2D`: Plot2D object</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">kwargs_regular_grid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">kwargs_regular_grid</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">kwargs_topography</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">kwargs_topography</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">section_names</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">cell_number</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">direction</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">cell_number</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;mid&#39;</span><span class="p">]</span>
+
+    <span class="n">show</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;show&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">block</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">warnings</span>
+        <span class="n">regular_grid</span> <span class="o">=</span> <span class="n">block</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;block is going to be deprecated. Use regular grid instead&#39;</span><span class="p">,</span>
+                      <span class="ne">DeprecationWarning</span><span class="p">)</span>
+
+    <span class="n">section_names</span> <span class="o">=</span> <span class="p">[]</span> <span class="k">if</span> <span class="n">section_names</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">section_names</span>
+    <span class="n">section_names</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">section_names</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">cell_number</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">cell_number</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">elif</span> <span class="n">cell_number</span> <span class="o">==</span> <span class="s1">&#39;mid&#39;</span><span class="p">:</span>
+        <span class="n">cell_number</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;mid&#39;</span><span class="p">]</span>
+    <span class="n">direction</span> <span class="o">=</span> <span class="p">[]</span> <span class="k">if</span> <span class="n">direction</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">direction</span>
+
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">cell_number</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="n">cell_number</span> <span class="o">=</span> <span class="p">[</span><span class="n">cell_number</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="n">direction</span> <span class="o">=</span> <span class="p">[</span><span class="n">direction</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">n_axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">n_axis</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">section_names</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">cell_number</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">show_results</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="n">show_lith</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">show_values</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">show_block</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">show_scalar</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">show_boundaries</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">show_data</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="n">show_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">show_data</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_axis</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">show_lith</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="n">show_lith</span> <span class="o">=</span> <span class="p">[</span><span class="n">show_lith</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_axis</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">show_values</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="n">show_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">show_values</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_axis</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">show_block</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="n">show_block</span> <span class="o">=</span> <span class="p">[</span><span class="n">show_block</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_axis</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">show_scalar</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="n">show_scalar</span> <span class="o">=</span> <span class="p">[</span><span class="n">show_scalar</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_axis</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">show_boundaries</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="n">show_boundaries</span> <span class="o">=</span> <span class="p">[</span><span class="n">show_boundaries</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_axis</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">show_topography</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="n">show_topography</span> <span class="o">=</span> <span class="p">[</span><span class="n">show_topography</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_axis</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">series_n</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="n">series_n</span> <span class="o">=</span> <span class="p">[</span><span class="n">series_n</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_axis</span>
+
+    <span class="c1"># init e</span>
+    <span class="n">e</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="c1"># is 10 and 10 because in the ax pos is the second digit</span>
+    <span class="n">n_columns_</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">section_names</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">cell_number</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="k">else</span> <span class="mi">2</span>
+    <span class="n">n_columns</span> <span class="o">=</span> <span class="n">n_columns_</span> <span class="o">*</span> <span class="mi">10</span>  <span class="c1"># This is for the axis location syntax</span>
+    <span class="n">n_rows</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">section_names</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">cell_number</span><span class="p">))</span> <span class="o">/</span> <span class="n">n_columns_</span>
+
+    <span class="n">n_columns_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">([</span><span class="n">n_columns_</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+    <span class="n">n_rows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">([</span><span class="n">n_rows</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+
+    <span class="n">p</span> <span class="o">=</span> <span class="n">Plot2D</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">create_figure</span><span class="p">(</span><span class="n">cols</span><span class="o">=</span><span class="n">n_columns_</span><span class="p">,</span> <span class="n">rows</span><span class="o">=</span><span class="n">n_rows</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">sn</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">section_names</span><span class="p">):</span>
+        <span class="c1"># Check if a plot that fills all pixels is plotted</span>
+        <span class="n">_is_filled</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">assert</span> <span class="n">e</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;Reached maximum of axes&#39;</span>
+
+        <span class="n">ax_pos</span> <span class="o">=</span> <span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">n_axis</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">+</span> <span class="mf">0.1</span><span class="p">))</span> <span class="o">*</span> <span class="mi">100</span> <span class="o">+</span> <span class="n">n_columns</span> <span class="o">+</span> <span class="n">e</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">temp_ax</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">add_section</span><span class="p">(</span><span class="n">section_name</span><span class="o">=</span><span class="n">sn</span><span class="p">,</span> <span class="n">ax_pos</span><span class="o">=</span><span class="n">ax_pos</span><span class="p">,</span> <span class="n">ve</span><span class="o">=</span><span class="n">ve</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">show_data</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">plot_data</span><span class="p">(</span><span class="n">temp_ax</span><span class="p">,</span> <span class="n">section_name</span><span class="o">=</span><span class="n">sn</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">show_lith</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">and</span> <span class="n">model</span><span class="o">.</span><span class="n">solutions</span><span class="o">.</span><span class="n">lith_block</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">_is_filled</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">plot_lith</span><span class="p">(</span><span class="n">temp_ax</span><span class="p">,</span> <span class="n">section_name</span><span class="o">=</span><span class="n">sn</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">show_values</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">and</span> <span class="n">model</span><span class="o">.</span><span class="n">solutions</span><span class="o">.</span><span class="n">values_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">_is_filled</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">plot_values</span><span class="p">(</span><span class="n">temp_ax</span><span class="p">,</span> <span class="n">series_n</span><span class="o">=</span><span class="n">series_n</span><span class="p">[</span><span class="n">e</span><span class="p">],</span> <span class="n">section_name</span><span class="o">=</span><span class="n">sn</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">show_block</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">and</span> <span class="n">model</span><span class="o">.</span><span class="n">solutions</span><span class="o">.</span><span class="n">block_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">_is_filled</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">plot_block</span><span class="p">(</span><span class="n">temp_ax</span><span class="p">,</span> <span class="n">series_n</span><span class="o">=</span><span class="n">series_n</span><span class="p">[</span><span class="n">e</span><span class="p">],</span> <span class="n">section_name</span><span class="o">=</span><span class="n">sn</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">show_scalar</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">and</span> <span class="n">model</span><span class="o">.</span><span class="n">solutions</span><span class="o">.</span><span class="n">scalar_field_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">_is_filled</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">plot_scalar_field</span><span class="p">(</span><span class="n">temp_ax</span><span class="p">,</span> <span class="n">series_n</span><span class="o">=</span><span class="n">series_n</span><span class="p">[</span><span class="n">e</span><span class="p">],</span> <span class="n">section_name</span><span class="o">=</span><span class="n">sn</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">show_boundaries</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">and</span> <span class="n">model</span><span class="o">.</span><span class="n">solutions</span><span class="o">.</span><span class="n">scalar_field_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">plot_contacts</span><span class="p">(</span><span class="n">temp_ax</span><span class="p">,</span> <span class="n">section_name</span><span class="o">=</span><span class="n">sn</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">show_topography</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="c1"># Check if anything dense is plot. If not plot dense topography</span>
+            <span class="n">f_c_</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">_is_filled</span>
+            <span class="c1"># f_c = kwargs_topography.get(&#39;fill_contour&#39;, f_c_)</span>
+            <span class="k">if</span> <span class="s1">&#39;fill_contour&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs_topography</span><span class="p">:</span>
+                <span class="n">kwargs_topography</span><span class="p">[</span><span class="s1">&#39;fill_contour&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">f_c_</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">plot_topography</span><span class="p">(</span><span class="n">temp_ax</span><span class="p">,</span> <span class="n">section_name</span><span class="o">=</span><span class="n">sn</span><span class="p">,</span>  <span class="c1"># fill_contour=f_c,</span>
+                              <span class="o">**</span><span class="n">kwargs_topography</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">show_section_traces</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">and</span> <span class="n">sn</span> <span class="o">==</span> <span class="s1">&#39;topography&#39;</span><span class="p">:</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">plot_section_traces</span><span class="p">(</span><span class="n">temp_ax</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">regular_grid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">plot_regular_grid</span><span class="p">(</span><span class="n">temp_ax</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">regular_grid</span><span class="p">,</span> <span class="n">section_name</span><span class="o">=</span><span class="n">sn</span><span class="p">,</span>
+                                <span class="o">**</span><span class="n">kwargs_regular_grid</span><span class="p">)</span>
+
+        <span class="n">temp_ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="n">ve</span><span class="p">)</span>
+
+        <span class="c1"># If there are section we need to shift one axis for the perpendicular</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="n">e</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="k">for</span> <span class="n">e2</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cell_number</span><span class="p">)):</span>
+        <span class="k">assert</span> <span class="p">(</span><span class="n">e</span> <span class="o">+</span> <span class="n">e2</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;Reached maximum of axes&#39;</span>
+
+        <span class="n">ax_pos</span> <span class="o">=</span> <span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">n_axis</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">+</span> <span class="mf">0.1</span><span class="p">))</span> <span class="o">*</span> <span class="mi">100</span> <span class="o">+</span> <span class="n">n_columns</span> <span class="o">+</span> <span class="n">e</span> <span class="o">+</span> <span class="n">e2</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">temp_ax</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">add_section</span><span class="p">(</span><span class="n">cell_number</span><span class="o">=</span><span class="n">cell_number</span><span class="p">[</span><span class="n">e2</span><span class="p">],</span>
+                                <span class="n">direction</span><span class="o">=</span><span class="n">direction</span><span class="p">[</span><span class="n">e2</span><span class="p">],</span> <span class="n">ax_pos</span><span class="o">=</span><span class="n">ax_pos</span><span class="p">,</span> <span class="n">ve</span><span class="o">=</span><span class="n">ve</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">show_data</span><span class="p">[</span><span class="n">e</span> <span class="o">+</span> <span class="n">e2</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">plot_data</span><span class="p">(</span><span class="n">temp_ax</span><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="n">cell_number</span><span class="p">[</span><span class="n">e2</span><span class="p">],</span>
+                        <span class="n">direction</span><span class="o">=</span><span class="n">direction</span><span class="p">[</span><span class="n">e2</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">show_lith</span><span class="p">[</span><span class="n">e</span> <span class="o">+</span> <span class="n">e2</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">and</span> <span class="n">model</span><span class="o">.</span><span class="n">solutions</span><span class="o">.</span><span class="n">lith_block</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">plot_lith</span><span class="p">(</span><span class="n">temp_ax</span><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="n">cell_number</span><span class="p">[</span><span class="n">e2</span><span class="p">],</span>
+                        <span class="n">direction</span><span class="o">=</span><span class="n">direction</span><span class="p">[</span><span class="n">e2</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">show_values</span><span class="p">[</span><span class="n">e</span> <span class="o">+</span> <span class="n">e2</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">and</span> <span class="n">model</span><span class="o">.</span><span class="n">solutions</span><span class="o">.</span><span class="n">values_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">plot_values</span><span class="p">(</span><span class="n">temp_ax</span><span class="p">,</span> <span class="n">series_n</span><span class="o">=</span><span class="n">series_n</span><span class="p">[</span><span class="n">e</span><span class="p">],</span> <span class="n">cell_number</span><span class="o">=</span><span class="n">cell_number</span><span class="p">[</span><span class="n">e2</span><span class="p">],</span>
+                          <span class="n">direction</span><span class="o">=</span><span class="n">direction</span><span class="p">[</span><span class="n">e2</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">show_block</span><span class="p">[</span><span class="n">e</span> <span class="o">+</span> <span class="n">e2</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">and</span> <span class="n">model</span><span class="o">.</span><span class="n">solutions</span><span class="o">.</span><span class="n">block_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">plot_block</span><span class="p">(</span><span class="n">temp_ax</span><span class="p">,</span> <span class="n">series_n</span><span class="o">=</span><span class="n">series_n</span><span class="p">[</span><span class="n">e</span><span class="p">],</span> <span class="n">cell_number</span><span class="o">=</span><span class="n">cell_number</span><span class="p">[</span><span class="n">e2</span><span class="p">],</span>
+                         <span class="n">direction</span><span class="o">=</span><span class="n">direction</span><span class="p">[</span><span class="n">e2</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">show_scalar</span><span class="p">[</span><span class="n">e</span> <span class="o">+</span> <span class="n">e2</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">and</span> <span class="n">model</span><span class="o">.</span><span class="n">solutions</span><span class="o">.</span><span class="n">scalar_field_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">plot_scalar_field</span><span class="p">(</span><span class="n">temp_ax</span><span class="p">,</span> <span class="n">series_n</span><span class="o">=</span><span class="n">series_n</span><span class="p">[</span><span class="n">e</span><span class="p">],</span> <span class="n">cell_number</span><span class="o">=</span><span class="n">cell_number</span><span class="p">[</span><span class="n">e2</span><span class="p">],</span>
+                                <span class="n">direction</span><span class="o">=</span><span class="n">direction</span><span class="p">[</span><span class="n">e2</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">show_boundaries</span><span class="p">[</span><span class="n">e</span> <span class="o">+</span> <span class="n">e2</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">and</span> <span class="n">model</span><span class="o">.</span><span class="n">solutions</span><span class="o">.</span><span class="n">scalar_field_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">plot_contacts</span><span class="p">(</span><span class="n">temp_ax</span><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="n">cell_number</span><span class="p">[</span><span class="n">e2</span><span class="p">],</span>
+                            <span class="n">direction</span><span class="o">=</span><span class="n">direction</span><span class="p">[</span><span class="n">e2</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">show_topography</span><span class="p">[</span><span class="n">e</span> <span class="o">+</span> <span class="n">e2</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">plot_topography</span><span class="p">(</span><span class="n">temp_ax</span><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="n">cell_number</span><span class="p">[</span><span class="n">e2</span><span class="p">],</span>
+                              <span class="n">direction</span><span class="o">=</span><span class="n">direction</span><span class="p">[</span><span class="n">e2</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs_topography</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">regular_grid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">plot_regular_grid</span><span class="p">(</span><span class="n">temp_ax</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">regular_grid</span><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="n">cell_number</span><span class="p">[</span><span class="n">e2</span><span class="p">],</span>
+                                <span class="n">direction</span><span class="o">=</span><span class="n">direction</span><span class="p">[</span><span class="n">e2</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs_regular_grid</span><span class="p">)</span>
+
+        <span class="n">temp_ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="n">ve</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">show</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">p</span></div>
+
+
+<div class="viewcode-block" id="plot_3d"><a class="viewcode-back" href="../../../Plot/gempy.plot_3d.html#gempy.plot_3d">[docs]</a><span class="k">def</span> <span class="nf">plot_3d</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">plotter_type</span><span class="o">=</span><span class="s1">&#39;basic&#39;</span><span class="p">,</span>
+            <span class="n">show_data</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">show_results</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">show_surfaces</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">show_lith</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">show_scalar</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">show_boundaries</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">show_topography</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">scalar_field</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">ve</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">kwargs_plot_structured_grid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">kwargs_plot_topography</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">kwargs_plot_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">image</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">off_screen</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GemPyToVista</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;foobar</span>
+
+<span class="sd">    Args:</span>
+
+<span class="sd">        model (:class:`gempy.core.model.Project`): Container class of all</span>
+<span class="sd">         objects that constitute a GemPy model.</span>
+<span class="sd">        plotter_type: PyVista plotter types. Supported plotters are:</span>
+<span class="sd">         &#39;basic&#39;, &#39;background&#39;, and &#39;notebook&#39;.</span>
+<span class="sd">        show_data (bool): Show original input data. Defaults to True.</span>
+<span class="sd">        show_results (bool): If False, override show lith, show_scalar, show_values</span>
+<span class="sd">        show_lith (bool): Show lithological block volumes. Defaults to True.</span>
+<span class="sd">        show_scalar (bool): Show scalar field isolines. Defaults to False.</span>
+<span class="sd">        show_boundaries (bool): Show surface boundaries as lines. Defaults to True.</span>
+<span class="sd">        show_topography (bool): Show topography on plot. Defaults to False.</span>
+<span class="sd">        scalar_field (str): Name of the field to be activated</span>
+<span class="sd">        series_n (int): number of the scalar field.</span>
+<span class="sd">        ve (float): Vertical Exaggeration</span>
+<span class="sd">        kwargs_plot_structured_grid:</span>
+<span class="sd">        kwargs_plot_topography:</span>
+<span class="sd">        **kwargs:</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        :class:`gempy.plot.vista.GemPyToVista`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">image</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">off_screen</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;off_screen&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">plotter_type</span> <span class="o">=</span> <span class="s1">&#39;basic&#39;</span>
+    <span class="k">if</span> <span class="n">show_results</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="n">show_surfaces</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">show_scalar</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">show_lith</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">if</span> <span class="n">kwargs_plot_topography</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">kwargs_plot_topography</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">kwargs_plot_structured_grid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">kwargs_plot_structured_grid</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">kwargs_plot_data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">kwargs_plot_data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+    <span class="n">fig_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;fig_path&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="n">gpv</span> <span class="o">=</span> <span class="n">GemPyToVista</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">plotter_type</span><span class="o">=</span><span class="n">plotter_type</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">show_surfaces</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">solutions</span><span class="o">.</span><span class="n">vertices</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">gpv</span><span class="o">.</span><span class="n">plot_surfaces</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">show_lith</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">and</span> <span class="n">model</span><span class="o">.</span><span class="n">solutions</span><span class="o">.</span><span class="n">lith_block</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">gpv</span><span class="o">.</span><span class="n">plot_structured_grid</span><span class="p">(</span><span class="s1">&#39;lith&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs_plot_structured_grid</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">show_scalar</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">and</span> <span class="n">model</span><span class="o">.</span><span class="n">solutions</span><span class="o">.</span><span class="n">scalar_field_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">gpv</span><span class="o">.</span><span class="n">plot_structured_grid</span><span class="p">(</span><span class="s2">&quot;scalar&quot;</span><span class="p">,</span> <span class="n">series</span><span class="o">=</span><span class="n">scalar_field</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">show_data</span><span class="p">:</span>
+        <span class="n">gpv</span><span class="o">.</span><span class="n">plot_data</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs_plot_data</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">show_topography</span> <span class="ow">and</span> <span class="n">model</span><span class="o">.</span><span class="n">_grid</span><span class="o">.</span><span class="n">topography</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">gpv</span><span class="o">.</span><span class="n">plot_topography</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs_plot_topography</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">ve</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">gpv</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">set_scale</span><span class="p">(</span><span class="n">zscale</span><span class="o">=</span><span class="n">ve</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">fig_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">gpv</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">screenshot</span><span class="o">=</span><span class="n">fig_path</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">image</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">img</span> <span class="o">=</span> <span class="n">gpv</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">screenshot</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="n">gpv</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">off_screen</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="n">gpv</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">gpv</span></div>
+
+
+<span class="k">def</span> <span class="nf">plot_interactive_3d</span><span class="p">(</span>
+        <span class="n">geo_model</span><span class="p">,</span>
+        <span class="n">scalar_field</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;all&#39;</span><span class="p">,</span>
+        <span class="n">series</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">show_topography</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Plot interactive 3-D geomodel with three cross sections in subplots.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        geo_model: Geomodel object with solutions.</span>
+<span class="sd">        name (str): Can be either one of the following</span>
+<span class="sd">                &#39;lith&#39; - Lithology id block.</span>
+<span class="sd">                &#39;scalar&#39; - Scalar field block.</span>
+<span class="sd">                &#39;values&#39; - Values matrix block.</span>
+<span class="sd">        render_topography: Render topography. Defaults to False.</span>
+<span class="sd">        **kwargs:</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        :class:`gempy.plot.vista.GemPyToVista`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">gpv</span> <span class="o">=</span> <span class="n">GemPyToVista</span><span class="p">(</span><span class="n">geo_model</span><span class="p">,</span> <span class="n">plotter_type</span><span class="o">=</span><span class="s1">&#39;background&#39;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="s2">&quot;1|3&quot;</span><span class="p">)</span>
+    <span class="n">gpv</span><span class="o">.</span><span class="n">plot_data</span><span class="p">()</span>
+    <span class="n">gpv</span><span class="o">.</span><span class="n">plot_structured_grid_interactive</span><span class="p">(</span><span class="n">scalar_field</span><span class="o">=</span><span class="n">scalar_field</span><span class="p">,</span> <span class="n">series</span><span class="o">=</span><span class="n">series</span><span class="p">,</span>
+                                         <span class="n">render_topography</span><span class="o">=</span><span class="n">show_topography</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">gpv</span>
+
+
+<span class="k">def</span> <span class="nf">plot_section_traces</span><span class="p">(</span><span class="n">model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Plot section traces of section grid in 2-D topview (xy).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        model: Geomodel object with solutions.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (Plot2D) Plot2D object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pst</span> <span class="o">=</span> <span class="n">plot_2d</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">n_axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;z&#39;</span><span class="p">],</span> <span class="n">cell_number</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                  <span class="n">show_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show_boundaries</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show_lith</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">pst</span><span class="o">.</span><span class="n">plot_section_traces</span><span class="p">(</span><span class="n">pst</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">show_data</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">pst</span>
+
+
+<span class="k">def</span> <span class="nf">plot_stereonet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">litho</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">planes</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">poles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                   <span class="n">single_plots</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                   <span class="n">show_density</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">mplstereonet_import</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
+            <span class="s1">&#39;mplstereonet package is not installed. No stereographic projection available.&#39;</span><span class="p">)</span>
+
+    <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+
+    <span class="k">if</span> <span class="n">litho</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">litho</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">_orientations</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;surface&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">single_plots</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">mplstereonet</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+        <span class="n">df_sub2</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">litho</span><span class="p">:</span>
+            <span class="n">df_sub2</span> <span class="o">=</span> <span class="n">df_sub2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">_orientations</span><span class="o">.</span><span class="n">df</span><span class="p">[</span>
+                                         <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">_orientations</span><span class="o">.</span><span class="n">df</span><span class="p">[</span>
+                                             <span class="s1">&#39;surface&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">i</span><span class="p">])</span>
+
+    <span class="k">for</span> <span class="n">formation</span> <span class="ow">in</span> <span class="n">litho</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">single_plots</span><span class="p">:</span>
+            <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+            <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;stereonet&#39;</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">formation</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">1.1</span><span class="p">)</span>
+
+        <span class="c1"># if series_only:</span>
+        <span class="c1"># df_sub = self.model.orientations.df[self.model.orientations.df[&#39;series&#39;] == formation]</span>
+        <span class="c1"># else:</span>
+        <span class="n">df_sub</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">_orientations</span><span class="o">.</span><span class="n">df</span><span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">_orientations</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;surface&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">formation</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">poles</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">pole</span><span class="p">(</span><span class="n">df_sub</span><span class="p">[</span><span class="s1">&#39;azimuth&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">90</span><span class="p">,</span> <span class="n">df_sub</span><span class="p">[</span><span class="s1">&#39;dip&#39;</span><span class="p">],</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span>
+                    <span class="n">markersize</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span>
+                    <span class="n">markerfacecolor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_color_lot</span><span class="p">[</span><span class="n">formation</span><span class="p">],</span>
+                    <span class="n">markeredgewidth</span><span class="o">=</span><span class="mf">1.1</span><span class="p">,</span> <span class="n">markeredgecolor</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span>
+                    <span class="n">label</span><span class="o">=</span><span class="n">formation</span> <span class="o">+</span> <span class="s1">&#39;: &#39;</span> <span class="o">+</span> <span class="s1">&#39;pole point&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">planes</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plane</span><span class="p">(</span><span class="n">df_sub</span><span class="p">[</span><span class="s1">&#39;azimuth&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">90</span><span class="p">,</span> <span class="n">df_sub</span><span class="p">[</span><span class="s1">&#39;dip&#39;</span><span class="p">],</span>
+                     <span class="n">color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_color_lot</span><span class="p">[</span><span class="n">formation</span><span class="p">],</span>
+                     <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">formation</span> <span class="o">+</span> <span class="s1">&#39;: &#39;</span> <span class="o">+</span> <span class="s1">&#39;azimuth/dip&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">show_density</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">single_plots</span><span class="p">:</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">density_contourf</span><span class="p">(</span><span class="n">df_sub</span><span class="p">[</span><span class="s1">&#39;azimuth&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">90</span><span class="p">,</span> <span class="n">df_sub</span><span class="p">[</span><span class="s1">&#39;dip&#39;</span><span class="p">],</span>
+                                    <span class="n">measurement</span><span class="o">=</span><span class="s1">&#39;poles&#39;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">,</span>
+                                    <span class="n">alpha</span><span class="o">=.</span><span class="mi">5</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">density_contourf</span><span class="p">(</span><span class="n">df_sub2</span><span class="p">[</span><span class="s1">&#39;azimuth&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">90</span><span class="p">,</span> <span class="n">df_sub2</span><span class="p">[</span><span class="s1">&#39;dip&#39;</span><span class="p">],</span>
+                                    <span class="n">measurement</span><span class="o">=</span><span class="s1">&#39;poles&#39;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">,</span>
+                                    <span class="n">alpha</span><span class="o">=.</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="n">fig</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">top</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+        <span class="n">handles</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_legend_handles_labels</span><span class="p">()</span>
+        <span class="n">by_label</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">handles</span><span class="p">))</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">by_label</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">by_label</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">1.9</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">))</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">_grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">plot_topology</span><span class="p">(</span><span class="n">geo_model</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">centroids</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                  <span class="n">label_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">edge_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Plot the topology adjacency graph in 2-D.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            geo_model ([type]): GemPy geomodel instance.</span>
+<span class="sd">            edges (Set[Tuple[int, int]]): Set of topology edges.</span>
+<span class="sd">            centroids (Dict[int, Array[int, 3]]): Dictionary of topology id&#39;s and</span>
+<span class="sd">                their centroids.</span>
+<span class="sd">            direction (Union[&quot;x&quot;, &quot;y&quot;, &quot;z&quot;, optional): Section direction.</span>
+<span class="sd">                Defaults to &quot;y&quot;.</span>
+<span class="sd">            label_kwargs (dict, optional): Keyword arguments for topology labels.</span>
+<span class="sd">                Defaults to None.</span>
+<span class="sd">            edge_kwargs (dict, optional): Keyword arguments for topology edges.</span>
+<span class="sd">                Defaults to None.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">geo_model</span><span class="o">.</span><span class="n">_grid</span><span class="o">.</span><span class="n">regular_grid</span><span class="o">.</span><span class="n">resolution</span>
+    <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span>
+        <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">e1</span> <span class="o">=</span> <span class="n">geo_model</span><span class="o">.</span><span class="n">_grid</span><span class="o">.</span><span class="n">regular_grid</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">geo_model</span><span class="o">.</span><span class="n">_grid</span><span class="o">.</span><span class="n">regular_grid</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">e2</span> <span class="o">=</span> <span class="n">geo_model</span><span class="o">.</span><span class="n">_grid</span><span class="o">.</span><span class="n">regular_grid</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">-</span> <span class="n">geo_model</span><span class="o">.</span><span class="n">_grid</span><span class="o">.</span><span class="n">regular_grid</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+        <span class="n">d1</span> <span class="o">=</span> <span class="n">geo_model</span><span class="o">.</span><span class="n">_grid</span><span class="o">.</span><span class="n">regular_grid</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">d2</span> <span class="o">=</span> <span class="n">geo_model</span><span class="o">.</span><span class="n">_grid</span><span class="o">.</span><span class="n">regular_grid</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+        <span class="c1"># if len(list(centroids.items())[0][1]) == 2:</span>
+        <span class="c1">#     c1, c2 = (0, 1)</span>
+        <span class="n">r1</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">r2</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">direction</span> <span class="o">==</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span>
+        <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">e1</span> <span class="o">=</span> <span class="n">geo_model</span><span class="o">.</span><span class="n">_grid</span><span class="o">.</span><span class="n">regular_grid</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">geo_model</span><span class="o">.</span><span class="n">_grid</span><span class="o">.</span><span class="n">regular_grid</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">e2</span> <span class="o">=</span> <span class="n">geo_model</span><span class="o">.</span><span class="n">_grid</span><span class="o">.</span><span class="n">regular_grid</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">-</span> <span class="n">geo_model</span><span class="o">.</span><span class="n">_grid</span><span class="o">.</span><span class="n">regular_grid</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+        <span class="n">d1</span> <span class="o">=</span> <span class="n">geo_model</span><span class="o">.</span><span class="n">_grid</span><span class="o">.</span><span class="n">regular_grid</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">d2</span> <span class="o">=</span> <span class="n">geo_model</span><span class="o">.</span><span class="n">_grid</span><span class="o">.</span><span class="n">regular_grid</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+        <span class="c1"># if len(list(centroids.items())[0][1]) == 2:</span>
+        <span class="c1">#     c1, c2 = (0, 1)</span>
+        <span class="n">r1</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">r2</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">direction</span> <span class="o">==</span> <span class="s2">&quot;z&quot;</span><span class="p">:</span>
+        <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">e1</span> <span class="o">=</span> <span class="n">geo_model</span><span class="o">.</span><span class="n">_grid</span><span class="o">.</span><span class="n">regular_grid</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">geo_model</span><span class="o">.</span><span class="n">_grid</span><span class="o">.</span><span class="n">regular_grid</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">e2</span> <span class="o">=</span> <span class="n">geo_model</span><span class="o">.</span><span class="n">_grid</span><span class="o">.</span><span class="n">regular_grid</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">geo_model</span><span class="o">.</span><span class="n">_grid</span><span class="o">.</span><span class="n">regular_grid</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">d1</span> <span class="o">=</span> <span class="n">geo_model</span><span class="o">.</span><span class="n">_grid</span><span class="o">.</span><span class="n">regular_grid</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">d2</span> <span class="o">=</span> <span class="n">geo_model</span><span class="o">.</span><span class="n">_grid</span><span class="o">.</span><span class="n">regular_grid</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="c1"># if len(list(centroids.items())[0][1]) == 2:</span>
+        <span class="c1">#     c1, c2 = (0, 1)</span>
+        <span class="n">r1</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">r2</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">tkw</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;white&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;fontsize&quot;</span><span class="p">:</span> <span class="mi">13</span><span class="p">,</span>
+        <span class="s2">&quot;ha&quot;</span><span class="p">:</span> <span class="s2">&quot;center&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;va&quot;</span><span class="p">:</span> <span class="s2">&quot;center&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;weight&quot;</span><span class="p">:</span> <span class="s2">&quot;ultralight&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;family&quot;</span><span class="p">:</span> <span class="s2">&quot;monospace&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;verticalalignment&quot;</span><span class="p">:</span> <span class="s2">&quot;center&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;horizontalalignment&quot;</span><span class="p">:</span> <span class="s2">&quot;center&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;bbox&quot;</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="n">boxstyle</span><span class="o">=</span><span class="s1">&#39;round&#39;</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="n">label_kwargs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">tkw</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">label_kwargs</span><span class="p">)</span>
+
+    <span class="n">lkw</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;linewidth&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;black&quot;</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="n">edge_kwargs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">lkw</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">edge_kwargs</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">:</span>
+        <span class="c1"># plot edges</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">centroids</span><span class="p">[</span><span class="n">a</span><span class="p">][</span><span class="n">c1</span><span class="p">],</span> <span class="n">centroids</span><span class="p">[</span><span class="n">b</span><span class="p">][</span><span class="n">c1</span><span class="p">]])</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">centroids</span><span class="p">[</span><span class="n">a</span><span class="p">][</span><span class="n">c2</span><span class="p">],</span> <span class="n">centroids</span><span class="p">[</span><span class="n">b</span><span class="p">][</span><span class="n">c2</span><span class="p">]])</span>
+        <span class="k">if</span> <span class="n">scale</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="n">e1</span> <span class="o">/</span> <span class="n">r1</span> <span class="o">+</span> <span class="n">d1</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">y</span> <span class="o">*</span> <span class="n">e2</span> <span class="o">/</span> <span class="n">r2</span> <span class="o">+</span> <span class="n">d2</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">lkw</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">edges</span><span class="p">)):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">centroids</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="n">c1</span><span class="p">]</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">centroids</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="n">c2</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">scale</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="n">e1</span> <span class="o">/</span> <span class="n">r1</span> <span class="o">+</span> <span class="n">d1</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">y</span> <span class="o">*</span> <span class="n">e2</span> <span class="o">/</span> <span class="n">r2</span> <span class="o">+</span> <span class="n">d2</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">node</span><span class="p">),</span> <span class="o">**</span><span class="n">tkw</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">plot_ar</span><span class="p">(</span><span class="n">geo_model</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">project_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">api_token</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">secret</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Create, upload and retrieve tag to visualize the model in AR in rexview</span>
+
+<span class="sd">    https://www.rexos.org/getting-started/</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        geo_model (gempy.Model):</span>
+<span class="sd">        path: Location for rex files. Default cwd</span>
+<span class="sd">        project_name: Name of the project in rexos</span>
+<span class="sd">        api_token: rexos api token</span>
+<span class="sd">        secret: rexos secret</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        gempy.addons.rex_api.Rextag</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">gempy.addons.rex_api</span> <span class="kn">import</span> <span class="n">upload_to_rexcloud</span>
+    <span class="kn">from</span> <span class="nn">gempy.addons.gempy_to_rexfile</span> <span class="kn">import</span> <span class="n">write_rex</span><span class="p">,</span> <span class="n">geomodel_to_rex</span>
+    <span class="k">if</span> <span class="n">project_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">project_name</span> <span class="o">=</span> <span class="n">geo_model</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">project_name</span>
+
+    <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;./&#39;</span>
+
+    <span class="n">rex_bytes</span> <span class="o">=</span> <span class="n">geomodel_to_rex</span><span class="p">(</span><span class="n">geo_model</span><span class="p">)</span>
+    <span class="n">files_path</span> <span class="o">=</span> <span class="n">write_rex</span><span class="p">(</span><span class="n">rex_bytes</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+    <span class="n">project_name_</span> <span class="o">=</span> <span class="n">project_name</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">40</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">tag</span> <span class="o">=</span> <span class="n">upload_to_rexcloud</span><span class="p">(</span><span class="n">files_path</span><span class="p">,</span> <span class="n">project_name</span><span class="o">=</span><span class="n">project_name_</span><span class="p">,</span>
+                                     <span class="n">api_token</span><span class="o">=</span><span class="n">api_token</span><span class="p">,</span> <span class="n">secret</span><span class="o">=</span><span class="n">secret</span><span class="p">)</span>
+            <span class="k">break</span>
+        <span class="k">except</span> <span class="ne">ConnectionError</span><span class="p">:</span>
+            <span class="n">project_name_</span> <span class="o">=</span> <span class="n">project_name</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="k">pass</span>
+
+    <span class="k">return</span> <span class="n">tag</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../index.html">
+    <img class="logo" src="../../../_static/./logos/gempy.png" alt="Logo"/>
+    
+    <h1 class="logo logo-name">GemPy</h1>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a class="badge" href="https://travis-ci.org/cgre-aachen/gempy">
+    <img
+        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../projects.html">Additional projects</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/index.html">GemPy Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../integrations/index.html">Integrations</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../code.html">Code</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017-2020, CGRE-Aachen Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

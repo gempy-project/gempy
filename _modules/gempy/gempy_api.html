@@ -1,0 +1,518 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>gempy.gempy_api &#8212; GemPy 2.2.7 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for gempy.gempy_api</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This file is part of gempy.</span>
+
+<span class="sd">gempy is free software. For license details, see the LICENSE.md file supplied</span>
+<span class="sd"> with gempy</span>
+
+<span class="sd">Created on 10/10 /2018</span>
+
+<span class="sd">@author: Miguel de la Varga</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pn</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">ndarray</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">gempy.core.model</span> <span class="kn">import</span> <span class="n">Project</span>
+<span class="kn">from</span> <span class="nn">gempy.core.solution</span> <span class="kn">import</span> <span class="n">Solution</span>
+<span class="kn">from</span> <span class="nn">gempy.utils.meta</span> <span class="kn">import</span> <span class="n">_setdoc</span><span class="p">,</span> <span class="n">_setdoc_pro</span>
+
+
+<span class="c1"># region get</span>
+<span class="k">def</span> <span class="nf">get</span><span class="p">():</span>
+    <span class="k">pass</span>
+
+
+<span class="c1"># endregion</span>
+
+<span class="c1"># region edit</span>
+<span class="k">def</span> <span class="nf">edit</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">Project</span><span class="p">,</span>  <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data_object</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Function to edit any of the data_objects of gempy. Check</span>
+<span class="sd">        https://www.gempy.org/documentation data for documentation.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        model (Project):</span>
+<span class="sd">        data_object (str): Object that you want to edit</span>
+<span class="sd">        method (str): Method you want to use</span>
+<span class="sd">        **kwargs:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">data_object</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">data_object</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">data_object</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">data_object</span> <span class="o">=</span> <span class="n">model</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">data_object</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">m</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+<span class="c1"># endregion</span>
+
+
+<span class="c1"># region mapping</span>
+<div class="viewcode-block" id="map_series_to_surfaces"><a class="viewcode-back" href="../../GemPy%20API/gempy.map_series_to_surfaces.html#gempy.map_series_to_surfaces">[docs]</a><span class="nd">@_setdoc_pro</span><span class="p">(</span><span class="n">Project</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">map_series_to_surfaces</span><span class="p">(</span><span class="n">geo_model</span><span class="p">:</span> <span class="n">Project</span><span class="p">,</span> <span class="n">mapping_object</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">pn</span><span class="o">.</span><span class="n">Categorical</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                           <span class="n">set_series</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sort_geometric_data</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">remove_unused_series</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Mapping which surfaces belongs to which geological feature</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        geo_model (:class:`gempy.core.model.Project`): [s0]</span>
+<span class="sd">        mapping_object: [s_mapping_object]</span>
+<span class="sd">        set_series (bool): If True set missing series from the mapping object</span>
+<span class="sd">        sort_geometric_data (bool): If True sort the geometric_data according to the new</span>
+<span class="sd">         order of the stack</span>
+<span class="sd">        remove_unused_series(bool):</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">        :class:`gempy.core.data.Surfaces`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Series is going to get renamed to Stack. Please use&#39;</span>
+                  <span class="s1">&#39;`map_stack_to_surfaces` instead.&#39;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
+
+    <span class="n">geo_model</span><span class="o">.</span><span class="n">map_stack_to_surfaces</span><span class="p">(</span><span class="n">mapping_object</span><span class="p">,</span> <span class="n">set_series</span><span class="p">,</span> <span class="n">sort_geometric_data</span><span class="p">,</span> <span class="n">remove_unused_series</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">geo_model</span><span class="o">.</span><span class="n">_surfaces</span></div>
+
+
+<div class="viewcode-block" id="map_stack_to_surfaces"><a class="viewcode-back" href="../../GemPy%20API/gempy.map_stack_to_surfaces.html#gempy.map_stack_to_surfaces">[docs]</a><span class="nd">@_setdoc_pro</span><span class="p">(</span><span class="n">Project</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">map_stack_to_surfaces</span><span class="p">(</span><span class="n">geo_model</span><span class="p">:</span> <span class="n">Project</span><span class="p">,</span> <span class="n">mapping_object</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">pn</span><span class="o">.</span><span class="n">Categorical</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                          <span class="n">set_features</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sort_geometric_data</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">remove_unused_series</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Mapping which surfaces belongs to which geological feature</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        geo_model (:class:`gempy.core.model.Project`): [s0]</span>
+<span class="sd">        mapping_object: [s_mapping_object]</span>
+<span class="sd">        set_features (bool): If True set missing features from the mapping object</span>
+<span class="sd">        sort_geometric_data (bool): If True sort the geometric_data according to the new</span>
+<span class="sd">         order of the stack</span>
+<span class="sd">        remove_unused_series(bool):</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">        :class:`gempy.core.data.Surfaces`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">geo_model</span><span class="o">.</span><span class="n">map_stack_to_surfaces</span><span class="p">(</span><span class="n">mapping_object</span><span class="p">,</span> <span class="n">set_features</span><span class="p">,</span> <span class="n">sort_geometric_data</span><span class="p">,</span> <span class="n">remove_unused_series</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">geo_model</span><span class="o">.</span><span class="n">_surfaces</span></div>
+
+<span class="c1"># endregion</span>
+
+
+<span class="c1"># region create</span>
+<div class="viewcode-block" id="create_model"><a class="viewcode-back" href="../../GemPy%20API/gempy.create_model.html#gempy.create_model">[docs]</a><span class="k">def</span> <span class="nf">create_model</span><span class="p">(</span><span class="n">project_name</span><span class="o">=</span><span class="s1">&#39;default_project&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Project</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Create a Project object.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        project_name (str): Name of the project</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        :class:`gempy.core.model.Project`</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        :class:`gempy.core.model.Project`</span>
+
+<span class="sd">    Notes:</span>
+<span class="sd">        TODO: Adding saving address</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">Project</span><span class="p">(</span><span class="n">project_name</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="create_data"><a class="viewcode-back" href="../../GemPy%20API/gempy.create_data.html#gempy.create_data">[docs]</a><span class="k">def</span> <span class="nf">create_data</span><span class="p">(</span><span class="n">project_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;default_project&#39;</span><span class="p">,</span>
+                <span class="n">extent</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="n">resolution</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Project</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Create a :class:`gempy.core.model.Project` object and initialize some of</span>
+<span class="sd">    the main functions such as:</span>
+
+<span class="sd">    - Grid :class:`gempy.core.data.GridClass`: To regular grid.</span>
+<span class="sd">    - read_csv: SurfacePoints and orientations: From csv files</span>
+<span class="sd">    - set_values to default</span>
+
+
+
+<span class="sd">    Args:</span>
+<span class="sd">        project_name (str):</span>
+<span class="sd">        extent (list or array): [x_min, x_max, y_min, y_max, z_min, z_max].</span>
+<span class="sd">            Extent for the visualization of data and default of for the grid</span>
+<span class="sd">            class.</span>
+<span class="sd">        resolution (list or array): [nx, ny, nz]. Resolution for the</span>
+<span class="sd">            visualization of data and default of for the grid class.</span>
+<span class="sd">        **kwargs:</span>
+
+<span class="sd">    Keyword:</span>
+<span class="sd">        path_i: Path to the data bases of surface_points. Default os.getcwd(),</span>
+<span class="sd">        path_o: Path to the data bases of orientations. Default os.getcwd()</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        :class:`Project`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">geo_model</span> <span class="o">=</span> <span class="n">create_model</span><span class="p">(</span><span class="n">project_name</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">init_data</span><span class="p">(</span><span class="n">geo_model</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="n">extent</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="n">resolution</span><span class="p">,</span>
+                     <span class="n">project_name</span><span class="o">=</span><span class="n">project_name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<span class="c1"># TODO We need to decide how to initialize a model. Having create_data and init</span>
+<span class="c1">#  data  does not seem too robust</span>
+<div class="viewcode-block" id="init_data"><a class="viewcode-back" href="../../GemPy%20API/gempy.init_data.html#gempy.init_data">[docs]</a><span class="nd">@_setdoc_pro</span><span class="p">([</span><span class="n">Project</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">init_data</span><span class="p">(</span><span class="n">geo_model</span><span class="p">:</span> <span class="n">Project</span><span class="p">,</span> <span class="n">extent</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+              <span class="n">resolution</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+              <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Project</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Initialize some of the main functions such as:</span>
+
+<span class="sd">     - Regular grid (:class:`gempy.core.data.Grid`).</span>
+<span class="sd">     - read_csv: :class:`gempy.core.data_modules.geometric_data.SurfacePoints`</span>
+<span class="sd">       and :class:`gempy.core.data_modules.geometric_data.Orientations` From csv files</span>
+<span class="sd">     - set_values to default</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        geo_model (Project): [s0]</span>
+<span class="sd">        extent: [s_extent]</span>
+<span class="sd">        resolution: [s_resolution]</span>
+
+<span class="sd">    Keyword Args:</span>
+<span class="sd">        path_i: [s_path_i]</span>
+<span class="sd">        path_o: [s_path_o]</span>
+<span class="sd">        surface_points_df: [s_surface_points_df]</span>
+<span class="sd">        orientations_df: [s_orientations_df]</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        :class:`gempy.core.model.Project`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">extent</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">resolution</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Regular grid won</span><span class="se">\&#39;</span><span class="s1">t be initialize, you will have to create a gridafterwards. See gempy.set_grid&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">geo_model</span><span class="o">.</span><span class="n">set_regular_grid</span><span class="p">(</span><span class="n">extent</span><span class="p">,</span> <span class="n">resolution</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s1">&#39;path_i&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">or</span> <span class="s1">&#39;path_o&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="n">read_csv</span><span class="p">(</span><span class="n">geo_model</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s1">&#39;surface_points_df&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="n">geo_model</span><span class="o">.</span><span class="n">set_surface_points</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;surface_points_df&#39;</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1"># if we set the surfaces names with surfaces they cannot be set again on orientations or pandas will complain.</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;update_surfaces&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="s1">&#39;orientations_df&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="n">geo_model</span><span class="o">.</span><span class="n">set_orientations</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;orientations_df&#39;</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">geo_model</span></div>
+
+
+<span class="c1"># endregion</span>
+
+
+<span class="c1"># If everything works out properly update. Should happen automatically. Therefore</span>
+<span class="c1"># we will keep it just as a method</span>
+<span class="c1"># region update</span>
+<div class="viewcode-block" id="update_additional_data"><a class="viewcode-back" href="../../GemPy%20API/gempy.update_additional_data.html#gempy.update_additional_data">[docs]</a><span class="k">def</span> <span class="nf">update_additional_data</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">Project</span><span class="p">,</span> <span class="n">update_structure</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">update_kriging</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Args:</span>
+<span class="sd">        model (Project):</span>
+<span class="sd">        update_structure:</span>
+<span class="sd">        update_kriging:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;This function is going to be deprecated. Use Project.update_additional_data instead&#39;</span><span class="p">,</span>
+                  <span class="ne">DeprecationWarning</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">model</span><span class="o">.</span><span class="n">update_additional_data</span><span class="p">(</span><span class="n">update_structure</span><span class="p">,</span> <span class="n">update_kriging</span><span class="p">)</span></div>
+
+
+<span class="c1"># endregion</span>
+
+
+<span class="c1"># region io</span>
+<span class="c1"># @_setdoc([Project.read_data.__doc__])</span>
+<div class="viewcode-block" id="read_csv"><a class="viewcode-back" href="../../GemPy%20API/gempy.read_csv.html#gempy.read_csv">[docs]</a><span class="k">def</span> <span class="nf">read_csv</span><span class="p">(</span><span class="n">geo_model</span><span class="p">:</span> <span class="n">Project</span><span class="p">,</span> <span class="n">path_i</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">path_o</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Args:</span>
+<span class="sd">        geo_model (Project):</span>
+<span class="sd">        path_i:</span>
+<span class="sd">        path_o:</span>
+<span class="sd">        **kwargs:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">path_i</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">path_o</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">geo_model</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">path_i</span><span class="p">,</span> <span class="n">path_o</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s1">&#39;Loading of CSV file failed. Check if you use commas &#39;</span>
+                           <span class="s1">&#39;to separate your data.&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<span class="c1"># endregion</span>
+
+
+<span class="c1"># region Computing the model</span>
+<div class="viewcode-block" id="compute_model"><a class="viewcode-back" href="../../GemPy%20API/gempy.compute_model.html#gempy.compute_model">[docs]</a><span class="nd">@_setdoc_pro</span><span class="p">([</span><span class="n">Project</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">,</span> <span class="n">Solution</span><span class="o">.</span><span class="n">compute_marching_cubes_regular_grid</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">,</span>
+              <span class="n">Project</span><span class="o">.</span><span class="n">set_surface_order_from_solution</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">compute_model</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">Project</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">at</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">compute_mesh</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                  <span class="n">reset_weights</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reset_scalar</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                  <span class="n">reset_block</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">sort_surfaces</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                  <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">set_solutions</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                  <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Solution</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Computes the geological model and any extra output given in the</span>
+<span class="sd">    additional data option.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        model (Project): [s0]</span>
+<span class="sd">        output (str {&#39;geology&#39;, &#39;gravity&#39;}): Compute the lithologies or gravity</span>
+<span class="sd">        at (np.ndarray):</span>
+<span class="sd">        compute_mesh (bool): if True compute marching cubes: [s1]</span>
+<span class="sd">        reset_weights (bool): Not Implemented</span>
+<span class="sd">        reset_scalar (bool): Not Implemented</span>
+<span class="sd">        reset_block (bool): Not Implemented</span>
+<span class="sd">        sort_surfaces (bool): if True call</span>
+<span class="sd">            Project.set_surface_order_from_solution: [s2]</span>
+<span class="sd">        debug (bool): if True, the computed interpolation are not stored in any</span>
+<span class="sd">            object but instead returned</span>
+<span class="sd">        set_solutions (bool): Default True. If True set the results into the</span>
+<span class="sd">            :class:`Solutions` linked object.</span>
+<span class="sd">        **kwargs:</span>
+
+<span class="sd">    Keyword Args:</span>
+<span class="sd">        compute_mesh_options (dict): options for the marching cube function. 1)</span>
+<span class="sd">            rescale: True</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        :class:`Solutions`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Check config</span>
+    <span class="c1"># ------------</span>
+    <span class="k">assert</span> <span class="n">model</span><span class="o">.</span><span class="n">_interpolator</span><span class="o">.</span><span class="n">theano_function</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;You need to compile&#39;</span> \
+                                                           <span class="s1">&#39;graph before. See `gempy.set_interpolator`.&#39;</span>
+
+    <span class="k">assert</span> <span class="n">model</span><span class="o">.</span><span class="n">_additional_data</span><span class="o">.</span><span class="n">structure_data</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;values&#39;</span><span class="p">,</span> <span class="s1">&#39;len surfaces surface_points&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">,</span> \
+        <span class="s1">&#39;To compute the model is necessary at least 2 interface points per layer&#39;</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">_interpolator</span><span class="o">.</span><span class="n">len_series_i</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">_interpolator</span><span class="o">.</span><span class="n">len_series_o</span><span class="p">),</span> \
+        <span class="s1">&#39;Every Series/Fault need at least 1 orientation and 2 surfaces points.&#39;</span>
+
+    <span class="k">if</span> <span class="n">output</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Argument output has no effect anymore and will be deprecated in GemPy 2.2.&#39;</span>
+                      <span class="s1">&#39;Set the output only in gempy.set_interpolator.&#39;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="p">)</span>
+    <span class="k">if</span> <span class="n">at</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">_grid</span><span class="o">.</span><span class="n">deactivate_all_grids</span><span class="p">()</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">set_custom_grid</span><span class="p">(</span><span class="n">at</span><span class="p">)</span>
+
+    <span class="c1"># ------------</span>
+
+    <span class="n">i</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">_interpolator</span><span class="o">.</span><span class="n">get_python_input_block</span><span class="p">(</span><span class="n">append_control</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fault_drift</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">_interpolator</span><span class="o">.</span><span class="n">reset_flow_control_initial_results</span><span class="p">(</span><span class="n">reset_weights</span><span class="p">,</span> <span class="n">reset_scalar</span><span class="p">,</span> <span class="n">reset_block</span><span class="p">)</span>
+
+    <span class="n">sol</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">_interpolator</span><span class="o">.</span><span class="n">theano_function</span><span class="p">(</span><span class="o">*</span><span class="n">i</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">debug</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">or</span> <span class="n">set_solutions</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">sol</span>
+
+    <span class="k">elif</span> <span class="n">set_solutions</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+
+        <span class="n">model</span><span class="o">.</span><span class="n">solutions</span><span class="o">.</span><span class="n">set_solutions</span><span class="p">(</span>
+            <span class="n">sol</span><span class="p">,</span>
+            <span class="n">compute_mesh</span><span class="p">,</span>
+            <span class="n">sort_surfaces</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">sort_surfaces</span><span class="p">:</span>
+            <span class="n">model</span><span class="o">.</span><span class="n">set_surface_order_from_solution</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">model</span><span class="o">.</span><span class="n">solutions</span></div>
+
+
+<span class="c1"># @_setdoc([Project.set_custom_grid.__doc__, compute_model.__doc__], indent=False)</span>
+<div class="viewcode-block" id="compute_model_at"><a class="viewcode-back" href="../../GemPy%20API/gempy.compute_model_at.html#gempy.compute_model_at">[docs]</a><span class="k">def</span> <span class="nf">compute_model_at</span><span class="p">(</span><span class="n">new_grid</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">model</span><span class="p">:</span> <span class="n">Project</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This function creates a new custom grid and deactivate all the other</span>
+<span class="sd">    grids and compute the model there:</span>
+
+<span class="sd">    This function does the same as  plus the addition functionallity of</span>
+<span class="sd">        :func:`compute_model`</span>
+<span class="sd">        passing a given array of points where evaluate the model instead of</span>
+<span class="sd">        using the :class:`gempy.core.data.GridClass`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        new_grid:</span>
+<span class="sd">        model (Project):</span>
+<span class="sd">        kwargs: :func:`compute_model` arguments</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        :class:`Solution`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># #TODO create backup of the mesh and a method to go back to it</span>
+    <span class="c1">#     set_grid(model, Grid(&#39;custom_grid&#39;, custom_grid=new_grid))</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;compute_model_at will be deprecated.&#39;</span>
+                  <span class="s1">&#39;Use argument `at` in compute_model instead&#39;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">_grid</span><span class="o">.</span><span class="n">deactivate_all_grids</span><span class="p">()</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">set_custom_grid</span><span class="p">(</span><span class="n">new_grid</span><span class="p">)</span>
+
+    <span class="c1"># Now we are good to compute the model again only in the new point</span>
+    <span class="n">sol</span> <span class="o">=</span> <span class="n">compute_model</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">set_solutions</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">sol</span></div>
+
+<span class="c1"># endregion</span>
+
+
+<span class="c1"># region activate</span>
+<div class="viewcode-block" id="activate_interactive_df"><a class="viewcode-back" href="../../GemPy%20API/gempy.activate_interactive_df.html#gempy.activate_interactive_df">[docs]</a><span class="nd">@_setdoc_pro</span><span class="p">([</span><span class="n">Project</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">],</span> <span class="p">)</span>
+<span class="k">def</span> <span class="nf">activate_interactive_df</span><span class="p">(</span><span class="n">geo_model</span><span class="p">:</span> <span class="n">Project</span><span class="p">,</span> <span class="n">plot_object</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Experimental: Activate the use of the QgridProjectIntegration: TODO</span>
+<span class="sd">    evaluate the use of this functionality</span>
+
+<span class="sd">    Notes: Since this feature is for advance levels we will keep only object</span>
+<span class="sd">    oriented functionality. Should we add in the future,</span>
+
+<span class="sd">    TODO: copy docstrings to QgridModelIntegration :param geo_model: [s0]</span>
+<span class="sd">    :param plot_object: GemPy plot object (so far only vtk is available)</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        geo_model (Project):</span>
+<span class="sd">        plot_object:</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        :class:`QgridModelIntegration`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">gempy.core.qgrid_integration</span> <span class="kn">import</span> <span class="n">QgridModelIntegration</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s1">&#39;qgrid package is not installed. No interactive dataframes available.&#39;</span><span class="p">)</span>
+    <span class="n">geo_model</span><span class="o">.</span><span class="n">qi</span> <span class="o">=</span> <span class="n">QgridModelIntegration</span><span class="p">(</span><span class="n">geo_model</span><span class="p">,</span> <span class="n">plot_object</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">geo_model</span><span class="o">.</span><span class="n">qi</span></div>
+<span class="c1"># endregion</span>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../index.html">
+    <img class="logo" src="../../_static/./logos/gempy.png" alt="Logo"/>
+    
+    <h1 class="logo logo-name">GemPy</h1>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a class="badge" href="https://travis-ci.org/cgre-aachen/gempy">
+    <img
+        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../projects.html">Additional projects</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">GemPy Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../integrations/index.html">Integrations</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../code.html">Code</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017-2020, CGRE-Aachen Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

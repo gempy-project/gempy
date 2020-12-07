@@ -1,0 +1,34 @@
+﻿gempy.core.grid\_modules.grid\_types.CenteredGrid
+=================================================
+
+.. currentmodule:: gempy.core.grid_modules.grid_types
+
+
+.. autoclass:: CenteredGrid
+   :no-undoc-members:
+
+   
+   .. rubric:: Examples using CenteredGrid
+   .. include:: ../gen_modules/backreferences/gempy.core.grid_modules.grid_types.CenteredGrid.examples
+   .. raw:: html
+
+       <div class="sphx-glr-clear"></div>
+   
+   
+   
+   .. rubric:: Methods
+   .. autosummary::
+   
+      ~CenteredGrid.__init__
+      ~CenteredGrid.create_irregular_grid_kernel
+      ~CenteredGrid.set_centered_grid
+      ~CenteredGrid.set_centered_kernel
+      ~CenteredGrid.set_tz_kernel
+   
+   
+
+   
+   
+   
+
+

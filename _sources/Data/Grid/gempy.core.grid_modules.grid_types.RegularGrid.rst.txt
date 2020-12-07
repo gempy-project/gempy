@@ -1,0 +1,35 @@
+﻿gempy.core.grid\_modules.grid\_types.RegularGrid
+================================================
+
+.. currentmodule:: gempy.core.grid_modules.grid_types
+
+
+.. autoclass:: RegularGrid
+   :no-undoc-members:
+
+   
+   .. rubric:: Examples using RegularGrid
+   .. include:: ../gen_modules/backreferences/gempy.core.grid_modules.grid_types.RegularGrid.examples
+   .. raw:: html
+
+       <div class="sphx-glr-clear"></div>
+   
+   
+   
+   .. rubric:: Methods
+   .. autosummary::
+   
+      ~RegularGrid.__init__
+      ~RegularGrid.create_regular_grid_3d
+      ~RegularGrid.get_dx_dy_dz
+      ~RegularGrid.set_coord
+      ~RegularGrid.set_regular_grid
+      ~RegularGrid.set_topography_mask
+   
+   
+
+   
+   
+   
+
+

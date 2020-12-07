@@ -1,0 +1,46 @@
+﻿gempy.core.data\_modules.stack.Stack
+====================================
+
+.. currentmodule:: gempy.core.data_modules.stack
+
+
+.. autoclass:: Stack
+   :no-undoc-members:
+
+   
+   .. rubric:: Examples using Stack
+   .. include:: ../gen_modules/backreferences/gempy.core.data_modules.stack.Stack.examples
+   .. raw:: html
+
+       <div class="sphx-glr-clear"></div>
+   
+   
+   
+   .. rubric:: Methods
+   .. autosummary::
+   
+      ~Stack.__init__
+      ~Stack.add_series
+      ~Stack.count_faults
+      ~Stack.delete_series
+      ~Stack.modify_order_series
+      ~Stack.rename_series
+      ~Stack.reorder_series
+      ~Stack.reset_order_series
+      ~Stack.set_bottom_relation
+      ~Stack.set_default_faults_relations
+      ~Stack.set_fault_relation
+      ~Stack.set_is_fault
+      ~Stack.set_is_finite_fault
+      ~Stack.set_series_index
+      ~Stack.sort_series
+      ~Stack.update_faults_index_rename
+      ~Stack.update_faults_index_reorder
+   
+   
+
+   
+   
+   
+
+

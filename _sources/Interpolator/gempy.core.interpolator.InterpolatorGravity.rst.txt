@@ -1,0 +1,35 @@
+﻿gempy.core.interpolator.InterpolatorGravity
+===========================================
+
+.. currentmodule:: gempy.core.interpolator
+
+
+.. autoclass:: InterpolatorGravity
+   :no-undoc-members:
+
+   
+   .. rubric:: Examples using InterpolatorGravity
+   .. include:: ../gen_modules/backreferences/gempy.core.interpolator.InterpolatorGravity.examples
+   .. raw:: html
+
+       <div class="sphx-glr-clear"></div>
+   
+   
+   
+   .. rubric:: Methods
+   .. autosummary::
+   
+      ~InterpolatorGravity.__init__
+      ~InterpolatorGravity.calculate_tz
+      ~InterpolatorGravity.set_theano_shared_gravity
+      ~InterpolatorGravity.set_theano_shared_l0_l1
+      ~InterpolatorGravity.set_theano_shared_pos_density
+      ~InterpolatorGravity.set_theano_shared_tz_kernel
+   
+   
+
+   
+   
+   
+
+

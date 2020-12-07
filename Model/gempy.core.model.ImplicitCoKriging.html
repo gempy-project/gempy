@@ -1,0 +1,1775 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>gempy.core.model.ImplicitCoKriging &#8212; GemPy 2.2.7 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="gempy.plot_2d" href="../Plot/gempy.plot_2d.html" />
+    <link rel="prev" title="gempy.core.model.Project" href="gempy.core.model.Project.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="gempy-core-model-implicitcokriging">
+<h1>gempy.core.model.ImplicitCoKriging<a class="headerlink" href="#gempy-core-model-implicitcokriging" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="gempy.core.model.ImplicitCoKriging">
+<em class="property">class </em><code class="sig-prename descclassname">gempy.core.model.</code><code class="sig-name descname">ImplicitCoKriging</code><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>This class handles all the mutation of the data objects of the model involved on the</dt><dd><p>implicit cokriging ensuring the synchronization of all the members.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="gempy.core.model.ImplicitCoKriging._grid">
+<code class="sig-name descname">_grid</code><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging._grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>[s0]  Class to generate grids.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../Data/gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data.Grid</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="gempy.core.model.ImplicitCoKriging._faults">
+<code class="sig-name descname">_faults</code><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging._faults" title="Permalink to this definition">¶</a></dt>
+<dd><p>[s1] Class that encapsulate faulting related content. Mainly, which surfaces/surfaces are faults. The fault network—i.e. which faults offset other faults—and fault types—finite vs infinite.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../Data/gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data.Grid</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="gempy.core.model.ImplicitCoKriging._stack">
+<code class="sig-name descname">_stack</code><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging._stack" title="Permalink to this definition">¶</a></dt>
+<dd><p>[s2]  Class that contains the functionality and attributes related to the series. Notice that series does not onlyrefers to stratigraphic series but to any set of surfaces which will be interpolated together (comfortably).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../Data/gempy.core.data_modules.stack.Stack.html#gempy.core.data_modules.stack.Stack" title="gempy.core.data_modules.stack.Stack"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.stack.Stack</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="gempy.core.model.ImplicitCoKriging._surfaces">
+<code class="sig-name descname">_surfaces</code><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging._surfaces" title="Permalink to this definition">¶</a></dt>
+<dd><p>[s3] Class that contains the surfaces of the model and the values of each of them.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../Data/gempy.core.data.Surfaces.html#gempy.core.data.Surfaces" title="gempy.core.data.Surfaces"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data.Surfaces</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="gempy.core.model.ImplicitCoKriging._surface_points">
+<code class="sig-name descname">_surface_points</code><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging._surface_points" title="Permalink to this definition">¶</a></dt>
+<dd><p>[s4] Data child with specific methods to manipulate interface data. It is initialize without arguments to giveflexibility to the origin of the data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../Data/gempy.core.data_modules.geometric_data.SurfacePoints.html#gempy.core.data_modules.geometric_data.SurfacePoints" title="gempy.core.data_modules.geometric_data.SurfacePoints"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.geometric_data.SurfacePoints</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="gempy.core.model.ImplicitCoKriging._orientations">
+<code class="sig-name descname">_orientations</code><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging._orientations" title="Permalink to this definition">¶</a></dt>
+<dd><p>[s5] Data child with specific methods to manipulate orientation data. It is initialize without arguments to giveflexibility to the origin of the data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../Data/gempy.core.data_modules.geometric_data.Orientations.html#gempy.core.data_modules.geometric_data.Orientations" title="gempy.core.data_modules.geometric_data.Orientations"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.geometric_data.Orientations</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="gempy.core.model.ImplicitCoKriging._rescaling">
+<code class="sig-name descname">_rescaling</code><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging._rescaling" title="Permalink to this definition">¶</a></dt>
+<dd><p>[s6] Auxiliary class to rescale the coordinates between 0 and 1 to increase float stability.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.geometric_data.Rescaling</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="gempy.core.model.ImplicitCoKriging._additional_data">
+<code class="sig-name descname">_additional_data</code><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging._additional_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>[s7] Container class that encapsulate <code class="xref py py-class docutils literal notranslate"><span class="pre">Structure</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">KrigingParameters</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Options</span></code> and rescaling parameters</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../Data/gempy.core.data.AdditionalData.html#gempy.core.data.AdditionalData" title="gempy.core.data.AdditionalData"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data.AdditionalData</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="gempy.core.model.ImplicitCoKriging._interpolator">
+<code class="sig-name descname">_interpolator</code><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging._interpolator" title="Permalink to this definition">¶</a></dt>
+<dd><p>[s8] Child class of <code class="xref py py-class docutils literal notranslate"><span class="pre">Interpolator</span></code> which set the shared variables and compiles the theanograph to compute the geological model, i.e. lithologies.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../Interpolator/gempy.core.interpolator.InterpolatorModel.html#gempy.core.interpolator.InterpolatorModel" title="gempy.core.interpolator.InterpolatorModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.interpolator.InterpolatorModel</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="gempy.core.model.ImplicitCoKriging.solutions">
+<code class="sig-name descname">solutions</code><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.solutions" title="Permalink to this definition">¶</a></dt>
+<dd><p>[s9] This class stores the output of the interpolation and the necessary objectsto visualize and manipulate this data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.solutions.Solutions</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Examples using ImplicitCoKriging</p>
+<div class="sphx-glr-thumbcontainer" tooltip="1.2b: The Implicit coKriging class"><div class="figure align-default" id="id1">
+<img alt="1.2b: The Implicit coKriging class" src="../_images/sphx_glr_ch1_2b_implicit_cokriging_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../tutorials/ch1_fundamentals/ch1_2b_implicit_cokriging.html#sphx-glr-tutorials-ch1-fundamentals-ch1-2b-implicit-cokriging-py"><span class="std std-ref">1.2b: The Implicit coKriging class</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-clear"></div><p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.__init__" title="gempy.core.model.ImplicitCoKriging.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>()</p></td>
+<td><p>Initialize self.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.add_features" title="gempy.core.model.ImplicitCoKriging.add_features"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_features</span></code></a>(features_list[, reset_order_series])</p></td>
+<td><p>Add series, update the categories dependent on them and reset the flow control.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.add_orientations" title="gempy.core.model.ImplicitCoKriging.add_orientations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_orientations</span></code></a>(X, Y, Z, surface[, …])</p></td>
+<td><p>Add orientation.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.add_series" title="gempy.core.model.ImplicitCoKriging.add_series"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_series</span></code></a>(series_list[, reset_order_series])</p></td>
+<td><p>Add series to the df</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.add_surface_points" title="gempy.core.model.ImplicitCoKriging.add_surface_points"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_surface_points</span></code></a>(X, Y, Z, surface[, idx, …])</p></td>
+<td><p>Add surface points.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.add_surface_values" title="gempy.core.model.ImplicitCoKriging.add_surface_values"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_surface_values</span></code></a>(values_array[, …])</p></td>
+<td><p>Add values to be interpolated for each surfaces.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.add_surfaces" title="gempy.core.model.ImplicitCoKriging.add_surfaces"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_surfaces</span></code></a>(surface_list[, update_df])</p></td>
+<td><p>Add surface to the df.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.delete_features" title="gempy.core.model.ImplicitCoKriging.delete_features"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delete_features</span></code></a>(indices[, …])</p></td>
+<td><p>Delete series, update the categories dependent on them and reset the flow control.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.delete_orientations" title="gempy.core.model.ImplicitCoKriging.delete_orientations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delete_orientations</span></code></a>(idx)</p></td>
+<td><p>Delete orientation</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.delete_series" title="gempy.core.model.ImplicitCoKriging.delete_series"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delete_series</span></code></a>(indices[, …])</p></td>
+<td><p>Delete series, update the categories dependent on them and reset the flow control.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.delete_surface_points" title="gempy.core.model.ImplicitCoKriging.delete_surface_points"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delete_surface_points</span></code></a>(idx)</p></td>
+<td><p>Delete surface points.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.delete_surface_points_basement" title="gempy.core.model.ImplicitCoKriging.delete_surface_points_basement"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delete_surface_points_basement</span></code></a>()</p></td>
+<td><p>Delete surface points belonging to the basement layer if any</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.delete_surface_values" title="gempy.core.model.ImplicitCoKriging.delete_surface_values"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delete_surface_values</span></code></a>(properties_names)</p></td>
+<td><p>Delete a property or several properties column.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.delete_surfaces" title="gempy.core.model.ImplicitCoKriging.delete_surfaces"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delete_surfaces</span></code></a>(indices[, update_id, …])</p></td>
+<td><p>&#64;TODO When implemeted activate geometric data, change remove data to False by default Delete a surface and update all related object.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_active_grids</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.map_geometric_data_df" title="gempy.core.model.ImplicitCoKriging.map_geometric_data_df"><code class="xref py py-obj docutils literal notranslate"><span class="pre">map_geometric_data_df</span></code></a>(d)</p></td>
+<td><p>Map a geometric data dataframe from the linked objects (at 07.2019 surfaces and series)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.map_series_to_surfaces" title="gempy.core.model.ImplicitCoKriging.map_series_to_surfaces"><code class="xref py py-obj docutils literal notranslate"><span class="pre">map_series_to_surfaces</span></code></a>(*args, **kwargs)</p></td>
+<td><p>Map series to surfaces and update all related objects accordingly to the following arguments:</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.map_stack_to_surfaces" title="gempy.core.model.ImplicitCoKriging.map_stack_to_surfaces"><code class="xref py py-obj docutils literal notranslate"><span class="pre">map_stack_to_surfaces</span></code></a>([mapping_object, …])</p></td>
+<td><p>Map series to surfaces and update all related objects accordingly to the following arguments:</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.modify_kriging_parameters" title="gempy.core.model.ImplicitCoKriging.modify_kriging_parameters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modify_kriging_parameters</span></code></a>(attribute, value, …)</p></td>
+<td><p>Method to modify a given field</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.modify_options" title="gempy.core.model.ImplicitCoKriging.modify_options"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modify_options</span></code></a>(attribute, value)</p></td>
+<td><p>Method to modify a given field</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.modify_order_features" title="gempy.core.model.ImplicitCoKriging.modify_order_features"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modify_order_features</span></code></a>(new_value, idx)</p></td>
+<td><p>Modify order of the feature.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.modify_order_series" title="gempy.core.model.ImplicitCoKriging.modify_order_series"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modify_order_series</span></code></a>(new_value, idx)</p></td>
+<td><p>Replace to the new location the old series</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.modify_order_surfaces" title="gempy.core.model.ImplicitCoKriging.modify_order_surfaces"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modify_order_surfaces</span></code></a>(new_value, idx[, …])</p></td>
+<td><p>Replace to the new location the old series</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.modify_orientations" title="gempy.core.model.ImplicitCoKriging.modify_orientations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modify_orientations</span></code></a>(idx, **kwargs)</p></td>
+<td><p>Allows modification of any of an orientation column at a given index.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.modify_rescaling_parameters" title="gempy.core.model.ImplicitCoKriging.modify_rescaling_parameters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modify_rescaling_parameters</span></code></a>(attribute, value)</p></td>
+<td><p>Modify the parameters used to rescale data</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.modify_surface_points" title="gempy.core.model.ImplicitCoKriging.modify_surface_points"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modify_surface_points</span></code></a>(indices[, …])</p></td>
+<td><p>Allows modification of the x,y and/or z-coordinates of an interface at specified dataframe index.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.modify_surface_values" title="gempy.core.model.ImplicitCoKriging.modify_surface_values"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modify_surface_values</span></code></a>(idx, properties_names, …)</p></td>
+<td><p>Method to modify values using loc of pandas.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.rename_features" title="gempy.core.model.ImplicitCoKriging.rename_features"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rename_features</span></code></a>(new_categories)</p></td>
+<td><p>Rename features and update the category dependent on them.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.rename_series" title="gempy.core.model.ImplicitCoKriging.rename_series"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rename_series</span></code></a>(new_categories)</p></td>
+<td><p>Rename features and update the category dependent on them.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.rename_surfaces" title="gempy.core.model.ImplicitCoKriging.rename_surfaces"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rename_surfaces</span></code></a>(to_replace, **kwargs)</p></td>
+<td><p>Replace values given in to_replace with value.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.reorder_features" title="gempy.core.model.ImplicitCoKriging.reorder_features"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reorder_features</span></code></a>(new_categories)</p></td>
+<td><p>Reorder series.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.reorder_series" title="gempy.core.model.ImplicitCoKriging.reorder_series"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reorder_series</span></code></a>(new_categories)</p></td>
+<td><p>Reorder series.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.set_active_grid" title="gempy.core.model.ImplicitCoKriging.set_active_grid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_active_grid</span></code></a>(grid_name[, reset])</p></td>
+<td><p>Set active a given or several grids.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.set_bottom_relation" title="gempy.core.model.ImplicitCoKriging.set_bottom_relation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_bottom_relation</span></code></a>(series, bottom_relation)</p></td>
+<td><p>Set the bottom relation between the series and the one below.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.set_centered_grid" title="gempy.core.model.ImplicitCoKriging.set_centered_grid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_centered_grid</span></code></a>(centers, radius[, resolution])</p></td>
+<td><p>[s0] Initialize gravity grid.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.set_custom_grid" title="gempy.core.model.ImplicitCoKriging.set_custom_grid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_custom_grid</span></code></a>(custom_grid)</p></td>
+<td><p>Set custom grid, rescale gird and initialize theano solutions.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.set_default_orientation" title="gempy.core.model.ImplicitCoKriging.set_default_orientation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_default_orientation</span></code></a>(**kwargs)</p></td>
+<td><p>Set a default orientation if the df is empty.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.set_default_surface_point" title="gempy.core.model.ImplicitCoKriging.set_default_surface_point"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_default_surface_point</span></code></a>(**kwargs)</p></td>
+<td><p>Set a default surface point if the df is empty.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.set_default_surfaces" title="gempy.core.model.ImplicitCoKriging.set_default_surfaces"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_default_surfaces</span></code></a>()</p></td>
+<td><p>Set two default surfaces if the df is empty.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.set_extent" title="gempy.core.model.ImplicitCoKriging.set_extent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_extent</span></code></a>(extent)</p></td>
+<td><p>Set project extent</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.set_fault_object" title="gempy.core.model.ImplicitCoKriging.set_fault_object"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_fault_object</span></code></a>()</p></td>
+<td><p>Not implemented</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.set_fault_relation" title="gempy.core.model.ImplicitCoKriging.set_fault_relation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_fault_relation</span></code></a>(rel_matrix)</p></td>
+<td><p>Method to set the df that offset a given sequence and therefore also another fault.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.set_grid_object" title="gempy.core.model.ImplicitCoKriging.set_grid_object"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_grid_object</span></code></a>(grid[, update_model])</p></td>
+<td><p>Not implemented</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.set_is_fault" title="gempy.core.model.ImplicitCoKriging.set_is_fault"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_is_fault</span></code></a>([feature_fault, toggle, …])</p></td>
+<td><p>Set a feature to fault and update all dependent objects of the Model.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.set_is_finite_fault" title="gempy.core.model.ImplicitCoKriging.set_is_finite_fault"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_is_finite_fault</span></code></a>([series_fault, toggle])</p></td>
+<td><p>Toggles given series’ finite fault property.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.set_orientations" title="gempy.core.model.ImplicitCoKriging.set_orientations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_orientations</span></code></a>(table, **kwargs)</p></td>
+<td><p>Set coordinates, surface and orientation data.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_orientations_object</span></code>(orientations[, …])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.set_regular_grid" title="gempy.core.model.ImplicitCoKriging.set_regular_grid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_regular_grid</span></code></a>(extent, resolution)</p></td>
+<td><p>Set a regular grid, rescale data and initialize theano solutions.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.set_section_grid" title="gempy.core.model.ImplicitCoKriging.set_section_grid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_section_grid</span></code></a>(section_dict)</p></td>
+<td><p>[s0] Object that creates a grid of cross sections between two points.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.set_series_object" title="gempy.core.model.ImplicitCoKriging.set_series_object"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_series_object</span></code></a>()</p></td>
+<td><p>Not implemented yet.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.set_surface_order_from_solution" title="gempy.core.model.ImplicitCoKriging.set_surface_order_from_solution"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_surface_order_from_solution</span></code></a>()</p></td>
+<td><p>Order the surfaces respect the last computation.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.set_surface_points" title="gempy.core.model.ImplicitCoKriging.set_surface_points"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_surface_points</span></code></a>(table, **kwargs)</p></td>
+<td><p>Set     Set coordinates and surface columns on the df.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.set_surface_points_object" title="gempy.core.model.ImplicitCoKriging.set_surface_points_object"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_surface_points_object</span></code></a>(surface_points[, …])</p></td>
+<td><p>Not Implemented</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.set_surface_values" title="gempy.core.model.ImplicitCoKriging.set_surface_values"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_surface_values</span></code></a>(values_array[, …])</p></td>
+<td><p>Set values to be interpolated for each surfaces.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.set_surfaces_object" title="gempy.core.model.ImplicitCoKriging.set_surfaces_object"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_surfaces_object</span></code></a>()</p></td>
+<td><p>Not implemented yet.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.set_theano_function" title="gempy.core.model.ImplicitCoKriging.set_theano_function"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_theano_function</span></code></a>(interpolator[, …])</p></td>
+<td><p>Pass a theano function and its correspondent graph from an Interpolator</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.set_theano_graph" title="gempy.core.model.ImplicitCoKriging.set_theano_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_theano_graph</span></code></a>(interpolator[, …])</p></td>
+<td><p>Pass a theano graph of a Interpolator instance other than the Model compose</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.set_topography" title="gempy.core.model.ImplicitCoKriging.set_topography"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_topography</span></code></a>([source, set_mask])</p></td>
+<td><p>Create a topography grid and activate it.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_additional_data</span></code>([update_structure, …])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.update_from_grid" title="gempy.core.model.ImplicitCoKriging.update_from_grid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_from_grid</span></code></a>()</p></td>
+<td><p>Update objects dependent from the grid.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.update_from_series" title="gempy.core.model.ImplicitCoKriging.update_from_series"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_from_series</span></code></a>([reorder_series, …])</p></td>
+<td><p>Update all objects dependent on series.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.update_from_surfaces" title="gempy.core.model.ImplicitCoKriging.update_from_surfaces"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_from_surfaces</span></code></a>([…])</p></td>
+<td><p>Update all objects dependt on surfaces.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.update_structure" title="gempy.core.model.ImplicitCoKriging.update_structure"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_structure</span></code></a>([update_theano, …])</p></td>
+<td><p>Update python and theano structure parameters.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.update_to_interpolator" title="gempy.core.model.ImplicitCoKriging.update_to_interpolator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_to_interpolator</span></code></a>([reset])</p></td>
+<td><p>Update all shared parameters from the data objects</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.additional_data" title="gempy.core.model.ImplicitCoKriging.additional_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">additional_data</span></code></a></p></td>
+<td><p><a class="reference internal" href="../Data/gempy.core.data.AdditionalData.html#gempy.core.data.AdditionalData" title="gempy.core.data.AdditionalData"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data.AdditionalData</span></code></a> [s0] Container class that encapsulate <code class="xref py py-class docutils literal notranslate"><span class="pre">Structure</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">KrigingParameters</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Options</span></code> and rescaling parameters</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.faults" title="gempy.core.model.ImplicitCoKriging.faults"><code class="xref py py-obj docutils literal notranslate"><span class="pre">faults</span></code></a></p></td>
+<td><p><a class="reference internal" href="../Data/gempy.core.data_modules.stack.Faults.html#gempy.core.data_modules.stack.Faults" title="gempy.core.data_modules.stack.Faults"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.stack.Faults</span></code></a> [s0] Class that encapsulate faulting related content.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.grid" title="gempy.core.model.ImplicitCoKriging.grid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">grid</span></code></a></p></td>
+<td><p><a class="reference internal" href="../Data/gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data.Grid</span></code></a> [s0]  Class to generate grids.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.interpolator" title="gempy.core.model.ImplicitCoKriging.interpolator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">interpolator</span></code></a></p></td>
+<td><p><a class="reference internal" href="../Interpolator/gempy.core.interpolator.InterpolatorModel.html#gempy.core.interpolator.InterpolatorModel" title="gempy.core.interpolator.InterpolatorModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.interpolator.InterpolatorModel</span></code></a> [s0] Child class of <code class="xref py py-class docutils literal notranslate"><span class="pre">Interpolator</span></code> which set the shared variables and compiles the theanograph to compute the geological model, i.e. lithologies.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.orientations" title="gempy.core.model.ImplicitCoKriging.orientations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">orientations</span></code></a></p></td>
+<td><p><a class="reference internal" href="../Data/gempy.core.data_modules.geometric_data.Orientations.html#gempy.core.data_modules.geometric_data.Orientations" title="gempy.core.data_modules.geometric_data.Orientations"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.geometric_data.Orientations</span></code></a> [s0] Data child with specific methods to manipulate orientation data.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.rescaling" title="gempy.core.model.ImplicitCoKriging.rescaling"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rescaling</span></code></a></p></td>
+<td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.geometric_data.Rescaling</span></code> [s0] Auxiliary class to rescale the coordinates between 0 and 1 to increase float stability.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.series" title="gempy.core.model.ImplicitCoKriging.series"><code class="xref py py-obj docutils literal notranslate"><span class="pre">series</span></code></a></p></td>
+<td><p>Class that contains the functionality and attributes related to the series.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.stack" title="gempy.core.model.ImplicitCoKriging.stack"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stack</span></code></a></p></td>
+<td><p><a class="reference internal" href="../Data/gempy.core.data_modules.stack.Stack.html#gempy.core.data_modules.stack.Stack" title="gempy.core.data_modules.stack.Stack"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.stack.Stack</span></code></a> [s0] Class that encapsulates all type of geological features.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.surface_points" title="gempy.core.model.ImplicitCoKriging.surface_points"><code class="xref py py-obj docutils literal notranslate"><span class="pre">surface_points</span></code></a></p></td>
+<td><p><a class="reference internal" href="../Data/gempy.core.data_modules.geometric_data.SurfacePoints.html#gempy.core.data_modules.geometric_data.SurfacePoints" title="gempy.core.data_modules.geometric_data.SurfacePoints"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.geometric_data.SurfacePoints</span></code></a> [s0] Data child with specific methods to manipulate interface data.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.surfaces" title="gempy.core.model.ImplicitCoKriging.surfaces"><code class="xref py py-obj docutils literal notranslate"><span class="pre">surfaces</span></code></a></p></td>
+<td><p><a class="reference internal" href="../Data/gempy.core.data.Surfaces.html#gempy.core.data.Surfaces" title="gempy.core.data.Surfaces"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data.Surfaces</span></code></a> [s0] Class that contains the surfaces of the model and the values of each of them.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.grid">
+<em class="property">property </em><code class="sig-name descname">grid</code><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.grid" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="../Data/gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data.Grid</span></code></a> [s0]  Class to generate grids.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.faults">
+<em class="property">property </em><code class="sig-name descname">faults</code><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.faults" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="../Data/gempy.core.data_modules.stack.Faults.html#gempy.core.data_modules.stack.Faults" title="gempy.core.data_modules.stack.Faults"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.stack.Faults</span></code></a> [s0] Class that encapsulate faulting related content. Mainly, which surfaces/surfaces are faults. The fault network—i.e. which faults offset other faults—and fault types—finite vs infinite.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.stack">
+<em class="property">property </em><code class="sig-name descname">stack</code><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.stack" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="../Data/gempy.core.data_modules.stack.Stack.html#gempy.core.data_modules.stack.Stack" title="gempy.core.data_modules.stack.Stack"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.stack.Stack</span></code></a> [s0] Class that encapsulates all type of geological features. So far is Series and      Faults</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.series">
+<em class="property">property </em><code class="sig-name descname">series</code><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.series" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class that contains the functionality and attributes related to the series. Notice that series does not onlyrefers to stratigraphic series but to any set of surfaces which will be interpolated together (comfortably).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.surfaces">
+<em class="property">property </em><code class="sig-name descname">surfaces</code><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.surfaces" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="../Data/gempy.core.data.Surfaces.html#gempy.core.data.Surfaces" title="gempy.core.data.Surfaces"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data.Surfaces</span></code></a> [s0] Class that contains the surfaces of the model and the values of each of them.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.surface_points">
+<em class="property">property </em><code class="sig-name descname">surface_points</code><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.surface_points" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="../Data/gempy.core.data_modules.geometric_data.SurfacePoints.html#gempy.core.data_modules.geometric_data.SurfacePoints" title="gempy.core.data_modules.geometric_data.SurfacePoints"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.geometric_data.SurfacePoints</span></code></a> [s0] Data child with specific methods to manipulate interface data. It is initialize without arguments to giveflexibility to the origin of the data.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.orientations">
+<em class="property">property </em><code class="sig-name descname">orientations</code><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.orientations" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="../Data/gempy.core.data_modules.geometric_data.Orientations.html#gempy.core.data_modules.geometric_data.Orientations" title="gempy.core.data_modules.geometric_data.Orientations"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.geometric_data.Orientations</span></code></a> [s0] Data child with specific methods to manipulate orientation data. It is initialize without arguments to giveflexibility to the origin of the data.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.rescaling">
+<em class="property">property </em><code class="sig-name descname">rescaling</code><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.rescaling" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.geometric_data.Rescaling</span></code> [s0] Auxiliary class to rescale the coordinates between 0 and 1 to increase float stability.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.additional_data">
+<em class="property">property </em><code class="sig-name descname">additional_data</code><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.additional_data" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="../Data/gempy.core.data.AdditionalData.html#gempy.core.data.AdditionalData" title="gempy.core.data.AdditionalData"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data.AdditionalData</span></code></a> [s0] Container class that encapsulate <code class="xref py py-class docutils literal notranslate"><span class="pre">Structure</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">KrigingParameters</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Options</span></code> and rescaling parameters</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.interpolator">
+<em class="property">property </em><code class="sig-name descname">interpolator</code><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.interpolator" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="../Interpolator/gempy.core.interpolator.InterpolatorModel.html#gempy.core.interpolator.InterpolatorModel" title="gempy.core.interpolator.InterpolatorModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.interpolator.InterpolatorModel</span></code></a> [s0] Child class of <code class="xref py py-class docutils literal notranslate"><span class="pre">Interpolator</span></code> which set the shared variables and compiles the theanograph to compute the geological model, i.e. lithologies.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.update_structure">
+<code class="sig-name descname">update_structure</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">update_theano</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">update_series_is_active</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">update_surface_is_active</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.update_structure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.update_structure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update python and theano structure parameters.</p>
+<p>[s0]     Update fields dependent on input data sucha as structure and universal kriging grade
+[s1]     Set all theano shared variable dependent on <code class="xref py py-class docutils literal notranslate"><span class="pre">Structure</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>update_theano</strong> (<em>str{'matrices'</em><em>, </em><em>'weights'}</em>) – <ul class="simple">
+<li><p>matrices [s2]     Modify all theano shared matrices to the right size according to the structure data. This method allows    to change the size of the results without having the recompute all serie</p></li>
+<li><p>weights [s3] Modify the theano shared weights vector according to the structure.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="../Data/gempy.core.data.Structure.html#gempy.core.data.Structure" title="gempy.core.data.Structure"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data.Structure</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.update_from_grid">
+<code class="sig-name descname">update_from_grid</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.update_from_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.update_from_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update objects dependent from the grid.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.set_active_grid">
+<code class="sig-name descname">set_active_grid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">grid_name</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">, </span>Iterable<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">]</span><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">reset</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.set_active_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.set_active_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set active a given or several grids.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>grid_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – Name of the grid you want to activate. Options are
+{regular, custom, topography, centered}</p></li>
+<li><p><strong>reset</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – If True set inactive all grids not in grid_name</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="../Data/gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data.Grid</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.set_grid_object">
+<code class="sig-name descname">set_grid_object</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">grid</span><span class="p">:</span> <span class="n"><a class="reference internal" href="../Data/gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid">gempy.core.data.Grid</a></span></em>, <em class="sig-param"><span class="n">update_model</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.set_grid_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.set_grid_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Not implemented</p>
+<p># TODO this should go to the api and let call all different grid types</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>grid</strong> – </p></li>
+<li><p><strong>update_model</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.set_regular_grid">
+<code class="sig-name descname">set_regular_grid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">extent</span></em>, <em class="sig-param"><span class="n">resolution</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.set_regular_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.set_regular_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a regular grid, rescale data and initialize theano solutions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>extent</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><em>numpy.ndarray</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>]</em>) – [x_min, x_max, y_min, y_max, z_min, z_max]. Extent for the visualization of data and default of for the regular grid class.</p></li>
+<li><p><strong>resolution</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><em>numpy.ndarray</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em>) – [nx, ny, nz]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="../Data/gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data.Grid</span></code></a></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../Data/gempy.core.data.Grid.html#gempy.core.data.Grid.create_regular_grid" title="gempy.core.data.Grid.create_regular_grid"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data.Grid.create_regular_grid</span></code></a></p>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data.grid_modules.grid_types.RegularGrid</span></code></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.set_custom_grid">
+<code class="sig-name descname">set_custom_grid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">custom_grid</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.set_custom_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.set_custom_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set custom grid, rescale gird and initialize theano solutions. foo</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>custom_grid</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><em>numpy.ndarray</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><em>3</em><em>]</em>) – XYZ 2D array. Axis 1 is the coordinates while axis 0 is n number of input</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="../Data/gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data.Grid</span></code></a></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../Data/gempy.core.data.Grid.html#gempy.core.data.Grid.create_custom_grid" title="gempy.core.data.Grid.create_custom_grid"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data.Grid.create_custom_grid</span></code></a></p>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data.grid_modules.grid_types.CustomGrid</span></code></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.set_topography">
+<code class="sig-name descname">set_topography</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">source</span><span class="o">=</span><span class="default_value">'random'</span></em>, <em class="sig-param"><span class="n">set_mask</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.set_topography"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.set_topography" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a topography grid and activate it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>source</strong> – <ul class="simple">
+<li><p>‘gdal’: Load topography from a raster file.</p></li>
+<li><p>’random’: Generate random topography (based on a fractal grid).</p></li>
+<li><p>’saved’: Load topography that was saved with the topography.save() function.
+this is useful after loading and saving a heavy raster file with gdal once
+or after saving a random topography with the save() function. This .npy file can then be set as
+topography.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>= 'gdal'</strong> (<em>source</em>) – <ul>
+<li><p>filepath: path to raster file, e.g. ‘.tif’, (for all file formats see
+<a class="reference external" href="https://gdal.org/drivers/raster/index.html">https://gdal.org/drivers/raster/index.html</a>)</p></li>
+</ul>
+</p></li>
+<li><p><strong>= 'random'</strong> (<em>source</em>) – <ul>
+<li><p>fd:         fractal dimension, defaults to 2.0</p></li>
+<li><p>d_z:        maximum height difference. If none, last 20% of the model in z direction</p></li>
+<li><p>extent:     extent in xy direction. If none, geo_model.grid.extent</p></li>
+<li><p>resolution: desired resolution of the topography array. If none, geo_model.grid.resoution</p></li>
+</ul>
+</p></li>
+<li><p><strong>= 'saved'</strong> (<em>source</em>) – <ul>
+<li><p>filepath:   path to the .npy file that was created using the topography.save() function</p></li>
+</ul>
+</p></li>
+<li><p><strong>= 'numpy'</strong> (<em>source</em>) – <ul>
+<li><p>array: numpy array containing the data</p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../Data/gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data.Grid</span></code></a></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.grid_modules.grid_types.Topography</span></code></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.set_centered_grid">
+<code class="sig-name descname">set_centered_grid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">centers</span></em>, <em class="sig-param"><span class="n">radius</span></em>, <em class="sig-param"><span class="n">resolution</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.set_centered_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.set_centered_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>[s0] Initialize gravity grid. Deactivate the rest of the grids (inserted)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>centers</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><em>numpy.ndarray</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><em>3</em><em>]</em>) – Location of the center of each kernel.</p></li>
+<li><p><strong>radius</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – Distance from each center to create each XYZ point</p></li>
+<li><p><strong>resolution</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><em>numpy.ndarray</em></a><em>[</em><em>3</em><em>]</em>) – Number of voxels in each direction per kernel</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="../Data/gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data.Grid</span></code></a></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../Data/Grid/gempy.core.grid_modules.grid_types.CenteredGrid.html#gempy.core.grid_modules.grid_types.CenteredGrid" title="gempy.core.grid_modules.grid_types.CenteredGrid"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.grid_modules.grid_types.CenteredGrid</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.set_section_grid">
+<code class="sig-name descname">set_section_grid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">section_dict</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.set_section_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.set_section_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>[s0] Object that creates a grid of cross sections between two points.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>section_dict</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – ‘section name’: ([p1_x, p1_y], [p2_x, p2_y], [xyres, zres])</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="../Data/Grid/gempy.core.grid_modules.grid_types.Sections.html#gempy.core.grid_modules.grid_types.Sections" title="gempy.core.grid_modules.grid_types.Sections"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.grid_modules.grid_types.Sections</span></code></a></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../Data/Grid/gempy.core.grid_modules.grid_types.Sections.html#gempy.core.grid_modules.grid_types.Sections" title="gempy.core.grid_modules.grid_types.Sections"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.grid_modules.grid_types.Sections</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.set_series_object">
+<code class="sig-name descname">set_series_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.set_series_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.set_series_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Not implemented yet. Exchange the series object of the Model object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.set_bottom_relation">
+<code class="sig-name descname">set_bottom_relation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">series</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">bottom_relation</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.set_bottom_relation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.set_bottom_relation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the bottom relation between the series and the one below.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>series_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – name or list of names of the series to apply the functionality</p></li>
+<li><p><strong>bottom_relation</strong> (<em>str{Onlap</em><em>, </em><em>Erode</em><em>, </em><em>Fault}</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="../Data/gempy.core.data_modules.stack.Stack.html#gempy.core.data_modules.stack.Stack" title="gempy.core.data_modules.stack.Stack"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.stack.Stack</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.add_features">
+<code class="sig-name descname">add_features</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">features_list</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">reset_order_series</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.add_features"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.add_features" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add series, update the categories dependent on them and reset the flow control.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>features_list</strong> – (str, list): name or list of names of the series to apply the functionality</p></li>
+<li><p><strong>reset_order_series</strong> – if true [s0]     Reset the column order series to monotonic ascendant values.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="../Data/gempy.core.data_modules.stack.Stack.html#gempy.core.data_modules.stack.Stack" title="gempy.core.data_modules.stack.Stack"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.stack.Stack</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.add_series">
+<code class="sig-name descname">add_series</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">series_list</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">reset_order_series</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.add_series"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.add_series" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add series to the df</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>series_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – name or list of names of the series to apply the functionality</p></li>
+<li><p><strong>reset_order_series</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – if true [s0]     Reset the column order series to monotonic ascendant values.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Series</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.delete_features">
+<code class="sig-name descname">delete_features</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">indices</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">reset_order_features</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">remove_surfaces</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">remove_data</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.delete_features"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.delete_features" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete series, update the categories dependent on them and reset the flow control.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>indices</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – name or list of names of the series to apply the functionality</p></li>
+<li><p><strong>reset_order_features</strong> – (bool): if true [s0]     Reset the column order series to monotonic ascendant values.</p></li>
+<li><p><strong>remove_surfaces</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – if True remove the surfaces associated with the feature.</p></li>
+<li><p><strong>remove_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – if True remove the geometric data associated with the feature</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="../Data/gempy.core.data_modules.stack.Stack.html#gempy.core.data_modules.stack.Stack" title="gempy.core.data_modules.stack.Stack"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.stack.Stack</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.delete_series">
+<code class="sig-name descname">delete_series</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">indices</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">refactor_order_series</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">remove_surfaces</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">remove_data</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.delete_series"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.delete_series" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete series, update the categories dependent on them and reset the flow control.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>indices</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – name or list of names of the series to apply the functionality</p></li>
+<li><p><strong>reset_order_features</strong> – (bool): if true [s0]     Reset the column order series to monotonic ascendant values.</p></li>
+<li><p><strong>remove_surfaces</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – if True remove the surfaces associated with the feature.</p></li>
+<li><p><strong>remove_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – if True remove the geometric data associated with the feature</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="../Data/gempy.core.data_modules.stack.Stack.html#gempy.core.data_modules.stack.Stack" title="gempy.core.data_modules.stack.Stack"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.stack.Stack</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.rename_features">
+<code class="sig-name descname">rename_features</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_categories</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.rename_features"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.rename_features" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rename features and update the category dependent on them.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>new_categories</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – <ul class="simple">
+<li><p>list-like: all items must be unique and the number of items in the new
+categories must match the existing number of categories.</p></li>
+<li><p>dict-like: specifies a mapping from old categories to new. Categories
+not contained in the mapping are passed through and extra categories in the mapping are ignored.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="../Data/gempy.core.data_modules.stack.Stack.html#gempy.core.data_modules.stack.Stack" title="gempy.core.data_modules.stack.Stack"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.stack.Stack</span></code></a></p>
+</dd>
+</dl>
+<p>[s0]     Rename categories.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>new_categories</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – <ul class="simple">
+<li><p>list-like: all items must be unique and the number of items in the new categories must match the
+existing number of categories.</p></li>
+<li><p>dict-like: specifies a mapping from old categories to new. Categories not contained in the mapping are
+passed through and extra categories in the mapping are ignored.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.rename_series">
+<code class="sig-name descname">rename_series</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_categories</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.rename_series"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.rename_series" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rename features and update the category dependent on them.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>new_categories</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – <ul class="simple">
+<li><p>list-like: all items must be unique and the number of items in the new
+categories must match the existing number of categories.</p></li>
+<li><p>dict-like: specifies a mapping from old categories to new. Categories
+not contained in the mapping are passed through and extra categories in the mapping are ignored.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="../Data/gempy.core.data_modules.stack.Stack.html#gempy.core.data_modules.stack.Stack" title="gempy.core.data_modules.stack.Stack"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.stack.Stack</span></code></a></p>
+</dd>
+</dl>
+<p>[s0]     Rename categories.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>new_categories</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – <ul class="simple">
+<li><p>list-like: all items must be unique and the number of items in the new categories must match the
+existing number of categories.</p></li>
+<li><p>dict-like: specifies a mapping from old categories to new. Categories not contained in the mapping are
+passed through and extra categories in the mapping are ignored.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.modify_order_features">
+<code class="sig-name descname">modify_order_features</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_value</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span></em>, <em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.modify_order_features"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.modify_order_features" title="Permalink to this definition">¶</a></dt>
+<dd><p>Modify order of the feature. Reorder categories of the link Surfaces, sort surface (reset the basement layer)
+remap the Stack and Surfaces to the corespondent dataframes, sort Geometric objects, update structure and
+reset the flow control objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>new_value</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – New location</p></li>
+<li><p><strong>idx</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – name of the feature to be moved</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="../Data/gempy.core.data_modules.stack.Stack.html#gempy.core.data_modules.stack.Stack" title="gempy.core.data_modules.stack.Stack"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.stack.Stack</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.modify_order_series">
+<code class="sig-name descname">modify_order_series</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_value</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span></em>, <em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.modify_order_series"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.modify_order_series" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replace to the new location the old series</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>new_value</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – New location</p></li>
+<li><p><strong>series_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – name of the series to be moved</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Series</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.reorder_features">
+<code class="sig-name descname">reorder_features</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_categories</span><span class="p">:</span> <span class="n">Iterable<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.reorder_features"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.reorder_features" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reorder series. Reorder categories of the link Surfaces, sort surface (reset the basement layer)
+remap the Series and Surfaces to the corespondent dataframes, sort Geometric objects, update structure and
+reset the flow control objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>new_categories</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – list with all series names in the desired order.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="../Data/gempy.core.data_modules.stack.Stack.html#gempy.core.data_modules.stack.Stack" title="gempy.core.data_modules.stack.Stack"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.stack.Stack</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.reorder_series">
+<code class="sig-name descname">reorder_series</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_categories</span><span class="p">:</span> <span class="n">Iterable<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.reorder_series"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.reorder_series" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reorder series. Reorder categories of the link Surfaces, sort surface (reset the basement layer)
+remap the Series and Surfaces to the corespondent dataframes, sort Geometric objects, update structure and
+reset the flow control objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>new_categories</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – list with all series names in the desired order.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="../Data/gempy.core.data_modules.stack.Stack.html#gempy.core.data_modules.stack.Stack" title="gempy.core.data_modules.stack.Stack"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.stack.Stack</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.set_fault_object">
+<code class="sig-name descname">set_fault_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.set_fault_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.set_fault_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Not implemented</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.set_is_fault">
+<code class="sig-name descname">set_is_fault</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">feature_fault</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">toggle</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">offset_faults</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">change_color</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">twofins</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.set_is_fault"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.set_is_fault" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a feature to fault and update all dependent objects of the Model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>feature_fault</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – Name of the series which are faults</p></li>
+<li><p><strong>toggle</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – if True, passing a name which is already True will set it False.</p></li>
+<li><p><strong>offset_faults</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – If True by default faults offset other faults</p></li>
+<li><p><strong>twofins</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – If True, it allows to set several surfaces of a given geological feature to fault.
+This is behaviour is not tested and could have unexpected behaviour.</p></li>
+<li><p><strong>change_color</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – If True faults surfaces get the default fault color (light gray)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="../Data/gempy.core.data_modules.stack.Faults.html#gempy.core.data_modules.stack.Faults" title="gempy.core.data_modules.stack.Faults"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.stack.Faults</span></code></a></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../Data/gempy.core.data_modules.stack.Faults.html#gempy.core.data_modules.stack.Faults.set_is_fault" title="gempy.core.data_modules.stack.Faults.set_is_fault"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.stack.Faults.set_is_fault</span></code></a></p>
+</div>
+<p>Set a flag to the series that are faults.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>series_fault</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – Name of the series which are faults</p></li>
+<li><p><strong>toggle</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – if True, passing a name which is already True will set it False.</p></li>
+<li><p><strong>offset_faults</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – If True by default faults offset other faults</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="../Data/gempy.core.data_modules.stack.Faults.html#gempy.core.data_modules.stack.Faults" title="gempy.core.data_modules.stack.Faults"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.stack.Faults</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.set_is_finite_fault">
+<code class="sig-name descname">set_is_finite_fault</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">series_fault</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">toggle</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></span> <span class="o">=</span> <span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.set_is_finite_fault"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.set_is_finite_fault" title="Permalink to this definition">¶</a></dt>
+<dd><p>Toggles given series’ finite fault property.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>series_finite</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – Name of the series which are finite</p></li>
+<li><p><strong>toggle</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – if True, passing a name which is already True will set it False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="../Data/gempy.core.data_modules.stack.Faults.html#gempy.core.data_modules.stack.Faults" title="gempy.core.data_modules.stack.Faults"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.stack.Faults</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.set_fault_relation">
+<code class="sig-name descname">set_fault_relation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rel_matrix</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.set_fault_relation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.set_fault_relation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to set the df that offset a given sequence and therefore also another fault.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>rel_matrix</strong> (<em>numpy.array</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>]</em>) – 2D Boolean array with boolean logic.
+Rows affect (offset) columns</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="../Data/gempy.core.data_modules.stack.Faults.html#gempy.core.data_modules.stack.Faults.faults_relations_df" title="gempy.core.data_modules.stack.Faults.faults_relations_df"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.stack.Faults.faults_relations_df</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.set_surfaces_object">
+<code class="sig-name descname">set_surfaces_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.set_surfaces_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.set_surfaces_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Not implemented yet. Exchange the surface object of the Model object
+Returns:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.add_surfaces">
+<code class="sig-name descname">add_surfaces</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">surface_list</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">update_df</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.add_surfaces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.add_surfaces" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add surface to the df.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>surface_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – name or list of names of the surfaces to apply the functionality</p></li>
+<li><p><strong>update_df</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Update Surfaces.df columns with the default values</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="../Data/gempy.core.data.Surfaces.html#gempy.core.data.Surfaces" title="gempy.core.data.Surfaces"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data.Surfaces</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.delete_surfaces">
+<code class="sig-name descname">delete_surfaces</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">indices</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">, </span>Iterable<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">]</span><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">update_id</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">remove_data</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.delete_surfaces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.delete_surfaces" title="Permalink to this definition">¶</a></dt>
+<dd><p>&#64;TODO When implemeted activate geometric data, change remove data to False by default
+Delete a surface and update all related object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>indices</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – name or list of names of the series to apply the functionality</p></li>
+<li><p><strong>update_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – if true [s0]     Set id of the layers (1 based)    Args:        id_list (list):</p></li>
+<li><p><strong>remove_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – if true delete all GeometricData labeled with the given surface.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="../Data/gempy.core.data.Surfaces.html#gempy.core.data.Surfaces" title="gempy.core.data.Surfaces"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data.Surfaces</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.rename_surfaces">
+<code class="sig-name descname">rename_surfaces</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">to_replace</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.rename_surfaces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.rename_surfaces" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replace values given in to_replace with value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>to_replace</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>regex</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a><em>, </em><a class="reference internal" href="../Data/gempy.core.data_modules.stack.Series.html#gempy.core.data_modules.stack.Series" title="gempy.core.data_modules.stack.Series"><em>Series</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a>) – How to find the values that will be replaced.</p></li>
+<li><p><strong>**kwargs</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="../Data/gempy.core.data.Surfaces.html#gempy.core.data.Surfaces" title="gempy.core.data.Surfaces"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data.Surfaces</span></code></a></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.replace.html#pandas.Series.replace" title="(in pandas v1.1.4)"><code class="xref any docutils literal notranslate"><span class="pre">pandas.Series.replace</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.modify_order_surfaces">
+<code class="sig-name descname">modify_order_surfaces</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_value</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span></em>, <em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span></em>, <em class="sig-param"><span class="n">series_name</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.modify_order_surfaces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.modify_order_surfaces" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replace to the new location the old series</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>new_value</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – New location</p></li>
+<li><p><strong>idx</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Index of the surface to be moved</p></li>
+<li><p><strong>series_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – name of the series to be moved</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="../Data/gempy.core.data.Surfaces.html#gempy.core.data.Surfaces" title="gempy.core.data.Surfaces"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data.Surfaces</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.add_surface_values">
+<code class="sig-name descname">add_surface_values</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">values_array</span><span class="p">:</span> <span class="n">Iterable</span></em>, <em class="sig-param"><span class="n">properties_names</span><span class="p">:</span> <span class="n">Iterable<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">array([], dtype=float64)</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.add_surface_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.add_surface_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add values to be interpolated for each surfaces.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>values_array</strong> (<em>np.ndarray</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – array-like of the same length as number of surfaces. This functionality
+can be used to assign different geophysical properties to each layer</p></li>
+<li><p><strong>properties_names</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – list of names for each values_array columns. This must be of same size as
+values_array axis 1. By default properties will take the column name: ‘value_X’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="../Data/gempy.core.data.Surfaces.html#gempy.core.data.Surfaces" title="gempy.core.data.Surfaces"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data.Surfaces</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.delete_surface_values">
+<code class="sig-name descname">delete_surface_values</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">properties_names</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.delete_surface_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.delete_surface_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete a property or several properties column.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>properties_names</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – Name of the property to delete</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="../Data/gempy.core.data.Surfaces.html#gempy.core.data.Surfaces" title="gempy.core.data.Surfaces"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data.Surfaces</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.modify_surface_values">
+<code class="sig-name descname">modify_surface_values</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span></em>, <em class="sig-param"><span class="n">properties_names</span></em>, <em class="sig-param"><span class="n">values</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.modify_surface_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.modify_surface_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to modify values using loc of pandas.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>idx</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em>) – </p></li>
+<li><p><strong>properties_names</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – </p></li>
+<li><p><strong>values</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><em>np.ndarray</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="../Data/gempy.core.data.Surfaces.html#gempy.core.data.Surfaces" title="gempy.core.data.Surfaces"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data.Surfaces</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.set_surface_values">
+<code class="sig-name descname">set_surface_values</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">values_array</span><span class="p">:</span> <span class="n">Iterable</span></em>, <em class="sig-param"><span class="n">properties_names</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a></span> <span class="o">=</span> <span class="default_value">array([], dtype=float64)</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.set_surface_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.set_surface_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set values to be interpolated for each surfaces. This method will delete the previous values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>values_array</strong> (<em>np.ndarray</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – array-like of the same length as number of surfaces. This functionality
+can be used to assign different geophysical properties to each layer</p></li>
+<li><p><strong>properties_names</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – list of names for each values_array columns. This must be of same size as
+values_array axis 1. By default properties will take the column name: ‘value_X’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="../Data/gempy.core.data.Surfaces.html#gempy.core.data.Surfaces" title="gempy.core.data.Surfaces"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data.Surfaces</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.map_stack_to_surfaces">
+<code class="sig-name descname">map_stack_to_surfaces</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mapping_object</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a><span class="p">, </span>pandas.core.arrays.categorical.Categorical<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">set_series</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">sort_geometric_data</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">remove_unused_series</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">twofins</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.map_stack_to_surfaces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.map_stack_to_surfaces" title="Permalink to this definition">¶</a></dt>
+<dd><p>Map series to surfaces and update all related objects accordingly to the following arguments:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mapping_object</strong> (dict, <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.1.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) – <ul>
+<li><p>dict: keys are the series and values the surfaces belonging to that series</p></li>
+<li><p>pandas.DataFrame: Dataframe with surfaces as index and a column series with the correspondent series
+name of each surface</p></li>
+</ul>
+</p></li>
+<li><p><strong>set_series</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – if True, if mapping object has non existing series they will be created.</p></li>
+<li><p><strong>sort_geometric_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – If true geometric data will be sorted accordingly to the new order of the
+series</p></li>
+<li><p><strong>remove_unused_series</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – if true, if an existing series is not assigned with a surface, it will get
+removed from the Series object.</p></li>
+<li><p><strong>twofins</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – If True, it allows to set several surfaces of a given geological feature to fault.
+This is behaviour is not tested and could have unexpected behaviour.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="../Data/gempy.core.data.Surfaces.html#gempy.core.data.Surfaces" title="gempy.core.data.Surfaces"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data.Surfaces</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.map_series_to_surfaces">
+<code class="sig-name descname">map_series_to_surfaces</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.map_series_to_surfaces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.map_series_to_surfaces" title="Permalink to this definition">¶</a></dt>
+<dd><p>Map series to surfaces and update all related objects accordingly to the following arguments:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mapping_object</strong> (dict, <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.1.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) – <ul>
+<li><p>dict: keys are the series and values the surfaces belonging to that series</p></li>
+<li><p>pandas.DataFrame: Dataframe with surfaces as index and a column series with the correspondent series
+name of each surface</p></li>
+</ul>
+</p></li>
+<li><p><strong>set_series</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – if True, if mapping object has non existing series they will be created.</p></li>
+<li><p><strong>sort_geometric_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – If true geometric data will be sorted accordingly to the new order of the
+series</p></li>
+<li><p><strong>remove_unused_series</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – if true, if an existing series is not assigned with a surface, it will get
+removed from the Series object.</p></li>
+<li><p><strong>twofins</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – If True, it allows to set several surfaces of a given geological feature to fault.
+This is behaviour is not tested and could have unexpected behaviour.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="../Data/gempy.core.data.Surfaces.html#gempy.core.data.Surfaces" title="gempy.core.data.Surfaces"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data.Surfaces</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.set_surface_points_object">
+<code class="sig-name descname">set_surface_points_object</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">surface_points</span><span class="p">:</span> <span class="n"><a class="reference internal" href="../Data/gempy.core.data_modules.geometric_data.SurfacePoints.html#gempy.core.data_modules.geometric_data.SurfacePoints" title="gempy.core.data_modules.geometric_data.SurfacePoints">gempy.core.data_modules.geometric_data.SurfacePoints</a></span></em>, <em class="sig-param"><span class="n">update_model</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.set_surface_points_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.set_surface_points_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Not Implemented</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.set_surface_points">
+<code class="sig-name descname">set_surface_points</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">table</span><span class="p">:</span> <span class="n">pandas.core.frame.DataFrame</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.set_surface_points"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.set_surface_points" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set     Set coordinates and surface columns on the df. coordinates and surface columns on the df.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>table</strong> (<em>pandas.Dataframe</em>) – table with surface points data.</p>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><p><strong>add_basement</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – add a basement surface to the df.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../Data/gempy.core.data_modules.geometric_data.SurfacePoints.html#gempy.core.data_modules.geometric_data.SurfacePoints" title="gempy.core.data_modules.geometric_data.SurfacePoints"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.geometric_data.SurfacePoints</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.set_orientations">
+<code class="sig-name descname">set_orientations</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">table</span><span class="p">:</span> <span class="n">pandas.core.frame.DataFrame</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.set_orientations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.set_orientations" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Set coordinates, surface and orientation data.</p>
+<p>If both are passed pole vector has priority over orientation</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>coord (np.ndarray): [s0] (numpy.ndarray[float, 3]): XYZ 2D array. Axis 1 is the coordinates while axis 0 is n number of input Notice that orientations may be place anywhere in the 3D space
+pole_vector (np.ndarray): [s2] (numpy.ndarray[float, 3]): 2D numpy array where axis 1 is the gradient values G_x, G_y, G_z of the pole while axis 0 is n number of orientations
+orientation (np.ndarray): [s3] (numpy.ndarray[float, 3]): 2D numpy array where axis 1 is are orientation values [dip, azimuth, polarity] of the pole while axis 0 is n number of orientations. — <em>Dip</em> is the inclination angle of 0 to 90 degrees measured from the horizontal plane downwards. <em>Azimuth</em> is the dip direction defined by a 360 degrees clockwise rotation, i.e. 0 = North, 90 = East, 180 = South, and 270 = West.*Polarity* defines where the upper (geologically younger) side of the orientation plane is and can be declared to be either normal (1) or reversed (-1).The orientation plane is perpendicular to the gradient
+surface (list[str]): [s1] (str, Iterable[str]): list with the surface names for each input point. They must exist in the surfaces object linked to SurfacePoints</p>
+</dd>
+</dl>
+<p>Returns:</p>
+</div></blockquote>
+<p>Set coordinates, surface and orientation data.</p>
+<blockquote>
+<div><p>If both are passed pole vector has priority over orientation</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>table (pn.Dataframe): table with surface points data.</p>
+</dd>
+<dt>Returns:</dt><dd><p><a class="reference internal" href="../Data/gempy.core.data_modules.geometric_data.Orientations.html#gempy.core.data_modules.geometric_data.Orientations" title="gempy.core.data_modules.geometric_data.Orientations"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.geometric_data.Orientations</span></code></a></p>
+</dd>
+<dt>See Also:</dt><dd><p><a class="reference internal" href="../Data/gempy.core.data_modules.geometric_data.Orientations.html#gempy.core.data_modules.geometric_data.Orientations" title="gempy.core.data_modules.geometric_data.Orientations"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.geometric_data.Orientations</span></code></a></p>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.add_surface_points">
+<code class="sig-name descname">add_surface_points</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">Z</span></em>, <em class="sig-param"><span class="n">surface</span></em>, <em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a><span class="p">, </span>Iterable<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a><span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">recompute_rescale_factor</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.add_surface_points"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.add_surface_points" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add surface points.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><em>np.ndarray</em>) – [s0] (bool): if True recompute the rescaling facto (float, Iterable[float]): values or list of values for the x coordinate</p></li>
+<li><p><strong>y</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><em>np.ndarray</em>) – [s1] (float, Iterable[float]): values or list of values for the y coordinate</p></li>
+<li><p><strong>z</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><em>np.ndarray</em>) – [s2] (float, Iterable[float]): values or list of values for the z coordinate</p></li>
+<li><p><strong>surface</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – [s3] (str, Iterable[str]): list with the surface names for each input point. They must exist in the surfaces object linked to SurfacePoints</p></li>
+<li><p><strong>idx</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em>) – [s4] (int, list, numpy.ndarray): If passed, list of indices where the function will be applied</p></li>
+<li><p><strong>X</strong> – </p></li>
+<li><p><strong>Y</strong> – </p></li>
+<li><p><strong>Z</strong> – </p></li>
+<li><p><strong>surface</strong> – </p></li>
+<li><p><strong>idx</strong> – Index of the point. If None, next available index will be used</p></li>
+<li><p><strong>recompute_rescale_factor</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – [s0].</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="../Data/gempy.core.data_modules.geometric_data.SurfacePoints.html#gempy.core.data_modules.geometric_data.SurfacePoints" title="gempy.core.data_modules.geometric_data.SurfacePoints"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.geometric_data.SurfacePoints</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.delete_surface_points">
+<code class="sig-name descname">delete_surface_points</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a><span class="p">, </span>Iterable<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a><span class="p">]</span><span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.delete_surface_points"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.delete_surface_points" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete surface points.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>idx</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em>) – [s0] (int, list, numpy.ndarray): If passed, list of indices where the function will be applied</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="../Data/gempy.core.data_modules.geometric_data.SurfacePoints.html#gempy.core.data_modules.geometric_data.SurfacePoints" title="gempy.core.data_modules.geometric_data.SurfacePoints"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.geometric_data.SurfacePoints</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.delete_surface_points_basement">
+<code class="sig-name descname">delete_surface_points_basement</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.delete_surface_points_basement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.delete_surface_points_basement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete surface points belonging to the basement layer if any</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.modify_surface_points">
+<code class="sig-name descname">modify_surface_points</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">indices</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">recompute_rescale_factor</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.modify_surface_points"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.modify_surface_points" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allows modification of the x,y and/or z-coordinates of an interface at specified dataframe index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>indices</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>, </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><em>numpy.ndarray</em></a>) – If passed, list of indices where the function will be applied.</p></li>
+<li><p><strong>recompute_rescale_factor</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – if True recompute the rescaling factor</p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>X</strong> (<em>*</em>) – values or list of values for the x coordinates</p></li>
+<li><p><strong>Y</strong> (<em>*</em>) – values or list of values for the y coordinates</p></li>
+<li><p><strong>Z</strong> (<em>*</em>) – values or list of values for the z coordinates</p></li>
+<li><p><strong>surface</strong> (<em>*</em>) – list with the surface names for each input point. They must exist in the surfaces object linked to SurfacePoints.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.add_orientations">
+<code class="sig-name descname">add_orientations</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">Z</span></em>, <em class="sig-param"><span class="n">surface</span></em>, <em class="sig-param"><span class="n">pole_vector</span><span class="p">:</span> <span class="n">Iterable</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">orientation</span><span class="p">:</span> <span class="n">Iterable</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">idx</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">recompute_rescale_factor</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.add_orientations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.add_orientations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add orientation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><em>Iterable</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>]</em>) – values or list of values for the x coordinates</p></li>
+<li><p><strong>Y</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><em>Iterable</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>]</em>) – values or list of values for the y coordinates</p></li>
+<li><p><strong>Z</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><em>Iterable</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>]</em>) – values or list of values for the z coordinates</p></li>
+<li><p><strong>surface</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>Iterable</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – list with the surface names for each input point. They must exist in the surfaces object linked to SurfacePoints.</p></li>
+<li><p><strong>pole_vector</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><em>numpy.ndarray</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><em>3</em><em>]</em>) – 2D numpy array where axis 1 is the gradient values G_x, G_y, G_z of the pole while axis 0 is n number of orientations.</p></li>
+<li><p><strong>orientation</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><em>numpy.ndarray</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><em>3</em><em>]</em>) – 2D numpy array where axis 1 is are orientation values [dip, azimuth, polarity] of the pole while axis 0 is n number of orientations. — <em>Dip</em> is the inclination angle of 0 to 90 degrees measured from the horizontal plane downwards. <em>Azimuth</em> is the dip direction defined by a 360 degrees clockwise rotation, i.e. 0 = North, 90 = East, 180 = South, and 270 = West.*Polarity* defines where the upper (geologically younger) side of the orientation plane is and can be declared to be either normal (1) or reversed (-1).The orientation plane is perpendicular to the gradient.</p></li>
+<li><p><strong>idx</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>, </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><em>numpy.ndarray</em></a>) – If passed, list of indices where the function will be applied.</p></li>
+<li><p><strong>recompute_rescale_factor</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – if True recompute the rescaling factor</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="../Data/gempy.core.data_modules.geometric_data.Orientations.html#gempy.core.data_modules.geometric_data.Orientations" title="gempy.core.data_modules.geometric_data.Orientations"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.geometric_data.Orientations</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.delete_orientations">
+<code class="sig-name descname">delete_orientations</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a><span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.delete_orientations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.delete_orientations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete orientation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>idx</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>, </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><em>numpy.ndarray</em></a>) – If passed, list of indices where the function will be applied.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="../Data/gempy.core.data_modules.geometric_data.Orientations.html#gempy.core.data_modules.geometric_data.Orientations" title="gempy.core.data_modules.geometric_data.Orientations"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.geometric_data.Orientations</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.modify_orientations">
+<code class="sig-name descname">modify_orientations</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a></span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.modify_orientations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.modify_orientations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allows modification of any of an orientation column at a given index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>idx</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em>) – [s0] (int, list, numpy.ndarray): If passed, list of indices where the function will be applied</p>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>X</strong> (<em>*</em>) – </p></li>
+<li><p><strong>Y</strong> (<em>*</em>) – </p></li>
+<li><p><strong>Z</strong> (<em>*</em>) – </p></li>
+<li><p><strong>G_x</strong> (<em>*</em>) – </p></li>
+<li><p><strong>G_y</strong> (<em>*</em>) – </p></li>
+<li><p><strong>G_z</strong> (<em>*</em>) – </p></li>
+<li><p><strong>dip</strong> (<em>*</em>) – </p></li>
+<li><p><strong>azimuth</strong> (<em>*</em>) – </p></li>
+<li><p><strong>polarity</strong> (<em>*</em>) – </p></li>
+<li><p><strong>surface</strong> (<em>*</em>) – [s1] (str, Iterable[str]): list with the surface names for each input point. They must exist in the surfaces object linked to SurfacePoints</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.modify_options">
+<code class="sig-name descname">modify_options</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attribute</span></em>, <em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.modify_options"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.modify_options" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to modify a given field</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>attribute</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Name of the field to modify</p></li>
+<li><p><strong>value</strong> – new value of the field. It will have to exist in the category in order for pandas to modify it.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>df where options data is stored</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.1.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.modify_kriging_parameters">
+<code class="sig-name descname">modify_kriging_parameters</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attribute</span></em>, <em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.modify_kriging_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.modify_kriging_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to modify a given field</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>attribute</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Name of the field to modify</p></li>
+<li><p><strong>value</strong> – new value of the field. It will have to exist in the category in order for pandas to modify it.</p></li>
+<li><p><strong>kwargs</strong> – <ul>
+<li><p>u_grade_sep (str): If drift equations values are <cite>str</cite>, symbol that separates the values.</p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>df where options data is stored</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.1.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.modify_rescaling_parameters">
+<code class="sig-name descname">modify_rescaling_parameters</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attribute</span></em>, <em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.modify_rescaling_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.modify_rescaling_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Modify the parameters used to rescale data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>attribute</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Attribute to be modified. It can be: centers, rescaling factor
+* centers: [s0] (numpy.ndarray[float, 3]): XYZ array with the center of the data. This controls how much we shift the input coordinate
+* rescaling factor: [s1] Scaling factor by which all the parameters will be rescaled</p></li>
+<li><p><strong>value</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>]</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.geometric_data.Rescaling</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.set_default_surface_point">
+<code class="sig-name descname">set_default_surface_point</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.set_default_surface_point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.set_default_surface_point" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a default surface point if the df is empty. This is necessary for some
+type of functionality such as qgrid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> – Same as <a class="reference internal" href="../Data/gempy.core.data_modules.geometric_data.SurfacePoints.html#gempy.core.data_modules.geometric_data.SurfacePoints.add_surface_points" title="gempy.core.data_modules.geometric_data.SurfacePoints.add_surface_points"><code class="xref py py-func docutils literal notranslate"><span class="pre">gempy.core.data_modules.geometric_data.SurfacePoints.add_surface_points()</span></code></a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="../Data/gempy.core.data_modules.geometric_data.SurfacePoints.html#gempy.core.data_modules.geometric_data.SurfacePoints" title="gempy.core.data_modules.geometric_data.SurfacePoints"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.geometric_data.SurfacePoints</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.set_default_orientation">
+<code class="sig-name descname">set_default_orientation</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.set_default_orientation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.set_default_orientation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a default orientation if the df is empty. This is necessary for some type of functionality such as qgrid</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> – Same as :func:<a class="reference internal" href="../Data/gempy.core.data_modules.geometric_data.Orientations.html#gempy.core.data_modules.geometric_data.Orientations.add_orientation" title="gempy.core.data_modules.geometric_data.Orientations.add_orientation"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.geometric_data.Orientations.add_orientation</span></code></a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="../Data/gempy.core.data_modules.geometric_data.Orientations.html#gempy.core.data_modules.geometric_data.Orientations" title="gempy.core.data_modules.geometric_data.Orientations"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.geometric_data.Orientations</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.set_default_surfaces">
+<code class="sig-name descname">set_default_surfaces</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.set_default_surfaces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.set_default_surfaces" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set two default surfaces if the df is empty. This is necessary for some type of functionality such as qgrid</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../Data/gempy.core.data.Surfaces.html#gempy.core.data.Surfaces" title="gempy.core.data.Surfaces"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data.Surfaces</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.set_extent">
+<code class="sig-name descname">set_extent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">extent</span><span class="p">:</span> <span class="n">Iterable</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.set_extent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.set_extent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set project extent</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>extent</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><em>numpy.ndarray</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>]</em>) – [x_min, x_max, y_min, y_max, z_min, z_max]. Extent for the visualization of data and default of for the regular grid class.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="../Data/gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data.Grid</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.update_from_series">
+<code class="sig-name descname">update_from_series</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">reorder_series</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">sort_geometric_data</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">update_interpolator</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.update_from_series"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.update_from_series" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update all objects dependent on series.</p>
+<p>This method is a bit of a legacy and has been substituted by <a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.rename_series" title="gempy.core.model.ImplicitCoKriging.rename_series"><code class="xref py py-meth docutils literal notranslate"><span class="pre">rename_series()</span></code></a> and <a class="reference internal" href="#gempy.core.model.ImplicitCoKriging.reorder_series" title="gempy.core.model.ImplicitCoKriging.reorder_series"><code class="xref py py-meth docutils literal notranslate"><span class="pre">reorder_series()</span></code></a>,
+however is useful if you want to make sure all objects are up to date with the latest changes on series.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reorder_series</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – if True reorder all pandas categories accordingly to the series.df</p></li>
+<li><p><strong>sort_geometric_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – It True sort the geometric data after mapping the new order</p></li>
+<li><p><strong>update_interpolator</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – If True update the theano shared variables dependent on the structure</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.update_from_surfaces">
+<code class="sig-name descname">update_from_surfaces</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">set_categories_from_series</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">set_categories_from_surfaces</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">map_surface_points</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">map_orientations</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">update_structural_data</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.update_from_surfaces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.update_from_surfaces" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update all objects dependt on surfaces.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>set_categories_from_series</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – If True update the pandas categories with the Series object</p></li>
+<li><p><strong>set_categories_from_surfaces</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – If True update the pandas categories with the surfaces object</p></li>
+<li><p><strong>map_surface_points</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – If True map the surface points fields with the Surfaces obejct</p></li>
+<li><p><strong>map_orientations</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – If True map the orientations fields with the Surfaces object</p></li>
+<li><p><strong>update_structural_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – If true update the Structure with the Surface object</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.set_theano_graph">
+<code class="sig-name descname">set_theano_graph</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">interpolator</span><span class="p">:</span> <span class="n"><a class="reference internal" href="../Interpolator/gempy.core.interpolator.InterpolatorModel.html#gempy.core.interpolator.InterpolatorModel" title="gempy.core.interpolator.InterpolatorModel">gempy.core.interpolator.InterpolatorModel</a></span></em>, <em class="sig-param"><span class="n">update_structure</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">update_kriging</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.set_theano_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.set_theano_graph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pass a theano graph of a Interpolator instance other than the Model compose</p>
+<p>Use this method only if you know what are you doing!</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>interpolator</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">InterpolatorModel</span></code>) – [s0]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>True  (inserted)</p>
+<p>Child class of <code class="xref py py-class docutils literal notranslate"><span class="pre">Interpolator</span></code> which set the shared variables and compiles the theano</p>
+<p>graph to compute the geological model, i.e. lithologies.</p>
+<p>Attributes:</p>
+<blockquote>
+<div><p>compute_weights_ctrl (list[bool]): [s0] List that controls what parts of the graph for each series have to be recomputed</p>
+<p>compute_scalar_ctrl (list[bool]):</p>
+<p>compute_block_ctrl (list[bool]):</p>
+</div></blockquote>
+<p>Interpolator Doc</p>
+<blockquote>
+<div><p>(inserted)</p>
+<blockquote>
+<div><p>Class that act as:</p>
+<blockquote>
+<div><blockquote>
+<div><ol class="arabic simple">
+<li><p>linker between the data objects and the theano graph</p></li>
+<li><p>container of theano graphs + shared variables</p></li>
+<li><p>container of theano function</p></li>
+</ol>
+</div></blockquote>
+<p>Args:</p>
+<blockquote>
+<div><p>surface_points (SurfacePoints): [s0] Data child with specific methods to manipulate interface data. It is initialize without arguments to giveflexibility to the origin of the data.</p>
+<p>orientations (Orientations): [s1] Data child with specific methods to manipulate orientation data. It is initialize without arguments to giveflexibility to the origin of the data.</p>
+<p>grid (Grid): [s2]  Class to generate grids.</p>
+<p>surfaces (Surfaces): [s3] Class that contains the surfaces of the model and the values of each of them.</p>
+<p>series (Series): [s4]  Class that contains the functionality and attributes related to the series. Notice that series does not onlyrefers to stratigraphic series but to any set of surfaces which will be interpolated together (comfortably).</p>
+<p>faults (Faults): [s5] Class that encapsulate faulting related content. Mainly, which surfaces/surfaces are faults. The fault network—i.e. which faults offset other faults—and fault types—finite vs infinite.</p>
+<p>additional_data (AdditionalData): [s6] Container class that encapsulate <code class="xref py py-class docutils literal notranslate"><span class="pre">Structure</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">KrigingParameters</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Options</span></code> and rescaling parameters</p>
+<p>kwargs:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>compile_theano: if true, the function is compile at the creation of the class</p></li>
+</ul>
+</div></blockquote>
+</div></blockquote>
+<p>Attributes:</p>
+<blockquote>
+<div><p>surface_points (SurfacePoints)</p>
+<p>orientations (Orientations)</p>
+<p>grid (Grid)</p>
+<p>surfaces (Surfaces)</p>
+<p>faults (Faults)</p>
+<p>additional_data (AdditionalData)</p>
+<p>dtype ([‘float32’, ‘float64’]): float precision</p>
+<p>theano_graph: theano graph object with the properties from AdditionalData -&gt; Options</p>
+<p>theano function: python function to call the theano code</p>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.set_theano_function">
+<code class="sig-name descname">set_theano_function</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">interpolator</span><span class="p">:</span> <span class="n"><a class="reference internal" href="../Interpolator/gempy.core.interpolator.InterpolatorModel.html#gempy.core.interpolator.InterpolatorModel" title="gempy.core.interpolator.InterpolatorModel">gempy.core.interpolator.InterpolatorModel</a></span></em>, <em class="sig-param"><span class="n">update_structure</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">update_kriging</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.set_theano_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.set_theano_function" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Pass a theano function and its correspondent graph from an Interpolator</dt><dd><p>instance other than the Model compose</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>interpolator</strong> (<a class="reference internal" href="../Interpolator/gempy.core.interpolator.InterpolatorModel.html#gempy.core.interpolator.InterpolatorModel" title="gempy.core.interpolator.InterpolatorModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.interpolator.InterpolatorModel</span></code></a>) – interpolator object
+with the compile graph.</p></li>
+<li><p><strong>update_kriging</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – if True update kriging parameters</p></li>
+<li><p><strong>update_structure</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – if Ture update structure</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../Interpolator/gempy.core.interpolator.InterpolatorModel.html#gempy.core.interpolator.InterpolatorModel" title="gempy.core.interpolator.InterpolatorModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.interpolator.InterpolatorModel</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.update_to_interpolator">
+<code class="sig-name descname">update_to_interpolator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">reset</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.update_to_interpolator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.update_to_interpolator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update all shared parameters from the data objects</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>reset</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – if True reset the flow control and initialize results arrays</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.map_geometric_data_df">
+<code class="sig-name descname">map_geometric_data_df</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d</span><span class="p">:</span> <span class="n">pandas.core.frame.DataFrame</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.map_geometric_data_df"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.map_geometric_data_df" title="Permalink to this definition">¶</a></dt>
+<dd><p>Map a geometric data dataframe from the linked objects (at 07.2019 surfaces and series)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>d</strong> (<em>pn.DataFrame</em>) – Geometric data dataframe to be mapped</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.ImplicitCoKriging.set_surface_order_from_solution">
+<code class="sig-name descname">set_surface_order_from_solution</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.set_surface_order_from_solution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.set_surface_order_from_solution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Order the surfaces respect the last computation. Therefore if you call this method,
+after sorting surface_points without recomputing you may get wrong results.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Surfaces</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/./logos/gempy.png" alt="Logo"/>
+    
+    <h1 class="logo logo-name">GemPy</h1>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a class="badge" href="https://travis-ci.org/cgre-aachen/gempy">
+    <img
+        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../projects.html">Additional projects</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">GemPy Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../integrations/index.html">Integrations</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../code.html">Code</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../code.html#gempy-api">GemPy API</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../code.html#model">Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#plot">Plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#data">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#grids">Grids</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#geometric-data">Geometric Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#interpolator">Interpolator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#solution">Solution</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../code.html">Code</a><ul>
+      <li>Previous: <a href="gempy.core.model.Project.html" title="previous chapter">gempy.core.model.Project</a></li>
+      <li>Next: <a href="../Plot/gempy.plot_2d.html" title="next chapter">gempy.plot_2d</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017-2020, CGRE-Aachen Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/Model/gempy.core.model.ImplicitCoKriging.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

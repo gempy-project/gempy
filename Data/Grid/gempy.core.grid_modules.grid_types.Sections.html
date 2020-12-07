@@ -1,0 +1,252 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>gempy.core.grid_modules.grid_types.Sections &#8212; GemPy 2.2.7 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="gempy.core.grid_modules.grid_types.CenteredGrid" href="gempy.core.grid_modules.grid_types.CenteredGrid.html" />
+    <link rel="prev" title="gempy.core.grid_modules.topography.Topography" href="gempy.core.grid_modules.topography.Topography.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="gempy-core-grid-modules-grid-types-sections">
+<h1>gempy.core.grid_modules.grid_types.Sections<a class="headerlink" href="#gempy-core-grid-modules-grid-types-sections" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="gempy.core.grid_modules.grid_types.Sections">
+<em class="property">class </em><code class="sig-prename descclassname">gempy.core.grid_modules.grid_types.</code><code class="sig-name descname">Sections</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">regular_grid</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">z_ext</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">section_dict</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gempy/core/grid_modules/grid_types.html#Sections"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.grid_modules.grid_types.Sections" title="Permalink to this definition">¶</a></dt>
+<dd><p>Object that creates a grid of cross sections between two points.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>regular_grid</strong> – Model.grid.regular_grid</p></li>
+<li><p><strong>section_dict</strong> – {‘section name’: ([p1_x, p1_y], [p2_x, p2_y], [xyres, zres])}</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples using Sections</p>
+<div class="sphx-glr-clear"></div><p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.grid_modules.grid_types.Sections.__init__" title="gempy.core.grid_modules.grid_types.Sections.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([regular_grid, z_ext, section_dict])</p></td>
+<td><p>Initialize self.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_all_distances</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_line_coordinates_2points</span></code>(p1, p2, res)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_section_coordinates</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">distance_2_points</span></code>(p1, p2)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_axis_coord</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_section_args</span></code>(section_name)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_section_grid</span></code>(section_name)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_section_params</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.grid_modules.grid_types.Sections.interpolate_zvals_at_xy" title="gempy.core.grid_modules.grid_types.Sections.interpolate_zvals_at_xy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">interpolate_zvals_at_xy</span></code></a>(xy, topography[, method])</p></td>
+<td><p>Interpolates DEM values on a defined section</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_sections</span></code>(section_dict[, regular_grid, z_ext])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">show</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="gempy.core.grid_modules.grid_types.Sections.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">regular_grid</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">z_ext</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">section_dict</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gempy/core/grid_modules/grid_types.html#Sections.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.grid_modules.grid_types.Sections.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.grid_modules.grid_types.Sections.interpolate_zvals_at_xy">
+<em class="property">static </em><code class="sig-name descname">interpolate_zvals_at_xy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xy</span></em>, <em class="sig-param"><span class="n">topography</span></em>, <em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">'interp2d'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gempy/core/grid_modules/grid_types.html#Sections.interpolate_zvals_at_xy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.grid_modules.grid_types.Sections.interpolate_zvals_at_xy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolates DEM values on a defined section</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xy</strong> – x (EW) and y (NS) coordinates of the profile</p></li>
+<li><p><strong>topography</strong> (<a class="reference internal" href="gempy.core.grid_modules.topography.Topography.html#gempy.core.grid_modules.topography.Topography" title="gempy.core.grid_modules.topography.Topography"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.grid_modules.topography.Topography</span></code></a>) – </p></li>
+<li><p><strong>method</strong> – interpolation method, ‘interp2d’ for cubic scipy.interpolate.interp2d
+‘spline’ for scipy.interpolate.RectBivariateSpline</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>z values, i.e. topography along the profile</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)">numpy.ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../index.html">
+    <img class="logo" src="../../_static/./logos/gempy.png" alt="Logo"/>
+    
+    <h1 class="logo logo-name">GemPy</h1>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a class="badge" href="https://travis-ci.org/cgre-aachen/gempy">
+    <img
+        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../projects.html">Additional projects</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">GemPy Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../integrations/index.html">Integrations</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../code.html">Code</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../code.html#gempy-api">GemPy API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../code.html#model">Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../code.html#plot">Plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../code.html#data">Data</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../code.html#grids">Grids</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../code.html#geometric-data">Geometric Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../code.html#interpolator">Interpolator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../code.html#solution">Solution</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../../code.html">Code</a><ul>
+      <li>Previous: <a href="gempy.core.grid_modules.topography.Topography.html" title="previous chapter">gempy.core.grid_modules.topography.Topography</a></li>
+      <li>Next: <a href="gempy.core.grid_modules.grid_types.CenteredGrid.html" title="next chapter">gempy.core.grid_modules.grid_types.CenteredGrid</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017-2020, CGRE-Aachen Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../_sources/Data/Grid/gempy.core.grid_modules.grid_types.Sections.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

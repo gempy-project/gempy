@@ -1,0 +1,675 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>gempy.core.model.Project &#8212; GemPy 2.2.7 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="gempy.core.model.ImplicitCoKriging" href="gempy.core.model.ImplicitCoKriging.html" />
+    <link rel="prev" title="gempy.get_th_fn" href="../GemPy%20API/gempy.get_th_fn.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="gempy-core-model-project">
+<h1>gempy.core.model.Project<a class="headerlink" href="#gempy-core-model-project" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="gempy.core.model.Project">
+<em class="property">class </em><code class="sig-prename descclassname">gempy.core.model.</code><code class="sig-name descname">Project</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">project_name</span><span class="o">=</span><span class="default_value">'default_project'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#Project"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.Project" title="Permalink to this definition">¶</a></dt>
+<dd><p>Container class of all objects that constitute a GemPy model.</p>
+<p>In addition the class provides all the methods you need to construct a geological
+model with <a class="reference internal" href="gempy.core.model.ImplicitCoKriging.html#gempy.core.model.ImplicitCoKriging" title="gempy.core.model.ImplicitCoKriging"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImplicitCoKriging</span></code></a>.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">MetaData</span></code>, <a class="reference internal" href="gempy.core.model.ImplicitCoKriging.html#gempy.core.model.ImplicitCoKriging" title="gempy.core.model.ImplicitCoKriging"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImplicitCoKriging</span></code></a></p>
+</div>
+<p class="rubric">Examples using Project</p>
+<div class="sphx-glr-thumbcontainer" tooltip="Getting Started"><div class="figure align-default" id="id1">
+<img alt="Getting Started" src="../_images/sphx_glr_get_started_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../getting_started/get_started.html#sphx-glr-getting-started-get-started-py"><span class="std std-ref">Getting Started</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="1.1 -Basics of geological modeling with GemPy"><div class="figure align-default" id="id2">
+<img alt="1.1 -Basics of geological modeling with GemPy" src="../_images/sphx_glr_ch1_1_basics_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../tutorials/ch1_fundamentals/ch1_1_basics.html#sphx-glr-tutorials-ch1-fundamentals-ch1-1-basics-py"><span class="std std-ref">1.1 -Basics of geological modeling with GemPy</span></a></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="1.2b: The Implicit coKriging class"><div class="figure align-default" id="id3">
+<img alt="1.2b: The Implicit coKriging class" src="../_images/sphx_glr_ch1_2b_implicit_cokriging_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../tutorials/ch1_fundamentals/ch1_2b_implicit_cokriging.html#sphx-glr-tutorials-ch1-fundamentals-ch1-2b-implicit-cokriging-py"><span class="std std-ref">1.2b: The Implicit coKriging class</span></a></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="1.3b: 2-D sections"><div class="figure align-default" id="id4">
+<img alt="1.3b: 2-D sections" src="../_images/sphx_glr_ch1_3b_cross_sections_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../tutorials/ch1_fundamentals/ch1_3b_cross_sections.html#sphx-glr-tutorials-ch1-fundamentals-ch1-3b-cross-sections-py"><span class="std std-ref">1.3b: 2-D sections</span></a></span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="1.3c: Adding topography to geological models"><div class="figure align-default" id="id5">
+<img alt="1.3c: Adding topography to geological models" src="../_images/sphx_glr_ch1_3c_topography_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../tutorials/ch1_fundamentals/ch1_3c_topography.html#sphx-glr-tutorials-ch1-fundamentals-ch1-3c-topography-py"><span class="std std-ref">1.3c: Adding topography to geological models</span></a></span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="1.4: Unconformity relationships"><div class="figure align-default" id="id6">
+<img alt="1.4: Unconformity relationships" src="../_images/sphx_glr_ch1_4_onlap_relations_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../tutorials/ch1_fundamentals/ch1_4_onlap_relations.html#sphx-glr-tutorials-ch1-fundamentals-ch1-4-onlap-relations-py"><span class="std std-ref">1.4: Unconformity relationships</span></a></span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="1.5: Fault relations"><div class="figure align-default" id="id7">
+<img alt="1.5: Fault relations" src="../_images/sphx_glr_ch1_5_fault_relations_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../tutorials/ch1_fundamentals/ch1_5_fault_relations.html#sphx-glr-tutorials-ch1-fundamentals-ch1-5-fault-relations-py"><span class="std std-ref">1.5: Fault relations</span></a></span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="1.6: 2D Visualization."><div class="figure align-default" id="id8">
+<img alt="1.6: 2D Visualization." src="../_images/sphx_glr_ch1_6_2d_visualization_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../tutorials/ch1_fundamentals/ch1_6_2d_visualization.html#sphx-glr-tutorials-ch1-fundamentals-ch1-6-2d-visualization-py"><span class="std std-ref">1.6: 2D Visualization.</span></a></span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="1.7: 3-D Visualization"><div class="figure align-default" id="id9">
+<img alt="1.7: 3-D Visualization" src="../_images/sphx_glr_ch1_7_3d_visualization_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../tutorials/ch1_fundamentals/ch1_7_3d_visualization.html#sphx-glr-tutorials-ch1-fundamentals-ch1-7-3d-visualization-py"><span class="std std-ref">1.7: 3-D Visualization</span></a></span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="2.1 Forward Gravity: Simple example"><div class="figure align-default" id="id10">
+<img alt="2.1 Forward Gravity: Simple example" src="../_images/sphx_glr_ch2_1_gravity_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../tutorials/ch2-Geophysics/ch2_1_gravity.html#sphx-glr-tutorials-ch2-geophysics-ch2-1-gravity-py"><span class="std std-ref">2.1 Forward Gravity: Simple example</span></a></span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="3.1: Simple example of kriging in gempy"><div class="figure align-default" id="id11">
+<img alt="3.1: Simple example of kriging in gempy" src="../_images/sphx_glr_ch3_1_kriging_interpolation_and_simulation_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../tutorials/ch3-Interpolations/ch3_1_kriging_interpolation_and_simulation.html#sphx-glr-tutorials-ch3-interpolations-ch3-1-kriging-interpolation-and-simulation-py"><span class="std std-ref">3.1: Simple example of kriging in gempy</span></a></span><a class="headerlink" href="#id11" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Chapter 4: Analyzing Geomodel Topology"><div class="figure align-default" id="id12">
+<img alt="Chapter 4: Analyzing Geomodel Topology" src="../_images/sphx_glr_ch4-1-Topology_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../tutorials/ch4-Topology/ch4-1-Topology.html#sphx-glr-tutorials-ch4-topology-ch4-1-topology-py"><span class="std std-ref">Chapter 4: Analyzing Geomodel Topology</span></a></span><a class="headerlink" href="#id12" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="In this example we will show how easy we can propagate uncertainty from GemPy parameters to fin..."><div class="figure align-default" id="id13">
+<img alt="5.1 - Probabilistic Modeling: Error Propagation" src="../_images/sphx_glr_ch5_1_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../tutorials/ch5_probabilistic_modeling/ch5_1.html#sphx-glr-tutorials-ch5-probabilistic-modeling-ch5-1-py"><span class="std std-ref">5.1 - Probabilistic Modeling: Error Propagation</span></a></span><a class="headerlink" href="#id13" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="5 2 - Introduction PyMC3."><div class="figure align-default" id="id14">
+<img alt="5 2 - Introduction PyMC3." src="../_images/sphx_glr_ch5_2_introduction_pymc3_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../tutorials/ch5_probabilistic_modeling/ch5_2_introduction_pymc3.html#sphx-glr-tutorials-ch5-probabilistic-modeling-ch5-2-introduction-pymc3-py"><span class="std std-ref">5 2 - Introduction PyMC3.</span></a></span><a class="headerlink" href="#id14" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="5.3 - Probability Density Transformation."><div class="figure align-default" id="id15">
+<img alt="5.3 - Probability Density Transformation." src="../_images/sphx_glr_ch5_3_probability_density_transformation_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../tutorials/ch5_probabilistic_modeling/ch5_3_probability_density_transformation.html#sphx-glr-tutorials-ch5-probabilistic-modeling-ch5-3-probability-density-transformation-py"><span class="std std-ref">5.3 - Probability Density Transformation.</span></a></span><a class="headerlink" href="#id15" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Model 1 - Horizontal stratigraphic"><div class="figure align-default" id="id16">
+<img alt="Model 1 - Horizontal stratigraphic" src="../_images/sphx_glr_1_horizontal_stratigraphic_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/geometries/1_horizontal_stratigraphic.html#sphx-glr-examples-geometries-1-horizontal-stratigraphic-py"><span class="std std-ref">Model 1 - Horizontal stratigraphic</span></a></span><a class="headerlink" href="#id16" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Model 2 - Anticline"><div class="figure align-default" id="id17">
+<img alt="Model 2 - Anticline" src="../_images/sphx_glr_2_fold_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/geometries/2_fold.html#sphx-glr-examples-geometries-2-fold-py"><span class="std std-ref">Model 2 - Anticline</span></a></span><a class="headerlink" href="#id17" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Model 3 - Recumbent Fold"><div class="figure align-default" id="id18">
+<img alt="Model 3 - Recumbent Fold" src="../_images/sphx_glr_3_recumbent_fold_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/geometries/3_recumbent_fold.html#sphx-glr-examples-geometries-3-recumbent-fold-py"><span class="std std-ref">Model 3 - Recumbent Fold</span></a></span><a class="headerlink" href="#id18" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Model 4 - Pinchout"><div class="figure align-default" id="id19">
+<img alt="Model 4 - Pinchout" src="../_images/sphx_glr_4_pinchout_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/geometries/4_pinchout.html#sphx-glr-examples-geometries-4-pinchout-py"><span class="std std-ref">Model 4 - Pinchout</span></a></span><a class="headerlink" href="#id19" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Model 5 - Fault"><div class="figure align-default" id="id20">
+<img alt="Model 5 - Fault" src="../_images/sphx_glr_5_fault_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/geometries/5_fault.html#sphx-glr-examples-geometries-5-fault-py"><span class="std std-ref">Model 5 - Fault</span></a></span><a class="headerlink" href="#id20" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Model 6 - Unconformity"><div class="figure align-default" id="id21">
+<img alt="Model 6 - Unconformity" src="../_images/sphx_glr_6_unconformity_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/geometries/6_unconformity.html#sphx-glr-examples-geometries-6-unconformity-py"><span class="std std-ref">Model 6 - Unconformity</span></a></span><a class="headerlink" href="#id21" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Model 7 - Combination"><div class="figure align-default" id="id22">
+<img alt="Model 7 - Combination" src="../_images/sphx_glr_7_combination_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/geometries/7_combination.html#sphx-glr-examples-geometries-7-combination-py"><span class="std std-ref">Model 7 - Combination</span></a></span><a class="headerlink" href="#id22" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Alesmodel: Plotting sections and maps."><div class="figure align-default" id="id23">
+<img alt="Alesmodel: Plotting sections and maps." src="../_images/sphx_glr_Alesmodel_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/real/Alesmodel.html#sphx-glr-examples-real-alesmodel-py"><span class="std std-ref">Alesmodel: Plotting sections and maps.</span></a></span><a class="headerlink" href="#id23" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Claudius"><div class="figure align-default" id="id24">
+<img alt="Claudius" src="../_images/sphx_glr_Claudius_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/real/Claudius.html#sphx-glr-examples-real-claudius-py"><span class="std std-ref">Claudius</span></a></span><a class="headerlink" href="#id24" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Greenstone."><div class="figure align-default" id="id25">
+<img alt="Greenstone." src="../_images/sphx_glr_Greenstone_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/real/Greenstone.html#sphx-glr-examples-real-greenstone-py"><span class="std std-ref">Greenstone.</span></a></span><a class="headerlink" href="#id25" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Hecho"><div class="figure align-default" id="id26">
+<img alt="Hecho" src="../_images/sphx_glr_Hecho_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/real/Hecho.html#sphx-glr-examples-real-hecho-py"><span class="std std-ref">Hecho</span></a></span><a class="headerlink" href="#id26" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Moureze"><div class="figure align-default" id="id27">
+<img alt="Moureze" src="../_images/sphx_glr_Moureze_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/real/Moureze.html#sphx-glr-examples-real-moureze-py"><span class="std std-ref">Moureze</span></a></span><a class="headerlink" href="#id27" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Perth basin."><div class="figure align-default" id="id28">
+<img alt="Perth basin." src="../_images/sphx_glr_Perth_basin_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/real/Perth_basin.html#sphx-glr-examples-real-perth-basin-py"><span class="std std-ref">Perth basin.</span></a></span><a class="headerlink" href="#id28" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Export a geological model from GemPy to use in MOOSE"><div class="figure align-default" id="id29">
+<img alt="Export a geological model from GemPy to use in MOOSE" src="../_images/sphx_glr_gempy_export_MOOSE_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../integrations/gempy_export_MOOSE.html#sphx-glr-integrations-gempy-export-moose-py"><span class="std std-ref">Export a geological model from GemPy to use in MOOSE</span></a></span><a class="headerlink" href="#id29" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Transform 2019: Integrating Striplog and GemPy"><div class="figure align-default" id="id30">
+<img alt="Transform 2019: Integrating Striplog and GemPy" src="../_images/sphx_glr_gempy_striplog_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../integrations/gempy_striplog.html#sphx-glr-integrations-gempy-striplog-py"><span class="std std-ref">Transform 2019: Integrating Striplog and GemPy</span></a></span><a class="headerlink" href="#id30" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-clear"></div><p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.model.Project.__init__" title="gempy.core.model.Project.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([project_name])</p></td>
+<td><p>Initialize self.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_features</span></code>(features_list[, reset_order_series])</p></td>
+<td><p>Add series, update the categories dependent on them and reset the flow control.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_orientations</span></code>(X, Y, Z, surface[, …])</p></td>
+<td><p>Add orientation.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_series</span></code>(series_list[, reset_order_series])</p></td>
+<td><p>Add series to the df</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_surface_points</span></code>(X, Y, Z, surface[, idx, …])</p></td>
+<td><p>Add surface points.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_surface_values</span></code>(values_array[, …])</p></td>
+<td><p>Add values to be interpolated for each surfaces.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_surfaces</span></code>(surface_list[, update_df])</p></td>
+<td><p>Add surface to the df.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">delete_features</span></code>(indices[, …])</p></td>
+<td><p>Delete series, update the categories dependent on them and reset the flow control.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">delete_orientations</span></code>(idx)</p></td>
+<td><p>Delete orientation</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">delete_series</span></code>(indices[, …])</p></td>
+<td><p>Delete series, update the categories dependent on them and reset the flow control.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">delete_surface_points</span></code>(idx)</p></td>
+<td><p>Delete surface points.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">delete_surface_points_basement</span></code>()</p></td>
+<td><p>Delete surface points belonging to the basement layer if any</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">delete_surface_values</span></code>(properties_names)</p></td>
+<td><p>Delete a property or several properties column.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">delete_surfaces</span></code>(indices[, update_id, …])</p></td>
+<td><p>&#64;TODO When implemeted activate geometric data, change remove data to False by default Delete a surface and update all related object.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_active_grids</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_additional_data</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.model.Project.get_data" title="gempy.core.model.Project.get_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_data</span></code></a>([itype, verbosity, numeric])</p></td>
+<td><p>Method to return the data stored in <code class="xref py py-class docutils literal notranslate"><span class="pre">panda.DataFrame</span></code> within a <a class="reference internal" href="#gempy.core.model.Project" title="gempy.core.model.Project"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.model.Project</span></code></a> data object.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.model.Project.load_model_pickle" title="gempy.core.model.Project.load_model_pickle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_model_pickle</span></code></a>(path)</p></td>
+<td><p>Read InputData object from python pickle.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">map_geometric_data_df</span></code>(d)</p></td>
+<td><p>Map a geometric data dataframe from the linked objects (at 07.2019 surfaces and series)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">map_series_to_surfaces</span></code>(*args, **kwargs)</p></td>
+<td><p>Map series to surfaces and update all related objects accordingly to the following arguments:</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">map_stack_to_surfaces</span></code>([mapping_object, …])</p></td>
+<td><p>Map series to surfaces and update all related objects accordingly to the following arguments:</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">modify_kriging_parameters</span></code>(attribute, value, …)</p></td>
+<td><p>Method to modify a given field</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">modify_options</span></code>(attribute, value)</p></td>
+<td><p>Method to modify a given field</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">modify_order_features</span></code>(new_value, idx)</p></td>
+<td><p>Modify order of the feature.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">modify_order_series</span></code>(new_value, idx)</p></td>
+<td><p>Replace to the new location the old series</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">modify_order_surfaces</span></code>(new_value, idx[, …])</p></td>
+<td><p>Replace to the new location the old series</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">modify_orientations</span></code>(idx, **kwargs)</p></td>
+<td><p>Allows modification of any of an orientation column at a given index.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">modify_rescaling_parameters</span></code>(attribute, value)</p></td>
+<td><p>Modify the parameters used to rescale data</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">modify_surface_points</span></code>(indices[, …])</p></td>
+<td><p>Allows modification of the x,y and/or z-coordinates of an interface at specified dataframe index.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">modify_surface_values</span></code>(idx, properties_names, …)</p></td>
+<td><p>Method to modify values using loc of pandas.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.model.Project.new_model" title="gempy.core.model.Project.new_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">new_model</span></code></a>([name_project])</p></td>
+<td><p>Reset the model object.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.model.Project.read_data" title="gempy.core.model.Project.read_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_data</span></code></a>([source_i, source_o, add_basement])</p></td>
+<td><p>Read data from a csv, or directly supplied dataframes</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rename_features</span></code>(new_categories)</p></td>
+<td><p>Rename features and update the category dependent on them.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rename_series</span></code>(new_categories)</p></td>
+<td><p>Rename features and update the category dependent on them.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rename_surfaces</span></code>(to_replace, **kwargs)</p></td>
+<td><p>Replace values given in to_replace with value.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reorder_features</span></code>(new_categories)</p></td>
+<td><p>Reorder series.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reorder_series</span></code>(new_categories)</p></td>
+<td><p>Reorder series.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.model.Project.save_model" title="gempy.core.model.Project.save_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_model</span></code></a>([name, path, compress])</p></td>
+<td><p>Save model in new folder.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.model.Project.save_model_pickle" title="gempy.core.model.Project.save_model_pickle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_model_pickle</span></code></a>([path])</p></td>
+<td><p>Short term model storage.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_solution</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_active_grid</span></code>(grid_name[, reset])</p></td>
+<td><p>Set active a given or several grids.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_bottom_relation</span></code>(series, bottom_relation)</p></td>
+<td><p>Set the bottom relation between the series and the one below.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_centered_grid</span></code>(centers, radius[, resolution])</p></td>
+<td><p>[s0] Initialize gravity grid.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_custom_grid</span></code>(custom_grid)</p></td>
+<td><p>Set custom grid, rescale gird and initialize theano solutions.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_default_orientation</span></code>(**kwargs)</p></td>
+<td><p>Set a default orientation if the df is empty.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_default_surface_point</span></code>(**kwargs)</p></td>
+<td><p>Set a default surface point if the df is empty.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_default_surfaces</span></code>()</p></td>
+<td><p>Set two default surfaces if the df is empty.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_extent</span></code>(extent)</p></td>
+<td><p>Set project extent</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_fault_object</span></code>()</p></td>
+<td><p>Not implemented</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_fault_relation</span></code>(rel_matrix)</p></td>
+<td><p>Method to set the df that offset a given sequence and therefore also another fault.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_grid_object</span></code>(grid[, update_model])</p></td>
+<td><p>Not implemented</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_is_fault</span></code>([feature_fault, toggle, …])</p></td>
+<td><p>Set a feature to fault and update all dependent objects of the Model.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_is_finite_fault</span></code>([series_fault, toggle])</p></td>
+<td><p>Toggles given series’ finite fault property.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_orientations</span></code>(table, **kwargs)</p></td>
+<td><p>Set coordinates, surface and orientation data.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_orientations_object</span></code>(orientations[, …])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_regular_grid</span></code>(extent, resolution)</p></td>
+<td><p>Set a regular grid, rescale data and initialize theano solutions.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_section_grid</span></code>(section_dict)</p></td>
+<td><p>[s0] Object that creates a grid of cross sections between two points.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_series_object</span></code>()</p></td>
+<td><p>Not implemented yet.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_surface_order_from_solution</span></code>()</p></td>
+<td><p>Order the surfaces respect the last computation.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_surface_points</span></code>(table, **kwargs)</p></td>
+<td><p>Set     Set coordinates and surface columns on the df.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_surface_points_object</span></code>(surface_points[, …])</p></td>
+<td><p>Not Implemented</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_surface_values</span></code>(values_array[, …])</p></td>
+<td><p>Set values to be interpolated for each surfaces.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_surfaces_object</span></code>()</p></td>
+<td><p>Not implemented yet.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_theano_function</span></code>(interpolator[, …])</p></td>
+<td><p>Pass a theano function and its correspondent graph from an Interpolator</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_theano_graph</span></code>(interpolator[, …])</p></td>
+<td><p>Pass a theano graph of a Interpolator instance other than the Model compose</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_topography</span></code>([source, set_mask])</p></td>
+<td><p>Create a topography grid and activate it.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_additional_data</span></code>([update_structure, …])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_from_grid</span></code>()</p></td>
+<td><p>Update objects dependent from the grid.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_from_series</span></code>([reorder_series, …])</p></td>
+<td><p>Update all objects dependent on series.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_from_surfaces</span></code>([…])</p></td>
+<td><p>Update all objects dependt on surfaces.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_structure</span></code>([update_theano, …])</p></td>
+<td><p>Update python and theano structure parameters.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_to_interpolator</span></code>([reset])</p></td>
+<td><p>Update all shared parameters from the data objects</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">additional_data</span></code></p></td>
+<td><p><a class="reference internal" href="../Data/gempy.core.data.AdditionalData.html#gempy.core.data.AdditionalData" title="gempy.core.data.AdditionalData"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data.AdditionalData</span></code></a> [s0] Container class that encapsulate <code class="xref py py-class docutils literal notranslate"><span class="pre">Structure</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">KrigingParameters</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Options</span></code> and rescaling parameters</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">faults</span></code></p></td>
+<td><p><a class="reference internal" href="../Data/gempy.core.data_modules.stack.Faults.html#gempy.core.data_modules.stack.Faults" title="gempy.core.data_modules.stack.Faults"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.stack.Faults</span></code></a> [s0] Class that encapsulate faulting related content.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">grid</span></code></p></td>
+<td><p><a class="reference internal" href="../Data/gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data.Grid</span></code></a> [s0]  Class to generate grids.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">interpolator</span></code></p></td>
+<td><p><a class="reference internal" href="../Interpolator/gempy.core.interpolator.InterpolatorModel.html#gempy.core.interpolator.InterpolatorModel" title="gempy.core.interpolator.InterpolatorModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.interpolator.InterpolatorModel</span></code></a> [s0] Child class of <code class="xref py py-class docutils literal notranslate"><span class="pre">Interpolator</span></code> which set the shared variables and compiles the theanograph to compute the geological model, i.e. lithologies.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">orientations</span></code></p></td>
+<td><p><a class="reference internal" href="../Data/gempy.core.data_modules.geometric_data.Orientations.html#gempy.core.data_modules.geometric_data.Orientations" title="gempy.core.data_modules.geometric_data.Orientations"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.geometric_data.Orientations</span></code></a> [s0] Data child with specific methods to manipulate orientation data.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rescaling</span></code></p></td>
+<td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.geometric_data.Rescaling</span></code> [s0] Auxiliary class to rescale the coordinates between 0 and 1 to increase float stability.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">series</span></code></p></td>
+<td><p>Class that contains the functionality and attributes related to the series.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">stack</span></code></p></td>
+<td><p><a class="reference internal" href="../Data/gempy.core.data_modules.stack.Stack.html#gempy.core.data_modules.stack.Stack" title="gempy.core.data_modules.stack.Stack"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.stack.Stack</span></code></a> [s0] Class that encapsulates all type of geological features.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">surface_points</span></code></p></td>
+<td><p><a class="reference internal" href="../Data/gempy.core.data_modules.geometric_data.SurfacePoints.html#gempy.core.data_modules.geometric_data.SurfacePoints" title="gempy.core.data_modules.geometric_data.SurfacePoints"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.geometric_data.SurfacePoints</span></code></a> [s0] Data child with specific methods to manipulate interface data.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">surfaces</span></code></p></td>
+<td><p><a class="reference internal" href="../Data/gempy.core.data.Surfaces.html#gempy.core.data.Surfaces" title="gempy.core.data.Surfaces"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data.Surfaces</span></code></a> [s0] Class that contains the surfaces of the model and the values of each of them.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="gempy.core.model.Project.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">project_name</span><span class="o">=</span><span class="default_value">'default_project'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#Project.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.Project.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.Project.new_model">
+<code class="sig-name descname">new_model</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name_project</span><span class="o">=</span><span class="default_value">'default_project'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#Project.new_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.Project.new_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset the model object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.Project.save_model_pickle">
+<code class="sig-name descname">save_model_pickle</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#Project.save_model_pickle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.Project.save_model_pickle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Short term model storage. Object to a python pickle (serialization of python). Be aware that if the dependencies
+versions used to export and import the pickle differ it may give problems</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – path where save the pickle</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.Project.load_model_pickle">
+<em class="property">static </em><code class="sig-name descname">load_model_pickle</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#Project.load_model_pickle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.Project.load_model_pickle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read InputData object from python pickle.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – path where save the pickle</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.model.Model</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.Project.save_model">
+<code class="sig-name descname">save_model</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">compress</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#Project.save_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.Project.save_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save model in new folder. Input data is saved as csv files. Solutions, extent and resolutions are saved as npy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – name of the newly created folder and the part of the files name</p></li>
+<li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – path where save the model folder.</p></li>
+<li><p><strong>compress</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – If true create a zip</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.Project.read_data">
+<code class="sig-name descname">read_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">source_i</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">source_o</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">add_basement</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#Project.read_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.Project.read_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read data from a csv, or directly supplied dataframes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source_i</strong> – Path to the data bases of surface_points. Default os.getcwd(), or direct pandas data frame</p></li>
+<li><p><strong>source_o</strong> – Path to the data bases of orientations. Default os.getcwd(), or direct pandas data frame</p></li>
+<li><p><strong>add_basement</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – if True add a basement surface. This wont be interpolated it just gives the values</p></li>
+<li><p><strong>the volume below the last surface.</strong> (<em>for</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><p><strong>update_surfaces</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – True</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.geometric_data.SurfacePoints.read_surface_points.</span></code></p></li>
+<li><p><a class="reference internal" href="../Data/gempy.core.data_modules.geometric_data.Orientations.html#gempy.core.data_modules.geometric_data.Orientations.read_orientations" title="gempy.core.data_modules.geometric_data.Orientations.read_orientations"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.geometric_data.Orientations.read_orientations</span></code></a></p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.model.Project.get_data">
+<code class="sig-name descname">get_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">itype</span><span class="o">=</span><span class="default_value">'data'</span></em>, <em class="sig-param"><span class="n">verbosity</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">numeric</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#Project.get_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.Project.get_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to return the data stored in <code class="xref py py-class docutils literal notranslate"><span class="pre">panda.DataFrame</span></code> within a
+<a class="reference internal" href="#gempy.core.model.Project" title="gempy.core.model.Project"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.model.Project</span></code></a> data object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>itype</strong> (<em>str{'all'</em><em>, </em><em>'surface_points'</em><em>, </em><em>'orientations'</em><em>, </em><em>'surfaces'</em><em>, </em><em>'series'</em><em>, </em><em>'faults'</em><em>, </em><em>'faults_relations'</em><em>,</em><em>'additional data'}</em>) – input data type to be retrieved.</p></li>
+<li><p><strong>numeric</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Return only the numerical values of the dataframe. This is much lighter database for storing
+traces</p></li>
+<li><p><strong>verbosity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Number of properties shown</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Data Object df.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.1.4)">pandas.DataFrame</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/./logos/gempy.png" alt="Logo"/>
+    
+    <h1 class="logo logo-name">GemPy</h1>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a class="badge" href="https://travis-ci.org/cgre-aachen/gempy">
+    <img
+        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../projects.html">Additional projects</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">GemPy Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../integrations/index.html">Integrations</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../code.html">Code</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../code.html#gempy-api">GemPy API</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../code.html#model">Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#plot">Plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#data">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#grids">Grids</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#geometric-data">Geometric Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#interpolator">Interpolator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#solution">Solution</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../code.html">Code</a><ul>
+      <li>Previous: <a href="../GemPy%20API/gempy.get_th_fn.html" title="previous chapter">gempy.get_th_fn</a></li>
+      <li>Next: <a href="gempy.core.model.ImplicitCoKriging.html" title="next chapter">gempy.core.model.ImplicitCoKriging</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017-2020, CGRE-Aachen Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/Model/gempy.core.model.Project.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

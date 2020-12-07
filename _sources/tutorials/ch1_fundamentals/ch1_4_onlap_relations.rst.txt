@@ -1,0 +1,302 @@
+.. only:: html
+
+    .. note::
+        :class: sphx-glr-download-link-note
+
+        Click :ref:`here <sphx_glr_download_tutorials_ch1_fundamentals_ch1_4_onlap_relations.py>`     to download the full example code
+    .. rst-class:: sphx-glr-example-title
+
+    .. _sphx_glr_tutorials_ch1_fundamentals_ch1_4_onlap_relations.py:
+
+
+1.4: Unconformity relationships
+===============================
+
+Importing gempy
+
+
+.. code-block:: python3
+
+    import gempy as gp
+
+    # Aux imports
+    import numpy as np
+    import pandas as pd
+    import os
+
+    np.random.seed(1515)
+    pd.set_option('precision', 2)
+
+
+
+
+
+
+
+
+We import a model from an existing folder, representing a subduction
+zone with onlap relationships. The theano function is automatically
+recombined to allow changes.
+
+
+
+.. code-block:: python3
+
+    cwd = os.getcwd()
+    if not 'examples' in cwd:
+        data_path = os.getcwd() + '/examples/'
+    else:
+        data_path = cwd + '/../../'
+
+    geo_model = gp.load_model(r'Tutorial_ch1-8_Onlap_relations',
+                              path=data_path + 'data/gempy_models/Tutorial_ch1-8_Onlap_relations',
+                              recompile=True)
+
+    geo_model.meta.project_name = "Onlap_relations"
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Active grids: ['regular']
+    Setting kriging parameters to their default values.
+    Compiling theano function...
+    Level of Optimization:  fast_compile
+    Device:  cpu
+    Precision:  float64
+    Number of faults:  0
+    Compilation Done!
+    Kriging values: 
+                               values
+    range                    1.9e+03
+    $C_o$                    8.2e+04
+    drift equations  [3, 3, 3, 3, 3]
+    nugget grad                 0.01
+    nugget scalar              1e-06
+
+
+
+
+
+.. code-block:: python3
+
+    gp.plot_2d(geo_model)
+
+
+
+
+.. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_4_onlap_relations_001.png
+    :alt: Cell Number: mid Direction: y
+    :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    <gempy.plot.visualization_2d.Plot2D object at 0x7f01e089b7f0>
+
+
+
+
+.. code-block:: python3
+
+    geo_model.set_regular_grid([-200, 1000, -500, 500, -1000, 0], [50, 50, 50])
+    geo_model.set_topography(d_z=np.array([-600, -100]))
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Active grids: ['regular']
+    Active grids: ['regular' 'topography']
+
+    Grid Object. Values: 
+    array([[-188.        , -490.        , -990.        ],
+           [-188.        , -490.        , -970.        ],
+           [-188.        , -490.        , -950.        ],
+           ...,
+           [1000.        ,  459.18367347, -508.13810685],
+           [1000.        ,  479.59183673, -499.68180865],
+           [1000.        ,  500.        , -498.66045422]])
+
+
+
+
+.. code-block:: python3
+
+    s = gp.compute_model(geo_model, compute_mesh=True, debug=False)
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    /home/miguel/PycharmProjects/gempy/gempy/core/solution.py:174: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify 'dtype=object' when creating the ndarray
+      self.geological_map = np.array(
+
+
+
+
+
+.. code-block:: python3
+
+    gp.plot_2d(geo_model, cell_number=25, show_data=True)
+
+
+
+
+.. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_4_onlap_relations_002.png
+    :alt: Cell Number: 25 Direction: y
+    :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    <gempy.plot.visualization_2d.Plot2D object at 0x7f01c913bd30>
+
+
+
+
+.. code-block:: python3
+
+    gp.plot_2d(geo_model, 2, regular_grid=geo_model.solutions.mask_matrix_pad[0],
+               show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
+
+    gp.plot_2d(geo_model, 2, regular_grid=geo_model.solutions.mask_matrix_pad[1],
+               show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
+
+    gp.plot_2d(geo_model, 2, regular_grid=geo_model.solutions.mask_matrix_pad[2],
+               show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
+
+    gp.plot_2d(geo_model, 2, regular_grid=geo_model.solutions.mask_matrix_pad[3],
+               show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
+
+
+
+
+
+.. rst-class:: sphx-glr-horizontal
+
+
+    *
+
+      .. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_4_onlap_relations_003.png
+          :alt: Cell Number: mid Direction: y
+          :class: sphx-glr-multi-img
+
+    *
+
+      .. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_4_onlap_relations_004.png
+          :alt: Cell Number: mid Direction: y
+          :class: sphx-glr-multi-img
+
+    *
+
+      .. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_4_onlap_relations_005.png
+          :alt: Cell Number: mid Direction: y
+          :class: sphx-glr-multi-img
+
+    *
+
+      .. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_4_onlap_relations_006.png
+          :alt: Cell Number: mid Direction: y
+          :class: sphx-glr-multi-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    <gempy.plot.visualization_2d.Plot2D object at 0x7f01c56295b0>
+
+
+
+sphinx_gallery_thumbnail_number = 7
+
+
+.. code-block:: python3
+
+    p3d = gp.plot_3d(geo_model, show_surfaces=True, show_data=True, image=False,
+                     show_topography=True,
+                     kwargs_plot_structured_grid={'opacity': .2})
+
+    gp.save_model(geo_model)
+
+
+.. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_4_onlap_relations_007.png
+    :alt: ch1 4 onlap relations
+    :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    True
+
+
+
+
+.. rst-class:: sphx-glr-timing
+
+   **Total running time of the script:** ( 0 minutes  5.695 seconds)
+
+
+.. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_4_onlap_relations.py:
+
+
+.. only :: html
+
+ .. container:: sphx-glr-footer
+    :class: sphx-glr-footer-example
+
+
+
+  .. container:: sphx-glr-download sphx-glr-download-python
+
+     :download:`Download Python source code: ch1_4_onlap_relations.py <ch1_4_onlap_relations.py>`
+
+
+
+  .. container:: sphx-glr-download sphx-glr-download-jupyter
+
+     :download:`Download Jupyter notebook: ch1_4_onlap_relations.ipynb <ch1_4_onlap_relations.ipynb>`
+
+
+.. only:: html
+
+ .. rst-class:: sphx-glr-signature
+
+    `Gallery generated by Sphinx-Gallery <https://sphinx-gallery.github.io>`_

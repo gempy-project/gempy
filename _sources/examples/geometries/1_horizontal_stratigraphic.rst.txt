@@ -1,0 +1,270 @@
+.. only:: html
+
+    .. note::
+        :class: sphx-glr-download-link-note
+
+        Click :ref:`here <sphx_glr_download_examples_geometries_1_horizontal_stratigraphic.py>`     to download the full example code
+    .. rst-class:: sphx-glr-example-title
+
+    .. _sphx_glr_examples_geometries_1_horizontal_stratigraphic.py:
+
+
+Model 1 - Horizontal stratigraphic
+==================================
+
+This is the most simple model of horizontally stacked layers. We start
+by importing the necessary dependencies:
+
+
+Importing GemPy
+
+
+.. code-block:: python3
+
+    import gempy as gp
+
+    import pandas as pd
+    pd.set_option('precision', 2)
+
+
+
+
+
+
+
+
+Creating the model by importing the input data and displaying it:
+
+
+
+.. code-block:: python3
+
+    data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
+    geo_data = gp.create_data('horizontal', extent=[0, 1000, 0, 1000, 0, 1000], resolution=[50, 50, 50],
+                              path_o=data_path + "/data/input_data/jan_models/model1_orientations.csv",
+                              path_i=data_path + "/data/input_data/jan_models/model1_surface_points.csv")
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Active grids: ['regular']
+
+
+
+
+Setting and ordering the units and series:
+
+
+
+.. code-block:: python3
+
+    gp.map_stack_to_surfaces(geo_data, {"Strat_Series": ('rock2', 'rock1'), "Basement_Series": ('basement')})
+
+
+
+
+
+
+.. raw:: html
+
+    <style  type="text/css" >
+    #T_4a1cfddc_3885_11eb_afc4_b3a2b3eb1f40row0_col3{
+                background-color:  #015482;
+            }#T_4a1cfddc_3885_11eb_afc4_b3a2b3eb1f40row1_col3{
+                background-color:  #9f0052;
+            }#T_4a1cfddc_3885_11eb_afc4_b3a2b3eb1f40row2_col3{
+                background-color:  #ffbe00;
+            }</style><table id="T_4a1cfddc_3885_11eb_afc4_b3a2b3eb1f40" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
+                    <tr>
+                            <th id="T_4a1cfddc_3885_11eb_afc4_b3a2b3eb1f40level0_row0" class="row_heading level0 row0" >0</th>
+                            <td id="T_4a1cfddc_3885_11eb_afc4_b3a2b3eb1f40row0_col0" class="data row0 col0" >rock2</td>
+                            <td id="T_4a1cfddc_3885_11eb_afc4_b3a2b3eb1f40row0_col1" class="data row0 col1" >Strat_Series</td>
+                            <td id="T_4a1cfddc_3885_11eb_afc4_b3a2b3eb1f40row0_col2" class="data row0 col2" >1</td>
+                            <td id="T_4a1cfddc_3885_11eb_afc4_b3a2b3eb1f40row0_col3" class="data row0 col3" >#015482</td>
+                            <td id="T_4a1cfddc_3885_11eb_afc4_b3a2b3eb1f40row0_col4" class="data row0 col4" >1</td>
+                </tr>
+                <tr>
+                            <th id="T_4a1cfddc_3885_11eb_afc4_b3a2b3eb1f40level0_row1" class="row_heading level0 row1" >1</th>
+                            <td id="T_4a1cfddc_3885_11eb_afc4_b3a2b3eb1f40row1_col0" class="data row1 col0" >rock1</td>
+                            <td id="T_4a1cfddc_3885_11eb_afc4_b3a2b3eb1f40row1_col1" class="data row1 col1" >Strat_Series</td>
+                            <td id="T_4a1cfddc_3885_11eb_afc4_b3a2b3eb1f40row1_col2" class="data row1 col2" >2</td>
+                            <td id="T_4a1cfddc_3885_11eb_afc4_b3a2b3eb1f40row1_col3" class="data row1 col3" >#9f0052</td>
+                            <td id="T_4a1cfddc_3885_11eb_afc4_b3a2b3eb1f40row1_col4" class="data row1 col4" >2</td>
+                </tr>
+                <tr>
+                            <th id="T_4a1cfddc_3885_11eb_afc4_b3a2b3eb1f40level0_row2" class="row_heading level0 row2" >2</th>
+                            <td id="T_4a1cfddc_3885_11eb_afc4_b3a2b3eb1f40row2_col0" class="data row2 col0" >basement</td>
+                            <td id="T_4a1cfddc_3885_11eb_afc4_b3a2b3eb1f40row2_col1" class="data row2 col1" >Basement_Series</td>
+                            <td id="T_4a1cfddc_3885_11eb_afc4_b3a2b3eb1f40row2_col2" class="data row2 col2" >1</td>
+                            <td id="T_4a1cfddc_3885_11eb_afc4_b3a2b3eb1f40row2_col3" class="data row2 col3" >#ffbe00</td>
+                            <td id="T_4a1cfddc_3885_11eb_afc4_b3a2b3eb1f40row2_col4" class="data row2 col4" >3</td>
+                </tr>
+        </tbody></table>
+    <br />
+    <br />
+
+
+.. code-block:: python3
+
+    gp.plot_2d(geo_data, direction=['y'])
+
+
+
+
+.. image:: /examples/geometries/images/sphx_glr_1_horizontal_stratigraphic_001.png
+    :alt: Cell Number: mid Direction: y
+    :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    <gempy.plot.visualization_2d.Plot2D object at 0x7f01c76fe190>
+
+
+
+Calculating the model:
+
+
+
+.. code-block:: python3
+
+    interp_data = gp.set_interpolator(geo_data, compile_theano=True,
+                                      theano_optimizer='fast_compile')
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Setting kriging parameters to their default values.
+    Compiling theano function...
+    Level of Optimization:  fast_compile
+    Device:  cpu
+    Precision:  float64
+    Number of faults:  0
+    Compilation Done!
+    Kriging values: 
+                       values
+    range            1.7e+03
+    $C_o$            7.1e+04
+    drift equations   [3, 3]
+
+
+
+
+
+.. code-block:: python3
+
+    sol = gp.compute_model(geo_data)
+
+
+
+
+
+
+
+
+Displaying the result in x and y direction:
+
+
+
+.. code-block:: python3
+
+    gp.plot_2d(geo_data, cell_number=[25],
+               direction=['x'], show_data=True)
+
+
+
+
+.. image:: /examples/geometries/images/sphx_glr_1_horizontal_stratigraphic_002.png
+    :alt: Cell Number: 25 Direction: x
+    :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    <gempy.plot.visualization_2d.Plot2D object at 0x7f01cecbcd00>
+
+
+
+sphinx_gallery_thumbnail_number = 2
+
+
+.. code-block:: python3
+
+    gp.plot_2d(geo_data, cell_number=[25],
+               direction=['y'], show_data=True)
+
+    gp.save_model(geo_data)
+
+
+.. image:: /examples/geometries/images/sphx_glr_1_horizontal_stratigraphic_003.png
+    :alt: Cell Number: 25 Direction: y
+    :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    True
+
+
+
+
+.. rst-class:: sphx-glr-timing
+
+   **Total running time of the script:** ( 0 minutes  4.019 seconds)
+
+
+.. _sphx_glr_download_examples_geometries_1_horizontal_stratigraphic.py:
+
+
+.. only :: html
+
+ .. container:: sphx-glr-footer
+    :class: sphx-glr-footer-example
+
+
+
+  .. container:: sphx-glr-download sphx-glr-download-python
+
+     :download:`Download Python source code: 1_horizontal_stratigraphic.py <1_horizontal_stratigraphic.py>`
+
+
+
+  .. container:: sphx-glr-download sphx-glr-download-jupyter
+
+     :download:`Download Jupyter notebook: 1_horizontal_stratigraphic.ipynb <1_horizontal_stratigraphic.ipynb>`
+
+
+.. only:: html
+
+ .. rst-class:: sphx-glr-signature
+
+    `Gallery generated by Sphinx-Gallery <https://sphinx-gallery.github.io>`_

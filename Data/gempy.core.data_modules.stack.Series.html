@@ -1,0 +1,383 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>gempy.core.data_modules.stack.Series &#8212; GemPy 2.2.7 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="gempy.core.data_modules.stack.Faults" href="gempy.core.data_modules.stack.Faults.html" />
+    <link rel="prev" title="gempy.core.data_modules.stack.Stack" href="gempy.core.data_modules.stack.Stack.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="gempy-core-data-modules-stack-series">
+<h1>gempy.core.data_modules.stack.Series<a class="headerlink" href="#gempy-core-data-modules-stack-series" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="gempy.core.data_modules.stack.Series">
+<em class="property">class </em><code class="sig-prename descclassname">gempy.core.data_modules.stack.</code><code class="sig-name descname">Series</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">faults</span></em>, <em class="sig-param"><span class="n">series_names</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data_modules/stack.html#Series"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data_modules.stack.Series" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class that contains the functionality and attributes related to the series. Notice that series does not only
+refers to stratigraphic series but to any set of surfaces which will be interpolated together (comfortably).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>faults</strong> (<a class="reference internal" href="gempy.core.data_modules.stack.Faults.html#gempy.core.data_modules.stack.Faults" title="gempy.core.data_modules.stack.Faults"><code class="xref py py-class docutils literal notranslate"><span class="pre">Faults</span></code></a>) – [s0] Class that encapsulate faulting related content. Mainly, which surfaces/surfaces are faults. The fault network—i.e. which faults offset other faults—and fault types—finite vs infinite.</p></li>
+<li><p><strong>series_names</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>]</em>) – name of the series. They are also ordered</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="gempy.core.data_modules.stack.Series.df">
+<code class="sig-name descname">df</code><a class="headerlink" href="#gempy.core.data_modules.stack.Series.df" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pandas data frame containing the series and the surfaces contained
+on them. TODO describe df columns</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">pn.core.frame.DataFrames</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="gempy.core.data_modules.stack.Series.faults">
+<code class="sig-name descname">faults</code><a class="headerlink" href="#gempy.core.data_modules.stack.Series.faults" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="gempy.core.data_modules.stack.Faults.html#gempy.core.data_modules.stack.Faults" title="gempy.core.data_modules.stack.Faults"><code class="xref py py-class docutils literal notranslate"><span class="pre">Faults</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Examples using Series</p>
+<div class="sphx-glr-thumbcontainer" tooltip="1.2: Data Structure and Manipulation"><div class="figure align-default" id="id1">
+<img alt="1.2: Data Structure and Manipulation" src="../_images/sphx_glr_ch1_2a_data_manipulation_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../tutorials/ch1_fundamentals/ch1_2a_data_manipulation.html#sphx-glr-tutorials-ch1-fundamentals-ch1-2a-data-manipulation-py"><span class="std std-ref">1.2: Data Structure and Manipulation</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-clear"></div><p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data_modules.stack.Series.__init__" title="gempy.core.data_modules.stack.Series.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(faults[, series_names])</p></td>
+<td><p>Initialize self.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data_modules.stack.Series.add_series" title="gempy.core.data_modules.stack.Series.add_series"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_series</span></code></a>(series_list[, reset_order_series])</p></td>
+<td><p>Add series to the df</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data_modules.stack.Series.delete_series" title="gempy.core.data_modules.stack.Series.delete_series"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delete_series</span></code></a>(indices[, reset_order_series])</p></td>
+<td><p>[s1]     Drop specified labels from rows or columns.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data_modules.stack.Series.modify_order_series" title="gempy.core.data_modules.stack.Series.modify_order_series"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modify_order_series</span></code></a>(new_value, series_name)</p></td>
+<td><p>Replace to the new location the old series</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data_modules.stack.Series.rename_series" title="gempy.core.data_modules.stack.Series.rename_series"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rename_series</span></code></a>(new_categories)</p></td>
+<td><p>[s0]     Rename categories.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data_modules.stack.Series.reorder_series" title="gempy.core.data_modules.stack.Series.reorder_series"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reorder_series</span></code></a>(new_categories)</p></td>
+<td><p>[s0]     Reorder categories as specified in new_categories.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data_modules.stack.Series.reset_order_series" title="gempy.core.data_modules.stack.Series.reset_order_series"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset_order_series</span></code></a>()</p></td>
+<td><p>Reset the column order series to monotonic ascendant values.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data_modules.stack.Series.set_bottom_relation" title="gempy.core.data_modules.stack.Series.set_bottom_relation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_bottom_relation</span></code></a>(series_list, bottom_relation)</p></td>
+<td><p>Set the bottom relation between the series and the one below.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data_modules.stack.Series.set_series_index" title="gempy.core.data_modules.stack.Series.set_series_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_series_index</span></code></a>(series_order[, …])</p></td>
+<td><p>Rewrite the index of the series df</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">sort_series</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_faults_index_rename</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_faults_index_reorder</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="gempy.core.data_modules.stack.Series.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">faults</span></em>, <em class="sig-param"><span class="n">series_names</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data_modules/stack.html#Series.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data_modules.stack.Series.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data_modules.stack.Series.reset_order_series">
+<code class="sig-name descname">reset_order_series</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data_modules/stack.html#Series.reset_order_series"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data_modules.stack.Series.reset_order_series" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset the column order series to monotonic ascendant values.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data_modules.stack.Series.set_series_index">
+<code class="sig-name descname">set_series_index</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">series_order</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><span class="p">, </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)">numpy.ndarray</a><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">reset_order_series</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data_modules/stack.html#Series.set_series_index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data_modules.stack.Series.set_series_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rewrite the index of the series df</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>series_order</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – List with names and order of series.</p></li>
+<li><p><strong>reset_order_series</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – if true [s0]     Reset the column order series to monotonic ascendant values.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Series</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#gempy.core.data_modules.stack.Series" title="gempy.core.data_modules.stack.Series"><code class="xref py py-class docutils literal notranslate"><span class="pre">Series</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data_modules.stack.Series.set_bottom_relation">
+<code class="sig-name descname">set_bottom_relation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">series_list</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">bottom_relation</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data_modules/stack.html#Series.set_bottom_relation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data_modules.stack.Series.set_bottom_relation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the bottom relation between the series and the one below.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>series_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – name or list of names of the series to apply the functionality</p></li>
+<li><p><strong>bottom_relation</strong> (<em>str{Onlap</em><em>, </em><em>Erode</em><em>, </em><em>Fault}</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="gempy.core.data_modules.stack.Stack.html#gempy.core.data_modules.stack.Stack" title="gempy.core.data_modules.stack.Stack"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.stack.Stack</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data_modules.stack.Series.add_series">
+<code class="sig-name descname">add_series</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">series_list</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">reset_order_series</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data_modules/stack.html#Series.add_series"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data_modules.stack.Series.add_series" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add series to the df</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>series_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – name or list of names of the series to apply the functionality</p></li>
+<li><p><strong>reset_order_series</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – if true [s0]     Reset the column order series to monotonic ascendant values.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Series</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data_modules.stack.Series.delete_series">
+<code class="sig-name descname">delete_series</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">indices</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">, </span>Iterable<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">reset_order_series</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data_modules/stack.html#Series.delete_series"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data_modules.stack.Series.delete_series" title="Permalink to this definition">¶</a></dt>
+<dd><p>[s1]     Drop specified labels from rows or columns.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>indices</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – name or list of names of the series to apply the functionality</p></li>
+<li><p><strong>reset_order_series</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – if true [s0]     Reset the column order series to monotonic ascendant values.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Series</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data_modules.stack.Series.rename_series">
+<code class="sig-name descname">rename_series</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_categories</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data_modules/stack.html#Series.rename_series"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data_modules.stack.Series.rename_series" title="Permalink to this definition">¶</a></dt>
+<dd><p>[s0]     Rename categories.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>new_categories</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – <ul class="simple">
+<li><p>list-like: all items must be unique and the number of items in the new categories must match the
+existing number of categories.</p></li>
+<li><p>dict-like: specifies a mapping from old categories to new. Categories not contained in the mapping are
+passed through and extra categories in the mapping are ignored.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data_modules.stack.Series.reorder_series">
+<code class="sig-name descname">reorder_series</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_categories</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><span class="p">, </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)">numpy.ndarray</a><span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data_modules/stack.html#Series.reorder_series"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data_modules.stack.Series.reorder_series" title="Permalink to this definition">¶</a></dt>
+<dd><p>[s0]     Reorder categories as specified in new_categories. [s1]     Return a sorted copy of the index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>new_categories</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – list with all series names in the desired order.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Series</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="gempy.core.data_modules.stack.Series.modify_order_series">
+<code class="sig-name descname">modify_order_series</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_value</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span></em>, <em class="sig-param"><span class="n">series_name</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data_modules/stack.html#Series.modify_order_series"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data_modules.stack.Series.modify_order_series" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replace to the new location the old series</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>new_value</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – New location</p></li>
+<li><p><strong>series_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – name of the series to be moved</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Series</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/./logos/gempy.png" alt="Logo"/>
+    
+    <h1 class="logo logo-name">GemPy</h1>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a class="badge" href="https://travis-ci.org/cgre-aachen/gempy">
+    <img
+        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../projects.html">Additional projects</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">GemPy Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../integrations/index.html">Integrations</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../code.html">Code</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../code.html#gempy-api">GemPy API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#model">Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#plot">Plot</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../code.html#data">Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#grids">Grids</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#geometric-data">Geometric Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#interpolator">Interpolator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code.html#solution">Solution</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../code.html">Code</a><ul>
+      <li>Previous: <a href="gempy.core.data_modules.stack.Stack.html" title="previous chapter">gempy.core.data_modules.stack.Stack</a></li>
+      <li>Next: <a href="gempy.core.data_modules.stack.Faults.html" title="next chapter">gempy.core.data_modules.stack.Faults</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017-2020, CGRE-Aachen Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/Data/gempy.core.data_modules.stack.Series.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,2844 @@
+.. only:: html
+
+    .. note::
+        :class: sphx-glr-download-link-note
+
+        Click :ref:`here <sphx_glr_download_tutorials_ch1_fundamentals_ch1_2b_implicit_cokriging.py>`     to download the full example code
+    .. rst-class:: sphx-glr-example-title
+
+    .. _sphx_glr_tutorials_ch1_fundamentals_ch1_2b_implicit_cokriging.py:
+
+
+1.2b: The Implicit coKriging class
+==================================
+
+Importing GemPy
+
+
+.. code-block:: python3
+
+    import gempy as gp
+
+    # Importing auxiliary libraries
+    import numpy as np
+    import pandas as pd
+    import matplotlib.pyplot as plt
+
+    pd.set_option('precision', 2)
+
+
+
+
+
+
+
+
+The description of the methods nomenclature remains the same as for the
+``data.py`` module with the particularity that update is slitted in:
+
+-  ``update_from``
+
+   -  update current object with the rest of dependencies. This is
+      useful if you change an object and you want to update the fields
+      with the rest of the objects. E.g after a set\_surface\_points
+
+-  ``update_to``
+
+   -  update dataframes from the current object. This is useful if you
+      modify one of the model dependencies and you want to update all
+      the other dependencies
+
+When we initialize a :class:`gempy.core.model.Project` class we create all the
+necessary objects already linked with each other.
+
+
+
+.. code-block:: python3
+
+    model = gp.Project()
+
+
+
+
+
+
+
+
+As expected these dependencies are empty:
+
+
+
+.. code-block:: python3
+
+    model.surface_points
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>X</th>
+          <th>Y</th>
+          <th>Z</th>
+          <th>smooth</th>
+          <th>surface</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+
+.. code-block:: python3
+
+    model.surfaces
+
+
+
+
+
+
+.. raw:: html
+
+    <style  type="text/css" >
+    </style><table id="T_e8ab8618_3884_11eb_afc4_b3a2b3eb1f40" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
+            </tbody></table>
+    <br />
+    <br />
+
+
+.. code-block:: python3
+
+    model.stack
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>order_series</th>
+          <th>BottomRelation</th>
+          <th>isActive</th>
+          <th>isFault</th>
+          <th>isFinite</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>Default series</th>
+          <td>1</td>
+          <td>Erosion</td>
+          <td>False</td>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+The pandas DataFrames are already configured properly to categories:
+
+
+
+.. code-block:: python3
+
+    model._surfaces.df['series'], model._surfaces.df['surface']
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    (Series([], Name: series, dtype: category
+    Categories (1, object): ['Default series']), Series([], Name: surface, dtype: object))
+
+
+
+And additional data has everything pretty much empty:
+
+
+
+.. code-block:: python3
+
+    model._additional_data
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th></th>
+          <th>values</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th rowspan="9" valign="top">Structure</th>
+          <th>isLith</th>
+          <td>True</td>
+        </tr>
+        <tr>
+          <th>isFault</th>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>number faults</th>
+          <td>0</td>
+        </tr>
+        <tr>
+          <th>number surfaces</th>
+          <td>0</td>
+        </tr>
+        <tr>
+          <th>number series</th>
+          <td>1</td>
+        </tr>
+        <tr>
+          <th>number surfaces per series</th>
+          <td>[0]</td>
+        </tr>
+        <tr>
+          <th>len surfaces surface_points</th>
+          <td>[]</td>
+        </tr>
+        <tr>
+          <th>len series surface_points</th>
+          <td>[0]</td>
+        </tr>
+        <tr>
+          <th>len series orientations</th>
+          <td>[0]</td>
+        </tr>
+        <tr>
+          <th rowspan="5" valign="top">Options</th>
+          <th>dtype</th>
+          <td>float64</td>
+        </tr>
+        <tr>
+          <th>output</th>
+          <td>geology</td>
+        </tr>
+        <tr>
+          <th>theano_optimizer</th>
+          <td>fast_compile</td>
+        </tr>
+        <tr>
+          <th>device</th>
+          <td>cpu</td>
+        </tr>
+        <tr>
+          <th>verbosity</th>
+          <td>None</td>
+        </tr>
+        <tr>
+          <th rowspan="3" valign="top">Kriging</th>
+          <th>range</th>
+          <td>0</td>
+        </tr>
+        <tr>
+          <th>$C_o$</th>
+          <td>0</td>
+        </tr>
+        <tr>
+          <th>drift equations</th>
+          <td>[3]</td>
+        </tr>
+        <tr>
+          <th rowspan="2" valign="top">Rescaling</th>
+          <th>rescaling factor</th>
+          <td>NaN</td>
+        </tr>
+        <tr>
+          <th>centers</th>
+          <td>[nan, nan, nan]</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+Reading data
+------------
+
+Usually data will be imported from external files. GemPy uses
+``pandas.read_table`` powerful functionality for that. The default
+format is XYZ surface\_name:
+
+
+
+.. code-block:: python3
+
+    data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
+
+    model.read_data(path_i=data_path + "/data/input_data/tut_chapter1/simple_fault_model_points.csv",
+                    path_o=data_path + "/data/input_data/tut_chapter1/simple_fault_model_orientations.csv")
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    True
+
+
+
+
+.. code-block:: python3
+
+    model.orientations
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>X</th>
+          <th>Y</th>
+          <th>Z</th>
+          <th>G_x</th>
+          <th>G_y</th>
+          <th>G_z</th>
+          <th>smooth</th>
+          <th>surface</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>1000</td>
+          <td>1000</td>
+          <td>950.0</td>
+          <td>0.32</td>
+          <td>1.00e-12</td>
+          <td>0.95</td>
+          <td>0.01</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>400</td>
+          <td>1000</td>
+          <td>1400.0</td>
+          <td>0.32</td>
+          <td>1.00e-12</td>
+          <td>0.95</td>
+          <td>0.01</td>
+          <td>Sandstone_2</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>500</td>
+          <td>1000</td>
+          <td>864.6</td>
+          <td>-0.95</td>
+          <td>1.00e-12</td>
+          <td>0.32</td>
+          <td>0.01</td>
+          <td>Main_Fault</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+
+.. code-block:: python3
+
+    model.map_stack_to_surfaces({"Fault_Series": ('Main_Fault', 'Silstone'),
+                                 "Strat_Series": ('Sandstone_2', 'Sandstone_1', 'Siltstone',
+                                                  'Shale',)}, )
+
+
+
+
+
+
+.. raw:: html
+
+    <style  type="text/css" >
+    #T_e8ab8619_3884_11eb_afc4_b3a2b3eb1f40row0_col3{
+                background-color:  #443988;
+            }#T_e8ab8619_3884_11eb_afc4_b3a2b3eb1f40row1_col3{
+                background-color:  #015482;
+            }#T_e8ab8619_3884_11eb_afc4_b3a2b3eb1f40row2_col3{
+                background-color:  #9f0052;
+            }#T_e8ab8619_3884_11eb_afc4_b3a2b3eb1f40row3_col3{
+                background-color:  #ffbe00;
+            }#T_e8ab8619_3884_11eb_afc4_b3a2b3eb1f40row4_col3{
+                background-color:  #728f02;
+            }#T_e8ab8619_3884_11eb_afc4_b3a2b3eb1f40row5_col3{
+                background-color:  #ff3f20;
+            }</style><table id="T_e8ab8619_3884_11eb_afc4_b3a2b3eb1f40" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
+                    <tr>
+                            <th id="T_e8ab8619_3884_11eb_afc4_b3a2b3eb1f40level0_row0" class="row_heading level0 row0" >4</th>
+                            <td id="T_e8ab8619_3884_11eb_afc4_b3a2b3eb1f40row0_col0" class="data row0 col0" >Main_Fault</td>
+                            <td id="T_e8ab8619_3884_11eb_afc4_b3a2b3eb1f40row0_col1" class="data row0 col1" >Fault_Series</td>
+                            <td id="T_e8ab8619_3884_11eb_afc4_b3a2b3eb1f40row0_col2" class="data row0 col2" >1</td>
+                            <td id="T_e8ab8619_3884_11eb_afc4_b3a2b3eb1f40row0_col3" class="data row0 col3" >#443988</td>
+                            <td id="T_e8ab8619_3884_11eb_afc4_b3a2b3eb1f40row0_col4" class="data row0 col4" >1</td>
+                </tr>
+                <tr>
+                            <th id="T_e8ab8619_3884_11eb_afc4_b3a2b3eb1f40level0_row1" class="row_heading level0 row1" >0</th>
+                            <td id="T_e8ab8619_3884_11eb_afc4_b3a2b3eb1f40row1_col0" class="data row1 col0" >Shale</td>
+                            <td id="T_e8ab8619_3884_11eb_afc4_b3a2b3eb1f40row1_col1" class="data row1 col1" >Strat_Series</td>
+                            <td id="T_e8ab8619_3884_11eb_afc4_b3a2b3eb1f40row1_col2" class="data row1 col2" >1</td>
+                            <td id="T_e8ab8619_3884_11eb_afc4_b3a2b3eb1f40row1_col3" class="data row1 col3" >#015482</td>
+                            <td id="T_e8ab8619_3884_11eb_afc4_b3a2b3eb1f40row1_col4" class="data row1 col4" >2</td>
+                </tr>
+                <tr>
+                            <th id="T_e8ab8619_3884_11eb_afc4_b3a2b3eb1f40level0_row2" class="row_heading level0 row2" >1</th>
+                            <td id="T_e8ab8619_3884_11eb_afc4_b3a2b3eb1f40row2_col0" class="data row2 col0" >Sandstone_1</td>
+                            <td id="T_e8ab8619_3884_11eb_afc4_b3a2b3eb1f40row2_col1" class="data row2 col1" >Strat_Series</td>
+                            <td id="T_e8ab8619_3884_11eb_afc4_b3a2b3eb1f40row2_col2" class="data row2 col2" >2</td>
+                            <td id="T_e8ab8619_3884_11eb_afc4_b3a2b3eb1f40row2_col3" class="data row2 col3" >#9f0052</td>
+                            <td id="T_e8ab8619_3884_11eb_afc4_b3a2b3eb1f40row2_col4" class="data row2 col4" >3</td>
+                </tr>
+                <tr>
+                            <th id="T_e8ab8619_3884_11eb_afc4_b3a2b3eb1f40level0_row3" class="row_heading level0 row3" >2</th>
+                            <td id="T_e8ab8619_3884_11eb_afc4_b3a2b3eb1f40row3_col0" class="data row3 col0" >Siltstone</td>
+                            <td id="T_e8ab8619_3884_11eb_afc4_b3a2b3eb1f40row3_col1" class="data row3 col1" >Strat_Series</td>
+                            <td id="T_e8ab8619_3884_11eb_afc4_b3a2b3eb1f40row3_col2" class="data row3 col2" >3</td>
+                            <td id="T_e8ab8619_3884_11eb_afc4_b3a2b3eb1f40row3_col3" class="data row3 col3" >#ffbe00</td>
+                            <td id="T_e8ab8619_3884_11eb_afc4_b3a2b3eb1f40row3_col4" class="data row3 col4" >4</td>
+                </tr>
+                <tr>
+                            <th id="T_e8ab8619_3884_11eb_afc4_b3a2b3eb1f40level0_row4" class="row_heading level0 row4" >3</th>
+                            <td id="T_e8ab8619_3884_11eb_afc4_b3a2b3eb1f40row4_col0" class="data row4 col0" >Sandstone_2</td>
+                            <td id="T_e8ab8619_3884_11eb_afc4_b3a2b3eb1f40row4_col1" class="data row4 col1" >Strat_Series</td>
+                            <td id="T_e8ab8619_3884_11eb_afc4_b3a2b3eb1f40row4_col2" class="data row4 col2" >4</td>
+                            <td id="T_e8ab8619_3884_11eb_afc4_b3a2b3eb1f40row4_col3" class="data row4 col3" >#728f02</td>
+                            <td id="T_e8ab8619_3884_11eb_afc4_b3a2b3eb1f40row4_col4" class="data row4 col4" >5</td>
+                </tr>
+                <tr>
+                            <th id="T_e8ab8619_3884_11eb_afc4_b3a2b3eb1f40level0_row5" class="row_heading level0 row5" >5</th>
+                            <td id="T_e8ab8619_3884_11eb_afc4_b3a2b3eb1f40row5_col0" class="data row5 col0" >basement</td>
+                            <td id="T_e8ab8619_3884_11eb_afc4_b3a2b3eb1f40row5_col1" class="data row5 col1" >Basement</td>
+                            <td id="T_e8ab8619_3884_11eb_afc4_b3a2b3eb1f40row5_col2" class="data row5 col2" >1</td>
+                            <td id="T_e8ab8619_3884_11eb_afc4_b3a2b3eb1f40row5_col3" class="data row5 col3" >#ff3f20</td>
+                            <td id="T_e8ab8619_3884_11eb_afc4_b3a2b3eb1f40row5_col4" class="data row5 col4" >6</td>
+                </tr>
+        </tbody></table>
+    <br />
+    <br />
+
+
+.. code-block:: python3
+
+    model.stack
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>order_series</th>
+          <th>BottomRelation</th>
+          <th>isActive</th>
+          <th>isFault</th>
+          <th>isFinite</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>Fault_Series</th>
+          <td>1</td>
+          <td>Erosion</td>
+          <td>True</td>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>Strat_Series</th>
+          <td>2</td>
+          <td>Erosion</td>
+          <td>True</td>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>Basement</th>
+          <td>3</td>
+          <td>Erosion</td>
+          <td>False</td>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+
+.. code-block:: python3
+
+    model.surfaces
+
+
+
+
+
+
+.. raw:: html
+
+    <style  type="text/css" >
+    #T_e8ab861a_3884_11eb_afc4_b3a2b3eb1f40row0_col3{
+                background-color:  #443988;
+            }#T_e8ab861a_3884_11eb_afc4_b3a2b3eb1f40row1_col3{
+                background-color:  #015482;
+            }#T_e8ab861a_3884_11eb_afc4_b3a2b3eb1f40row2_col3{
+                background-color:  #9f0052;
+            }#T_e8ab861a_3884_11eb_afc4_b3a2b3eb1f40row3_col3{
+                background-color:  #ffbe00;
+            }#T_e8ab861a_3884_11eb_afc4_b3a2b3eb1f40row4_col3{
+                background-color:  #728f02;
+            }#T_e8ab861a_3884_11eb_afc4_b3a2b3eb1f40row5_col3{
+                background-color:  #ff3f20;
+            }</style><table id="T_e8ab861a_3884_11eb_afc4_b3a2b3eb1f40" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
+                    <tr>
+                            <th id="T_e8ab861a_3884_11eb_afc4_b3a2b3eb1f40level0_row0" class="row_heading level0 row0" >4</th>
+                            <td id="T_e8ab861a_3884_11eb_afc4_b3a2b3eb1f40row0_col0" class="data row0 col0" >Main_Fault</td>
+                            <td id="T_e8ab861a_3884_11eb_afc4_b3a2b3eb1f40row0_col1" class="data row0 col1" >Fault_Series</td>
+                            <td id="T_e8ab861a_3884_11eb_afc4_b3a2b3eb1f40row0_col2" class="data row0 col2" >1</td>
+                            <td id="T_e8ab861a_3884_11eb_afc4_b3a2b3eb1f40row0_col3" class="data row0 col3" >#443988</td>
+                            <td id="T_e8ab861a_3884_11eb_afc4_b3a2b3eb1f40row0_col4" class="data row0 col4" >1</td>
+                </tr>
+                <tr>
+                            <th id="T_e8ab861a_3884_11eb_afc4_b3a2b3eb1f40level0_row1" class="row_heading level0 row1" >0</th>
+                            <td id="T_e8ab861a_3884_11eb_afc4_b3a2b3eb1f40row1_col0" class="data row1 col0" >Shale</td>
+                            <td id="T_e8ab861a_3884_11eb_afc4_b3a2b3eb1f40row1_col1" class="data row1 col1" >Strat_Series</td>
+                            <td id="T_e8ab861a_3884_11eb_afc4_b3a2b3eb1f40row1_col2" class="data row1 col2" >1</td>
+                            <td id="T_e8ab861a_3884_11eb_afc4_b3a2b3eb1f40row1_col3" class="data row1 col3" >#015482</td>
+                            <td id="T_e8ab861a_3884_11eb_afc4_b3a2b3eb1f40row1_col4" class="data row1 col4" >2</td>
+                </tr>
+                <tr>
+                            <th id="T_e8ab861a_3884_11eb_afc4_b3a2b3eb1f40level0_row2" class="row_heading level0 row2" >1</th>
+                            <td id="T_e8ab861a_3884_11eb_afc4_b3a2b3eb1f40row2_col0" class="data row2 col0" >Sandstone_1</td>
+                            <td id="T_e8ab861a_3884_11eb_afc4_b3a2b3eb1f40row2_col1" class="data row2 col1" >Strat_Series</td>
+                            <td id="T_e8ab861a_3884_11eb_afc4_b3a2b3eb1f40row2_col2" class="data row2 col2" >2</td>
+                            <td id="T_e8ab861a_3884_11eb_afc4_b3a2b3eb1f40row2_col3" class="data row2 col3" >#9f0052</td>
+                            <td id="T_e8ab861a_3884_11eb_afc4_b3a2b3eb1f40row2_col4" class="data row2 col4" >3</td>
+                </tr>
+                <tr>
+                            <th id="T_e8ab861a_3884_11eb_afc4_b3a2b3eb1f40level0_row3" class="row_heading level0 row3" >2</th>
+                            <td id="T_e8ab861a_3884_11eb_afc4_b3a2b3eb1f40row3_col0" class="data row3 col0" >Siltstone</td>
+                            <td id="T_e8ab861a_3884_11eb_afc4_b3a2b3eb1f40row3_col1" class="data row3 col1" >Strat_Series</td>
+                            <td id="T_e8ab861a_3884_11eb_afc4_b3a2b3eb1f40row3_col2" class="data row3 col2" >3</td>
+                            <td id="T_e8ab861a_3884_11eb_afc4_b3a2b3eb1f40row3_col3" class="data row3 col3" >#ffbe00</td>
+                            <td id="T_e8ab861a_3884_11eb_afc4_b3a2b3eb1f40row3_col4" class="data row3 col4" >4</td>
+                </tr>
+                <tr>
+                            <th id="T_e8ab861a_3884_11eb_afc4_b3a2b3eb1f40level0_row4" class="row_heading level0 row4" >3</th>
+                            <td id="T_e8ab861a_3884_11eb_afc4_b3a2b3eb1f40row4_col0" class="data row4 col0" >Sandstone_2</td>
+                            <td id="T_e8ab861a_3884_11eb_afc4_b3a2b3eb1f40row4_col1" class="data row4 col1" >Strat_Series</td>
+                            <td id="T_e8ab861a_3884_11eb_afc4_b3a2b3eb1f40row4_col2" class="data row4 col2" >4</td>
+                            <td id="T_e8ab861a_3884_11eb_afc4_b3a2b3eb1f40row4_col3" class="data row4 col3" >#728f02</td>
+                            <td id="T_e8ab861a_3884_11eb_afc4_b3a2b3eb1f40row4_col4" class="data row4 col4" >5</td>
+                </tr>
+                <tr>
+                            <th id="T_e8ab861a_3884_11eb_afc4_b3a2b3eb1f40level0_row5" class="row_heading level0 row5" >5</th>
+                            <td id="T_e8ab861a_3884_11eb_afc4_b3a2b3eb1f40row5_col0" class="data row5 col0" >basement</td>
+                            <td id="T_e8ab861a_3884_11eb_afc4_b3a2b3eb1f40row5_col1" class="data row5 col1" >Basement</td>
+                            <td id="T_e8ab861a_3884_11eb_afc4_b3a2b3eb1f40row5_col2" class="data row5 col2" >1</td>
+                            <td id="T_e8ab861a_3884_11eb_afc4_b3a2b3eb1f40row5_col3" class="data row5 col3" >#ff3f20</td>
+                            <td id="T_e8ab861a_3884_11eb_afc4_b3a2b3eb1f40row5_col4" class="data row5 col4" >6</td>
+                </tr>
+        </tbody></table>
+    <br />
+    <br />
+
+
+.. code-block:: python3
+
+    model.surface_points
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>X</th>
+          <th>Y</th>
+          <th>Z</th>
+          <th>smooth</th>
+          <th>surface</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>52</th>
+          <td>700</td>
+          <td>1000</td>
+          <td>900</td>
+          <td>2.00e-06</td>
+          <td>Main_Fault</td>
+        </tr>
+        <tr>
+          <th>53</th>
+          <td>600</td>
+          <td>1000</td>
+          <td>600</td>
+          <td>2.00e-06</td>
+          <td>Main_Fault</td>
+        </tr>
+        <tr>
+          <th>54</th>
+          <td>500</td>
+          <td>1000</td>
+          <td>300</td>
+          <td>2.00e-06</td>
+          <td>Main_Fault</td>
+        </tr>
+        <tr>
+          <th>55</th>
+          <td>800</td>
+          <td>1000</td>
+          <td>1200</td>
+          <td>2.00e-06</td>
+          <td>Main_Fault</td>
+        </tr>
+        <tr>
+          <th>56</th>
+          <td>900</td>
+          <td>1000</td>
+          <td>1500</td>
+          <td>2.00e-06</td>
+          <td>Main_Fault</td>
+        </tr>
+        <tr>
+          <th>0</th>
+          <td>800</td>
+          <td>50</td>
+          <td>750</td>
+          <td>2.00e-06</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>800</td>
+          <td>150</td>
+          <td>700</td>
+          <td>2.00e-06</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>800</td>
+          <td>300</td>
+          <td>700</td>
+          <td>2.00e-06</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>800</td>
+          <td>500</td>
+          <td>800</td>
+          <td>2.00e-06</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>800</td>
+          <td>1000</td>
+          <td>1000</td>
+          <td>2.00e-06</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>5</th>
+          <td>800</td>
+          <td>1500</td>
+          <td>700</td>
+          <td>2.00e-06</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>6</th>
+          <td>800</td>
+          <td>1700</td>
+          <td>600</td>
+          <td>2.00e-06</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>7</th>
+          <td>800</td>
+          <td>1950</td>
+          <td>650</td>
+          <td>2.00e-06</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>8</th>
+          <td>0</td>
+          <td>1000</td>
+          <td>1100</td>
+          <td>2.00e-06</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>9</th>
+          <td>300</td>
+          <td>1000</td>
+          <td>1000</td>
+          <td>2.00e-06</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>10</th>
+          <td>450</td>
+          <td>1000</td>
+          <td>950</td>
+          <td>2.00e-06</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>11</th>
+          <td>1100</td>
+          <td>1000</td>
+          <td>900</td>
+          <td>2.00e-06</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>12</th>
+          <td>1400</td>
+          <td>1000</td>
+          <td>850</td>
+          <td>2.00e-06</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>13</th>
+          <td>1700</td>
+          <td>1000</td>
+          <td>900</td>
+          <td>2.00e-06</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>14</th>
+          <td>1500</td>
+          <td>500</td>
+          <td>800</td>
+          <td>2.00e-06</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>15</th>
+          <td>1500</td>
+          <td>1500</td>
+          <td>750</td>
+          <td>2.00e-06</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>16</th>
+          <td>800</td>
+          <td>50</td>
+          <td>450</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_1</td>
+        </tr>
+        <tr>
+          <th>17</th>
+          <td>800</td>
+          <td>150</td>
+          <td>400</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_1</td>
+        </tr>
+        <tr>
+          <th>18</th>
+          <td>800</td>
+          <td>300</td>
+          <td>400</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_1</td>
+        </tr>
+        <tr>
+          <th>19</th>
+          <td>800</td>
+          <td>500</td>
+          <td>500</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_1</td>
+        </tr>
+        <tr>
+          <th>20</th>
+          <td>800</td>
+          <td>1000</td>
+          <td>700</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_1</td>
+        </tr>
+        <tr>
+          <th>21</th>
+          <td>800</td>
+          <td>1500</td>
+          <td>400</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_1</td>
+        </tr>
+        <tr>
+          <th>22</th>
+          <td>800</td>
+          <td>1700</td>
+          <td>300</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_1</td>
+        </tr>
+        <tr>
+          <th>23</th>
+          <td>800</td>
+          <td>1950</td>
+          <td>350</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_1</td>
+        </tr>
+        <tr>
+          <th>24</th>
+          <td>0</td>
+          <td>1000</td>
+          <td>800</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_1</td>
+        </tr>
+        <tr>
+          <th>25</th>
+          <td>300</td>
+          <td>1000</td>
+          <td>700</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_1</td>
+        </tr>
+        <tr>
+          <th>26</th>
+          <td>1100</td>
+          <td>1000</td>
+          <td>600</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_1</td>
+        </tr>
+        <tr>
+          <th>27</th>
+          <td>1400</td>
+          <td>1000</td>
+          <td>550</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_1</td>
+        </tr>
+        <tr>
+          <th>28</th>
+          <td>1700</td>
+          <td>1000</td>
+          <td>600</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_1</td>
+        </tr>
+        <tr>
+          <th>29</th>
+          <td>1500</td>
+          <td>500</td>
+          <td>500</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_1</td>
+        </tr>
+        <tr>
+          <th>30</th>
+          <td>1500</td>
+          <td>1500</td>
+          <td>450</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_1</td>
+        </tr>
+        <tr>
+          <th>31</th>
+          <td>900</td>
+          <td>150</td>
+          <td>920</td>
+          <td>2.00e-06</td>
+          <td>Siltstone</td>
+        </tr>
+        <tr>
+          <th>32</th>
+          <td>900</td>
+          <td>300</td>
+          <td>920</td>
+          <td>2.00e-06</td>
+          <td>Siltstone</td>
+        </tr>
+        <tr>
+          <th>33</th>
+          <td>900</td>
+          <td>1500</td>
+          <td>920</td>
+          <td>2.00e-06</td>
+          <td>Siltstone</td>
+        </tr>
+        <tr>
+          <th>34</th>
+          <td>900</td>
+          <td>1700</td>
+          <td>820</td>
+          <td>2.00e-06</td>
+          <td>Siltstone</td>
+        </tr>
+        <tr>
+          <th>35</th>
+          <td>900</td>
+          <td>1950</td>
+          <td>870</td>
+          <td>2.00e-06</td>
+          <td>Siltstone</td>
+        </tr>
+        <tr>
+          <th>36</th>
+          <td>0</td>
+          <td>1000</td>
+          <td>1300</td>
+          <td>2.00e-06</td>
+          <td>Siltstone</td>
+        </tr>
+        <tr>
+          <th>37</th>
+          <td>300</td>
+          <td>1000</td>
+          <td>1200</td>
+          <td>2.00e-06</td>
+          <td>Siltstone</td>
+        </tr>
+        <tr>
+          <th>38</th>
+          <td>600</td>
+          <td>1000</td>
+          <td>1100</td>
+          <td>2.00e-06</td>
+          <td>Siltstone</td>
+        </tr>
+        <tr>
+          <th>39</th>
+          <td>1100</td>
+          <td>1000</td>
+          <td>1100</td>
+          <td>2.00e-06</td>
+          <td>Siltstone</td>
+        </tr>
+        <tr>
+          <th>40</th>
+          <td>1400</td>
+          <td>1000</td>
+          <td>1050</td>
+          <td>2.00e-06</td>
+          <td>Siltstone</td>
+        </tr>
+        <tr>
+          <th>41</th>
+          <td>1700</td>
+          <td>1000</td>
+          <td>1100</td>
+          <td>2.00e-06</td>
+          <td>Siltstone</td>
+        </tr>
+        <tr>
+          <th>42</th>
+          <td>1500</td>
+          <td>500</td>
+          <td>1000</td>
+          <td>2.00e-06</td>
+          <td>Siltstone</td>
+        </tr>
+        <tr>
+          <th>43</th>
+          <td>1500</td>
+          <td>1500</td>
+          <td>950</td>
+          <td>2.00e-06</td>
+          <td>Siltstone</td>
+        </tr>
+        <tr>
+          <th>44</th>
+          <td>0</td>
+          <td>1000</td>
+          <td>1500</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_2</td>
+        </tr>
+        <tr>
+          <th>45</th>
+          <td>300</td>
+          <td>1000</td>
+          <td>1400</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_2</td>
+        </tr>
+        <tr>
+          <th>46</th>
+          <td>600</td>
+          <td>1000</td>
+          <td>1300</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_2</td>
+        </tr>
+        <tr>
+          <th>47</th>
+          <td>1100</td>
+          <td>1000</td>
+          <td>1300</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_2</td>
+        </tr>
+        <tr>
+          <th>48</th>
+          <td>1400</td>
+          <td>1000</td>
+          <td>1250</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_2</td>
+        </tr>
+        <tr>
+          <th>49</th>
+          <td>1700</td>
+          <td>1000</td>
+          <td>1300</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_2</td>
+        </tr>
+        <tr>
+          <th>50</th>
+          <td>1500</td>
+          <td>500</td>
+          <td>1200</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_2</td>
+        </tr>
+        <tr>
+          <th>51</th>
+          <td>1500</td>
+          <td>1500</td>
+          <td>1150</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_2</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+
+.. code-block:: python3
+
+    model._orientations.df.head()
+
+
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>X</th>
+          <th>Y</th>
+          <th>Z</th>
+          <th>X_c</th>
+          <th>Y_c</th>
+          <th>Z_c</th>
+          <th>G_x</th>
+          <th>G_y</th>
+          <th>G_z</th>
+          <th>dip</th>
+          <th>azimuth</th>
+          <th>polarity</th>
+          <th>surface</th>
+          <th>series</th>
+          <th>id</th>
+          <th>order_series</th>
+          <th>smooth</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>2</th>
+          <td>500</td>
+          <td>1000</td>
+          <td>864.6</td>
+          <td>0.41</td>
+          <td>0.5</td>
+          <td>0.49</td>
+          <td>-0.95</td>
+          <td>1.00e-12</td>
+          <td>0.32</td>
+          <td>71.56</td>
+          <td>270.0</td>
+          <td>1.0</td>
+          <td>Main_Fault</td>
+          <td>Fault_Series</td>
+          <td>1</td>
+          <td>1</td>
+          <td>0.01</td>
+        </tr>
+        <tr>
+          <th>0</th>
+          <td>1000</td>
+          <td>1000</td>
+          <td>950.0</td>
+          <td>0.54</td>
+          <td>0.5</td>
+          <td>0.51</td>
+          <td>0.32</td>
+          <td>1.00e-12</td>
+          <td>0.95</td>
+          <td>18.43</td>
+          <td>90.0</td>
+          <td>1.0</td>
+          <td>Shale</td>
+          <td>Strat_Series</td>
+          <td>2</td>
+          <td>2</td>
+          <td>0.01</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>400</td>
+          <td>1000</td>
+          <td>1400.0</td>
+          <td>0.38</td>
+          <td>0.5</td>
+          <td>0.63</td>
+          <td>0.32</td>
+          <td>1.00e-12</td>
+          <td>0.95</td>
+          <td>18.43</td>
+          <td>90.0</td>
+          <td>1.0</td>
+          <td>Sandstone_2</td>
+          <td>Strat_Series</td>
+          <td>5</td>
+          <td>2</td>
+          <td>0.01</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+    <br />
+    <br />
+
+Next we need to categorize each surface into the right series. This will
+update all the Dataframes depending on ``Formations`` and ``Series`` to
+the right categories:
+
+
+
+.. code-block:: python3
+
+    model.map_stack_to_surfaces({"Fault_Series": 'Main_Fault',
+                                 "Strat_Series": ('Sandstone_2', 'Siltstone',
+                                                  'Shale', 'Sandstone_1')})
+
+
+
+
+
+
+.. raw:: html
+
+    <style  type="text/css" >
+    #T_e8ab861b_3884_11eb_afc4_b3a2b3eb1f40row0_col3{
+                background-color:  #443988;
+            }#T_e8ab861b_3884_11eb_afc4_b3a2b3eb1f40row1_col3{
+                background-color:  #015482;
+            }#T_e8ab861b_3884_11eb_afc4_b3a2b3eb1f40row2_col3{
+                background-color:  #9f0052;
+            }#T_e8ab861b_3884_11eb_afc4_b3a2b3eb1f40row3_col3{
+                background-color:  #ffbe00;
+            }#T_e8ab861b_3884_11eb_afc4_b3a2b3eb1f40row4_col3{
+                background-color:  #728f02;
+            }#T_e8ab861b_3884_11eb_afc4_b3a2b3eb1f40row5_col3{
+                background-color:  #ff3f20;
+            }</style><table id="T_e8ab861b_3884_11eb_afc4_b3a2b3eb1f40" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
+                    <tr>
+                            <th id="T_e8ab861b_3884_11eb_afc4_b3a2b3eb1f40level0_row0" class="row_heading level0 row0" >4</th>
+                            <td id="T_e8ab861b_3884_11eb_afc4_b3a2b3eb1f40row0_col0" class="data row0 col0" >Main_Fault</td>
+                            <td id="T_e8ab861b_3884_11eb_afc4_b3a2b3eb1f40row0_col1" class="data row0 col1" >Fault_Series</td>
+                            <td id="T_e8ab861b_3884_11eb_afc4_b3a2b3eb1f40row0_col2" class="data row0 col2" >1</td>
+                            <td id="T_e8ab861b_3884_11eb_afc4_b3a2b3eb1f40row0_col3" class="data row0 col3" >#443988</td>
+                            <td id="T_e8ab861b_3884_11eb_afc4_b3a2b3eb1f40row0_col4" class="data row0 col4" >1</td>
+                </tr>
+                <tr>
+                            <th id="T_e8ab861b_3884_11eb_afc4_b3a2b3eb1f40level0_row1" class="row_heading level0 row1" >0</th>
+                            <td id="T_e8ab861b_3884_11eb_afc4_b3a2b3eb1f40row1_col0" class="data row1 col0" >Shale</td>
+                            <td id="T_e8ab861b_3884_11eb_afc4_b3a2b3eb1f40row1_col1" class="data row1 col1" >Strat_Series</td>
+                            <td id="T_e8ab861b_3884_11eb_afc4_b3a2b3eb1f40row1_col2" class="data row1 col2" >1</td>
+                            <td id="T_e8ab861b_3884_11eb_afc4_b3a2b3eb1f40row1_col3" class="data row1 col3" >#015482</td>
+                            <td id="T_e8ab861b_3884_11eb_afc4_b3a2b3eb1f40row1_col4" class="data row1 col4" >2</td>
+                </tr>
+                <tr>
+                            <th id="T_e8ab861b_3884_11eb_afc4_b3a2b3eb1f40level0_row2" class="row_heading level0 row2" >1</th>
+                            <td id="T_e8ab861b_3884_11eb_afc4_b3a2b3eb1f40row2_col0" class="data row2 col0" >Sandstone_1</td>
+                            <td id="T_e8ab861b_3884_11eb_afc4_b3a2b3eb1f40row2_col1" class="data row2 col1" >Strat_Series</td>
+                            <td id="T_e8ab861b_3884_11eb_afc4_b3a2b3eb1f40row2_col2" class="data row2 col2" >2</td>
+                            <td id="T_e8ab861b_3884_11eb_afc4_b3a2b3eb1f40row2_col3" class="data row2 col3" >#9f0052</td>
+                            <td id="T_e8ab861b_3884_11eb_afc4_b3a2b3eb1f40row2_col4" class="data row2 col4" >3</td>
+                </tr>
+                <tr>
+                            <th id="T_e8ab861b_3884_11eb_afc4_b3a2b3eb1f40level0_row3" class="row_heading level0 row3" >2</th>
+                            <td id="T_e8ab861b_3884_11eb_afc4_b3a2b3eb1f40row3_col0" class="data row3 col0" >Siltstone</td>
+                            <td id="T_e8ab861b_3884_11eb_afc4_b3a2b3eb1f40row3_col1" class="data row3 col1" >Strat_Series</td>
+                            <td id="T_e8ab861b_3884_11eb_afc4_b3a2b3eb1f40row3_col2" class="data row3 col2" >3</td>
+                            <td id="T_e8ab861b_3884_11eb_afc4_b3a2b3eb1f40row3_col3" class="data row3 col3" >#ffbe00</td>
+                            <td id="T_e8ab861b_3884_11eb_afc4_b3a2b3eb1f40row3_col4" class="data row3 col4" >4</td>
+                </tr>
+                <tr>
+                            <th id="T_e8ab861b_3884_11eb_afc4_b3a2b3eb1f40level0_row4" class="row_heading level0 row4" >3</th>
+                            <td id="T_e8ab861b_3884_11eb_afc4_b3a2b3eb1f40row4_col0" class="data row4 col0" >Sandstone_2</td>
+                            <td id="T_e8ab861b_3884_11eb_afc4_b3a2b3eb1f40row4_col1" class="data row4 col1" >Strat_Series</td>
+                            <td id="T_e8ab861b_3884_11eb_afc4_b3a2b3eb1f40row4_col2" class="data row4 col2" >4</td>
+                            <td id="T_e8ab861b_3884_11eb_afc4_b3a2b3eb1f40row4_col3" class="data row4 col3" >#728f02</td>
+                            <td id="T_e8ab861b_3884_11eb_afc4_b3a2b3eb1f40row4_col4" class="data row4 col4" >5</td>
+                </tr>
+                <tr>
+                            <th id="T_e8ab861b_3884_11eb_afc4_b3a2b3eb1f40level0_row5" class="row_heading level0 row5" >5</th>
+                            <td id="T_e8ab861b_3884_11eb_afc4_b3a2b3eb1f40row5_col0" class="data row5 col0" >basement</td>
+                            <td id="T_e8ab861b_3884_11eb_afc4_b3a2b3eb1f40row5_col1" class="data row5 col1" >Basement</td>
+                            <td id="T_e8ab861b_3884_11eb_afc4_b3a2b3eb1f40row5_col2" class="data row5 col2" >1</td>
+                            <td id="T_e8ab861b_3884_11eb_afc4_b3a2b3eb1f40row5_col3" class="data row5 col3" >#ff3f20</td>
+                            <td id="T_e8ab861b_3884_11eb_afc4_b3a2b3eb1f40row5_col4" class="data row5 col4" >6</td>
+                </tr>
+        </tbody></table>
+    <br />
+    <br />
+
+
+.. code-block:: python3
+
+    model._surfaces.df['series']
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    4    Fault_Series
+    0    Strat_Series
+    1    Strat_Series
+    2    Strat_Series
+    3    Strat_Series
+    5        Basement
+    Name: series, dtype: category
+    Categories (3, object): ['Fault_Series', 'Strat_Series', 'Basement']
+
+
+
+
+.. code-block:: python3
+
+    model.surfaces
+
+
+
+
+
+
+.. raw:: html
+
+    <style  type="text/css" >
+    #T_e8ab861c_3884_11eb_afc4_b3a2b3eb1f40row0_col3{
+                background-color:  #443988;
+            }#T_e8ab861c_3884_11eb_afc4_b3a2b3eb1f40row1_col3{
+                background-color:  #015482;
+            }#T_e8ab861c_3884_11eb_afc4_b3a2b3eb1f40row2_col3{
+                background-color:  #9f0052;
+            }#T_e8ab861c_3884_11eb_afc4_b3a2b3eb1f40row3_col3{
+                background-color:  #ffbe00;
+            }#T_e8ab861c_3884_11eb_afc4_b3a2b3eb1f40row4_col3{
+                background-color:  #728f02;
+            }#T_e8ab861c_3884_11eb_afc4_b3a2b3eb1f40row5_col3{
+                background-color:  #ff3f20;
+            }</style><table id="T_e8ab861c_3884_11eb_afc4_b3a2b3eb1f40" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
+                    <tr>
+                            <th id="T_e8ab861c_3884_11eb_afc4_b3a2b3eb1f40level0_row0" class="row_heading level0 row0" >4</th>
+                            <td id="T_e8ab861c_3884_11eb_afc4_b3a2b3eb1f40row0_col0" class="data row0 col0" >Main_Fault</td>
+                            <td id="T_e8ab861c_3884_11eb_afc4_b3a2b3eb1f40row0_col1" class="data row0 col1" >Fault_Series</td>
+                            <td id="T_e8ab861c_3884_11eb_afc4_b3a2b3eb1f40row0_col2" class="data row0 col2" >1</td>
+                            <td id="T_e8ab861c_3884_11eb_afc4_b3a2b3eb1f40row0_col3" class="data row0 col3" >#443988</td>
+                            <td id="T_e8ab861c_3884_11eb_afc4_b3a2b3eb1f40row0_col4" class="data row0 col4" >1</td>
+                </tr>
+                <tr>
+                            <th id="T_e8ab861c_3884_11eb_afc4_b3a2b3eb1f40level0_row1" class="row_heading level0 row1" >0</th>
+                            <td id="T_e8ab861c_3884_11eb_afc4_b3a2b3eb1f40row1_col0" class="data row1 col0" >Shale</td>
+                            <td id="T_e8ab861c_3884_11eb_afc4_b3a2b3eb1f40row1_col1" class="data row1 col1" >Strat_Series</td>
+                            <td id="T_e8ab861c_3884_11eb_afc4_b3a2b3eb1f40row1_col2" class="data row1 col2" >1</td>
+                            <td id="T_e8ab861c_3884_11eb_afc4_b3a2b3eb1f40row1_col3" class="data row1 col3" >#015482</td>
+                            <td id="T_e8ab861c_3884_11eb_afc4_b3a2b3eb1f40row1_col4" class="data row1 col4" >2</td>
+                </tr>
+                <tr>
+                            <th id="T_e8ab861c_3884_11eb_afc4_b3a2b3eb1f40level0_row2" class="row_heading level0 row2" >1</th>
+                            <td id="T_e8ab861c_3884_11eb_afc4_b3a2b3eb1f40row2_col0" class="data row2 col0" >Sandstone_1</td>
+                            <td id="T_e8ab861c_3884_11eb_afc4_b3a2b3eb1f40row2_col1" class="data row2 col1" >Strat_Series</td>
+                            <td id="T_e8ab861c_3884_11eb_afc4_b3a2b3eb1f40row2_col2" class="data row2 col2" >2</td>
+                            <td id="T_e8ab861c_3884_11eb_afc4_b3a2b3eb1f40row2_col3" class="data row2 col3" >#9f0052</td>
+                            <td id="T_e8ab861c_3884_11eb_afc4_b3a2b3eb1f40row2_col4" class="data row2 col4" >3</td>
+                </tr>
+                <tr>
+                            <th id="T_e8ab861c_3884_11eb_afc4_b3a2b3eb1f40level0_row3" class="row_heading level0 row3" >2</th>
+                            <td id="T_e8ab861c_3884_11eb_afc4_b3a2b3eb1f40row3_col0" class="data row3 col0" >Siltstone</td>
+                            <td id="T_e8ab861c_3884_11eb_afc4_b3a2b3eb1f40row3_col1" class="data row3 col1" >Strat_Series</td>
+                            <td id="T_e8ab861c_3884_11eb_afc4_b3a2b3eb1f40row3_col2" class="data row3 col2" >3</td>
+                            <td id="T_e8ab861c_3884_11eb_afc4_b3a2b3eb1f40row3_col3" class="data row3 col3" >#ffbe00</td>
+                            <td id="T_e8ab861c_3884_11eb_afc4_b3a2b3eb1f40row3_col4" class="data row3 col4" >4</td>
+                </tr>
+                <tr>
+                            <th id="T_e8ab861c_3884_11eb_afc4_b3a2b3eb1f40level0_row4" class="row_heading level0 row4" >3</th>
+                            <td id="T_e8ab861c_3884_11eb_afc4_b3a2b3eb1f40row4_col0" class="data row4 col0" >Sandstone_2</td>
+                            <td id="T_e8ab861c_3884_11eb_afc4_b3a2b3eb1f40row4_col1" class="data row4 col1" >Strat_Series</td>
+                            <td id="T_e8ab861c_3884_11eb_afc4_b3a2b3eb1f40row4_col2" class="data row4 col2" >4</td>
+                            <td id="T_e8ab861c_3884_11eb_afc4_b3a2b3eb1f40row4_col3" class="data row4 col3" >#728f02</td>
+                            <td id="T_e8ab861c_3884_11eb_afc4_b3a2b3eb1f40row4_col4" class="data row4 col4" >5</td>
+                </tr>
+                <tr>
+                            <th id="T_e8ab861c_3884_11eb_afc4_b3a2b3eb1f40level0_row5" class="row_heading level0 row5" >5</th>
+                            <td id="T_e8ab861c_3884_11eb_afc4_b3a2b3eb1f40row5_col0" class="data row5 col0" >basement</td>
+                            <td id="T_e8ab861c_3884_11eb_afc4_b3a2b3eb1f40row5_col1" class="data row5 col1" >Basement</td>
+                            <td id="T_e8ab861c_3884_11eb_afc4_b3a2b3eb1f40row5_col2" class="data row5 col2" >1</td>
+                            <td id="T_e8ab861c_3884_11eb_afc4_b3a2b3eb1f40row5_col3" class="data row5 col3" >#ff3f20</td>
+                            <td id="T_e8ab861c_3884_11eb_afc4_b3a2b3eb1f40row5_col4" class="data row5 col4" >6</td>
+                </tr>
+        </tbody></table>
+    <br />
+    <br />
+
+
+.. code-block:: python3
+
+    gp.get_data(model, 'surface points')
+
+
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>X</th>
+          <th>Y</th>
+          <th>Z</th>
+          <th>smooth</th>
+          <th>surface</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>52</th>
+          <td>700</td>
+          <td>1000</td>
+          <td>900</td>
+          <td>2.00e-06</td>
+          <td>Main_Fault</td>
+        </tr>
+        <tr>
+          <th>53</th>
+          <td>600</td>
+          <td>1000</td>
+          <td>600</td>
+          <td>2.00e-06</td>
+          <td>Main_Fault</td>
+        </tr>
+        <tr>
+          <th>54</th>
+          <td>500</td>
+          <td>1000</td>
+          <td>300</td>
+          <td>2.00e-06</td>
+          <td>Main_Fault</td>
+        </tr>
+        <tr>
+          <th>55</th>
+          <td>800</td>
+          <td>1000</td>
+          <td>1200</td>
+          <td>2.00e-06</td>
+          <td>Main_Fault</td>
+        </tr>
+        <tr>
+          <th>56</th>
+          <td>900</td>
+          <td>1000</td>
+          <td>1500</td>
+          <td>2.00e-06</td>
+          <td>Main_Fault</td>
+        </tr>
+        <tr>
+          <th>0</th>
+          <td>800</td>
+          <td>50</td>
+          <td>750</td>
+          <td>2.00e-06</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>800</td>
+          <td>150</td>
+          <td>700</td>
+          <td>2.00e-06</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>800</td>
+          <td>300</td>
+          <td>700</td>
+          <td>2.00e-06</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>800</td>
+          <td>500</td>
+          <td>800</td>
+          <td>2.00e-06</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>800</td>
+          <td>1000</td>
+          <td>1000</td>
+          <td>2.00e-06</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>5</th>
+          <td>800</td>
+          <td>1500</td>
+          <td>700</td>
+          <td>2.00e-06</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>6</th>
+          <td>800</td>
+          <td>1700</td>
+          <td>600</td>
+          <td>2.00e-06</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>7</th>
+          <td>800</td>
+          <td>1950</td>
+          <td>650</td>
+          <td>2.00e-06</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>8</th>
+          <td>0</td>
+          <td>1000</td>
+          <td>1100</td>
+          <td>2.00e-06</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>9</th>
+          <td>300</td>
+          <td>1000</td>
+          <td>1000</td>
+          <td>2.00e-06</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>10</th>
+          <td>450</td>
+          <td>1000</td>
+          <td>950</td>
+          <td>2.00e-06</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>11</th>
+          <td>1100</td>
+          <td>1000</td>
+          <td>900</td>
+          <td>2.00e-06</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>12</th>
+          <td>1400</td>
+          <td>1000</td>
+          <td>850</td>
+          <td>2.00e-06</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>13</th>
+          <td>1700</td>
+          <td>1000</td>
+          <td>900</td>
+          <td>2.00e-06</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>14</th>
+          <td>1500</td>
+          <td>500</td>
+          <td>800</td>
+          <td>2.00e-06</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>15</th>
+          <td>1500</td>
+          <td>1500</td>
+          <td>750</td>
+          <td>2.00e-06</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>16</th>
+          <td>800</td>
+          <td>50</td>
+          <td>450</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_1</td>
+        </tr>
+        <tr>
+          <th>17</th>
+          <td>800</td>
+          <td>150</td>
+          <td>400</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_1</td>
+        </tr>
+        <tr>
+          <th>18</th>
+          <td>800</td>
+          <td>300</td>
+          <td>400</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_1</td>
+        </tr>
+        <tr>
+          <th>19</th>
+          <td>800</td>
+          <td>500</td>
+          <td>500</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_1</td>
+        </tr>
+        <tr>
+          <th>20</th>
+          <td>800</td>
+          <td>1000</td>
+          <td>700</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_1</td>
+        </tr>
+        <tr>
+          <th>21</th>
+          <td>800</td>
+          <td>1500</td>
+          <td>400</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_1</td>
+        </tr>
+        <tr>
+          <th>22</th>
+          <td>800</td>
+          <td>1700</td>
+          <td>300</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_1</td>
+        </tr>
+        <tr>
+          <th>23</th>
+          <td>800</td>
+          <td>1950</td>
+          <td>350</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_1</td>
+        </tr>
+        <tr>
+          <th>24</th>
+          <td>0</td>
+          <td>1000</td>
+          <td>800</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_1</td>
+        </tr>
+        <tr>
+          <th>25</th>
+          <td>300</td>
+          <td>1000</td>
+          <td>700</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_1</td>
+        </tr>
+        <tr>
+          <th>26</th>
+          <td>1100</td>
+          <td>1000</td>
+          <td>600</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_1</td>
+        </tr>
+        <tr>
+          <th>27</th>
+          <td>1400</td>
+          <td>1000</td>
+          <td>550</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_1</td>
+        </tr>
+        <tr>
+          <th>28</th>
+          <td>1700</td>
+          <td>1000</td>
+          <td>600</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_1</td>
+        </tr>
+        <tr>
+          <th>29</th>
+          <td>1500</td>
+          <td>500</td>
+          <td>500</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_1</td>
+        </tr>
+        <tr>
+          <th>30</th>
+          <td>1500</td>
+          <td>1500</td>
+          <td>450</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_1</td>
+        </tr>
+        <tr>
+          <th>31</th>
+          <td>900</td>
+          <td>150</td>
+          <td>920</td>
+          <td>2.00e-06</td>
+          <td>Siltstone</td>
+        </tr>
+        <tr>
+          <th>32</th>
+          <td>900</td>
+          <td>300</td>
+          <td>920</td>
+          <td>2.00e-06</td>
+          <td>Siltstone</td>
+        </tr>
+        <tr>
+          <th>33</th>
+          <td>900</td>
+          <td>1500</td>
+          <td>920</td>
+          <td>2.00e-06</td>
+          <td>Siltstone</td>
+        </tr>
+        <tr>
+          <th>34</th>
+          <td>900</td>
+          <td>1700</td>
+          <td>820</td>
+          <td>2.00e-06</td>
+          <td>Siltstone</td>
+        </tr>
+        <tr>
+          <th>35</th>
+          <td>900</td>
+          <td>1950</td>
+          <td>870</td>
+          <td>2.00e-06</td>
+          <td>Siltstone</td>
+        </tr>
+        <tr>
+          <th>36</th>
+          <td>0</td>
+          <td>1000</td>
+          <td>1300</td>
+          <td>2.00e-06</td>
+          <td>Siltstone</td>
+        </tr>
+        <tr>
+          <th>37</th>
+          <td>300</td>
+          <td>1000</td>
+          <td>1200</td>
+          <td>2.00e-06</td>
+          <td>Siltstone</td>
+        </tr>
+        <tr>
+          <th>38</th>
+          <td>600</td>
+          <td>1000</td>
+          <td>1100</td>
+          <td>2.00e-06</td>
+          <td>Siltstone</td>
+        </tr>
+        <tr>
+          <th>39</th>
+          <td>1100</td>
+          <td>1000</td>
+          <td>1100</td>
+          <td>2.00e-06</td>
+          <td>Siltstone</td>
+        </tr>
+        <tr>
+          <th>40</th>
+          <td>1400</td>
+          <td>1000</td>
+          <td>1050</td>
+          <td>2.00e-06</td>
+          <td>Siltstone</td>
+        </tr>
+        <tr>
+          <th>41</th>
+          <td>1700</td>
+          <td>1000</td>
+          <td>1100</td>
+          <td>2.00e-06</td>
+          <td>Siltstone</td>
+        </tr>
+        <tr>
+          <th>42</th>
+          <td>1500</td>
+          <td>500</td>
+          <td>1000</td>
+          <td>2.00e-06</td>
+          <td>Siltstone</td>
+        </tr>
+        <tr>
+          <th>43</th>
+          <td>1500</td>
+          <td>1500</td>
+          <td>950</td>
+          <td>2.00e-06</td>
+          <td>Siltstone</td>
+        </tr>
+        <tr>
+          <th>44</th>
+          <td>0</td>
+          <td>1000</td>
+          <td>1500</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_2</td>
+        </tr>
+        <tr>
+          <th>45</th>
+          <td>300</td>
+          <td>1000</td>
+          <td>1400</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_2</td>
+        </tr>
+        <tr>
+          <th>46</th>
+          <td>600</td>
+          <td>1000</td>
+          <td>1300</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_2</td>
+        </tr>
+        <tr>
+          <th>47</th>
+          <td>1100</td>
+          <td>1000</td>
+          <td>1300</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_2</td>
+        </tr>
+        <tr>
+          <th>48</th>
+          <td>1400</td>
+          <td>1000</td>
+          <td>1250</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_2</td>
+        </tr>
+        <tr>
+          <th>49</th>
+          <td>1700</td>
+          <td>1000</td>
+          <td>1300</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_2</td>
+        </tr>
+        <tr>
+          <th>50</th>
+          <td>1500</td>
+          <td>500</td>
+          <td>1200</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_2</td>
+        </tr>
+        <tr>
+          <th>51</th>
+          <td>1500</td>
+          <td>1500</td>
+          <td>1150</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_2</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+    <br />
+    <br />
+
+
+.. code-block:: python3
+
+    model.stack
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>order_series</th>
+          <th>BottomRelation</th>
+          <th>isActive</th>
+          <th>isFault</th>
+          <th>isFinite</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>Fault_Series</th>
+          <td>1</td>
+          <td>Erosion</td>
+          <td>True</td>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>Strat_Series</th>
+          <td>2</td>
+          <td>Erosion</td>
+          <td>True</td>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>Basement</th>
+          <td>3</td>
+          <td>Erosion</td>
+          <td>False</td>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+In the case of having faults we need to assign wich series are faults:
+
+
+
+.. code-block:: python3
+
+    model.faults
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>order_series</th>
+          <th>BottomRelation</th>
+          <th>isActive</th>
+          <th>isFault</th>
+          <th>isFinite</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>Fault_Series</th>
+          <td>1</td>
+          <td>Erosion</td>
+          <td>True</td>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>Strat_Series</th>
+          <td>2</td>
+          <td>Erosion</td>
+          <td>True</td>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>Basement</th>
+          <td>3</td>
+          <td>Erosion</td>
+          <td>False</td>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+
+.. code-block:: python3
+
+    model.set_is_fault(['Fault_Series'])
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Fault colors changed. If you do not like this behavior, set change_color to False.
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>order_series</th>
+          <th>BottomRelation</th>
+          <th>isActive</th>
+          <th>isFault</th>
+          <th>isFinite</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>Fault_Series</th>
+          <td>1</td>
+          <td>Fault</td>
+          <td>True</td>
+          <td>True</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>Strat_Series</th>
+          <td>2</td>
+          <td>Erosion</td>
+          <td>True</td>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>Basement</th>
+          <td>3</td>
+          <td>Erosion</td>
+          <td>False</td>
+          <td>False</td>
+          <td>False</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+
+.. code-block:: python3
+
+    model.surface_points
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>X</th>
+          <th>Y</th>
+          <th>Z</th>
+          <th>smooth</th>
+          <th>surface</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>52</th>
+          <td>700</td>
+          <td>1000</td>
+          <td>900</td>
+          <td>2.00e-06</td>
+          <td>Main_Fault</td>
+        </tr>
+        <tr>
+          <th>53</th>
+          <td>600</td>
+          <td>1000</td>
+          <td>600</td>
+          <td>2.00e-06</td>
+          <td>Main_Fault</td>
+        </tr>
+        <tr>
+          <th>54</th>
+          <td>500</td>
+          <td>1000</td>
+          <td>300</td>
+          <td>2.00e-06</td>
+          <td>Main_Fault</td>
+        </tr>
+        <tr>
+          <th>55</th>
+          <td>800</td>
+          <td>1000</td>
+          <td>1200</td>
+          <td>2.00e-06</td>
+          <td>Main_Fault</td>
+        </tr>
+        <tr>
+          <th>56</th>
+          <td>900</td>
+          <td>1000</td>
+          <td>1500</td>
+          <td>2.00e-06</td>
+          <td>Main_Fault</td>
+        </tr>
+        <tr>
+          <th>0</th>
+          <td>800</td>
+          <td>50</td>
+          <td>750</td>
+          <td>2.00e-06</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>800</td>
+          <td>150</td>
+          <td>700</td>
+          <td>2.00e-06</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>800</td>
+          <td>300</td>
+          <td>700</td>
+          <td>2.00e-06</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>800</td>
+          <td>500</td>
+          <td>800</td>
+          <td>2.00e-06</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>800</td>
+          <td>1000</td>
+          <td>1000</td>
+          <td>2.00e-06</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>5</th>
+          <td>800</td>
+          <td>1500</td>
+          <td>700</td>
+          <td>2.00e-06</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>6</th>
+          <td>800</td>
+          <td>1700</td>
+          <td>600</td>
+          <td>2.00e-06</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>7</th>
+          <td>800</td>
+          <td>1950</td>
+          <td>650</td>
+          <td>2.00e-06</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>8</th>
+          <td>0</td>
+          <td>1000</td>
+          <td>1100</td>
+          <td>2.00e-06</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>9</th>
+          <td>300</td>
+          <td>1000</td>
+          <td>1000</td>
+          <td>2.00e-06</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>10</th>
+          <td>450</td>
+          <td>1000</td>
+          <td>950</td>
+          <td>2.00e-06</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>11</th>
+          <td>1100</td>
+          <td>1000</td>
+          <td>900</td>
+          <td>2.00e-06</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>12</th>
+          <td>1400</td>
+          <td>1000</td>
+          <td>850</td>
+          <td>2.00e-06</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>13</th>
+          <td>1700</td>
+          <td>1000</td>
+          <td>900</td>
+          <td>2.00e-06</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>14</th>
+          <td>1500</td>
+          <td>500</td>
+          <td>800</td>
+          <td>2.00e-06</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>15</th>
+          <td>1500</td>
+          <td>1500</td>
+          <td>750</td>
+          <td>2.00e-06</td>
+          <td>Shale</td>
+        </tr>
+        <tr>
+          <th>16</th>
+          <td>800</td>
+          <td>50</td>
+          <td>450</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_1</td>
+        </tr>
+        <tr>
+          <th>17</th>
+          <td>800</td>
+          <td>150</td>
+          <td>400</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_1</td>
+        </tr>
+        <tr>
+          <th>18</th>
+          <td>800</td>
+          <td>300</td>
+          <td>400</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_1</td>
+        </tr>
+        <tr>
+          <th>19</th>
+          <td>800</td>
+          <td>500</td>
+          <td>500</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_1</td>
+        </tr>
+        <tr>
+          <th>20</th>
+          <td>800</td>
+          <td>1000</td>
+          <td>700</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_1</td>
+        </tr>
+        <tr>
+          <th>21</th>
+          <td>800</td>
+          <td>1500</td>
+          <td>400</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_1</td>
+        </tr>
+        <tr>
+          <th>22</th>
+          <td>800</td>
+          <td>1700</td>
+          <td>300</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_1</td>
+        </tr>
+        <tr>
+          <th>23</th>
+          <td>800</td>
+          <td>1950</td>
+          <td>350</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_1</td>
+        </tr>
+        <tr>
+          <th>24</th>
+          <td>0</td>
+          <td>1000</td>
+          <td>800</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_1</td>
+        </tr>
+        <tr>
+          <th>25</th>
+          <td>300</td>
+          <td>1000</td>
+          <td>700</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_1</td>
+        </tr>
+        <tr>
+          <th>26</th>
+          <td>1100</td>
+          <td>1000</td>
+          <td>600</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_1</td>
+        </tr>
+        <tr>
+          <th>27</th>
+          <td>1400</td>
+          <td>1000</td>
+          <td>550</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_1</td>
+        </tr>
+        <tr>
+          <th>28</th>
+          <td>1700</td>
+          <td>1000</td>
+          <td>600</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_1</td>
+        </tr>
+        <tr>
+          <th>29</th>
+          <td>1500</td>
+          <td>500</td>
+          <td>500</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_1</td>
+        </tr>
+        <tr>
+          <th>30</th>
+          <td>1500</td>
+          <td>1500</td>
+          <td>450</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_1</td>
+        </tr>
+        <tr>
+          <th>31</th>
+          <td>900</td>
+          <td>150</td>
+          <td>920</td>
+          <td>2.00e-06</td>
+          <td>Siltstone</td>
+        </tr>
+        <tr>
+          <th>32</th>
+          <td>900</td>
+          <td>300</td>
+          <td>920</td>
+          <td>2.00e-06</td>
+          <td>Siltstone</td>
+        </tr>
+        <tr>
+          <th>33</th>
+          <td>900</td>
+          <td>1500</td>
+          <td>920</td>
+          <td>2.00e-06</td>
+          <td>Siltstone</td>
+        </tr>
+        <tr>
+          <th>34</th>
+          <td>900</td>
+          <td>1700</td>
+          <td>820</td>
+          <td>2.00e-06</td>
+          <td>Siltstone</td>
+        </tr>
+        <tr>
+          <th>35</th>
+          <td>900</td>
+          <td>1950</td>
+          <td>870</td>
+          <td>2.00e-06</td>
+          <td>Siltstone</td>
+        </tr>
+        <tr>
+          <th>36</th>
+          <td>0</td>
+          <td>1000</td>
+          <td>1300</td>
+          <td>2.00e-06</td>
+          <td>Siltstone</td>
+        </tr>
+        <tr>
+          <th>37</th>
+          <td>300</td>
+          <td>1000</td>
+          <td>1200</td>
+          <td>2.00e-06</td>
+          <td>Siltstone</td>
+        </tr>
+        <tr>
+          <th>38</th>
+          <td>600</td>
+          <td>1000</td>
+          <td>1100</td>
+          <td>2.00e-06</td>
+          <td>Siltstone</td>
+        </tr>
+        <tr>
+          <th>39</th>
+          <td>1100</td>
+          <td>1000</td>
+          <td>1100</td>
+          <td>2.00e-06</td>
+          <td>Siltstone</td>
+        </tr>
+        <tr>
+          <th>40</th>
+          <td>1400</td>
+          <td>1000</td>
+          <td>1050</td>
+          <td>2.00e-06</td>
+          <td>Siltstone</td>
+        </tr>
+        <tr>
+          <th>41</th>
+          <td>1700</td>
+          <td>1000</td>
+          <td>1100</td>
+          <td>2.00e-06</td>
+          <td>Siltstone</td>
+        </tr>
+        <tr>
+          <th>42</th>
+          <td>1500</td>
+          <td>500</td>
+          <td>1000</td>
+          <td>2.00e-06</td>
+          <td>Siltstone</td>
+        </tr>
+        <tr>
+          <th>43</th>
+          <td>1500</td>
+          <td>1500</td>
+          <td>950</td>
+          <td>2.00e-06</td>
+          <td>Siltstone</td>
+        </tr>
+        <tr>
+          <th>44</th>
+          <td>0</td>
+          <td>1000</td>
+          <td>1500</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_2</td>
+        </tr>
+        <tr>
+          <th>45</th>
+          <td>300</td>
+          <td>1000</td>
+          <td>1400</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_2</td>
+        </tr>
+        <tr>
+          <th>46</th>
+          <td>600</td>
+          <td>1000</td>
+          <td>1300</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_2</td>
+        </tr>
+        <tr>
+          <th>47</th>
+          <td>1100</td>
+          <td>1000</td>
+          <td>1300</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_2</td>
+        </tr>
+        <tr>
+          <th>48</th>
+          <td>1400</td>
+          <td>1000</td>
+          <td>1250</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_2</td>
+        </tr>
+        <tr>
+          <th>49</th>
+          <td>1700</td>
+          <td>1000</td>
+          <td>1300</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_2</td>
+        </tr>
+        <tr>
+          <th>50</th>
+          <td>1500</td>
+          <td>500</td>
+          <td>1200</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_2</td>
+        </tr>
+        <tr>
+          <th>51</th>
+          <td>1500</td>
+          <td>1500</td>
+          <td>1150</td>
+          <td>2.00e-06</td>
+          <td>Sandstone_2</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+Again as we can see, as long we use the model methods, all the dependent
+objects change inplace accordingly. If for any reason you do not want
+this behaviour you can always use the individual methods of the objects
+(e.g. ``model.faults.set_is_fault``)
+
+
+
+.. code-block:: python3
+
+    model.additional_data
+
+
+
+
+
+
+.. raw:: html
+
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th></th>
+          <th>values</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th rowspan="9" valign="top">Structure</th>
+          <th>isLith</th>
+          <td>True</td>
+        </tr>
+        <tr>
+          <th>isFault</th>
+          <td>True</td>
+        </tr>
+        <tr>
+          <th>number faults</th>
+          <td>1</td>
+        </tr>
+        <tr>
+          <th>number surfaces</th>
+          <td>5</td>
+        </tr>
+        <tr>
+          <th>number series</th>
+          <td>3</td>
+        </tr>
+        <tr>
+          <th>number surfaces per series</th>
+          <td>[1, 4, 0]</td>
+        </tr>
+        <tr>
+          <th>len surfaces surface_points</th>
+          <td>[5, 16, 15, 13, 8]</td>
+        </tr>
+        <tr>
+          <th>len series surface_points</th>
+          <td>[5, 52, 0]</td>
+        </tr>
+        <tr>
+          <th>len series orientations</th>
+          <td>[1, 2, 0]</td>
+        </tr>
+        <tr>
+          <th rowspan="5" valign="top">Options</th>
+          <th>dtype</th>
+          <td>float64</td>
+        </tr>
+        <tr>
+          <th>output</th>
+          <td>geology</td>
+        </tr>
+        <tr>
+          <th>theano_optimizer</th>
+          <td>fast_compile</td>
+        </tr>
+        <tr>
+          <th>device</th>
+          <td>cpu</td>
+        </tr>
+        <tr>
+          <th>verbosity</th>
+          <td>None</td>
+        </tr>
+        <tr>
+          <th rowspan="3" valign="top">Kriging</th>
+          <th>range</th>
+          <td>0</td>
+        </tr>
+        <tr>
+          <th>$C_o$</th>
+          <td>0</td>
+        </tr>
+        <tr>
+          <th>drift equations</th>
+          <td>[3, 3, 3]</td>
+        </tr>
+        <tr>
+          <th rowspan="2" valign="top">Rescaling</th>
+          <th>rescaling factor</th>
+          <td>3.8e+03</td>
+        </tr>
+        <tr>
+          <th>centers</th>
+          <td>[850.0, 1000.0, 900.0]</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+    <br />
+
+Setting grid
+------------
+
+So far we have worked on data that depends exclusively of input (i.e.
+sequential pile, surface_points, orientations, etc). With things like
+grid the idea is the same:
+
+
+
+.. code-block:: python3
+
+    model.grid
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    Grid Object. Values: 
+    array([], shape=(0, 3), dtype=float64)
+
+
+
+
+.. code-block:: python3
+
+    model.set_regular_grid([0, 10, 0, 10, 0, 10], [50, 50, 50])
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Active grids: ['regular']
+
+    Grid Object. Values: 
+    array([[0.1, 0.1, 0.1],
+           [0.1, 0.1, 0.3],
+           [0.1, 0.1, 0.5],
+           ...,
+           [9.9, 9.9, 9.5],
+           [9.9, 9.9, 9.7],
+           [9.9, 9.9, 9.9]])
+
+
+
+Getting data
+------------
+
+
+Alternatively we can access the dataframe by:
+
+
+
+.. code-block:: python3
+
+    gp.get_data(model, 'surfaces')
+
+
+
+
+
+
+.. raw:: html
+
+    <style  type="text/css" >
+    #T_e8ab861d_3884_11eb_afc4_b3a2b3eb1f40row0_col3{
+                background-color:  #527682;
+            }#T_e8ab861d_3884_11eb_afc4_b3a2b3eb1f40row1_col3{
+                background-color:  #015482;
+            }#T_e8ab861d_3884_11eb_afc4_b3a2b3eb1f40row2_col3{
+                background-color:  #9f0052;
+            }#T_e8ab861d_3884_11eb_afc4_b3a2b3eb1f40row3_col3{
+                background-color:  #ffbe00;
+            }#T_e8ab861d_3884_11eb_afc4_b3a2b3eb1f40row4_col3{
+                background-color:  #728f02;
+            }#T_e8ab861d_3884_11eb_afc4_b3a2b3eb1f40row5_col3{
+                background-color:  #ff3f20;
+            }</style><table id="T_e8ab861d_3884_11eb_afc4_b3a2b3eb1f40" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
+                    <tr>
+                            <th id="T_e8ab861d_3884_11eb_afc4_b3a2b3eb1f40level0_row0" class="row_heading level0 row0" >4</th>
+                            <td id="T_e8ab861d_3884_11eb_afc4_b3a2b3eb1f40row0_col0" class="data row0 col0" >Main_Fault</td>
+                            <td id="T_e8ab861d_3884_11eb_afc4_b3a2b3eb1f40row0_col1" class="data row0 col1" >Fault_Series</td>
+                            <td id="T_e8ab861d_3884_11eb_afc4_b3a2b3eb1f40row0_col2" class="data row0 col2" >1</td>
+                            <td id="T_e8ab861d_3884_11eb_afc4_b3a2b3eb1f40row0_col3" class="data row0 col3" >#527682</td>
+                            <td id="T_e8ab861d_3884_11eb_afc4_b3a2b3eb1f40row0_col4" class="data row0 col4" >1</td>
+                </tr>
+                <tr>
+                            <th id="T_e8ab861d_3884_11eb_afc4_b3a2b3eb1f40level0_row1" class="row_heading level0 row1" >0</th>
+                            <td id="T_e8ab861d_3884_11eb_afc4_b3a2b3eb1f40row1_col0" class="data row1 col0" >Shale</td>
+                            <td id="T_e8ab861d_3884_11eb_afc4_b3a2b3eb1f40row1_col1" class="data row1 col1" >Strat_Series</td>
+                            <td id="T_e8ab861d_3884_11eb_afc4_b3a2b3eb1f40row1_col2" class="data row1 col2" >1</td>
+                            <td id="T_e8ab861d_3884_11eb_afc4_b3a2b3eb1f40row1_col3" class="data row1 col3" >#015482</td>
+                            <td id="T_e8ab861d_3884_11eb_afc4_b3a2b3eb1f40row1_col4" class="data row1 col4" >2</td>
+                </tr>
+                <tr>
+                            <th id="T_e8ab861d_3884_11eb_afc4_b3a2b3eb1f40level0_row2" class="row_heading level0 row2" >1</th>
+                            <td id="T_e8ab861d_3884_11eb_afc4_b3a2b3eb1f40row2_col0" class="data row2 col0" >Sandstone_1</td>
+                            <td id="T_e8ab861d_3884_11eb_afc4_b3a2b3eb1f40row2_col1" class="data row2 col1" >Strat_Series</td>
+                            <td id="T_e8ab861d_3884_11eb_afc4_b3a2b3eb1f40row2_col2" class="data row2 col2" >2</td>
+                            <td id="T_e8ab861d_3884_11eb_afc4_b3a2b3eb1f40row2_col3" class="data row2 col3" >#9f0052</td>
+                            <td id="T_e8ab861d_3884_11eb_afc4_b3a2b3eb1f40row2_col4" class="data row2 col4" >3</td>
+                </tr>
+                <tr>
+                            <th id="T_e8ab861d_3884_11eb_afc4_b3a2b3eb1f40level0_row3" class="row_heading level0 row3" >2</th>
+                            <td id="T_e8ab861d_3884_11eb_afc4_b3a2b3eb1f40row3_col0" class="data row3 col0" >Siltstone</td>
+                            <td id="T_e8ab861d_3884_11eb_afc4_b3a2b3eb1f40row3_col1" class="data row3 col1" >Strat_Series</td>
+                            <td id="T_e8ab861d_3884_11eb_afc4_b3a2b3eb1f40row3_col2" class="data row3 col2" >3</td>
+                            <td id="T_e8ab861d_3884_11eb_afc4_b3a2b3eb1f40row3_col3" class="data row3 col3" >#ffbe00</td>
+                            <td id="T_e8ab861d_3884_11eb_afc4_b3a2b3eb1f40row3_col4" class="data row3 col4" >4</td>
+                </tr>
+                <tr>
+                            <th id="T_e8ab861d_3884_11eb_afc4_b3a2b3eb1f40level0_row4" class="row_heading level0 row4" >3</th>
+                            <td id="T_e8ab861d_3884_11eb_afc4_b3a2b3eb1f40row4_col0" class="data row4 col0" >Sandstone_2</td>
+                            <td id="T_e8ab861d_3884_11eb_afc4_b3a2b3eb1f40row4_col1" class="data row4 col1" >Strat_Series</td>
+                            <td id="T_e8ab861d_3884_11eb_afc4_b3a2b3eb1f40row4_col2" class="data row4 col2" >4</td>
+                            <td id="T_e8ab861d_3884_11eb_afc4_b3a2b3eb1f40row4_col3" class="data row4 col3" >#728f02</td>
+                            <td id="T_e8ab861d_3884_11eb_afc4_b3a2b3eb1f40row4_col4" class="data row4 col4" >5</td>
+                </tr>
+                <tr>
+                            <th id="T_e8ab861d_3884_11eb_afc4_b3a2b3eb1f40level0_row5" class="row_heading level0 row5" >5</th>
+                            <td id="T_e8ab861d_3884_11eb_afc4_b3a2b3eb1f40row5_col0" class="data row5 col0" >basement</td>
+                            <td id="T_e8ab861d_3884_11eb_afc4_b3a2b3eb1f40row5_col1" class="data row5 col1" >Basement</td>
+                            <td id="T_e8ab861d_3884_11eb_afc4_b3a2b3eb1f40row5_col2" class="data row5 col2" >1</td>
+                            <td id="T_e8ab861d_3884_11eb_afc4_b3a2b3eb1f40row5_col3" class="data row5 col3" >#ff3f20</td>
+                            <td id="T_e8ab861d_3884_11eb_afc4_b3a2b3eb1f40row5_col4" class="data row5 col4" >6</td>
+                </tr>
+        </tbody></table>
+    <br />
+    <br />
+
+The class :class:`gempy.core.model.Model` works as the parent container of
+our project. Therefore the main step of any project is to create an
+instance of this class. In the official documentation we use normally
+``geo_model`` (``geo_data`` in the past) as name of this instance.
+
+When we instantiate a ``Model`` object we full data structure is
+created. By using ``gp.init_data`` and ``set_series`` we set the default
+values -- given the attributes -- to all of fields. Data is stored in
+pandas dataframes. With ``gp.get_data`` and the name of the data object
+it is possible to have access to the dataframes:
+
+``str``\ ['all', 'surface\_points', 'orientations', 'formations',
+'series', 'faults', 'faults\_relations', additional data]
+
+These dataframes are stored in specific objects. These objects contain
+the specific methods to manipulate them. You access these objects with
+the specific getter or as a attribute of ``Model``
+
+
+
+.. rst-class:: sphx-glr-timing
+
+   **Total running time of the script:** ( 0 minutes  1.301 seconds)
+
+
+.. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_2b_implicit_cokriging.py:
+
+
+.. only :: html
+
+ .. container:: sphx-glr-footer
+    :class: sphx-glr-footer-example
+
+
+
+  .. container:: sphx-glr-download sphx-glr-download-python
+
+     :download:`Download Python source code: ch1_2b_implicit_cokriging.py <ch1_2b_implicit_cokriging.py>`
+
+
+
+  .. container:: sphx-glr-download sphx-glr-download-jupyter
+
+     :download:`Download Jupyter notebook: ch1_2b_implicit_cokriging.ipynb <ch1_2b_implicit_cokriging.ipynb>`
+
+
+.. only:: html
+
+ .. rst-class:: sphx-glr-signature
+
+    `Gallery generated by Sphinx-Gallery <https://sphinx-gallery.github.io>`_
