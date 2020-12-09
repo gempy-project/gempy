@@ -3,6 +3,7 @@ from matplotlib.cm import ScalarMappable as SM
 from gempy.plot._visualization_2d import PlotData2D
 import numpy as np
 import os
+import h5py
 
 
 def export_geomap2geotiff(path, geo_model, geo_map=None, geotiff_filepath=None):
@@ -134,3 +135,101 @@ def export_moose_input(geo_model, path=None, filename='geo_model_units_moose_inp
     f.close()
     
     print("Successfully exported geological model as moose input to "+path)
+
+def export_pflotran_input(geo_model, path=None, filename='pflotran.ugi',
+                          mesh_format=None):
+    """
+    Method to export a 3D geological model as PFLOTRAN implicit unstructured grid
+    (see pflotran.org)
+
+    Args:
+        path (str): Filepath for the exported input file
+        filename (str): name of exported input file
+        mesh_format (str): format of exported mesh ('ascii' or 'hdf5')
+                           if not provided, deduced from file extension
+
+    Returns:
+        
+    """
+    #
+    # Added by Moise Rousseau, December 8th, 2020
+    # see https://www.pflotran.org/documentation/user_guide/cards/subsurface/grid_card.html
+    # create vertices array
+    nx, ny, nz = geo_model.grid.regular_grid.resolution
+    xmin, xmax, ymin, ymax, zmin, zmax = geo_model.solutions.grid.regular_grid.extent
+    dx, dy, dz = (xmax-xmin)/nx, (ymax-ymin)/ny, (zmax-zmin)/nz
+    n_vertices = (nx+1) * (ny+1) * (nz+1)
+    vertices = np.zeros((n_vertices, 3), dtype='f8')
+    vertices_ids = np.arange(n_vertices) #used to generate coordinate
+    vertices[:,0] = vertices_ids % (nx+1) * dx
+    vertices[:,1] = vertices_ids // (nx+1) * dy
+    vertices[:,2] = vertices_ids // ( (nx+1) * (ny+1) ) * dz
+    
+    #build elements
+    n_elements = len(geo_model.grid.regular_grid.values)
+    element_ids = np.arange(n_elements) #used to generate elems
+    elements = np.zeros((n_elements,9), dtype='f8')
+    i = element_ids % nz
+    j = element_ids // nz % ny
+    k = element_ids // (nz*ny)
+    elements[:,0] = 8 #all hex
+    elements[:,1] = 1 + i*(nx+1)*(ny+1) + j*(nx+1) + k
+    elements[:,2] = elements[:,1] + 1
+    elements[:,3] = elements[:,1] + (nx+1)
+    elements[:,4] = elements[:,3] + 1
+    elements[:,5] = elements[:,1] + ( (nx+1)*(ny+1) )
+    elements[:,6] = elements[:,5] + 1
+    elements[:,7] = elements[:,5] + (nx+1)
+    elements[:,8] = elements[:,7] + 1
+    
+    #create mesh
+    if not path:
+        path = './'
+    if not os.path.exists(path):
+        os.makedirs(path)
+    
+    if mesh_format is None:
+        ext = filename.split('.')[-1]
+        if ext == 'ugi': mesh_format = 'ascii'
+        elif ext == 'h5': mesh_format = 'hdf5'
+        else: #assume ugi mesh
+            mesh_format = 'ugi'
+            filename += '.ugi'
+    
+    if mesh_format == 'ascii': #export as ugi
+        out = open(path+filename, 'w')
+        out.write(f"{n_elements} {n_vertices}")
+        for element in elements:
+            out.write('\nH ')
+            out.write(' '.join(element[1:]))
+        for vertice in vertices:
+            out.write('\n')
+            out.write(' '.join(vertices))
+        out.close()
+    elif mesh_format == 'hdf5':
+        out = h5py.File(path+filename, 'w')
+        out.create_dataset("Domain/Cells", data=elements)
+        out.create_dataset("Domain/Vertices", data=vertices)
+        out.close()
+    
+    #make groups
+    lith_ids = np.round(geo_model.solutions.lith_block)
+    lith_ids = ids.astype(int)
+    for region_id,region_name in enumerate(geo_model._surfaces.df['surface'].keys()):
+        cell_ids = np.where(lith_ids == region_id)+1
+        if mesh_format == 'ascii':
+            out = open(path+region_name+'.vs','w')
+            for x in cell_ids:
+                out.write(f"{x}\n")
+            out.close()
+        if mesh_format == "h5":
+            out = h5py.File(path+filename,'r+')
+            out.create_dataset(f"Regions/{region_name}", data=cell_ids)
+            out.close()
+            
+    print("Successfully exported geological model as PFLOTRAN input to "+path)
+    return
+
+def export_flac3D_input(geo_model, path=None, filename='pflotran.ugi',
+                          mesh_format='ugi'):
+  return
