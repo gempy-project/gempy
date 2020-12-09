@@ -59,10 +59,10 @@ install:
   - pip install git+https://github.com/softwareunderground/subsurface.git@mig_dev#egg=subsurface
 
   - python -c "import pyvista as pv;print(pv.Report())"
+  - pip install theano
 
 stages:
   - test
-  - deploy
 
 jobs:
   include:
