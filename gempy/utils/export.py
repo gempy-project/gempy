@@ -3,7 +3,6 @@ from matplotlib.cm import ScalarMappable as SM
 from gempy.plot._visualization_2d import PlotData2D
 import numpy as np
 import os
-import h5py
 
 
 def export_geomap2geotiff(path, geo_model, geo_map=None, geotiff_filepath=None):
@@ -138,6 +137,7 @@ def export_moose_input(geo_model, path=None, filename='geo_model_units_moose_inp
 
 def export_pflotran_input(geo_model, path=None, filename='pflotran.ugi',
                           mesh_format=None):
+    import h5py
     """
     Method to export a 3D geological model as PFLOTRAN implicit unstructured grid
     (see pflotran.org)
@@ -162,25 +162,25 @@ def export_pflotran_input(geo_model, path=None, filename='pflotran.ugi',
     vertices = np.zeros((n_vertices, 3), dtype='f8')
     vertices_ids = np.arange(n_vertices) #used to generate coordinate
     vertices[:,0] = vertices_ids % (nx+1) * dx
-    vertices[:,1] = vertices_ids // (nx+1) * dy
-    vertices[:,2] = vertices_ids // ( (nx+1) * (ny+1) ) * dz
+    vertices[:,1] = ( vertices_ids % ( (nx+1)*(ny+1) ) ) // (nx+1) * dy
+    vertices[:,2] = vertices_ids // ( (nx+1)*(ny+1) ) * dz
     
     #build elements
     n_elements = len(geo_model.grid.regular_grid.values)
     element_ids = np.arange(n_elements) #used to generate elems
-    elements = np.zeros((n_elements,9), dtype='f8')
+    elements = np.zeros((n_elements,9), dtype='i8')
     i = element_ids % nz
     j = element_ids // nz % ny
     k = element_ids // (nz*ny)
     elements[:,0] = 8 #all hex
     elements[:,1] = 1 + i*(nx+1)*(ny+1) + j*(nx+1) + k
     elements[:,2] = elements[:,1] + 1
-    elements[:,3] = elements[:,1] + (nx+1)
-    elements[:,4] = elements[:,3] + 1
+    elements[:,3] = elements[:,2] + (nx+1)
+    elements[:,4] = elements[:,3] - 1
     elements[:,5] = elements[:,1] + ( (nx+1)*(ny+1) )
     elements[:,6] = elements[:,5] + 1
-    elements[:,7] = elements[:,5] + (nx+1)
-    elements[:,8] = elements[:,7] + 1
+    elements[:,7] = elements[:,6] + (nx+1)
+    elements[:,8] = elements[:,7] - 1
     
     #create mesh
     if not path:
@@ -200,11 +200,12 @@ def export_pflotran_input(geo_model, path=None, filename='pflotran.ugi',
         out = open(path+filename, 'w')
         out.write(f"{n_elements} {n_vertices}")
         for element in elements:
-            out.write('\nH ')
-            out.write(' '.join(element[1:]))
+            out.write('\nH')
+            for x in element[1:]:
+              out.write(f" {int(x)}")
         for vertice in vertices:
             out.write('\n')
-            out.write(' '.join(vertices))
+            out.write(f"{vertice[0]} {vertice[1]} {vertice[2]}")
         out.close()
     elif mesh_format == 'hdf5':
         out = h5py.File(path+filename, 'w')
@@ -214,17 +215,19 @@ def export_pflotran_input(geo_model, path=None, filename='pflotran.ugi',
     
     #make groups
     lith_ids = np.round(geo_model.solutions.lith_block)
-    lith_ids = ids.astype(int)
-    for region_id,region_name in enumerate(geo_model._surfaces.df['surface'].keys()):
-        cell_ids = np.where(lith_ids == region_id)+1
+    lith_ids = lith_ids.astype(int)
+    sids = dict(zip(geo_model._surfaces.df['surface'], geo_model._surfaces.df['id']))
+    for region_name,region_id in sids.items():
+        cell_ids = np.where(lith_ids == region_id)[0] + 1
+        if not len(cell_ids): continue
         if mesh_format == 'ascii':
             out = open(path+region_name+'.vs','w')
             for x in cell_ids:
                 out.write(f"{x}\n")
             out.close()
-        if mesh_format == "h5":
+        if mesh_format == "hdf5":
             out = h5py.File(path+filename,'r+')
-            out.create_dataset(f"Regions/{region_name}", data=cell_ids)
+            out.create_dataset(f"Regions/{region_name}/Cell Ids", data=cell_ids)
             out.close()
             
     print("Successfully exported geological model as PFLOTRAN input to "+path)
