@@ -26,7 +26,7 @@ from gempy.api_modules.getters import *
 from gempy.api_modules.setters import *
 from gempy.api_modules.io import *
 from gempy.core.model import Project, ImplicitCoKriging, AdditionalData, Faults, Grid, \
-    Orientations, RescaledData, Series, SurfacePoints, \
+    Orientations, ScalingSystem, Series, SurfacePoints, \
     Surfaces, Options, Structure, KrigingParameters
 
 from gempy.core.solution import Solution
@@ -37,7 +37,7 @@ from gempy.plot.plot_api import plot_2d, plot_3d
 from gempy.plot import _plot as _plot
 
 assert sys.version_info[0] >= 3, "GemPy requires Python 3.X"  # sys.version_info[1] for minor e.g. 6
-__version__ = '2.2.6'
+__version__ = '2.2.7'
 
 if __name__ == '__main__':
     pass

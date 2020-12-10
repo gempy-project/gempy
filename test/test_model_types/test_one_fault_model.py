@@ -27,7 +27,7 @@ class TestFabianModel:
     def test_plot_section(self, one_fault_model):
 
         gp.plot.plot_2d(one_fault_model, cell_number=25,
-                       direction='y', show_data=True)
+                        direction='y', show_data=True)
 
        # plt.savefig(os.pardir+'/../figs/example1.png')
 

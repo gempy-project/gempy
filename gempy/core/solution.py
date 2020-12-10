@@ -4,14 +4,26 @@ import warnings
 from skimage import measure
 from gempy.utils.input_manipulation import find_interfaces_from_block_bottoms
 from gempy.core.data import Grid, Surfaces
-from gempy.core.data_modules.stack import Series
-from gempy.utils.meta import _setdoc, _setdoc_pro
+from gempy.core.data_modules.stack import Series, Stack
+from gempy.utils.meta import _setdoc_pro
 import gempy.utils.docstring as ds
 
+try:
+    from gempy.core.xsolution import XSolution
 
-@_setdoc_pro([Grid.__doc__, Surfaces.__doc__, Series.__doc__, ds.weights_vector, ds.sfai, ds.bai, ds.mai, ds.vai,
-              ds.lith_block, ds.sfm, ds.bm, ds.mm, ds.vm, ds.vertices, ds.edges, ds.geological_map])
-class Solution(object):
+    _xsolution_imported = True
+    inheritance = XSolution
+except ImportError:
+    inheritance = object
+    _xsolution_imported = False
+
+
+@_setdoc_pro(
+    [Grid.__doc__, Surfaces.__doc__, Series.__doc__, ds.weights_vector, ds.sfai,
+     ds.bai, ds.mai, ds.vai,
+     ds.lith_block, ds.sfm, ds.bm, ds.mm, ds.vm, ds.vertices, ds.edges,
+     ds.geological_map])
+class Solution(inheritance):
     """This class stores the output of the interpolation and the necessary objects
     to visualize and manipulate this data.
 
@@ -50,10 +62,11 @@ class Solution(object):
                  series: Series = None,
                  ):
 
+        super().__init__(grid, surfaces, series)
         # self.additional_data = additional_data
         self.grid = grid
         #  self.surface_points = surface_points
-        self.series = series
+        self.stack = series
         self.surfaces = surfaces
 
         # Input data results
@@ -119,17 +132,52 @@ class Solution(object):
 
         return self
 
+    def set_solutions(self, sol, compute_mesh, sort_surfaces,
+                      to_xsolution=False, **kwargs):
+
+        # Set geology:
+        self.set_values_to_surface_points(sol)
+
+        if self.grid.active_grids[0] is np.True_:
+            self.set_solution_to_regular_grid(sol,
+                                              compute_mesh=compute_mesh,
+                                              **kwargs)
+        if self.grid.active_grids[1] is np.True_:
+            self.set_solution_to_custom(sol)
+        if self.grid.active_grids[2] is np.True_:
+            self.set_solution_to_topography(sol)
+        if self.grid.active_grids[3] is np.True_:
+            self.set_solution_to_sections(sol)
+        # Set gravity
+        self.fw_gravity = sol[12]
+
+        # TODO: [X] Set magnetcs and [ ] set topology @A.Schaaf probably it should
+        #  populate the topology object?
+        self.fw_magnetics = sol[13]
+
+        if _xsolution_imported and to_xsolution is True:
+            self.set_values(sol)
+            if compute_mesh is True:
+                try:
+                    self.set_meshes(self.surfaces)
+                except ValueError:
+                    warnings.warn('Meshes are empty.')
+        return self
+
     def set_solution_to_custom(self, values: Union[list, np.ndarray]):
         l0, l1 = self.grid.get_grid_args('custom')
-        self.custom = np.array([values[0][:, l0: l1], values[4][:, l0: l1].astype(float)])
+        self.custom = np.array(
+            [values[0][:, l0: l1], values[4][:, l0: l1].astype(float)])
 
     def set_solution_to_topography(self, values: Union[list, np.ndarray]):
         l0, l1 = self.grid.get_grid_args('topography')
-        self.geological_map = np.array([values[0][:, l0: l1], values[4][:, l0: l1].astype(float)])
+        self.geological_map = np.array(
+            [values[0][:, l0: l1], values[4][:, l0: l1].astype(float)])
 
     def set_solution_to_sections(self, values: Union[list, np.ndarray]):
         l0, l1 = self.grid.get_grid_args('sections')
-        self.sections = np.array([values[0][:, l0: l1], values[4][:, l0: l1].astype(float)])
+        self.sections = np.array(
+            [values[0][:, l0: l1], values[4][:, l0: l1].astype(float)])
 
     def set_values_to_regular_grid(self, values: Union[list, np.ndarray]):
         """Set all solution values to the correspondent attribute.
@@ -142,25 +190,33 @@ class Solution(object):
             :class:`gempy.core.solutions.Solutions`
 
         """
-        regular_grid_length_l0, regular_grid_length_l1 = self.grid.get_grid_args('regular')
+        regular_grid_length_l0, regular_grid_length_l1 = self.grid.get_grid_args(
+            'regular')
 
         # Lithology final block
-        self.lith_block = values[0][0, regular_grid_length_l0: regular_grid_length_l1]
+        self.lith_block = values[0][0,
+                          regular_grid_length_l0: regular_grid_length_l1]
 
         # Properties
-        self.values_matrix = values[0][1:, regular_grid_length_l0: regular_grid_length_l1]
+        self.values_matrix = values[0][1:,
+                             regular_grid_length_l0: regular_grid_length_l1]
 
         # Axis 0 is the series. Axis 1 is the value
-        self.block_matrix = values[1][:, :, regular_grid_length_l0: regular_grid_length_l1]
+        self.block_matrix = values[1][:, :,
+                            regular_grid_length_l0: regular_grid_length_l1]
 
         self.fault_block = values[2]
+        # This here does not make any sense
         self.weights_vector = values[3]
 
-        self.scalar_field_matrix = values[4][:, regular_grid_length_l0: regular_grid_length_l1]
+        self.scalar_field_matrix = values[4][:,
+                                   regular_grid_length_l0: regular_grid_length_l1]
 
-        self.mask_matrix = values[6][:, regular_grid_length_l0: regular_grid_length_l1]
+        self.mask_matrix = values[6][:,
+                           regular_grid_length_l0: regular_grid_length_l1]
 
-        self.fault_mask = values[7][:, regular_grid_length_l0: regular_grid_length_l1]
+        self.fault_mask = values[7][:,
+                          regular_grid_length_l0: regular_grid_length_l1]
 
         # TODO add topology solutions
 
@@ -209,7 +265,6 @@ class Solution(object):
 
         return [vertices, simplices, normals, values]
 
-
     def padding_mask_matrix(self, mask_topography=True, shift=2):
         """Pad as many elements as in shift to the masking arrays. This is done
          to guarantee intersection of layers if masked marching cubes are done
@@ -223,9 +278,10 @@ class Solution(object):
         """
 
         self.mask_matrix_pad = []
-        series_type = self.series.df['BottomRelation']
+        series_type = self.stack.df['BottomRelation']
         for e, mask_series in enumerate(self.mask_matrix):
-            mask_series_reshape = mask_series.reshape(self.grid.regular_grid.resolution)
+            mask_series_reshape = mask_series.reshape(
+                self.grid.regular_grid.resolution)
 
             mask_pad = (mask_series_reshape + find_interfaces_from_block_bottoms(
                 mask_series_reshape, True, shift=shift))
@@ -253,43 +309,70 @@ class Solution(object):
         """
         self.vertices = []
         self.edges = []
-        if 'mask_topography' in kwargs:
-            mask_topography = kwargs.pop('mask_topography')
-        else:
-            mask_topography = True
-
-        if 'masked_marching_cubes' in kwargs:
-            masked_marching_cubes = kwargs.pop('masked_marching_cubes')
-        else:
-            masked_marching_cubes = True
-
-        self.padding_mask_matrix(mask_topography=mask_topography)
-        series_type = self.series.df['BottomRelation']
+        mask_topography = kwargs.pop('mask_topography', True)
+        masked_marching_cubes = kwargs.pop('masked_marching_cubes', True)
+        self.mask_matrix_pad = self.padding_mask_matrix(
+            mask_topography=mask_topography
+        )
+        series_type = self.stack.df['BottomRelation']
         s_n = 0
         active_indices = self.surfaces.df.groupby('isActive').groups[True]
         rescale = kwargs.pop('rescale', False)
 
         # We loop the scalar fields
         for e, scalar_field in enumerate(self.scalar_field_matrix):
-            sfas = self.scalar_field_at_surface_points[e]
+
             # Drop
-            sfas = sfas[np.nonzero(sfas)]
-            mask_array = self.mask_matrix_pad[e-1 if series_type[e-1] == 'Onlap' else e]
+            mask_array, sfas = self.prepare_marching_cubes_args(e,
+                                                                masked_marching_cubes,
+                                                                series_type)
             for level in sfas:
-                try:
-                    v, s, norm, val = self.compute_marching_cubes_regular_grid(
-                        level, scalar_field, mask_array, rescale=rescale, **kwargs)
-                except Exception as e:
-                    warnings.warn('Surfaces not computed due to: ' + str(e) + '. The surface is: Series: ' + str(e) +
-                                  '; Surface Number:' + str(s_n))
-                    v = np.nan
-                    s = np.nan
-
-                self.vertices.append(v)
-                self.edges.append(s)
-                idx = active_indices[s_n]
-                self.surfaces.df.loc[idx, 'vertices'] = [v]
-                self.surfaces.df.loc[idx, 'edges'] = [s]
-                s_n += 1
-
+                s, v = self.try_compute_marching_cubes_on_the_regular_grid(
+                    level,
+                    mask_array,
+                    rescale,
+                    s_n,
+                    scalar_field,
+                    kwargs
+                )
+                s_n = self.set_vertices_edges(active_indices, s, s_n, v)
         return self.vertices, self.edges
+
+    def try_compute_marching_cubes_on_the_regular_grid(
+            self,
+            level,
+            mask_array,
+            rescale,
+            s_n,
+            scalar_field,
+            kwargs):
+        try:
+            v, s, norm, val = self.compute_marching_cubes_regular_grid(
+                level, scalar_field, mask_array, rescale=rescale, **kwargs)
+        except Exception as e:
+            warnings.warn('Surfaces not computed due to: ' + str(
+                e) + '. The surface is: Series: ' + str(e) +
+                          '; Surface Number:' + str(s_n))
+            v = np.nan
+            s = np.nan
+        return s, v
+
+    def set_vertices_edges(self, active_indices, s, s_n, v):
+        self.vertices.append(v)
+        self.edges.append(s)
+        idx = active_indices[s_n]
+        self.surfaces.df.loc[idx, 'vertices'] = [v]
+        self.surfaces.df.loc[idx, 'edges'] = [s]
+        s_n += 1
+        return s_n
+
+    def prepare_marching_cubes_args(self, e, masked_marching_cubes, series_type):
+
+        sfas = self.scalar_field_at_surface_points[e]
+        sfas = sfas[np.nonzero(sfas)]
+        if masked_marching_cubes is True:
+            mask_array = self.mask_matrix_pad[
+                e - 1 if series_type[e - 1] == 'Onlap' else e]
+        else:
+            mask_array = None
+        return mask_array, sfas

@@ -14,3 +14,5 @@ mplstereonet
 welly
 # gdal # install gdal with conda! `conda install gdal`
 
+# Subsurface
+git+https://github.com/softwareunderground/subsurface.git@mig_dev#egg=subsurface
