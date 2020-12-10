@@ -40,6 +40,8 @@ install:
   # Installs from anaconda
   - conda install -c anaconda libffi
 
+  - conda install theano
+
   # Installs from pip
   - pip install welly pymc3 pooch
 
@@ -59,7 +61,6 @@ install:
   - pip install git+https://github.com/softwareunderground/subsurface.git@mig_dev#egg=subsurface
 
   - python -c "import pyvista as pv;print(pv.Report())"
-  - pip install theano
 
 stages:
   - test
