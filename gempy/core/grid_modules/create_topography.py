@@ -8,14 +8,11 @@ Created on 16.04.2019
 
 import numpy as np
 from scipy import fftpack
-import scipy.ndimage as ndimage
-import random
 import pandas as pn
 import os
 
 try:
-    import gdal
-
+    from osgeo import gdal
     GDAL_IMPORT = True
 except ImportError:
     GDAL_IMPORT = False
@@ -23,7 +20,8 @@ import matplotlib.pyplot as plt
 
 
 class LoadDEMGDAL:
-    """Class to include height elevation data (e.g. DEMs) with the geological grid """
+    """Class to include height elevation data (e.g. DEMs) with the geological grid
+    """
 
     def __init__(self, path_dem, grid=None, extent=None, delete_temp=True):
         """

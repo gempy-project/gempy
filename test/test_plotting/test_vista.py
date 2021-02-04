@@ -100,7 +100,7 @@ class TestVista:
         vista_object_only_data.plot_surface_points()
         img = vista_object_only_data.p.show(screenshot=True, auto_close=False)
         plt.imshow(img[1])
-        plt.show()
+        plt.show(block=False)
         print('foo')
 
     def test_plot_surface_points_poly_clear(self, vista_object_only_data):
@@ -113,7 +113,7 @@ class TestVista:
         vista_object_only_data.plot_surface_points()
         img = vista_object_only_data.p.show(screenshot=True, auto_close=False)
         plt.imshow(img[1])
-        plt.show()
+        plt.show(block=False)
         print('foo')
 
     def test_plot_data_static(self, vista_object_only_data):
