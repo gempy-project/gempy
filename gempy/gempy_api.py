@@ -312,7 +312,6 @@ def compute_model(model: Project, output=None, at: np.ndarray = None, compute_me
         return model.solutions
 
 
-# @_setdoc([Project.set_custom_grid.__doc__, compute_model.__doc__], indent=False)
 def compute_model_at(new_grid: Union[ndarray], model: Project, **kwargs):
     """This function creates a new custom grid and deactivate all the other
     grids and compute the model there:

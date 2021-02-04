@@ -85,6 +85,8 @@ def test_loop2gempy2():
                vtk=True, vtk_path=None, image_2d=True)
 
 
+@pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
+                    reason="Skipping this test on Travis CI beacuse travis.")
 def test_map2loop_model_import_data():
     geo_model = gp.create_model('test_map2Loop')
     gp.init_data(
@@ -108,6 +110,8 @@ def test_map2loop_model_import_data():
     print(geo_model.orientations)
 
 
+@pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
+                    reason="Skipping this test on Travis CI beacuse travis.")
 def test_map2loop_model_no_faults():
     # Location box
     bbox = (500000, 7490000, 545000, 7520000)
