@@ -55,10 +55,10 @@ install:
   # Arviz broke with xarray update
   - pip install git+https://github.com/arviz-devs/arviz --force-reinstall
 
-  - conda install -c conda-forge gdal
-
   # Install subsurface
   - pip install subsurface
+
+  - conda install -c conda-forge gdal
 
   - python -c "import pyvista as pv;print(pv.Report())"
 

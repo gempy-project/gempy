@@ -14,8 +14,10 @@ import os
 try:
     from osgeo import gdal
     GDAL_IMPORT = True
-except ImportError:
+except ImportError as e:
     GDAL_IMPORT = False
+    print(e)
+
 import matplotlib.pyplot as plt
 
 
