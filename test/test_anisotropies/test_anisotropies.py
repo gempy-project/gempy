@@ -17,6 +17,8 @@ bbox = (500000, 7490000, 545000, 7520000)
 model_base = -1500  # Original 3200
 model_top = 800
 
+gdal = pytest.importorskip("gdal")
+
 
 @pytest.fixture(scope='module')
 def model():

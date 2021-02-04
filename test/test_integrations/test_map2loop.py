@@ -12,7 +12,6 @@ root = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/data/inp
 root2 = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/data/input_data/australia/'
 path = os.path.dirname(__file__) + '/../input_data/'
 
-
 orientations_file = root + 'orientations_clean.csv'
 orientations_file2 = root2 + 'orientations_clean.csv'
 
@@ -30,32 +29,28 @@ faults_rel_matrix2 = root2 + 'fault-fault-relationships.csv'
 series_rel_matrix = root + 'group-fault-relationships.csv'
 series_rel_matrix2 = root2 + 'group-fault-relationships.csv'
 
-
 ff = root2 + 'fault-fault-relationships.csv'
 fg = root2 + 'group-fault-relationships.csv'
 
-
 fp = path + 'dtm_rp.tif'
 fp2 = path + 'dtm_rp2.tif'
-
 
 bbox = (500000, 7490000, 545000, 7520000)
 model_base = -0  # Original 3200
 model_top = 800
 extent_g = [515687.3100586407, 562666.8601065436,
-          7473446.765934078, 7521273.574077863,
-         -3200,1200.0]
+            7473446.765934078, 7521273.574077863,
+            -3200, 1200.0]
 
 extent = [515687.3100586407, 7473446.765934078,
           562666.8601065436, 7521273.574077863,
-         -3200, 1200.0]
+          -3200, 1200.0]
 
 
 @pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
                     reason="Skipping this test on Travis CI. For some reason there is a linalg "
                            "error.")
 def test_loop2gempy():
-
     topo = fp
     topo = None
 
@@ -71,18 +66,20 @@ def test_map2loop2relmatrix():
     print(p)
 
 
+@pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
+                    reason="Skipping this test on Travis CI beacuse travis.")
 def test_loop2gempy2():
-
     topo = fp2
-    #topo = None
+    # topo = None
 
-    loop2gempy(contacts_file2, orientations_file2, extent[:4], series_file2, extent[4],
+    loop2gempy(contacts_file2, orientations_file2, extent[:4], series_file2,
+               extent[4],
                extent[5],
-               dtm_reproj_file= topo,
-               faults_contact= faults_contact2,
-               faults_orientations= faults_orientations2,
-               faults_faults_rel = ff,
-               faults_groups_rel = fg,
+               dtm_reproj_file=topo,
+               faults_contact=faults_contact2,
+               faults_orientations=faults_orientations2,
+               faults_faults_rel=ff,
+               faults_groups_rel=fg,
                model_name='testing_map',
                compute=True,
                vtk=True, vtk_path=None, image_2d=True)
@@ -160,7 +157,7 @@ def test_map2loop_model_no_faults():
                              remove_unused_series=False)
 
     # Adding axial rescale
-    #geo_model._rescaling.toggle_axial_anisotropy()
+    # geo_model._rescaling.toggle_axial_anisotropy()
 
     # Increasing nugget effect
     geo_model.modify_surface_points(
@@ -182,5 +179,3 @@ def test_map2loop_model_no_faults():
                image=True,
                show_lith=False,
                )
-
-
