@@ -324,10 +324,10 @@ def _check_valid_model_input(model):
         model._orientations.df['surface']).any()
 
     if is_basement_in_ori or is_basement_in_sp:
-        raise ValueError('There are surface points or orientations assigned to the'
-                         'Surface defined as basement (bottom of the stack). The'
-                         'basement surface only refers to the volume below the last'
-                         'surface and is not supposed to be interpolated.'
+        raise ValueError('There are surface points or orientations assigned to the '
+                         'Surface defined as basement (bottom of the stack). The '
+                         'basement surface only refers to the volume below the last '
+                         'surface and is not supposed to be interpolated. '
                          'Add a "basement" surface (`model.add_surface("basement")`)'
                          ' or delete the discordant surface points or orientations')
 

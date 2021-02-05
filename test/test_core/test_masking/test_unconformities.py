@@ -115,7 +115,7 @@ def test_two_onlap(geo_model):
                show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
 
     p3d = gp.plot_3d(geo_model, show_surfaces=True, show_data=True,
-                     image=False,
+                     image=True,
                      kwargs_plot_structured_grid={'opacity': .2})
 
     if save:
@@ -159,7 +159,7 @@ def test_masked_marching_cubes():
                show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
 
     p3d = gp.plot_3d(geo_model, show_surfaces=True, show_data=True,
-                     image=False,
+                     image=True,
                      kwargs_plot_structured_grid={'opacity': .2})
 
 

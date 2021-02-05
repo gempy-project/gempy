@@ -9,7 +9,7 @@ try:
     from pandas.plotting._tools import (_subplots, _flatten)
 except:
     #TODO this is a quick fix for #38
-    from pandas.plotting._matplotlib.tools import (_subplots, _flatten)
+     from pandas.plotting._matplotlib.tools import (create_subplots, flatten_axes)
 
 from pandas import (DataFrame, Series)
 from pandas.core.dtypes.common import is_number
@@ -381,14 +381,14 @@ def _joyplot(data,
     global_x_min, global_x_max = min(global_x_range), max(global_x_range)
 
     # Each plot will have its own axis
-    fig, axes = _subplots(naxes=num_axes, ax=ax, squeeze=False,
+    fig, axes = create_subplots(naxes=num_axes, ax=ax, squeeze=False,
                           sharex=False, sharey=False, figsize=figsize,
                           layout_type='vertical')
-    _axes = _flatten(axes)
+    _axes = flatten_axes(axes)
 
     # The legend must be drawn in the last axis if we want it at the bottom.
     if loc in (3, 4, 8) or 'lower' in str(loc):
-        legend_axis = num_axis - 1
+        legend_axis = num_axes - 1
     else:
         legend_axis = 0
 
