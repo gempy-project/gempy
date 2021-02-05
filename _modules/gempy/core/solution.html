@@ -5,17 +5,17 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>gempy.core.solution &#8212; GemPy 2.2.7 documentation</title>
-    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <title>gempy.core.solution &#8212; GemPy 2.2.8 documentation</title>
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/gallery.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/gallery-rendered-html.css" />
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/language_data.js"></script>
     <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -410,8 +410,11 @@
         <span class="n">sfas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scalar_field_at_surface_points</span><span class="p">[</span><span class="n">e</span><span class="p">]</span>
         <span class="n">sfas</span> <span class="o">=</span> <span class="n">sfas</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">sfas</span><span class="p">)]</span>
         <span class="k">if</span> <span class="n">masked_marching_cubes</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-            <span class="n">mask_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask_matrix_pad</span><span class="p">[</span>
-                <span class="n">e</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">series_type</span><span class="p">[</span><span class="n">e</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Onlap&#39;</span> <span class="k">else</span> <span class="n">e</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">series_type</span><span class="p">[</span><span class="n">e</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Onlap&#39;</span> <span class="ow">and</span> <span class="n">series_type</span><span class="p">[</span><span class="n">e</span> <span class="o">-</span> <span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Erosion&#39;</span><span class="p">:</span>
+                <span class="n">mask_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask_matrix_pad</span><span class="p">[</span><span class="n">e</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">mask_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask_matrix_pad</span><span class="p">[</span><span class="n">e</span><span class="p">]</span>
+
         <span class="k">else</span><span class="p">:</span>
             <span class="n">mask_array</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="n">mask_array</span><span class="p">,</span> <span class="n">sfas</span></div>
@@ -508,10 +511,10 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2017-2020, CGRE-Aachen Team.
+      &copy;2017-2021, CGRE-Aachen Team.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

@@ -5,17 +5,17 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>gempy.core.data_modules.stack &#8212; GemPy 2.2.7 documentation</title>
-    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <title>gempy.core.data_modules.stack &#8212; GemPy 2.2.8 documentation</title>
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/gallery.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/gallery-rendered-html.css" />
     <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
     <script src="../../../../_static/jquery.js"></script>
     <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
-    <script src="../../../../_static/language_data.js"></script>
     <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../../genindex.html" />
@@ -366,7 +366,7 @@
 <span class="sd">            Series</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="c1"># If we are using the Stack class it is just one elemnt in memory</span>
+        <span class="c1"># If we are using the Stack class it is just one element in memory</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">faults</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
@@ -500,11 +500,6 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;order_series&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;order_series&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;BottomRelation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">Categorical</span><span class="p">([</span><span class="s1">&#39;Erosion&#39;</span><span class="p">],</span> <span class="n">categories</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Erosion&#39;</span><span class="p">,</span> <span class="s1">&#39;Onlap&#39;</span><span class="p">,</span> <span class="s1">&#39;Fault&#39;</span><span class="p">])</span>
-        <span class="c1"># self.df[&#39;isActive&#39;] = False</span>
-        <span class="c1"># self.df[&#39;isFault&#39;] = False</span>
-        <span class="c1"># self.df[&#39;isFinite&#39;] = False</span>
-        <span class="c1"># self.faults = MockFault()</span>
-        <span class="c1"># self.faults.df = self.df</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">faults</span> <span class="o">=</span> <span class="bp">self</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">faults_relations_df</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">pn</span><span class="o">.</span><span class="n">CategoricalIndex</span><span class="p">([</span><span class="s1">&#39;Default series&#39;</span><span class="p">]),</span>
@@ -618,10 +613,10 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2017-2020, CGRE-Aachen Team.
+      &copy;2017-2021, CGRE-Aachen Team.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

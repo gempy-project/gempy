@@ -5,10 +5,10 @@
 
 Computation times
 =================
-**00:22.292** total execution time for **tutorials_ch2-Geophysics** files:
+**00:25.270** total execution time for **tutorials_ch2-Geophysics** files:
 
 +------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_tutorials_ch2-Geophysics_ch2_1_gravity.py` (``ch2_1_gravity.py``)               | 00:21.959 | 0.0 MB |
+| :ref:`sphx_glr_tutorials_ch2-Geophysics_ch2_1_gravity.py` (``ch2_1_gravity.py``)               | 00:24.898 | 0.0 MB |
 +------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_tutorials_ch2-Geophysics_ch2_2_cell_selection.py` (``ch2_2_cell_selection.py``) | 00:00.333 | 0.0 MB |
+| :ref:`sphx_glr_tutorials_ch2-Geophysics_ch2_2_cell_selection.py` (``ch2_2_cell_selection.py``) | 00:00.372 | 0.0 MB |
 +------------------------------------------------------------------------------------------------+-----------+--------+

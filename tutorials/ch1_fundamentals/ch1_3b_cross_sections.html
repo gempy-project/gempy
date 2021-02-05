@@ -5,17 +5,17 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>1.3b: 2-D sections &#8212; GemPy 2.2.7 documentation</title>
-    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <title>1.3b: 2-D sections &#8212; GemPy 2.2.8 documentation</title>
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery-rendered-html.css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/language_data.js"></script>
     <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="shortcut icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -40,7 +40,8 @@
             
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
-<p>Click <a class="reference internal" href="#sphx-glr-download-tutorials-ch1-fundamentals-ch1-3b-cross-sections-py"><span class="std std-ref">here</span></a>     to download the full example code</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-tutorials-ch1-fundamentals-ch1-3b-cross-sections-py"><span class="std std-ref">here</span></a>
+to download the full example code</p>
 </div>
 <div class="sphx-glr-example-title section" id="b-2-d-sections">
 <span id="sphx-glr-tutorials-ch1-fundamentals-ch1-3b-cross-sections-py"></span><h1>1.3b: 2-D sections<a class="headerlink" href="#b-2-d-sections" title="Permalink to this headline">¶</a></h1>
@@ -73,6 +74,7 @@
 Fault colors changed. If you do not like this behavior, set change_color to False.
 </pre></div>
 </div>
+<div class="output_subarea output_html rendered_html output_result">
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -103,6 +105,7 @@ Fault colors changed. If you do not like this behavior, set change_color to Fals
     </tr>
   </tbody>
 </table>
+</div>
 <br />
 <br /><div class="section" id="add-sections">
 <h3>Add sections<a class="headerlink" href="#add-sections" title="Permalink to this headline">¶</a></h3>
@@ -118,6 +121,7 @@ every section:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Active grids: [&#39;regular&#39; &#39;sections&#39;]
 </pre></div>
 </div>
+<div class="output_subarea output_html rendered_html output_result">
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -152,6 +156,7 @@ every section:</p>
     </tr>
   </tbody>
 </table>
+</div>
 <br />
 <br /></div>
 <div class="section" id="add-topography">
@@ -197,21 +202,21 @@ Precision:  float64
 Number of faults:  1
 Compilation Done!
 Kriging values:
-                   values
-range            3.5e+03
-$C_o$            2.9e+05
-drift equations   [3, 3]
+                     values
+range               3464.1
+$C_o$            285714.29
+drift equations     [3, 3]
 
-&lt;gempy.core.interpolator.InterpolatorModel object at 0x7f8f65d09970&gt;
+&lt;gempy.core.interpolator.InterpolatorModel object at 0x7f316708a3d0&gt;
 </pre></div>
 </div>
 <div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Solution/gempy.core.solution.Solution.html#gempy.core.solution.Solution" title="gempy.core.solution.Solution" class="sphx-glr-backref-module-gempy-core-solution sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sol</span></a> <span class="o">=</span> <a href="../../GemPy API/gempy.compute_model.html#gempy.compute_model" title="gempy.compute_model" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span></a><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">compute_mesh</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/miguel/PycharmProjects/gempy/gempy/core/solution.py:174: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify &#39;dtype=object&#39; when creating the ndarray
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/miguel/PycharmProjects/gempy/gempy/core/solution.py:174: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify &#39;dtype=object&#39; when creating the ndarray.
   self.geological_map = np.array(
-/home/miguel/PycharmProjects/gempy/gempy/core/solution.py:179: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify &#39;dtype=object&#39; when creating the ndarray
+/home/miguel/PycharmProjects/gempy/gempy/core/solution.py:179: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify &#39;dtype=object&#39; when creating the ndarray.
   self.sections = np.array(
 </pre></div>
 </div>
@@ -220,7 +225,7 @@ drift equations   [3, 3]
 </div>
 <img alt="Geological map" class="sphx-glr-single-img" src="../../_images/sphx_glr_ch1_3b_cross_sections_002.png" />
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy.plot.visualization_2d.Plot2D object at 0x7f8f64799790&gt;
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy.plot.visualization_2d.Plot2D object at 0x7f316708a670&gt;
 </pre></div>
 </div>
 <div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Plot/gempy.plot_2d.html#gempy.plot_2d" title="gempy.plot_2d" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">plot_2d</span></a><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">section_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;section1&#39;</span><span class="p">])</span>
@@ -1852,7 +1857,7 @@ drift equations   [3, 3]
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>True
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  6.426 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  6.627 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-tutorials-ch1-fundamentals-ch1-3b-cross-sections-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/eb8d0d3d6a9395c2de9e287b381668d0/ch1_3b_cross_sections.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">ch1_3b_cross_sections.py</span></code></a></p>
@@ -1923,7 +1928,6 @@ drift equations   [3, 3]
 <li class="toctree-l2"><a class="reference internal" href="../index.html#chapter-2-gempy-geophysics">Chapter 2: GemPy Geophysics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#chapter-3-domain-kriging">Chapter 3: Domain Kriging</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#chapter-4-topological-analysis">Chapter 4: Topological analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#chapter-5-probabilistic-modeling">Chapter 5: Probabilistic Modeling</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../examples/index.html">Examples</a></li>
@@ -1968,10 +1972,10 @@ drift equations   [3, 3]
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2017-2020, CGRE-Aachen Team.
+      &copy;2017-2021, CGRE-Aachen Team.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

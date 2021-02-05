@@ -5,22 +5,22 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Chapter 4: Analyzing Geomodel Topology &#8212; GemPy 2.2.7 documentation</title>
-    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <title>Chapter 4: Analyzing Geomodel Topology &#8212; GemPy 2.2.8 documentation</title>
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery-rendered-html.css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/language_data.js"></script>
     <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="shortcut icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="5.1 - Probabilistic Modeling: Error Propagation" href="../ch5_probabilistic_modeling/ch5_1.html" />
+    <link rel="next" title="Examples" href="../../examples/index.html" />
     <link rel="prev" title="3.1: Simple example of kriging in gempy" href="../ch3-Interpolations/ch3_1_kriging_interpolation_and_simulation.html" />
    
   <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -40,7 +40,8 @@
             
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
-<p>Click <a class="reference internal" href="#sphx-glr-download-tutorials-ch4-topology-ch4-1-topology-py"><span class="std std-ref">here</span></a>     to download the full example code</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-tutorials-ch4-topology-ch4-1-topology-py"><span class="std std-ref">here</span></a>
+to download the full example code</p>
 </div>
 <div class="sphx-glr-example-title section" id="chapter-4-analyzing-geomodel-topology">
 <span id="sphx-glr-tutorials-ch4-topology-ch4-1-topology-py"></span><h1>Chapter 4: Analyzing Geomodel Topology<a class="headerlink" href="#chapter-4-analyzing-geomodel-topology" title="Permalink to this headline">¶</a></h1>
@@ -92,8 +93,8 @@ Number of faults:  1
 Compilation Done!
 Kriging values:
                      values
-range              3.6e+03
-$C_o$              3.1e+05
+range              3605.61
+$C_o$            309533.33
 drift equations  [3, 3, 3]
 </pre></div>
 </div>
@@ -102,7 +103,7 @@ drift equations  [3, 3, 3]
 </div>
 <img alt="Cell Number: 5 Direction: y" class="sphx-glr-single-img" src="../../_images/sphx_glr_ch4-1-Topology_001.png" />
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy.plot.visualization_2d.Plot2D object at 0x7f8f661bbca0&gt;
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy.plot.visualization_2d.Plot2D object at 0x7f322bae2760&gt;
 </pre></div>
 </div>
 </div>
@@ -261,7 +262,7 @@ id’s:</p>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{(&#39;3_0&#39;, &#39;5_1&#39;), (&#39;3_0&#39;, &#39;4_1&#39;), (&#39;2_0&#39;, &#39;4_1&#39;), (&#39;5_1&#39;, &#39;6_1&#39;), (&#39;5_0&#39;, &#39;6_0&#39;), (&#39;2_0&#39;, &#39;2_1&#39;), (&#39;2_0&#39;, &#39;3_1&#39;), (&#39;4_0&#39;, &#39;5_1&#39;), (&#39;3_0&#39;, &#39;4_0&#39;), (&#39;2_0&#39;, &#39;3_0&#39;), (&#39;4_0&#39;, &#39;5_0&#39;), (&#39;6_0&#39;, &#39;6_1&#39;), (&#39;3_1&#39;, &#39;4_1&#39;), (&#39;2_1&#39;, &#39;3_1&#39;), (&#39;4_0&#39;, &#39;6_1&#39;), (&#39;5_0&#39;, &#39;6_1&#39;), (&#39;4_1&#39;, &#39;5_1&#39;)}
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{(&#39;3_1&#39;, &#39;4_1&#39;), (&#39;2_0&#39;, &#39;2_1&#39;), (&#39;2_0&#39;, &#39;4_1&#39;), (&#39;2_0&#39;, &#39;3_1&#39;), (&#39;2_1&#39;, &#39;3_1&#39;), (&#39;3_0&#39;, &#39;5_1&#39;), (&#39;5_0&#39;, &#39;6_0&#39;), (&#39;4_1&#39;, &#39;5_1&#39;), (&#39;3_0&#39;, &#39;4_1&#39;), (&#39;5_1&#39;, &#39;6_1&#39;), (&#39;6_0&#39;, &#39;6_1&#39;), (&#39;4_0&#39;, &#39;5_0&#39;), (&#39;4_0&#39;, &#39;6_1&#39;), (&#39;2_0&#39;, &#39;3_0&#39;), (&#39;5_0&#39;, &#39;6_1&#39;), (&#39;4_0&#39;, &#39;5_1&#39;), (&#39;3_0&#39;, &#39;4_0&#39;)}
 </pre></div>
 </div>
 <div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dcentroids</span></a>
@@ -290,10 +291,10 @@ use of the detailed labeling and the <code class="docutils literal notranslate">
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;4_1&#39;, &#39;6_1&#39;, &#39;4_0&#39;, &#39;3_0&#39;}
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;3_0&#39;, &#39;6_1&#39;, &#39;4_1&#39;, &#39;4_0&#39;}
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  4.999 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  5.165 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-tutorials-ch4-topology-ch4-1-topology-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/0cc867df887d4d4f10ef7be410f9ac57/ch4-1-Topology.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">ch4-1-Topology.py</span></code></a></p>
@@ -361,7 +362,6 @@ use of the detailed labeling and the <code class="docutils literal notranslate">
 <li class="toctree-l2"><a class="reference internal" href="../index.html#chapter-2-gempy-geophysics">Chapter 2: GemPy Geophysics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#chapter-3-domain-kriging">Chapter 3: Domain Kriging</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../index.html#chapter-4-topological-analysis">Chapter 4: Topological analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#chapter-5-probabilistic-modeling">Chapter 5: Probabilistic Modeling</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../examples/index.html">Examples</a></li>
@@ -378,7 +378,7 @@ use of the detailed labeling and the <code class="docutils literal notranslate">
   <li><a href="../../index.html">Documentation overview</a><ul>
   <li><a href="../index.html">GemPy Tutorials</a><ul>
       <li>Previous: <a href="../ch3-Interpolations/ch3_1_kriging_interpolation_and_simulation.html" title="previous chapter">3.1: Simple example of kriging in gempy</a></li>
-      <li>Next: <a href="../ch5_probabilistic_modeling/ch5_1.html" title="next chapter">5.1 - Probabilistic Modeling: Error Propagation</a></li>
+      <li>Next: <a href="../../examples/index.html" title="next chapter">Examples</a></li>
   </ul></li>
   </ul></li>
 </ul>
@@ -406,10 +406,10 @@ use of the detailed labeling and the <code class="docutils literal notranslate">
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2017-2020, CGRE-Aachen Team.
+      &copy;2017-2021, CGRE-Aachen Team.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

@@ -5,8 +5,8 @@
 
 Computation times
 =================
-**00:05.269** total execution time for **tutorials_ch3-Interpolations** files:
+**00:07.831** total execution time for **tutorials_ch3-Interpolations** files:
 
 +------------------------------------------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_tutorials_ch3-Interpolations_ch3_1_kriging_interpolation_and_simulation.py` (``ch3_1_kriging_interpolation_and_simulation.py``) | 00:05.269 | 0.0 MB |
+| :ref:`sphx_glr_tutorials_ch3-Interpolations_ch3_1_kriging_interpolation_and_simulation.py` (``ch3_1_kriging_interpolation_and_simulation.py``) | 00:07.831 | 0.0 MB |
 +------------------------------------------------------------------------------------------------------------------------------------------------+-----------+--------+

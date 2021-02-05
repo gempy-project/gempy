@@ -5,17 +5,17 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>gempy.core.model.ImplicitCoKriging &#8212; GemPy 2.2.7 documentation</title>
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <title>gempy.core.model.ImplicitCoKriging &#8212; GemPy 2.2.8 documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-rendered-html.css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/language_data.js"></script>
     <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -535,8 +535,8 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>extent</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><em>numpy.ndarray</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>]</em>) – [x_min, x_max, y_min, y_max, z_min, z_max]. Extent for the visualization of data and default of for the regular grid class.</p></li>
-<li><p><strong>resolution</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><em>numpy.ndarray</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em>) – [nx, ny, nz]</p></li>
+<li><p><strong>extent</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.20)"><em>numpy.ndarray</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>]</em>) – [x_min, x_max, y_min, y_max, z_min, z_max]. Extent for the visualization of data and default of for the regular grid class.</p></li>
+<li><p><strong>resolution</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.20)"><em>numpy.ndarray</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em>) – [nx, ny, nz]</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -556,7 +556,7 @@
 <dd><p>Set custom grid, rescale gird and initialize theano solutions. foo</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>custom_grid</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><em>numpy.ndarray</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><em>3</em><em>]</em>) – XYZ 2D array. Axis 1 is the coordinates while axis 0 is n number of input</p>
+<dd class="field-odd"><p><strong>custom_grid</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.20)"><em>numpy.ndarray</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><em>3</em><em>]</em>) – XYZ 2D array. Axis 1 is the coordinates while axis 0 is n number of input</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><a class="reference internal" href="../Data/gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data.Grid</span></code></a></p>
@@ -626,9 +626,9 @@ topography.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>centers</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><em>numpy.ndarray</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><em>3</em><em>]</em>) – Location of the center of each kernel.</p></li>
+<li><p><strong>centers</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.20)"><em>numpy.ndarray</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><em>3</em><em>]</em>) – Location of the center of each kernel.</p></li>
 <li><p><strong>radius</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – Distance from each center to create each XYZ point</p></li>
-<li><p><strong>resolution</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><em>numpy.ndarray</em></a><em>[</em><em>3</em><em>]</em>) – Number of voxels in each direction per kernel</p></li>
+<li><p><strong>resolution</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.20)"><em>numpy.ndarray</em></a><em>[</em><em>3</em><em>]</em>) – Number of voxels in each direction per kernel</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -896,14 +896,13 @@ reset the flow control objects.</p>
 
 <dl class="py method">
 <dt id="gempy.core.model.ImplicitCoKriging.set_is_fault">
-<code class="sig-name descname">set_is_fault</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">feature_fault</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">toggle</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">offset_faults</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">change_color</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">twofins</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.set_is_fault"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.set_is_fault" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">set_is_fault</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">feature_fault</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">toggle</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">change_color</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">twofins</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.set_is_fault"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.set_is_fault" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set a feature to fault and update all dependent objects of the Model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>feature_fault</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – Name of the series which are faults</p></li>
 <li><p><strong>toggle</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – if True, passing a name which is already True will set it False.</p></li>
-<li><p><strong>offset_faults</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – If True by default faults offset other faults</p></li>
 <li><p><strong>twofins</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – If True, it allows to set several surfaces of a given geological feature to fault.
 This is behaviour is not tested and could have unexpected behaviour.</p></li>
 <li><p><strong>change_color</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – If True faults surfaces get the default fault color (light gray)</p></li>
@@ -1024,13 +1023,13 @@ Delete a surface and update all related object.</p>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.replace.html#pandas.Series.replace" title="(in pandas v1.1.5)"><code class="xref any docutils literal notranslate"><span class="pre">pandas.Series.replace</span></code></a></p>
+<p><a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.replace.html#pandas.Series.replace" title="(in pandas v1.2.1)"><code class="xref any docutils literal notranslate"><span class="pre">pandas.Series.replace</span></code></a></p>
 </div>
 </dd></dl>
 
 <dl class="py method">
 <dt id="gempy.core.model.ImplicitCoKriging.modify_order_surfaces">
-<code class="sig-name descname">modify_order_surfaces</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_value</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span></em>, <em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span></em>, <em class="sig-param"><span class="n">series_name</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.modify_order_surfaces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.modify_order_surfaces" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">modify_order_surfaces</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_value</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span></em>, <em class="sig-param"><span class="n">idx</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span></em>, <em class="sig-param"><span class="n">series_name</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.modify_order_surfaces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.modify_order_surfaces" title="Permalink to this definition">¶</a></dt>
 <dd><p>Replace to the new location the old series</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1118,12 +1117,12 @@ values_array axis 1. By default properties will take the column name: ‘value_X
 
 <dl class="py method">
 <dt id="gempy.core.model.ImplicitCoKriging.map_stack_to_surfaces">
-<code class="sig-name descname">map_stack_to_surfaces</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mapping_object</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a><span class="p">, </span>pandas.core.arrays.categorical.Categorical<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">set_series</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">sort_geometric_data</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">remove_unused_series</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">twofins</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.map_stack_to_surfaces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.map_stack_to_surfaces" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">map_stack_to_surfaces</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mapping_object</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a><span class="p">, </span>pandas.core.arrays.categorical.Categorical<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">set_series</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">sort_geometric_data</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">remove_unused_series</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">twofins</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/model.html#ImplicitCoKriging.map_stack_to_surfaces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.model.ImplicitCoKriging.map_stack_to_surfaces" title="Permalink to this definition">¶</a></dt>
 <dd><p>Map series to surfaces and update all related objects accordingly to the following arguments:</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>mapping_object</strong> (dict, <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.1.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) – <ul>
+<li><p><strong>mapping_object</strong> (dict, <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.2.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) – <ul>
 <li><p>dict: keys are the series and values the surfaces belonging to that series</p></li>
 <li><p>pandas.DataFrame: Dataframe with surfaces as index and a column series with the correspondent series
 name of each surface</p></li>
@@ -1151,7 +1150,7 @@ This is behaviour is not tested and could have unexpected behaviour.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>mapping_object</strong> (dict, <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.1.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) – <ul>
+<li><p><strong>mapping_object</strong> (dict, <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.2.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) – <ul>
 <li><p>dict: keys are the series and values the surfaces belonging to that series</p></li>
 <li><p>pandas.DataFrame: Dataframe with surfaces as index and a column series with the correspondent series
 name of each surface</p></li>
@@ -1278,7 +1277,7 @@ surface (list[str]): [s1] (str, Iterable[str]): list with the surface names for 
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>indices</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>, </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><em>numpy.ndarray</em></a>) – If passed, list of indices where the function will be applied.</p></li>
+<li><p><strong>indices</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>, </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.20)"><em>numpy.ndarray</em></a>) – If passed, list of indices where the function will be applied.</p></li>
 <li><p><strong>recompute_rescale_factor</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – if True recompute the rescaling factor</p></li>
 </ul>
 </dd>
@@ -1304,9 +1303,9 @@ surface (list[str]): [s1] (str, Iterable[str]): list with the surface names for 
 <li><p><strong>Y</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><em>Iterable</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>]</em>) – values or list of values for the y coordinates</p></li>
 <li><p><strong>Z</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><em>Iterable</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>]</em>) – values or list of values for the z coordinates</p></li>
 <li><p><strong>surface</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>Iterable</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – list with the surface names for each input point. They must exist in the surfaces object linked to SurfacePoints.</p></li>
-<li><p><strong>pole_vector</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><em>numpy.ndarray</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><em>3</em><em>]</em>) – 2D numpy array where axis 1 is the gradient values G_x, G_y, G_z of the pole while axis 0 is n number of orientations.</p></li>
-<li><p><strong>orientation</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><em>numpy.ndarray</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><em>3</em><em>]</em>) – 2D numpy array where axis 1 is are orientation values [dip, azimuth, polarity] of the pole while axis 0 is n number of orientations. — <em>Dip</em> is the inclination angle of 0 to 90 degrees measured from the horizontal plane downwards. <em>Azimuth</em> is the dip direction defined by a 360 degrees clockwise rotation, i.e. 0 = North, 90 = East, 180 = South, and 270 = West.*Polarity* defines where the upper (geologically younger) side of the orientation plane is and can be declared to be either normal (1) or reversed (-1).The orientation plane is perpendicular to the gradient.</p></li>
-<li><p><strong>idx</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>, </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><em>numpy.ndarray</em></a>) – If passed, list of indices where the function will be applied.</p></li>
+<li><p><strong>pole_vector</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.20)"><em>numpy.ndarray</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><em>3</em><em>]</em>) – 2D numpy array where axis 1 is the gradient values G_x, G_y, G_z of the pole while axis 0 is n number of orientations.</p></li>
+<li><p><strong>orientation</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.20)"><em>numpy.ndarray</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><em>3</em><em>]</em>) – 2D numpy array where axis 1 is are orientation values [dip, azimuth, polarity] of the pole while axis 0 is n number of orientations. — <em>Dip</em> is the inclination angle of 0 to 90 degrees measured from the horizontal plane downwards. <em>Azimuth</em> is the dip direction defined by a 360 degrees clockwise rotation, i.e. 0 = North, 90 = East, 180 = South, and 270 = West.*Polarity* defines where the upper (geologically younger) side of the orientation plane is and can be declared to be either normal (1) or reversed (-1).The orientation plane is perpendicular to the gradient.</p></li>
+<li><p><strong>idx</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>, </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.20)"><em>numpy.ndarray</em></a>) – If passed, list of indices where the function will be applied.</p></li>
 <li><p><strong>recompute_rescale_factor</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – if True recompute the rescaling factor</p></li>
 </ul>
 </dd>
@@ -1322,7 +1321,7 @@ surface (list[str]): [s1] (str, Iterable[str]): list with the surface names for 
 <dd><p>Delete orientation</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>idx</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>, </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><em>numpy.ndarray</em></a>) – If passed, list of indices where the function will be applied.</p>
+<dd class="field-odd"><p><strong>idx</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>, </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.20)"><em>numpy.ndarray</em></a>) – If passed, list of indices where the function will be applied.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><a class="reference internal" href="../Data/gempy.core.data_modules.geometric_data.Orientations.html#gempy.core.data_modules.geometric_data.Orientations" title="gempy.core.data_modules.geometric_data.Orientations"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data_modules.geometric_data.Orientations</span></code></a></p>
@@ -1370,7 +1369,7 @@ surface (list[str]): [s1] (str, Iterable[str]): list with the surface names for 
 <dd class="field-even"><p>df where options data is stored</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.1.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.2.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1394,7 +1393,7 @@ surface (list[str]): [s1] (str, Iterable[str]): list with the surface names for 
 <dd class="field-even"><p>df where options data is stored</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.1.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.2.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1464,7 +1463,7 @@ type of functionality such as qgrid.</p>
 <dd><p>Set project extent</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>extent</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><em>numpy.ndarray</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>]</em>) – [x_min, x_max, y_min, y_max, z_min, z_max]. Extent for the visualization of data and default of for the regular grid class.</p>
+<dd class="field-odd"><p><strong>extent</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.20)"><em>numpy.ndarray</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>]</em>) – [x_min, x_max, y_min, y_max, z_min, z_max]. Extent for the visualization of data and default of for the regular grid class.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><a class="reference internal" href="../Data/gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid"><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.data.Grid</span></code></a></p>
@@ -1757,10 +1756,10 @@ after sorting surface_points without recomputing you may get wrong results.</p>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2017-2020, CGRE-Aachen Team.
+      &copy;2017-2021, CGRE-Aachen Team.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

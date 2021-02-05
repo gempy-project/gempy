@@ -5,17 +5,17 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Model 7 - Combination &#8212; GemPy 2.2.7 documentation</title>
-    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <title>Model 7 - Combination &#8212; GemPy 2.2.8 documentation</title>
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery-rendered-html.css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/language_data.js"></script>
     <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="shortcut icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -40,7 +40,8 @@
             
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
-<p>Click <a class="reference internal" href="#sphx-glr-download-examples-geometries-7-combination-py"><span class="std std-ref">here</span></a>     to download the full example code</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-examples-geometries-7-combination-py"><span class="std std-ref">here</span></a>
+to download the full example code</p>
 </div>
 <div class="sphx-glr-example-title section" id="model-7-combination">
 <span id="sphx-glr-examples-geometries-7-combination-py"></span><h1>Model 7 - Combination<a class="headerlink" href="#model-7-combination" title="Permalink to this headline">¶</a></h1>
@@ -71,6 +72,7 @@ the necessary dependencies:</p>
 <div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project.get_data" title="gempy.core.model.Project.get_data" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-method"><span class="n">geo_data</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">()</span>
 </pre></div>
 </div>
+<div class="output_subarea output_html rendered_html output_result">
 <div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
@@ -229,6 +231,7 @@ the necessary dependencies:</p>
 </table>
 <p>110 rows × 8 columns</p>
 </div>
+</div>
 <br />
 <br /><p>Setting and ordering the units and series:</p>
 <div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../GemPy API/gempy.map_stack_to_surfaces.html#gempy.map_stack_to_surfaces" title="gempy.map_stack_to_surfaces" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">map_stack_to_surfaces</span></a><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_data</span></a><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;Fault_Series&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;fault&#39;</span><span class="p">),</span> <span class="s2">&quot;Strat_Series1&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;rock3&#39;</span><span class="p">),</span>
@@ -242,6 +245,7 @@ the necessary dependencies:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Fault colors changed. If you do not like this behavior, set change_color to False.
 </pre></div>
 </div>
+<div class="output_subarea output_html rendered_html output_result">
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -288,13 +292,14 @@ the necessary dependencies:</p>
     </tr>
   </tbody>
 </table>
+</div>
 <br />
 <br /><div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Plot/gempy.plot_2d.html#gempy.plot_2d" title="gempy.plot_2d" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">plot_2d</span></a><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_data</span></a><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <img alt="Cell Number: mid Direction: y" class="sphx-glr-single-img" src="../../_images/sphx_glr_7_combination_001.png" />
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy.plot.visualization_2d.Plot2D object at 0x7f8f6f6424c0&gt;
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy.plot.visualization_2d.Plot2D object at 0x7f31949e2490&gt;
 </pre></div>
 </div>
 <p>Calculating the model:</p>
@@ -311,8 +316,8 @@ Number of faults:  1
 Compilation Done!
 Kriging values:
                         values
-range                 2.9e+03
-$C_o$                   2e+05
+range                 2872.28
+$C_o$               196428.57
 drift equations  [3, 3, 3, 3]
 </pre></div>
 </div>
@@ -326,7 +331,7 @@ drift equations  [3, 3, 3, 3]
 </div>
 <img alt="Cell Number: 5 Direction: y" class="sphx-glr-single-img" src="../../_images/sphx_glr_7_combination_002.png" />
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy.plot.visualization_2d.Plot2D object at 0x7f8f6ef77550&gt;
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy.plot.visualization_2d.Plot2D object at 0x7f3197bad370&gt;
 </pre></div>
 </div>
 <p>sphinx_gallery_thumbnail_number = 2</p>
@@ -336,7 +341,7 @@ drift equations  [3, 3, 3, 3]
 </div>
 <img alt="Cell Number: 5 Direction: x" class="sphx-glr-single-img" src="../../_images/sphx_glr_7_combination_003.png" />
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy.plot.visualization_2d.Plot2D object at 0x7f8f6f6424c0&gt;
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy.plot.visualization_2d.Plot2D object at 0x7f322b9f03a0&gt;
 </pre></div>
 </div>
 <div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Plot/gempy.plot_3d.html#gempy.plot_3d" title="gempy.plot_3d" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">plot_3d</span></a><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_data</span></a><span class="p">)</span>
@@ -348,7 +353,7 @@ drift equations  [3, 3, 3, 3]
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>True
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  11.052 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  11.961 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-examples-geometries-7-combination-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/359fc9d9bf3ff73c2efce77797880f43/7_combination.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">7_combination.py</span></code></a></p>
@@ -458,10 +463,10 @@ drift equations  [3, 3, 3, 3]
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2017-2020, CGRE-Aachen Team.
+      &copy;2017-2021, CGRE-Aachen Team.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

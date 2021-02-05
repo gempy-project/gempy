@@ -5,8 +5,8 @@
 
 Computation times
 =================
-**00:04.999** total execution time for **tutorials_ch4-Topology** files:
+**00:05.165** total execution time for **tutorials_ch4-Topology** files:
 
 +----------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_tutorials_ch4-Topology_ch4-1-Topology.py` (``ch4-1-Topology.py``) | 00:04.999 | 0.0 MB |
+| :ref:`sphx_glr_tutorials_ch4-Topology_ch4-1-Topology.py` (``ch4-1-Topology.py``) | 00:05.165 | 0.0 MB |
 +----------------------------------------------------------------------------------+-----------+--------+

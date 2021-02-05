@@ -5,17 +5,17 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>gempy.init_data &#8212; GemPy 2.2.7 documentation</title>
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <title>gempy.init_data &#8212; GemPy 2.2.8 documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-rendered-html.css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/language_data.js"></script>
     <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -42,7 +42,7 @@
 <h1>gempy.init_data<a class="headerlink" href="#gempy-init-data" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="gempy.init_data">
-<code class="sig-prename descclassname">gempy.</code><code class="sig-name descname">init_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">geo_model</span><span class="p">:</span> <span class="n"><a class="reference internal" href="../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project">gempy.core.model.Project</a></span></em>, <em class="sig-param"><span class="n">extent</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><span class="p">, </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)">numpy.ndarray</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">resolution</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><span class="p">, </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)">numpy.ndarray</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project">gempy.core.model.Project</a><a class="reference internal" href="../_modules/gempy/gempy_api.html#init_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.init_data" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">gempy.</code><code class="sig-name descname">init_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">geo_model</span><span class="p">:</span> <span class="n"><a class="reference internal" href="../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project">gempy.core.model.Project</a></span></em>, <em class="sig-param"><span class="n">extent</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><span class="p">, </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.20)">numpy.ndarray</a><span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">resolution</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><span class="p">, </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.20)">numpy.ndarray</a><span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project">gempy.core.model.Project</a><a class="reference internal" href="../_modules/gempy/gempy_api.html#init_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.init_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize some of the main functions such as:</p>
 <blockquote>
 <div><ul class="simple">
@@ -56,16 +56,16 @@ and <a class="reference internal" href="../Data/gempy.core.data_modules.geometri
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>geo_model</strong> (<a class="reference internal" href="../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project"><em>Project</em></a>) – [s0] Container class of all objects that constitute a GemPy model.</p></li>
-<li><p><strong>extent</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><em>numpy.ndarray</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>]</em>) – [x_min, x_max, y_min, y_max, z_min, z_max]. Extent for the visualization of data and default of for the regular grid class.</p></li>
-<li><p><strong>resolution</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><em>numpy.ndarray</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em>) – [nx, ny, nz]</p></li>
+<li><p><strong>extent</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.20)"><em>numpy.ndarray</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>]</em>) – [x_min, x_max, y_min, y_max, z_min, z_max]. Extent for the visualization of data and default of for the regular grid class.</p></li>
+<li><p><strong>resolution</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.20)"><em>numpy.ndarray</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em>) – [nx, ny, nz]</p></li>
 </ul>
 </dd>
 <dt class="field-even">Keyword Arguments</dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>path_i</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Path to the data bases of surface_points. Default os.getcwd()</p></li>
 <li><p><strong>path_o</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Path to the data bases of orientations. Default os.getcwd()</p></li>
-<li><p><strong>surface_points_df</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.1.5)"><em>pandas.DataFrame</em></a>) – A pn.Dataframe object with X, Y, Z, and surface columns</p></li>
-<li><p><strong>orientations_df</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.1.5)"><em>pandas.DataFrame</em></a>) – A pn.Dataframe object with X, Y, Z, surface columns and pole or orientation columns.</p></li>
+<li><p><strong>surface_points_df</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.2.1)"><em>pandas.DataFrame</em></a>) – A pn.Dataframe object with X, Y, Z, and surface columns</p></li>
+<li><p><strong>orientations_df</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.2.1)"><em>pandas.DataFrame</em></a>) – A pn.Dataframe object with X, Y, Z, surface columns and pole or orientation columns.</p></li>
 </ul>
 </dd>
 <dt class="field-odd">Returns</dt>
@@ -96,41 +96,37 @@ and <a class="reference internal" href="../Data/gempy.core.data_modules.geometri
 <img alt="Chapter 4: Analyzing Geomodel Topology" src="../_images/sphx_glr_ch4-1-Topology_thumb.png" />
 <p class="caption"><span class="caption-text"><a class="reference internal" href="../tutorials/ch4-Topology/ch4-1-Topology.html#sphx-glr-tutorials-ch4-topology-ch4-1-topology-py"><span class="std std-ref">Chapter 4: Analyzing Geomodel Topology</span></a></span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
 </div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="In this example we will show how easy we can propagate uncertainty from GemPy parameters to fin..."><div class="figure align-default" id="id6">
-<img alt="5.1 - Probabilistic Modeling: Error Propagation" src="../_images/sphx_glr_ch5_1_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../tutorials/ch5_probabilistic_modeling/ch5_1.html#sphx-glr-tutorials-ch5-probabilistic-modeling-ch5-1-py"><span class="std std-ref">5.1 - Probabilistic Modeling: Error Propagation</span></a></span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="Alesmodel: Plotting sections and maps."><div class="figure align-default" id="id7">
+</div><div class="sphx-glr-thumbcontainer" tooltip="Alesmodel: Plotting sections and maps."><div class="figure align-default" id="id6">
 <img alt="Alesmodel: Plotting sections and maps." src="../_images/sphx_glr_Alesmodel_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/real/Alesmodel.html#sphx-glr-examples-real-alesmodel-py"><span class="std std-ref">Alesmodel: Plotting sections and maps.</span></a></span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/real/Alesmodel.html#sphx-glr-examples-real-alesmodel-py"><span class="std std-ref">Alesmodel: Plotting sections and maps.</span></a></span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
 </div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="Claudius"><div class="figure align-default" id="id8">
+</div><div class="sphx-glr-thumbcontainer" tooltip="Claudius"><div class="figure align-default" id="id7">
 <img alt="Claudius" src="../_images/sphx_glr_Claudius_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/real/Claudius.html#sphx-glr-examples-real-claudius-py"><span class="std std-ref">Claudius</span></a></span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/real/Claudius.html#sphx-glr-examples-real-claudius-py"><span class="std std-ref">Claudius</span></a></span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
 </div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="Greenstone."><div class="figure align-default" id="id9">
+</div><div class="sphx-glr-thumbcontainer" tooltip="Greenstone."><div class="figure align-default" id="id8">
 <img alt="Greenstone." src="../_images/sphx_glr_Greenstone_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/real/Greenstone.html#sphx-glr-examples-real-greenstone-py"><span class="std std-ref">Greenstone.</span></a></span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/real/Greenstone.html#sphx-glr-examples-real-greenstone-py"><span class="std std-ref">Greenstone.</span></a></span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
 </div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="Hecho"><div class="figure align-default" id="id10">
+</div><div class="sphx-glr-thumbcontainer" tooltip="Hecho"><div class="figure align-default" id="id9">
 <img alt="Hecho" src="../_images/sphx_glr_Hecho_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/real/Hecho.html#sphx-glr-examples-real-hecho-py"><span class="std std-ref">Hecho</span></a></span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/real/Hecho.html#sphx-glr-examples-real-hecho-py"><span class="std std-ref">Hecho</span></a></span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
 </div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="Moureze"><div class="figure align-default" id="id11">
+</div><div class="sphx-glr-thumbcontainer" tooltip="Moureze"><div class="figure align-default" id="id10">
 <img alt="Moureze" src="../_images/sphx_glr_Moureze_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/real/Moureze.html#sphx-glr-examples-real-moureze-py"><span class="std std-ref">Moureze</span></a></span><a class="headerlink" href="#id11" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/real/Moureze.html#sphx-glr-examples-real-moureze-py"><span class="std std-ref">Moureze</span></a></span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
 </div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="Perth basin."><div class="figure align-default" id="id12">
+</div><div class="sphx-glr-thumbcontainer" tooltip="Perth basin."><div class="figure align-default" id="id11">
 <img alt="Perth basin." src="../_images/sphx_glr_Perth_basin_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/real/Perth_basin.html#sphx-glr-examples-real-perth-basin-py"><span class="std std-ref">Perth basin.</span></a></span><a class="headerlink" href="#id12" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/real/Perth_basin.html#sphx-glr-examples-real-perth-basin-py"><span class="std std-ref">Perth basin.</span></a></span><a class="headerlink" href="#id11" title="Permalink to this image">¶</a></p>
 </div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="Export a geological model from GemPy to use in MOOSE"><div class="figure align-default" id="id13">
+</div><div class="sphx-glr-thumbcontainer" tooltip="Export a geological model from GemPy to use in MOOSE"><div class="figure align-default" id="id12">
 <img alt="Export a geological model from GemPy to use in MOOSE" src="../_images/sphx_glr_gempy_export_MOOSE_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../integrations/gempy_export_MOOSE.html#sphx-glr-integrations-gempy-export-moose-py"><span class="std std-ref">Export a geological model from GemPy to use in MOOSE</span></a></span><a class="headerlink" href="#id13" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../integrations/gempy_export_MOOSE.html#sphx-glr-integrations-gempy-export-moose-py"><span class="std std-ref">Export a geological model from GemPy to use in MOOSE</span></a></span><a class="headerlink" href="#id12" title="Permalink to this image">¶</a></p>
 </div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="Transform 2019: Integrating Striplog and GemPy"><div class="figure align-default" id="id14">
+</div><div class="sphx-glr-thumbcontainer" tooltip="Transform 2019: Integrating Striplog and GemPy"><div class="figure align-default" id="id13">
 <img alt="Transform 2019: Integrating Striplog and GemPy" src="../_images/sphx_glr_gempy_striplog_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../integrations/gempy_striplog.html#sphx-glr-integrations-gempy-striplog-py"><span class="std std-ref">Transform 2019: Integrating Striplog and GemPy</span></a></span><a class="headerlink" href="#id14" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../integrations/gempy_striplog.html#sphx-glr-integrations-gempy-striplog-py"><span class="std std-ref">Transform 2019: Integrating Striplog and GemPy</span></a></span><a class="headerlink" href="#id13" title="Permalink to this image">¶</a></p>
 </div>
 </div><div class="sphx-glr-clear"></div></div>
 </div>
@@ -239,10 +235,10 @@ and <a class="reference internal" href="../Data/gempy.core.data_modules.geometri
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2017-2020, CGRE-Aachen Team.
+      &copy;2017-2021, CGRE-Aachen Team.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

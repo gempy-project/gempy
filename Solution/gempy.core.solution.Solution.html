@@ -5,17 +5,17 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>gempy.core.solution.Solution &#8212; GemPy 2.2.7 documentation</title>
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <title>gempy.core.solution.Solution &#8212; GemPy 2.2.8 documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-rendered-html.css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/language_data.js"></script>
     <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -41,7 +41,7 @@
 <h1>gempy.core.solution.Solution<a class="headerlink" href="#gempy-core-solution-solution" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="gempy.core.solution.Solution">
-<em class="property">class </em><code class="sig-prename descclassname">gempy.core.solution.</code><code class="sig-name descname">Solution</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">grid</span><span class="p">:</span> <span class="n"><a class="reference internal" href="../Data/gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid">gempy.core.data.Grid</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">surfaces</span><span class="p">:</span> <span class="n"><a class="reference internal" href="../Data/gempy.core.data.Surfaces.html#gempy.core.data.Surfaces" title="gempy.core.data.Surfaces">gempy.core.data.Surfaces</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">series</span><span class="p">:</span> <span class="n"><a class="reference internal" href="../Data/gempy.core.data_modules.stack.Series.html#gempy.core.data_modules.stack.Series" title="gempy.core.data_modules.stack.Series">gempy.core.data_modules.stack.Series</a></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/solution.html#Solution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.solution.Solution" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">gempy.core.solution.</code><code class="sig-name descname">Solution</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">grid</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span><a class="reference internal" href="../Data/gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid">gempy.core.data.Grid</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">surfaces</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span><a class="reference internal" href="../Data/gempy.core.data.Surfaces.html#gempy.core.data.Surfaces" title="gempy.core.data.Surfaces">gempy.core.data.Surfaces</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">series</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span><a class="reference internal" href="../Data/gempy.core.data_modules.stack.Series.html#gempy.core.data_modules.stack.Series" title="gempy.core.data_modules.stack.Series">gempy.core.data_modules.stack.Series</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/solution.html#Solution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.solution.Solution" title="Permalink to this definition">¶</a></dt>
 <dd><p>This class stores the output of the interpolation and the necessary objects
 to visualize and manipulate this data.</p>
 <dl class="simple">
@@ -406,13 +406,13 @@ other after marching cubes</p>
 </table>
 <dl class="py method">
 <dt id="gempy.core.solution.Solution.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">grid</span><span class="p">:</span> <span class="n"><a class="reference internal" href="../Data/gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid">gempy.core.data.Grid</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">surfaces</span><span class="p">:</span> <span class="n"><a class="reference internal" href="../Data/gempy.core.data.Surfaces.html#gempy.core.data.Surfaces" title="gempy.core.data.Surfaces">gempy.core.data.Surfaces</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">series</span><span class="p">:</span> <span class="n"><a class="reference internal" href="../Data/gempy.core.data_modules.stack.Series.html#gempy.core.data_modules.stack.Series" title="gempy.core.data_modules.stack.Series">gempy.core.data_modules.stack.Series</a></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/solution.html#Solution.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.solution.Solution.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">grid</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span><a class="reference internal" href="../Data/gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid">gempy.core.data.Grid</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">surfaces</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span><a class="reference internal" href="../Data/gempy.core.data.Surfaces.html#gempy.core.data.Surfaces" title="gempy.core.data.Surfaces">gempy.core.data.Surfaces</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">series</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span><a class="reference internal" href="../Data/gempy.core.data_modules.stack.Series.html#gempy.core.data_modules.stack.Series" title="gempy.core.data_modules.stack.Series">gempy.core.data_modules.stack.Series</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/solution.html#Solution.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.solution.Solution.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="gempy.core.solution.Solution.set_solution_to_regular_grid">
-<code class="sig-name descname">set_solution_to_regular_grid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">values</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><span class="p">, </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)">numpy.ndarray</a><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">compute_mesh</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">compute_mesh_options</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/solution.html#Solution.set_solution_to_regular_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.solution.Solution.set_solution_to_regular_grid" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">set_solution_to_regular_grid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">values</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><span class="p">, </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.20)">numpy.ndarray</a><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">compute_mesh</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">compute_mesh_options</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/solution.html#Solution.set_solution_to_regular_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.solution.Solution.set_solution_to_regular_grid" title="Permalink to this definition">¶</a></dt>
 <dd><p>If regular grid is active set all the solution objects dependent on them and compute mesh.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -443,7 +443,7 @@ implicit model.</p></li>
 
 <dl class="py method">
 <dt id="gempy.core.solution.Solution.set_values_to_regular_grid">
-<code class="sig-name descname">set_values_to_regular_grid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">values</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><span class="p">, </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)">numpy.ndarray</a><span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/solution.html#Solution.set_values_to_regular_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.solution.Solution.set_values_to_regular_grid" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">set_values_to_regular_grid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">values</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><span class="p">, </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.20)">numpy.ndarray</a><span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/solution.html#Solution.set_values_to_regular_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.solution.Solution.set_values_to_regular_grid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set all solution values to the correspondent attribute.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -484,7 +484,7 @@ implicit model.</p></li>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference external" href="https://scikit-image.org/docs/dev/api/skimage.measure.html#skimage.measure.marching_cubes" title="(in skimage v0.18.0.dev0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">skimage.measure.marching_cubes()</span></code></a></p>
+<p><a class="reference external" href="https://scikit-image.org/docs/dev/api/skimage.measure.html#skimage.measure.marching_cubes" title="(in skimage v0.19.0.dev0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">skimage.measure.marching_cubes()</span></code></a></p>
 </div>
 </dd></dl>
 
@@ -506,7 +506,7 @@ implicit model.</p></li>
 <dd class="field-even"><p>masked regular grid</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)">numpy.ndarray</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.20)">numpy.ndarray</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -517,7 +517,7 @@ implicit model.</p></li>
 <dd><p>Compute all surfaces of the model given the geological features rules.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>**kwargs</strong> – <a class="reference external" href="https://scikit-image.org/docs/dev/api/skimage.measure.html#skimage.measure.marching_cubes" title="(in skimage v0.18.0.dev0)"><code class="xref any docutils literal notranslate"><span class="pre">skimage.measure.marching_cubes</span></code></a> args (see below)</p>
+<dd class="field-odd"><p><strong>**kwargs</strong> – <a class="reference external" href="https://scikit-image.org/docs/dev/api/skimage.measure.html#skimage.measure.marching_cubes" title="(in skimage v0.19.0.dev0)"><code class="xref any docutils literal notranslate"><span class="pre">skimage.measure.marching_cubes</span></code></a> args (see below)</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>vertices and edges</p>
@@ -639,10 +639,10 @@ implicit model.</p></li>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2017-2020, CGRE-Aachen Team.
+      &copy;2017-2021, CGRE-Aachen Team.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

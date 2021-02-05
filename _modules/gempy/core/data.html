@@ -5,17 +5,17 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>gempy.core.data &#8212; GemPy 2.2.7 documentation</title>
-    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <title>gempy.core.data &#8212; GemPy 2.2.8 documentation</title>
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/gallery.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/gallery-rendered-html.css" />
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/language_data.js"></script>
     <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -514,7 +514,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">set_surfaces_names</span><span class="p">(</span><span class="n">surface_names</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">values_array</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">set_surfaces_values</span><span class="p">(</span><span class="n">values_array</span><span class="o">=</span><span class="n">values_array</span><span class="p">,</span> <span class="n">properties_names</span><span class="o">=</span><span class="n">properties_names</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_surfaces_values</span><span class="p">(</span><span class="n">values_array</span><span class="o">=</span><span class="n">values_array</span><span class="p">,</span>
+                                     <span class="n">properties_names</span><span class="o">=</span><span class="n">properties_names</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">c_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="o">~</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_columns_vis_drop</span><span class="p">))]</span>
@@ -531,6 +532,10 @@
         <span class="n">all_col</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span>
         <span class="n">prop_cols</span> <span class="o">=</span> <span class="n">all_col</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_columns</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">prop_cols</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">basement</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;surface&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;isBasement&#39;</span><span class="p">]]</span>
 
 <div class="viewcode-block" id="Surfaces.update_id"><a class="viewcode-back" href="../../../Data/gempy.core.data.Surfaces.html#gempy.core.data.Surfaces.update_id">[docs]</a>    <span class="k">def</span> <span class="nf">update_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">id_list</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1331,8 +1336,6 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;drift equations&#39;</span><span class="p">]</span></div></div>
 
 
-<span class="c1"># @_setdoc_pro([Grid.__doc__, Surfaces.__doc__, Faults.__doc__,</span>
-<span class="c1">#               Structure.__doc__, KrigingParameters.__doc__, Options.__doc__])</span>
 <div class="viewcode-block" id="AdditionalData"><a class="viewcode-back" href="../../../Data/gempy.core.data.AdditionalData.html#gempy.core.data.AdditionalData">[docs]</a><span class="k">class</span> <span class="nc">AdditionalData</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Container class that encapsulate :class:`Structure`, :class:`KrigingParameters`, :class:`Options` and</span>
@@ -1489,10 +1492,10 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2017-2020, CGRE-Aachen Team.
+      &copy;2017-2021, CGRE-Aachen Team.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

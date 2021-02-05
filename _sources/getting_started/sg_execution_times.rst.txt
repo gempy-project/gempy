@@ -5,8 +5,8 @@
 
 Computation times
 =================
-**00:25.436** total execution time for **getting_started** files:
+**00:26.065** total execution time for **getting_started** files:
 
 +---------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_getting_started_get_started.py` (``get_started.py``) | 00:25.436 | 0.0 MB |
+| :ref:`sphx_glr_getting_started_get_started.py` (``get_started.py``) | 00:26.065 | 0.0 MB |
 +---------------------------------------------------------------------+-----------+--------+

@@ -5,17 +5,17 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>gempy.gempy_api &#8212; GemPy 2.2.7 documentation</title>
-    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <title>gempy.gempy_api &#8212; GemPy 2.2.8 documentation</title>
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery-rendered-html.css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/language_data.js"></script>
     <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="shortcut icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -267,9 +267,9 @@
     <span class="k">if</span> <span class="n">path_i</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">path_o</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">geo_model</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">path_i</span><span class="p">,</span> <span class="n">path_o</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s1">&#39;Loading of CSV file failed. Check if you use commas &#39;</span>
-                           <span class="s1">&#39;to separate your data.&#39;</span><span class="p">)</span>
+                           <span class="s1">&#39;to separate your data.&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
     <span class="k">return</span> <span class="kc">True</span></div>
 
 
@@ -313,13 +313,7 @@
 
     <span class="c1"># Check config</span>
     <span class="c1"># ------------</span>
-    <span class="k">assert</span> <span class="n">model</span><span class="o">.</span><span class="n">_interpolator</span><span class="o">.</span><span class="n">theano_function</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;You need to compile&#39;</span> \
-                                                           <span class="s1">&#39;graph before. See `gempy.set_interpolator`.&#39;</span>
-
-    <span class="k">assert</span> <span class="n">model</span><span class="o">.</span><span class="n">_additional_data</span><span class="o">.</span><span class="n">structure_data</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;values&#39;</span><span class="p">,</span> <span class="s1">&#39;len surfaces surface_points&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">,</span> \
-        <span class="s1">&#39;To compute the model is necessary at least 2 interface points per layer&#39;</span>
-    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">_interpolator</span><span class="o">.</span><span class="n">len_series_i</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">_interpolator</span><span class="o">.</span><span class="n">len_series_o</span><span class="p">),</span> \
-        <span class="s1">&#39;Every Series/Fault need at least 1 orientation and 2 surfaces points.&#39;</span>
+    <span class="n">_check_valid_model_input</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">output</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Argument output has no effect anymore and will be deprecated in GemPy 2.2.&#39;</span>
@@ -351,12 +345,42 @@
         <span class="k">return</span> <span class="n">model</span><span class="o">.</span><span class="n">solutions</span></div>
 
 
-<span class="c1"># @_setdoc([Project.set_custom_grid.__doc__, compute_model.__doc__], indent=False)</span>
+<span class="k">def</span> <span class="nf">_check_valid_model_input</span><span class="p">(</span><span class="n">model</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">_interpolator</span><span class="o">.</span><span class="n">theano_function</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;You need to compile graph before. &#39;</span>
+                         <span class="s1">&#39;See `gempy.set_interpolator`.&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">_additional_data</span><span class="o">.</span><span class="n">structure_data</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+        <span class="s1">&#39;values&#39;</span><span class="p">,</span> <span class="s1">&#39;len surfaces surface_points&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;To compute the model is necessary at least 2 interface &#39;</span>
+                         <span class="s1">&#39;points per layer&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">_interpolator</span><span class="o">.</span><span class="n">len_series_i</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">_interpolator</span><span class="o">.</span><span class="n">len_series_o</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Every Series/Fault need at least 1 orientation and 2 &#39;</span>
+                         <span class="s1">&#39;surfaces points.&#39;</span><span class="p">)</span>
+    <span class="n">is_basement_in_sp</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">_surfaces</span><span class="o">.</span><span class="n">basement</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">_surface_points</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;surface&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">any</span><span class="p">()</span>
+    <span class="n">is_basement_in_ori</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">_surfaces</span><span class="o">.</span><span class="n">basement</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">_orientations</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;surface&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">any</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">is_basement_in_ori</span> <span class="ow">or</span> <span class="n">is_basement_in_sp</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;There are surface points or orientations assigned to the &#39;</span>
+                         <span class="s1">&#39;Surface defined as basement (bottom of the stack). The &#39;</span>
+                         <span class="s1">&#39;basement surface only refers to the volume below the last &#39;</span>
+                         <span class="s1">&#39;surface and is not supposed to be interpolated. &#39;</span>
+                         <span class="s1">&#39;Add a &quot;basement&quot; surface (`model.add_surface(&quot;basement&quot;)`)&#39;</span>
+                         <span class="s1">&#39; or delete the discordant surface points or orientations&#39;</span><span class="p">)</span>
+
+    <span class="n">last_feature_is_fault</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">_stack</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;BottomRelation&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">last</span> <span class="o">==</span> <span class="s1">&#39;fault&#39;</span>
+    <span class="k">if</span> <span class="n">last_feature_is_fault</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Last feature of the stack should not be a fault. &#39;</span>
+                         <span class="s1">&#39;Reorder the stack using geo_model.reorder_features(List)&#39;</span><span class="p">)</span>
+
+
 <div class="viewcode-block" id="compute_model_at"><a class="viewcode-back" href="../../GemPy%20API/gempy.compute_model_at.html#gempy.compute_model_at">[docs]</a><span class="k">def</span> <span class="nf">compute_model_at</span><span class="p">(</span><span class="n">new_grid</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">model</span><span class="p">:</span> <span class="n">Project</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;This function creates a new custom grid and deactivate all the other</span>
 <span class="sd">    grids and compute the model there:</span>
 
-<span class="sd">    This function does the same as  plus the addition functionallity of</span>
+<span class="sd">    This function does the same as  plus the addition functionality of</span>
 <span class="sd">        :func:`compute_model`</span>
 <span class="sd">        passing a given array of points where evaluate the model instead of</span>
 <span class="sd">        using the :class:`gempy.core.data.GridClass`.</span>
@@ -503,10 +527,10 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2017-2020, CGRE-Aachen Team.
+      &copy;2017-2021, CGRE-Aachen Team.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

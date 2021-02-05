@@ -5,17 +5,17 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>gempy.core.data_modules.stack.Series &#8212; GemPy 2.2.7 documentation</title>
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <title>gempy.core.data_modules.stack.Series &#8212; GemPy 2.2.8 documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-rendered-html.css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/language_data.js"></script>
     <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -42,7 +42,7 @@
 <h1>gempy.core.data_modules.stack.Series<a class="headerlink" href="#gempy-core-data-modules-stack-series" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="gempy.core.data_modules.stack.Series">
-<em class="property">class </em><code class="sig-prename descclassname">gempy.core.data_modules.stack.</code><code class="sig-name descname">Series</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">faults</span></em>, <em class="sig-param"><span class="n">series_names</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data_modules/stack.html#Series"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data_modules.stack.Series" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">gempy.core.data_modules.stack.</code><code class="sig-name descname">Series</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">faults</span></em>, <em class="sig-param"><span class="n">series_names</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data_modules/stack.html#Series"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data_modules.stack.Series" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class that contains the functionality and attributes related to the series. Notice that series does not only
 refers to stratigraphic series but to any set of surfaces which will be interpolated together (comfortably).</p>
 <dl class="field-list simple">
@@ -127,7 +127,7 @@ on them. TODO describe df columns</p>
 </table>
 <dl class="py method">
 <dt id="gempy.core.data_modules.stack.Series.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">faults</span></em>, <em class="sig-param"><span class="n">series_names</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data_modules/stack.html#Series.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data_modules.stack.Series.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">faults</span></em>, <em class="sig-param"><span class="n">series_names</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data_modules/stack.html#Series.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data_modules.stack.Series.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
 </dd></dl>
 
@@ -139,7 +139,7 @@ on them. TODO describe df columns</p>
 
 <dl class="py method">
 <dt id="gempy.core.data_modules.stack.Series.set_series_index">
-<code class="sig-name descname">set_series_index</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">series_order</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><span class="p">, </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)">numpy.ndarray</a><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">reset_order_series</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data_modules/stack.html#Series.set_series_index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data_modules.stack.Series.set_series_index" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">set_series_index</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">series_order</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><span class="p">, </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.20)">numpy.ndarray</a><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">reset_order_series</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data_modules/stack.html#Series.set_series_index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data_modules.stack.Series.set_series_index" title="Permalink to this definition">¶</a></dt>
 <dd><p>Rewrite the index of the series df</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -228,7 +228,7 @@ passed through and extra categories in the mapping are ignored.</p></li>
 
 <dl class="py method">
 <dt id="gempy.core.data_modules.stack.Series.reorder_series">
-<code class="sig-name descname">reorder_series</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_categories</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><span class="p">, </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)">numpy.ndarray</a><span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data_modules/stack.html#Series.reorder_series"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data_modules.stack.Series.reorder_series" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">reorder_series</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_categories</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a><span class="p">, </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.20)">numpy.ndarray</a><span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data_modules/stack.html#Series.reorder_series"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.core.data_modules.stack.Series.reorder_series" title="Permalink to this definition">¶</a></dt>
 <dd><p>[s0]     Reorder categories as specified in new_categories. [s1]     Return a sorted copy of the index.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -365,10 +365,10 @@ passed through and extra categories in the mapping are ignored.</p></li>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2017-2020, CGRE-Aachen Team.
+      &copy;2017-2021, CGRE-Aachen Team.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
