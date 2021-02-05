@@ -73,7 +73,7 @@ parse_args() {
 	# vars should be declared here, with sane defaults if applicable.
 
 	# Source directory & target branch.
-	deploy_directory=${GIT_DEPLOY_DIR:-docs/build/html}
+	deploy_directory=${GIT_DEPLOY_DIR:-../docs/build/html}
 	deploy_branch=${GIT_DEPLOY_BRANCH:-gh-pages}
 
 	#if no user identity is already set in the current git environment, use this:
