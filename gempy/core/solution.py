@@ -371,8 +371,11 @@ class Solution(inheritance):
         sfas = self.scalar_field_at_surface_points[e]
         sfas = sfas[np.nonzero(sfas)]
         if masked_marching_cubes is True:
-            mask_array = self.mask_matrix_pad[
-                e - 1 if series_type[e - 1] == 'Onlap' else e]
+            if series_type[e - 1] == 'Onlap' and series_type[e - 2] == 'Erosion':
+                mask_array = self.mask_matrix_pad[e-1]
+            else:
+                mask_array = self.mask_matrix_pad[e]
+
         else:
             mask_array = None
         return mask_array, sfas

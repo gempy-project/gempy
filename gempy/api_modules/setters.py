@@ -277,7 +277,7 @@ def set_orientation_from_neighbours(geo_model, neighbours):
                                    normvec.tolist())
     # if computation is impossible set normal vector to default orientation
     else:
-        print("orientation calculation of point" + neighbours[0] + "is impossible")
+        print("orientation calculation of point" + str(neighbours[0]) + "is impossible")
         print("-> default vector is set [0,0,1]")
         geo_model.add_orientations(geo_model._surface_points.df['X'][neighbours[0]],
                                    geo_model._surface_points.df['Y'][neighbours[0]],
