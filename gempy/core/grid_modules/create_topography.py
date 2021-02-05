@@ -8,22 +8,22 @@ Created on 16.04.2019
 
 import numpy as np
 from scipy import fftpack
-import scipy.ndimage as ndimage
-import random
 import pandas as pn
 import os
 
 try:
-    import gdal
-
+    from osgeo import gdal
     GDAL_IMPORT = True
-except ImportError:
+except ImportError as e:
     GDAL_IMPORT = False
+    print(e)
+
 import matplotlib.pyplot as plt
 
 
 class LoadDEMGDAL:
-    """Class to include height elevation data (e.g. DEMs) with the geological grid """
+    """Class to include height elevation data (e.g. DEMs) with the geological grid
+    """
 
     def __init__(self, path_dem, grid=None, extent=None, delete_temp=True):
         """
@@ -201,7 +201,6 @@ class LoadDEMArtificial:
 
         if d_z is None:
             self.d_z = np.array(
-
                 [self.extent[5] - (self.extent[5] - self.extent[4]) * 1 / 5,
                  self.extent[5]])
             print(self.d_z)
@@ -239,19 +238,19 @@ class LoadDEMArtificial:
             for j in range(int(n / 2) + 1):
                 phase = 2 * np.pi * np.random.rand()
 
-                if i is not 0 or j is not 0:
+                if i != 0 or j != 0:
                     rad = (i * i + j * j) ** powerr * np.random.normal()
                 else:
                     rad = 0.0
 
                 a[i, j] = complex(rad * np.cos(phase), rad * np.sin(phase))
 
-                if i is 0:
+                if i == 0:
                     i0 = 0
                 else:
                     i0 = n - i
 
-                if j is 0:
+                if j == 0:
                     j0 = 0
                 else:
                     j0 = n - j
@@ -278,6 +277,8 @@ class LoadDEMArtificial:
         """for masking the lith block"""
         x = np.linspace(self.extent[0], self.extent[1], self.resolution[0])
         y = np.linspace(self.extent[2], self.extent[3], self.resolution[1])
+        self.x = x
+        self.y = y
         xx, yy = np.meshgrid(x, y, indexing='ij')
         self.values_2d = np.dstack([xx, yy, self.dem_zval])
 

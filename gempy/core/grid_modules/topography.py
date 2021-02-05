@@ -41,6 +41,28 @@ class Topography:
         # Source for the
         self.source = None
 
+        # Coords
+        self._x = None
+        self._y = None
+
+    @property
+    def x(self):
+        if self._x is not None:
+            return self._x
+        else:
+            val = self.values[:, 0]
+            val.sort()
+            return np.unique(val)
+
+    @property
+    def y(self):
+        if self._y is not None:
+            return self._y
+        else:
+            val = self.values[:, 1]
+            val.sort()
+            return np.unique(val)
+
     def set_values(self, values_2d: np.ndarray):
         """General method to set topography
 
@@ -93,10 +115,12 @@ class Topography:
         dem = LoadDEMArtificial(extent=self.extent,
                                 resolution=self.regular_grid_resolution, **kwargs)
 
+        self._x, self._y = dem.x, dem.y
         self.set_values(dem.get_values())
 
     def load_from_gdal(self, filepath):
         dem = LoadDEMGDAL(filepath, extent=self.extent)
+        self._x, self._y = None, None
         self.set_values(dem.get_values())
         # self.source = 'gdal'
 
@@ -105,6 +129,7 @@ class Topography:
 
     def load(self, path):
         self.set_values(np.load(path))
+        self._x, self._y = None, None
         return self.values
 
     def load_from_saved(self, *args, **kwargs):

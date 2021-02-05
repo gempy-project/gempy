@@ -1,3 +1,12 @@
+IMPORTANT NOTE
+--------------
+
+At the moment pymc3 is being ported to a new backend and it is making complicated
+to keep the tutorials updated and running. For now we will leave the files
+for reference but we are not actively supporting compatibility with pymc3 after
+further notice.
+
+
 Chapter 5: Probabilistic Modeling
 ---------------------------------
 

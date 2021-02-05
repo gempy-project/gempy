@@ -1,5 +1,3 @@
-
-
 # These two lines are necessary only if GemPy is not installed
 import sys, os
 sys.path.append("../..")
@@ -11,7 +9,6 @@ import gempy as gp
 
 # Importing auxiliary libraries
 import numpy as np
-import pandas as pn
 import matplotlib.pyplot as plt
 import pytest
 
@@ -25,7 +22,8 @@ def geo_model(interpolator):
     # Importing the data from CSV-files and setting extent and resolution
     gp.init_data(geo_model, [0, 10., 0, 2., 0, 5.], [100, 3, 100],
                  path_o=input_path + '/05_toy_fold_unconformity_orientations.csv',
-                 path_i=input_path + '/05_toy_fold_unconformity_interfaces.csv', default_values=True);
+                 path_i=input_path + '/05_toy_fold_unconformity_interfaces.csv',
+                 default_values=True)
 
     gp.map_stack_to_surfaces(geo_model,
                              {"Flat_Series": 'Flat',
