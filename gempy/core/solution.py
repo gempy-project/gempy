@@ -62,10 +62,10 @@ class Solution(inheritance):
                  series: Series = None,
                  ):
 
-        super().__init__(grid, surfaces, series)
-        # self.additional_data = additional_data
+        if _xsolution_imported:
+            super().__init__(grid, surfaces, series)
+
         self.grid = grid
-        #  self.surface_points = surface_points
         self.stack = series
         self.surfaces = surfaces
 
