@@ -185,7 +185,7 @@ For more details in the installation check:
 <a name="doc"></a>
 ## Documentation
 
-Extensive documentation for `GemPy` is hosted at [gempy.readthedocs.io](http://gempy.readthedocs.io/),
+Extensive documentation for `GemPy` is hosted at [docs.gempy.org/](http://docs.gempy.org/),
 explaining its capabilities, [the theory behind it](https://www.geosci-model-dev.net/12/1/2019/) and 
 providing detailed [tutorials](https://www.gempy.org/tutorials) on how to use it.
 
