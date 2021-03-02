@@ -25,28 +25,29 @@ powerful **implicit representation** approach.
 
 We provide the latest release version of GemPy via PyPi package services. We highly recommend using PyPi,
 
-$ pip install gempy
+`$ pip install gempy`
 
 as it will take care of automatically installing all the required dependencies - except in windows that requires one extra step.
 
 Windows does not have a gcc compilers pre-installed. The easiest way to get a theano compatible compiler is by using 
 the theano conda installation. Therefore the process would be the following:
 
-$ conda install theano
+`$ conda install theano`
 
-$ pip install gempy
+`$ pip install gempy`
 
 For more information, refer to the [installation documentation](https://docs.gempy.org/installation.html)
 
 ## Resources
 
-- Getting started: [Notebook tutorial](https://docs.gempy.org/getting_started/get_started.html#sphx-glr-getting-started-get-started-py)
+After installation you can either check the [Notebook tutorials](https://docs.gempy.org/getting_started/get_started.html#sphx-glr-getting-started-get-started-py) 
+or the [video introduction](https://www.youtube.com/watch?v=n0btC5Zilyc) to get started.
 
-- Video tutorial: [Transform 2020 Gempy Introduction](https://www.youtube.com/watch?v=n0btC5Zilyc)
+Check the [documentation site](http://docs.gempy.org/) for further information and enjoy the [tutorials and examples](https://www.gempy.org/tutorials).
 
-- Documentation: [docs.gempy.org](http://docs.gempy.org/)
+For questions and support, please use [discussions](https://github.com/cgre-aachen/gempy/discussions).
 
-- Tutorials and examples: [tutorials.gempy.org](https://www.gempy.org/tutorials)
+If you find a bug or have a feature request, create an [issue](https://github.com/cgre-aachen/gempy/issues).
 
 <a name="ref"></a>
 ## References 
