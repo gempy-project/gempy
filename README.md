@@ -58,10 +58,10 @@ If you find a bug or have a feature request, create an [issue](https://github.co
 
 ## Publications using GemPy
 
+* Stamm, F. A., de la Varga, M., and Wellmann, F.: [Actors, actions, and uncertainties: optimizing decision-making based on 3-D structural geological models](https://se.copernicus.org/articles/10/2015/2019/se-10-2015-2019.html), Solid Earth, 10, 2015–2043, https://doi.org/10.5194/se-10-2015-2019, 2019.
 * Wellmann, F., Schaaf, A., de la Varga, M., & von Hagke, C. (2019). [From Google Earth to 3D Geology Problem 2: Seeing Below the Surface of the Digital Earth](
 https://www.sciencedirect.com/science/article/pii/B9780128140482000156).
 In Developments in Structural Geology and Tectonics (Vol. 5, pp. 189-204). Elsevier.
-* add other papers
 
 ## Geometry Examples
 
