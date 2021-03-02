@@ -1,4 +1,4 @@
-# <p align="left"><img src="docs/logos/gempy1.png" width="300"></p>
+# <p align="left"><img src="docs/readme_images/200622_GemPy_Logo.svg" width="300"></p>
 
 > Open-source, implicit 3D structural geological modeling in Python.
 
@@ -40,7 +40,7 @@ For more information, refer to the [installation documentation](https://docs.gem
 
 ## Resources
 
-After installation you can either check the [Notebook tutorials](https://docs.gempy.org/getting_started/get_started.html#sphx-glr-getting-started-get-started-py) 
+After installation you can either check the [notebook tutorials](https://docs.gempy.org/getting_started/get_started.html#sphx-glr-getting-started-get-started-py) 
 or the [video introduction](https://www.youtube.com/watch?v=n0btC5Zilyc) to get started.
 
 Check the [documentation site](http://docs.gempy.org/) for further information and enjoy the [tutorials and examples](https://www.gempy.org/tutorials).
@@ -62,3 +62,46 @@ If you find a bug or have a feature request, create an [issue](https://github.co
 https://www.sciencedirect.com/science/article/pii/B9780128140482000156).
 In Developments in Structural Geology and Tectonics (Vol. 5, pp. 189-204). Elsevier.
 * add other papers
+
+## Geometry Examples
+
+<p>
+<table>
+<tr>
+
+  <td>
+  <a align="center"><img src="docs/readme_images/model1.png" width="300">
+  </a>
+  </td>
+
+  <td>
+  <a align="center"><img src="docs/readme_images/model2.png" width="300">
+  </a>
+  </td>
+
+  <td>
+  <a align="center"><img src="docs/readme_images/model3.png" width="300">
+  </a>
+  </td>
+
+</tr>
+<tr>
+
+  <td>
+  <a align="center"><img src="docs/readme_images/model4.png" width="300">
+  </a>
+  </td>
+
+  <td>
+  <a align="center"><img src="docs/readme_images/model5.png" width="300">
+  </a>
+  </td>
+
+  <td>
+  <a align="center"><img src="docs/readme_images/model6.png" width="300">
+  </a>
+  </td>
+
+</tr>
+</table>
+</p>
