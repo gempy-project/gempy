@@ -1,4 +1,4 @@
-# <p align="left"><img src="docs/readme_images/200622_GemPy_Logo.svg" width="300"></p>
+# <p align="left"><img src="docs/readme_images/Gempy_logo.png" width="400"></p>
 
 > Open-source, implicit 3D structural geological modeling in Python.
 
