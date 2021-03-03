@@ -1,7 +1,6 @@
-# <p align="left"><img src="docs/readme_images/200622_GemPy_Logo.svg" width="300"></p>
+# <p align="left"><img src="docs/readme_images/Gempy_logo.png" width="400"></p>
 
 > Open-source, implicit 3D structural geological modeling in Python.
-
 
 [![PyPI](https://img.shields.io/badge/python-3-blue.svg)](https://www.python.org/downloads/)
 [![PyPI](https://img.shields.io/badge/pypi-1.0-blue.svg)](https://pypi.org/project/gempy/)
@@ -12,7 +11,7 @@
 [![DOI](https://zenodo.org/badge/96211155.svg)](https://zenodo.org/badge/latestdoi/96211155)
 [![DOCKER](https://img.shields.io/docker/cloud/automated/leguark/gempy.svg)](https://cloud.docker.com/repository/docker/leguark/gempy)
 
-<p align="center"><img src="docs/source/images/perth_example.png" width="800"></p>
+<p align="center"><img src="docs/source/images/perth_example.png" width="600"></p>
 
 ## Overview
 
@@ -36,32 +35,37 @@ the theano conda installation. Therefore the process would be the following:
 
 `$ pip install gempy`
 
-For more information, refer to the [installation documentation](https://docs.gempy.org/installation.html)
+For more information, refer to the [installation documentation](https://docs.gempy.org/installation.html).
 
 ## Resources
 
 After installation you can either check the [notebook tutorials](https://docs.gempy.org/getting_started/get_started.html#sphx-glr-getting-started-get-started-py) 
 or the [video introduction](https://www.youtube.com/watch?v=n0btC5Zilyc) to get started.
 
-Check the [documentation site](http://docs.gempy.org/) for further information and enjoy the [tutorials and examples](https://www.gempy.org/tutorials).
+Got to the [documentation site](http://docs.gempy.org/) for further information and enjoy the [tutorials and examples](https://www.gempy.org/tutorials).
 
 For questions and support, please use [discussions](https://github.com/cgre-aachen/gempy/discussions).
 
 If you find a bug or have a feature request, create an [issue](https://github.com/cgre-aachen/gempy/issues).
 
+Follow these [guidelines](https://github.com/cgre-aachen/gempy/blob/WIP_readme-update-march21/CONTRIBUTING.md) to contribute to GemPy.
+
 <a name="ref"></a>
 ## References 
 
-* de la Varga, M., Schaaf, A., and Wellmann, F.: GemPy 1.0: open-source stochastic geological modeling and inversion, Geosci. Model Dev., 12, 1-32, https://doi.org/10.5194/gmd-12-1-2019, 2019
+* de la Varga, M., Schaaf, A., and Wellmann, F. (2019). [GemPy 1.0: open-source stochastic geological modeling and inversion](https://gmd.copernicus.org/articles/12/1/2019/gmd-12-1-2019.pdf), Geosci. Model Dev., 12, 1-32.
+* Wellmann, F., & Caumon, G. (2018). [3-D Structural geological models: Concepts, methods, and uncertainties.](https://hal.univ-lorraine.fr/hal-01921494/file/structural_models_for_geophysicsHAL.pdf) In Advances in Geophysics (Vol. 59, pp. 1-121). Elsevier.
 * Calcagno, P., Chilès, J. P., Courrioux, G., & Guillen, A. (2008). Geological modelling from field data and geological knowledge: Part I. Modelling method coupling 3D potential-field interpolation and geological rules. Physics of the Earth and Planetary Interiors, 171(1-4), 147-157.
 * Lajaunie, C., Courrioux, G., & Manuel, L. (1997). Foliation fields and 3D cartography in geology: principles of a method based on potential interpolation. Mathematical Geology, 29(4), 571-584.
 
 ## Publications using GemPy
 
+* Güdük, N., de la Varga, M. Kaukolinna, J. and Wellmann, F. (in review). Model-Based Probabilistic Inversion Using Magnetic Data: A Case Study on the Kevitsa Deposit.
+* Schaaf, A., de la Varga, M., Wellmann, F., & Bond, C. E. (2020). [Constraining stochastic 3-D structural geological models with topology information using Approximate Bayesian Computation using GemPy 2.1](https://gmd.copernicus.org/preprints/gmd-2020-136/gmd-2020-136.pdf). Geoscientific Model Development Discussions, 1-24.
+* Stamm, F. A., de la Varga, M., and Wellmann, F.: [Actors, actions, and uncertainties: optimizing decision-making based on 3-D structural geological models](https://se.copernicus.org/articles/10/2015/2019/se-10-2015-2019.html), Solid Earth, 10, 2015–2043, https://doi.org/10.5194/se-10-2015-2019, 2019.
 * Wellmann, F., Schaaf, A., de la Varga, M., & von Hagke, C. (2019). [From Google Earth to 3D Geology Problem 2: Seeing Below the Surface of the Digital Earth](
 https://www.sciencedirect.com/science/article/pii/B9780128140482000156).
 In Developments in Structural Geology and Tectonics (Vol. 5, pp. 189-204). Elsevier.
-* add other papers
 
 ## Geometry Examples
 
