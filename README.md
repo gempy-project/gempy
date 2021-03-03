@@ -1,4 +1,4 @@
-# <p align="left"><img src="docs/readme_images/Gempy_logo.png" width="400"></p>
+# <p align="center"><img src="docs/readme_images/header_combined.png" width="1000"></p>
 
 > Open-source, implicit 3D structural geological modeling in Python.
 
@@ -10,8 +10,6 @@
 [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/cgre-aachen/gempy/master)
 [![DOI](https://zenodo.org/badge/96211155.svg)](https://zenodo.org/badge/latestdoi/96211155)
 [![DOCKER](https://img.shields.io/docker/cloud/automated/leguark/gempy.svg)](https://cloud.docker.com/repository/docker/leguark/gempy)
-
-<p align="center"><img src="docs/source/images/perth_example.png" width="600"></p>
 
 ## Overview
 
