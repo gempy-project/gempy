@@ -1,4 +1,4 @@
-# <p align="center"><img src="docs/readme_images/header_combined.png" width="1000"></p>
+# <p align="center"><img src="docs/readme_images/header_combined_slim.png" width="1000"></p>
 
 > Open-source, implicit 3D structural geological modeling in Python.
 
@@ -60,7 +60,7 @@ Follow these [guidelines](https://github.com/cgre-aachen/gempy/blob/WIP_readme-u
 
 * Güdük, N., de la Varga, M. Kaukolinna, J. and Wellmann, F. (in review). Model-Based Probabilistic Inversion Using Magnetic Data: A Case Study on the Kevitsa Deposit.
 * Schaaf, A., de la Varga, M., Wellmann, F., & Bond, C. E. (2020). [Constraining stochastic 3-D structural geological models with topology information using Approximate Bayesian Computation using GemPy 2.1](https://gmd.copernicus.org/preprints/gmd-2020-136/gmd-2020-136.pdf). Geoscientific Model Development Discussions, 1-24.
-* Stamm, F. A., de la Varga, M., and Wellmann, F.: [Actors, actions, and uncertainties: optimizing decision-making based on 3-D structural geological models](https://se.copernicus.org/articles/10/2015/2019/se-10-2015-2019.html), Solid Earth, 10, 2015–2043, https://doi.org/10.5194/se-10-2015-2019, 2019.
+* Stamm, F. A., de la Varga, M., and Wellmann, F. (2019). [Actors, actions, and uncertainties: optimizing decision-making based on 3-D structural geological models](https://se.copernicus.org/articles/10/2015/2019/se-10-2015-2019.html), Solid Earth, 10, 2015–2043.
 * Wellmann, F., Schaaf, A., de la Varga, M., & von Hagke, C. (2019). [From Google Earth to 3D Geology Problem 2: Seeing Below the Surface of the Digital Earth](
 https://www.sciencedirect.com/science/article/pii/B9780128140482000156).
 In Developments in Structural Geology and Tectonics (Vol. 5, pp. 189-204). Elsevier.
