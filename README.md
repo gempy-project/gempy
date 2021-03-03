@@ -1,4 +1,4 @@
-# <p align="center"><img src="docs/readme_images/header_combined.png" width="1000"></p>
+# <p align="center"><img src="docs/readme_images/header_combined_slim.png" width="1000"></p>
 
 > Open-source, implicit 3D structural geological modeling in Python.
 
