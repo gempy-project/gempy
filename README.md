@@ -65,24 +65,27 @@ Follow these [guidelines](https://github.com/cgre-aachen/gempy/blob/WIP_readme-u
 https://www.sciencedirect.com/science/article/pii/B9780128140482000156).
 In Developments in Structural Geology and Tectonics (Vol. 5, pp. 189-204). Elsevier.
 
-## Geometry Examples
+## Gallery
 
 <p>
 <table>
 <tr>
 
   <td>
-  <a align="center"><img src="docs/readme_images/model1.png" width="300">
+  <a href="https://docs.gempy.org/examples/geometries/1_horizontal_stratigraphic.html#sphx-glr-examples-geometries-1-horizontal-stratigraphic-py">
+  <img alt="colormapped image plot thumbnail" src="docs/readme_images/model1_nodata.png" width="300" />
   </a>
   </td>
-
+  
   <td>
-  <a align="center"><img src="docs/readme_images/model2.png" width="300">
+  <a href="https://docs.gempy.org/examples/geometries/2_fold.html#sphx-glr-examples-geometries-2-fold-py">
+  <img alt="colormapped image plot thumbnail" src="docs/readme_images/model2_nodata.png" width="300" />
   </a>
   </td>
-
-  <td>
-  <a align="center"><img src="docs/readme_images/model3.png" width="300">
+  
+   <td>
+  <a href="https://docs.gempy.org/examples/geometries/3_recumbent_fold.html#sphx-glr-examples-geometries-3-recumbent-fold-py">
+  <img alt="colormapped image plot thumbnail" src="docs/readme_images/model3_nodata.png" width="300" />
   </a>
   </td>
 
@@ -90,17 +93,20 @@ In Developments in Structural Geology and Tectonics (Vol. 5, pp. 189-204). Elsev
 <tr>
 
   <td>
-  <a align="center"><img src="docs/readme_images/model4.png" width="300">
+  <a href="https://docs.gempy.org/examples/geometries/4_pinchout.html#sphx-glr-examples-geometries-4-pinchout-py">
+  <img alt="colormapped image plot thumbnail" src="docs/readme_images/model4_nodata.png" width="300" />
   </a>
   </td>
-
+  
   <td>
-  <a align="center"><img src="docs/readme_images/model5.png" width="300">
+  <a href="https://docs.gempy.org/examples/geometries/5_fault.html#sphx-glr-examples-geometries-5-fault-py">
+  <img alt="colormapped image plot thumbnail" src="docs/readme_images/model5_nodata.png" width="300" />
   </a>
   </td>
-
+  
   <td>
-  <a align="center"><img src="docs/readme_images/model6.png" width="300">
+  <a href="https://docs.gempy.org/examples/geometries/6_unconformity.html#sphx-glr-examples-geometries-6-unconformity-py">
+  <img alt="colormapped image plot thumbnail" src="docs/readme_images/model6_nodata.png" width="300" />
   </a>
   </td>
 
