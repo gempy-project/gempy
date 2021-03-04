@@ -67,6 +67,8 @@ In Developments in Structural Geology and Tectonics (Vol. 5, pp. 189-204). Elsev
 
 ## Gallery
 
+### Geometries
+
 <p>
 <table>
 <tr>
@@ -107,6 +109,84 @@ In Developments in Structural Geology and Tectonics (Vol. 5, pp. 189-204). Elsev
   <td>
   <a href="https://docs.gempy.org/examples/geometries/6_unconformity.html#sphx-glr-examples-geometries-6-unconformity-py">
   <img alt="colormapped image plot thumbnail" src="docs/readme_images/model6_nodata.png" width="300" />
+  </a>
+  </td>
+
+</tr>
+</table>
+</p>
+
+### Features
+
+<p>
+<table>
+<tr>
+
+  <td>
+  <a href="https://docs.gempy.org/tutorials/ch1_fundamentals/ch1_3b_cross_sections.html#sphx-glr-tutorials-ch1-fundamentals-ch1-3b-cross-sections-py">
+  <img alt="colormapped image plot thumbnail" src="docs/readme_images/sectiontest.png" width="300" />
+  </a>
+  </td>
+  
+  <td>
+  <a href="https://docs.gempy.org/tutorials/ch1_fundamentals/ch1_7_3d_visualization.html#sphx-glr-tutorials-ch1-fundamentals-ch1-7-3d-visualization-py">
+  <img alt="colormapped image plot thumbnail" src="docs/readme_images/data_vis.png" width="300" />
+  </a>
+  </td>
+  
+   <td>
+  <a href="https://docs.gempy.org/examples/geometries/7_combination.html#sphx-glr-examples-geometries-7-combination-py">
+  <img alt="colormapped image plot thumbnail" src="docs/readme_images/scalarfield.png" width="300" />
+  </a>
+  </td>
+
+</tr>
+<tr>
+
+  <td>
+  <a href="https://docs.gempy.org/tutorials/ch1_fundamentals/ch1_3b_cross_sections.html#sphx-glr-tutorials-ch1-fundamentals-ch1-3b-cross-sections-py">
+  <img alt="colormapped image plot thumbnail" src="docs/readme_images/geomap.png" width="300" />
+  </a>
+  </td>
+  
+  <td>
+  <a href="https://docs.gempy.org/tutorials/ch4-Topology/ch4-1-Topology.html#sphx-glr-tutorials-ch4-topology-ch4-1-topology-py">
+  <img alt="colormapped image plot thumbnail" src="docs/readme_images/topology.png" width="300" />
+  </a>
+  </td>
+  
+  <td>
+  <a href="https://docs.gempy.org/tutorials/ch4-Topology/ch4-1-Topology.html#sphx-glr-tutorials-ch4-topology-ch4-1-topology-py">
+  <img alt="colormapped image plot thumbnail" src="docs/readme_images/topology_matrix.png" width="300" />
+  </a>
+  </td>
+
+</tr>
+</table>
+</p>
+
+
+### Case studies
+
+<p>
+<table>
+<tr>
+
+  <td>
+  <a href="https://docs.gempy.org/examples/real/Alesmodel.html#sphx-glr-examples-real-alesmodel-py">
+  <img alt="colormapped image plot thumbnail" src="docs/readme_images/alesmodel.png" width="300" />
+  </a>
+  </td>
+  
+  <td>
+  <a href="https://docs.gempy.org/examples/real/Perth_basin.html#sphx-glr-examples-real-perth-basin-py">
+  <img alt="colormapped image plot thumbnail" src="docs/readme_images/perthmodel.png" width="300" />
+  </a>
+  </td>
+  
+   <td>
+  <a href="https://docs.gempy.org/examples/real/Greenstone.html#sphx-glr-examples-real-greenstone-py">
+  <img alt="colormapped image plot thumbnail" src="docs/readme_images/greenstonemodel.png" width="300" />
   </a>
   </td>
 
