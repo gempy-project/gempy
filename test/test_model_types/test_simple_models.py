@@ -216,3 +216,29 @@ class TestFaults:
 
         ver, sim = gempy.get_surfaces(geo_data)
         print(ver, sim)
+
+    def test_compute_model_multiple_ranges(self, interpolator):
+
+
+        # Importing the data from csv files and settign extent and resolution
+        geo_data = gempy.create_data(extent=[0, 2000, 0, 2000, -2000, 0], resolution=[50, 50, 50],
+                                     path_o=input_path + "/GeoModeller/test_f/test_f_Foliations.csv",
+                                     path_i=input_path + "/GeoModeller/test_f/test_f_Points.csv")
+
+        gempy.map_stack_to_surfaces(geo_data, {'fault1': 'MainFault',
+                                               'series': ('Reservoir',
+                                                          'Seal',
+                                                          'SecondaryReservoir',
+                                                          'NonReservoirDeep'
+                                                          ),
+                                               },
+                                    )
+
+        geo_data.set_theano_function(interpolator)
+        geo_data.set_is_fault('fault1')
+        geo_data.modify_kriging_parameters('range', [3000, 3500, 0])
+        geo_data._additional_data.kriging_data.set_default_c_o()
+        # Compute model
+        sol = gempy.compute_model(geo_data, sort_surfaces=True)
+        gempy.plot.plot_2d(geo_data, cell_number=25, direction='y', show_data=True)
+        plt.show()

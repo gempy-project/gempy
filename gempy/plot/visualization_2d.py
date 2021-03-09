@@ -52,7 +52,8 @@ class Plot2D:
 
     def __init__(self, model, cmap=None, norm=None, **kwargs):
         self.model = model
-        self._color_lot = dict(zip(self.model._surfaces.df['surface'], self.model._surfaces.df['color']))
+        self._color_lot = dict(zip(self.model._surfaces.df['surface'],
+                                   self.model._surfaces.df['color']))
         self.axes = list()
 
         if cmap is None:
@@ -448,21 +449,25 @@ class Plot2D:
         select_projected_p = cartesian_point_dist < projection_distance
         select_projected_o = cartesian_ori_dist < projection_distance
 
-        if self.fig.is_legend is False and legend is True or legend == 'force':
-            make_legend = 'full'
-            self.fig.is_legend = True
-
-        else:
-            make_legend = None
-
         # Hack to keep the right X label:
         temp_label = copy.copy(ax.xaxis.label)
 
-        #points['surface'] = points['surface'].astype('category')
-        sns.scatterplot(data=points[select_projected_p], x=x, y=y, hue='surface',
-                        ax=ax, legend=make_legend,
-                        palette=self._color_lot, zorder=101)
+        points_df = points[select_projected_p]
+        points_df['colors'] = points_df['surface'].map(self._color_lot)
 
+        points_df.plot.scatter(x=x, y=y, ax=ax, c='colors', s=70,  zorder=102,
+                               edgecolors='white',
+                               colorbar=False)
+        # points_df.plot.scatter(x=x, y=y, ax=ax, c='white', s=80,  zorder=101,
+        #                        colorbar=False)
+
+        if self.fig.is_legend is False and legend is True or legend == 'force':
+
+            markers = [plt.Line2D([0, 0], [0, 0], color=color, marker='o',
+                                  linestyle='') for color in
+                       self._color_lot.values()]
+            ax.legend(markers, self._color_lot.keys(), numpoints=1)
+            self.fig.is_legend = True
         ax.xaxis.label = temp_label
 
         sel_ori = orientations[select_projected_o]
@@ -581,22 +586,28 @@ class Plot2D:
             p1, p2 = self.calculate_p1p2(direction, cell_number)
             resx = self.model._grid.regular_grid.resolution[0]
             resy = self.model._grid.regular_grid.resolution[1]
-            x, y, z = self._slice_topo_4_sections(p1, p2, resx)
-            if direction == 'x':
-                a = np.vstack((y, z)).T
-                ext = self.model._grid.regular_grid.extent[[2, 3]]
-            elif direction == 'y':
-                a = np.vstack((x, z)).T
-                ext = self.model._grid.regular_grid.extent[[0, 1]]
-            else:
-                raise NotImplementedError
-            a = np.append(a,
-                          ([ext[1], a[:, 1][-1]],
-                           [ext[1], self.model._grid.regular_grid.extent[5]],
-                           [ext[0], self.model._grid.regular_grid.extent[5]],
-                           [ext[0], a[:, 1][0]]))
-            line = a.reshape(-1, 2)
-            ax.fill(line[:, 0], line[:, 1], color='k')
+
+            try:
+                x, y, z = self._slice_topo_4_sections(p1, p2, resx)
+                if direction == 'x':
+                    a = np.vstack((y, z)).T
+                    ext = self.model._grid.regular_grid.extent[[2, 3]]
+                elif direction == 'y':
+                    a = np.vstack((x, z)).T
+                    ext = self.model._grid.regular_grid.extent[[0, 1]]
+                else:
+                    raise NotImplementedError
+                a = np.append(a,
+                              ([ext[1], a[:, 1][-1]],
+                               [ext[1], self.model._grid.regular_grid.extent[5]],
+                               [ext[0], self.model._grid.regular_grid.extent[5]],
+                               [ext[0], a[:, 1][0]]))
+                line = a.reshape(-1, 2)
+                ax.fill(line[:, 0], line[:, 1], color='k')
+            except IndexError:
+                warnings.warn('Topography needs to be a raster to be able to plot it'
+                                     'in 2D sections')
+        return ax
 
     def plot_contacts(self, ax, section_name=None, cell_number=None, direction='y', block=None,
                       only_faults=False, **kwargs):
@@ -639,6 +650,7 @@ class Plot2D:
                 for e, block in enumerate(scalar_fields):
                     level = self.model.solutions.scalar_field_at_surface_points[e][np.where(
                         self.model.solutions.scalar_field_at_surface_points[e] != 0)]
+
                     # Ignore warning about some scalars not being on the plot since it is very common
                     # that an interface does not exit for a given section
                     c_id2 = c_id + len(level)  # color id endpoint

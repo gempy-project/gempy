@@ -8,9 +8,8 @@ import gempy
 request = pytest.importorskip("requests")
 from gempy.addons import gempy_to_rexfile as gtr
 from gempy.addons import rex_api
-pyqrcode = pytest.importorskip("pyqrcde")
+pyqrcode = pytest.importorskip("pyqrcode")
 input_path = os.path.dirname(__file__)+'/../input_data'
-
 
 
 @pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
@@ -26,7 +25,7 @@ class TestGemPyToREX:
         return geo_data
 
     def test_write_header(self):
-        header_bytes = gtr.write_file_block(3, 1)
+        header_bytes = gtr.write_file_header_block(3, 1)
         if False:
             gtr.write_file(header_bytes, './rexfiles/header_test')
 
@@ -39,7 +38,7 @@ class TestGemPyToREX:
         data_block_size_no_header = (n_vtx_coord + n_triangles) * 4 + mesh_header_size
 
         # Write header
-        header_bytes = gtr.write_file_block(n_data_blocks=1,
+        header_bytes = gtr.write_file_header_block(n_data_blocks=1,
                                             size_data_blocks=data_block_size_no_header+gtr.rexDataBlockHeaderSize,
                                             start_data=file_header_size)
 
@@ -85,10 +84,10 @@ class TestGemPyToREX:
         with pytest.raises(RuntimeError):
             rex_bytes = gtr.geomodel_to_rex(model)
 
-    # TODO this test should go away together with the request = pytest.importorskip("request")
+    @pytest.mark.skip(reason="Needs token and secret. (@leguark they are in notion)")
     def test_plot_ar(self, geo_model):
         tag = gempy.plot.plot_ar(geo_model,
-                                 api_token='8e8a12ef-5da2-4790-9a84-15923a287965', \
+                                 api_token='foo', \
                                  project_name='Alesmodel',
-                                 secret='45tBkVGgbhodX1C9SCaGf7FxBOCTDIQv')
+                                 secret='bar')
         print(tag.display_tag(reverse=False))

@@ -18,7 +18,7 @@ def export_geomap2geotiff(path, geo_model, geo_map=None, geotiff_filepath=None):
     Returns:
         Saves the geological map as a geotiff to the given path.
     """
-    import gdal
+    from osgeo import gdal
 
     plot = PlotData2D(geo_model)
     cmap = plot._cmap

@@ -228,9 +228,9 @@ def read_csv(geo_model: Project, path_i=None, path_o=None, **kwargs):
     if path_i is not None or path_o is not None:
         try:
             geo_model.read_data(path_i, path_o, **kwargs)
-        except KeyError:
+        except KeyError as e:
             raise KeyError('Loading of CSV file failed. Check if you use commas '
-                           'to separate your data.')
+                           'to separate your data.' + str(e))
     return True
 
 
@@ -274,13 +274,7 @@ def compute_model(model: Project, output=None, at: np.ndarray = None, compute_me
 
     # Check config
     # ------------
-    assert model._interpolator.theano_function is not None, 'You need to compile' \
-                                                           'graph before. See `gempy.set_interpolator`.'
-
-    assert model._additional_data.structure_data.df.loc['values', 'len surfaces surface_points'].min() > 1, \
-        'To compute the model is necessary at least 2 interface points per layer'
-    assert len(model._interpolator.len_series_i) == len(model._interpolator.len_series_o), \
-        'Every Series/Fault need at least 1 orientation and 2 surfaces points.'
+    _check_valid_model_input(model)
 
     if output is not None:
         warnings.warn('Argument output has no effect anymore and will be deprecated in GemPy 2.2.'
@@ -301,34 +295,53 @@ def compute_model(model: Project, output=None, at: np.ndarray = None, compute_me
 
     elif set_solutions is True:
 
-        # Set geology:
-        model.solutions.set_values_to_surface_points(sol)
-
-        if model._grid.active_grids[0] is np.True_:
-            model.solutions.set_solution_to_regular_grid(sol, compute_mesh=compute_mesh, **kwargs)
-        if model._grid.active_grids[1] is np.True_:
-            model.solutions.set_solution_to_custom(sol)
-        if model._grid.active_grids[2] is np.True_:
-            model.solutions.set_solution_to_topography(sol)
-        if model._grid.active_grids[3] is np.True_:
-            model.solutions.set_solution_to_sections(sol)
-        # Set gravity
-        model.solutions.fw_gravity = sol[12]
-
-        # TODO: [X] Set magnetcs and [ ] set topology @A.Schaaf probably it should populate the topology object?
-        model.solutions.fw_magnetics = sol[13]
+        model.solutions.set_solutions(
+            sol,
+            compute_mesh,
+            sort_surfaces,
+            **kwargs)
 
         if sort_surfaces:
             model.set_surface_order_from_solution()
         return model.solutions
 
 
-# @_setdoc([Project.set_custom_grid.__doc__, compute_model.__doc__], indent=False)
+def _check_valid_model_input(model):
+    if model._interpolator.theano_function is None:
+        raise ValueError('You need to compile graph before. '
+                         'See `gempy.set_interpolator`.')
+    if model._additional_data.structure_data.df.loc[
+        'values', 'len surfaces surface_points'].min() < 1:
+        raise ValueError('To compute the model is necessary at least 2 interface '
+                         'points per layer')
+    if len(model._interpolator.len_series_i) != len(
+        model._interpolator.len_series_o):
+        raise ValueError('Every Series/Fault need at least 1 orientation and 2 '
+                         'surfaces points.')
+    is_basement_in_sp = model._surfaces.basement.isin(
+        model._surface_points.df['surface']).any()
+    is_basement_in_ori = model._surfaces.basement.isin(
+        model._orientations.df['surface']).any()
+
+    if is_basement_in_ori or is_basement_in_sp:
+        raise ValueError('There are surface points or orientations assigned to the '
+                         'Surface defined as basement (bottom of the stack). The '
+                         'basement surface only refers to the volume below the last '
+                         'surface and is not supposed to be interpolated. '
+                         'Add a "basement" surface (`model.add_surface("basement")`)'
+                         ' or delete the discordant surface points or orientations')
+
+    last_feature_is_fault = model._stack.df['BottomRelation'].last == 'fault'
+    if last_feature_is_fault:
+        raise ValueError('Last feature of the stack should not be a fault. '
+                         'Reorder the stack using geo_model.reorder_features(List)')
+
+
 def compute_model_at(new_grid: Union[ndarray], model: Project, **kwargs):
     """This function creates a new custom grid and deactivate all the other
     grids and compute the model there:
 
-    This function does the same as  plus the addition functionallity of
+    This function does the same as  plus the addition functionality of
         :func:`compute_model`
         passing a given array of points where evaluate the model instead of
         using the :class:`gempy.core.data.GridClass`.
@@ -343,7 +356,7 @@ def compute_model_at(new_grid: Union[ndarray], model: Project, **kwargs):
     """
     # #TODO create backup of the mesh and a method to go back to it
     #     set_grid(model, Grid('custom_grid', custom_grid=new_grid))
-    warnings.warn('compute_model_at will be deprecated in GemPy 2.2.'
+    warnings.warn('compute_model_at will be deprecated.'
                   'Use argument `at` in compute_model instead', DeprecationWarning)
     model._grid.deactivate_all_grids()
     model.set_custom_grid(new_grid)

@@ -32,6 +32,7 @@ for letter in 'ABCD':
 # Add fault:
 dfs.append(pn.read_csv('https://raw.githubusercontent.com/Loop3D/ImplicitBenchmark/master/Claudius/Fault.csv',
                        names=['X', 'Y', 'Z', 'surface'], header=0, sep=';'))
+
 surface_points = pn.concat(dfs, sort=True)
 surface_points['surface'] =surface_points['surface'].astype('str')
 # surface_points['surface'] = surface_points['surface'].astype('str')
@@ -298,3 +299,4 @@ def write_property_to_gocad_voxet(propertyfilename, propertyvalues):
 write_property_to_gocad_voxet('claudius_sf_gempy',
                               geo_model.solutions.scalar_field_matrix[1].reshape([38, 55, 30]).ravel('F'))
 
+gp.save_model(geo_model)

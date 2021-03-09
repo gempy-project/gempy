@@ -5,7 +5,6 @@ pymc3
 arviz
 # vtk plugins
 pyvistaqt
-pyevtk
 
 # AR
 pyqrcode
@@ -15,3 +14,7 @@ mplstereonet
 welly
 # gdal # install gdal with conda! `conda install gdal`
 
+sklearn
+
+# Subsurface
+subsurface

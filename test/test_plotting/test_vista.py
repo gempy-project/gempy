@@ -75,7 +75,7 @@ class TestVista:
         """
         sp = vista_object_only_data._select_surfaces_data(data_df=vista_object_only_data.model._surface_points.df,
                                                           surfaces='all')
-        np.testing.assert_almost_equal(sp.loc[4, 'X_r'],  0.486942, 5)
+        np.testing.assert_almost_equal(sp.loc[4, 'X_c'],  0.486942, 5)
 
         sp2 = vista_object_only_data._select_surfaces_data(data_df=vista_object_only_data.model._surface_points.df,
                                                            surfaces=['Sandstone_2'])
@@ -100,7 +100,7 @@ class TestVista:
         vista_object_only_data.plot_surface_points()
         img = vista_object_only_data.p.show(screenshot=True, auto_close=False)
         plt.imshow(img[1])
-        plt.show()
+        plt.show(block=False)
         print('foo')
 
     def test_plot_surface_points_poly_clear(self, vista_object_only_data):
@@ -113,7 +113,7 @@ class TestVista:
         vista_object_only_data.plot_surface_points()
         img = vista_object_only_data.p.show(screenshot=True, auto_close=False)
         plt.imshow(img[1])
-        plt.show()
+        plt.show(block=False)
         print('foo')
 
     def test_plot_data_static(self, vista_object_only_data):

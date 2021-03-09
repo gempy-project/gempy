@@ -7,6 +7,8 @@ Created on 21/02/2020
 """
 
 import numpy as np
+import matplotlib.colors as mcolors
+import pandas as pd
 
 rexFileHeaderSize = 64
 rexCoordSize = 22
@@ -46,7 +48,7 @@ class GemPyToRex:
         self.geo_model = geo_model
 
     def __call__(self, geo_model=None, meshes=True, material=True,
-                 surfaces=None, app='GemPlay'):
+                 surfaces=None, topography=True, app='GemPlay'):
         """
 
         Args:
@@ -64,6 +66,8 @@ class GemPyToRex:
 
         if geo_model is None:
             geo_model = self.geo_model
+        else:
+            self.geo_model = geo_model
 
         if surfaces is not None:
             raise NotImplementedError
@@ -72,22 +76,29 @@ class GemPyToRex:
         # flip_yz, backside, vertex_color = False, True, False
 
         surface_df = self.grab_meshes(geo_model)
+        if topography:
+            topography_dict = self.grab_topography(geo_model)
+        else:
+            topography_dict = None
 
         # Data Blocks
         # -----------
         if material is True:
             # Material
-            byte_array += self.gempy_color_to_rex_material(surface_df)
+            byte_array += self.gempy_color_to_rex_material(surface_df, topography)
 
         if meshes is True:
             # Mesh
-            byte_array += self.gempy_mesh_to_rex(
-                surface_df, flip_yz=flip_yz,
+            byte_array += self.gempy_meshes_to_rex(
+                surface_df,
+                topography_dict=topography_dict,
+                flip_yz=flip_yz,
                 backside=backside,
                 vertex_color=vertex_color)
 
         # Size of all data blocks together
         byte_size += len(byte_array)
+
         # Write file header
         # -----------------
         n_data_blocks = self.data_id
@@ -99,7 +110,8 @@ class GemPyToRex:
 
         return header_bytes + byte_array
 
-    def grab_meshes(self, geo_model):
+    @staticmethod
+    def grab_meshes(geo_model):
         """Check if surfaces are computed. And return a pandas.DataFrame with
          the meshes to be converted
 
@@ -118,6 +130,22 @@ class GemPyToRex:
             raise RuntimeError('No computed surfaces yet.')
 
         return surface_df[['surface', 'vertices', 'edges', 'color']]
+
+    @staticmethod
+    def grab_topography(geo_model):
+        from scipy.spatial import Delaunay
+
+        if geo_model._grid.topography is None or geo_model._grid.topography.values.shape[0] == 0:
+            return None
+        else:
+            topography_dict = dict()
+            topography_dict['surface'] = "Topography"
+            topography_dict['vertices'] = geo_model._grid.topography.values
+            # tri = Delaunay(geo_model._grid.topography.values)
+            topography_dict['edges'] = Delaunay(geo_model._grid.topography.values[:, :2]).simplices
+            topography_dict['color'] = geo_model.solutions.geological_map
+
+            return topography_dict
 
     @staticmethod
     def hex_to_rgb(hex: str, normalize: bool = True) -> np.ndarray:
@@ -146,15 +174,20 @@ class GemPyToRex:
         else:
             raise AttributeError('app must be either GemPlay or RexView')
 
-    def gempy_mesh_to_rex(self, surface_df, flip_yz=False, backside=True,
-                          vertex_color=False):
+    def gempy_meshes_to_rex(self,
+                            surface_df,
+                            topography_dict=None,
+                            flip_yz=False,
+                            backside=True,
+                            vertex_color=False):
         """Write mesh to Rexfile.
 
         Args:
-            vertex_color:
             surface_df:
+            topography_dict:
             flip_yz: Fliping YZ coordinates. Rexview need this
             backside: If True, create a second set of triangles on the backside of the mesh
+            vertex_color
 
         Returns:
 
@@ -163,8 +196,9 @@ class GemPyToRex:
 
         """
         rex_bytes = bytearray()
-        iter = 0
-        # Loop surfaces
+        mesh_number = 0
+
+        # Loop geological surfaces surfaces
         for idx, surface_vals in surface_df.iterrows():
 
             tri = surface_vals['edges']
@@ -172,49 +206,91 @@ class GemPyToRex:
                 continue
 
             ver = surface_vals['vertices']
-
-            if flip_yz:
-                # This depends. For RexViewer we need to flip XYZ. For GemPlay not really
-                ver_ = np.copy(ver)
-                ver[:, 2] = ver_[:, 1]
-                ver[:, 1] = ver_[:, 2]
-
-            # Pre-processing GemPy output
-            ver_ravel, tri_ravel, n_vtx_coord, n_triangles = mesh_preprocess(ver, tri)
-
-            # Number of vertex colors
+            surface_name = surface_vals['surface']
             if vertex_color:
-                n_vtx_colors = n_vtx_coord
                 # Hex Colors
                 col_ = surface_vals['color']
-                # Give color to each vertex
-                # TODO: Is this necessary if I pass a material
+            else:
+                col_ = None
+
+            rex_bytes = self.mesh_prepare_and_encode(rex_bytes, mesh_number, ver, tri,
+                                                     surface_name, col_=col_,
+                                                     flip_yz=flip_yz, backside=backside,
+                                                     vertex_color=False)
+            mesh_number += 1
+
+        # Add topography
+        if topography_dict is not None:
+
+            rex_bytes = self.mesh_prepare_and_encode(rex_bytes, n_surface=-1,
+                                                     ver=topography_dict['vertices'],
+                                                     tri=topography_dict['edges'],
+                                                     surface_name=topography_dict['surface'],
+                                                     col_=topography_dict['color'],
+                                                     flip_yz=flip_yz, backside=backside,
+                                                     vertex_color=True)
+
+        return rex_bytes
+
+    def mesh_prepare_and_encode(self, rex_bytes, n_surface, ver, tri, surface_name, col_=None, \
+                                flip_yz=False,
+                                backside=True,
+                                vertex_color=False):
+
+        if flip_yz:
+            # This depends. For RexViewer we need to flip XYZ. For GemPlay not really
+            ver_ = np.copy(ver)
+            ver[:, 2] = ver_[:, 1]
+            ver[:, 1] = ver_[:, 2]
+
+        # Pre-processing GemPy output
+        ver_ravel, tri_ravel, n_vtx_coord, n_triangles = mesh_preprocess(ver, tri)
+
+        # Number of vertex colors
+        if vertex_color:
+            n_vtx_colors = n_vtx_coord
+
+            # Give color to each vertex
+            # TODO: Is this necessary if I pass a material
+            if type(col_) is str:
                 colors = np.zeros_like(ver) + self.hex_to_rgb(col_, normalize=True)
                 c_r = colors.ravel()
+
+            elif type(col_) is np.ndarray:
+                surf_df = self.geo_model._surfaces.df.set_index('id')
+                colors_hex = surf_df.groupby(
+                    ['isActive', 'isFault']).get_group((True, False))['color']
+
+                colors_rgb_ = colors_hex.apply(lambda val: list(mcolors.hex2color(val)))
+                colors_rgb = pd.DataFrame(colors_rgb_.to_list(), index=colors_hex.index)
+
+                sel = np.round(col_[0]).astype(int)[0]
+                c_r = colors_rgb.loc[sel].values.ravel()
             else:
-                n_vtx_colors = 0
-                c_r = None
+                raise AttributeError("col_ must be either hex string or rgb array")
+        else:
+            n_vtx_colors = 0
+            c_r = None
+
+        rex_bytes = self._mesh_encode(
+            rex_bytes, n_surface,
+            n_vtx_coord, n_triangles, n_vtx_colors,
+            surface_name, ver_ravel, tri_ravel, c_r)
+
+        if backside:
+            # Coping triangles to create the backside normal of the layers
+            tri_ = np.copy(tri)
+            # TURN normals - One side of the normals
+            tri_[:, 2] = tri[:, 1]
+            tri_[:, 1] = tri[:, 2]
+            # Pre-processing GemPy output
+            ver_ravel, tri_ravel, n_vtx_coord, n_triangles = mesh_preprocess(ver, tri_)
+            # tri = np.append(tri, tri_)
 
             rex_bytes = self._mesh_encode(
-                rex_bytes, iter,
+                rex_bytes, n_surface,
                 n_vtx_coord, n_triangles, n_vtx_colors,
-                surface_vals['surface'], ver_ravel, tri_ravel, c_r)
-
-            if backside:
-                # Coping triangles to create the backside normal of the layers
-                tri_ = np.copy(tri)
-                # TURN normals - One side of the normals
-                tri_[:, 2] = tri[:, 1]
-                tri_[:, 1] = tri[:, 2]
-                # Pre-processing GemPy output
-                ver_ravel, tri_ravel, n_vtx_coord, n_triangles = mesh_preprocess(ver, tri_)
-                # tri = np.append(tri, tri_)
-
-                rex_bytes = self._mesh_encode(
-                    rex_bytes, iter,
-                    n_vtx_coord, n_triangles, n_vtx_colors,
-                    surface_vals['surface'], ver_ravel, tri_ravel, c_r)
-            iter += 1
+                surface_name, ver_ravel, tri_ravel, c_r)
 
         return rex_bytes
 
@@ -258,8 +334,9 @@ class GemPyToRex:
 
         return rex_bytes
 
-    def gempy_color_to_rex_material(self, surface_df):
+    def gempy_color_to_rex_material(self, surface_df, topography=False):
         rex_bytes = bytearray()
+
         for idx, surface_vals in surface_df.iterrows():
             # Write data block header for Material 1
             data_header_bytes = write_data_block_header(
@@ -271,7 +348,7 @@ class GemPyToRex:
             self.data_id += 1
 
             rgb_color = self.hex_to_rgb(surface_vals['color'], normalize=True)
-            #rgb_color = [1, 1, 1]
+            # rgb_color = [1, 1, 1]
             # Write Material
             material_bytes = write_material_data(
                 ka_red=rgb_color[0], ka_green=rgb_color[1], ka_blue=rgb_color[2],
@@ -284,6 +361,31 @@ class GemPyToRex:
                 alpha=1  # opacity
             )
 
+            rex_bytes += data_header_bytes + material_bytes
+
+        if topography is True:
+            # Write data block header for Material 1
+            data_header_bytes = write_data_block_header(
+                data_type=5,  # Material data type
+                version_data=1,  # Version. Probably useful for operation counter
+                size_data=68,  # Size of the block is FIXED
+                data_id=-1  # self.data_id
+            )
+
+            rgb_color = [1, 1, 1]
+            # Write Material
+            material_bytes = write_material_data(
+                ka_red=rgb_color[0], ka_green=rgb_color[1], ka_blue=rgb_color[2],
+                ka_texture_ID=9223372036854775807,  # ambient
+                ks_red=rgb_color[0], ks_green=rgb_color[1], ks_blue=rgb_color[2],
+                ks_texture_ID=9223372036854775807,  # specular
+                kd_red=rgb_color[0], kd_green=rgb_color[1], kd_blue=rgb_color[2],
+                kd_texture_ID=9223372036854775807,  # diffuse
+                ns=0.1,  # specular exponent
+                alpha=1  # opacity
+            )
+
+            self.data_id += 1
             rex_bytes += data_header_bytes + material_bytes
 
         return rex_bytes
@@ -639,7 +741,7 @@ def geomodel_to_rex(geo_model, backside=True):
 
         # FOR REXView Saving each surface is a rexfile
         rex_bytes[surface_vals['surface']] = all_bytes
-    return all_bytes  # rex_bytes
+    return rex_bytes
 
 
 def mesh_preprocess(ver, tri):

@@ -184,14 +184,15 @@ gp.plot_3d(geo_model)
 # 
 
 # %% 
-geo_model.add_series('Unconformity')
+geo_model.add_features('Unconformity')
 
 # %%
 # Now we set the green layer in the second series
 # 
 
 # %% 
-geo_model.map_series_to_surfaces({'Uncomformity': ['brian', 'evan', 'dieter']})
+geo_model.map_stack_to_surfaces({'Uncomformity': ['brian', 'evan', 'dieter']})
+geo_model.add_surfaces('basement')
 
 # %%
 # Lastly we need to add a dummy orientation to the new series:

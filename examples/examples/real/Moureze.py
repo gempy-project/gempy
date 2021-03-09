@@ -103,7 +103,7 @@ gp.plot_2d(geo_model, direction='y')
 
 # %% 
 gp.set_interpolator(geo_model,
-                    theano_optimizer='fast_run', dtype='float32')
+                    theano_optimizer='fast_run', dtype='float64')
 
 # %%
 # The default range is always the diagonal of the extent. Since in this
@@ -112,9 +112,9 @@ gp.set_interpolator(geo_model,
 # 
 
 # %% 
-val = .1
-geo_model.interpolator.theano_graph.a_T.set_value(val)
-geo_model.interpolator.theano_graph.a_T_surface.set_value(val)
+
+new_range = geo_model.get_additional_data().loc[('Kriging', 'range'), 'values'] * 0.2
+geo_model.modify_kriging_parameters('range', new_range)
 
 # %%
 gp.compute_model(geo_model, set_solutions=True, sort_surfaces=False)
@@ -192,3 +192,4 @@ geo_model.surfaces
 # np.save('Moureze_edges', geo_model.solutions.edges)
 # gp.plot.export_to_vtk(geo_model, 'Moureze')
 
+gp.save_model(geo_model)

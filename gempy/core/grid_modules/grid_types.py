@@ -27,6 +27,7 @@ class RegularGrid:
         dz (float): size of the cells on z
 
     """
+
     def __init__(self, extent=None, resolution=None, **kwargs):
         self.resolution = np.ones((0, 3), dtype='int64')
         self.extent = np.zeros(6, dtype='float64')
@@ -34,12 +35,29 @@ class RegularGrid:
         self.values = np.zeros((0, 3))
         self.values_r = np.zeros((0, 3))
         self.mask_topo = np.zeros((0, 3), dtype=bool)
+        self.x = None
+        self.y = None
+        self.z = None
+
         if extent is not None and resolution is not None:
             self.set_regular_grid(extent, resolution)
             self.dx, self.dy, self.dz = self.get_dx_dy_dz()
 
-    @staticmethod
-    def create_regular_grid_3d(extent, resolution):
+    def set_coord(self, extent, resolution):
+        dx = (extent[1] - extent[0]) / resolution[0]
+        dy = (extent[3] - extent[2]) / resolution[1]
+        dz = (extent[5] - extent[4]) / resolution[2]
+
+        self.x = np.linspace(extent[0] + dx / 2, extent[1] - dx / 2, resolution[0],
+                             dtype="float64")
+        self.y = np.linspace(extent[2] + dy / 2, extent[3] - dy / 2, resolution[1],
+                             dtype="float64")
+        self.z = np.linspace(extent[4] + dz / 2, extent[5] - dz / 2, resolution[2],
+                             dtype="float64")
+
+        return self.x, self.y, self.z
+
+    def create_regular_grid_3d(self, extent, resolution):
         """
         Method to create a 3D regular grid where is interpolated
 
@@ -52,16 +70,8 @@ class RegularGrid:
 
         """
 
-        dx = (extent[1] - extent[0]) / resolution[0]
-        dy = (extent[3] - extent[2]) / resolution[1]
-        dz = (extent[5] - extent[4]) / resolution[2]
-
-        g = np.meshgrid(
-            np.linspace(extent[0] + dx / 2, extent[1] - dx / 2, resolution[0], dtype="float64"),
-            np.linspace(extent[2] + dy / 2, extent[3] - dy / 2, resolution[1], dtype="float64"),
-            np.linspace(extent[4] + dz / 2, extent[5] - dz / 2, resolution[2], dtype="float64"), indexing="ij"
-        )
-
+        coords = self.set_coord(extent, resolution)
+        g = np.meshgrid(*coords, indexing="ij")
         values = np.vstack(tuple(map(np.ravel, g))).T.astype("float64")
         return values
 
@@ -101,8 +111,9 @@ class RegularGrid:
         Returns:
 
         """
-        assert np.array_equal(topography.extent, self.extent), 'The extent of' \
-            'the topography must match to the extent of the regular grid.'
+        assert np.array_equal(topography.extent,
+                              self.extent), 'The extent of' \
+                                            'the topography must match to the extent of the regular grid.'
 
         # interpolate topography values to the regular grid
         regular_grid_topo = skimage.transform.resize(
@@ -113,7 +124,13 @@ class RegularGrid:
 
         # Reshape the Z values of the regular grid to 3d
         values_3d = self.values[:, 2].reshape(self.resolution)
-        mask = np.greater(values_3d[:, :, :], regular_grid_topo[:, :, [2]])
+        if regular_grid_topo.ndim == 3:
+            regular_grid_topo_z = regular_grid_topo[:, :, [2]]
+        elif regular_grid_topo.ndim == 2:
+            regular_grid_topo_z = regular_grid_topo
+        else:
+            raise ValueError()
+        mask = np.greater(values_3d[:, :, :], regular_grid_topo_z)
 
         self.mask_topo = mask
         return self.mask_topo
@@ -127,6 +144,7 @@ class Sections:
         regular_grid: Model.grid.regular_grid
         section_dict: {'section name': ([p1_x, p1_y], [p2_x, p2_y], [xyres, zres])}
     """
+
     def __init__(self, regular_grid=None, z_ext=None, section_dict=None):
         if regular_grid is not None:
             self.z_ext = regular_grid.extent[4:]
@@ -145,7 +163,7 @@ class Sections:
         self.extent = None
 
         if section_dict is not None:
-           self.set_sections(section_dict)
+            self.set_sections(section_dict)
 
     def _repr_html_(self):
         return self.df.to_html()
@@ -165,7 +183,8 @@ class Sections:
 
         self.get_section_params()
         self.calculate_all_distances()
-        self.df = pn.DataFrame.from_dict(self.section_dict, orient='index', columns=['start', 'stop', 'resolution'])
+        self.df = pn.DataFrame.from_dict(self.section_dict, orient='index',
+                                         columns=['start', 'stop', 'resolution'])
         self.df['dist'] = self.dist
 
         self.compute_section_coordinates()
@@ -177,7 +196,8 @@ class Sections:
 
         for i, section in enumerate(self.names):
             points = [self.section_dict[section][0], self.section_dict[section][1]]
-            assert points[0] != points[1], 'The start and end points of the section must not be identical.'
+            assert points[0] != points[
+                1], 'The start and end points of the section must not be identical.'
 
             self.points.append(points)
             self.resolution.append(self.section_dict[section][2])
@@ -186,8 +206,10 @@ class Sections:
         self.length = np.array(self.length).cumsum()
 
     def calculate_all_distances(self):
-        self.coordinates = np.array(self.points).ravel().reshape(-1, 4) #axis are x1,y1,x2,y2
-        self.dist = np.sqrt(np.diff(self.coordinates[:, [0, 2]])**2 + np.diff(self.coordinates[:, [1, 3]])**2)
+        self.coordinates = np.array(self.points).ravel().reshape(-1,
+                                                                 4)  # axis are x1,y1,x2,y2
+        self.dist = np.sqrt(np.diff(self.coordinates[:, [0, 2]]) ** 2 + np.diff(
+            self.coordinates[:, [1, 3]]) ** 2)
 
     @staticmethod
     def distance_2_points(p1, p2):
@@ -195,9 +217,11 @@ class Sections:
 
     def compute_section_coordinates(self):
         for i in range(len(self.names)):
-            xy = self.calculate_line_coordinates_2points(self.coordinates[i, :2], self.coordinates[i, 2:], self.resolution[i][0])
+            xy = self.calculate_line_coordinates_2points(self.coordinates[i, :2],
+                                                         self.coordinates[i, 2:],
+                                                         self.resolution[i][0])
             zaxis = np.linspace(self.z_ext[0], self.z_ext[1], self.resolution[i][1],
-                                     dtype="float64")
+                                dtype="float64")
             X, Z = np.meshgrid(xy[:, 0], zaxis, indexing='ij')
             Y, _ = np.meshgrid(xy[:, 1], zaxis, indexing='ij')
             xyz = np.vstack((X.flatten(), Y.flatten(), Z.flatten())).T
@@ -206,13 +230,22 @@ class Sections:
             else:
                 self.values = np.vstack((self.values, xyz))
 
+    def generate_axis_coord(self):
+        for i, name in enumerate(self.names):
+            xy = self.calculate_line_coordinates_2points(
+                self.coordinates[i, :2],
+                self.coordinates[i, 2:],
+                self.resolution[i][0]
+            )
+            yield name, xy
+
     def calculate_line_coordinates_2points(self, p1, p2, res):
         if isinstance(p1, list):
             p1 = np.array(p1)
         if isinstance(p2, list):
             p2 = np.array(p2)
-        v = p2-p1 #vector pointing from p1 to p2
-        u = v/np.linalg.norm(v) # normalize it
+        v = p2 - p1  # vector pointing from p1 to p2
+        u = v / np.linalg.norm(v)  # normalize it
         distance = self.distance_2_points(p1, p2)
         steps = np.linspace(0, distance, res)
         values = p1.reshape(2, 1) + u.reshape(2, 1) * steps.ravel()
@@ -220,7 +253,7 @@ class Sections:
 
     def get_section_args(self, section_name: str):
         where = np.where(self.names == section_name)[0][0]
-        return self.length[where], self.length[where+1]
+        return self.length[where], self.length[where + 1]
 
     def get_section_grid(self, section_name: str):
         l0, l1 = self.get_section_args(section_name)
@@ -254,14 +287,15 @@ class Sections:
             else:
                 return np.flipud(zi).diagonal()
         else:
-            assert xy[:, 0][0] <= xy[:, 0][-1], 'The xy values of the first point must be smaller than second.' \
-                                               'Please use interp2d as method argument. Will be fixed.'
-            assert xy[:, 1][0] <= xy[:, 1][-1], 'The xy values of the first point must be smaller than second.' \
-                                               'Please use interp2d as method argument. Will be fixed.'
+            assert xy[:, 0][0] <= xy[:, 0][
+                -1], 'The xy values of the first point must be smaller than second.' \
+                     'Please use interp2d as method argument. Will be fixed.'
+            assert xy[:, 1][0] <= xy[:, 1][
+                -1], 'The xy values of the first point must be smaller than second.' \
+                     'Please use interp2d as method argument. Will be fixed.'
             f = interpolate.RectBivariateSpline(xj, yj, zj)
             zi = f(xy[:, 0], xy[:, 1])
             return np.flipud(zi).diagonal()
-
 
 
 class CustomGrid:
@@ -273,6 +307,7 @@ class CustomGrid:
     Attributes:
         values (np.ndarray): XYZ coordinates
     """
+
     def __init__(self, custom_grid: np.ndarray):
         self.values = np.zeros((0, 3))
         self.set_custom_grid(custom_grid)
@@ -289,9 +324,9 @@ class CustomGrid:
                grid
         """
         custom_grid = np.atleast_2d(custom_grid)
-        assert type(custom_grid) is np.ndarray and custom_grid.shape[1] is 3, 'The shape of new grid must be (n,3)' \
-                                                                              ' where n is the number of points of ' \
-                                                                              'the grid'
+        assert type(custom_grid) is np.ndarray and custom_grid.shape[1] == 3, \
+            'The shape of new grid must be (n,3)  where n is the number of' \
+            ' points of the grid'
 
         self.values = custom_grid
         self.length = self.values.shape[0]
@@ -317,7 +352,8 @@ class CenteredGrid:
             if resolution is None:
                 resolution = [10, 10, 20]
 
-            self.set_centered_grid(centers=centers, radius=radius, resolution=resolution)
+            self.set_centered_grid(centers=centers, radius=radius,
+                                   resolution=resolution)
 
     @staticmethod
     @_setdoc_pro(ds.resolution)
@@ -345,15 +381,17 @@ class CenteredGrid:
                 # Make the grid only negative for the z axis
 
                 g_.append(np.geomspace(0.01, 1, int(resolution[xyz])))
-                g_2.append((np.concatenate(([0], g_[xyz])) + 0.05) * - radius[xyz] * 1.2)
+                g_2.append(
+                    (np.concatenate(([0], g_[xyz])) + 0.05) * - radius[xyz] * 1.2)
             else:
                 g_.append(np.geomspace(0.01, 1, int(resolution[xyz] / 2)))
-                g_2.append(np.concatenate((-g_[xyz][::-1], [0], g_[xyz])) * radius[xyz])
+                g_2.append(
+                    np.concatenate((-g_[xyz][::-1], [0], g_[xyz])) * radius[xyz])
             d_.append(np.diff(np.pad(g_2[xyz], 1, 'reflect', reflect_type='odd')))
 
         g = np.meshgrid(*g_2)
-        d_left = np.meshgrid(d_[0][:-1]/2, d_[1][:-1]/2, d_[2][:-1]/2)
-        d_right = np.meshgrid(d_[0][1:]/2, d_[1][1:]/2, d_[2][1:]/2)
+        d_left = np.meshgrid(d_[0][:-1] / 2, d_[1][:-1] / 2, d_[2][:-1] / 2)
+        d_right = np.meshgrid(d_[0][1:] / 2, d_[1][1:] / 2, d_[2][1:] / 2)
         kernel_g = np.vstack(tuple(map(np.ravel, g))).T.astype("float64")
         kernel_d_left = np.vstack(tuple(map(np.ravel, d_left))).T.astype("float64")
         kernel_d_right = np.vstack(tuple(map(np.ravel, d_right))).T.astype("float64")
@@ -398,7 +436,8 @@ class CenteredGrid:
         if kernel_centers is None:
             kernel_centers = self.set_centered_kernel(**kwargs)
 
-        assert centers.shape[1] == 3, 'Centers must be a numpy array that contains the coordinates XYZ'
+        assert centers.shape[
+                   1] == 3, 'Centers must be a numpy array that contains the coordinates XYZ'
 
         for i in centers:
             self.values = np.vstack((self.values, i + kernel_centers))
@@ -416,9 +455,12 @@ class CenteredGrid:
         s_gr_z = grid_values[:, 2]
 
         # getting the coordinates of the corners of the voxel...
-        x_cor = np.stack((s_gr_x - self.kernel_dxyz_left[:, 0], s_gr_x + self.kernel_dxyz_right[:, 0]), axis=1)
-        y_cor = np.stack((s_gr_y - self.kernel_dxyz_left[:, 1], s_gr_y + self.kernel_dxyz_right[:, 1]), axis=1)
-        z_cor = np.stack((s_gr_z - self.kernel_dxyz_left[:, 2], s_gr_z + self.kernel_dxyz_right[:, 2]), axis=1)
+        x_cor = np.stack((s_gr_x - self.kernel_dxyz_left[:, 0],
+                          s_gr_x + self.kernel_dxyz_right[:, 0]), axis=1)
+        y_cor = np.stack((s_gr_y - self.kernel_dxyz_left[:, 1],
+                          s_gr_y + self.kernel_dxyz_right[:, 1]), axis=1)
+        z_cor = np.stack((s_gr_z - self.kernel_dxyz_left[:, 2],
+                          s_gr_z + self.kernel_dxyz_right[:, 2]), axis=1)
 
         # ...and prepare them for a vectorial op
         x_matrix = np.repeat(x_cor, 4, axis=1)
@@ -436,11 +478,11 @@ class CenteredGrid:
                    mu * (
                            x_matrix * np.log(y_matrix + s_r) +
                            y_matrix * np.log(x_matrix + s_r) -
-                           z_matrix * np.arctan(x_matrix * y_matrix / (z_matrix * s_r))),
+                           z_matrix * np.arctan(
+                       x_matrix * y_matrix / (z_matrix * s_r))),
                    axis=1))
 
         return self.tz
-
 
 # class Topography:
 #     """
@@ -584,4 +626,3 @@ class CenteredGrid:
 #             f = interpolate.RectBivariateSpline(xj, yj, zj)
 #             zi = f(xy[:, 0], xy[:, 1])
 #             return np.flipud(zi).diagonal()
-
