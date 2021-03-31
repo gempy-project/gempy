@@ -8,7 +8,7 @@ branches:
         - release
 
 python:
-  - '3.7'
+  - '3.8'
 
 before_install:
   # configure a headless display
