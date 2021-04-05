@@ -1578,6 +1578,11 @@ class TheanoGraphPro(object):
         # Add name to the theano node
         sigma_0_interf.name = 'Contribution of the surface_points to the potential field at every point of the grid'
 
+        if str(sys._getframe().f_code.co_name) in self.verbose:
+            sigma_0_interf = theano.printing.Print('interface_contribution')(
+                sigma_0_interf)
+
+
         return sigma_0_interf
 
     def contribution_universal_drift(self, grid_val, weights=None):
@@ -1817,9 +1822,8 @@ class TheanoGraphPro(object):
             drift = theano.printing.Print("drift[slice_init:slice_init+1][0]")(drift)
 
         # The 5 rules the slope of the function
-        sigm = (-n_surface_0.reshape((-1, 1)) / (1 + T.exp(-l * (Z_x - a)))) - \
-               (n_surface_1.reshape((-1, 1)) / (
-                       1 + T.exp(l * (Z_x - b)))) + drift.reshape((-1, 1))
+        sigm =  (-n_surface_0.reshape((-1, 1)) / (1 + T.exp(-l * (Z_x - a)))) \
+               - (n_surface_1.reshape((-1, 1)) / (1 + T.exp(l * (Z_x - b)))) + drift.reshape((-1, 1))
         if 'sigma' in self.verbose:
             sigm = theano.printing.Print("middle point")(sigm)
         return sigm
