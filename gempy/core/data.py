@@ -43,7 +43,7 @@ class MetaData(object):
         now = datetime.datetime.now()
         self.date = now.strftime(" %Y-%m-%d %H:%M")
 
-        if project_name is 'default_project':
+        if project_name == 'default_project':
             project_name += self.date
 
         self.project_name = project_name
@@ -189,6 +189,9 @@ class Grid(object):
                 self.topography.load_from_saved(filepath)
             else:
                 print('path to .npy file must be provided')
+        elif source == 'numpy':
+            array = kwargs.get('array', None)
+            self.topography.set_values(array)
         else:
             raise AttributeError('source must be random, gdal or saved')
 
@@ -472,7 +475,8 @@ class Surfaces(object):
             self.set_surfaces_names(surface_names)
 
         if values_array is not None:
-            self.set_surfaces_values(values_array=values_array, properties_names=properties_names)
+            self.set_surfaces_values(values_array=values_array,
+                                     properties_names=properties_names)
 
     def __repr__(self):
         c_ = self.df.columns[~(self.df.columns.isin(self._columns_vis_drop))]
@@ -483,6 +487,16 @@ class Surfaces(object):
         c_ = self.df.columns[~(self.df.columns.isin(self._columns_vis_drop))]
 
         return self.df[c_].style.applymap(self.background_color, subset=['color']).render()
+
+    @property
+    def properties_val(self):
+        all_col = self.df.columns
+        prop_cols = all_col.drop(self._columns)
+        return prop_cols.insert(0, 'id')
+
+    @property
+    def basement(self):
+        return self.df['surface'][self.df['isBasement']]
 
     def update_id(self, id_list: list = None):
         """
@@ -667,7 +681,7 @@ class Surfaces(object):
         group = self.df.groupby('series').get_group(series_name)['order_surfaces']
         assert np.isin(new_value, group), 'new_value must exist already in the order_surfaces group.'
         old_value = group[idx]
-        self.df.loc[group.index, 'order_surfaces'] = group.replace([new_value, old_value], [old_value, new_value])
+        self.df.loc[group.index.astype('int'), 'order_surfaces'] = group.replace([new_value, old_value], [old_value, new_value])
         self.sort_surfaces()
         self.set_basement()
         return self
@@ -950,9 +964,9 @@ class Structure(object):
         # Array containing the size of every series. SurfacePoints.
         points_count = self.surface_points.df['order_series'].value_counts(sort=False)
         len_series_i = np.zeros(len_series, dtype=int)
-        len_series_i[points_count.index - 1] = points_count.values
+        len_series_i[points_count.index.astype('int') - 1] = points_count.values
 
-        if len_series_i.shape[0] is 0:
+        if len_series_i.shape[0] == 0:
             len_series_i = np.insert(len_series_i, 0, 0)
 
         self.df.at['values', 'len series surface_points'] = len_series_i
@@ -971,7 +985,7 @@ class Structure(object):
 
         len_series_o = np.zeros(self.surfaces.series.df.shape[0], dtype=int)
         ori_count = self.orientations.df['order_series'].value_counts(sort=False)
-        len_series_o[ori_count.index - 1] = ori_count.values
+        len_series_o[ori_count.index.astype('int') - 1] = ori_count.values
 
         self.df.at['values', 'len series orientations'] = len_series_o
 
@@ -989,7 +1003,7 @@ class Structure(object):
         surf_count = self.surface_points.df.groupby('order_series'). \
             surface.nunique()
 
-        len_sps[surf_count.index - 1] = surf_count.values
+        len_sps[surf_count.index.astype('int') - 1] = surf_count.values
 
         self.df.at['values', 'number surfaces per series'] = len_sps
         return self.df
@@ -1121,7 +1135,9 @@ class KrigingParameters(object):
                            columns=['range', '$C_o$', 'drift equations',
                                     ])
 
-        self.df = df_.astype({'drift equations': object})
+        self.df = df_.astype({'drift equations': object,
+                              'range': object,
+                              '$C_o$': object})
         self.set_default_range()
         self.set_default_c_o()
         self.set_u_grade()
@@ -1165,7 +1181,11 @@ class KrigingParameters(object):
                 print('u_grade length must be the same as the number of series')
 
         else:
-            self.df.loc['values', attribute] = value
+            self.df = self.df.astype({'drift equations': object,
+                                  'range': object,
+                                  '$C_o$': object})
+
+            self.df.at['values', attribute] = value
 
     def str2int_u_grade(self, **kwargs):
         """
@@ -1214,11 +1234,12 @@ class KrigingParameters(object):
                 (extent[2] - extent[3]) ** 2 +
                 (extent[4] - extent[5]) ** 2)
         except TypeError:
-            warnings.warn('The extent passed or if None the extent of the grid object has some type of problem',
+            warnings.warn('The extent passed or if None the extent of the grid object has some '
+                          'type of problem',
                           TypeError)
-            range_var = np.nan
+            range_var = np.array(np.nan)
 
-        self.df['range'] = range_var
+        self.df['range'] = np.atleast_1d(range_var)
 
         return range_var
 
@@ -1234,9 +1255,13 @@ class KrigingParameters(object):
 
         """
         if range_var is None:
-            range_var = self.df['range']
+            range_var = self.df.loc['values', 'range']
 
-        self.df['$C_o$'] = range_var ** 2 / 14 / 3
+        if type(range_var) is list:
+            range_var = np.atleast_1d(range_var)
+
+        self.df.at['values', '$C_o$'] = range_var ** 2 / 14 / 3
+
         return self.df['$C_o$']
 
     def set_u_grade(self, u_grade: list = None):
@@ -1272,8 +1297,6 @@ class KrigingParameters(object):
         return self.df['drift equations']
 
 
-# @_setdoc_pro([Grid.__doc__, Surfaces.__doc__, Faults.__doc__,
-#               Structure.__doc__, KrigingParameters.__doc__, Options.__doc__])
 class AdditionalData(object):
     """
     Container class that encapsulate :class:`Structure`, :class:`KrigingParameters`, :class:`Options` and

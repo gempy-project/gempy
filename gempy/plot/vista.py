@@ -149,11 +149,11 @@ class GemPyToVista(WidgetsCallbacks, RenderChanges):
         """
         if lith_c is None:
             surf_df = self.model._surfaces.df.set_index(index)
-            unique_surf_points = np.unique(self.model._surface_points.df['id'])
+            unique_surf_points = np.unique(self.model._surface_points.df['id']).astype(int)
 
             if len(unique_surf_points) != 0:
                 bool_surf_points = np.zeros(surf_df.shape[0], dtype=bool)
-                bool_surf_points[unique_surf_points - 1] = True
+                bool_surf_points[unique_surf_points.astype('int') - 1] = True
 
                 surf_df['isActive'] = (surf_df['isActive'] | bool_surf_points)
 
@@ -230,7 +230,7 @@ class GemPyToVista(WidgetsCallbacks, RenderChanges):
             orientations:
             **kwargs:
         """
-        if self.model.surface_points.df.shape[0] !=0:
+        if self.model.surface_points.df.shape[0] != 0:
             self.plot_surface_points(surfaces=surfaces, surface_points=surface_points, **kwargs)
             self.set_scalar_bar()
         if self.model.orientations.df.shape[0] != 0:
@@ -768,7 +768,7 @@ class GemPyToVista(WidgetsCallbacks, RenderChanges):
             cmap = 'lith' if scalar_field == 'lith' else 'viridis'
             self.set_scalar_field_cmap(cmap=cmap)
             arr_ = regular_grid.get_array(scalar_field)
-            if scalar_field is not'lith':
+            if scalar_field != 'lith':
                 self.p.add_scalar_bar(title='values')
                 self.p.update_scalar_bar_range((arr_.min(), arr_.max()))
 

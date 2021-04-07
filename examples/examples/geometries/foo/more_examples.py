@@ -112,7 +112,7 @@ def create_example(name_model, interpolator=None, save_pickle=False, plot_sectio
         # 2D Plot
         gp.plot_2d(geo_data, cell_number=25,
                              direction='y', show_data=True)
-        gp.plot_3d(geo_data)
+        gp.plot_3d(geo_data, image=True)
 
     if save_pickle is not False:
         if type(save_pickle) is str:

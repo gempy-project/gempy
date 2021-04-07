@@ -9,7 +9,7 @@ os.environ["THEANO_FLAGS"] = "mode=FAST_RUN,device=cuda"
 
 # Importing GemPy
 import gempy as gp
-from examples.tutorials.ch5_probabilistic_modeling.aux_functions.aux_funct import plot_geo_setting
+from examples.tutorials.ch5_probabilistic_modeling_DEP.aux_functions.DEP_aux_funct import plot_geo_setting
 
 # Embedding matplotlib figures in the notebooks
 # %matplotlib inline

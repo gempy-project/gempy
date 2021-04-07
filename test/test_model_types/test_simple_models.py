@@ -181,11 +181,11 @@ class TestFaults:
                                      path_i=input_path + "/GeoModeller/test_f/test_f_Points.csv")
 
         gempy.map_stack_to_surfaces(geo_data, {'fault1': 'MainFault',
-                                                'series': ('Reservoir',
-                                                           'Seal',
-                                                           'SecondaryReservoir',
-                                                           'NonReservoirDeep'
-                                                           ),
+                                               'series': ('Reservoir',
+                                                          'Seal',
+                                                          'SecondaryReservoir',
+                                                          'NonReservoirDeep'
+                                                          ),
                                                },
                                     )
 
@@ -216,3 +216,75 @@ class TestFaults:
 
         ver, sim = gempy.get_surfaces(geo_data)
         print(ver, sim)
+
+    def test_compute_model_multiple_ranges(self, interpolator):
+
+        # Importing the data from csv files and settign extent and resolution
+        geo_data = gempy.create_data(extent=[0, 2000, 0, 2000, -2000, 0], resolution=[50, 50, 50],
+                                     path_o=input_path + "/GeoModeller/test_f/test_f_Foliations.csv",
+                                     path_i=input_path + "/GeoModeller/test_f/test_f_Points.csv")
+
+        gempy.map_stack_to_surfaces(geo_data, {'fault1': 'MainFault',
+                                               'series': ('Reservoir',
+                                                          'Seal',
+                                                          'SecondaryReservoir',
+                                                          'NonReservoirDeep'
+                                                          ),
+                                               },
+                                    )
+
+        geo_data.set_theano_function(interpolator)
+        geo_data.set_is_fault('fault1')
+        geo_data.modify_kriging_parameters('range', [3000, 3500, 0])
+        geo_data._additional_data.kriging_data.set_default_c_o()
+        # Compute model
+        sol = gempy.compute_model(geo_data, sort_surfaces=True)
+        gempy.plot.plot_2d(geo_data, cell_number=25, direction='y', show_data=True)
+        plt.show()
+
+
+def test_simple_model_gempy_engine():
+    import numpy
+    numpy.set_printoptions(precision=3, linewidth=200)
+
+    g = gempy.create_data("test_engine", extent=[-4, 4, -4, 4, -4, 4], resolution=[4, 1, 4])
+    sp = np.array([[-3, 0, 0],
+                   [0, 0, 0],
+                   [2, 0, 0.5],
+                   [2.5, 0, 1.2],
+                   [3, 0, 2],
+                   [1, 0, .2],
+                   [2.8, 0, 1.5]])
+
+    g.set_default_surfaces()
+
+    for i in sp:
+        g.add_surface_points(*i, surface="surface1")
+
+    g.add_orientations(-3, 0, 2, pole_vector=(0, 0, 1), surface="surface1")
+    g.add_orientations(2, 0, 3, pole_vector=(-.2, 0, .8), surface="surface1")
+
+    g.modify_orientations([0, 1], smooth=0.000000000001)
+    g.modify_surface_points(g._surface_points.df.index, smooth=0.0000000001)
+
+    gempy.set_interpolator(g, verbose=["contribution_gradient_interface"])
+
+    g.modify_kriging_parameters("range", 50)
+    # g.modify_kriging_parameters("$C_o$", 5 ** 2 / 14 / 3)
+    g.modify_kriging_parameters("drift equations", [0])
+
+    import theano
+    dtype = "float32"
+
+    g._interpolator.theano_graph.i_reescale.set_value(np.cast[dtype](1.))
+    g._interpolator.theano_graph.gi_reescale.set_value(np.cast[dtype](1.))
+
+    gempy.compute_model(g)
+
+    print(g.additional_data)
+    print(g.solutions.scalar_field_matrix)
+
+    gempy.plot_2d(g)
+    print(g.grid.values)
+
+    print(g.solutions.weights_vector)

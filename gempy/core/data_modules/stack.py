@@ -327,7 +327,7 @@ class Series(object):
             Series
         """
         self.df.drop(indices, inplace=True)
-        # If we are using the Stack class it is just one elemnt in memory
+        # If we are using the Stack class it is just one element in memory
         try:
             self.faults.df.drop(indices, inplace=True)
         except KeyError:
@@ -461,11 +461,6 @@ class Stack(Series, Faults):
 
         self.df['order_series'] = self.df['order_series'].astype(int)
         self.df['BottomRelation'] = pn.Categorical(['Erosion'], categories=['Erosion', 'Onlap', 'Fault'])
-        # self.df['isActive'] = False
-        # self.df['isFault'] = False
-        # self.df['isFinite'] = False
-        # self.faults = MockFault()
-        # self.faults.df = self.df
 
         self.faults = self
         self.faults_relations_df = pn.DataFrame(index=pn.CategoricalIndex(['Default series']),
