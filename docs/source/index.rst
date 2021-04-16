@@ -215,4 +215,7 @@ Indices and tables
 
 
 .. image:: ../logos/logo_CGRE.png
-   :width: 59%
+   :width: 40%
+
+.. image:: ../logos/terranigma.png
+   :width: 40%
