@@ -78,7 +78,7 @@ class XSolution(object):
         simplex_array = np.concatenate(simplex)
         ids_array = np.concatenate(ids)
 
-        self.meshes = subsurface.UnstructuredData(
+        self.meshes = subsurface.UnstructuredData.from_array(
             vertex=vertex_array,
             cells=simplex_array,
             attributes=pd.DataFrame(ids_array, columns=['id'])
@@ -269,8 +269,9 @@ class XSolution(object):
         coords = coords_base
         arrays = self.create_unstruct_xarray(values, l0, l1, xyz=None)
 
-        self.s_custom_grid = subsurface.UnstructuredData(
+        self.s_custom_grid = subsurface.UnstructuredData.from_array(
             vertex=xyz,
+            cells="points",
             attributes=arrays,
             coords=coords)
 
@@ -284,7 +285,7 @@ class XSolution(object):
         arrays = self.create_struc_xarrays(values, l0, l1,
                                            self.grid.regular_grid.resolution)
 
-        self.s_regular_grid = subsurface.StructuredData(data=arrays, coords=coords)
+        self.s_regular_grid = subsurface.StructuredData.from_dict(data_dict=arrays, coords=coords)
 
     def add_cartesian_coords(self, coords_base):
         coords = coords_base
@@ -303,7 +304,7 @@ class XSolution(object):
         resolution = self.grid.topography.resolution
         arrays = self.create_struc_xarrays(values, l0, l1, resolution)
 
-        self.s_topography = subsurface.StructuredData(data=arrays, coords=coords)
+        self.s_topography = subsurface.StructuredData.from_dict(data_dict=arrays, coords=coords)
         return self.s_topography
 
     def set_values_to_sections(self,
@@ -321,21 +322,20 @@ class XSolution(object):
             coords['X'] = xy[:, 0]
             coords['Y'] = xy[:, 1]
 
-            arrays = self.create_struc_xarrays(values, l0 + l0_s, l0 + l1_s,
-                                               resolution)
+            arrays = self.create_struc_xarrays(values, l0 + l0_s, l0 + l1_s, resolution)
 
-            self.s_sections[name] = subsurface.StructuredData(data=arrays,
-                                                              coords=coords)
+            self.s_sections[name] = subsurface.StructuredData.from_dict(data_dict=arrays, coords=coords)
         return self.s_sections
 
     @property
     def data_structures(self):
         # TODO: Add sections
-        args = [self.s_regular_grid, self.s_custom_grid, self.s_topography,  self.meshes]
+        args = [self.s_regular_grid, self.s_custom_grid, self.s_topography, self.meshes]
         names = ['regular_grid', 'custom_grid', 'topography', 'meshes']
         return zip(args, names)
 
     def to_netcdf(self, path, name, **kwargs):
+        from subsurface.structs.base_structures.common_data_utils import to_netcdf
         for a, n in self.data_structures:
             if a is not None:
-                a.to_netcdf(f'{path}/{name}_{n}.nc', **kwargs)
+                to_netcdf(a, f'{path}/{name}_{n}.nc', **kwargs)

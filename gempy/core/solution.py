@@ -132,8 +132,7 @@ class Solution(inheritance):
 
         return self
 
-    def set_solutions(self, sol, compute_mesh, sort_surfaces,
-                      to_xsolution=False, **kwargs):
+    def set_solutions(self, sol, compute_mesh, sort_surfaces, to_subsurface=False, **kwargs):
 
         # Set geology:
         self.set_values_to_surface_points(sol)
@@ -155,7 +154,7 @@ class Solution(inheritance):
         #  populate the topology object?
         self.fw_magnetics = sol[13]
 
-        if _xsolution_imported and to_xsolution is True:
+        if _xsolution_imported and to_subsurface is True:
             self.set_values(sol)
             if compute_mesh is True:
                 try:

@@ -267,7 +267,12 @@ def test_simple_model_gempy_engine():
     g.modify_orientations([0, 1], smooth=0.000000000001)
     g.modify_surface_points(g._surface_points.df.index, smooth=0.0000000001)
 
-    gempy.set_interpolator(g, verbose=["contribution_gradient_interface"])
+    gempy.set_interpolator(g, verbose=[
+        "n_surface_op_float_sigmoid",
+        "scalar_field_iter",
+        "compare",
+        "sigma"
+    ])
 
     g.modify_kriging_parameters("range", 50)
     # g.modify_kriging_parameters("$C_o$", 5 ** 2 / 14 / 3)
