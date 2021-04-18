@@ -214,8 +214,8 @@ Indices and tables
 * :ref:`search`
 
 
-.. image:: ../logos/logo_CGRE.png
+.. image:: _static/logos/logo_CGRE.png
    :width: 40%
 
-.. image:: ../logos/terranigma.png
+.. image:: _static/logos/Terranigma.png
    :width: 40%

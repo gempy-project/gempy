@@ -24,7 +24,7 @@ element = sb.LineSet(unstruct)
 lines_mesh = sb.visualization.to_pyvista_line(element, radius=50)
 
 # Plot default LITH
-sb.visualization.pv_plot([lines_mesh], image_2d=True)
+sb.visualization.pv_plot([lines_mesh])
 
 
 # %% md
@@ -68,7 +68,7 @@ interf_us
 
 element = sb.PointSet(interf_us)
 point_mesh = sb.visualization.to_pyvista_points(element)
-sb.visualization.pv_plot([lines_mesh, point_mesh], image_2d=True)
+sb.visualization.pv_plot([lines_mesh, point_mesh])
 
 # %% md
 # GemPy: Initialize model
