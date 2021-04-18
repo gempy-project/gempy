@@ -101,10 +101,10 @@
                  <span class="n">series</span><span class="p">:</span> <span class="n">Series</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="p">):</span>
 
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">surfaces</span><span class="p">,</span> <span class="n">series</span><span class="p">)</span>
-        <span class="c1"># self.additional_data = additional_data</span>
+        <span class="k">if</span> <span class="n">_xsolution_imported</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">surfaces</span><span class="p">,</span> <span class="n">series</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">grid</span>
-        <span class="c1">#  self.surface_points = surface_points</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stack</span> <span class="o">=</span> <span class="n">series</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">surfaces</span> <span class="o">=</span> <span class="n">surfaces</span>
 
@@ -171,8 +171,7 @@
 
         <span class="k">return</span> <span class="bp">self</span></div>
 
-    <span class="k">def</span> <span class="nf">set_solutions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sol</span><span class="p">,</span> <span class="n">compute_mesh</span><span class="p">,</span> <span class="n">sort_surfaces</span><span class="p">,</span>
-                      <span class="n">to_xsolution</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">set_solutions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sol</span><span class="p">,</span> <span class="n">compute_mesh</span><span class="p">,</span> <span class="n">sort_surfaces</span><span class="p">,</span> <span class="n">to_subsurface</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 
         <span class="c1"># Set geology:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_values_to_surface_points</span><span class="p">(</span><span class="n">sol</span><span class="p">)</span>
@@ -194,7 +193,7 @@
         <span class="c1">#  populate the topology object?</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fw_magnetics</span> <span class="o">=</span> <span class="n">sol</span><span class="p">[</span><span class="mi">13</span><span class="p">]</span>
 
-        <span class="k">if</span> <span class="n">_xsolution_imported</span> <span class="ow">and</span> <span class="n">to_xsolution</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">_xsolution_imported</span> <span class="ow">and</span> <span class="n">to_subsurface</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_values</span><span class="p">(</span><span class="n">sol</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">compute_mesh</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
@@ -429,8 +428,6 @@
 <p class="logo">
   <a href="../../../index.html">
     <img class="logo" src="../../../_static/./logos/gempy.png" alt="Logo"/>
-    
-    <h1 class="logo logo-name">GemPy</h1>
     
   </a>
 </p>

@@ -100,7 +100,7 @@ Data Preparation
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7f31e02f8f70>
+    <gempy.plot.visualization_2d.Plot2D object at 0x7fcb8bab22e0>
 
 
 
@@ -171,7 +171,7 @@ Data Preparation
 
     Active grids: ['regular' 'topography' 'sections']
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7f3194c75250>
+    <gempy.plot.visualization_2d.Plot2D object at 0x7fcb8912c580>
 
 
 
@@ -256,7 +256,7 @@ Data Preparation
     $C_o$            71428.57
     drift equations    [3, 3]
 
-    <gempy.core.interpolator.InterpolatorModel object at 0x7f3166fb97f0>
+    <gempy.core.interpolator.InterpolatorModel object at 0x7fcc3704b1f0>
 
 
 
@@ -364,9 +364,9 @@ Data Preparation
 
  .. code-block:: none
 
-    /home/miguel/PycharmProjects/gempy/gempy/core/solution.py:174: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify 'dtype=object' when creating the ndarray.
+    /WorkSSD/PythonProjects/gempy/gempy/core/solution.py:173: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify 'dtype=object' when creating the ndarray.
       self.geological_map = np.array(
-    /home/miguel/PycharmProjects/gempy/gempy/core/solution.py:179: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify 'dtype=object' when creating the ndarray.
+    /WorkSSD/PythonProjects/gempy/gempy/core/solution.py:178: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify 'dtype=object' when creating the ndarray.
       self.sections = np.array(
 
 
@@ -442,7 +442,7 @@ new plotting api
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7f3166d8fac0>
+    <gempy.plot.visualization_2d.Plot2D object at 0x7fcc748f31f0>
 
 
 
@@ -471,7 +471,7 @@ or
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7f3194c75250>
+    <gempy.plot.visualization_2d.Plot2D object at 0x7fcc3a05f580>
 
 
 
@@ -784,7 +784,7 @@ Plotting traces:
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7f3166d8fac0>
+    <gempy.plot.visualization_2d.Plot2D object at 0x7fcb84d3afd0>
 
 
 
@@ -844,7 +844,7 @@ any combination of the above:
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7f32343cc1c0>
+    <gempy.plot.visualization_2d.Plot2D object at 0x7fcc46ba6910>
 
 
 
@@ -869,7 +869,7 @@ any combination of the above:
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7f322b6f9f40>
+    <gempy.plot.visualization_2d.Plot2D object at 0x7fcbe00cda90>
 
 
 
@@ -894,7 +894,7 @@ any combination of the above:
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7f322b6c8b20>
+    <gempy.plot.visualization_2d.Plot2D object at 0x7fcc46b47400>
 
 
 
@@ -919,14 +919,14 @@ any combination of the above:
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7f3166de6520>
+    <gempy.plot.visualization_2d.Plot2D object at 0x7fcc74762df0>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  8.869 seconds)
+   **Total running time of the script:** ( 0 minutes  9.016 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_6_2d_visualization.py:

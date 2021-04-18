@@ -5,10 +5,12 @@
 
 Computation times
 =================
-**00:18.406** total execution time for **integrations** files:
+**00:36.858** total execution time for **integrations** files:
 
 +--------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_integrations_gempy_striplog.py` (``gempy_striplog.py``)         | 00:11.454 | 0.0 MB |
+| :ref:`sphx_glr_integrations_gempy_subsurface.py` (``gempy_subsurface.py``)     | 00:15.762 | 0.0 MB |
 +--------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_integrations_gempy_export_MOOSE.py` (``gempy_export_MOOSE.py``) | 00:06.952 | 0.0 MB |
+| :ref:`sphx_glr_integrations_gempy_striplog.py` (``gempy_striplog.py``)         | 00:12.397 | 0.0 MB |
++--------------------------------------------------------------------------------+-----------+--------+
+| :ref:`sphx_glr_integrations_gempy_export_MOOSE.py` (``gempy_export_MOOSE.py``) | 00:08.698 | 0.0 MB |
 +--------------------------------------------------------------------------------+-----------+--------+

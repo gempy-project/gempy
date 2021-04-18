@@ -358,7 +358,7 @@ Setting and ordering the units and series:
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7f31949e2490>
+    <gempy.plot.visualization_2d.Plot2D object at 0x7fccb8adedc0>
 
 
 
@@ -439,7 +439,7 @@ Displaying the result in x and y direction:
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7f3197bad370>
+    <gempy.plot.visualization_2d.Plot2D object at 0x7fcc46555d60>
 
 
 
@@ -469,7 +469,7 @@ sphinx_gallery_thumbnail_number = 2
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7f322b9f03a0>
+    <gempy.plot.visualization_2d.Plot2D object at 0x7fcc46555790>
 
 
 
@@ -500,7 +500,7 @@ sphinx_gallery_thumbnail_number = 2
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  11.961 seconds)
+   **Total running time of the script:** ( 0 minutes  16.459 seconds)
 
 
 .. _sphx_glr_download_examples_geometries_7_combination.py:

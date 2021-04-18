@@ -986,66 +986,66 @@ Now we can see how the data looks so far:
 
     <div class="output_subarea output_html rendered_html output_result">
     <style  type="text/css" >
-    #T_af95a_row0_col3{
+    #T_19c3c_row0_col3{
                 background-color:  #015482;
-            }#T_af95a_row1_col3{
+            }#T_19c3c_row1_col3{
                 background-color:  #9f0052;
-            }#T_af95a_row2_col3{
+            }#T_19c3c_row2_col3{
                 background-color:  #ffbe00;
-            }#T_af95a_row3_col3{
+            }#T_19c3c_row3_col3{
                 background-color:  #728f02;
-            }#T_af95a_row4_col3{
+            }#T_19c3c_row4_col3{
                 background-color:  #443988;
-            }#T_af95a_row5_col3{
+            }#T_19c3c_row5_col3{
                 background-color:  #ff3f20;
-            }</style><table id="T_af95a_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
+            }</style><table id="T_19c3c_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
                     <tr>
-                            <th id="T_af95a_level0_row0" class="row_heading level0 row0" >0</th>
-                            <td id="T_af95a_row0_col0" class="data row0 col0" >0</td>
-                            <td id="T_af95a_row0_col1" class="data row0 col1" >Default series</td>
-                            <td id="T_af95a_row0_col2" class="data row0 col2" >1</td>
-                            <td id="T_af95a_row0_col3" class="data row0 col3" >#015482</td>
-                            <td id="T_af95a_row0_col4" class="data row0 col4" >1</td>
+                            <th id="T_19c3c_level0_row0" class="row_heading level0 row0" >0</th>
+                            <td id="T_19c3c_row0_col0" class="data row0 col0" >0</td>
+                            <td id="T_19c3c_row0_col1" class="data row0 col1" >Default series</td>
+                            <td id="T_19c3c_row0_col2" class="data row0 col2" >1</td>
+                            <td id="T_19c3c_row0_col3" class="data row0 col3" >#015482</td>
+                            <td id="T_19c3c_row0_col4" class="data row0 col4" >1</td>
                 </tr>
                 <tr>
-                            <th id="T_af95a_level0_row1" class="row_heading level0 row1" >1</th>
-                            <td id="T_af95a_row1_col0" class="data row1 col0" >60</td>
-                            <td id="T_af95a_row1_col1" class="data row1 col1" >Default series</td>
-                            <td id="T_af95a_row1_col2" class="data row1 col2" >2</td>
-                            <td id="T_af95a_row1_col3" class="data row1 col3" >#9f0052</td>
-                            <td id="T_af95a_row1_col4" class="data row1 col4" >2</td>
+                            <th id="T_19c3c_level0_row1" class="row_heading level0 row1" >1</th>
+                            <td id="T_19c3c_row1_col0" class="data row1 col0" >60</td>
+                            <td id="T_19c3c_row1_col1" class="data row1 col1" >Default series</td>
+                            <td id="T_19c3c_row1_col2" class="data row1 col2" >2</td>
+                            <td id="T_19c3c_row1_col3" class="data row1 col3" >#9f0052</td>
+                            <td id="T_19c3c_row1_col4" class="data row1 col4" >2</td>
                 </tr>
                 <tr>
-                            <th id="T_af95a_level0_row2" class="row_heading level0 row2" >2</th>
-                            <td id="T_af95a_row2_col0" class="data row2 col0" >250</td>
-                            <td id="T_af95a_row2_col1" class="data row2 col1" >Default series</td>
-                            <td id="T_af95a_row2_col2" class="data row2 col2" >3</td>
-                            <td id="T_af95a_row2_col3" class="data row2 col3" >#ffbe00</td>
-                            <td id="T_af95a_row2_col4" class="data row2 col4" >3</td>
+                            <th id="T_19c3c_level0_row2" class="row_heading level0 row2" >2</th>
+                            <td id="T_19c3c_row2_col0" class="data row2 col0" >250</td>
+                            <td id="T_19c3c_row2_col1" class="data row2 col1" >Default series</td>
+                            <td id="T_19c3c_row2_col2" class="data row2 col2" >3</td>
+                            <td id="T_19c3c_row2_col3" class="data row2 col3" >#ffbe00</td>
+                            <td id="T_19c3c_row2_col4" class="data row2 col4" >3</td>
                 </tr>
                 <tr>
-                            <th id="T_af95a_level0_row3" class="row_heading level0 row3" >3</th>
-                            <td id="T_af95a_row3_col0" class="data row3 col0" >330</td>
-                            <td id="T_af95a_row3_col1" class="data row3 col1" >Default series</td>
-                            <td id="T_af95a_row3_col2" class="data row3 col2" >4</td>
-                            <td id="T_af95a_row3_col3" class="data row3 col3" >#728f02</td>
-                            <td id="T_af95a_row3_col4" class="data row3 col4" >4</td>
+                            <th id="T_19c3c_level0_row3" class="row_heading level0 row3" >3</th>
+                            <td id="T_19c3c_row3_col0" class="data row3 col0" >330</td>
+                            <td id="T_19c3c_row3_col1" class="data row3 col1" >Default series</td>
+                            <td id="T_19c3c_row3_col2" class="data row3 col2" >4</td>
+                            <td id="T_19c3c_row3_col3" class="data row3 col3" >#728f02</td>
+                            <td id="T_19c3c_row3_col4" class="data row3 col4" >4</td>
                 </tr>
                 <tr>
-                            <th id="T_af95a_level0_row4" class="row_heading level0 row4" >4</th>
-                            <td id="T_af95a_row4_col0" class="data row4 col0" >Claudius_fault</td>
-                            <td id="T_af95a_row4_col1" class="data row4 col1" >Default series</td>
-                            <td id="T_af95a_row4_col2" class="data row4 col2" >5</td>
-                            <td id="T_af95a_row4_col3" class="data row4 col3" >#443988</td>
-                            <td id="T_af95a_row4_col4" class="data row4 col4" >5</td>
+                            <th id="T_19c3c_level0_row4" class="row_heading level0 row4" >4</th>
+                            <td id="T_19c3c_row4_col0" class="data row4 col0" >Claudius_fault</td>
+                            <td id="T_19c3c_row4_col1" class="data row4 col1" >Default series</td>
+                            <td id="T_19c3c_row4_col2" class="data row4 col2" >5</td>
+                            <td id="T_19c3c_row4_col3" class="data row4 col3" >#443988</td>
+                            <td id="T_19c3c_row4_col4" class="data row4 col4" >5</td>
                 </tr>
                 <tr>
-                            <th id="T_af95a_level0_row5" class="row_heading level0 row5" >5</th>
-                            <td id="T_af95a_row5_col0" class="data row5 col0" >basement</td>
-                            <td id="T_af95a_row5_col1" class="data row5 col1" >Basement</td>
-                            <td id="T_af95a_row5_col2" class="data row5 col2" >1</td>
-                            <td id="T_af95a_row5_col3" class="data row5 col3" >#ff3f20</td>
-                            <td id="T_af95a_row5_col4" class="data row5 col4" >6</td>
+                            <th id="T_19c3c_level0_row5" class="row_heading level0 row5" >5</th>
+                            <td id="T_19c3c_row5_col0" class="data row5 col0" >basement</td>
+                            <td id="T_19c3c_row5_col1" class="data row5 col1" >Basement</td>
+                            <td id="T_19c3c_row5_col2" class="data row5 col2" >1</td>
+                            <td id="T_19c3c_row5_col3" class="data row5 col3" >#ff3f20</td>
+                            <td id="T_19c3c_row5_col4" class="data row5 col4" >6</td>
                 </tr>
         </tbody></table>
     </div>
@@ -1073,7 +1073,7 @@ Now we can see how the data looks so far:
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7f31944c5790>
+    <gempy.plot.visualization_2d.Plot2D object at 0x7fcc46042a60>
 
 
 
@@ -1097,66 +1097,66 @@ By default all surfaces belong to one unique series.
 
     <div class="output_subarea output_html rendered_html output_result">
     <style  type="text/css" >
-    #T_c2f60_row0_col3{
+    #T_5e1db_row0_col3{
                 background-color:  #015482;
-            }#T_c2f60_row1_col3{
+            }#T_5e1db_row1_col3{
                 background-color:  #9f0052;
-            }#T_c2f60_row2_col3{
+            }#T_5e1db_row2_col3{
                 background-color:  #ffbe00;
-            }#T_c2f60_row3_col3{
+            }#T_5e1db_row3_col3{
                 background-color:  #728f02;
-            }#T_c2f60_row4_col3{
+            }#T_5e1db_row4_col3{
                 background-color:  #443988;
-            }#T_c2f60_row5_col3{
+            }#T_5e1db_row5_col3{
                 background-color:  #ff3f20;
-            }</style><table id="T_c2f60_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
+            }</style><table id="T_5e1db_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
                     <tr>
-                            <th id="T_c2f60_level0_row0" class="row_heading level0 row0" >0</th>
-                            <td id="T_c2f60_row0_col0" class="data row0 col0" >0</td>
-                            <td id="T_c2f60_row0_col1" class="data row0 col1" >Default series</td>
-                            <td id="T_c2f60_row0_col2" class="data row0 col2" >1</td>
-                            <td id="T_c2f60_row0_col3" class="data row0 col3" >#015482</td>
-                            <td id="T_c2f60_row0_col4" class="data row0 col4" >1</td>
+                            <th id="T_5e1db_level0_row0" class="row_heading level0 row0" >0</th>
+                            <td id="T_5e1db_row0_col0" class="data row0 col0" >0</td>
+                            <td id="T_5e1db_row0_col1" class="data row0 col1" >Default series</td>
+                            <td id="T_5e1db_row0_col2" class="data row0 col2" >1</td>
+                            <td id="T_5e1db_row0_col3" class="data row0 col3" >#015482</td>
+                            <td id="T_5e1db_row0_col4" class="data row0 col4" >1</td>
                 </tr>
                 <tr>
-                            <th id="T_c2f60_level0_row1" class="row_heading level0 row1" >1</th>
-                            <td id="T_c2f60_row1_col0" class="data row1 col0" >60</td>
-                            <td id="T_c2f60_row1_col1" class="data row1 col1" >Default series</td>
-                            <td id="T_c2f60_row1_col2" class="data row1 col2" >2</td>
-                            <td id="T_c2f60_row1_col3" class="data row1 col3" >#9f0052</td>
-                            <td id="T_c2f60_row1_col4" class="data row1 col4" >2</td>
+                            <th id="T_5e1db_level0_row1" class="row_heading level0 row1" >1</th>
+                            <td id="T_5e1db_row1_col0" class="data row1 col0" >60</td>
+                            <td id="T_5e1db_row1_col1" class="data row1 col1" >Default series</td>
+                            <td id="T_5e1db_row1_col2" class="data row1 col2" >2</td>
+                            <td id="T_5e1db_row1_col3" class="data row1 col3" >#9f0052</td>
+                            <td id="T_5e1db_row1_col4" class="data row1 col4" >2</td>
                 </tr>
                 <tr>
-                            <th id="T_c2f60_level0_row2" class="row_heading level0 row2" >2</th>
-                            <td id="T_c2f60_row2_col0" class="data row2 col0" >250</td>
-                            <td id="T_c2f60_row2_col1" class="data row2 col1" >Default series</td>
-                            <td id="T_c2f60_row2_col2" class="data row2 col2" >3</td>
-                            <td id="T_c2f60_row2_col3" class="data row2 col3" >#ffbe00</td>
-                            <td id="T_c2f60_row2_col4" class="data row2 col4" >3</td>
+                            <th id="T_5e1db_level0_row2" class="row_heading level0 row2" >2</th>
+                            <td id="T_5e1db_row2_col0" class="data row2 col0" >250</td>
+                            <td id="T_5e1db_row2_col1" class="data row2 col1" >Default series</td>
+                            <td id="T_5e1db_row2_col2" class="data row2 col2" >3</td>
+                            <td id="T_5e1db_row2_col3" class="data row2 col3" >#ffbe00</td>
+                            <td id="T_5e1db_row2_col4" class="data row2 col4" >3</td>
                 </tr>
                 <tr>
-                            <th id="T_c2f60_level0_row3" class="row_heading level0 row3" >3</th>
-                            <td id="T_c2f60_row3_col0" class="data row3 col0" >330</td>
-                            <td id="T_c2f60_row3_col1" class="data row3 col1" >Default series</td>
-                            <td id="T_c2f60_row3_col2" class="data row3 col2" >4</td>
-                            <td id="T_c2f60_row3_col3" class="data row3 col3" >#728f02</td>
-                            <td id="T_c2f60_row3_col4" class="data row3 col4" >4</td>
+                            <th id="T_5e1db_level0_row3" class="row_heading level0 row3" >3</th>
+                            <td id="T_5e1db_row3_col0" class="data row3 col0" >330</td>
+                            <td id="T_5e1db_row3_col1" class="data row3 col1" >Default series</td>
+                            <td id="T_5e1db_row3_col2" class="data row3 col2" >4</td>
+                            <td id="T_5e1db_row3_col3" class="data row3 col3" >#728f02</td>
+                            <td id="T_5e1db_row3_col4" class="data row3 col4" >4</td>
                 </tr>
                 <tr>
-                            <th id="T_c2f60_level0_row4" class="row_heading level0 row4" >4</th>
-                            <td id="T_c2f60_row4_col0" class="data row4 col0" >Claudius_fault</td>
-                            <td id="T_c2f60_row4_col1" class="data row4 col1" >Default series</td>
-                            <td id="T_c2f60_row4_col2" class="data row4 col2" >5</td>
-                            <td id="T_c2f60_row4_col3" class="data row4 col3" >#443988</td>
-                            <td id="T_c2f60_row4_col4" class="data row4 col4" >5</td>
+                            <th id="T_5e1db_level0_row4" class="row_heading level0 row4" >4</th>
+                            <td id="T_5e1db_row4_col0" class="data row4 col0" >Claudius_fault</td>
+                            <td id="T_5e1db_row4_col1" class="data row4 col1" >Default series</td>
+                            <td id="T_5e1db_row4_col2" class="data row4 col2" >5</td>
+                            <td id="T_5e1db_row4_col3" class="data row4 col3" >#443988</td>
+                            <td id="T_5e1db_row4_col4" class="data row4 col4" >5</td>
                 </tr>
                 <tr>
-                            <th id="T_c2f60_level0_row5" class="row_heading level0 row5" >5</th>
-                            <td id="T_c2f60_row5_col0" class="data row5 col0" >basement</td>
-                            <td id="T_c2f60_row5_col1" class="data row5 col1" >Basement</td>
-                            <td id="T_c2f60_row5_col2" class="data row5 col2" >1</td>
-                            <td id="T_c2f60_row5_col3" class="data row5 col3" >#ff3f20</td>
-                            <td id="T_c2f60_row5_col4" class="data row5 col4" >6</td>
+                            <th id="T_5e1db_level0_row5" class="row_heading level0 row5" >5</th>
+                            <td id="T_5e1db_row5_col0" class="data row5 col0" >basement</td>
+                            <td id="T_5e1db_row5_col1" class="data row5 col1" >Basement</td>
+                            <td id="T_5e1db_row5_col2" class="data row5 col2" >1</td>
+                            <td id="T_5e1db_row5_col3" class="data row5 col3" >#ff3f20</td>
+                            <td id="T_5e1db_row5_col4" class="data row5 col4" >6</td>
                 </tr>
         </tbody></table>
     </div>
@@ -1409,7 +1409,7 @@ Now we are good to go:
     $C_o$              1182430.95
     drift equations  [3, 3, 3, 3]
 
-    <gempy.core.interpolator.InterpolatorModel object at 0x7f3167bf3c70>
+    <gempy.core.interpolator.InterpolatorModel object at 0x7fcc6b70cd60>
 
 
 
@@ -1461,7 +1461,7 @@ Now we are good to go:
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7f323c8a0f10>
+    <gempy.plot.visualization_2d.Plot2D object at 0x7fcc46bbdac0>
 
 
 
@@ -1486,7 +1486,7 @@ Now we are good to go:
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7f32802788e0>
+    <gempy.plot.visualization_2d.Plot2D object at 0x7fcc74890a60>
 
 
 
@@ -1530,7 +1530,7 @@ Now we are good to go:
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7f323c67e250>
+    <gempy.plot.visualization_2d.Plot2D object at 0x7fcc6b8d83a0>
 
 
 
@@ -1555,7 +1555,7 @@ Now we are good to go:
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7f3194784b20>
+    <gempy.plot.visualization_2d.Plot2D object at 0x7fccd0e70df0>
 
 
 
@@ -1584,7 +1584,7 @@ Now we are good to go:
  .. code-block:: none
 
 
-    <gempy.plot.vista.GemPyToVista object at 0x7f323c8a0f10>
+    <gempy.plot.vista.GemPyToVista object at 0x7fcb8ae53910>
 
 
 
@@ -1684,66 +1684,66 @@ other with triangles. Axis 0 is each surface in the order:
 
     <div class="output_subarea output_html rendered_html output_result">
     <style  type="text/css" >
-    #T_0a179_row0_col3{
+    #T_c6962_row0_col3{
                 background-color:  #015482;
-            }#T_0a179_row1_col3{
+            }#T_c6962_row1_col3{
                 background-color:  #9f0052;
-            }#T_0a179_row2_col3{
+            }#T_c6962_row2_col3{
                 background-color:  #ffbe00;
-            }#T_0a179_row3_col3{
+            }#T_c6962_row3_col3{
                 background-color:  #527682;
-            }#T_0a179_row4_col3{
+            }#T_c6962_row4_col3{
                 background-color:  #728f02;
-            }#T_0a179_row5_col3{
+            }#T_c6962_row5_col3{
                 background-color:  #ff3f20;
-            }</style><table id="T_0a179_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
+            }</style><table id="T_c6962_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
                     <tr>
-                            <th id="T_0a179_level0_row0" class="row_heading level0 row0" >0</th>
-                            <td id="T_0a179_row0_col0" class="data row0 col0" >0</td>
-                            <td id="T_0a179_row0_col1" class="data row0 col1" >Default series</td>
-                            <td id="T_0a179_row0_col2" class="data row0 col2" >1</td>
-                            <td id="T_0a179_row0_col3" class="data row0 col3" >#015482</td>
-                            <td id="T_0a179_row0_col4" class="data row0 col4" >1</td>
+                            <th id="T_c6962_level0_row0" class="row_heading level0 row0" >0</th>
+                            <td id="T_c6962_row0_col0" class="data row0 col0" >0</td>
+                            <td id="T_c6962_row0_col1" class="data row0 col1" >Default series</td>
+                            <td id="T_c6962_row0_col2" class="data row0 col2" >1</td>
+                            <td id="T_c6962_row0_col3" class="data row0 col3" >#015482</td>
+                            <td id="T_c6962_row0_col4" class="data row0 col4" >1</td>
                 </tr>
                 <tr>
-                            <th id="T_0a179_level0_row1" class="row_heading level0 row1" >1</th>
-                            <td id="T_0a179_row1_col0" class="data row1 col0" >60</td>
-                            <td id="T_0a179_row1_col1" class="data row1 col1" >Default series</td>
-                            <td id="T_0a179_row1_col2" class="data row1 col2" >2</td>
-                            <td id="T_0a179_row1_col3" class="data row1 col3" >#9f0052</td>
-                            <td id="T_0a179_row1_col4" class="data row1 col4" >2</td>
+                            <th id="T_c6962_level0_row1" class="row_heading level0 row1" >1</th>
+                            <td id="T_c6962_row1_col0" class="data row1 col0" >60</td>
+                            <td id="T_c6962_row1_col1" class="data row1 col1" >Default series</td>
+                            <td id="T_c6962_row1_col2" class="data row1 col2" >2</td>
+                            <td id="T_c6962_row1_col3" class="data row1 col3" >#9f0052</td>
+                            <td id="T_c6962_row1_col4" class="data row1 col4" >2</td>
                 </tr>
                 <tr>
-                            <th id="T_0a179_level0_row2" class="row_heading level0 row2" >2</th>
-                            <td id="T_0a179_row2_col0" class="data row2 col0" >250</td>
-                            <td id="T_0a179_row2_col1" class="data row2 col1" >Default series</td>
-                            <td id="T_0a179_row2_col2" class="data row2 col2" >3</td>
-                            <td id="T_0a179_row2_col3" class="data row2 col3" >#ffbe00</td>
-                            <td id="T_0a179_row2_col4" class="data row2 col4" >3</td>
+                            <th id="T_c6962_level0_row2" class="row_heading level0 row2" >2</th>
+                            <td id="T_c6962_row2_col0" class="data row2 col0" >250</td>
+                            <td id="T_c6962_row2_col1" class="data row2 col1" >Default series</td>
+                            <td id="T_c6962_row2_col2" class="data row2 col2" >3</td>
+                            <td id="T_c6962_row2_col3" class="data row2 col3" >#ffbe00</td>
+                            <td id="T_c6962_row2_col4" class="data row2 col4" >3</td>
                 </tr>
                 <tr>
-                            <th id="T_0a179_level0_row3" class="row_heading level0 row3" >4</th>
-                            <td id="T_0a179_row3_col0" class="data row3 col0" >Claudius_fault</td>
-                            <td id="T_0a179_row3_col1" class="data row3 col1" >Fault</td>
-                            <td id="T_0a179_row3_col2" class="data row3 col2" >1</td>
-                            <td id="T_0a179_row3_col3" class="data row3 col3" >#527682</td>
-                            <td id="T_0a179_row3_col4" class="data row3 col4" >4</td>
+                            <th id="T_c6962_level0_row3" class="row_heading level0 row3" >4</th>
+                            <td id="T_c6962_row3_col0" class="data row3 col0" >Claudius_fault</td>
+                            <td id="T_c6962_row3_col1" class="data row3 col1" >Fault</td>
+                            <td id="T_c6962_row3_col2" class="data row3 col2" >1</td>
+                            <td id="T_c6962_row3_col3" class="data row3 col3" >#527682</td>
+                            <td id="T_c6962_row3_col4" class="data row3 col4" >4</td>
                 </tr>
                 <tr>
-                            <th id="T_0a179_level0_row4" class="row_heading level0 row4" >3</th>
-                            <td id="T_0a179_row4_col0" class="data row4 col0" >330</td>
-                            <td id="T_0a179_row4_col1" class="data row4 col1" >Uncomformity</td>
-                            <td id="T_0a179_row4_col2" class="data row4 col2" >1</td>
-                            <td id="T_0a179_row4_col3" class="data row4 col3" >#728f02</td>
-                            <td id="T_0a179_row4_col4" class="data row4 col4" >5</td>
+                            <th id="T_c6962_level0_row4" class="row_heading level0 row4" >3</th>
+                            <td id="T_c6962_row4_col0" class="data row4 col0" >330</td>
+                            <td id="T_c6962_row4_col1" class="data row4 col1" >Uncomformity</td>
+                            <td id="T_c6962_row4_col2" class="data row4 col2" >1</td>
+                            <td id="T_c6962_row4_col3" class="data row4 col3" >#728f02</td>
+                            <td id="T_c6962_row4_col4" class="data row4 col4" >5</td>
                 </tr>
                 <tr>
-                            <th id="T_0a179_level0_row5" class="row_heading level0 row5" >5</th>
-                            <td id="T_0a179_row5_col0" class="data row5 col0" >basement</td>
-                            <td id="T_0a179_row5_col1" class="data row5 col1" >Basement</td>
-                            <td id="T_0a179_row5_col2" class="data row5 col2" >1</td>
-                            <td id="T_0a179_row5_col3" class="data row5 col3" >#ff3f20</td>
-                            <td id="T_0a179_row5_col4" class="data row5 col4" >6</td>
+                            <th id="T_c6962_level0_row5" class="row_heading level0 row5" >5</th>
+                            <td id="T_c6962_row5_col0" class="data row5 col0" >basement</td>
+                            <td id="T_c6962_row5_col1" class="data row5 col1" >Basement</td>
+                            <td id="T_c6962_row5_col2" class="data row5 col2" >1</td>
+                            <td id="T_c6962_row5_col3" class="data row5 col3" >#ff3f20</td>
+                            <td id="T_c6962_row5_col4" class="data row5 col4" >6</td>
                 </tr>
         </tbody></table>
     </div>
@@ -1841,7 +1841,7 @@ Export to gocad
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  17.308 seconds)
+   **Total running time of the script:** ( 0 minutes  26.141 seconds)
 
 
 .. _sphx_glr_download_examples_real_Claudius.py:

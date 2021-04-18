@@ -5,18 +5,18 @@
 
 Computation times
 =================
-**04:52.448** total execution time for **examples_real** files:
+**08:28.250** total execution time for **examples_real** files:
 
 +-------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_examples_real_Hecho.py` (``Hecho.py``)             | 01:28.236 | 0.0 MB |
+| :ref:`sphx_glr_examples_real_Hecho.py` (``Hecho.py``)             | 02:42.685 | 0.0 MB |
 +-------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_examples_real_Alesmodel.py` (``Alesmodel.py``)     | 01:13.240 | 0.0 MB |
+| :ref:`sphx_glr_examples_real_Moureze.py` (``Moureze.py``)         | 02:04.415 | 0.0 MB |
 +-------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_examples_real_Moureze.py` (``Moureze.py``)         | 01:09.187 | 0.0 MB |
+| :ref:`sphx_glr_examples_real_Alesmodel.py` (``Alesmodel.py``)     | 02:03.841 | 0.0 MB |
 +-------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_examples_real_Perth_basin.py` (``Perth_basin.py``) | 00:36.431 | 0.0 MB |
+| :ref:`sphx_glr_examples_real_Perth_basin.py` (``Perth_basin.py``) | 01:00.762 | 0.0 MB |
 +-------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_examples_real_Claudius.py` (``Claudius.py``)       | 00:17.308 | 0.0 MB |
+| :ref:`sphx_glr_examples_real_Claudius.py` (``Claudius.py``)       | 00:26.141 | 0.0 MB |
 +-------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_examples_real_Greenstone.py` (``Greenstone.py``)   | 00:08.045 | 0.0 MB |
+| :ref:`sphx_glr_examples_real_Greenstone.py` (``Greenstone.py``)   | 00:10.406 | 0.0 MB |
 +-------------------------------------------------------------------+-----------+--------+

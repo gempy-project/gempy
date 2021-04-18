@@ -501,7 +501,7 @@ Now we can see how the data looks so far:
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7f31e2881490>
+    <gempy.plot.visualization_2d.Plot2D object at 0x7fccd1ea9970>
 
 
 
@@ -525,136 +525,136 @@ By default all surfaces belong to one unique series.
 
     <div class="output_subarea output_html rendered_html output_result">
     <style  type="text/css" >
-    #T_e17da_row0_col3{
+    #T_e1423_row0_col3{
                 background-color:  #015482;
-            }#T_e17da_row1_col3{
+            }#T_e1423_row1_col3{
                 background-color:  #9f0052;
-            }#T_e17da_row2_col3{
+            }#T_e1423_row2_col3{
                 background-color:  #ffbe00;
-            }#T_e17da_row3_col3{
+            }#T_e1423_row3_col3{
                 background-color:  #728f02;
-            }#T_e17da_row4_col3{
+            }#T_e1423_row4_col3{
                 background-color:  #443988;
-            }#T_e17da_row5_col3{
+            }#T_e1423_row5_col3{
                 background-color:  #ff3f20;
-            }#T_e17da_row6_col3{
+            }#T_e1423_row6_col3{
                 background-color:  #5DA629;
-            }#T_e17da_row7_col3{
+            }#T_e1423_row7_col3{
                 background-color:  #4878d0;
-            }#T_e17da_row8_col3{
+            }#T_e1423_row8_col3{
                 background-color:  #ee854a;
-            }#T_e17da_row9_col3{
+            }#T_e1423_row9_col3{
                 background-color:  #6acc64;
-            }#T_e17da_row10_col3{
+            }#T_e1423_row10_col3{
                 background-color:  #d65f5f;
-            }#T_e17da_row11_col3{
+            }#T_e1423_row11_col3{
                 background-color:  #956cb4;
-            }#T_e17da_row12_col3{
+            }#T_e1423_row12_col3{
                 background-color:  #8c613c;
-            }</style><table id="T_e17da_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
+            }</style><table id="T_e1423_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
                     <tr>
-                            <th id="T_e17da_level0_row0" class="row_heading level0 row0" >0</th>
-                            <td id="T_e17da_row0_col0" class="data row0 col0" >0</td>
-                            <td id="T_e17da_row0_col1" class="data row0 col1" >Default series</td>
-                            <td id="T_e17da_row0_col2" class="data row0 col2" >1</td>
-                            <td id="T_e17da_row0_col3" class="data row0 col3" >#015482</td>
-                            <td id="T_e17da_row0_col4" class="data row0 col4" >1</td>
+                            <th id="T_e1423_level0_row0" class="row_heading level0 row0" >0</th>
+                            <td id="T_e1423_row0_col0" class="data row0 col0" >0</td>
+                            <td id="T_e1423_row0_col1" class="data row0 col1" >Default series</td>
+                            <td id="T_e1423_row0_col2" class="data row0 col2" >1</td>
+                            <td id="T_e1423_row0_col3" class="data row0 col3" >#015482</td>
+                            <td id="T_e1423_row0_col4" class="data row0 col4" >1</td>
                 </tr>
                 <tr>
-                            <th id="T_e17da_level0_row1" class="row_heading level0 row1" >1</th>
-                            <td id="T_e17da_row1_col0" class="data row1 col0" >0.78</td>
-                            <td id="T_e17da_row1_col1" class="data row1 col1" >Default series</td>
-                            <td id="T_e17da_row1_col2" class="data row1 col2" >2</td>
-                            <td id="T_e17da_row1_col3" class="data row1 col3" >#9f0052</td>
-                            <td id="T_e17da_row1_col4" class="data row1 col4" >2</td>
+                            <th id="T_e1423_level0_row1" class="row_heading level0 row1" >1</th>
+                            <td id="T_e1423_row1_col0" class="data row1 col0" >0.78</td>
+                            <td id="T_e1423_row1_col1" class="data row1 col1" >Default series</td>
+                            <td id="T_e1423_row1_col2" class="data row1 col2" >2</td>
+                            <td id="T_e1423_row1_col3" class="data row1 col3" >#9f0052</td>
+                            <td id="T_e1423_row1_col4" class="data row1 col4" >2</td>
                 </tr>
                 <tr>
-                            <th id="T_e17da_level0_row2" class="row_heading level0 row2" >2</th>
-                            <td id="T_e17da_row2_col0" class="data row2 col0" >1.15</td>
-                            <td id="T_e17da_row2_col1" class="data row2 col1" >Default series</td>
-                            <td id="T_e17da_row2_col2" class="data row2 col2" >3</td>
-                            <td id="T_e17da_row2_col3" class="data row2 col3" >#ffbe00</td>
-                            <td id="T_e17da_row2_col4" class="data row2 col4" >3</td>
+                            <th id="T_e1423_level0_row2" class="row_heading level0 row2" >2</th>
+                            <td id="T_e1423_row2_col0" class="data row2 col0" >1.15</td>
+                            <td id="T_e1423_row2_col1" class="data row2 col1" >Default series</td>
+                            <td id="T_e1423_row2_col2" class="data row2 col2" >3</td>
+                            <td id="T_e1423_row2_col3" class="data row2 col3" >#ffbe00</td>
+                            <td id="T_e1423_row2_col4" class="data row2 col4" >3</td>
                 </tr>
                 <tr>
-                            <th id="T_e17da_level0_row3" class="row_heading level0 row3" >3</th>
-                            <td id="T_e17da_row3_col0" class="data row3 col0" >1.90</td>
-                            <td id="T_e17da_row3_col1" class="data row3 col1" >Default series</td>
-                            <td id="T_e17da_row3_col2" class="data row3 col2" >4</td>
-                            <td id="T_e17da_row3_col3" class="data row3 col3" >#728f02</td>
-                            <td id="T_e17da_row3_col4" class="data row3 col4" >4</td>
+                            <th id="T_e1423_level0_row3" class="row_heading level0 row3" >3</th>
+                            <td id="T_e1423_row3_col0" class="data row3 col0" >1.90</td>
+                            <td id="T_e1423_row3_col1" class="data row3 col1" >Default series</td>
+                            <td id="T_e1423_row3_col2" class="data row3 col2" >4</td>
+                            <td id="T_e1423_row3_col3" class="data row3 col3" >#728f02</td>
+                            <td id="T_e1423_row3_col4" class="data row3 col4" >4</td>
                 </tr>
                 <tr>
-                            <th id="T_e17da_level0_row4" class="row_heading level0 row4" >4</th>
-                            <td id="T_e17da_row4_col0" class="data row4 col0" >2.50</td>
-                            <td id="T_e17da_row4_col1" class="data row4 col1" >Default series</td>
-                            <td id="T_e17da_row4_col2" class="data row4 col2" >5</td>
-                            <td id="T_e17da_row4_col3" class="data row4 col3" >#443988</td>
-                            <td id="T_e17da_row4_col4" class="data row4 col4" >5</td>
+                            <th id="T_e1423_level0_row4" class="row_heading level0 row4" >4</th>
+                            <td id="T_e1423_row4_col0" class="data row4 col0" >2.50</td>
+                            <td id="T_e1423_row4_col1" class="data row4 col1" >Default series</td>
+                            <td id="T_e1423_row4_col2" class="data row4 col2" >5</td>
+                            <td id="T_e1423_row4_col3" class="data row4 col3" >#443988</td>
+                            <td id="T_e1423_row4_col4" class="data row4 col4" >5</td>
                 </tr>
                 <tr>
-                            <th id="T_e17da_level0_row5" class="row_heading level0 row5" >5</th>
-                            <td id="T_e17da_row5_col0" class="data row5 col0" >3.10</td>
-                            <td id="T_e17da_row5_col1" class="data row5 col1" >Default series</td>
-                            <td id="T_e17da_row5_col2" class="data row5 col2" >6</td>
-                            <td id="T_e17da_row5_col3" class="data row5 col3" >#ff3f20</td>
-                            <td id="T_e17da_row5_col4" class="data row5 col4" >6</td>
+                            <th id="T_e1423_level0_row5" class="row_heading level0 row5" >5</th>
+                            <td id="T_e1423_row5_col0" class="data row5 col0" >3.10</td>
+                            <td id="T_e1423_row5_col1" class="data row5 col1" >Default series</td>
+                            <td id="T_e1423_row5_col2" class="data row5 col2" >6</td>
+                            <td id="T_e1423_row5_col3" class="data row5 col3" >#ff3f20</td>
+                            <td id="T_e1423_row5_col4" class="data row5 col4" >6</td>
                 </tr>
                 <tr>
-                            <th id="T_e17da_level0_row6" class="row_heading level0 row6" >6</th>
-                            <td id="T_e17da_row6_col0" class="data row6 col0" >3.90</td>
-                            <td id="T_e17da_row6_col1" class="data row6 col1" >Default series</td>
-                            <td id="T_e17da_row6_col2" class="data row6 col2" >7</td>
-                            <td id="T_e17da_row6_col3" class="data row6 col3" >#5DA629</td>
-                            <td id="T_e17da_row6_col4" class="data row6 col4" >7</td>
+                            <th id="T_e1423_level0_row6" class="row_heading level0 row6" >6</th>
+                            <td id="T_e1423_row6_col0" class="data row6 col0" >3.90</td>
+                            <td id="T_e1423_row6_col1" class="data row6 col1" >Default series</td>
+                            <td id="T_e1423_row6_col2" class="data row6 col2" >7</td>
+                            <td id="T_e1423_row6_col3" class="data row6 col3" >#5DA629</td>
+                            <td id="T_e1423_row6_col4" class="data row6 col4" >7</td>
                 </tr>
                 <tr>
-                            <th id="T_e17da_level0_row7" class="row_heading level0 row7" >7</th>
-                            <td id="T_e17da_row7_col0" class="data row7 col0" >4.40</td>
-                            <td id="T_e17da_row7_col1" class="data row7 col1" >Default series</td>
-                            <td id="T_e17da_row7_col2" class="data row7 col2" >8</td>
-                            <td id="T_e17da_row7_col3" class="data row7 col3" >#4878d0</td>
-                            <td id="T_e17da_row7_col4" class="data row7 col4" >8</td>
+                            <th id="T_e1423_level0_row7" class="row_heading level0 row7" >7</th>
+                            <td id="T_e1423_row7_col0" class="data row7 col0" >4.40</td>
+                            <td id="T_e1423_row7_col1" class="data row7 col1" >Default series</td>
+                            <td id="T_e1423_row7_col2" class="data row7 col2" >8</td>
+                            <td id="T_e1423_row7_col3" class="data row7 col3" >#4878d0</td>
+                            <td id="T_e1423_row7_col4" class="data row7 col4" >8</td>
                 </tr>
                 <tr>
-                            <th id="T_e17da_level0_row8" class="row_heading level0 row8" >8</th>
-                            <td id="T_e17da_row8_col0" class="data row8 col0" >5.20</td>
-                            <td id="T_e17da_row8_col1" class="data row8 col1" >Default series</td>
-                            <td id="T_e17da_row8_col2" class="data row8 col2" >9</td>
-                            <td id="T_e17da_row8_col3" class="data row8 col3" >#ee854a</td>
-                            <td id="T_e17da_row8_col4" class="data row8 col4" >9</td>
+                            <th id="T_e1423_level0_row8" class="row_heading level0 row8" >8</th>
+                            <td id="T_e1423_row8_col0" class="data row8 col0" >5.20</td>
+                            <td id="T_e1423_row8_col1" class="data row8 col1" >Default series</td>
+                            <td id="T_e1423_row8_col2" class="data row8 col2" >9</td>
+                            <td id="T_e1423_row8_col3" class="data row8 col3" >#ee854a</td>
+                            <td id="T_e1423_row8_col4" class="data row8 col4" >9</td>
                 </tr>
                 <tr>
-                            <th id="T_e17da_level0_row9" class="row_heading level0 row9" >9</th>
-                            <td id="T_e17da_row9_col0" class="data row9 col0" >f1</td>
-                            <td id="T_e17da_row9_col1" class="data row9 col1" >Default series</td>
-                            <td id="T_e17da_row9_col2" class="data row9 col2" >10</td>
-                            <td id="T_e17da_row9_col3" class="data row9 col3" >#6acc64</td>
-                            <td id="T_e17da_row9_col4" class="data row9 col4" >10</td>
+                            <th id="T_e1423_level0_row9" class="row_heading level0 row9" >9</th>
+                            <td id="T_e1423_row9_col0" class="data row9 col0" >f1</td>
+                            <td id="T_e1423_row9_col1" class="data row9 col1" >Default series</td>
+                            <td id="T_e1423_row9_col2" class="data row9 col2" >10</td>
+                            <td id="T_e1423_row9_col3" class="data row9 col3" >#6acc64</td>
+                            <td id="T_e1423_row9_col4" class="data row9 col4" >10</td>
                 </tr>
                 <tr>
-                            <th id="T_e17da_level0_row10" class="row_heading level0 row10" >10</th>
-                            <td id="T_e17da_row10_col0" class="data row10 col0" >f2</td>
-                            <td id="T_e17da_row10_col1" class="data row10 col1" >Default series</td>
-                            <td id="T_e17da_row10_col2" class="data row10 col2" >11</td>
-                            <td id="T_e17da_row10_col3" class="data row10 col3" >#d65f5f</td>
-                            <td id="T_e17da_row10_col4" class="data row10 col4" >11</td>
+                            <th id="T_e1423_level0_row10" class="row_heading level0 row10" >10</th>
+                            <td id="T_e1423_row10_col0" class="data row10 col0" >f2</td>
+                            <td id="T_e1423_row10_col1" class="data row10 col1" >Default series</td>
+                            <td id="T_e1423_row10_col2" class="data row10 col2" >11</td>
+                            <td id="T_e1423_row10_col3" class="data row10 col3" >#d65f5f</td>
+                            <td id="T_e1423_row10_col4" class="data row10 col4" >11</td>
                 </tr>
                 <tr>
-                            <th id="T_e17da_level0_row11" class="row_heading level0 row11" >11</th>
-                            <td id="T_e17da_row11_col0" class="data row11 col0" >f3</td>
-                            <td id="T_e17da_row11_col1" class="data row11 col1" >Default series</td>
-                            <td id="T_e17da_row11_col2" class="data row11 col2" >12</td>
-                            <td id="T_e17da_row11_col3" class="data row11 col3" >#956cb4</td>
-                            <td id="T_e17da_row11_col4" class="data row11 col4" >12</td>
+                            <th id="T_e1423_level0_row11" class="row_heading level0 row11" >11</th>
+                            <td id="T_e1423_row11_col0" class="data row11 col0" >f3</td>
+                            <td id="T_e1423_row11_col1" class="data row11 col1" >Default series</td>
+                            <td id="T_e1423_row11_col2" class="data row11 col2" >12</td>
+                            <td id="T_e1423_row11_col3" class="data row11 col3" >#956cb4</td>
+                            <td id="T_e1423_row11_col4" class="data row11 col4" >12</td>
                 </tr>
                 <tr>
-                            <th id="T_e17da_level0_row12" class="row_heading level0 row12" >12</th>
-                            <td id="T_e17da_row12_col0" class="data row12 col0" >basement</td>
-                            <td id="T_e17da_row12_col1" class="data row12 col1" >Basement</td>
-                            <td id="T_e17da_row12_col2" class="data row12 col2" >1</td>
-                            <td id="T_e17da_row12_col3" class="data row12 col3" >#8c613c</td>
-                            <td id="T_e17da_row12_col4" class="data row12 col4" >13</td>
+                            <th id="T_e1423_level0_row12" class="row_heading level0 row12" >12</th>
+                            <td id="T_e1423_row12_col0" class="data row12 col0" >basement</td>
+                            <td id="T_e1423_row12_col1" class="data row12 col1" >Basement</td>
+                            <td id="T_e1423_row12_col2" class="data row12 col2" >1</td>
+                            <td id="T_e1423_row12_col3" class="data row12 col3" >#8c613c</td>
+                            <td id="T_e1423_row12_col4" class="data row12 col4" >13</td>
                 </tr>
         </tbody></table>
     </div>
@@ -719,136 +719,136 @@ We will need to separate with surface belong to each series:
 
     <div class="output_subarea output_html rendered_html output_result">
     <style  type="text/css" >
-    #T_7b411_row0_col3{
+    #T_d2328_row0_col3{
                 background-color:  #015482;
-            }#T_7b411_row1_col3{
+            }#T_d2328_row1_col3{
                 background-color:  #9f0052;
-            }#T_7b411_row2_col3{
+            }#T_d2328_row2_col3{
                 background-color:  #ffbe00;
-            }#T_7b411_row3_col3{
+            }#T_d2328_row3_col3{
                 background-color:  #728f02;
-            }#T_7b411_row4_col3{
+            }#T_d2328_row4_col3{
                 background-color:  #443988;
-            }#T_7b411_row5_col3{
+            }#T_d2328_row5_col3{
                 background-color:  #ff3f20;
-            }#T_7b411_row6_col3{
+            }#T_d2328_row6_col3{
                 background-color:  #5DA629;
-            }#T_7b411_row7_col3{
+            }#T_d2328_row7_col3{
                 background-color:  #4878d0;
-            }#T_7b411_row8_col3{
+            }#T_d2328_row8_col3{
                 background-color:  #ee854a;
-            }#T_7b411_row9_col3{
+            }#T_d2328_row9_col3{
                 background-color:  #6acc64;
-            }#T_7b411_row10_col3{
+            }#T_d2328_row10_col3{
                 background-color:  #d65f5f;
-            }#T_7b411_row11_col3{
+            }#T_d2328_row11_col3{
                 background-color:  #956cb4;
-            }#T_7b411_row12_col3{
+            }#T_d2328_row12_col3{
                 background-color:  #8c613c;
-            }</style><table id="T_7b411_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
+            }</style><table id="T_d2328_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
                     <tr>
-                            <th id="T_7b411_level0_row0" class="row_heading level0 row0" >0</th>
-                            <td id="T_7b411_row0_col0" class="data row0 col0" >0</td>
-                            <td id="T_7b411_row0_col1" class="data row0 col1" >Default series</td>
-                            <td id="T_7b411_row0_col2" class="data row0 col2" >1</td>
-                            <td id="T_7b411_row0_col3" class="data row0 col3" >#015482</td>
-                            <td id="T_7b411_row0_col4" class="data row0 col4" >1</td>
+                            <th id="T_d2328_level0_row0" class="row_heading level0 row0" >0</th>
+                            <td id="T_d2328_row0_col0" class="data row0 col0" >0</td>
+                            <td id="T_d2328_row0_col1" class="data row0 col1" >Default series</td>
+                            <td id="T_d2328_row0_col2" class="data row0 col2" >1</td>
+                            <td id="T_d2328_row0_col3" class="data row0 col3" >#015482</td>
+                            <td id="T_d2328_row0_col4" class="data row0 col4" >1</td>
                 </tr>
                 <tr>
-                            <th id="T_7b411_level0_row1" class="row_heading level0 row1" >1</th>
-                            <td id="T_7b411_row1_col0" class="data row1 col0" >0.78</td>
-                            <td id="T_7b411_row1_col1" class="data row1 col1" >Default series</td>
-                            <td id="T_7b411_row1_col2" class="data row1 col2" >2</td>
-                            <td id="T_7b411_row1_col3" class="data row1 col3" >#9f0052</td>
-                            <td id="T_7b411_row1_col4" class="data row1 col4" >2</td>
+                            <th id="T_d2328_level0_row1" class="row_heading level0 row1" >1</th>
+                            <td id="T_d2328_row1_col0" class="data row1 col0" >0.78</td>
+                            <td id="T_d2328_row1_col1" class="data row1 col1" >Default series</td>
+                            <td id="T_d2328_row1_col2" class="data row1 col2" >2</td>
+                            <td id="T_d2328_row1_col3" class="data row1 col3" >#9f0052</td>
+                            <td id="T_d2328_row1_col4" class="data row1 col4" >2</td>
                 </tr>
                 <tr>
-                            <th id="T_7b411_level0_row2" class="row_heading level0 row2" >2</th>
-                            <td id="T_7b411_row2_col0" class="data row2 col0" >1.15</td>
-                            <td id="T_7b411_row2_col1" class="data row2 col1" >Default series</td>
-                            <td id="T_7b411_row2_col2" class="data row2 col2" >3</td>
-                            <td id="T_7b411_row2_col3" class="data row2 col3" >#ffbe00</td>
-                            <td id="T_7b411_row2_col4" class="data row2 col4" >3</td>
+                            <th id="T_d2328_level0_row2" class="row_heading level0 row2" >2</th>
+                            <td id="T_d2328_row2_col0" class="data row2 col0" >1.15</td>
+                            <td id="T_d2328_row2_col1" class="data row2 col1" >Default series</td>
+                            <td id="T_d2328_row2_col2" class="data row2 col2" >3</td>
+                            <td id="T_d2328_row2_col3" class="data row2 col3" >#ffbe00</td>
+                            <td id="T_d2328_row2_col4" class="data row2 col4" >3</td>
                 </tr>
                 <tr>
-                            <th id="T_7b411_level0_row3" class="row_heading level0 row3" >3</th>
-                            <td id="T_7b411_row3_col0" class="data row3 col0" >1.90</td>
-                            <td id="T_7b411_row3_col1" class="data row3 col1" >Default series</td>
-                            <td id="T_7b411_row3_col2" class="data row3 col2" >4</td>
-                            <td id="T_7b411_row3_col3" class="data row3 col3" >#728f02</td>
-                            <td id="T_7b411_row3_col4" class="data row3 col4" >4</td>
+                            <th id="T_d2328_level0_row3" class="row_heading level0 row3" >3</th>
+                            <td id="T_d2328_row3_col0" class="data row3 col0" >1.90</td>
+                            <td id="T_d2328_row3_col1" class="data row3 col1" >Default series</td>
+                            <td id="T_d2328_row3_col2" class="data row3 col2" >4</td>
+                            <td id="T_d2328_row3_col3" class="data row3 col3" >#728f02</td>
+                            <td id="T_d2328_row3_col4" class="data row3 col4" >4</td>
                 </tr>
                 <tr>
-                            <th id="T_7b411_level0_row4" class="row_heading level0 row4" >4</th>
-                            <td id="T_7b411_row4_col0" class="data row4 col0" >2.50</td>
-                            <td id="T_7b411_row4_col1" class="data row4 col1" >Default series</td>
-                            <td id="T_7b411_row4_col2" class="data row4 col2" >5</td>
-                            <td id="T_7b411_row4_col3" class="data row4 col3" >#443988</td>
-                            <td id="T_7b411_row4_col4" class="data row4 col4" >5</td>
+                            <th id="T_d2328_level0_row4" class="row_heading level0 row4" >4</th>
+                            <td id="T_d2328_row4_col0" class="data row4 col0" >2.50</td>
+                            <td id="T_d2328_row4_col1" class="data row4 col1" >Default series</td>
+                            <td id="T_d2328_row4_col2" class="data row4 col2" >5</td>
+                            <td id="T_d2328_row4_col3" class="data row4 col3" >#443988</td>
+                            <td id="T_d2328_row4_col4" class="data row4 col4" >5</td>
                 </tr>
                 <tr>
-                            <th id="T_7b411_level0_row5" class="row_heading level0 row5" >5</th>
-                            <td id="T_7b411_row5_col0" class="data row5 col0" >3.10</td>
-                            <td id="T_7b411_row5_col1" class="data row5 col1" >Default series</td>
-                            <td id="T_7b411_row5_col2" class="data row5 col2" >6</td>
-                            <td id="T_7b411_row5_col3" class="data row5 col3" >#ff3f20</td>
-                            <td id="T_7b411_row5_col4" class="data row5 col4" >6</td>
+                            <th id="T_d2328_level0_row5" class="row_heading level0 row5" >5</th>
+                            <td id="T_d2328_row5_col0" class="data row5 col0" >3.10</td>
+                            <td id="T_d2328_row5_col1" class="data row5 col1" >Default series</td>
+                            <td id="T_d2328_row5_col2" class="data row5 col2" >6</td>
+                            <td id="T_d2328_row5_col3" class="data row5 col3" >#ff3f20</td>
+                            <td id="T_d2328_row5_col4" class="data row5 col4" >6</td>
                 </tr>
                 <tr>
-                            <th id="T_7b411_level0_row6" class="row_heading level0 row6" >6</th>
-                            <td id="T_7b411_row6_col0" class="data row6 col0" >3.90</td>
-                            <td id="T_7b411_row6_col1" class="data row6 col1" >Default series</td>
-                            <td id="T_7b411_row6_col2" class="data row6 col2" >7</td>
-                            <td id="T_7b411_row6_col3" class="data row6 col3" >#5DA629</td>
-                            <td id="T_7b411_row6_col4" class="data row6 col4" >7</td>
+                            <th id="T_d2328_level0_row6" class="row_heading level0 row6" >6</th>
+                            <td id="T_d2328_row6_col0" class="data row6 col0" >3.90</td>
+                            <td id="T_d2328_row6_col1" class="data row6 col1" >Default series</td>
+                            <td id="T_d2328_row6_col2" class="data row6 col2" >7</td>
+                            <td id="T_d2328_row6_col3" class="data row6 col3" >#5DA629</td>
+                            <td id="T_d2328_row6_col4" class="data row6 col4" >7</td>
                 </tr>
                 <tr>
-                            <th id="T_7b411_level0_row7" class="row_heading level0 row7" >7</th>
-                            <td id="T_7b411_row7_col0" class="data row7 col0" >4.40</td>
-                            <td id="T_7b411_row7_col1" class="data row7 col1" >Default series</td>
-                            <td id="T_7b411_row7_col2" class="data row7 col2" >8</td>
-                            <td id="T_7b411_row7_col3" class="data row7 col3" >#4878d0</td>
-                            <td id="T_7b411_row7_col4" class="data row7 col4" >8</td>
+                            <th id="T_d2328_level0_row7" class="row_heading level0 row7" >7</th>
+                            <td id="T_d2328_row7_col0" class="data row7 col0" >4.40</td>
+                            <td id="T_d2328_row7_col1" class="data row7 col1" >Default series</td>
+                            <td id="T_d2328_row7_col2" class="data row7 col2" >8</td>
+                            <td id="T_d2328_row7_col3" class="data row7 col3" >#4878d0</td>
+                            <td id="T_d2328_row7_col4" class="data row7 col4" >8</td>
                 </tr>
                 <tr>
-                            <th id="T_7b411_level0_row8" class="row_heading level0 row8" >8</th>
-                            <td id="T_7b411_row8_col0" class="data row8 col0" >5.20</td>
-                            <td id="T_7b411_row8_col1" class="data row8 col1" >Default series</td>
-                            <td id="T_7b411_row8_col2" class="data row8 col2" >9</td>
-                            <td id="T_7b411_row8_col3" class="data row8 col3" >#ee854a</td>
-                            <td id="T_7b411_row8_col4" class="data row8 col4" >9</td>
+                            <th id="T_d2328_level0_row8" class="row_heading level0 row8" >8</th>
+                            <td id="T_d2328_row8_col0" class="data row8 col0" >5.20</td>
+                            <td id="T_d2328_row8_col1" class="data row8 col1" >Default series</td>
+                            <td id="T_d2328_row8_col2" class="data row8 col2" >9</td>
+                            <td id="T_d2328_row8_col3" class="data row8 col3" >#ee854a</td>
+                            <td id="T_d2328_row8_col4" class="data row8 col4" >9</td>
                 </tr>
                 <tr>
-                            <th id="T_7b411_level0_row9" class="row_heading level0 row9" >9</th>
-                            <td id="T_7b411_row9_col0" class="data row9 col0" >f1</td>
-                            <td id="T_7b411_row9_col1" class="data row9 col1" >Fault1</td>
-                            <td id="T_7b411_row9_col2" class="data row9 col2" >1</td>
-                            <td id="T_7b411_row9_col3" class="data row9 col3" >#6acc64</td>
-                            <td id="T_7b411_row9_col4" class="data row9 col4" >10</td>
+                            <th id="T_d2328_level0_row9" class="row_heading level0 row9" >9</th>
+                            <td id="T_d2328_row9_col0" class="data row9 col0" >f1</td>
+                            <td id="T_d2328_row9_col1" class="data row9 col1" >Fault1</td>
+                            <td id="T_d2328_row9_col2" class="data row9 col2" >1</td>
+                            <td id="T_d2328_row9_col3" class="data row9 col3" >#6acc64</td>
+                            <td id="T_d2328_row9_col4" class="data row9 col4" >10</td>
                 </tr>
                 <tr>
-                            <th id="T_7b411_level0_row10" class="row_heading level0 row10" >10</th>
-                            <td id="T_7b411_row10_col0" class="data row10 col0" >f2</td>
-                            <td id="T_7b411_row10_col1" class="data row10 col1" >Fault2</td>
-                            <td id="T_7b411_row10_col2" class="data row10 col2" >1</td>
-                            <td id="T_7b411_row10_col3" class="data row10 col3" >#d65f5f</td>
-                            <td id="T_7b411_row10_col4" class="data row10 col4" >11</td>
+                            <th id="T_d2328_level0_row10" class="row_heading level0 row10" >10</th>
+                            <td id="T_d2328_row10_col0" class="data row10 col0" >f2</td>
+                            <td id="T_d2328_row10_col1" class="data row10 col1" >Fault2</td>
+                            <td id="T_d2328_row10_col2" class="data row10 col2" >1</td>
+                            <td id="T_d2328_row10_col3" class="data row10 col3" >#d65f5f</td>
+                            <td id="T_d2328_row10_col4" class="data row10 col4" >11</td>
                 </tr>
                 <tr>
-                            <th id="T_7b411_level0_row11" class="row_heading level0 row11" >11</th>
-                            <td id="T_7b411_row11_col0" class="data row11 col0" >f3</td>
-                            <td id="T_7b411_row11_col1" class="data row11 col1" >Fault3</td>
-                            <td id="T_7b411_row11_col2" class="data row11 col2" >1</td>
-                            <td id="T_7b411_row11_col3" class="data row11 col3" >#956cb4</td>
-                            <td id="T_7b411_row11_col4" class="data row11 col4" >12</td>
+                            <th id="T_d2328_level0_row11" class="row_heading level0 row11" >11</th>
+                            <td id="T_d2328_row11_col0" class="data row11 col0" >f3</td>
+                            <td id="T_d2328_row11_col1" class="data row11 col1" >Fault3</td>
+                            <td id="T_d2328_row11_col2" class="data row11 col2" >1</td>
+                            <td id="T_d2328_row11_col3" class="data row11 col3" >#956cb4</td>
+                            <td id="T_d2328_row11_col4" class="data row11 col4" >12</td>
                 </tr>
                 <tr>
-                            <th id="T_7b411_level0_row12" class="row_heading level0 row12" >12</th>
-                            <td id="T_7b411_row12_col0" class="data row12 col0" >basement</td>
-                            <td id="T_7b411_row12_col1" class="data row12 col1" >Basement</td>
-                            <td id="T_7b411_row12_col2" class="data row12 col2" >1</td>
-                            <td id="T_7b411_row12_col3" class="data row12 col3" >#8c613c</td>
-                            <td id="T_7b411_row12_col4" class="data row12 col4" >13</td>
+                            <th id="T_d2328_level0_row12" class="row_heading level0 row12" >12</th>
+                            <td id="T_d2328_row12_col0" class="data row12 col0" >basement</td>
+                            <td id="T_d2328_row12_col1" class="data row12 col1" >Basement</td>
+                            <td id="T_d2328_row12_col2" class="data row12 col2" >1</td>
+                            <td id="T_d2328_row12_col3" class="data row12 col3" >#8c613c</td>
+                            <td id="T_d2328_row12_col4" class="data row12 col4" >13</td>
                 </tr>
         </tbody></table>
     </div>
@@ -1052,7 +1052,7 @@ Now we are good to go:
     $C_o$                        6.6
     drift equations  [3, 3, 3, 3, 3]
 
-    <gempy.core.interpolator.InterpolatorModel object at 0x7f31941ddeb0>
+    <gempy.core.interpolator.InterpolatorModel object at 0x7fcb8b176eb0>
 
 
 
@@ -1160,7 +1160,7 @@ Time
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7f3194785040>
+    <gempy.plot.visualization_2d.Plot2D object at 0x7fcc3c7aaee0>
 
 
 
@@ -1185,7 +1185,7 @@ Time
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7f31feb0dee0>
+    <gempy.plot.visualization_2d.Plot2D object at 0x7fcb8b8b5970>
 
 
 
@@ -1215,7 +1215,7 @@ sphinx_gallery_thumbnail_number = 3
  .. code-block:: none
 
 
-    <gempy.plot.vista.GemPyToVista object at 0x7f31fe860790>
+    <gempy.plot.vista.GemPyToVista object at 0x7fcc46b3f1f0>
 
 
 
@@ -1322,132 +1322,132 @@ other with triangles. Axis 0 is each surface in the order:
 
     <div class="output_subarea output_html rendered_html output_result">
     <style  type="text/css" >
-    #T_beb67_row0_col3,#T_beb67_row1_col3,#T_beb67_row2_col3{
+    #T_ae548_row0_col3,#T_ae548_row1_col3,#T_ae548_row2_col3{
                 background-color:  #527682;
-            }#T_beb67_row3_col3{
+            }#T_ae548_row3_col3{
                 background-color:  #015482;
-            }#T_beb67_row4_col3{
+            }#T_ae548_row4_col3{
                 background-color:  #9f0052;
-            }#T_beb67_row5_col3{
+            }#T_ae548_row5_col3{
                 background-color:  #ffbe00;
-            }#T_beb67_row6_col3{
+            }#T_ae548_row6_col3{
                 background-color:  #443988;
-            }#T_beb67_row7_col3{
+            }#T_ae548_row7_col3{
                 background-color:  #ff3f20;
-            }#T_beb67_row8_col3{
+            }#T_ae548_row8_col3{
                 background-color:  #728f02;
-            }#T_beb67_row9_col3{
+            }#T_ae548_row9_col3{
                 background-color:  #5DA629;
-            }#T_beb67_row10_col3{
+            }#T_ae548_row10_col3{
                 background-color:  #4878d0;
-            }#T_beb67_row11_col3{
+            }#T_ae548_row11_col3{
                 background-color:  #ee854a;
-            }#T_beb67_row12_col3{
+            }#T_ae548_row12_col3{
                 background-color:  #8c613c;
-            }</style><table id="T_beb67_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
+            }</style><table id="T_ae548_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
                     <tr>
-                            <th id="T_beb67_level0_row0" class="row_heading level0 row0" >11</th>
-                            <td id="T_beb67_row0_col0" class="data row0 col0" >f3</td>
-                            <td id="T_beb67_row0_col1" class="data row0 col1" >Fault3</td>
-                            <td id="T_beb67_row0_col2" class="data row0 col2" >1</td>
-                            <td id="T_beb67_row0_col3" class="data row0 col3" >#527682</td>
-                            <td id="T_beb67_row0_col4" class="data row0 col4" >1</td>
+                            <th id="T_ae548_level0_row0" class="row_heading level0 row0" >11</th>
+                            <td id="T_ae548_row0_col0" class="data row0 col0" >f3</td>
+                            <td id="T_ae548_row0_col1" class="data row0 col1" >Fault3</td>
+                            <td id="T_ae548_row0_col2" class="data row0 col2" >1</td>
+                            <td id="T_ae548_row0_col3" class="data row0 col3" >#527682</td>
+                            <td id="T_ae548_row0_col4" class="data row0 col4" >1</td>
                 </tr>
                 <tr>
-                            <th id="T_beb67_level0_row1" class="row_heading level0 row1" >9</th>
-                            <td id="T_beb67_row1_col0" class="data row1 col0" >f1</td>
-                            <td id="T_beb67_row1_col1" class="data row1 col1" >Fault1</td>
-                            <td id="T_beb67_row1_col2" class="data row1 col2" >1</td>
-                            <td id="T_beb67_row1_col3" class="data row1 col3" >#527682</td>
-                            <td id="T_beb67_row1_col4" class="data row1 col4" >2</td>
+                            <th id="T_ae548_level0_row1" class="row_heading level0 row1" >9</th>
+                            <td id="T_ae548_row1_col0" class="data row1 col0" >f1</td>
+                            <td id="T_ae548_row1_col1" class="data row1 col1" >Fault1</td>
+                            <td id="T_ae548_row1_col2" class="data row1 col2" >1</td>
+                            <td id="T_ae548_row1_col3" class="data row1 col3" >#527682</td>
+                            <td id="T_ae548_row1_col4" class="data row1 col4" >2</td>
                 </tr>
                 <tr>
-                            <th id="T_beb67_level0_row2" class="row_heading level0 row2" >10</th>
-                            <td id="T_beb67_row2_col0" class="data row2 col0" >f2</td>
-                            <td id="T_beb67_row2_col1" class="data row2 col1" >Fault2</td>
-                            <td id="T_beb67_row2_col2" class="data row2 col2" >1</td>
-                            <td id="T_beb67_row2_col3" class="data row2 col3" >#527682</td>
-                            <td id="T_beb67_row2_col4" class="data row2 col4" >3</td>
+                            <th id="T_ae548_level0_row2" class="row_heading level0 row2" >10</th>
+                            <td id="T_ae548_row2_col0" class="data row2 col0" >f2</td>
+                            <td id="T_ae548_row2_col1" class="data row2 col1" >Fault2</td>
+                            <td id="T_ae548_row2_col2" class="data row2 col2" >1</td>
+                            <td id="T_ae548_row2_col3" class="data row2 col3" >#527682</td>
+                            <td id="T_ae548_row2_col4" class="data row2 col4" >3</td>
                 </tr>
                 <tr>
-                            <th id="T_beb67_level0_row3" class="row_heading level0 row3" >0</th>
-                            <td id="T_beb67_row3_col0" class="data row3 col0" >0</td>
-                            <td id="T_beb67_row3_col1" class="data row3 col1" >Default series</td>
-                            <td id="T_beb67_row3_col2" class="data row3 col2" >1</td>
-                            <td id="T_beb67_row3_col3" class="data row3 col3" >#015482</td>
-                            <td id="T_beb67_row3_col4" class="data row3 col4" >4</td>
+                            <th id="T_ae548_level0_row3" class="row_heading level0 row3" >0</th>
+                            <td id="T_ae548_row3_col0" class="data row3 col0" >0</td>
+                            <td id="T_ae548_row3_col1" class="data row3 col1" >Default series</td>
+                            <td id="T_ae548_row3_col2" class="data row3 col2" >1</td>
+                            <td id="T_ae548_row3_col3" class="data row3 col3" >#015482</td>
+                            <td id="T_ae548_row3_col4" class="data row3 col4" >4</td>
                 </tr>
                 <tr>
-                            <th id="T_beb67_level0_row4" class="row_heading level0 row4" >1</th>
-                            <td id="T_beb67_row4_col0" class="data row4 col0" >0.78</td>
-                            <td id="T_beb67_row4_col1" class="data row4 col1" >Default series</td>
-                            <td id="T_beb67_row4_col2" class="data row4 col2" >2</td>
-                            <td id="T_beb67_row4_col3" class="data row4 col3" >#9f0052</td>
-                            <td id="T_beb67_row4_col4" class="data row4 col4" >5</td>
+                            <th id="T_ae548_level0_row4" class="row_heading level0 row4" >1</th>
+                            <td id="T_ae548_row4_col0" class="data row4 col0" >0.78</td>
+                            <td id="T_ae548_row4_col1" class="data row4 col1" >Default series</td>
+                            <td id="T_ae548_row4_col2" class="data row4 col2" >2</td>
+                            <td id="T_ae548_row4_col3" class="data row4 col3" >#9f0052</td>
+                            <td id="T_ae548_row4_col4" class="data row4 col4" >5</td>
                 </tr>
                 <tr>
-                            <th id="T_beb67_level0_row5" class="row_heading level0 row5" >2</th>
-                            <td id="T_beb67_row5_col0" class="data row5 col0" >1.15</td>
-                            <td id="T_beb67_row5_col1" class="data row5 col1" >Default series</td>
-                            <td id="T_beb67_row5_col2" class="data row5 col2" >3</td>
-                            <td id="T_beb67_row5_col3" class="data row5 col3" >#ffbe00</td>
-                            <td id="T_beb67_row5_col4" class="data row5 col4" >6</td>
+                            <th id="T_ae548_level0_row5" class="row_heading level0 row5" >2</th>
+                            <td id="T_ae548_row5_col0" class="data row5 col0" >1.15</td>
+                            <td id="T_ae548_row5_col1" class="data row5 col1" >Default series</td>
+                            <td id="T_ae548_row5_col2" class="data row5 col2" >3</td>
+                            <td id="T_ae548_row5_col3" class="data row5 col3" >#ffbe00</td>
+                            <td id="T_ae548_row5_col4" class="data row5 col4" >6</td>
                 </tr>
                 <tr>
-                            <th id="T_beb67_level0_row6" class="row_heading level0 row6" >4</th>
-                            <td id="T_beb67_row6_col0" class="data row6 col0" >2.50</td>
-                            <td id="T_beb67_row6_col1" class="data row6 col1" >Default series</td>
-                            <td id="T_beb67_row6_col2" class="data row6 col2" >4</td>
-                            <td id="T_beb67_row6_col3" class="data row6 col3" >#443988</td>
-                            <td id="T_beb67_row6_col4" class="data row6 col4" >7</td>
+                            <th id="T_ae548_level0_row6" class="row_heading level0 row6" >4</th>
+                            <td id="T_ae548_row6_col0" class="data row6 col0" >2.50</td>
+                            <td id="T_ae548_row6_col1" class="data row6 col1" >Default series</td>
+                            <td id="T_ae548_row6_col2" class="data row6 col2" >4</td>
+                            <td id="T_ae548_row6_col3" class="data row6 col3" >#443988</td>
+                            <td id="T_ae548_row6_col4" class="data row6 col4" >7</td>
                 </tr>
                 <tr>
-                            <th id="T_beb67_level0_row7" class="row_heading level0 row7" >5</th>
-                            <td id="T_beb67_row7_col0" class="data row7 col0" >3.10</td>
-                            <td id="T_beb67_row7_col1" class="data row7 col1" >Default series</td>
-                            <td id="T_beb67_row7_col2" class="data row7 col2" >5</td>
-                            <td id="T_beb67_row7_col3" class="data row7 col3" >#ff3f20</td>
-                            <td id="T_beb67_row7_col4" class="data row7 col4" >8</td>
+                            <th id="T_ae548_level0_row7" class="row_heading level0 row7" >5</th>
+                            <td id="T_ae548_row7_col0" class="data row7 col0" >3.10</td>
+                            <td id="T_ae548_row7_col1" class="data row7 col1" >Default series</td>
+                            <td id="T_ae548_row7_col2" class="data row7 col2" >5</td>
+                            <td id="T_ae548_row7_col3" class="data row7 col3" >#ff3f20</td>
+                            <td id="T_ae548_row7_col4" class="data row7 col4" >8</td>
                 </tr>
                 <tr>
-                            <th id="T_beb67_level0_row8" class="row_heading level0 row8" >3</th>
-                            <td id="T_beb67_row8_col0" class="data row8 col0" >1.90</td>
-                            <td id="T_beb67_row8_col1" class="data row8 col1" >Default series</td>
-                            <td id="T_beb67_row8_col2" class="data row8 col2" >6</td>
-                            <td id="T_beb67_row8_col3" class="data row8 col3" >#728f02</td>
-                            <td id="T_beb67_row8_col4" class="data row8 col4" >9</td>
+                            <th id="T_ae548_level0_row8" class="row_heading level0 row8" >3</th>
+                            <td id="T_ae548_row8_col0" class="data row8 col0" >1.90</td>
+                            <td id="T_ae548_row8_col1" class="data row8 col1" >Default series</td>
+                            <td id="T_ae548_row8_col2" class="data row8 col2" >6</td>
+                            <td id="T_ae548_row8_col3" class="data row8 col3" >#728f02</td>
+                            <td id="T_ae548_row8_col4" class="data row8 col4" >9</td>
                 </tr>
                 <tr>
-                            <th id="T_beb67_level0_row9" class="row_heading level0 row9" >6</th>
-                            <td id="T_beb67_row9_col0" class="data row9 col0" >3.90</td>
-                            <td id="T_beb67_row9_col1" class="data row9 col1" >Default series</td>
-                            <td id="T_beb67_row9_col2" class="data row9 col2" >7</td>
-                            <td id="T_beb67_row9_col3" class="data row9 col3" >#5DA629</td>
-                            <td id="T_beb67_row9_col4" class="data row9 col4" >10</td>
+                            <th id="T_ae548_level0_row9" class="row_heading level0 row9" >6</th>
+                            <td id="T_ae548_row9_col0" class="data row9 col0" >3.90</td>
+                            <td id="T_ae548_row9_col1" class="data row9 col1" >Default series</td>
+                            <td id="T_ae548_row9_col2" class="data row9 col2" >7</td>
+                            <td id="T_ae548_row9_col3" class="data row9 col3" >#5DA629</td>
+                            <td id="T_ae548_row9_col4" class="data row9 col4" >10</td>
                 </tr>
                 <tr>
-                            <th id="T_beb67_level0_row10" class="row_heading level0 row10" >7</th>
-                            <td id="T_beb67_row10_col0" class="data row10 col0" >4.40</td>
-                            <td id="T_beb67_row10_col1" class="data row10 col1" >Default series</td>
-                            <td id="T_beb67_row10_col2" class="data row10 col2" >8</td>
-                            <td id="T_beb67_row10_col3" class="data row10 col3" >#4878d0</td>
-                            <td id="T_beb67_row10_col4" class="data row10 col4" >11</td>
+                            <th id="T_ae548_level0_row10" class="row_heading level0 row10" >7</th>
+                            <td id="T_ae548_row10_col0" class="data row10 col0" >4.40</td>
+                            <td id="T_ae548_row10_col1" class="data row10 col1" >Default series</td>
+                            <td id="T_ae548_row10_col2" class="data row10 col2" >8</td>
+                            <td id="T_ae548_row10_col3" class="data row10 col3" >#4878d0</td>
+                            <td id="T_ae548_row10_col4" class="data row10 col4" >11</td>
                 </tr>
                 <tr>
-                            <th id="T_beb67_level0_row11" class="row_heading level0 row11" >8</th>
-                            <td id="T_beb67_row11_col0" class="data row11 col0" >5.20</td>
-                            <td id="T_beb67_row11_col1" class="data row11 col1" >Default series</td>
-                            <td id="T_beb67_row11_col2" class="data row11 col2" >9</td>
-                            <td id="T_beb67_row11_col3" class="data row11 col3" >#ee854a</td>
-                            <td id="T_beb67_row11_col4" class="data row11 col4" >12</td>
+                            <th id="T_ae548_level0_row11" class="row_heading level0 row11" >8</th>
+                            <td id="T_ae548_row11_col0" class="data row11 col0" >5.20</td>
+                            <td id="T_ae548_row11_col1" class="data row11 col1" >Default series</td>
+                            <td id="T_ae548_row11_col2" class="data row11 col2" >9</td>
+                            <td id="T_ae548_row11_col3" class="data row11 col3" >#ee854a</td>
+                            <td id="T_ae548_row11_col4" class="data row11 col4" >12</td>
                 </tr>
                 <tr>
-                            <th id="T_beb67_level0_row12" class="row_heading level0 row12" >12</th>
-                            <td id="T_beb67_row12_col0" class="data row12 col0" >basement</td>
-                            <td id="T_beb67_row12_col1" class="data row12 col1" >Basement</td>
-                            <td id="T_beb67_row12_col2" class="data row12 col2" >1</td>
-                            <td id="T_beb67_row12_col3" class="data row12 col3" >#8c613c</td>
-                            <td id="T_beb67_row12_col4" class="data row12 col4" >13</td>
+                            <th id="T_ae548_level0_row12" class="row_heading level0 row12" >12</th>
+                            <td id="T_ae548_row12_col0" class="data row12 col0" >basement</td>
+                            <td id="T_ae548_row12_col1" class="data row12 col1" >Basement</td>
+                            <td id="T_ae548_row12_col2" class="data row12 col2" >1</td>
+                            <td id="T_ae548_row12_col3" class="data row12 col3" >#8c613c</td>
+                            <td id="T_ae548_row12_col4" class="data row12 col4" >13</td>
                 </tr>
         </tbody></table>
     </div>
@@ -1529,7 +1529,7 @@ other with triangles. Axis 0 is each surface in the order:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  28.236 seconds)
+   **Total running time of the script:** ( 2 minutes  42.685 seconds)
 
 
 .. _sphx_glr_download_examples_real_Hecho.py:

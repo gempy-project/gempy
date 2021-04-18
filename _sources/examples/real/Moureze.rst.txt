@@ -427,7 +427,7 @@ Now we can see how the data looks so far:
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7f326f1d2dc0>
+    <gempy.plot.visualization_2d.Plot2D object at 0x7fcb8a163970>
 
 
 
@@ -461,7 +461,7 @@ Now we can see how the data looks so far:
     $C_o$            6826.19
     drift equations   [3, 3]
 
-    <gempy.core.interpolator.InterpolatorModel object at 0x7f326ef53c10>
+    <gempy.core.interpolator.InterpolatorModel object at 0x7fcb8c089220>
 
 
 
@@ -587,7 +587,7 @@ Time
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7f326f20f670>
+    <gempy.plot.visualization_2d.Plot2D object at 0x7fcc7468b7f0>
 
 
 
@@ -612,7 +612,7 @@ Time
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7f319436c1c0>
+    <gempy.plot.visualization_2d.Plot2D object at 0x7fcc2d021e20>
 
 
 
@@ -642,7 +642,7 @@ sphinx_gallery_thumbnail_number = 4
  .. code-block:: none
 
 
-    <gempy.plot.vista.GemPyToVista object at 0x7f326ef901c0>
+    <gempy.plot.vista.GemPyToVista object at 0x7fcc3c89d370>
 
 
 
@@ -734,26 +734,26 @@ other with triangles. Axis 0 is each surface in the order:
 
     <div class="output_subarea output_html rendered_html output_result">
     <style  type="text/css" >
-    #T_699e8_row0_col3{
+    #T_06884_row0_col3{
                 background-color:  #015482;
-            }#T_699e8_row1_col3{
+            }#T_06884_row1_col3{
                 background-color:  #9f0052;
-            }</style><table id="T_699e8_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
+            }</style><table id="T_06884_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
                     <tr>
-                            <th id="T_699e8_level0_row0" class="row_heading level0 row0" >0</th>
-                            <td id="T_699e8_row0_col0" class="data row0 col0" >0</td>
-                            <td id="T_699e8_row0_col1" class="data row0 col1" >Default series</td>
-                            <td id="T_699e8_row0_col2" class="data row0 col2" >1</td>
-                            <td id="T_699e8_row0_col3" class="data row0 col3" >#015482</td>
-                            <td id="T_699e8_row0_col4" class="data row0 col4" >1</td>
+                            <th id="T_06884_level0_row0" class="row_heading level0 row0" >0</th>
+                            <td id="T_06884_row0_col0" class="data row0 col0" >0</td>
+                            <td id="T_06884_row0_col1" class="data row0 col1" >Default series</td>
+                            <td id="T_06884_row0_col2" class="data row0 col2" >1</td>
+                            <td id="T_06884_row0_col3" class="data row0 col3" >#015482</td>
+                            <td id="T_06884_row0_col4" class="data row0 col4" >1</td>
                 </tr>
                 <tr>
-                            <th id="T_699e8_level0_row1" class="row_heading level0 row1" >1</th>
-                            <td id="T_699e8_row1_col0" class="data row1 col0" >basement</td>
-                            <td id="T_699e8_row1_col1" class="data row1 col1" >Basement</td>
-                            <td id="T_699e8_row1_col2" class="data row1 col2" >1</td>
-                            <td id="T_699e8_row1_col3" class="data row1 col3" >#9f0052</td>
-                            <td id="T_699e8_row1_col4" class="data row1 col4" >2</td>
+                            <th id="T_06884_level0_row1" class="row_heading level0 row1" >1</th>
+                            <td id="T_06884_row1_col0" class="data row1 col0" >basement</td>
+                            <td id="T_06884_row1_col1" class="data row1 col1" >Basement</td>
+                            <td id="T_06884_row1_col2" class="data row1 col2" >1</td>
+                            <td id="T_06884_row1_col3" class="data row1 col3" >#9f0052</td>
+                            <td id="T_06884_row1_col4" class="data row1 col4" >2</td>
                 </tr>
         </tbody></table>
     </div>
@@ -790,7 +790,7 @@ gp.plot.export_to_vtk(geo_model, 'Moureze')
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  9.187 seconds)
+   **Total running time of the script:** ( 2 minutes  4.415 seconds)
 
 
 .. _sphx_glr_download_examples_real_Moureze.py:

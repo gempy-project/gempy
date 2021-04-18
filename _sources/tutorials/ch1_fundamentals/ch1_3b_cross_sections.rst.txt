@@ -299,7 +299,7 @@ Active grids:
     $C_o$            285714.29
     drift equations     [3, 3]
 
-    <gempy.core.interpolator.InterpolatorModel object at 0x7f316708a3d0>
+    <gempy.core.interpolator.InterpolatorModel object at 0x7fcc46b9b7c0>
 
 
 
@@ -319,9 +319,9 @@ Active grids:
 
  .. code-block:: none
 
-    /home/miguel/PycharmProjects/gempy/gempy/core/solution.py:174: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify 'dtype=object' when creating the ndarray.
+    /WorkSSD/PythonProjects/gempy/gempy/core/solution.py:173: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify 'dtype=object' when creating the ndarray.
       self.geological_map = np.array(
-    /home/miguel/PycharmProjects/gempy/gempy/core/solution.py:179: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify 'dtype=object' when creating the ndarray.
+    /WorkSSD/PythonProjects/gempy/gempy/core/solution.py:178: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify 'dtype=object' when creating the ndarray.
       self.sections = np.array(
 
 
@@ -348,7 +348,7 @@ Active grids:
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7f316708a670>
+    <gempy.plot.visualization_2d.Plot2D object at 0x7fcc46f04580>
 
 
 
@@ -2098,7 +2098,7 @@ Look at resulting polygons:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  6.627 seconds)
+   **Total running time of the script:** ( 0 minutes  7.628 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_3b_cross_sections.py:

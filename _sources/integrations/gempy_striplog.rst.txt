@@ -109,9 +109,9 @@ Reading tops file
 
  .. code-block:: none
 
-    /home/miguel/PycharmProjects/gempy/examples/integrations/../data/input_data/striplog_integration/*.tops
+    /WorkSSD/PythonProjects/gempy/examples/integrations/../data/input_data/striplog_integration/*.tops
 
-    ['/home/miguel/PycharmProjects/gempy/examples/integrations/../data/input_data/striplog_integration/beta_strip.tops', '/home/miguel/PycharmProjects/gempy/examples/integrations/../data/input_data/striplog_integration/gamma_strip.tops', '/home/miguel/PycharmProjects/gempy/examples/integrations/../data/input_data/striplog_integration/epsilon_strip.tops', '/home/miguel/PycharmProjects/gempy/examples/integrations/../data/input_data/striplog_integration/alpha_strip.tops']
+    ['/WorkSSD/PythonProjects/gempy/examples/integrations/../data/input_data/striplog_integration/alpha_strip.tops', '/WorkSSD/PythonProjects/gempy/examples/integrations/../data/input_data/striplog_integration/beta_strip.tops', '/WorkSSD/PythonProjects/gempy/examples/integrations/../data/input_data/striplog_integration/epsilon_strip.tops', '/WorkSSD/PythonProjects/gempy/examples/integrations/../data/input_data/striplog_integration/gamma_strip.tops']
 
 
 
@@ -246,7 +246,7 @@ Striplog to pandas df of bottoms
           <th>1</th>
           <td>0</td>
           <td>0</td>
-          <td>75.0</td>
+          <td>80.0</td>
           <td>miguel</td>
           <td>1</td>
           <td>alpha</td>
@@ -345,7 +345,7 @@ Striplog to pandas df of bottoms
           <th>12</th>
           <td>12</td>
           <td>0</td>
-          <td>120.0</td>
+          <td>130.0</td>
           <td>brian</td>
           <td>1</td>
           <td>gamma</td>
@@ -354,7 +354,7 @@ Striplog to pandas df of bottoms
           <th>13</th>
           <td>12</td>
           <td>0</td>
-          <td>121.0</td>
+          <td>131.0</td>
           <td>dieter</td>
           <td>1</td>
           <td>gamma</td>
@@ -372,7 +372,7 @@ Striplog to pandas df of bottoms
           <th>15</th>
           <td>20</td>
           <td>0</td>
-          <td>80.0</td>
+          <td>75.0</td>
           <td>miguel</td>
           <td>1</td>
           <td>epsilon</td>
@@ -390,7 +390,7 @@ Striplog to pandas df of bottoms
           <th>17</th>
           <td>20</td>
           <td>0</td>
-          <td>130.0</td>
+          <td>120.0</td>
           <td>brian</td>
           <td>1</td>
           <td>epsilon</td>
@@ -399,7 +399,7 @@ Striplog to pandas df of bottoms
           <th>18</th>
           <td>20</td>
           <td>0</td>
-          <td>131.0</td>
+          <td>121.0</td>
           <td>dieter</td>
           <td>1</td>
           <td>epsilon</td>
@@ -445,7 +445,7 @@ Create gempy model object
 
     Active grids: ['regular']
 
-    welly_integration  2021-02-05 15:30
+    welly_integration  2021-04-18 11:39
 
 
 
@@ -513,10 +513,10 @@ Create gempy model object
           <th>1</th>
           <td>0</td>
           <td>0</td>
-          <td>75.0</td>
+          <td>80.0</td>
           <td>0.44</td>
           <td>0.47</td>
-          <td>0.40</td>
+          <td>0.44</td>
           <td>miguel</td>
           <td>Default series</td>
           <td>2</td>
@@ -587,56 +587,56 @@ Create gempy model object
 
     <div class="output_subarea output_html rendered_html output_result">
     <style  type="text/css" >
-    #T_a95a9_row0_col3{
+    #T_e9ed8_row0_col3{
                 background-color:  #015482;
-            }#T_a95a9_row1_col3{
+            }#T_e9ed8_row1_col3{
                 background-color:  #9f0052;
-            }#T_a95a9_row2_col3{
+            }#T_e9ed8_row2_col3{
                 background-color:  #ffbe00;
-            }#T_a95a9_row3_col3{
+            }#T_e9ed8_row3_col3{
                 background-color:  #728f02;
-            }#T_a95a9_row4_col3{
+            }#T_e9ed8_row4_col3{
                 background-color:  #443988;
-            }</style><table id="T_a95a9_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
+            }</style><table id="T_e9ed8_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
                     <tr>
-                            <th id="T_a95a9_level0_row0" class="row_heading level0 row0" >0</th>
-                            <td id="T_a95a9_row0_col0" class="data row0 col0" >overburden</td>
-                            <td id="T_a95a9_row0_col1" class="data row0 col1" >Default series</td>
-                            <td id="T_a95a9_row0_col2" class="data row0 col2" >1</td>
-                            <td id="T_a95a9_row0_col3" class="data row0 col3" >#015482</td>
-                            <td id="T_a95a9_row0_col4" class="data row0 col4" >1</td>
+                            <th id="T_e9ed8_level0_row0" class="row_heading level0 row0" >0</th>
+                            <td id="T_e9ed8_row0_col0" class="data row0 col0" >overburden</td>
+                            <td id="T_e9ed8_row0_col1" class="data row0 col1" >Default series</td>
+                            <td id="T_e9ed8_row0_col2" class="data row0 col2" >1</td>
+                            <td id="T_e9ed8_row0_col3" class="data row0 col3" >#015482</td>
+                            <td id="T_e9ed8_row0_col4" class="data row0 col4" >1</td>
                 </tr>
                 <tr>
-                            <th id="T_a95a9_level0_row1" class="row_heading level0 row1" >1</th>
-                            <td id="T_a95a9_row1_col0" class="data row1 col0" >miguel</td>
-                            <td id="T_a95a9_row1_col1" class="data row1 col1" >Default series</td>
-                            <td id="T_a95a9_row1_col2" class="data row1 col2" >2</td>
-                            <td id="T_a95a9_row1_col3" class="data row1 col3" >#9f0052</td>
-                            <td id="T_a95a9_row1_col4" class="data row1 col4" >2</td>
+                            <th id="T_e9ed8_level0_row1" class="row_heading level0 row1" >1</th>
+                            <td id="T_e9ed8_row1_col0" class="data row1 col0" >miguel</td>
+                            <td id="T_e9ed8_row1_col1" class="data row1 col1" >Default series</td>
+                            <td id="T_e9ed8_row1_col2" class="data row1 col2" >2</td>
+                            <td id="T_e9ed8_row1_col3" class="data row1 col3" >#9f0052</td>
+                            <td id="T_e9ed8_row1_col4" class="data row1 col4" >2</td>
                 </tr>
                 <tr>
-                            <th id="T_a95a9_level0_row2" class="row_heading level0 row2" >2</th>
-                            <td id="T_a95a9_row2_col0" class="data row2 col0" >evan</td>
-                            <td id="T_a95a9_row2_col1" class="data row2 col1" >Default series</td>
-                            <td id="T_a95a9_row2_col2" class="data row2 col2" >3</td>
-                            <td id="T_a95a9_row2_col3" class="data row2 col3" >#ffbe00</td>
-                            <td id="T_a95a9_row2_col4" class="data row2 col4" >3</td>
+                            <th id="T_e9ed8_level0_row2" class="row_heading level0 row2" >2</th>
+                            <td id="T_e9ed8_row2_col0" class="data row2 col0" >evan</td>
+                            <td id="T_e9ed8_row2_col1" class="data row2 col1" >Default series</td>
+                            <td id="T_e9ed8_row2_col2" class="data row2 col2" >3</td>
+                            <td id="T_e9ed8_row2_col3" class="data row2 col3" >#ffbe00</td>
+                            <td id="T_e9ed8_row2_col4" class="data row2 col4" >3</td>
                 </tr>
                 <tr>
-                            <th id="T_a95a9_level0_row3" class="row_heading level0 row3" >3</th>
-                            <td id="T_a95a9_row3_col0" class="data row3 col0" >brian</td>
-                            <td id="T_a95a9_row3_col1" class="data row3 col1" >Default series</td>
-                            <td id="T_a95a9_row3_col2" class="data row3 col2" >4</td>
-                            <td id="T_a95a9_row3_col3" class="data row3 col3" >#728f02</td>
-                            <td id="T_a95a9_row3_col4" class="data row3 col4" >4</td>
+                            <th id="T_e9ed8_level0_row3" class="row_heading level0 row3" >3</th>
+                            <td id="T_e9ed8_row3_col0" class="data row3 col0" >brian</td>
+                            <td id="T_e9ed8_row3_col1" class="data row3 col1" >Default series</td>
+                            <td id="T_e9ed8_row3_col2" class="data row3 col2" >4</td>
+                            <td id="T_e9ed8_row3_col3" class="data row3 col3" >#728f02</td>
+                            <td id="T_e9ed8_row3_col4" class="data row3 col4" >4</td>
                 </tr>
                 <tr>
-                            <th id="T_a95a9_level0_row4" class="row_heading level0 row4" >4</th>
-                            <td id="T_a95a9_row4_col0" class="data row4 col0" >dieter</td>
-                            <td id="T_a95a9_row4_col1" class="data row4 col1" >Default series</td>
-                            <td id="T_a95a9_row4_col2" class="data row4 col2" >5</td>
-                            <td id="T_a95a9_row4_col3" class="data row4 col3" >#443988</td>
-                            <td id="T_a95a9_row4_col4" class="data row4 col4" >5</td>
+                            <th id="T_e9ed8_level0_row4" class="row_heading level0 row4" >4</th>
+                            <td id="T_e9ed8_row4_col0" class="data row4 col0" >dieter</td>
+                            <td id="T_e9ed8_row4_col1" class="data row4 col1" >Default series</td>
+                            <td id="T_e9ed8_row4_col2" class="data row4 col2" >5</td>
+                            <td id="T_e9ed8_row4_col3" class="data row4 col3" >#443988</td>
+                            <td id="T_e9ed8_row4_col4" class="data row4 col4" >5</td>
                 </tr>
         </tbody></table>
     </div>
@@ -837,7 +837,7 @@ Adding an arbitrary orientation. Remember gempy need an orientation per series
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7f31fe680640>
+    <gempy.plot.visualization_2d.Plot2D object at 0x7fcc3707c0a0>
 
 
 
@@ -870,7 +870,7 @@ Adding an arbitrary orientation. Remember gempy need an orientation per series
     $C_o$            6488.1
     drift equations     [3]
 
-    <gempy.core.interpolator.InterpolatorModel object at 0x7f316795c940>
+    <gempy.core.interpolator.InterpolatorModel object at 0x7fcc46e8d8b0>
 
 
 
@@ -938,7 +938,7 @@ Adding an arbitrary orientation. Remember gempy need an orientation per series
  .. code-block:: none
 
 
-    <gempy.plot.vista.GemPyToVista object at 0x7f326f16c1f0>
+    <gempy.plot.vista.GemPyToVista object at 0x7fcc467e8970>
 
 
 
@@ -1021,66 +1021,66 @@ Now we set the green layer in the second series
 
     <div class="output_subarea output_html rendered_html output_result">
     <style  type="text/css" >
-    #T_69f08_row0_col3{
+    #T_6acb5_row0_col3{
                 background-color:  #015482;
-            }#T_69f08_row1_col3{
+            }#T_6acb5_row1_col3{
                 background-color:  #9f0052;
-            }#T_69f08_row2_col3{
+            }#T_6acb5_row2_col3{
                 background-color:  #ffbe00;
-            }#T_69f08_row3_col3{
+            }#T_6acb5_row3_col3{
                 background-color:  #728f02;
-            }#T_69f08_row4_col3{
+            }#T_6acb5_row4_col3{
                 background-color:  #443988;
-            }#T_69f08_row5_col3{
+            }#T_6acb5_row5_col3{
                 background-color:  #ff3f20;
-            }</style><table id="T_69f08_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
+            }</style><table id="T_6acb5_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
                     <tr>
-                            <th id="T_69f08_level0_row0" class="row_heading level0 row0" >0</th>
-                            <td id="T_69f08_row0_col0" class="data row0 col0" >overburden</td>
-                            <td id="T_69f08_row0_col1" class="data row0 col1" >Default series</td>
-                            <td id="T_69f08_row0_col2" class="data row0 col2" >1</td>
-                            <td id="T_69f08_row0_col3" class="data row0 col3" >#015482</td>
-                            <td id="T_69f08_row0_col4" class="data row0 col4" >1</td>
+                            <th id="T_6acb5_level0_row0" class="row_heading level0 row0" >0</th>
+                            <td id="T_6acb5_row0_col0" class="data row0 col0" >overburden</td>
+                            <td id="T_6acb5_row0_col1" class="data row0 col1" >Default series</td>
+                            <td id="T_6acb5_row0_col2" class="data row0 col2" >1</td>
+                            <td id="T_6acb5_row0_col3" class="data row0 col3" >#015482</td>
+                            <td id="T_6acb5_row0_col4" class="data row0 col4" >1</td>
                 </tr>
                 <tr>
-                            <th id="T_69f08_level0_row1" class="row_heading level0 row1" >1</th>
-                            <td id="T_69f08_row1_col0" class="data row1 col0" >miguel</td>
-                            <td id="T_69f08_row1_col1" class="data row1 col1" >Default series</td>
-                            <td id="T_69f08_row1_col2" class="data row1 col2" >2</td>
-                            <td id="T_69f08_row1_col3" class="data row1 col3" >#9f0052</td>
-                            <td id="T_69f08_row1_col4" class="data row1 col4" >2</td>
+                            <th id="T_6acb5_level0_row1" class="row_heading level0 row1" >1</th>
+                            <td id="T_6acb5_row1_col0" class="data row1 col0" >miguel</td>
+                            <td id="T_6acb5_row1_col1" class="data row1 col1" >Default series</td>
+                            <td id="T_6acb5_row1_col2" class="data row1 col2" >2</td>
+                            <td id="T_6acb5_row1_col3" class="data row1 col3" >#9f0052</td>
+                            <td id="T_6acb5_row1_col4" class="data row1 col4" >2</td>
                 </tr>
                 <tr>
-                            <th id="T_69f08_level0_row2" class="row_heading level0 row2" >2</th>
-                            <td id="T_69f08_row2_col0" class="data row2 col0" >evan</td>
-                            <td id="T_69f08_row2_col1" class="data row2 col1" >Uncomformity</td>
-                            <td id="T_69f08_row2_col2" class="data row2 col2" >1</td>
-                            <td id="T_69f08_row2_col3" class="data row2 col3" >#ffbe00</td>
-                            <td id="T_69f08_row2_col4" class="data row2 col4" >3</td>
+                            <th id="T_6acb5_level0_row2" class="row_heading level0 row2" >2</th>
+                            <td id="T_6acb5_row2_col0" class="data row2 col0" >evan</td>
+                            <td id="T_6acb5_row2_col1" class="data row2 col1" >Uncomformity</td>
+                            <td id="T_6acb5_row2_col2" class="data row2 col2" >1</td>
+                            <td id="T_6acb5_row2_col3" class="data row2 col3" >#ffbe00</td>
+                            <td id="T_6acb5_row2_col4" class="data row2 col4" >3</td>
                 </tr>
                 <tr>
-                            <th id="T_69f08_level0_row3" class="row_heading level0 row3" >3</th>
-                            <td id="T_69f08_row3_col0" class="data row3 col0" >brian</td>
-                            <td id="T_69f08_row3_col1" class="data row3 col1" >Uncomformity</td>
-                            <td id="T_69f08_row3_col2" class="data row3 col2" >2</td>
-                            <td id="T_69f08_row3_col3" class="data row3 col3" >#728f02</td>
-                            <td id="T_69f08_row3_col4" class="data row3 col4" >4</td>
+                            <th id="T_6acb5_level0_row3" class="row_heading level0 row3" >3</th>
+                            <td id="T_6acb5_row3_col0" class="data row3 col0" >brian</td>
+                            <td id="T_6acb5_row3_col1" class="data row3 col1" >Uncomformity</td>
+                            <td id="T_6acb5_row3_col2" class="data row3 col2" >2</td>
+                            <td id="T_6acb5_row3_col3" class="data row3 col3" >#728f02</td>
+                            <td id="T_6acb5_row3_col4" class="data row3 col4" >4</td>
                 </tr>
                 <tr>
-                            <th id="T_69f08_level0_row4" class="row_heading level0 row4" >4</th>
-                            <td id="T_69f08_row4_col0" class="data row4 col0" >dieter</td>
-                            <td id="T_69f08_row4_col1" class="data row4 col1" >Uncomformity</td>
-                            <td id="T_69f08_row4_col2" class="data row4 col2" >3</td>
-                            <td id="T_69f08_row4_col3" class="data row4 col3" >#443988</td>
-                            <td id="T_69f08_row4_col4" class="data row4 col4" >5</td>
+                            <th id="T_6acb5_level0_row4" class="row_heading level0 row4" >4</th>
+                            <td id="T_6acb5_row4_col0" class="data row4 col0" >dieter</td>
+                            <td id="T_6acb5_row4_col1" class="data row4 col1" >Uncomformity</td>
+                            <td id="T_6acb5_row4_col2" class="data row4 col2" >3</td>
+                            <td id="T_6acb5_row4_col3" class="data row4 col3" >#443988</td>
+                            <td id="T_6acb5_row4_col4" class="data row4 col4" >5</td>
                 </tr>
                 <tr>
-                            <th id="T_69f08_level0_row5" class="row_heading level0 row5" >5</th>
-                            <td id="T_69f08_row5_col0" class="data row5 col0" >basement</td>
-                            <td id="T_69f08_row5_col1" class="data row5 col1" >Uncomformity</td>
-                            <td id="T_69f08_row5_col2" class="data row5 col2" >4</td>
-                            <td id="T_69f08_row5_col3" class="data row5 col3" >#ff3f20</td>
-                            <td id="T_69f08_row5_col4" class="data row5 col4" >6</td>
+                            <th id="T_6acb5_level0_row5" class="row_heading level0 row5" >5</th>
+                            <td id="T_6acb5_row5_col0" class="data row5 col0" >basement</td>
+                            <td id="T_6acb5_row5_col1" class="data row5 col1" >Uncomformity</td>
+                            <td id="T_6acb5_row5_col2" class="data row5 col2" >4</td>
+                            <td id="T_6acb5_row5_col3" class="data row5 col3" >#ff3f20</td>
+                            <td id="T_6acb5_row5_col4" class="data row5 col4" >6</td>
                 </tr>
         </tbody></table>
     </div>
@@ -1281,7 +1281,7 @@ add an artifial point to get that shape:
           <th>1</th>
           <td>0.0</td>
           <td>0.0</td>
-          <td>-75.0</td>
+          <td>-80.0</td>
           <td>2.00e-06</td>
           <td>miguel</td>
         </tr>
@@ -1305,7 +1305,7 @@ add an artifial point to get that shape:
           <th>15</th>
           <td>200.0</td>
           <td>0.0</td>
-          <td>-80.0</td>
+          <td>-75.0</td>
           <td>2.00e-06</td>
           <td>miguel</td>
         </tr>
@@ -1361,7 +1361,7 @@ add an artifial point to get that shape:
           <th>12</th>
           <td>120.0</td>
           <td>0.0</td>
-          <td>-120.0</td>
+          <td>-130.0</td>
           <td>2.00e-06</td>
           <td>brian</td>
         </tr>
@@ -1369,7 +1369,7 @@ add an artifial point to get that shape:
           <th>17</th>
           <td>200.0</td>
           <td>0.0</td>
-          <td>-130.0</td>
+          <td>-120.0</td>
           <td>2.00e-06</td>
           <td>brian</td>
         </tr>
@@ -1439,7 +1439,7 @@ sphinx_gallery_thumbnail_number = 7
  .. code-block:: none
 
 
-    <gempy.plot.vista.GemPyToVista object at 0x7f31e2900550>
+    <gempy.plot.vista.GemPyToVista object at 0x7fcc6bbb8190>
 
 
 
@@ -1450,7 +1450,7 @@ gp.save_model(geo_model)
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  11.454 seconds)
+   **Total running time of the script:** ( 0 minutes  12.397 seconds)
 
 
 .. _sphx_glr_download_integrations_gempy_striplog.py:

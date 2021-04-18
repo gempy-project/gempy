@@ -5,26 +5,26 @@
 
 Computation times
 =================
-**01:11.932** total execution time for **tutorials_ch1_fundamentals** files:
+**01:21.276** total execution time for **tutorials_ch1_fundamentals** files:
 
 +------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_5_fault_relations.py` (``ch1_5_fault_relations.py``)         | 00:15.158 | 0.0 MB |
+| :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_5_fault_relations.py` (``ch1_5_fault_relations.py``)         | 00:19.931 | 0.0 MB |
 +------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_3c_topography.py` (``ch1_3c_topography.py``)                 | 00:13.204 | 0.0 MB |
+| :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_3c_topography.py` (``ch1_3c_topography.py``)                 | 00:13.109 | 0.0 MB |
 +------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_1_basics.py` (``ch1_1_basics.py``)                           | 00:10.276 | 0.0 MB |
+| :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_1_basics.py` (``ch1_1_basics.py``)                           | 00:11.939 | 0.0 MB |
 +------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_6_2d_visualization.py` (``ch1_6_2d_visualization.py``)       | 00:08.869 | 0.0 MB |
+| :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_6_2d_visualization.py` (``ch1_6_2d_visualization.py``)       | 00:09.016 | 0.0 MB |
 +------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_7_3d_visualization.py` (``ch1_7_3d_visualization.py``)       | 00:07.160 | 0.0 MB |
+| :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_7_3d_visualization.py` (``ch1_7_3d_visualization.py``)       | 00:07.775 | 0.0 MB |
 +------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_3b_cross_sections.py` (``ch1_3b_cross_sections.py``)         | 00:06.627 | 0.0 MB |
+| :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_3b_cross_sections.py` (``ch1_3b_cross_sections.py``)         | 00:07.628 | 0.0 MB |
 +------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_4_onlap_relations.py` (``ch1_4_onlap_relations.py``)         | 00:05.892 | 0.0 MB |
+| :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_4_onlap_relations.py` (``ch1_4_onlap_relations.py``)         | 00:06.901 | 0.0 MB |
 +------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_2a_data_manipulation.py` (``ch1_2a_data_manipulation.py``)   | 00:03.277 | 0.0 MB |
+| :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_2a_data_manipulation.py` (``ch1_2a_data_manipulation.py``)   | 00:03.449 | 0.0 MB |
 +------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_2b_implicit_cokriging.py` (``ch1_2b_implicit_cokriging.py``) | 00:01.186 | 0.0 MB |
+| :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_2b_implicit_cokriging.py` (``ch1_2b_implicit_cokriging.py``) | 00:01.232 | 0.0 MB |
 +------------------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_3a_grids.py` (``ch1_3a_grids.py``)                           | 00:00.285 | 0.0 MB |
+| :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_3a_grids.py` (``ch1_3a_grids.py``)                           | 00:00.295 | 0.0 MB |
 +------------------------------------------------------------------------------------------------------------+-----------+--------+

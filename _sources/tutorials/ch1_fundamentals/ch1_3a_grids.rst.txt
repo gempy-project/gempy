@@ -358,7 +358,7 @@ activate them.
  .. code-block:: none
 
 
-    <gempy.core.grid_modules.grid_types.RegularGrid object at 0x7f3244e1dee0>
+    <gempy.core.grid_modules.grid_types.RegularGrid object at 0x7fcc6bb90370>
 
 
 
@@ -1053,7 +1053,7 @@ This grid type has its own tutorial. See ch1-3b
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.285 seconds)
+   **Total running time of the script:** ( 0 minutes  0.295 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_3a_grids.py:

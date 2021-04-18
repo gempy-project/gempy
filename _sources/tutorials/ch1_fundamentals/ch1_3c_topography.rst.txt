@@ -67,7 +67,7 @@
 
     Active grids: ['regular']
 
-    Single_layer_topo  2021-02-05 15:22
+    Single_layer_topo  2021-04-18 11:28
 
 
 
@@ -103,26 +103,26 @@ use happy spring colors!
 
     <div class="output_subarea output_html rendered_html output_result">
     <style  type="text/css" >
-    #T_8608b_row0_col3{
+    #T_0086f_row0_col3{
                 background-color:  #ff8000;
-            }#T_8608b_row1_col3{
+            }#T_0086f_row1_col3{
                 background-color:  #88cc60;
-            }</style><table id="T_8608b_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
+            }</style><table id="T_0086f_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
                     <tr>
-                            <th id="T_8608b_level0_row0" class="row_heading level0 row0" >0</th>
-                            <td id="T_8608b_row0_col0" class="data row0 col0" >layer1</td>
-                            <td id="T_8608b_row0_col1" class="data row0 col1" >series</td>
-                            <td id="T_8608b_row0_col2" class="data row0 col2" >1</td>
-                            <td id="T_8608b_row0_col3" class="data row0 col3" >#ff8000</td>
-                            <td id="T_8608b_row0_col4" class="data row0 col4" >1</td>
+                            <th id="T_0086f_level0_row0" class="row_heading level0 row0" >0</th>
+                            <td id="T_0086f_row0_col0" class="data row0 col0" >layer1</td>
+                            <td id="T_0086f_row0_col1" class="data row0 col1" >series</td>
+                            <td id="T_0086f_row0_col2" class="data row0 col2" >1</td>
+                            <td id="T_0086f_row0_col3" class="data row0 col3" >#ff8000</td>
+                            <td id="T_0086f_row0_col4" class="data row0 col4" >1</td>
                 </tr>
                 <tr>
-                            <th id="T_8608b_level0_row1" class="row_heading level0 row1" >1</th>
-                            <td id="T_8608b_row1_col0" class="data row1 col0" >basement</td>
-                            <td id="T_8608b_row1_col1" class="data row1 col1" >series</td>
-                            <td id="T_8608b_row1_col2" class="data row1 col2" >2</td>
-                            <td id="T_8608b_row1_col3" class="data row1 col3" >#88cc60</td>
-                            <td id="T_8608b_row1_col4" class="data row1 col4" >2</td>
+                            <th id="T_0086f_level0_row1" class="row_heading level0 row1" >1</th>
+                            <td id="T_0086f_row1_col0" class="data row1 col0" >basement</td>
+                            <td id="T_0086f_row1_col1" class="data row1 col1" >series</td>
+                            <td id="T_0086f_row1_col2" class="data row1 col2" >2</td>
+                            <td id="T_0086f_row1_col3" class="data row1 col3" >#88cc60</td>
+                            <td id="T_0086f_row1_col4" class="data row1 col4" >2</td>
                 </tr>
         </tbody></table>
     </div>
@@ -436,7 +436,7 @@ Compute model
     $C_o$            4815476.19
     drift equations         [3]
 
-    <gempy.core.interpolator.InterpolatorModel object at 0x7f31fe4af4c0>
+    <gempy.core.interpolator.InterpolatorModel object at 0x7fcb8ae537f0>
 
 
 
@@ -558,7 +558,7 @@ sphinx_gallery_thumbnail_number = 3
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  13.204 seconds)
+   **Total running time of the script:** ( 0 minutes  13.109 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_3c_topography.py:

@@ -52,6 +52,27 @@ of geoscientific stack. This needs to grow!
    :hidden:
 
    /integrations/gempy_striplog
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="GemPy - Subsurface Link">
+
+.. only:: html
+
+ .. figure:: /integrations/images/thumb/sphx_glr_gempy_subsurface_thumb.png
+     :alt: GemPy - Subsurface Link
+
+     :ref:`sphx_glr_integrations_gempy_subsurface.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /integrations/gempy_subsurface
 .. raw:: html
 
     <div class="sphx-glr-clear"></div>

@@ -119,7 +119,7 @@ recombined to allow changes.
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7f322b75d8e0>
+    <gempy.plot.visualization_2d.Plot2D object at 0x7fcc41806fd0>
 
 
 
@@ -170,7 +170,7 @@ recombined to allow changes.
 
  .. code-block:: none
 
-    /home/miguel/PycharmProjects/gempy/gempy/core/solution.py:174: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify 'dtype=object' when creating the ndarray.
+    /WorkSSD/PythonProjects/gempy/gempy/core/solution.py:173: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify 'dtype=object' when creating the ndarray.
       self.geological_map = np.array(
 
 
@@ -197,7 +197,7 @@ recombined to allow changes.
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7f31dfc00fa0>
+    <gempy.plot.visualization_2d.Plot2D object at 0x7fcc7498beb0>
 
 
 
@@ -256,7 +256,7 @@ recombined to allow changes.
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7f321aa24880>
+    <gempy.plot.visualization_2d.Plot2D object at 0x7fcc466ccf70>
 
 
 
@@ -294,7 +294,7 @@ sphinx_gallery_thumbnail_number = 7
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  5.892 seconds)
+   **Total running time of the script:** ( 0 minutes  6.901 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_4_onlap_relations.py:

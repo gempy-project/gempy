@@ -87,7 +87,9 @@ Loading an example geomodel
  .. code-block:: none
 
     Active grids: ['regular']
-    /home/miguel/PycharmProjects/gempy/gempy/core/data_modules/geometric_data.py:537: UserWarning: If pole_vector and orientation are passed pole_vector is used/
+    /home/miguel/miniconda3/envs/gempy/lib/python3.8/site-packages/pandas/core/arraylike.py:358: RuntimeWarning: invalid value encountered in arccos
+      result = getattr(ufunc, method)(*inputs, **kwargs)
+    /WorkSSD/PythonProjects/gempy/gempy/core/data_modules/geometric_data.py:537: UserWarning: If pole_vector and orientation are passed pole_vector is used/
       warnings.warn('If pole_vector and orientation are passed pole_vector is used/')
     Fault colors changed. If you do not like this behavior, set change_color to False.
     [1280. 1600.]
@@ -104,7 +106,7 @@ Loading an example geomodel
     range                 3249.62
     $C_o$               251428.57
     drift equations  [3, 3, 3, 3]
-    /home/miguel/PycharmProjects/gempy/gempy/core/solution.py:174: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify 'dtype=object' when creating the ndarray.
+    /WorkSSD/PythonProjects/gempy/gempy/core/solution.py:173: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify 'dtype=object' when creating the ndarray.
       self.geological_map = np.array(
 
 
@@ -147,7 +149,7 @@ Data plot
  .. code-block:: none
 
 
-    <gempy.plot.vista.GemPyToVista object at 0x7f3233e8a1c0>
+    <gempy.plot.vista.GemPyToVista object at 0x7fcb8bad0850>
 
 
 
@@ -178,7 +180,7 @@ Geomodel plot
  .. code-block:: none
 
 
-    <gempy.plot.vista.GemPyToVista object at 0x7f3233e8a700>
+    <gempy.plot.vista.GemPyToVista object at 0x7fcc6b916430>
 
 
 
@@ -218,7 +220,7 @@ Geomodel plot
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  7.160 seconds)
+   **Total running time of the script:** ( 0 minutes  7.775 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_7_3d_visualization.py:
