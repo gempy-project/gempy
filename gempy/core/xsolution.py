@@ -231,19 +231,19 @@ class XSolution(object):
             # Values and lith block
             property_v3 = xr.DataArray(
                 data=values[0][:, l0:l1],
-                dims=['attribute', 'cell'],
+                dims=['cell_attr', 'cell'],
             )
 
-            arrays['property_v3'] = property_v3
+            arrays['property'] = property_v3
 
         if values[1] is not None:
             # block
             block_v3 = xr.DataArray(
                 data=values[1][:, :, l0:l1],
-                dims=['Features', 'attribute', 'cell'],
+                dims=['Features', 'cell_attr', 'cell'],
             )
 
-            arrays['block_v3'] = block_v3
+            arrays['block'] = block_v3
 
         if values[4] is not None:
             # Scalar field
@@ -251,7 +251,7 @@ class XSolution(object):
                 data=values[4][:, l0:l1],
                 dims=['Features', 'cell'],
             )
-            arrays['scalar_field_v3'] = scalar_field_v3
+            arrays['scalar_field'] = scalar_field_v3
 
         if values[6] is not None:
             # Scalar field
@@ -259,7 +259,7 @@ class XSolution(object):
                 data=values[6][:, l0:l1],
                 dims=['Features', 'cell'],
             )
-            arrays['mask_v3'] = mask_v3
+            arrays['mask'] = mask_v3
 
         return arrays
 
@@ -272,8 +272,10 @@ class XSolution(object):
         self.s_custom_grid = subsurface.UnstructuredData.from_array(
             vertex=xyz,
             cells="points",
-            attributes=arrays,
-            coords=coords)
+            cells_attr=arrays,
+            coords=coords,
+            default_cells_attr_name="block"
+        )
 
         return self.s_custom_grid
 
