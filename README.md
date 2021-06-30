@@ -40,7 +40,7 @@ For more information, refer to the [installation documentation](https://docs.gem
 After installation you can either check the [notebook tutorials](https://docs.gempy.org/getting_started/get_started.html#sphx-glr-getting-started-get-started-py) 
 or the [video introduction](https://www.youtube.com/watch?v=n0btC5Zilyc) to get started.
 
-Got to the [documentation site](http://docs.gempy.org/) for further information and enjoy the [tutorials and examples](https://www.gempy.org/tutorials).
+Go to the [documentation site](http://docs.gempy.org/) for further information and enjoy the [tutorials and examples](https://www.gempy.org/tutorials).
 
 For questions and support, please use [discussions](https://github.com/cgre-aachen/gempy/discussions).
 
