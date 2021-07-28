@@ -17,7 +17,7 @@ def export_geomap2geotiff(path, geo_model, geo_map=None, geotiff_filepath=None):
     Returns:
         Saves the geological map as a geotiff to the given path.
     """
-    import gdal
+    from osgeo import gdal
 
     plot = PlotData2D(geo_model)
     cmap = plot._cmap
@@ -135,9 +135,7 @@ def export_moose_input(geo_model, path=None, filename='geo_model_units_moose_inp
     
     print("Successfully exported geological model as moose input to "+path)
 
-def export_pflotran_input(geo_model, path=None, filename='pflotran.ugi',
-                          mesh_format=None):
-    import h5py
+def export_pflotran_input(geo_model, path=None, filename='pflotran.ugi'):
     """
     Method to export a 3D geological model as PFLOTRAN implicit unstructured grid
     (see pflotran.org)
@@ -145,8 +143,6 @@ def export_pflotran_input(geo_model, path=None, filename='pflotran.ugi',
     Args:
         path (str): Filepath for the exported input file
         filename (str): name of exported input file
-        mesh_format (str): format of exported mesh ('ascii' or 'hdf5')
-                           if not provided, deduced from file extension
 
     Returns:
         
@@ -164,17 +160,25 @@ def export_pflotran_input(geo_model, path=None, filename='pflotran.ugi',
     if not os.path.exists(path):
         os.makedirs(path)
     
-    if mesh_format is None:
-        ext = filename.split('.')[-1]
-        if ext == 'ugi': mesh_format = 'ascii'
-        elif ext == 'h5': mesh_format = 'hdf5'
-        else: #assume ugi mesh
-            mesh_format = 'ugi'
+    ext = filename.split('.')[-1]
+    if ext == 'ugi': 
+        mesh_format = 'ascii'
+    elif ext == 'h5': 
+        mesh_format = 'hdf5'
+        try:
+            import h5py
+        except:
+            print("h5py library not installed. Please install it to enable hdf5 output")
+            print("Export as ascii instead")
+            mesh_format = 'ascii'
             filename += '.ugi'
-    
+    else: #assume ugi mesh
+        mesh_format = 'ascii'
+        filename += '.ugi'
+        
     if mesh_format == 'ascii': #export as ugi
         out = open(path+filename, 'w')
-        out.write(f"{n_elements} {n_vertices}")
+        out.write(f"{len(elements)} {len(vertices)}")
         for element in elements:
             out.write('\nH')
             for x in element[1:]:
@@ -204,6 +208,45 @@ def export_pflotran_input(geo_model, path=None, filename='pflotran.ugi',
         if mesh_format == "hdf5":
             out = h5py.File(path+filename,'r+')
             out.create_dataset(f"Regions/{region_name}/Cell Ids", data=cell_ids)
+            out.close()
+    #make inactive cell group
+    inactive_cells = ~np.isin(lith_ids, geo_model._surfaces.df['id']) #get cell not on a lith_block
+    if np.any(inactive_cells):
+        cell_ids = np.arange(len(inactive_cells))[inactive_cells] + 1
+        print(cell_ids)
+        if mesh_format == 'ascii':
+            out = open(path+"inactive_cells.vs",'w')
+            out.write(f"{len(cell_ids)}\n")
+            for x in cell_ids:
+                out.write(f"{x}\n")
+            out.close()
+        if mesh_format == "hdf5":
+            out = h5py.File(path+filename,'r+')
+            out.create_dataset(f"Regions/Inactive/Cell Ids", data=cell_ids)
+            out.close()
+        #topography z faces
+        nx, ny, nz = geo_model.grid.regular_grid.resolution
+        boundary_ids = cell_ids[~np.isin(cell_ids, cell_ids-1)]-1
+        z_inter = np.zeros((len(boundary_ids),5), dtype='i8')
+        i = boundary_ids % nz
+        j = boundary_ids // nz % ny
+        k = boundary_ids // (nz*ny)
+        z_inter[:,0] = 4 #quad
+        z_inter[:,1] = 1 + i*(nx+1)*(ny+1) + j*(nx+1) + k
+        z_inter[:,2] = z_inter[:,1] + 1
+        z_inter[:,3] = z_inter[:,2] + (nx+1)
+        z_inter[:,4] = z_inter[:,3] - 1
+        if mesh_format == 'ascii':
+            out = open(path+"topography_surface.ss",'w')
+            for elem in z_inter:
+                out.write("Q ")
+                for node in elem[1:]:
+                    out.write(f"{node} ")
+                out.write('\n')
+            out.close()
+        if mesh_format == "hdf5":
+            out = h5py.File(path+filename,'r+')
+            out.create_dataset(f"Regions/Topography_surface/Vertex Ids", data=z_inter)
             out.close()
             
     print("Successfully exported geological model as PFLOTRAN input to "+path)
@@ -277,9 +320,9 @@ def __build_vertices_and_elements__(geo_model):
     n_vertices = (nx+1) * (ny+1) * (nz+1)
     vertices = np.zeros((n_vertices, 3), dtype='f8')
     vertices_ids = np.arange(n_vertices) #used to generate coordinate
-    vertices[:,0] = vertices_ids % (nx+1) * dx
-    vertices[:,1] = ( vertices_ids % ( (nx+1)*(ny+1) ) ) // (nx+1) * dy
-    vertices[:,2] = vertices_ids // ( (nx+1)*(ny+1) ) * dz
+    vertices[:,0] = vertices_ids % (nx+1) * dx + xmin
+    vertices[:,1] = ( vertices_ids % ( (nx+1)*(ny+1) ) ) // (nx+1) * dy + ymin
+    vertices[:,2] = vertices_ids // ( (nx+1)*(ny+1) ) * dz + zmin
     
     #build elements
     n_elements = nx*ny*nz

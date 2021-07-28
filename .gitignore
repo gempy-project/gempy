@@ -146,3 +146,10 @@ examples/data/input_data/Claudius/Results_
 
 /docs/source/gen_modules/
 
+#examples folders
+examples/integrations/*.vs
+examples/integrations/*.ugi
+examples/integrations/*.h5
+examples/integrations/*.xmf
+examples/integrations/*.ss
+examples/integrations/*.out
