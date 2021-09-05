@@ -1,14 +1,11 @@
 import pooch
 import pytest
 import sys, os
-import numpy as np
 
 from gempy.addons.gempy_to_rexfile import GemPyToRex, geomodel_to_rex
 
-# sys.path.append("../..")
 import gempy
-from gempy.addons import gempy_to_rexfile as gtr
-from gempy.addons import rex_api
+
 input_path = os.path.dirname(__file__)+'/../input_data'
 
 

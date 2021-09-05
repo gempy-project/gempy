@@ -475,7 +475,8 @@ class Surfaces(object):
             self.set_surfaces_names(surface_names)
 
         if values_array is not None:
-            self.set_surfaces_values(values_array=values_array, properties_names=properties_names)
+            self.set_surfaces_values(values_array=values_array,
+                                     properties_names=properties_names)
 
     def __repr__(self):
         c_ = self.df.columns[~(self.df.columns.isin(self._columns_vis_drop))]
@@ -492,6 +493,10 @@ class Surfaces(object):
         all_col = self.df.columns
         prop_cols = all_col.drop(self._columns)
         return prop_cols.insert(0, 'id')
+
+    @property
+    def basement(self):
+        return self.df['surface'][self.df['isBasement']]
 
     def update_id(self, id_list: list = None):
         """
@@ -1292,8 +1297,6 @@ class KrigingParameters(object):
         return self.df['drift equations']
 
 
-# @_setdoc_pro([Grid.__doc__, Surfaces.__doc__, Faults.__doc__,
-#               Structure.__doc__, KrigingParameters.__doc__, Options.__doc__])
 class AdditionalData(object):
     """
     Container class that encapsulate :class:`Structure`, :class:`KrigingParameters`, :class:`Options` and

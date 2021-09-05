@@ -62,10 +62,10 @@ class Solution(inheritance):
                  series: Series = None,
                  ):
 
-        super().__init__(grid, surfaces, series)
-        # self.additional_data = additional_data
+        if _xsolution_imported:
+            super().__init__(grid, surfaces, series)
+
         self.grid = grid
-        #  self.surface_points = surface_points
         self.stack = series
         self.surfaces = surfaces
 
@@ -132,8 +132,7 @@ class Solution(inheritance):
 
         return self
 
-    def set_solutions(self, sol, compute_mesh, sort_surfaces,
-                      to_xsolution=False, **kwargs):
+    def set_solutions(self, sol, compute_mesh, sort_surfaces, to_subsurface=False, **kwargs):
 
         # Set geology:
         self.set_values_to_surface_points(sol)
@@ -155,7 +154,7 @@ class Solution(inheritance):
         #  populate the topology object?
         self.fw_magnetics = sol[13]
 
-        if _xsolution_imported and to_xsolution is True:
+        if _xsolution_imported and to_subsurface is True:
             self.set_values(sol)
             if compute_mesh is True:
                 try:
@@ -371,8 +370,11 @@ class Solution(inheritance):
         sfas = self.scalar_field_at_surface_points[e]
         sfas = sfas[np.nonzero(sfas)]
         if masked_marching_cubes is True:
-            mask_array = self.mask_matrix_pad[
-                e - 1 if series_type[e - 1] == 'Onlap' else e]
+            if series_type[e - 1] == 'Onlap' and series_type[e - 2] == 'Erosion':
+                mask_array = self.mask_matrix_pad[e-1]
+            else:
+                mask_array = self.mask_matrix_pad[e]
+
         else:
             mask_array = None
         return mask_array, sfas

@@ -40,8 +40,6 @@ pyvista.BUILDING_GALLERY = True
 if not os.path.exists(pyvista.FIGURE_PATH):
     os.makedirs(pyvista.FIGURE_PATH)
 
-import IPython.sphinxext
-from pygments.plugin import find_plugin_lexers
 
 sys.path.insert(0, os.path.abspath('.'))
 
@@ -200,7 +198,7 @@ html_theme_options = {
     'github_repo': 'gempy',
     'github_type': 'star',
     'logo': './logos/gempy.png',
-    'logo_name': True,
+    'logo_name': False,
     'travis_button': True,
     'page_width': '1200px',
     'fixed_sidebar': False,

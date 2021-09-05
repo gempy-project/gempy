@@ -73,14 +73,14 @@ def sol_values(a_grid):
     n_properties = 3
     # Generate random solution
     values = list()
-    values_matrix = np.random.random_integers(0, 10, (n_properties, len_x))
-    block_matrix = np.random.random_integers(
+    values_matrix = np.random.randint(0, 10, (n_properties, len_x))
+    block_matrix = np.random.randint(
         0, 10, (n_features, n_properties, len_x)
     )
 
-    fault_block = np.random.random_integers(40, 50, (n_features, len_x))
+    fault_block = np.random.randint(40, 50, (n_features, len_x))
     weights = None
-    scalar_field = np.random.random_integers(20, 30, (n_features, len_x))
+    scalar_field = np.random.randint(20, 30, (n_features, len_x))
     unknows = None
     mask_matrix = None
     fault_mask = None

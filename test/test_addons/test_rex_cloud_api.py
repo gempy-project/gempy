@@ -84,7 +84,7 @@ class TestGemPyToREX:
         with pytest.raises(RuntimeError):
             rex_bytes = gtr.geomodel_to_rex(model)
 
-    @pytest.skip(reason="Needs token and secret. (@leguark they are in notion)")
+    @pytest.mark.skip(reason="Needs token and secret. (@leguark they are in notion)")
     def test_plot_ar(self, geo_model):
         tag = gempy.plot.plot_ar(geo_model,
                                  api_token='foo', \
