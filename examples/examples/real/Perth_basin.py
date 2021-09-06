@@ -188,4 +188,4 @@ gp.plot_3d(geo_model, show_topography=True)
 # sim = np.load('sim.npy')
 # lith_block = np.load('lith.npy')
 
-gp.save_model_pickle(geo_model)
+gp.save_model(geo_model)
