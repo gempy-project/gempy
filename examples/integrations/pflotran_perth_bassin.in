@@ -17,12 +17,14 @@ SUBSURFACE
 
 
 #=========================== discretization ===================================
-#ASCII format
-GRID
-  TYPE UNSTRUCTURED ./perth_basin_mesh.ugi #path to the grid outputted by gempy
-END
 
-#for each stratigraphic formation, create a PFLOTRAN region and assign the right gempy file 
+################################################
+#Import mesh from GemPy in ASCII format 
+GRID
+  TYPE UNSTRUCTURED ./perth_basin_mesh.ugi     #path to the grid outputted by gempy
+END
+#for each stratigraphic formation, create a PFLOTRAN region 
+#and assign the right gempy file 
 REGION Permian
   FILE ./Permian.vs
 END
@@ -41,12 +43,13 @@ END
 REGION Yarragadee
   FILE ./Yarragadee.vs
 END
-#create a region corresponding to cell above topography
-REGION inactive
-  FILE ./inactive_cells.vs
+#create a region corresponding to the topographic surface (z normal faces)
+REGION topo_surface
+  FILE topography_surface.ss
 END
 
-#HDF5 format
+################################################
+#Import mesh from GemPy in HDF5 format
 SKIP
 GRID
   TYPE UNSTRUCTURED ./perth_basin_mesh.h5
@@ -69,11 +72,11 @@ END
 REGION Yarragadee
   FILE ./perth_basin_mesh.h5
 END
-#create a region corresponding to cell above topography
-REGION Inactive
+REGION Topography_surface
   FILE ./perth_basin_mesh.h5
 END
 NOSKIP
+################################################
 
 
 #create region on the model boundary to further apply a boundary condition
@@ -98,10 +101,6 @@ REGION all
   /
 END
 
-#create a region corresponding to the topographic surface (z normal faces)
-#REGION topo_surface
-#  FILE topography_surface.ss
-#END
 
 
 #=========================== material properties ==============================
@@ -264,11 +263,6 @@ END
 STRATA
   REGION basement
   MATERIAL basement
-END
-
-STRATA
-  REGION inactive
-  INACTIVE
 END
 
 

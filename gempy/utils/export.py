@@ -151,15 +151,14 @@ def export_pflotran_input(geo_model, path=None, filename='pflotran.ugi'):
     # Added by Moise Rousseau, December 8th, 2020
     # see https://www.pflotran.org/documentation/user_guide/cards/subsurface/grid_card.html
     #
-    # create vertices and elements
-    vertices, elements = __build_vertices_and_elements__(geo_model)
+    # create vertices, elements and groups
+    vertices, elements, groups = __build_vertices_elements_groups__(geo_model)
     
     #create mesh
     if not path:
         path = './'
     if not os.path.exists(path):
         os.makedirs(path)
-    
     ext = filename.split('.')[-1]
     if ext == 'ugi': 
         mesh_format = 'ascii'
@@ -175,7 +174,8 @@ def export_pflotran_input(geo_model, path=None, filename='pflotran.ugi'):
     else: #assume ugi mesh
         mesh_format = 'ascii'
         filename += '.ugi'
-        
+    
+    #export mesh
     if mesh_format == 'ascii': #export as ugi
         out = open(path+filename, 'w')
         out.write(f"{len(elements)} {len(vertices)}")
@@ -193,52 +193,14 @@ def export_pflotran_input(geo_model, path=None, filename='pflotran.ugi'):
         out.create_dataset("Domain/Vertices", data=vertices)
         out.close()
     
-    #make groups
-    lith_ids = np.round(geo_model.solutions.lith_block)
-    lith_ids = lith_ids.astype(int)
-    sids = dict(zip(geo_model._surfaces.df['surface'], geo_model._surfaces.df['id']))
-    for region_name,region_id in sids.items():
-        cell_ids = np.where(lith_ids == region_id)[0] + 1
-        if not len(cell_ids): continue
-        if mesh_format == 'ascii':
-            out = open(path+region_name+'.vs','w')
-            for x in cell_ids:
-                out.write(f"{x}\n")
-            out.close()
-        if mesh_format == "hdf5":
-            out = h5py.File(path+filename,'r+')
-            out.create_dataset(f"Regions/{region_name}/Cell Ids", data=cell_ids)
-            out.close()
-    #make inactive cell group
-    inactive_cells = ~np.isin(lith_ids, geo_model._surfaces.df['id']) #get cell not on a lith_block
-    if np.any(inactive_cells):
-        cell_ids = np.arange(len(inactive_cells))[inactive_cells] + 1
-        print(cell_ids)
-        if mesh_format == 'ascii':
-            out = open(path+"inactive_cells.vs",'w')
-            out.write(f"{len(cell_ids)}\n")
-            for x in cell_ids:
-                out.write(f"{x}\n")
-            out.close()
-        if mesh_format == "hdf5":
-            out = h5py.File(path+filename,'r+')
-            out.create_dataset(f"Regions/Inactive/Cell Ids", data=cell_ids)
-            out.close()
-        #topography z faces
-        nx, ny, nz = geo_model.grid.regular_grid.resolution
-        boundary_ids = cell_ids[~np.isin(cell_ids, cell_ids-1)]-1
-        z_inter = np.zeros((len(boundary_ids),5), dtype='i8')
-        i = boundary_ids % nz
-        j = boundary_ids // nz % ny
-        k = boundary_ids // (nz*ny)
-        z_inter[:,0] = 4 #quad
-        z_inter[:,1] = 1 + i*(nx+1)*(ny+1) + j*(nx+1) + k
-        z_inter[:,2] = z_inter[:,1] + 1
-        z_inter[:,3] = z_inter[:,2] + (nx+1)
-        z_inter[:,4] = z_inter[:,3] - 1
+    #topography z faces
+    nx, ny, nz = geo_model.grid.regular_grid.resolution
+    if len(elements) != nx*ny*nz:
+        inter = __generate_topographic_surface__(vertices,elements)
         if mesh_format == 'ascii':
             out = open(path+"topography_surface.ss",'w')
-            for elem in z_inter:
+            out.write(str(len(inter))+'\n')
+            for elem in inter:
                 out.write("Q ")
                 for node in elem[1:]:
                     out.write(f"{node} ")
@@ -246,10 +208,22 @@ def export_pflotran_input(geo_model, path=None, filename='pflotran.ugi'):
             out.close()
         if mesh_format == "hdf5":
             out = h5py.File(path+filename,'r+')
-            out.create_dataset(f"Regions/Topography_surface/Vertex Ids", data=z_inter)
+            out.create_dataset(f"Regions/Topography_surface/Vertex Ids", data=inter)
+            out.close()
+    
+    #export groups
+    for grp_name,cell_ids in groups.items():
+        if mesh_format == 'ascii':
+            out = open(path+grp_name+'.vs','w')
+            for x in cell_ids:
+                out.write(f"{x}\n")
+            out.close()
+        if mesh_format == "hdf5":
+            out = h5py.File(path+filename,'r+')
+            out.create_dataset(f"Regions/{grp_name}/Cell Ids", data=cell_ids)
             out.close()
             
-    print("Successfully exported geological model as PFLOTRAN input to "+path)
+    print("Successfully exported geological model as PFLOTRAN input to "+path+filename)
     return
 
 def export_flac3D_input(geo_model, path=None, filename='geomodel.f3grid'):
@@ -263,11 +237,12 @@ def export_flac3D_input(geo_model, path=None, filename='geomodel.f3grid'):
     Returns:
         
     """
+    print("Warning! This is experimental and this have not been validated")
     #
-    # Added by Moise Rousseau, December 9th, 202
+    # Added by Moise Rousseau, December 9th, 2020
     #
     # create vertices and elements
-    vertices, elements = __build_vertices_and_elements__(geo_model)
+    vertices, elements, groups = __build_vertices_elements_groups__(geo_model)
     
     #open output file
     if not path:
@@ -290,15 +265,10 @@ def export_flac3D_input(geo_model, path=None, filename='geomodel.f3grid'):
     
     #make groups
     out.write('\n*GROUPS\n')
-    lith_ids = np.round(geo_model.solutions.lith_block)
-    lith_ids = lith_ids.astype(int)
-    sids = dict(zip(geo_model._surfaces.df['surface'], geo_model._surfaces.df['id']))
-    for region_name,region_id in sids.items():
-        cell_ids = np.where(lith_ids == region_id)[0] + 1
-        if not len(cell_ids): continue
-        out.write(f"*ZGROUP {region_name}\n")
+    for grp_name,grp in groups.items():
+        out.write(f"*ZGROUP {grp_name}\n")
         count = 0
-        for x in cell_ids:
+        for x in grp:
             out.write(f"{x} ")
             count += 1
             if count == 8:
@@ -310,7 +280,16 @@ def export_flac3D_input(geo_model, path=None, filename='geomodel.f3grid'):
     print("Successfully exported geological model as FLAC3D input to "+path)
     return
 
-def __build_vertices_and_elements__(geo_model):
+
+
+def __build_vertices_elements_groups__(geo_model):
+    """
+    In: GemPy model class instance
+        Generate topo interface (optional)
+    Out: Vertices coordinates numpy array
+         Elements defined by the number of vertices (always 8)
+           and their vertices id (bottom face and top face)
+    """
     # get model information
     nx, ny, nz = geo_model.grid.regular_grid.resolution
     xmin, xmax, ymin, ymax, zmin, zmax = geo_model.solutions.grid.regular_grid.extent
@@ -341,4 +320,58 @@ def __build_vertices_and_elements__(geo_model):
     elements[:,7] = elements[:,6] + (nx+1)
     elements[:,8] = elements[:,7] - 1
     
-    return vertices, elements
+    #build groups
+    lith_ids = np.round(geo_model.solutions.lith_block)
+    lith_ids = lith_ids.astype(int)
+    sids = dict(zip(geo_model._surfaces.df['surface'], geo_model._surfaces.df['id']))
+    groups = {}
+    for region_name,region_id in sids.items():
+        cell_ids = np.where(lith_ids == region_id)[0] + 1
+        if not len(cell_ids): continue
+        groups[region_name] = cell_ids
+            
+    #remove element above topography
+    lith_ids = np.round(geo_model.solutions.lith_block)
+    lith_ids = lith_ids.astype(int)
+    inactive_cells = ~np.isin(lith_ids, geo_model._surfaces.df['id']) #get cell not on a lith_block
+    if np.any(inactive_cells):
+        #update correspondance
+        new_id_vertices = np.zeros(len(vertices),dtype='i8')
+        new_id_elements = np.zeros(len(elements),dtype='i8')
+        #remove inactive cell
+        elements = elements[~inactive_cells]
+        new_id_elements[~inactive_cells] = np.arange(len(elements))+1
+        #remove deleted vertices
+        cond = np.isin(np.arange(len(vertices))+1, elements[:,1:].flatten())
+        vertices = vertices[cond]
+        new_id_vertices[cond] = np.arange(len(vertices))+1
+        #renumber vertices in element
+        elements[1:] = new_id_vertices[elements[1:]-1]
+        #renumber groups
+        for grp in groups.values():
+          grp[:] = new_id_elements[grp-1]
+    
+    return vertices, elements, groups
+
+
+def __generate_topographic_surface__(vertices, elements):
+    """
+    In: Vertices array generated by __build_vertices_and_elements__
+        Elements array generated by __build_vertices_and_elements__
+    Out: Topography surface defined by the top faces
+    """
+    inter = np.zeros((len(elements),5), dtype='i8')
+    count = 1
+    inter[:,0] = 4 #all quad face
+    inter[0, 1:] = elements[-1,5:] 
+    last_node_z = -1e20
+    for ie,elem in enumerate(elements):
+        node = elem[-1]
+        node_z = vertices[node-1][2]
+        if node_z < last_node_z:
+            inter[count,1:] = elements[ie-1,5:]
+            count += 1
+        last_node_z = node_z
+    inter = inter[:count]
+    return inter
+        
