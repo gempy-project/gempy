@@ -53,8 +53,8 @@ class MetaData(object):
 class Grid(object):
     """ Class to generate grids.
 
-    This class is used to create points usede to
-    evaluate the geological model. This class serves a container which transmits the XYZ coordinates to the
+    This class is used to create points to evaluate the geological model. 
+    This class serves a container which transmits the XYZ coordinates to the
     interpolator. There are several type of grid objects feeding into the Grid class
 
     Args:
