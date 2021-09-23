@@ -1,0 +1,41 @@
+name: GemPy CI
+
+on:
+  push:
+    branches: [ dev_alexj ]
+
+  pull_request:
+    branches: [ main ]
+
+    # Allows you to run this workflow manually from the Actions tab
+    workflow_dispatch:
+
+jobs:
+  # A workflow run is made up of one or more jobs that can run sequentially or in parallel
+  testing:
+    name: Testing
+    runs-on: "ubuntu-latest"
+    defaults:
+      run:
+        shell: bash -l {0}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          activate-environment: gempy_testing
+          environment-file: environment.yml
+          python-version: 3.9
+          channels: conda-forge
+      #- name: List dependencies
+      #  run: |
+      #    conda list pygeos
+      #    conda list geopandas
+      #    conda list rasterio
+      #    conda list pyvista
+      #    conda list gemgis
+      #- name: Install dependencies
+      #  run: |
+      #    pip install -r requirements_optional.txt
+      - name: Run tests with pytest
+        run: |
+          pytest
