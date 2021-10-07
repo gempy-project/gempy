@@ -1,4 +1,4 @@
-name: GemPy CI
+name: GemPy Testing CI
 
 on:
   push:
