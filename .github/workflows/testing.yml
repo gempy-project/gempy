@@ -28,7 +28,7 @@ jobs:
           channels: conda-forge
       #- name: List dependencies
       #  run: |
-      #    conda list pygeos
+      #     conda list pygeos
       #    conda list geopandas
       #    conda list rasterio
       #    conda list pyvista
