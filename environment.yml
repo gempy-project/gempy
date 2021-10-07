@@ -1,5 +1,5 @@
 name: gempy
 channels:
   - conda-forge
-dependencies
+dependencies:
   - gempy
