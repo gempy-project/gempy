@@ -2,4 +2,5 @@ name: gempy
 channels:
   - conda-forge
 dependencies:
+  - subsurface
   - gempy
