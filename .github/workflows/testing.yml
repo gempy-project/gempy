@@ -1,4 +1,4 @@
-name: GemPy Testing CI
+name: GemGIS CI
 
 on:
   push:
@@ -26,6 +26,9 @@ jobs:
           environment-file: environment.yml
           python-version: 3.9
           channels: conda-forge
+      - name: List dependencies
+        run: |
+            conda list geopandas
 
       - name: Run tests with pytest
         run: |
