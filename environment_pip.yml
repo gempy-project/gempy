@@ -6,3 +6,4 @@ dependencies:
   - pip
   - pip:
       - gempy
+      - pyqt5
