@@ -23,12 +23,17 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v2
         with:
           activate-environment: gempy_testing
-          environment-file: environment.yml
+          environment-file: environment_conda.yml
           python-version: 3.9
           channels: conda-forge
       - name: List dependencies
         run: |
-            conda list geopandas
+            conda list gempy
+            conda list gdal
+            conda list pyvista
+            conda list vtk
+            conda list pandas
+            conda list numpy
 
       - name: Run tests with pytest
         run: |
