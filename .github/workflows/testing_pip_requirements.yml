@@ -1,4 +1,4 @@
-name: GemGIS CI Conda Pip Requirements
+name: GemGIS CI Pip Requirements
 
 on:
   push:
@@ -23,7 +23,7 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v2
         with:
           activate-environment: gempy_testing
-          environment-file: environment_pip.yml
+          #environment-file: environment_pip.yml
           python-version: 3.9
           channels: conda-forge
       - name: List dependencies
@@ -34,7 +34,9 @@ jobs:
             conda list vtk
             conda list pandas
             conda list numpy
-
+      - name: Install dependencies
+        run: |
+          pip install -r requirements_optional.txt
       - name: Run tests with pytest
         run: |
           pytest

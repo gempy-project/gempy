@@ -1,4 +1,4 @@
-name: GemGIS CI
+name: GemGIS CI Conda Requirements
 
 on:
   push:
