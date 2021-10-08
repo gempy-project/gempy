@@ -1,4 +1,4 @@
-name: GemGIS CI Pip Requirements
+name: GemPy CI Pip Requirements
 
 on:
   push:
@@ -36,7 +36,7 @@ jobs:
             conda list numpy
       - name: Install dependencies
         run: |
-          pip install -r requirements_optional.txt
+          pip install -r requirements.txt
       - name: Run tests with pytest
         run: |
           pytest

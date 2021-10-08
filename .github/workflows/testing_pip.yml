@@ -1,4 +1,4 @@
-name: GemGIS CI Conda Pip Requirements
+name: GemPy CI Conda Pip Requirements
 
 on:
   push:
