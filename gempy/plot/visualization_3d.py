@@ -1177,7 +1177,7 @@ class vtkVisualization(object):
 
         if lith_block is None:
             lith_block = geo_data.solutions.lith_block
-        lith = lith_block.reshape((nx, ny, nz))
+        lith = lith_block.reshape((nx, ny, nz)).flatten(order='F')
         out = pv.RectilinearGrid(x,y,z)
         out['Lithology'] = lith
         out.save(path+'_lith_block.vtr')
