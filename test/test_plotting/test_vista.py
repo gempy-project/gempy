@@ -89,12 +89,6 @@ class TestVista:
         """
         vista_object_only_data_interactive.live_updating = True
         vista_object_only_data_interactive.plot_surface_points()
-        print('foo')
-        img = vista_object_only_data_interactive.p.show(screenshot=True, auto_close=False)
-        plt.imshow(img[1])
-        plt.show(block=False)
-        print('foo')
-
 
     def test_plot_surface_points_poly_static(self, vista_object_only_data):
         """
