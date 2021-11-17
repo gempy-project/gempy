@@ -2,7 +2,7 @@ name: GemPy CI Conda Requirements
 
 on:
   push:
-    branches: [ dev_alexj, master, main, release ]
+    branches: [ dev_alexj, master, main, release, fixing_actions ]
 
   pull_request:
     branches: [ dev_alexj, master, main, release ]
@@ -13,7 +13,7 @@ on:
 jobs:
   # A workflow run is made up of one or more jobs that can run sequentially or in parallel
   testing_conda:
-    name: ${{ matrix.case.os }} py${{ matrix.case.python-version }} ${{ matrix.case.name }}
+    name: 'Conda: ' ${{ matrix.case.os }} py${{ matrix.case.python-version }} ${{ matrix.case.name }}
     runs-on: ${{ matrix.case.os }}-latest
     defaults:
       run:
@@ -51,13 +51,6 @@ jobs:
             Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
             sleep 3
 
-      - uses: conda-incubator/setup-miniconda@v2
-        with:
-          activate-environment: gempy_testing
-          environment-file: environment_conda.yml
-          python-version: 3.9
-          channels: conda-forge
-
       - name: Install dependencies
         run: |
             conda list gempy
@@ -74,7 +67,7 @@ jobs:
           pytest
 
   testing_pip:
-    name: ${{ matrix.case.os }} py${{ matrix.case.python-version }} ${{ matrix.case.name }}
+    name: 'Pip: '  ${{ matrix.case.os }} py${{ matrix.case.python-version }} ${{ matrix.case.name }}
     runs-on: ${{ matrix.case.os }}-latest
     defaults:
       run:
@@ -112,21 +105,8 @@ jobs:
           Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
           sleep 3
 
-      - uses: conda-incubator/setup-miniconda@v2
-        with:
-          activate-environment: gempy_testing
-          environment-file: environment_pip.yml
-          python-version: 3.9
-          channels: conda-forge
-
       - name: Install dependencies
         run: |
-          conda list gempy
-          conda list gdal
-          conda list pyvista
-          conda list vtk
-          conda list pandas
-          conda list numpy
           python -m pip install --upgrade pip
           pip install -r dev-requirements.txt
 
