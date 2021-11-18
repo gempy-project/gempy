@@ -35,6 +35,7 @@ jobs:
       SHELLOPTS: 'errexit:pipefail'
       OS: ${{ matrix.case.os }}
       PYTHON: ${{ matrix.case.python-version }}
+      GITHUBACTION: "true"
 
     steps:
       # Cancel any previous run of the test job; [pin v0.8.0 (2021-02-13)]
@@ -90,7 +91,7 @@ jobs:
       SHELLOPTS: 'errexit:pipefail'
       OS: ${{ matrix.case.os }}
       PYTHON: ${{ matrix.case.python-version }}
-
+      GITHUBACTION: "true"
     steps:
       # Cancel any previous run of the test job; [pin v0.8.0 (2021-02-13)]
       - name: Cancel Previous Runs
