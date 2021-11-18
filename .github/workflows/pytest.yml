@@ -59,6 +59,7 @@ jobs:
             conda list vtk
             conda list pandas
             conda list numpy
+            conda install gdal
             python -m pip install --upgrade pip
             pip install -r dev-requirements.txt
 
