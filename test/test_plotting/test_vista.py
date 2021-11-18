@@ -82,6 +82,7 @@ class TestVista:
         with pytest.raises(KeyError):
             sp2.loc[4, 'X_r']
 
+    @pytest.mark.skip(reason= "github actions does not like background plot")
     def test_plot_surface_points_poly_live(self, vista_object_only_data_interactive):
         """
         Args:
@@ -125,6 +126,7 @@ class TestVista:
         plt.show()
         print('foo')
 
+    @pytest.mark.skip(reason="github actions does not like background plot")
     def test_plot_orientations_poly_live(self, vista_object_only_data_interactive):
         """
         Args:
