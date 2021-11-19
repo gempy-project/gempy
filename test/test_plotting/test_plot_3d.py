@@ -71,6 +71,6 @@ def test_plot_3d_structure_topo2(unconformity_model_topo):
                           show_lith=True,
                           image=True,
                           kwargs_plot_structured_grid={'opacity': .5})
-    img = gpv.p.show(screenshot=True)
-    plt.imshow(img[1])
-    plt.show()
+    # img = gpv.p.show(screenshot=True)
+    # plt.imshow(img[1])
+    # plt.show()
