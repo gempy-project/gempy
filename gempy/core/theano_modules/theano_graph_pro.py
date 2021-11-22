@@ -647,7 +647,7 @@ class TheanoGraphPro(object):
         return solutions
 
     def compute_topology(self, unique_val):
-        uv_3d = T.cast(T.round(unique_val[0, :T.prod(self.regular_grid_res)].reshape(
+        uv_3d = T.cast(T.round(unique_val[:T.prod(self.regular_grid_res)].reshape(
             self.regular_grid_res, ndim=3)),
             'int32')
 
@@ -1092,6 +1092,8 @@ class TheanoGraphPro(object):
 
         # Add name to the theano node
         C_GI.name = 'Covariance gradient interface'
+        if str(sys._getframe().f_code.co_name) in self.verbose:
+            C_GI = theano.printing.Print('Cov Gradients - Interface')(C_GI)
 
         if str(sys._getframe().f_code.co_name) + '_g' in self.verbose:
             theano.printing.pydotprint(C_GI,
@@ -1169,20 +1171,11 @@ class TheanoGraphPro(object):
                      self.rest_layer_points[:, 2] ** 2 - self.ref_layer_points[:,
                                                          2] ** 2),
              self.gi_reescale ** 2 * (
-                     self.rest_layer_points[:, 0] * self.rest_layer_points[:,
-                                                    1] - self.ref_layer_points[:,
-                                                         0] *
-                     self.ref_layer_points[:, 1]),
+                     self.rest_layer_points[:, 0] * self.rest_layer_points[:, 1] - self.ref_layer_points[:, 0] * self.ref_layer_points[:, 1]),
              self.gi_reescale ** 2 * (
-                     self.rest_layer_points[:, 0] * self.rest_layer_points[:,
-                                                    2] - self.ref_layer_points[:,
-                                                         0] *
-                     self.ref_layer_points[:, 2]),
+                     self.rest_layer_points[:, 0] * self.rest_layer_points[:, 2] - self.ref_layer_points[:, 0] * self.ref_layer_points[:, 2]),
              self.gi_reescale ** 2 * (
-                     self.rest_layer_points[:, 1] * self.rest_layer_points[:,
-                                                    2] - self.ref_layer_points[:,
-                                                         1] *
-                     self.ref_layer_points[:, 2]),
+                     self.rest_layer_points[:, 1] * self.rest_layer_points[:, 2] - self.ref_layer_points[:, 1] * self.ref_layer_points[:, 2]),
              )).T
 
         if 'U_I' in self.verbose:
@@ -1582,7 +1575,6 @@ class TheanoGraphPro(object):
             sigma_0_interf = theano.printing.Print('interface_contribution')(
                 sigma_0_interf)
 
-
         return sigma_0_interf
 
     def contribution_universal_drift(self, grid_val, weights=None):
@@ -1616,12 +1608,14 @@ class TheanoGraphPro(object):
                 (self.gi_reescale * _aux_magic_term *
                  universal_grid_surface_points_matrix[:self.n_universal_eq_T_op]))
         else:
-            # Drif contribution
+            universal_kernel = self.gi_reescale * _aux_magic_term * \
+                               universal_grid_surface_points_matrix[:self.n_universal_eq_T_op]
+
+
+            # Drift contribution
             f_0 = (T.sum(
-                weights[
-                length_of_CG + length_of_CGI:length_of_CG + length_of_CGI + length_of_U_I] * self.gi_reescale *
-                _aux_magic_term *
-                universal_grid_surface_points_matrix[:self.n_universal_eq_T_op]
+                weights[length_of_CG + length_of_CGI:length_of_CG + length_of_CGI + length_of_U_I] *
+                universal_kernel
                 , axis=0))
 
         if not type(f_0) == int:
@@ -1822,7 +1816,7 @@ class TheanoGraphPro(object):
             drift = theano.printing.Print("drift[slice_init:slice_init+1][0]")(drift)
 
         # The 5 rules the slope of the function
-        sigm =  (-n_surface_0.reshape((-1, 1)) / (1 + T.exp(-l * (Z_x - a)))) \
+        sigm = (-n_surface_0.reshape((-1, 1)) / (1 + T.exp(-l * (Z_x - a)))) \
                - (n_surface_1.reshape((-1, 1)) / (1 + T.exp(l * (Z_x - b)))) + drift.reshape((-1, 1))
         if 'sigma' in self.verbose:
             sigm = theano.printing.Print("middle point")(sigm)
@@ -2180,7 +2174,7 @@ class TheanoGraphPro(object):
         is_onlap_or_fault = self.is_onlap[n_series] + self.is_fault[n_series]
 
         # This adds a counter  --- check series onlap-fault --- check the chain starts with onlap
-        nsle = (nsle + is_onlap_or_fault) * is_onlap_or_fault *\
+        nsle = (nsle + is_onlap_or_fault) * is_onlap_or_fault * \
                self.is_onlap[n_series - nsle]
         nsle_op = nsle  # T.max([nsle, 1])
 
@@ -2268,7 +2262,7 @@ class TheanoGraphPro(object):
         sfai = T.set_subtensor(sfai[n_series, n_surface_op - 1],
                                scalar_field_at_surface_points)
 
-        return block_matrix, weights_vector, scalar_field_matrix, sfai, mask_matrix,\
+        return block_matrix, weights_vector, scalar_field_matrix, sfai, mask_matrix, \
                mask_matrix_f, fault_matrix, nsle
 
     def compute_forward_gravity(self, densities=None,

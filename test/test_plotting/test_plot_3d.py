@@ -11,8 +11,8 @@ except Exception as e:  # pragma: no cover
 
 
 def test_pyvista_running():
-    from pyvista import examples
-    examples.plot_wave()
+    from pyvista import demos
+    demos.plot_wave()
 
 def test_plot_3d_data_default(one_fault_model_no_interp):
     gpv = gp.plot.plot_3d(one_fault_model_no_interp,

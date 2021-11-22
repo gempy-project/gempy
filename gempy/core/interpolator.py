@@ -737,7 +737,7 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
     def set_theano_shared_topology(self):
 
         max_lith = self.surfaces.df.groupby('isFault')['id'].count()[False]
-        if type(max_lith) != int:
+        if type(max_lith) != int or type(max_lith) != np.int64 or type(max_lith) != np.int32:
             max_lith = 0
 
         self.theano_graph.max_lith.set_value(max_lith)

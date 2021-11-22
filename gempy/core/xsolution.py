@@ -2,8 +2,15 @@ from typing import Union
 
 from gempy.core.data_modules.stack import Stack
 from gempy.core.data import Grid, Surfaces
-import xarray as xr
-import subsurface
+try:
+    import xarray as xr
+    import subsurface
+    from subsurface.structs.base_structures.common_data_utils import to_netcdf
+except:
+    print("Not subsurface compatibility available")
+
+
+
 import numpy as np
 import pandas as pd
 
@@ -337,7 +344,6 @@ class XSolution(object):
         return zip(args, names)
 
     def to_netcdf(self, path, name, **kwargs):
-        from subsurface.structs.base_structures.common_data_utils import to_netcdf
         for a, n in self.data_structures:
             if a is not None:
                 to_netcdf(a, f'{path}/{name}_{n}.nc', **kwargs)

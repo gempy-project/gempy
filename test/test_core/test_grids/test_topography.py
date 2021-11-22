@@ -29,7 +29,8 @@ def artificial_grid(one_fault_model_no_interp):
     return topo
 
 
-@pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
+@pytest.mark.skipif(("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true") or
+                    ("GITHUBACTION" in os.environ and os.environ["GITHUBACTION"] == "true"),
                     reason="Skipping this test on Travis CI because gdal.")
 def test_real_grid_ales():
     resolution = [30, 20, 50]
