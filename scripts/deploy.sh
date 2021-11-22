@@ -30,7 +30,7 @@ overridden by environment variables. Any environment variables are overridden
 by values set in a '.env' file (if it exists), and in turn by those set in a
 file specified by the '--config-file' option."
 
-echo "docs.gempy.org" > docs/build/html/CNAME
+echo "docs.gempy.org" > ../docs/build/html/CNAME
 
 
 parse_args() {
@@ -73,7 +73,7 @@ parse_args() {
 	# vars should be declared here, with sane defaults if applicable.
 
 	# Source directory & target branch.
-	deploy_directory=${GIT_DEPLOY_DIR:-docs/build/html}
+	deploy_directory=${GIT_DEPLOY_DIR:-../docs/build/html}
 	deploy_branch=${GIT_DEPLOY_BRANCH:-gh-pages}
 
 	#if no user identity is already set in the current git environment, use this:
