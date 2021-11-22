@@ -47,7 +47,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Setup Headless Display
         run: |
-            sudo apt-get install libgl1-mesa-glx
+            sudo apt-get update && sudo apt-get install libgl1-mesa-glx xvfb -y
             sudo apt-get install -y xvfb
             Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
             sleep 3
@@ -102,7 +102,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Setup Headless Display
         run: |
-          sudo apt-get install libgl1-mesa-glx
+          sudo apt-get update && sudo apt-get install libgl1-mesa-glx xvfb -y
           sudo apt-get install -y xvfb
           Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
           sleep 3
