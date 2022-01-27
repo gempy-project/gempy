@@ -58,6 +58,7 @@ Follow these [guidelines](https://github.com/cgre-aachen/gempy/blob/WIP_readme-u
 
 ## Publications using GemPy
 
+
 * Schaaf, A., de la Varga, M., Wellmann, F., & Bond, C. E. (2021). [Constraining stochastic 3-D structural geological models with topology information using approximate Bayesian computation in GemPy 2.1](https://gmd.copernicus.org/articles/14/3899/2021/gmd-14-3899-2021.html). Geosci. Model Dev., 14(6), 3899-3913. doi:10.5194/gmd-14-3899-2021
 * Güdük, N., de la Varga, M. Kaukolinna, J. and Wellmann, F. (in review). Model-Based Probabilistic Inversion Using Magnetic Data: A Case Study on the Kevitsa Deposit.
 * Stamm, F. A., de la Varga, M., and Wellmann, F. (2019). [Actors, actions, and uncertainties: optimizing decision-making based on 3-D structural geological models](https://se.copernicus.org/articles/10/2015/2019/se-10-2015-2019.html), Solid Earth, 10, 2015–2043.

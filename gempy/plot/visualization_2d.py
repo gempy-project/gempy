@@ -414,8 +414,8 @@ class Plot2D:
                 cartesian_ori = np.dot(A_rotate, (orientations[['X', 'Y']] - shift).T).T
 
                 # Since we plot only the section we want the norm of those coordinates
-                points[['X']] = np.linalg.norm(cartesian_point, axis=1)
-                orientations[['X']] = np.linalg.norm(cartesian_ori, axis=1)
+                points['X'] = np.linalg.norm(cartesian_point, axis=1)
+                orientations['X'] = np.linalg.norm(cartesian_ori, axis=1)
                 x, y, Gx, Gy = 'X', 'Z', 'G_x', 'G_z'
 
         else:

@@ -88,6 +88,9 @@ class Solution(inheritance):
         self.vertices = []
         self.edges = []
 
+        self.topology_edges = None
+        self.topology_count = None
+
         self.geological_map = None
         self.sections = None
         self.custom = None
@@ -147,6 +150,10 @@ class Solution(inheritance):
             self.set_solution_to_topography(sol)
         if self.grid.active_grids[3] is np.True_:
             self.set_solution_to_sections(sol)
+
+        self.topology_edges = sol[10]
+        self.topology_count = sol[11]
+
         # Set gravity
         self.fw_gravity = sol[12]
 

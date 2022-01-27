@@ -33,7 +33,7 @@ from matplotlib import cm
 import numpy as np
 import pandas as pd
 import pyvista as pv
-from pyvista.plotting.theme import parse_color
+from pyvista.plotting import parse_color
 # TODO Check if this is necessary if it is implemented in the API
 try:
     import pyvistaqt as pvqt
@@ -665,7 +665,7 @@ class GemPyToVista(WidgetsCallbacks, RenderChanges):
             regular_grid_mesh = regular_grid_mesh.threshold(-99, scalars=main_scalar)
         
         return regular_grid_mesh, cmap
-    
+
     def add_regular_grid_mesh(self,
                               regular_grid_mesh,
                               cmap,
@@ -673,12 +673,14 @@ class GemPyToVista(WidgetsCallbacks, RenderChanges):
                               series: str = '',
                               opacity=.5, **kwargs):
 
+        sargs = self.scalar_bar_options
+
         if scalar_field == 'all' or scalar_field == 'lith':
-            stitle = 'id'
+            sargs['title'] = 'id'
             show_scalar_bar = False
             main_scalar = 'id'
         else:
-            stitle = scalar_field + ': ' + series
+            sargs['title'] = scalar_field + ': ' + series
             show_scalar_bar = True
             main_scalar_prefix = 'sf_' if scalar_field == 'scalar' else 'values_'
             main_scalar = main_scalar_prefix + series
@@ -686,10 +688,9 @@ class GemPyToVista(WidgetsCallbacks, RenderChanges):
                 main_scalar = regular_grid_mesh.array_names[-1]
 
         self.regular_grid_actor = self.p.add_mesh(regular_grid_mesh, cmap=cmap,
-                                                  stitle=stitle,
                                                   scalars=main_scalar,
                                                   show_scalar_bar=show_scalar_bar,
-                                                  scalar_bar_args=self.scalar_bar_options,
+                                                  scalar_bar_args=sargs,
                                                   opacity=opacity,
                                                   **kwargs)
 

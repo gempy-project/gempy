@@ -343,6 +343,7 @@ def plot_3d(model, plotter_type='basic',
 
     if image is True:
         img = gpv.p.show(screenshot=True)
+        img = gpv.p.last_image
         plt.imshow(img[1])
         plt.axis('off')
         plt.show(block=False)

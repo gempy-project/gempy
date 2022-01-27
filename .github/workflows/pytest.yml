@@ -1,0 +1,117 @@
+name: GemPy CI Conda Requirements
+
+on:
+  push:
+    branches: [ dev_alexj, master, main, release, fixing_actions ]
+
+  pull_request:
+    branches: [ dev_alexj, master, main, release ]
+
+    # Allows you to run this workflow manually from the Actions tab
+    workflow_dispatch:
+
+jobs:
+  # A workflow run is made up of one or more jobs that can run sequentially or in parallel
+  testing_conda:
+    name: Conda install ${{ matrix.case.os }} py${{ matrix.case.python-version }} ${{ matrix.case.name }}
+    runs-on: ${{ matrix.case.os }}-latest
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu, ]  # macos, windows]  # Only Linux currently.
+        case:
+          - python-version: 3.8
+            name: basic
+            os: ubuntu
+
+    env:
+      DISPLAY: ':99.0'
+      PYVISTA_OFF_SCREEN: 'True'
+      ALLOW_PLOTTING: true
+      SHELLOPTS: 'errexit:pipefail'
+      OS: ${{ matrix.case.os }}
+      PYTHON: ${{ matrix.case.python-version }}
+      GITHUBACTION: "true"
+
+    steps:
+      # Cancel any previous run of the test job; [pin v0.8.0 (2021-02-13)]
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@3d86a7cc43670094ac248017207be0295edbc31d
+        with:
+          access_token: ${{ github.token }}
+
+      - uses: actions/checkout@v2
+      - name: Setup Headless Display
+        run: |
+            sudo apt-get update && sudo apt-get install libgl1-mesa-glx xvfb -y
+            sudo apt-get install -y xvfb
+            Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+            sleep 3
+
+      - name: Install dependencies
+        run: |
+            conda list gempy
+            conda list gdal
+            conda list pyvista
+            conda list vtk
+            conda list pandas
+            conda list numpy
+            conda install gdal
+            python -m pip install --upgrade pip
+            pip install -r dev-requirements.txt
+
+      - name: Run tests with pytest
+        run: |
+          pytest
+
+  testing_pip:
+    name: Pip install ${{ matrix.case.os }} py${{ matrix.case.python-version }} ${{ matrix.case.name }}
+    runs-on: ${{ matrix.case.os }}-latest
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu, ]  # macos, windows]  # Only Linux currently.
+        case:
+          - python-version: 3.8
+            name: basic
+            os: ubuntu
+
+    env:
+      DISPLAY: ':99.0'
+      PYVISTA_OFF_SCREEN: 'True'
+      ALLOW_PLOTTING: true
+      SHELLOPTS: 'errexit:pipefail'
+      OS: ${{ matrix.case.os }}
+      PYTHON: ${{ matrix.case.python-version }}
+      GITHUBACTION: "true"
+    steps:
+      # Cancel any previous run of the test job; [pin v0.8.0 (2021-02-13)]
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@3d86a7cc43670094ac248017207be0295edbc31d
+        with:
+          access_token: ${{ github.token }}
+
+      - uses: actions/checkout@v2
+      - name: Setup Headless Display
+        run: |
+          sudo apt-get update && sudo apt-get install libgl1-mesa-glx xvfb -y
+          sudo apt-get install -y xvfb
+          Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+          sleep 3
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r dev-requirements.txt
+
+      - name: Run tests with pytest
+        run: |
+          pytest

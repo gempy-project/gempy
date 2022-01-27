@@ -10,9 +10,10 @@ import pandas as pd
 import subsurface as sb
 from subsurface.reader import read_netcdf
 
-data_url = "https://raw.githubusercontent.com/softwareunderground/subsurface/t21-main/examples/tutorials/wells_unstructured.nc"
+data_url = "https://raw.githubusercontent.com/softwareunderground/subsurface/main" \
+           "/examples/tutorials/wells_unstructured.nc"
 
-data_hash = '05198041f2bffcc03d138f7f2b1802657228725c4a895d819d4f5fbc0e9978ca'
+data_hash = "206290db4e563e379361725349ebf4a02628f4700d361599aedff37fab9cf5b9"
 borehole_unstructured_data_file = pooch.retrieve(url=data_url,
                                                  known_hash=data_hash)
 
