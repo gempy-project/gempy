@@ -47,7 +47,8 @@ extent = [515687.3100586407, 7473446.765934078,
           -3200, 1200.0]
 
 
-@pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
+@pytest.mark.skipif(("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true") or
+                    ("GITHUBACTION" in os.environ and os.environ["GITHUBACTION"] == "true"),
                     reason="Skipping this test on Travis CI. For some reason there is a linalg "
                            "error.")
 def test_loop2gempy():
@@ -66,8 +67,10 @@ def test_map2loop2relmatrix():
     print(p)
 
 
-@pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
-                    reason="Skipping this test on Travis CI beacuse travis.")
+@pytest.mark.skipif(("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true") or
+                    ("GITHUBACTION" in os.environ and os.environ["GITHUBACTION"] == "true"),
+                    reason="Skipping this test on Travis CI. For some reason there is a linalg "
+                           "error.")
 def test_loop2gempy2():
     topo = fp2
     # topo = None
@@ -85,8 +88,10 @@ def test_loop2gempy2():
                vtk=True, vtk_path=None, image_2d=True)
 
 
-@pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
-                    reason="Skipping this test on Travis CI beacuse travis.")
+@pytest.mark.skipif(("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true") or
+                    ("GITHUBACTION" in os.environ and os.environ["GITHUBACTION"] == "true"),
+                    reason="Skipping this test on Travis CI. For some reason there is a linalg "
+                           "error.")
 def test_map2loop_model_import_data():
     geo_model = gp.create_model('test_map2Loop')
     gp.init_data(
@@ -110,8 +115,10 @@ def test_map2loop_model_import_data():
     print(geo_model.orientations)
 
 
-@pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
-                    reason="Skipping this test on Travis CI beacuse travis.")
+@pytest.mark.skipif(("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true") or
+                    ("GITHUBACTION" in os.environ and os.environ["GITHUBACTION"] == "true"),
+                    reason="Skipping this test on Travis CI. For some reason there is a linalg "
+                           "error.")
 def test_map2loop_model_no_faults():
     # Location box
     bbox = (500000, 7490000, 545000, 7520000)

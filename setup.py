@@ -1,5 +1,5 @@
 from setuptools import setup, find_packages
-version = '2.2.8'
+version = '2.2.10'
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -10,7 +10,7 @@ setup(
     packages=find_packages(exclude=('test', 'docs', 'examples')),
     include_package_data=True,
     install_requires=[
-        'pandas>=1.0.5',
+        'pandas==1.3.4',
         'Theano>=1.0.4',
         'matplotlib',
         'numpy',
@@ -20,7 +20,8 @@ setup(
         'scikit-image>=0.17',
         'pyvista>=0.25',
         'pyvistaqt',
-        'iPython',
+        'pyqt5',
+        'iPython'
     ],
     url='https://github.com/cgre-aachen/gempy',
     license='LGPL v3',

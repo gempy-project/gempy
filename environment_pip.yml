@@ -1,0 +1,10 @@
+name: gempy
+channels:
+  - conda-forge
+dependencies:
+  - subsurface
+  - geopandas
+  - pip
+  - pip:
+      - gempy
+      - pyqt5

@@ -8,7 +8,7 @@ branches:
         - release
 
 python:
-  - '3.7'
+  - '3.8'
 
 before_install:
   # configure a headless display
@@ -43,7 +43,7 @@ install:
   - conda install theano
 
   # Installs from pip
-  - pip install welly pymc3 pooch
+  - pip install welly pymc3
 
   - pip install scikit-image>=0.17 sklearn
 
@@ -61,6 +61,8 @@ install:
   - conda install -c conda-forge gdal
 
   - python -c "import pyvista as pv;print(pv.Report())"
+
+  - pip install pooch
 
 stages:
   - test

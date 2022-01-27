@@ -1,0 +1,269 @@
+#Sample simulation of the flow in the Perth bassin modeled with gempy
+#Illustrate how to set up properly a PFLOTRAN simulation with the
+#  meshes outputted by gempy
+#Note: formation properties are not realistic
+
+
+SIMULATION
+  SIMULATION_TYPE SUBSURFACE
+  PROCESS_MODELS
+    SUBSURFACE_FLOW flow
+      MODE RICHARDS
+    /
+  /
+END
+
+SUBSURFACE
+
+
+#=========================== discretization ===================================
+
+################################################
+#Import mesh from GemPy in ASCII format 
+GRID
+  TYPE UNSTRUCTURED ./perth_basin_mesh.ugi     #path to the grid outputted by gempy
+END
+#for each stratigraphic formation, create a PFLOTRAN region 
+#and assign the right gempy file 
+REGION Permian
+  FILE ./Permian.vs
+END
+REGION Lesueur
+  FILE ./Lesueur.vs
+END
+REGION Eneabba
+  FILE ./Eneabba.vs
+END
+REGION Cretaceous
+  FILE ./Cretaceous.vs
+END
+REGION basement
+  FILE ./basement.vs
+END
+REGION Yarragadee
+  FILE ./Yarragadee.vs
+END
+#create a region corresponding to the topographic surface (z normal faces)
+REGION topo_surface
+  FILE topography_surface.ss
+END
+
+################################################
+#Import mesh from GemPy in HDF5 format
+SKIP
+GRID
+  TYPE UNSTRUCTURED ./perth_basin_mesh.h5
+END
+REGION Permian
+  FILE ./perth_basin_mesh.h5
+END
+REGION Lesueur
+  FILE ./perth_basin_mesh.h5
+END
+REGION Eneabba
+  FILE ./perth_basin_mesh.h5
+END
+REGION Cretaceous
+  FILE ./perth_basin_mesh.h5
+END
+REGION basement
+  FILE ./perth_basin_mesh.h5
+END
+REGION Yarragadee
+  FILE ./perth_basin_mesh.h5
+END
+REGION Topography_surface
+  FILE ./perth_basin_mesh.h5
+END
+NOSKIP
+################################################
+
+
+#create region on the model boundary to further apply a boundary condition
+REGION xmin
+  COORDINATES 
+    337000. -1e20 -1e20
+    337000. 1e20 1e20
+  /
+END
+
+REGION xmax
+  COORDINATES 
+    400000. -1e20 -1e20
+    400000. 1e20 1e20
+  /
+END
+
+REGION all
+  COORDINATES 
+     -1e20 -1e20 -1e20
+     1e20 1e20 1e20
+  /
+END
+
+
+
+#=========================== material properties ==============================
+#Define material property for each formation
+MATERIAL_PROPERTY Permian
+  ID 1
+  SATURATION_FUNCTION default
+  POROSITY 0.3
+  PERMEABILITY
+    PERM_ISO 1e-12
+  /
+END
+
+MATERIAL_PROPERTY Lesueur
+  ID 2
+  SATURATION_FUNCTION default
+  POROSITY 0.3
+  PERMEABILITY
+    PERM_ISO 5e-12
+  /
+END
+
+MATERIAL_PROPERTY Eneabba
+  ID 3
+  SATURATION_FUNCTION default
+  POROSITY 0.3
+  PERMEABILITY
+    PERM_ISO 5e-14
+  /
+END
+
+MATERIAL_PROPERTY Cretaceous
+  ID 4
+  SATURATION_FUNCTION default
+  POROSITY 0.3
+  PERMEABILITY
+    PERM_ISO 1e-13
+  /
+END
+
+MATERIAL_PROPERTY Yarragadee
+  ID 5
+  SATURATION_FUNCTION default
+  POROSITY 0.3
+  PERMEABILITY
+    PERM_ISO 1e-12
+  /
+END
+
+MATERIAL_PROPERTY basement
+  ID 6
+  SATURATION_FUNCTION default
+  POROSITY 0.3
+  PERMEABILITY
+    PERM_ISO 5e-13
+  /
+END
+
+
+#=========================== characteristic curves ============================
+CHARACTERISTIC_CURVES default
+  DEFAULT
+END
+
+
+#=========================== output options ===================================
+OUTPUT
+  FORMAT HDF5
+  VARIABLES
+    PERMEABILITY_X
+  /
+  NO_PRINT_INITIAL
+END
+
+
+#=========================== times ============================================
+TIME
+  FINAL_TIME 50 y
+  INITIAL_TIMESTEP_SIZE 50 y
+  MAXIMUM_TIMESTEP_SIZE 1e3 y
+END
+
+
+
+
+
+
+
+#=========================== flow conditions ==================================
+FLOW_CONDITION initial
+  TYPE
+    PRESSURE hydrostatic
+  /
+  DATUM 0 0 20000.
+  GRADIENT 
+    PRESSURE -0.01 0. 0.
+  /
+  PRESSURE 101325.
+END
+
+FLOW_CONDITION rain
+  TYPE
+    FLUX NEUMANN
+  /
+  FLUX 1.757d-9 ! [m/s]
+END
+
+
+#=========================== condition couplers ===============================
+# initial condition
+INITIAL_CONDITION
+  FLOW_CONDITION initial
+  REGION all
+END
+
+
+BOUNDARY_CONDITION west
+  FLOW_CONDITION initial
+  REGION xmin
+END
+
+BOUNDARY_CONDITION east
+  FLOW_CONDITION initial
+  REGION xmax
+END
+
+#BOUNDARY_CONDITION topo #apply rain on the topography
+#  FLOW_CONDITION rain
+#  REGION topo_surface
+#END
+
+
+#=========================== stratigraphy couplers ============================
+#Couple the PFLOTRAN region and material
+STRATA
+  REGION Permian
+  MATERIAL Permian
+END
+
+STRATA
+  REGION Lesueur
+  MATERIAL Lesueur
+END
+
+STRATA
+  REGION Eneabba
+  MATERIAL Eneabba
+END
+
+STRATA
+  REGION Cretaceous
+  MATERIAL Cretaceous
+END
+
+STRATA
+  REGION Yarragadee
+  MATERIAL Yarragadee
+END
+
+STRATA
+  REGION basement
+  MATERIAL basement
+END
+
+
+END_SUBSURFACE
