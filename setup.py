@@ -21,7 +21,8 @@ setup(
         'pyvista>=0.25',
         'pyvistaqt',
         'pyqt5',
-        'iPython'
+        'iPython',
+        'pandas==1.3.4'
     ],
     url='https://github.com/cgre-aachen/gempy',
     license='LGPL v3',
