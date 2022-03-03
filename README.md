@@ -65,7 +65,7 @@ Follow these [guidelines](https://github.com/cgre-aachen/gempy/blob/WIP_readme-u
 https://www.sciencedirect.com/science/article/pii/B9780128140482000156).
 In Developments in Structural Geology and Tectonics (Vol. 5, pp. 189-204). Elsevier.
 
-A continuously growing list of gempy-applications (e.g. listing real-world models) can be found [here](https://terranigma.notion.site/Gempy-8da5b0b551ce4bcb8af641ab1157ed9b).
+A continuously growing list of gempy-applications (e.g. listing real-world models) can be found [here](https://hackmd.io/@Japhiolite/B1juPvCxc).
 
 ## Gallery
 
