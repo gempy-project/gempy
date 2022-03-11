@@ -215,7 +215,7 @@ class Series(object):
         """
         Reset the column order series to monotonic ascendant values.
         """
-        self.df.at[:, 'order_series'] = pn.RangeIndex(1, self.df.shape[0] + 1)
+        self.df['order_series'] = pn.RangeIndex(1, self.df.shape[0] + 1)
 
     @_setdoc_pro(reset_order_series.__doc__)
     def set_series_index(self, series_order: Union[list, np.ndarray], reset_order_series=True):
