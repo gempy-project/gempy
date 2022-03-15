@@ -1221,7 +1221,7 @@ class ImplicitCoKriging(object):
 
         """
 
-        # surface = np.atleast_1d(surface)
+        surface = np.atleast_1d(surface)
         idx = self._add_valid_idx_o(idx)
 
         self._orientations.add_orientation(X, Y, Z, surface, pole_vector=pole_vector,
