@@ -291,14 +291,20 @@ class SurfacePoints(GeometricData):
                               'layer at the bottom of the pile.')
 
             self.df.loc[idx, ['X', 'Y', 'Z']] = coord_array.astype('float64')
-            # if isinstance(surface, np.ndarray):
-            #     # self.df.loc[idx, 'surface'] = surface
-            #     for s in surface:
-            #         self.df.loc[idx]['surface'] = s
-            #         # self.df['surface'].cat.add_categories(s, inplace=True)
-            # else:
-            #     self.df.loc[idx, 'surface'] = surface
-            self.df.loc[idx, 'surface'] = surface
+            if isinstance(surface, np.ndarray): # type(surface) is numpy.ndarray:
+                # self.df.loc[idx, 'surface'] = surface
+                if self.df['surface'].dtype == 'category':
+                    for s in surface:
+                        if s not in self.df['surface'].cat.categories:
+                            self.df['surface'].cat.add_categories(s)
+                        self.df.loc[idx, 'surface'] = s
+                else:
+                    for s in surface:
+                        self.df.loc[idx, 'surface'] = s
+
+            else:
+                self.df.loc[idx, 'surface'] = surface
+            # self.df.loc[idx, 'surface'] = surface
         # ToDO test this
         except ValueError as error:
             self.del_surface_points(idx)
