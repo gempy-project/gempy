@@ -605,12 +605,12 @@ class Orientations(GeometricData):
 
         if pole_vector is not None:
             self.df.loc[idx, ['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z']] = np.array([x, y, z, *pole_vector], dtype=float)
-            if type(surface) is numpy.ndarray:
-                for s in surface:
-                    self.df.loc[idx, 'surface'] = s
-            else:
-                self.df.loc[idx, 'surface'] = surface
-            # self.df.loc[idx, 'surface'] = surface
+            # if type(surface) is numpy.ndarray:
+            #     for s in surface:
+            #         self.df.loc[idx, 'surface'] = s
+            # else:
+            #     self.df.loc[idx, 'surface'] = surface
+            self.df.loc[idx, 'surface'] = surface
 
             self.calculate_orientations(idx)
 
@@ -620,12 +620,12 @@ class Orientations(GeometricData):
             if orientation is not None:
                 self.df.loc[idx, ['X', 'Y', 'Z', ]] = np.array([x, y, z], dtype=float)
                 self.df.loc[idx, ['azimuth', 'dip', 'polarity']] = np.array(orientation, dtype=float)
-                if type(surface) is not str:
-                    for s in surface:
-                        self.df.loc[idx, 'surface'] = s
-                else:
-                    self.df.loc[idx, 'surface'] = surface
-                # self.df.loc[idx, 'surface'] = surface
+                # if type(surface) is not str:
+                #     for s in surface:
+                #         self.df.loc[idx, 'surface'] = s
+                # else:
+                #     self.df.loc[idx, 'surface'] = surface
+                self.df.loc[idx, 'surface'] = surface
 
                 self.calculate_gradient(idx)
             else:
