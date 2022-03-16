@@ -6,6 +6,7 @@ Created on 21/10/2016
 """
 import sys
 import os
+import pandas
 
 import warnings
 
@@ -37,6 +38,10 @@ from gempy.plot.plot_api import plot_2d, plot_3d
 from gempy.plot import _plot as _plot
 
 assert sys.version_info[0] >= 3, "GemPy requires Python 3.X"  # sys.version_info[1] for minor e.g. 6
+assert pandas.__version__ <= '1.4.0', \
+    "GemPy requires pandas version < 1.4.0. The new pandas release is not compatible with GemPy.\n" \
+    "We're actively working on this issue for a future release.\n"
+
 __version__ = '2.2.10'
 
 if __name__ == '__main__':
