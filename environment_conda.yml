@@ -3,5 +3,4 @@ channels:
   - conda-forge
 dependencies:
   - subsurface
-  - geopandas
   - gempy
