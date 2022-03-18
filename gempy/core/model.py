@@ -789,10 +789,8 @@ class ImplicitCoKriging(object):
     @_setdoc(Surfaces.add_surface.__doc__, indent=False)
     def add_surfaces(self, surface_list: Union[str, list], update_df=True):
         self._surfaces.add_surface(surface_list, update_df)
-        self._surface_points.df['surface'].cat.add_categories(surface_list,
-                                                              inplace=True)
-        self._orientations.df['surface'].cat.add_categories(surface_list,
-                                                            inplace=True)
+        self._surface_points.df['surface'].cat.add_categories(surface_list)
+        self._orientations.df['surface'].cat.add_categories(surface_list)
         self.update_structure()
         return self._surfaces
 
