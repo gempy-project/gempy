@@ -519,11 +519,9 @@ class ImplicitCoKriging(object):
 
         """
         self._stack.add_series(features_list, reset_order_series)
-        self._surfaces.df['series'].cat.add_categories(features_list, inplace=True)
-        self._surface_points.df['series'].cat.add_categories(features_list,
-                                                             inplace=True)
-        self._orientations.df['series'].cat.add_categories(features_list,
-                                                           inplace=True)
+        self._surfaces.df['series'] = self._surfaces.df['series'].cat.add_categories(features_list)
+        self._surface_points.df['series'] = self._surface_points.df['series'].cat.add_categories(features_list)
+        self._orientations.df['series'] = self._orientations.df['series'].cat.add_categories(features_list)
 
         self.update_structure()
         self._interpolator.set_flow_control()
@@ -560,10 +558,9 @@ class ImplicitCoKriging(object):
                     self._surfaces.df.groupby('series').get_group(s)['surface'],
                     remove_data=remove_data)
 
-        self._surfaces.df['series'].cat.remove_categories(indices, inplace=True)
-        self._surface_points.df['series'].cat.remove_categories(indices,
-                                                                inplace=True)
-        self._orientations.df['series'].cat.remove_categories(indices, inplace=True)
+        self._surfaces.df['series'] = self._surfaces.df['series'].cat.remove_categories(indices)
+        self._surface_points.df['series'] = self._surface_points.df['series'].cat.remove_categories(indices)
+        self._orientations.df['series'] = self._orientations.df['series'].cat.remove_categories(indices)
         self.map_geometric_data_df(self._surface_points.df)
         self.map_geometric_data_df(self._orientations.df)
 
@@ -601,12 +598,9 @@ class ImplicitCoKriging(object):
 
         """
         self._stack.rename_series(new_categories)
-        self._surfaces.df['series'].cat.rename_categories(new_categories,
-                                                          inplace=True)
-        self._surface_points.df['series'].cat.rename_categories(new_categories,
-                                                                inplace=True)
-        self._orientations.df['series'].cat.rename_categories(new_categories,
-                                                              inplace=True)
+        self._surfaces.df['series'] = self._surfaces.df['series'].cat.rename_categories(new_categories)
+        self._surface_points.df['series'] = self._surface_points.df['series'].cat.rename_categories(new_categories)
+        self._orientations.df['series'] = self._orientations.df['series'].cat.rename_categories(new_categories)
         return self._stack
 
     @_setdoc(rename_features.__doc__, indent=False)
@@ -789,8 +783,8 @@ class ImplicitCoKriging(object):
     @_setdoc(Surfaces.add_surface.__doc__, indent=False)
     def add_surfaces(self, surface_list: Union[str, list], update_df=True):
         self._surfaces.add_surface(surface_list, update_df)
-        self._surface_points.df['surface'].cat.add_categories(surface_list)
-        self._orientations.df['surface'].cat.add_categories(surface_list)
+        self._surface_points.df['surface'] = self._surface_points.df['surface'].cat.add_categories(surface_list)
+        self._orientations.df['surface'] = self._orientations.df['surface'].cat.add_categories(surface_list)
         self.update_structure()
         return self._surfaces
 
@@ -826,10 +820,8 @@ class ImplicitCoKriging(object):
                 self._orientations.df[
                     self._orientations.df.surface.isin(surfaces_names)].index)
 
-        self._surface_points.df['surface'].cat.remove_categories(surfaces_names,
-                                                                 inplace=True)
-        self._orientations.df['surface'].cat.remove_categories(surfaces_names,
-                                                               inplace=True)
+        self._surface_points.df['surface'] = self._surface_points.df['surface'].cat.remove_categories(surfaces_names)
+        self._orientations.df['surface'] = self._orientations.df['surface'].cat.remove_categories(surfaces_names)
         self.map_geometric_data_df(self._surface_points.df)
         self.map_geometric_data_df(self._orientations.df)
         self._surfaces.colors.delete_colors(surfaces_names)
@@ -844,10 +836,8 @@ class ImplicitCoKriging(object):
     def rename_surfaces(self, to_replace: Union[dict], **kwargs):
 
         self._surfaces.rename_surfaces(to_replace, **kwargs)
-        self._surface_points.df['surface'].cat.rename_categories(to_replace,
-                                                                 inplace=True)
-        self._orientations.df['surface'].cat.rename_categories(to_replace,
-                                                               inplace=True)
+        self._surface_points.df['surface'] = self._surface_points.df['surface'].cat.rename_categories(to_replace)
+        self._orientations.df['surface'] = self._orientations.df['surface'].cat.rename_categories(to_replace)
         return self._surfaces
 
     @_setdoc(Surfaces.modify_order_surfaces.__doc__, indent=False)
@@ -932,7 +922,7 @@ class ImplicitCoKriging(object):
 
         # Here we remove the series that were not assigned to a surface
         if remove_unused_series is True:
-            self._surfaces.df['series'].cat.remove_unused_categories(inplace=True)
+            self._surfaces.df['series'] = self._surfaces.df['series'].cat.remove_unused_categories()
             unused_cat = self._stack.df.index[~self._stack.df.index.isin(
                 self._surfaces.df['series'].cat.categories)]
             self._stack.delete_series(unused_cat)
