@@ -455,8 +455,8 @@ class Plot2D:
         points_df = points[select_projected_p]
         points_df['colors'] = points_df['surface'].map(self._color_lot)
 
-        points_df.plot.scatter(x=x, y=y, ax=ax, c='colors', s=70,  zorder=102,
-                               edgecolors='white',
+        points_df.plot.scatter(x=x, y=y, ax=ax, c=points_df['surface'].map(self._color_lot),
+                               s=70,  zorder=102, edgecolors='white',
                                colorbar=False)
         # points_df.plot.scatter(x=x, y=y, ax=ax, c='white', s=80,  zorder=101,
         #                        colorbar=False)

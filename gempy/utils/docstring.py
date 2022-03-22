@@ -10,7 +10,7 @@ coord_ori = coord + 'Notice that orientations may be place anywhere in the 3D sp
 pole_vector = '(numpy.ndarray[float, 3]): 2D numpy array where axis 1 is the gradient values G_x, G_y, G_z of the pole while axis 0 is n number of' \
               ' orientations.'
 
-orientations = '(numpy.ndarray[float, 3]): 2D numpy array where axis 1 is are orientation values [dip, azimuth, polarity] of the pole while axis 0' \
+orientations = '(numpy.ndarray[float, 3]): 2D numpy array where axis 1 is are orientation values [azimuth, dip, polarity] of the pole while axis 0' \
                ' is n number of orientations. --- ' \
                '*Dip* is the inclination angle of 0 to 90 degrees measured from the horizontal plane downwards. ' \
                '*Azimuth* is the dip direction defined by a 360 degrees clockwise rotation, i.e. 0 = North,' \

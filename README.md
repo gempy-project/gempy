@@ -11,6 +11,9 @@
 [![DOI](https://zenodo.org/badge/96211155.svg)](https://zenodo.org/badge/latestdoi/96211155)
 [![DOCKER](https://img.shields.io/docker/cloud/automated/leguark/gempy.svg)](https://cloud.docker.com/repository/docker/leguark/gempy)
 
+:warning: **Warning: GemPy requires pandas version < 1.4.0. The new pandas release is not compatible with GemPy.  
+    We're actively working on this issue for a future release.  
+Please make sure to use Pandas version 1.3.x when working with GemPy for the time being.** :warning:
 ## Overview
 
 [GemPy](https://www.gempy.org/) is a Python-based, **open-source geomodeling library**. It is
@@ -65,6 +68,8 @@ Follow these [guidelines](https://github.com/cgre-aachen/gempy/blob/WIP_readme-u
 * Wellmann, F., Schaaf, A., de la Varga, M., & von Hagke, C. (2019). [From Google Earth to 3D Geology Problem 2: Seeing Below the Surface of the Digital Earth](
 https://www.sciencedirect.com/science/article/pii/B9780128140482000156).
 In Developments in Structural Geology and Tectonics (Vol. 5, pp. 189-204). Elsevier.
+
+A continuously growing list of gempy-applications (e.g. listing real-world models) can be found [here](https://hackmd.io/@Japhiolite/B1juPvCxc).
 
 ## Gallery
 
