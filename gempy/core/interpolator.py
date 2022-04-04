@@ -1,4 +1,3 @@
-from collections import Iterable
 from typing import Union
 from gempy.core.data import Grid, Surfaces, AdditionalData
 from gempy.core.data_modules.geometric_data import SurfacePoints, Orientations
