@@ -264,7 +264,7 @@ class Plot2D:
             if section_name == 'topography':
                 try:
                     image = self.model.solutions.geological_map[0].reshape(
-                        self.model._grid.topography.values_2d[:, :, 2].shape)
+                        self.model._grid.topography.values_2d[:, :, 2].shape).T
 
                 except AttributeError:
                     raise AttributeError('Geological map not computed. Activate the topography grid.')
@@ -633,7 +633,7 @@ class Plot2D:
                         self.model.solutions.scalar_field_at_surface_points[e] != 0)]
 
                     c_id2 = c_id + len(level)  # color id endpoint
-                    ax.contour(block.reshape(shape), 0, levels=np.sort(level),
+                    ax.contour(block.reshape(shape).T, 0, levels=np.sort(level),
                                colors=self.cmap.colors[c_id:c_id2][::-1],
                                linestyles='solid', origin='lower',
                                extent=extent_val, zorder=zorder - (e + len(level))
