@@ -1708,6 +1708,10 @@ class Project(ImplicitCoKriging):
         if self._grid.topography is not None:
             self._grid.topography.save(f'{path}/{name}_topography.npy')
 
+        if self._grid.sections is not None:
+            self._grid.sections.df.to_csv(f'{path}/{name}_sections.csv')
+            np.save(f'{path}/{name}_sections.npy', self._grid.sections.values)
+
         # if compress is True:
         #     shutil.make_archive(name, 'zip', path)
         #     shutil.rmtree(path)
