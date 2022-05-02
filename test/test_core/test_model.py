@@ -144,6 +144,17 @@ def test_compute_model(interpolator, map_sequential_pile):
     plt.savefig(os.path.dirname(__file__)+'/../figs/test_integration_scalar')
 
 
+def test_save_model(interpolator, map_sequential_pile):
+    geo_model = map_sequential_pile
+    geo_model.set_theano_function(interpolator)
+    gp.compute_model(geo_model, compute_mesh=False)
+    gp.save_model(geo_model, name='test_save_model', path=input_path+'/save_model/', save_solution=True,
+                  compress=False)
+
+    lith_block_sol = np.load(input_path+'/save_model/test_save_model/test_save_model_lith_block.npy')
+    np.testing.assert_array_almost_equal(geo_model.solutions.lith_block, lith_block_sol, decimal=0)
+
+
 def test_kriging_mutation(interpolator, map_sequential_pile):
     geo_model = map_sequential_pile
     geo_model.set_theano_graph(interpolator)
