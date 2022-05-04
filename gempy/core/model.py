@@ -1659,13 +1659,14 @@ class Project(ImplicitCoKriging):
             model = pickle.load(f)
             return model
 
-    def save_model(self, name=None, path=None, compress=True):
+    def save_model(self, name=None, path=None, compress=True, save_solution=True):
         """
         Save model in new folder. Input data is saved as csv files. Solutions, extent and resolutions are saved as npy.
 
         Args:
             name (str): name of the newly created folder and the part of the files name
             path (str): path where save the model folder.
+            save_solution (bool): if True, save the solution
             compress (bool): If true create a zip
 
         Returns:
@@ -1696,13 +1697,21 @@ class Project(ImplicitCoKriging):
         if self._grid.topography is not None:
             self._grid.topography.save(f'{path}/{name}_topography.npy')
 
+        if self._grid.sections is not None:
+            self._grid.sections.df.to_csv(f'{path}/{name}_sections.csv')
+            np.save(f'{path}/{name}_sections.npy', self._grid.sections.values)
+
+        if save_solution:
+            self.save_solution(name, path)
+
         # if compress is True:
         #     shutil.make_archive(name, 'zip', path)
         #     shutil.rmtree(path)
         return True
 
-    def save_solution(self):
-        pass
+    def save_solution(self, name=None, path=None):
+        if self.solutions.lith_block is not None:
+            np.save(f'{path}/{name}_lith_block.npy', self.solutions.lith_block)
 
     def read_data(self, source_i=None, source_o=None, add_basement=True, **kwargs):
         """

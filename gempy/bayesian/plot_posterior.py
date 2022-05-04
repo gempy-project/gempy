@@ -143,7 +143,7 @@ class PlotPosterior:
         ax_like.spines['right'].set_position(('axes', 1.03))
         ax_like.spines['top'].set_color('none')
         ax_like.spines['left'].set_color('none')
-        ax_like.set_xlabel('Thickness Obs.')
+        ax_like.set_xlabel('Observations')
         ax_like.set_title('Likelihood')
         return ax_like
 
@@ -481,7 +481,7 @@ class PlotPosterior:
         self.likelihood_axes.spines['right'].set_position(('axes', 1.03))
         self.likelihood_axes.spines['top'].set_color('none')
         self.likelihood_axes.spines['left'].set_color('none')
-        self.likelihood_axes.set_xlabel('Thickness Obs.')
+        self.likelihood_axes.set_xlabel('Observations')
         self.likelihood_axes.set_title('Likelihood')
 
         # self.likelihood_axes.set_ylim(y_min, y_max)
