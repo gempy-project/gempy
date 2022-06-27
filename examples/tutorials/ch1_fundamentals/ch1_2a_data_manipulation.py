@@ -529,4 +529,4 @@ interp = gp.InterpolatorModel(surface_points, orientations, grid, surfaces, seri
 interp.compile_th_fn_geo()
 
 # %% 
-interp.print_theano_shared()
+interp.print_aesara_shared()

@@ -16,8 +16,8 @@
 """
 
 import numpy as np
-import theano
-import theano.tensor as T
+import aesara
+import aesara.tensor  as T
 from gempy.core.grid_modules.grid_types import CenteredGrid
 
 

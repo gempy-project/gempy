@@ -23,7 +23,7 @@ try:
 except ImportError:
     warnings.warn("pymc (v2) package is not installed. No support for stochastic simulation posterior analysis.")
 try:
-    import pymc3
+    import pymc
 except ImportError:
     warnings.warn("pymc (v3) package is not installed. No support for stochastic simulation posterior analysis.")
 import numpy as np

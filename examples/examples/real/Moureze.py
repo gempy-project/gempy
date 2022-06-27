@@ -7,7 +7,7 @@ Moureze
 # %% 
 # These two lines are necessary only if gempy is not installed
 import sys, os
-os.environ["THEANO_FLAGS"] = "mode=FAST_RUN,device=cpu"
+os.environ["aesara_FLAGS"] = "mode=FAST_RUN,device=cpu"
 
 # Importing gempy
 import gempy as gp
@@ -103,7 +103,7 @@ gp.plot_2d(geo_model, direction='y')
 
 # %% 
 gp.set_interpolator(geo_model,
-                    theano_optimizer='fast_run', dtype='float64')
+                    aesara_optimizer='fast_run', dtype='float64')
 
 # %%
 # The default range is always the diagonal of the extent. Since in this

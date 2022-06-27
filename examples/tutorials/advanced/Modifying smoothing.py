@@ -52,13 +52,13 @@ gp.plot.plot_data(geo_data, direction='y')
 # Calculating the model:
 # 
 
-interp_data = gp.set_interpolation_data(geo_data, theano_optimizer='fast_compile')
+interp_data = gp.set_interpolation_data(geo_data, aesara_optimizer='fast_compile')
 
 geo_data.update_to_interpolator()
 
 geo_data._orientations
 
-geo_data._interpolator.theano_graph.nugget_effect_grad_T.get_value()
+geo_data._interpolator.aesara_graph.nugget_effect_grad_T.get_value()
 
 sol = gp.compute_model(geo_data)
 
@@ -87,5 +87,5 @@ sel
 
 geo_data.modify_surface_points(sel, smooth=100, plot_object=vtkplot)
 
-geo_data._interpolator.theano_graph.nugget_effect_scalar_T.get_value()
+geo_data._interpolator.aesara_graph.nugget_effect_scalar_T.get_value()
 

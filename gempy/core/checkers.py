@@ -10,7 +10,7 @@ def check_for_nans(array_like):
     return array_like
 
 
-def check_for_nans_input_theano():
+def check_for_nans_input_aesara():
     pass
 
 

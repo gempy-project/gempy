@@ -26,7 +26,7 @@ class TestNoFaults:
                                      path_o=input_path + "/GeoModeller/test_a/test_a_Foliations.csv",
                                      path_i=input_path + "/GeoModeller/test_a/test_a_Points.csv")
 
-        geo_data.set_theano_function(interpolator)
+        geo_data.set_aesara_function(interpolator)
 
         # Compute model
         sol = gempy.compute_model(geo_data)
@@ -56,7 +56,7 @@ class TestNoFaults:
                                      path_o=input_path + "/GeoModeller/test_b/test_b_Foliations.csv",
                                      path_i=input_path + "/GeoModeller/test_b/test_b_Points.csv")
 
-        geo_data.set_theano_function(interpolator)
+        geo_data.set_aesara_function(interpolator)
 
         # Compute model
         sol = gempy.compute_model(geo_data)
@@ -86,7 +86,7 @@ class TestNoFaults:
                                      path_o=input_path + "/GeoModeller/test_c/test_c_Foliations.csv",
                                      path_i=input_path + "/GeoModeller/test_c/test_c_Points.csv")
 
-        geo_data.set_theano_function(interpolator)
+        geo_data.set_aesara_function(interpolator)
 
         # Compute model
         sol = gempy.compute_model(geo_data)
@@ -124,7 +124,7 @@ class TestFaults:
 
         geo_data.set_is_fault('fault1')
 
-        geo_data.set_theano_function(interpolator)
+        geo_data.set_aesara_function(interpolator)
 
         # Compute model
         sol = gempy.compute_model(geo_data)
@@ -153,7 +153,7 @@ class TestFaults:
         gempy.map_stack_to_surfaces(geo_data, {'fault1': 'f1', 'series': ('A', 'B')})
         geo_data.set_is_fault('fault1')
 
-        geo_data.set_theano_function(interpolator)
+        geo_data.set_aesara_function(interpolator)
 
         # Compute model
         sol = gempy.compute_model(geo_data)
@@ -189,7 +189,7 @@ class TestFaults:
                                                },
                                     )
 
-        geo_data.set_theano_function(interpolator)
+        geo_data.set_aesara_function(interpolator)
         geo_data.set_is_fault('fault1')
 
         # Compute model
@@ -233,7 +233,7 @@ class TestFaults:
                                                },
                                     )
 
-        geo_data.set_theano_function(interpolator)
+        geo_data.set_aesara_function(interpolator)
         geo_data.set_is_fault('fault1')
         geo_data.modify_kriging_parameters('range', [3000, 3500, 0])
         geo_data._additional_data.kriging_data.set_default_c_o()
@@ -278,11 +278,11 @@ def test_simple_model_gempy_engine():
     # g.modify_kriging_parameters("$C_o$", 5 ** 2 / 14 / 3)
     g.modify_kriging_parameters("drift equations", [0])
 
-    import theano
+    import aesara
     dtype = "float32"
 
-    g._interpolator.theano_graph.i_reescale.set_value(np.cast[dtype](1.))
-    g._interpolator.theano_graph.gi_reescale.set_value(np.cast[dtype](1.))
+    g._interpolator.aesara_graph.i_reescale.set_value(np.cast[dtype](1.))
+    g._interpolator.aesara_graph.gi_reescale.set_value(np.cast[dtype](1.))
 
     gempy.compute_model(g)
 

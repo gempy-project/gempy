@@ -12,7 +12,7 @@ import gempy as gp
 import os
 import numpy as np
 import matplotlib.pyplot as plt
-import pymc3 as pm
+import pymc as pm
 import arviz as az
 
 from gempy.bayesian import plot_posterior as pp

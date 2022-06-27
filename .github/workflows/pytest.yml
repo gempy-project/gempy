@@ -2,10 +2,10 @@ name: GemPy CI Conda Requirements
 
 on:
   push:
-    branches: [ dev_alexj, master, main, release, fixing_actions ]
+    branches: [ dev_alexj, master, main, release, fixing_actions, dev_pymc4 ]
 
   pull_request:
-    branches: [ dev_alexj, master, main, release ]
+    branches: [ dev_alexj, master, main, release, dev_pymc4 ]
 
     # Allows you to run this workflow manually from the Actions tab
     workflow_dispatch:

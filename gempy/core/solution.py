@@ -109,7 +109,7 @@ class Solution(inheritance):
         """If regular grid is active set all the solution objects dependent on them and compute mesh.
 
         Args:
-            values (list[np.array]): list with result of the theano evaluation (values returned by
+            values (list[np.array]): list with result of the aesara evaluation (values returned by
              :func:`gempy.compute_model` function):
 
                  - block_matrix

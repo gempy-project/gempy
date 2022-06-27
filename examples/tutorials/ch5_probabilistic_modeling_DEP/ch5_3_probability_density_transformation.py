@@ -12,7 +12,7 @@ from gempy.bayesian.plot_posterior import default_red, default_blue
 # Importing auxiliary libraries
 import numpy as np
 import matplotlib.pyplot as plt
-import pymc3 as pm
+import pymc as pm
 import arviz as az
 import os
 

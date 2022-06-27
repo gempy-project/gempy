@@ -41,7 +41,7 @@ centers = '(numpy.ndarray[float, 3]): XYZ array with the center of the data. Thi
 
 rescaling_factor = 'Scaling factor by which all the parameters will be rescaled.'
 
-theano_graph_pro = 'GemPy object that contains all graph structure of theano'
+aesara_graph_pro = 'GemPy object that contains all graph structure of aesara'
 
 ctrl = 'List that controls what parts of the graph for each series have to be recomputed.'
 
@@ -66,9 +66,9 @@ geological_map = '2D array containing the lithologies at the surfaces. '
 
 recompute_rf = '(bool): if True recompute the rescaling factor'
 
-compile_theano = 'Default true. Either if the theano graph must be compiled or not'
-theano_optimizer = 'Type of theano compilation. This rules the number ' \
-                   'optimizations theano performs at compilation time: fast_run will take longer \
+compile_aesara = 'Default true. Either if the aesara graph must be compiled or not'
+aesara_optimizer = 'Type of aesara compilation. This rules the number ' \
+                   'optimizations aesara performs at compilation time: fast_run will take longer \
              to compile but at run time will be faster and will consume significantly less memory. fast_compile will \
              compile faster.'
 

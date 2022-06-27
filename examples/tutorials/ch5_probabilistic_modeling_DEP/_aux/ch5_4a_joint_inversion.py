@@ -6,7 +6,7 @@
  # These two lines are necessary only if GemPy is not installed
 import sys, os
 sys.path.append("../../gempy")
-os.environ["THEANO_FLAGS"] = "mode=FAST_RUN,device=cuda"
+os.environ["aesara_FLAGS"] = "mode=FAST_RUN,device=cuda"
 
 # Importing GemPy
 import gempy as gp
@@ -18,7 +18,7 @@ from examples.tutorials.ch5_probabilistic_modeling_DEP.aux_functions.DEP_aux_fun
 # Importing auxiliary libraries
 import numpy as np
 import matplotlib.pyplot as plt
-import pymc3 as pm
+import pymc as pm
 import arviz as az
 
 
@@ -88,7 +88,7 @@ geo_model.set_centered_grid(device_loc,  resolution = [10, 10, 60], radius=4000)
 
 # %%
 gp.set_interpolator(geo_model, output=['gravity'], pos_density=2,  gradient=True,
-                    theano_optimizer='fast_run')            
+                    aesara_optimizer='fast_run')            
 
 # %% 
 gp.compute_model(geo_model, set_solutions=True, compute_mesh=False)
@@ -111,13 +111,13 @@ geo_model.solutions.fw_gravity
 # 
 
 # %% 
-geo_model._interpolator.theano_graph.sig_slope.set_value(150)
+geo_model._interpolator.aesara_graph.sig_slope.set_value(150)
 
 # %% 
-geo_model._interpolator.theano_graph.input_parameters_loop[4]
+geo_model._interpolator.aesara_graph.input_parameters_loop[4]
 
 # %% 
-geo_model._interpolator.theano_graph.compute_type
+geo_model._interpolator.aesara_graph.compute_type
 
 
 # %%
@@ -126,22 +126,22 @@ geo_model._interpolator.theano_graph.compute_type
 # 
 
 # %% 
-import theano
-import theano.tensor as tt
-theano.config.compute_test_value = 'ignore'
-geo_model_T = theano.OpFromGraph(geo_model.interpolator.theano_graph.input_parameters_loop,
-                                [theano.grad(geo_model.interpolator.theano_graph.theano_output()[12][0],
-                                             geo_model.interpolator.theano_graph.input_parameters_loop[4])],
+import aesara
+import aesara.tensor as tt
+aesara.config.compute_test_value = 'ignore'
+geo_model_T = aesara.OpFromGraph(geo_model.interpolator.aesara_graph.input_parameters_loop,
+                                [aesara.grad(geo_model.interpolator.aesara_graph.aesara_output()[12][0],
+                                             geo_model.interpolator.aesara_graph.input_parameters_loop[4])],
                                  inline=True,
                                  on_unused_input='ignore',
                                  name='forw_grav')
 
 # %% 
 i = geo_model.interpolator.get_python_input_block()
-th_f = theano.function([], geo_model_T(*i), on_unused_input='warn')
+th_f = aesara.function([], geo_model_T(*i), on_unused_input='warn')
 
 # %% 
-geo_model.interpolator.theano_graph.sig_slope.set_value(20)
+geo_model.interpolator.aesara_graph.sig_slope.set_value(20)
 
 # %% 
 th_f()
@@ -154,25 +154,25 @@ th_f()
 
 # %% 
 i = geo_model.interpolator.get_python_input_block()
-theano.config.compute_test_value = 'ignore'
-geo_model_T_grav = theano.OpFromGraph(geo_model.interpolator.theano_graph.input_parameters_loop,
-                                [geo_model.interpolator.theano_graph.theano_output()[12]],
+aesara.config.compute_test_value = 'ignore'
+geo_model_T_grav = aesara.OpFromGraph(geo_model.interpolator.aesara_graph.input_parameters_loop,
+                                [geo_model.interpolator.aesara_graph.aesara_output()[12]],
                                  inline=False,
                                  on_unused_input='ignore',
                                  name='forw_grav')
 
 # %% 
-geo_model_T_thick = theano.OpFromGraph(geo_model.interpolator.theano_graph.input_parameters_loop,
-                                [geo_model.interpolator.theano_graph.compute_series()[0][1][0:250000]], inline=True,
+geo_model_T_thick = aesara.OpFromGraph(geo_model.interpolator.aesara_graph.input_parameters_loop,
+                                [geo_model.interpolator.aesara_graph.compute_series()[0][1][0:250000]], inline=True,
                                  on_unused_input='ignore',
                                  name='geo_model')
 
 # %% 
-# We convert a python variable to theano.shared
+# We convert a python variable to aesara.shared
 input_sh = []
 i = geo_model.interpolator.get_python_input_block()
 for ii in i:
-    input_sh.append(theano.shared(ii))
+    input_sh.append(aesara.shared(ii))
 
 # We get the rescaling parameters:
 rf = geo_model.rescaling.df.loc['values', 'rescaling factor'].astype('float32')
@@ -180,7 +180,7 @@ centers = geo_model.rescaling.df.loc['values', 'centers'].astype('float32')
 
 # We create pandas groups by id to be able to modify several points at the same time:
 g = geo_model.surface_points.df.groupby('id')
-l = theano.shared(np.array([], dtype='float64'))
+l = aesara.shared(np.array([], dtype='float64'))
 
 # %% 
 g_obs_p = 1e3 * np.array([-0.3548658 , -0.35558686, -0.3563156 , -0.35558686, -0.3548658 ,
@@ -203,7 +203,7 @@ i
 input_sh
 
 # %% 
-## theano.config.compute_test_value = 'ignore'
+## aesara.config.compute_test_value = 'ignore'
 
 with pm.Model() as model:
     

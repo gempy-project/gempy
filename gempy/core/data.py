@@ -869,7 +869,7 @@ class Surfaces(object):
 class Structure(object):
     """
     The structure_data class analyses the different lengths of subset in the interface and orientations categories_df
-    to pass them to the theano function.
+    to pass them to the aesara function.
 
     Attributes:
         surface_points (:class:`SurfacePoints`): [s0]
@@ -1059,14 +1059,14 @@ class Options(object):
     def __init__(self):
         df_ = pn.DataFrame(np.array(['float32', 'geology', 'fast_compile', 'cpu', None]).reshape(1, -1),
                            index=['values'],
-                           columns=['dtype', 'output', 'theano_optimizer', 'device', 'verbosity'])
+                           columns=['dtype', 'output', 'aesara_optimizer', 'device', 'verbosity'])
 
         self.df = df_.astype({'dtype': 'category', 'output': 'category',
-                              'theano_optimizer': 'category', 'device': 'category',
+                              'aesara_optimizer': 'category', 'device': 'category',
                               'verbosity': object})
 
         self.df['dtype'].cat.set_categories(['float32', 'float64'], inplace=True)
-        self.df['theano_optimizer'].cat.set_categories(['fast_run', 'fast_compile'], inplace=True)
+        self.df['aesara_optimizer'].cat.set_categories(['fast_run', 'fast_compile'], inplace=True)
         self.df['device'].cat.set_categories(['cpu', 'cuda'], inplace=True)
 
         self.default_options()
@@ -1098,15 +1098,15 @@ class Options(object):
         Returns:
             bool: True
         """
-        import theano
-        self.df.loc['values', 'device'] = theano.config.device
+        import aesara
+        self.df.loc['values', 'device'] = aesara.config.device
 
         if self.df.loc['values', 'device'] == 'cpu':
             self.df.loc['values', 'dtype'] = 'float64'
         else:
             self.df.loc['values', 'dtype'] = 'float32'
 
-        self.df.loc['values', 'theano_optimizer'] = 'fast_compile'
+        self.df.loc['values', 'aesara_optimizer'] = 'fast_compile'
         return True
 
 

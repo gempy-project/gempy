@@ -40,7 +40,7 @@ install:
   # Installs from anaconda
   - conda install -c anaconda libffi
 
-  - conda install theano
+  - conda install aesara
 
   # Installs from pip
   - pip install welly pymc3

@@ -1,4 +1,4 @@
-# Heavily intspired by docker theano
+# Heavily intspired by docker aesara
 # Heavily Inspired from https://github.com/jupyter/docker-stacks/tree/master/minimal-notebook
 FROM nvidia/cuda:9.0-cudnn7-devel
 
@@ -82,9 +82,8 @@ RUN conda install --quiet --yes \
     mkl-service \
     && conda clean -tipsy
 
-# Install Theano, pygpu
-RUN conda install -c conda-forge pygpu
-RUN conda install theano gdal
+# Install aesara
+RUN conda install aesara gdal -c conda-forge 
 
 ENV MKL_THREADING_LAYER GNU
 
@@ -103,7 +102,7 @@ WORKDIR /home/$NB_USER/work/gempy
 RUN echo '2014122501' >/dev/null && git pull
 # This is necessary to get rid off the scan.c file missing
 
-RUN pip install --upgrade --force-reinstall Theano>=1.0.4
+RUN pip install --upgrade --force-reinstall aesara>=1.0.4
 RUN pip install -e .
 RUN pip install -r optional-requirements.txt
 
@@ -134,7 +133,7 @@ RUN sudo apt update && sudo apt -y install python-qt4 libgl1-mesa-glx
 #    apt-get clean && \
 #    rm -rf /var/lib/apt/lists/*
 #
-#COPY theanorc /home/$NB_USER/.theanorc
+#COPY aesararc /home/$NB_USER/.aesararc
 #
 ## Make sure user jovyan owns files in HOME
 #RUN chown -R $NB_USER:users /home/$NB_USER

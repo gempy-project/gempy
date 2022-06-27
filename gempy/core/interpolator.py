@@ -6,7 +6,7 @@ from gempy.utils.meta import _setdoc_pro, _setdoc
 import gempy.utils.docstring as ds
 
 import numpy as np
-import theano
+import aesara
 
 
 @_setdoc_pro(
@@ -14,9 +14,9 @@ import theano
      Faults.__doc__, AdditionalData.__doc__])
 class Interpolator(object):
     """Class that act as:
-     1) linker between the data objects and the theano graph
-     2) container of theano graphs + shared variables
-     3) container of theano function
+     1) linker between the data objects and the aesara graph
+     2) container of aesara graphs + shared variables
+     3) container of aesara function
 
     Args:
         surface_points (SurfacePoints): [s0]
@@ -27,7 +27,7 @@ class Interpolator(object):
         faults (Faults): [s5]
         additional_data (AdditionalData): [s6]
         kwargs:
-            - compile_theano: if true, the function is compile at the creation of the class
+            - compile_aesara: if true, the function is compile at the creation of the class
 
     Attributes:
         surface_points (SurfacePoints)
@@ -37,8 +37,8 @@ class Interpolator(object):
         faults (Faults)
         additional_data (AdditionalData)
         dtype (['float32', 'float64']): float precision
-        theano_graph: theano graph object with the properties from AdditionalData -> Options
-        theano function: python function to call the theano code
+        aesara_graph: aesara graph object with the properties from AdditionalData -> Options
+        aesara function: python function to call the aesara code
 
     """
 
@@ -57,8 +57,8 @@ class Interpolator(object):
         self.faults = faults
 
         self.dtype = additional_data.options.df.loc['values', 'dtype']
-        self.theano_graph = self.create_theano_graph(additional_data, inplace=False)
-        self.theano_function = None
+        self.aesara_graph = self.create_aesara_graph(additional_data, inplace=False)
+        self.aesara_function = None
 
         self._compute_len_series()
 
@@ -89,8 +89,8 @@ class Interpolator(object):
 
         self.len_series_w = self.len_series_i + self.len_series_o * 3 + self.len_series_u + self.len_series_f
 
-    @_setdoc_pro([AdditionalData.__doc__, ds.inplace, ds.theano_graph_pro])
-    def create_theano_graph(self, additional_data: "AdditionalData" = None, inplace=True,
+    @_setdoc_pro([AdditionalData.__doc__, ds.inplace, ds.aesara_graph_pro])
+    def create_aesara_graph(self, additional_data: "AdditionalData" = None, inplace=True,
                             output=None, **kwargs):
         """
         Create the graph accordingly to the options in the AdditionalData object
@@ -100,12 +100,12 @@ class Interpolator(object):
             inplace (bool): [s1]
 
         Returns:
-            TheanoGraphPro: [s2]
+            aesaraGraphPro: [s2]
         """
         if output is None:
             output = ['geology']
 
-        import gempy.core.theano_modules.theano_graph_pro as tg
+        import gempy.core.aesara_modules.aesara_graph_pro as tg
         import importlib
         importlib.reload(tg)
 
@@ -114,33 +114,33 @@ class Interpolator(object):
 
         self.dtype = additional_data.options.df.loc['values', 'dtype']
 
-        graph = tg.TheanoGraphPro(
-            optimizer=additional_data.options.df.loc['values', 'theano_optimizer'],
+        graph = tg.aesaraGraphPro(
+            optimizer=additional_data.options.df.loc['values', 'aesara_optimizer'],
             verbose=additional_data.options.df.loc['values', 'verbosity'],
             output=output,
             **kwargs)
         if inplace is True:
-            self.theano_graph = graph
+            self.aesara_graph = graph
         else:
             return graph
 
-    @_setdoc_pro([ds.theano_graph_pro])
-    def set_theano_graph(self, th_graph):
+    @_setdoc_pro([ds.aesara_graph_pro])
+    def set_aesara_graph(self, th_graph):
         """
-        Attach an already create theano graph.
+        Attach an already create aesara graph.
 
         Args:
-            th_graph (TheanoGraphPro): [s0]
+            th_graph (aesaraGraphPro): [s0]
 
         Returns:
             True
         """
-        self.theano_graph = th_graph
+        self.aesara_graph = th_graph
         return True
 
-    def set_theano_shared_kriging(self):
+    def set_aesara_shared_kriging(self):
         """
-        Set to the theano_graph attribute the shared variables of kriging values from the linked
+        Set to the aesara_graph attribute the shared variables of kriging values from the linked
          :class:`AdditionalData`.
 
         Returns:
@@ -166,7 +166,7 @@ class Interpolator(object):
         #     raise AttributeError('Range must be either int or Iterable')
 
         # TODO add rescaled range and co into the rescaling data df?
-        self.theano_graph.a_T.set_value(np.cast[self.dtype](range_list))
+        self.aesara_graph.a_T.set_value(np.cast[self.dtype](range_list))
 
         # Covariance at 0
 
@@ -189,35 +189,35 @@ class Interpolator(object):
         # else:
         #     raise AttributeError('Covariance at 0 must be either int or Iterable')
 
-        self.theano_graph.c_o_T.set_value(
+        self.aesara_graph.c_o_T.set_value(
             np.cast[self.dtype](cov_list)
         )
 
         # universal grades
-        self.theano_graph.n_universal_eq_T.set_value(
+        self.aesara_graph.n_universal_eq_T.set_value(
             list(self.additional_data.kriging_data.df.loc['values', 'drift equations'].astype(
                 'int32')[self.non_zero]))
 
-        self.set_theano_shared_nuggets()
+        self.set_aesara_shared_nuggets()
 
-    def set_theano_shared_nuggets(self):
+    def set_aesara_shared_nuggets(self):
         # nugget effect
         # len_orientations = self.additional_data.structure_data.df.loc['values', 'len series orientations']
         # len_orientations_len = np.sum(len_orientations)
 
-        self.theano_graph.nugget_effect_grad_T.set_value(
+        self.aesara_graph.nugget_effect_grad_T.set_value(
             np.cast[self.dtype](np.tile(
                 self.orientations.df['smooth'], 3)))
 
         # len_rest_form = (self.additional_data.structure_data.df.loc['values', 'len surfaces surface_points'])
         # len_rest_len = np.sum(len_rest_form)
-        self.theano_graph.nugget_effect_scalar_T.set_value(
+        self.aesara_graph.nugget_effect_scalar_T.set_value(
             np.cast[self.dtype](self.surface_points.df['smooth']))
         return True
 
-    def set_theano_shared_structure_surfaces(self):
+    def set_aesara_shared_structure_surfaces(self):
         """
-        Set to the theano_graph attribute the shared variables of structure from the linked
+        Set to the aesara_graph attribute the shared variables of structure from the linked
          :class:`AdditionalData`.
 
         Returns:
@@ -225,7 +225,7 @@ class Interpolator(object):
         """
         len_rest_form = (self.additional_data.structure_data.df.loc[
                              'values', 'len surfaces surface_points'] - 1)
-        self.theano_graph.number_of_points_per_surface_T.set_value(len_rest_form.astype('int32'))
+        self.aesara_graph.number_of_points_per_surface_T.set_value(len_rest_form.astype('int32'))
 
 
 class InterpolatorWeights(Interpolator):
@@ -249,7 +249,7 @@ class InterpolatorWeights(Interpolator):
              Returns:
                  (list)
              """
-        # orientations, this ones I tile them inside theano. PYTHON VAR
+        # orientations, this ones I tile them inside aesara. PYTHON VAR
         dips_position = self.orientations.df[['X_c', 'Y_c', 'Z_c']].values
         dip_angles = self.orientations.df["dip"].values
         azimuth = self.orientations.df["azimuth"].values
@@ -268,24 +268,24 @@ class InterpolatorWeights(Interpolator):
 
     def compile_th_fn(self, inplace=False, debug=False):
 
-        self.set_theano_shared_kriging()
-        self.set_theano_shared_structure_surfaces()
+        self.set_aesara_shared_kriging()
+        self.set_aesara_shared_structure_surfaces()
         # This are the shared parameters and the compilation of the function. This will be hidden as well at some point
-        input_data_T = self.theano_graph.input_parameters_kriging
-        print('Compiling theano function...')
+        input_data_T = self.aesara_graph.input_parameters_kriging
+        print('Compiling aesara function...')
 
-        th_fn = theano.function(input_data_T,
-                                self.theano_graph.compute_weights(),
+        th_fn = aesara.function(input_data_T,
+                                self.aesara_graph.compute_weights(),
                                 # mode=NanGuardMode(nan_is_error=True),
                                 on_unused_input='warn',
                                 allow_input_downcast=False,
                                 profile=False)
         if inplace is True:
-            self.theano_function = th_fn
+            self.aesara_function = th_fn
 
         if debug is True:
-            print('Level of Optimization: ', theano.config.optimizer)
-            print('Device: ', theano.config.device)
+            print('Level of Optimization: ', aesara.config.optimizer)
+            print('Device: ', aesara.config.device)
             print('Precision: ', self.dtype)
             print('Number of faults: ',
                   self.additional_data.structure_data.df.loc['values', 'number faults'])
@@ -314,7 +314,7 @@ class InterpolatorScalar(Interpolator):
              Returns:
                  (list)
              """
-        # orientations, this ones I tile them inside theano. PYTHON VAR
+        # orientations, this ones I tile them inside aesara. PYTHON VAR
         dips_position = self.orientations.df[['X_c', 'Y_c', 'Z_c']].values
         dip_angles = self.orientations.df["dip"].values
         azimuth = self.orientations.df["azimuth"].values
@@ -345,36 +345,36 @@ class InterpolatorScalar(Interpolator):
         Returns:
 
         """
-        self.set_theano_shared_kriging()
-        self.set_theano_shared_structure_surfaces()
+        self.set_aesara_shared_kriging()
+        self.set_aesara_shared_structure_surfaces()
         # This are the shared parameters and the compilation of the function. This will be hidden as well at some point
-        input_data_T = self.theano_graph.input_parameters_kriging_export
-        print('Compiling theano function...')
+        input_data_T = self.aesara_graph.input_parameters_kriging_export
+        print('Compiling aesara function...')
 
         if weights is None:
-            weights = self.theano_graph.compute_weights()
+            weights = self.aesara_graph.compute_weights()
         else:
-            weights = theano.shared(weights)
+            weights = aesara.shared(weights)
 
         if grid is None:
-            grid = self.theano_graph.grid_val_T
+            grid = self.aesara_graph.grid_val_T
         else:
-            grid = theano.shared(grid)
+            grid = aesara.shared(grid)
 
-        th_fn = theano.function(input_data_T,
-                                self.theano_graph.compute_scalar_field(weights, grid),
+        th_fn = aesara.function(input_data_T,
+                                self.aesara_graph.compute_scalar_field(weights, grid),
                                 # mode=NanGuardMode(nan_is_error=True),
                                 on_unused_input='ignore',
                                 allow_input_downcast=False,
                                 profile=False)
 
         if inplace is True:
-            self.theano_function = th_fn
+            self.aesara_function = th_fn
 
         if debug is True:
-            print('Level of Optimization: ', theano.config.optimizer)
-            print('Device: ', theano.config.device)
-            print('Precision: ', theano.config.floatX)
+            print('Level of Optimization: ', aesara.config.optimizer)
+            print('Device: ', aesara.config.device)
+            print('Precision: ', aesara.config.floatX)
             print('Number of faults: ',
                   self.additional_data.structure_data.df.loc['values', 'number faults'])
         print('Compilation Done!')
@@ -390,8 +390,8 @@ class InterpolatorBlock(Interpolator):
         super(InterpolatorBlock, self).__init__(surface_points, orientations, grid, surfaces,
                                                 series,
                                                 faults, additional_data, **kwargs)
-        self.theano_function_formation = None
-        self.theano_function_faults = None
+        self.aesara_function_formation = None
+        self.aesara_function_faults = None
 
     def get_python_input_block(self, fault_drift=None):
         """
@@ -404,7 +404,7 @@ class InterpolatorBlock(Interpolator):
              Returns:
                  (list)
              """
-        # orientations, this ones I tile them inside theano. PYTHON VAR
+        # orientations, this ones I tile them inside aesara. PYTHON VAR
         dips_position = self.orientations.df[['X_c', 'Y_c', 'Z_c']].values
         dip_angles = self.orientations.df["dip"].values
         azimuth = self.orientations.df["azimuth"].values
@@ -437,36 +437,36 @@ class InterpolatorBlock(Interpolator):
         Returns:
 
         """
-        self.set_theano_shared_kriging()
-        self.set_theano_shared_structure_surfaces()
+        self.set_aesara_shared_kriging()
+        self.set_aesara_shared_structure_surfaces()
         # This are the shared parameters and the compilation of the function. This will be hidden as well at some point
-        input_data_T = self.theano_graph.input_parameters_block
-        print('Compiling theano function...')
+        input_data_T = self.aesara_graph.input_parameters_block
+        print('Compiling aesara function...')
 
         if weights is None:
-            weights = self.theano_graph.compute_weights()
+            weights = self.aesara_graph.compute_weights()
         else:
-            weights = theano.shared(weights)
+            weights = aesara.shared(weights)
 
         if grid is None:
-            grid = self.theano_graph.grid_val_T
+            grid = self.aesara_graph.grid_val_T
         else:
-            grid = theano.shared(grid)
+            grid = aesara.shared(grid)
 
         if values_properties is None:
-            values_properties = self.theano_graph.values_properties_op
+            values_properties = self.aesara_graph.values_properties_op
         else:
-            values_properties = theano.shared(values_properties)
+            values_properties = aesara.shared(values_properties)
 
         if Z_x is None:
-            Z_x = self.theano_graph.compute_scalar_field(weights, grid)
+            Z_x = self.aesara_graph.compute_scalar_field(weights, grid)
         else:
-            Z_x = theano.shared(Z_x)
+            Z_x = aesara.shared(Z_x)
 
-        th_fn = theano.function(input_data_T,
-                                self.theano_graph.compute_formation_block(
+        th_fn = aesara.function(input_data_T,
+                                self.aesara_graph.compute_formation_block(
                                     Z_x,
-                                    self.theano_graph.get_scalar_field_at_surface_points(Z_x),
+                                    self.aesara_graph.get_scalar_field_at_surface_points(Z_x),
                                     values_properties
                                 ),
                                 on_unused_input='ignore',
@@ -474,11 +474,11 @@ class InterpolatorBlock(Interpolator):
                                 profile=False)
 
         if inplace is True:
-            self.theano_function_formation = th_fn
+            self.aesara_function_formation = th_fn
 
         if debug is True:
-            print('Level of Optimization: ', theano.config.optimizer)
-            print('Device: ', theano.config.device)
+            print('Level of Optimization: ', aesara.config.optimizer)
+            print('Device: ', aesara.config.device)
             print('Precision: ', self.dtype)
             print('Number of faults: ',
                   self.additional_data.structure_data.df.loc['values', 'number faults'])
@@ -499,37 +499,37 @@ class InterpolatorBlock(Interpolator):
         Returns:
 
         """
-        self.set_theano_shared_kriging()
-        self.set_theano_shared_structure_surfaces()
+        self.set_aesara_shared_kriging()
+        self.set_aesara_shared_structure_surfaces()
 
         # This are the shared parameters and the compilation of the function. This will be hidden as well at some point
-        input_data_T = self.theano_graph.input_parameters_block
-        print('Compiling theano function...')
+        input_data_T = self.aesara_graph.input_parameters_block
+        print('Compiling aesara function...')
 
         if weights is None:
-            weights = self.theano_graph.compute_weights()
+            weights = self.aesara_graph.compute_weights()
         else:
-            weights = theano.shared(weights)
+            weights = aesara.shared(weights)
 
         if grid is None:
-            grid = self.theano_graph.grid_val_T
+            grid = self.aesara_graph.grid_val_T
         else:
-            grid = theano.shared(grid)
+            grid = aesara.shared(grid)
 
         if values_properties is None:
-            values_properties = self.theano_graph.values_properties_op
+            values_properties = self.aesara_graph.values_properties_op
         else:
-            values_properties = theano.shared(values_properties)
+            values_properties = aesara.shared(values_properties)
 
         if Z_x is None:
-            Z_x = self.theano_graph.compute_scalar_field(weights, grid)
+            Z_x = self.aesara_graph.compute_scalar_field(weights, grid)
         else:
-            Z_x = theano.shared(Z_x)
+            Z_x = aesara.shared(Z_x)
 
-        th_fn = theano.function(input_data_T,
-                                self.theano_graph.compute_fault_block(
+        th_fn = aesara.function(input_data_T,
+                                self.aesara_graph.compute_fault_block(
                                     Z_x,
-                                    self.theano_graph.get_scalar_field_at_surface_points(Z_x),
+                                    self.aesara_graph.get_scalar_field_at_surface_points(Z_x),
                                     values_properties,
                                     0,
                                     grid
@@ -540,11 +540,11 @@ class InterpolatorBlock(Interpolator):
                                 profile=False)
 
         if inplace is True:
-            self.theano_function_faults = th_fn
+            self.aesara_function_faults = th_fn
 
         if debug is True:
-            print('Level of Optimization: ', theano.config.optimizer)
-            print('Device: ', theano.config.device)
+            print('Level of Optimization: ', aesara.config.optimizer)
+            print('Device: ', aesara.config.device)
             print('Precision: ', self.dtype)
             print('Number of faults: ',
                   self.additional_data.structure_data.df.loc['values', 'number faults'])
@@ -553,8 +553,8 @@ class InterpolatorBlock(Interpolator):
 
 
 class InterpolatorGravity:
-    def set_theano_shared_tz_kernel(self, tz=None):
-        """Set the theano component tz to each voxel"""
+    def set_aesara_shared_tz_kernel(self, tz=None):
+        """Set the aesara component tz to each voxel"""
 
         if tz is None or tz == 'auto':
             try:
@@ -562,7 +562,7 @@ class InterpolatorGravity:
             except AttributeError:
                 raise AttributeError('You need to calculate or pass tz first.')
 
-        self.theano_graph.tz.set_value(tz.astype(self.dtype))
+        self.aesara_graph.tz.set_value(tz.astype(self.dtype))
 
     def calculate_tz(self, centered_grid):
         from gempy.assets.geophysics import GravityPreprocessing
@@ -570,21 +570,21 @@ class InterpolatorGravity:
 
         return g.set_tz_kernel()
 
-    def set_theano_shared_pos_density(self, pos_density):
-        self.theano_graph.pos_density.set_value(pos_density)
+    def set_aesara_shared_pos_density(self, pos_density):
+        self.aesara_graph.pos_density.set_value(pos_density)
 
-    def set_theano_shared_l0_l1(self):
-        self.theano_graph.lg0.set_value(self.grid.get_grid_args('centered')[0])
-        self.theano_graph.lg1.set_value(self.grid.get_grid_args('centered')[1])
+    def set_aesara_shared_l0_l1(self):
+        self.aesara_graph.lg0.set_value(self.grid.get_grid_args('centered')[0])
+        self.aesara_graph.lg1.set_value(self.grid.get_grid_args('centered')[1])
 
-    def set_theano_shared_gravity(self, tz='auto', pos_density=1):
-        self.set_theano_shared_tz_kernel(tz)
-        self.set_theano_shared_pos_density(pos_density)
-        self.set_theano_shared_l0_l1()
+    def set_aesara_shared_gravity(self, tz='auto', pos_density=1):
+        self.set_aesara_shared_tz_kernel(tz)
+        self.set_aesara_shared_pos_density(pos_density)
+        self.set_aesara_shared_l0_l1()
 
 
 class InterpolatorMagnetics:
-    def set_theano_shared_Vs_kernel(self, V=None):
+    def set_aesara_shared_Vs_kernel(self, V=None):
 
         if V is None or V == 'auto':
             try:
@@ -592,7 +592,7 @@ class InterpolatorMagnetics:
             except AttributeError:
                 raise AttributeError('You need to calculate or pass V first.')
 
-        self.theano_graph.V.set_value(V.astype(self.dtype))
+        self.aesara_graph.V.set_value(V.astype(self.dtype))
 
     def calculate_V(self, centered_grid):
         from gempy.assets.geophysics import MagneticsPreprocessing
@@ -600,10 +600,10 @@ class InterpolatorMagnetics:
 
         return Vmodel
 
-    def set_theano_shared_pos_magnetics(self, pos_magnetics):
-        self.theano_graph.pos_magnetics.set_value(pos_magnetics)
+    def set_aesara_shared_pos_magnetics(self, pos_magnetics):
+        self.aesara_graph.pos_magnetics.set_value(pos_magnetics)
 
-    def set_theano_shared_magnetic_cts(self, incl, decl, B_ext=52819.8506939139e-9):
+    def set_aesara_shared_magnetic_cts(self, incl, decl, B_ext=52819.8506939139e-9):
         """
         Args:
             B_ext : External magnetic field in [T], in magnetic surveys this is the geomagnetic field - varies temporaly
@@ -611,27 +611,27 @@ class InterpolatorMagnetics:
             decl  : Angle between magnetic and true North in degrees - varies spatially
         """
 
-        self.theano_graph.incl.set_value(incl)
-        self.theano_graph.decl.set_value(decl)
-        self.theano_graph.B_ext.set_value(B_ext)
+        self.aesara_graph.incl.set_value(incl)
+        self.aesara_graph.decl.set_value(decl)
+        self.aesara_graph.B_ext.set_value(B_ext)
 
-    def set_theano_shared_l0_l1(self):
-        self.theano_graph.lg0.set_value(self.grid.get_grid_args('centered')[0])
-        self.theano_graph.lg1.set_value(self.grid.get_grid_args('centered')[1])
+    def set_aesara_shared_l0_l1(self):
+        self.aesara_graph.lg0.set_value(self.grid.get_grid_args('centered')[0])
+        self.aesara_graph.lg1.set_value(self.grid.get_grid_args('centered')[1])
 
-    def set_theano_shared_magnetics(self, V='auto', pos_magnetics=1,
+    def set_aesara_shared_magnetics(self, V='auto', pos_magnetics=1,
                                     incl=None, decl=None, B_ext=52819.8506939139e-9):
-        self.set_theano_shared_Vs_kernel(V)
-        self.set_theano_shared_pos_magnetics(pos_magnetics)
-        self.set_theano_shared_magnetic_cts(incl, decl, B_ext)
-        self.set_theano_shared_l0_l1()
+        self.set_aesara_shared_Vs_kernel(V)
+        self.set_aesara_shared_pos_magnetics(pos_magnetics)
+        self.set_aesara_shared_magnetic_cts(incl, decl, B_ext)
+        self.set_aesara_shared_l0_l1()
 
 
 @_setdoc_pro(ds.ctrl)
 @_setdoc([Interpolator.__doc__])
 class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics):
     """
-    Child class of :class:`Interpolator` which set the shared variables and compiles the theano
+    Child class of :class:`Interpolator` which set the shared variables and compiles the aesara
     graph to compute the geological model, i.e. lithologies.
 
     Attributes:
@@ -681,19 +681,19 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
 
         if reset_weights is True:
             self.compute_weights_ctrl = np.ones(1000, dtype=bool)
-            self.theano_graph.weights_vector.set_value(
+            self.aesara_graph.weights_vector.set_value(
                 np.zeros((self.len_series_w.sum()), dtype=self.dtype))
 
         if reset_scalar is True:
             self.compute_scalar_ctrl = np.ones(1000, dtype=bool)
-            self.theano_graph.scalar_fields_matrix.set_value(
+            self.aesara_graph.scalar_fields_matrix.set_value(
                 np.zeros((n_series, x_to_interp_shape), dtype=self.dtype))
 
         if reset_block is True:
             self.compute_block_ctrl = np.ones(1000, dtype=bool)
-            self.theano_graph.mask_matrix.set_value(
+            self.aesara_graph.mask_matrix.set_value(
                 np.zeros((n_series, x_to_interp_shape), dtype='bool'))
-            self.theano_graph.block_matrix.set_value(
+            self.aesara_graph.block_matrix.set_value(
                 np.zeros((n_series,
                           self.surfaces.df.iloc[:, self.surfaces._n_properties:].values.shape[1],
                           x_to_interp_shape), dtype=self.dtype))
@@ -715,7 +715,7 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
     @_setdoc_pro(reset_flow_control_initial_results.__doc__)
     def set_all_shared_parameters(self, reset_ctrl=False):
         """
-        Set all theano shared parameters required for the computation of lithology
+        Set all aesara shared parameters required for the computation of lithology
 
         Args:
             reset_ctrl (bool): If true, [s0]
@@ -723,31 +723,31 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
         Returns:
             True
         """
-        self.set_theano_shared_loop()
-        self.set_theano_shared_relations()
-        self.set_theano_shared_kriging()
-        self.set_theano_shared_structure_surfaces()
-        # self.set_theano_shared_topology()
+        self.set_aesara_shared_loop()
+        self.set_aesara_shared_relations()
+        self.set_aesara_shared_kriging()
+        self.set_aesara_shared_structure_surfaces()
+        # self.set_aesara_shared_topology()
         if reset_ctrl is True:
             self.reset_flow_control_initial_results()
 
         return True
 
-    def set_theano_shared_topology(self):
+    def set_aesara_shared_topology(self):
 
         max_lith = self.surfaces.df.groupby('isFault')['id'].count()[False]
         if type(max_lith) != int or type(max_lith) != np.int64 or type(max_lith) != np.int32:
             max_lith = 0
 
-        self.theano_graph.max_lith.set_value(max_lith)
-        self.theano_graph.regular_grid_res.set_value(self.grid.regular_grid.resolution)
-        self.theano_graph.dxdydz.set_value(
+        self.aesara_graph.max_lith.set_value(max_lith)
+        self.aesara_graph.regular_grid_res.set_value(self.grid.regular_grid.resolution)
+        self.aesara_graph.dxdydz.set_value(
             np.array(self.grid.regular_grid.get_dx_dy_dz(), dtype=self.dtype))
 
     @_setdoc_pro(reset_flow_control_initial_results.__doc__)
-    def set_theano_shared_structure(self, reset_ctrl=False):
+    def set_aesara_shared_structure(self, reset_ctrl=False):
         """
-        Set all theano shared variable dependent on :class:`Structure`.
+        Set all aesara shared variable dependent on :class:`Structure`.
 
         Args:
             reset_ctrl (bool): If true, [s0]
@@ -756,11 +756,11 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
             True
 
         """
-        self.set_theano_shared_loop()
-        self.set_theano_shared_relations()
-        self.set_theano_shared_structure_surfaces()
+        self.set_aesara_shared_loop()
+        self.set_aesara_shared_relations()
+        self.set_aesara_shared_structure_surfaces()
         # universal grades
-        # self.theano_graph.n_universal_eq_T.set_value(
+        # self.aesara_graph.n_universal_eq_T.set_value(
         #     list(self.additional_data.kriging_data.df.loc['values', 'drift equations'].astype('int32')))
 
         if reset_ctrl is True:
@@ -836,15 +836,15 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
 
         self.len_series_w = self.len_series_i + self.len_series_o * 3 + self.len_series_u + self.len_series_f
 
-    def set_theano_shared_loop(self):
-        """Set the theano shared variables that are looped for each series."""
+    def set_aesara_shared_loop(self):
+        """Set the aesara shared variables that are looped for each series."""
         self._compute_len_series()
 
-        self.theano_graph.len_series_i.set_value(
+        self.aesara_graph.len_series_i.set_value(
             np.insert(self.len_series_i.cumsum(), 0, 0).astype('int32'))
-        self.theano_graph.len_series_o.set_value(
+        self.aesara_graph.len_series_o.set_value(
             np.insert(self.len_series_o.cumsum(), 0, 0).astype('int32'))
-        self.theano_graph.len_series_w.set_value(
+        self.aesara_graph.len_series_w.set_value(
             np.insert(self.len_series_w.cumsum(), 0, 0).astype('int32'))
 
         # Number of surfaces per series. The function is not pretty but the result is quite clear
@@ -852,35 +852,35 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
             self.additional_data.structure_data.df.loc['values', 'number surfaces per series'][
                 self.non_zero].cumsum(), 0, 0). \
             astype('int32')
-        self.theano_graph.n_surfaces_per_series.set_value(n_surfaces_per_serie)
-        self.theano_graph.n_universal_eq_T.set_value(
+        self.aesara_graph.n_surfaces_per_series.set_value(n_surfaces_per_serie)
+        self.aesara_graph.n_universal_eq_T.set_value(
             list(self.additional_data.kriging_data.df.loc['values', 'drift equations'].astype(
                 'int32')[self.non_zero]))
 
-    @_setdoc_pro(set_theano_shared_loop.__doc__)
-    def set_theano_shared_weights(self):
-        """Set the theano shared weights and [s0]"""
-        self.set_theano_shared_loop()
-        self.theano_graph.weights_vector.set_value(
+    @_setdoc_pro(set_aesara_shared_loop.__doc__)
+    def set_aesara_shared_weights(self):
+        """Set the aesara shared weights and [s0]"""
+        self.set_aesara_shared_loop()
+        self.aesara_graph.weights_vector.set_value(
             np.zeros((self.len_series_w.sum()), dtype=self.dtype))
 
-    def set_theano_shared_fault_relation(self):
+    def set_aesara_shared_fault_relation(self):
         self.remove_series_without_data()
-        """Set the theano shared variable with the fault relation"""
-        self.theano_graph.fault_relation.set_value(
+        """Set the aesara shared variable with the fault relation"""
+        self.aesara_graph.fault_relation.set_value(
             self.faults.faults_relations_df.values[self.non_zero][:, self.non_zero])
 
-    def set_theano_shared_is_fault(self):
-        """Set theano shared variable which controls if a series is fault or not"""
+    def set_aesara_shared_is_fault(self):
+        """Set aesara shared variable which controls if a series is fault or not"""
         is_fault_ = self.faults.df['isFault'].values[self.non_zero]
-        self.theano_graph.is_fault.set_value(is_fault_)
+        self.aesara_graph.is_fault.set_value(is_fault_)
 
-    def set_theano_shared_is_finite(self):
-        """Set theano shared variable which controls if a fault is finite or not"""
-        self.theano_graph.is_finite_ctrl.set_value(self.faults.df['isFinite'].values.astype(bool))
+    def set_aesara_shared_is_finite(self):
+        """Set aesara shared variable which controls if a fault is finite or not"""
+        self.aesara_graph.is_finite_ctrl.set_value(self.faults.df['isFinite'].values.astype(bool))
 
-    def set_theano_shared_onlap_erode(self):
-        """Set the theano variables which control the masking patterns according to the uncomformity relation"""
+    def set_aesara_shared_onlap_erode(self):
+        """Set the aesara variables which control the masking patterns according to the uncomformity relation"""
         self.remove_series_without_data()
 
         is_erosion = self.series.df['BottomRelation'].values[self.non_zero] == 'Erosion'
@@ -889,29 +889,29 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
         if len(is_erosion) != 0:
             is_erosion[-1] = False
         # this comes from the series df
-        self.theano_graph.is_erosion.set_value(is_erosion)
-        self.theano_graph.is_onlap.set_value(is_onlap)
+        self.aesara_graph.is_erosion.set_value(is_erosion)
+        self.aesara_graph.is_onlap.set_value(is_onlap)
 
-    def set_theano_shared_faults(self):
-        """Set all theano shared variables wich controls the faults behaviour"""
+    def set_aesara_shared_faults(self):
+        """Set all aesara shared variables wich controls the faults behaviour"""
 
-        self.set_theano_shared_fault_relation()
+        self.set_aesara_shared_fault_relation()
         # This comes from the faults df
-        self.set_theano_shared_is_fault()
-        self.set_theano_shared_is_finite()
+        self.set_aesara_shared_is_fault()
+        self.set_aesara_shared_is_finite()
 
-    def set_theano_shared_relations(self):
-        """Set all theano shared variables that control all the series interactions with each other"""
-        self.set_theano_shared_fault_relation()
+    def set_aesara_shared_relations(self):
+        """Set all aesara shared variables that control all the series interactions with each other"""
+        self.set_aesara_shared_fault_relation()
         # This comes from the faults df
-        self.set_theano_shared_is_fault()
-        self.set_theano_shared_is_finite()
-        self.set_theano_shared_onlap_erode()
+        self.set_aesara_shared_is_fault()
+        self.set_aesara_shared_is_finite()
+        self.set_aesara_shared_onlap_erode()
 
     def set_initial_results(self):
         """
-        Initialize all the theano shared variables where we store the final results of the interpolation.
-        This function must be called always after set_theano_shared_loop
+        Initialize all the aesara shared variables where we store the final results of the interpolation.
+        This function must be called always after set_aesara_shared_loop
 
         Returns:
             True
@@ -922,14 +922,14 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
         n_series = self.len_series_i.shape[
             0]  # self.additional_data.structure_data.df.loc['values', 'number series']
 
-        self.theano_graph.weights_vector.set_value(
+        self.aesara_graph.weights_vector.set_value(
             np.zeros((self.len_series_w.sum()), dtype=self.dtype))
-        self.theano_graph.scalar_fields_matrix.set_value(
+        self.aesara_graph.scalar_fields_matrix.set_value(
             np.zeros((n_series, x_to_interp_shape), dtype=self.dtype))
 
-        self.theano_graph.mask_matrix.set_value(
+        self.aesara_graph.mask_matrix.set_value(
             np.zeros((n_series, x_to_interp_shape), dtype='bool'))
-        self.theano_graph.block_matrix.set_value(
+        self.aesara_graph.block_matrix.set_value(
             np.zeros(
                 (n_series, self.surfaces.df.iloc[:, self.surfaces._n_properties:].values.shape[1],
                  x_to_interp_shape), dtype=self.dtype))
@@ -937,7 +937,7 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
 
     def set_initial_results_matrices(self):
         """
-        Initialize all the theano shared variables where we store the final results of the interpolation except the
+        Initialize all the aesara shared variables where we store the final results of the interpolation except the
         kriging weights vector.
 
 
@@ -950,28 +950,28 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
         n_series = self.len_series_i.shape[
             0]  # self.additional_data.structure_data.df.loc['values', 'number series']
 
-        self.theano_graph.scalar_fields_matrix.set_value(
+        self.aesara_graph.scalar_fields_matrix.set_value(
             np.zeros((n_series, x_to_interp_shape), dtype=self.dtype))
 
-        self.theano_graph.mask_matrix.set_value(
+        self.aesara_graph.mask_matrix.set_value(
             np.zeros((n_series, x_to_interp_shape), dtype='bool'))
-        self.theano_graph.block_matrix.set_value(
+        self.aesara_graph.block_matrix.set_value(
             np.zeros(
                 (n_series, self.surfaces.df.iloc[:, self.surfaces._n_properties:].values.shape[1],
                  x_to_interp_shape), dtype=self.dtype))
 
-    def set_theano_shared_grid(self, grid=None):
+    def set_aesara_shared_grid(self, grid=None):
         if grid == 'shared':
             grid_sh = self.grid.values_c
-            self.theano_graph.grid_val_T = theano.shared(grid_sh.astype(self.dtype),
+            self.aesara_graph.grid_val_T = aesara.shared(grid_sh.astype(self.dtype),
                                                          'Constant values to interpolate.')
         elif grid is not None:
-            self.theano_graph.grid_val_T = theano.shared(grid.astype(self.dtype),
+            self.aesara_graph.grid_val_T = aesara.shared(grid.astype(self.dtype),
                                                          'Constant values to interpolate.')
 
     def modify_results_matrices_pro(self):
         """
-        Modify all theano shared matrices to the right size according to the structure data. This method allows
+        Modify all aesara shared matrices to the right size according to the structure data. This method allows
         to change the size of the results without having the recompute all series"""
 
         old_len_i = self._old_len_series
@@ -986,9 +986,9 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
             self.set_initial_results()
             new_len_i = new_len_i[new_len_i != 0]
         else:
-            scalar_fields_matrix = self.theano_graph.scalar_fields_matrix.get_value()
-            mask_matrix = self.theano_graph.mask_matrix.get_value()
-            block_matrix = self.theano_graph.block_matrix.get_value()
+            scalar_fields_matrix = self.aesara_graph.scalar_fields_matrix.get_value()
+            mask_matrix = self.aesara_graph.mask_matrix.get_value()
+            block_matrix = self.aesara_graph.block_matrix.get_value()
 
             len_i_diff = new_len_i - old_len_i
             for e, i in enumerate(len_i_diff):
@@ -997,25 +997,25 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
                 if i == 0:
                     pass
                 elif i > 0:
-                    self.theano_graph.scalar_fields_matrix.set_value(
+                    self.aesara_graph.scalar_fields_matrix.set_value(
                         np.insert(scalar_fields_matrix, [loc], np.zeros(i), axis=1))
-                    self.theano_graph.mask_matrix.set_value(np.insert(
+                    self.aesara_graph.mask_matrix.set_value(np.insert(
                         mask_matrix, [loc], np.zeros(i, dtype=self.dtype), axis=1))
-                    self.theano_graph.block_matrix.set_value(np.insert(
+                    self.aesara_graph.block_matrix.set_value(np.insert(
                         block_matrix, [loc], np.zeros(i, dtype=self.dtype), axis=2))
 
                 else:
-                    self.theano_graph.scalar_fields_matrix.set_value(
+                    self.aesara_graph.scalar_fields_matrix.set_value(
                         np.delete(scalar_fields_matrix, np.arange(loc, loc + i, -1) - 1, axis=1))
-                    self.theano_graph.mask_matrix.set_value(
+                    self.aesara_graph.mask_matrix.set_value(
                         np.delete(mask_matrix, np.arange(loc, loc + i, -1) - 1, axis=1))
-                    self.theano_graph.block_matrix.set_value(
+                    self.aesara_graph.block_matrix.set_value(
                         np.delete(block_matrix, np.arange(loc, loc + i, -1) - 1, axis=2))
 
         self.modify_results_weights()
 
     def modify_results_weights(self):
-        """Modify the theano shared weights vector according to the structure.
+        """Modify the aesara shared weights vector according to the structure.
         """
         old_len_w = self.len_series_w
         self._compute_len_series()
@@ -1023,18 +1023,18 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
         if new_len_w.shape[0] != old_len_w[0]:
             self.set_initial_results()
         else:
-            weights = self.theano_graph.weights_vector.get_value()
+            weights = self.aesara_graph.weights_vector.get_value()
             len_w_diff = new_len_w - old_len_w
             for e, i in enumerate(len_w_diff):
                 #   print(len_w_diff, weights)
                 if i == 0:
                     pass
                 elif i > 0:
-                    self.theano_graph.weights_vector.set_value(
+                    self.aesara_graph.weights_vector.set_value(
                         np.insert(weights, old_len_w[e], np.zeros(i)))
                 else:
                     #      print(np.delete(weights, np.arange(old_len_w[e],  old_len_w[e] + i, -1)-1))
-                    self.theano_graph.weights_vector.set_value(
+                    self.aesara_graph.weights_vector.set_value(
                         np.delete(weights, np.arange(old_len_w[e], old_len_w[e] + i, -1) - 1))
 
     def get_python_input_block(self, append_control=True, fault_drift=None):
@@ -1051,9 +1051,9 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
             fault_drift (Optional[np.array]): matrix with per computed faults to drift the model
 
         Returns:
-            list: list of arrays with all the input parameters to the theano function
+            list: list of arrays with all the input parameters to the aesara function
         """
-        # orientations, this ones I tile them inside theano. PYTHON VAR
+        # orientations, this ones I tile them inside aesara. PYTHON VAR
         dips_position = self.orientations.df[['X_c', 'Y_c', 'Z_c']].values
         dip_angles = self.orientations.df["dip"].values
         azimuth = self.orientations.df["azimuth"].values
@@ -1085,61 +1085,61 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
 
         return idl
 
-    def print_theano_shared(self):
-        """Print many of the theano shared variables"""
+    def print_aesara_shared(self):
+        """Print many of the aesara shared variables"""
 
-        print('len sereies i', self.theano_graph.len_series_i.get_value())
-        print('len sereies o', self.theano_graph.len_series_o.get_value())
-        print('len sereies w', self.theano_graph.len_series_w.get_value())
-        print('n surfaces per series', self.theano_graph.n_surfaces_per_series.get_value())
-        print('n universal eq', self.theano_graph.n_universal_eq_T.get_value())
-        print('is finite', self.theano_graph.is_finite_ctrl.get_value())
-        print('is erosion', self.theano_graph.is_erosion.get_value())
-        print('is onlap', self.theano_graph.is_onlap.get_value())
+        print('len sereies i', self.aesara_graph.len_series_i.get_value())
+        print('len sereies o', self.aesara_graph.len_series_o.get_value())
+        print('len sereies w', self.aesara_graph.len_series_w.get_value())
+        print('n surfaces per series', self.aesara_graph.n_surfaces_per_series.get_value())
+        print('n universal eq', self.aesara_graph.n_universal_eq_T.get_value())
+        print('is finite', self.aesara_graph.is_finite_ctrl.get_value())
+        print('is erosion', self.aesara_graph.is_erosion.get_value())
+        print('is onlap', self.aesara_graph.is_onlap.get_value())
 
     def compile_th_fn_geo(self, inplace=False, debug=True, grid: Union[str, np.ndarray] = None):
         """
-        Compile and create the theano function which can be evaluated to compute the geological models
+        Compile and create the aesara function which can be evaluated to compute the geological models
 
         Args:
 
-            inplace (bool): If true add the attribute theano.function to the object inplace
-            debug (bool): If true print some of the theano flags
+            inplace (bool): If true add the attribute aesara.function to the object inplace
+            debug (bool): If true print some of the aesara flags
             grid: If None, grid will be passed as variable. If shared or np.ndarray the grid will be treated as
              constant (if shared the grid will be taken of grid)
 
         Returns:
-            theano.function: function that computes the whole interpolation
+            aesara.function: function that computes the whole interpolation
         """
 
         self.set_all_shared_parameters(reset_ctrl=False)
         # This are the shared parameters and the compilation of the function. This will be hidden as well at some point
-        input_data_T = self.theano_graph.input_parameters_loop
-        print('Compiling theano function...')
+        input_data_T = self.aesara_graph.input_parameters_loop
+        print('Compiling aesara function...')
         if grid == 'shared' or grid is not None:
-            self.set_theano_shared_grid(grid)
+            self.set_aesara_shared_grid(grid)
 
-        th_fn = theano.function(input_data_T,
-                                self.theano_graph.theano_output(),
+        th_fn = aesara.function(input_data_T,
+                                self.aesara_graph.aesara_output(),
                                 updates=[
-                                    (self.theano_graph.block_matrix, self.theano_graph.new_block),
-                                    (self.theano_graph.weights_vector,
-                                     self.theano_graph.new_weights),
-                                    (self.theano_graph.scalar_fields_matrix,
-                                     self.theano_graph.new_scalar),
-                                    (self.theano_graph.mask_matrix, self.theano_graph.new_mask)
+                                    (self.aesara_graph.block_matrix, self.aesara_graph.new_block),
+                                    (self.aesara_graph.weights_vector,
+                                     self.aesara_graph.new_weights),
+                                    (self.aesara_graph.scalar_fields_matrix,
+                                     self.aesara_graph.new_scalar),
+                                    (self.aesara_graph.mask_matrix, self.aesara_graph.new_mask)
                                 ],
                                 on_unused_input='ignore',
                                 allow_input_downcast=False,
                                 profile=False)
 
         if inplace is True:
-            self.theano_function = th_fn
+            self.aesara_function = th_fn
 
         if debug is True:
-            print('Level of Optimization: ', theano.config.optimizer)
-            print('Device: ', theano.config.device)
-            print('Precision: ', theano.config.floatX)
+            print('Level of Optimization: ', aesara.config.optimizer)
+            print('Device: ', aesara.config.device)
+            print('Precision: ', aesara.config.floatX)
             print('Number of faults: ',
                   self.additional_data.structure_data.df.loc['values', 'number faults'])
         print('Compilation Done!')

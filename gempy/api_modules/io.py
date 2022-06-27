@@ -76,7 +76,7 @@ def load_model(name=None, path=None, recompile=False):
     Args:
         name: name of folder with saved files
         path (str): path to folder directory or the zip file
-        recompile (bool): if true, theano functions will be recompiled
+        recompile (bool): if true, aesara functions will be recompiled
 
     Returns:
         :class:`Project`
@@ -256,12 +256,12 @@ def _load_additional_data(geo_model, name, path):
                                                         index_col=0,
                                                         dtype={'dtype': 'category',
                                                                'output': 'category',
-                                                               'theano_optimizer': 'category',
+                                                               'aesara_optimizer': 'category',
                                                                'device': 'category',
                                                                'verbosity': object})
     geo_model._additional_data.options.df['dtype'].cat.set_categories(
         ['float32', 'float64'], inplace=True)
-    geo_model._additional_data.options.df['theano_optimizer'].cat.set_categories(
+    geo_model._additional_data.options.df['aesara_optimizer'].cat.set_categories(
         ['fast_run', 'fast_compile'],
         inplace=True)
     geo_model._additional_data.options.df['device'].cat.set_categories(
