@@ -11,7 +11,8 @@ setup(
     include_package_data=True,
     install_requires=[
         'pandas==1.3.4',
-        'aesara>=1.0.4',
+        'aesara',
+        'pymc'
         'matplotlib',
         'numpy',
         'pytest',
@@ -22,7 +23,6 @@ setup(
         'pyvistaqt',
         'pyqt5',
         'iPython',
-        'pandas==1.3.4'
     ],
     url='https://github.com/cgre-aachen/gempy',
     license='LGPL v3',
