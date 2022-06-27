@@ -12,7 +12,7 @@ setup(
     install_requires=[
         'pandas==1.3.4',
         'aesara',
-        'pymc'
+        'pymc',
         'matplotlib',
         'numpy',
         'pytest',
