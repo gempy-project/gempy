@@ -43,7 +43,7 @@ def test_load_model_compressed():
 
 
 def test_load_model_compressed_remote():
-    model_file = pooch.retrieve(url="https://github.com/cgre-aachen/gempy_data/raw/master/"
+    model_file = pooch.retrieve(url="https://github.com/cgre-aachen/gempy_data/raw/aesara_data/"
                                     "data/gempy_models/viz_3d.zip",
                                 known_hash=None)
 
@@ -59,7 +59,7 @@ def test_load_model_compressed_remote_fail():
 
 
 def test_load_model_compressed_remote2():
-    model_file = pooch.retrieve(url="https://github.com/cgre-aachen/gempy_data/raw/master/"
+    model_file = pooch.retrieve(url="https://github.com/cgre-aachen/gempy_data/raw/aesara_data/"
                                     "data/gempy_models/Onlap_relations.zip",
                                 known_hash=None)
 

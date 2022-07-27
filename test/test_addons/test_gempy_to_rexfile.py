@@ -35,8 +35,8 @@ class TestGemPyToRexClass:
 
     def test_gempy_to_rex_with_topo(self):
         import pooch
-        model_file = pooch.retrieve(url="https://github.com/cgre-aachen/gempy_data/raw/master/data/gempy_models/combination.zip",
-                                    known_hash=None)
+        model_file = pooch.retrieve(url="https://github.com/cgre-aachen/gempy_data/raw/aesara_data/data/gempy_models/combination.zip",
+                                    known_hash="e2fa667f2ad64d6027f513c4f801557681b0e318ee1e1fcf30fc1c7ed0c60faf")
 
         geo_model = gempy.load_model(name='combination', path=model_file)
         gempy_to_rex = GemPyToRex()
