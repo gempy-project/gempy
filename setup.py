@@ -13,7 +13,7 @@ setup(
         'pandas==1.3.4',
         'Theano>=1.0.4',
         'matplotlib',
-        'numpy==1.20.0',
+        'numpy==1.21.6',
         'pytest',
         'seaborn>=0.9',
         'networkx',
