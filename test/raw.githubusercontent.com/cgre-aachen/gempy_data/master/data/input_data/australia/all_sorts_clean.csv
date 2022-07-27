@@ -1,0 +1,17 @@
+index,group number,index in group,number in group,code,group,uctype,colour
+1,1,1,1,Turee_Creek_Group,Turee_Creek_Group,erode,#E0CABF
+2,2,1,7,Boolgeeda_Iron_Formation,Hamersley_Group,erode,#B5E1FC
+3,2,2,7,Woongarra_Rhyolite,Hamersley_Group,erode,#CAA894
+4,2,3,7,Weeli_Wolli_Formation,Hamersley_Group,erode,#E0CABF
+5,2,4,7,Brockman_Iron_Formation,Hamersley_Group,erode,#84CDFA
+6,2,5,7,Mount_McRae_Shale_and_Mount_Sylvia_Formation,Hamersley_Group,erode,#B6846A
+7,2,6,7,Wittenoom_Formation,Hamersley_Group,erode,#E0CABF
+8,2,7,7,Marra_Mamba_Iron_Formation,Hamersley_Group,erode,#B5E1FC
+9,3,1,7,Jeerinah_Formation,Fortescue_Group,erode,#CDCFA7
+10,3,2,7,Fortescue_Group,Fortescue_Group,erode,#8EE4B4
+11,3,3,7,Bunjinah_Formation,Fortescue_Group,erode,#E6E7D3
+12,3,4,7,Pyradie_Formation,Fortescue_Group,erode,#D5D7B6
+13,3,5,7,Boongal_Formation,Fortescue_Group,erode,#EEEFE2
+14,3,6,7,Hardey_Formation,Fortescue_Group,erode,#F1D8BD
+15,3,7,7,Mount_Roe_Basalt,Fortescue_Group,erode,#C4C798
+16,4,1,1,Rocklea_Inlier_metagranitic_unit,Rocklea_Inlier_metagranitic_unit,erode,#FE6FB8

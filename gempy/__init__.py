@@ -42,7 +42,7 @@ assert pandas.__version__ <= '1.4.0', \
     "GemPy requires pandas version < 1.4.0. The new pandas release is not compatible with GemPy.\n" \
     "We're actively working on this issue for a future release.\n"
 
-__version__ = '2.2.11'
+__version__ = '2.2.12'
 
 if __name__ == '__main__':
     pass

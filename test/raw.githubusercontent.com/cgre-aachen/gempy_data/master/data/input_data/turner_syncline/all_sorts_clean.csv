@@ -1,0 +1,13 @@
+index,group number,index in group,number in group,code,group,uctype
+1,1,1,1,Turee_Creek_Group,Turee_Creek_Group,erode
+2,2,1,7,Boolgeeda_Iron_Formation,Hamersley_Group,erode
+3,2,2,7,Woongarra_Rhyolite,Hamersley_Group,erode
+4,2,3,7,Weeli_Wolli_Formation,Hamersley_Group,erode
+5,2,4,7,Brockman_Iron_Formation,Hamersley_Group,erode
+6,2,5,7,Mount_McRae_Shale_and_Mount_Sylvia_Formation,Hamersley_Group,erode
+7,2,6,7,Wittenoom_Formation,Hamersley_Group,erode
+8,2,7,7,Marra_Mamba_Iron_Formation,Hamersley_Group,erode
+9,3,1,4,Jeerinah_Formation,Fortescue_Group,erode
+10,3,2,4,Bunjinah_Formation,Fortescue_Group,erode
+11,3,3,4,Fortescue_Group,Fortescue_Group,erode
+12,3,4,4,Pyradie_Formation,Fortescue_Group,erode
