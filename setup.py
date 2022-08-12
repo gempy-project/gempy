@@ -1,5 +1,5 @@
 from setuptools import setup, find_packages
-version = '2.2.11'
+version = '2.2.12'
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -14,7 +14,7 @@ setup(
         'aesara',
         'pymc',
         'matplotlib',
-        'numpy',
+        'numpy==1.21.6',
         'pytest',
         'seaborn>=0.9',
         'networkx',
@@ -23,10 +23,11 @@ setup(
         'pyvistaqt',
         'pyqt5',
         'iPython',
+        'xarray==2022.3.0'
     ],
     url='https://github.com/cgre-aachen/gempy',
     license='LGPL v3',
-    author='Miguel de la Varga, Alexander Zimmerman, Elisa Heim, Alexander Schaaf, Fabian Stamm, Florian Wellmann',
+    author='Miguel de la Varga, Alexander Zimmerman, Elisa Heim, Alexander Schaaf, Fabian Stamm, Florian Wellmann, Jan Niederau',
     author_email='varga@aices.rwth-aachen.de',
     description='An Open-source, Python-based 3-D structural geological modeling software.',
     keywords=['geology', '3-D modeling', 'structural geology', 'uncertainty']
