@@ -10,9 +10,8 @@ setup(
     packages=find_packages(exclude=('test', 'docs', 'examples')),
     include_package_data=True,
     install_requires=[
-        'setuptools!=50.0.0',
         'pandas==1.3.4',
-        'aesara',
+        'aesara==2.7.7',
         'pymc',
         'matplotlib',
         'numpy==1.21.6',
