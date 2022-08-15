@@ -728,12 +728,24 @@ class ImplicitCoKriging(object):
                     ' True to suppress this error.'
 
         self._faults.set_is_fault(feature_fault, toggle=toggle)
+        if change_color:
+            print(
+                'Fault colors changed. If you do not like this behavior, set change_color to False.')
+            self._surfaces.colors.make_faults_black(feature_fault)
 
         if toggle is True:
             already_fault = self._stack.df.loc[
                                 feature_fault, 'BottomRelation'] == 'Fault'
             self._stack.df.loc[
                 feature_fault[already_fault], 'BottomRelation'] = 'Erosion'
+            print(feature_fault[already_fault])
+            faults_list = list(self.surfaces.df[self.surfaces.df.series.isin(feature_fault[already_fault])]['surface'])
+            for fault in faults_list:
+                f_color = self._surfaces.df.index[self._surfaces.df['surface'] == fault][0]
+                print(f_color)
+                self._surfaces.colors.colordict[fault] = self._surfaces.colors._hexcolors_soft[f_color]
+                print(self._surfaces.colors.colordict)
+                self._surfaces.colors._set_colors()
             self._stack.df.loc[
                 feature_fault[~already_fault], 'BottomRelation'] = 'Fault'
         else:
@@ -742,10 +754,7 @@ class ImplicitCoKriging(object):
         self._additional_data.structure_data.set_number_of_faults()
         self._interpolator.set_theano_shared_relations()
         self._interpolator.set_theano_shared_loop()
-        if change_color:
-            print(
-                'Fault colors changed. If you do not like this behavior, set change_color to False.')
-            self._surfaces.colors.make_faults_black(feature_fault)
+
         self.update_from_series(False, False, False)
         self.update_structure(update_theano='matrices')
         return self._faults
