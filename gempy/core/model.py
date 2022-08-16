@@ -742,9 +742,7 @@ class ImplicitCoKriging(object):
             faults_list = list(self.surfaces.df[self.surfaces.df.series.isin(feature_fault[already_fault])]['surface'])
             for fault in faults_list:
                 f_color = self._surfaces.df.index[self._surfaces.df['surface'] == fault][0]
-                print(f_color)
                 self._surfaces.colors.colordict[fault] = self._surfaces.colors._hexcolors_soft[f_color]
-                print(self._surfaces.colors.colordict)
                 self._surfaces.colors._set_colors()
             self._stack.df.loc[
                 feature_fault[~already_fault], 'BottomRelation'] = 'Fault'
