@@ -118,6 +118,23 @@ def test_define_sequential_pile(map_sequential_pile):
     print(map_sequential_pile._surfaces)
 
 
+def test_sequential_pile_colors(load_model):
+    geo_model = load_model
+
+    gp.map_stack_to_surfaces(geo_model, {"Fault_Series": 'Main_Fault',
+                                          "Strat_Series": ('Sandstone_2', 'Siltstone',
+                                                           'Shale', 'Sandstone_1', 'basement')},
+                             remove_unused_series=True)
+
+    color1 = geo_model._surfaces.colors.colordict['Main_Fault']
+    geo_model.set_is_fault(['Fault_Series'], toggle=True)
+    color2 = geo_model._surfaces.colors.colordict['Main_Fault']
+    geo_model.set_is_fault(['Fault_Series'], toggle=True)
+    color3 = geo_model._surfaces.colors.colordict['Main_Fault']
+    assert color1 == color3
+    #print(color1, color2, color3)
+
+
 def test_compute_model(interpolator, map_sequential_pile):
     geo_model = map_sequential_pile
     geo_model.set_theano_graph(interpolator)
