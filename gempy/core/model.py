@@ -728,12 +728,22 @@ class ImplicitCoKriging(object):
                     ' True to suppress this error.'
 
         self._faults.set_is_fault(feature_fault, toggle=toggle)
+        if change_color:
+            print(
+                'Fault colors changed. If you do not like this behavior, set change_color to False.')
+            self._surfaces.colors.make_faults_black(feature_fault)
 
         if toggle is True:
             already_fault = self._stack.df.loc[
                                 feature_fault, 'BottomRelation'] == 'Fault'
             self._stack.df.loc[
                 feature_fault[already_fault], 'BottomRelation'] = 'Erosion'
+            print(feature_fault[already_fault])
+            faults_list = list(self.surfaces.df[self.surfaces.df.series.isin(feature_fault[already_fault])]['surface'])
+            for fault in faults_list:
+                f_color = self._surfaces.df.index[self._surfaces.df['surface'] == fault][0]
+                self._surfaces.colors.colordict[fault] = self._surfaces.colors._hexcolors_soft[f_color]
+                self._surfaces.colors._set_colors()
             self._stack.df.loc[
                 feature_fault[~already_fault], 'BottomRelation'] = 'Fault'
         else:
