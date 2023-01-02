@@ -11,6 +11,11 @@
 [![DOI](https://zenodo.org/badge/96211155.svg)](https://zenodo.org/badge/latestdoi/96211155)
 [![DOCKER](https://img.shields.io/docker/cloud/automated/leguark/gempy.svg)](https://cloud.docker.com/repository/docker/leguark/gempy)
 
+:warning: **Warning: GemPy requires pandas version < 1.4.0. The new pandas release is not compatible with GemPy.  
+    We're actively working on this issue for a future release.  
+Please make sure to use Pandas version 1.3.x when working with GemPy for the time being.** 
+
+**Using theano, GemPy requires numpy version < 1.22.0 as `blas_opt_info` was deprecated in newer numpy versions.**:warning:
 ## Overview
 
 [GemPy](https://www.gempy.org/) is a Python-based, **open-source geomodeling library**. It is
@@ -40,7 +45,7 @@ For more information, refer to the [installation documentation](https://docs.gem
 After installation you can either check the [notebook tutorials](https://docs.gempy.org/getting_started/get_started.html#sphx-glr-getting-started-get-started-py) 
 or the [video introduction](https://www.youtube.com/watch?v=n0btC5Zilyc) to get started.
 
-Got to the [documentation site](http://docs.gempy.org/) for further information and enjoy the [tutorials and examples](https://www.gempy.org/tutorials).
+Go to the [documentation site](http://docs.gempy.org/) for further information and enjoy the [tutorials and examples](https://www.gempy.org/tutorials).
 
 For questions and support, please use [discussions](https://github.com/cgre-aachen/gempy/discussions).
 
@@ -58,12 +63,15 @@ Follow these [guidelines](https://github.com/cgre-aachen/gempy/blob/WIP_readme-u
 
 ## Publications using GemPy
 
-* Güdük, N., de la Varga, M. Kaukolinna, J. and Wellmann, F. (in review). Model-Based Probabilistic Inversion Using Magnetic Data: A Case Study on the Kevitsa Deposit.
-* Schaaf, A., de la Varga, M., Wellmann, F., & Bond, C. E. (2020). [Constraining stochastic 3-D structural geological models with topology information using Approximate Bayesian Computation using GemPy 2.1](https://gmd.copernicus.org/preprints/gmd-2020-136/gmd-2020-136.pdf). Geoscientific Model Development Discussions, 1-24.
+
+* Schaaf, A., de la Varga, M., Wellmann, F., & Bond, C. E. (2021). [Constraining stochastic 3-D structural geological models with topology information using approximate Bayesian computation in GemPy 2.1](https://gmd.copernicus.org/articles/14/3899/2021/gmd-14-3899-2021.html). Geosci. Model Dev., 14(6), 3899-3913. doi:10.5194/gmd-14-3899-2021
+* Güdük, N., de la Varga, M. Kaukolinna, J. and Wellmann, F. (2021). [Model-Based Probabilistic Inversion Using Magnetic Data: A Case Study on the Kevitsa Deposit](https://www.mdpi.com/2076-3263/11/4/150), _Geosciences_, 11(4):150. https://doi.org/10.3390/geosciences11040150.
 * Stamm, F. A., de la Varga, M., and Wellmann, F. (2019). [Actors, actions, and uncertainties: optimizing decision-making based on 3-D structural geological models](https://se.copernicus.org/articles/10/2015/2019/se-10-2015-2019.html), Solid Earth, 10, 2015–2043.
 * Wellmann, F., Schaaf, A., de la Varga, M., & von Hagke, C. (2019). [From Google Earth to 3D Geology Problem 2: Seeing Below the Surface of the Digital Earth](
 https://www.sciencedirect.com/science/article/pii/B9780128140482000156).
 In Developments in Structural Geology and Tectonics (Vol. 5, pp. 189-204). Elsevier.
+
+A continuously growing list of gempy-applications (e.g. listing real-world models) can be found [here](https://hackmd.io/@Japhiolite/B1juPvCxc).
 
 ## Gallery
 

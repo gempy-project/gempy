@@ -3,6 +3,7 @@ import sys
 import warnings
 from typing import Union, Iterable
 
+import numpy
 import numpy as np
 import pandas as pn
 
@@ -291,6 +292,19 @@ class SurfacePoints(GeometricData):
 
             self.df.loc[idx, ['X', 'Y', 'Z']] = coord_array.astype('float64')
             self.df.loc[idx, 'surface'] = surface
+            # if isinstance(surface, np.ndarray): # If surface is a numpy array
+            #     # self.df.loc[idx, 'surface'] = surface
+            #     if self.df['surface'].dtype == 'category':
+            #         for s in surface:
+            #             if s not in self.df['surface'].cat.categories:
+            #                 self.df['surface'].cat.add_categories(s, inplace=True)
+            #             self.df.loc[idx, 'surface'] = s
+            #     else:
+            #         for s in surface:
+            #             self.df.loc[idx, 'surface'] = s
+            #
+            # else:
+            #     self.df.loc[idx, 'surface'] = surface
         # ToDO test this
         except ValueError as error:
             self.del_surface_points(idx)
@@ -591,6 +605,11 @@ class Orientations(GeometricData):
 
         if pole_vector is not None:
             self.df.loc[idx, ['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z']] = np.array([x, y, z, *pole_vector], dtype=float)
+            # if type(surface) is numpy.ndarray:
+            #     for s in surface:
+            #         self.df.loc[idx, 'surface'] = s
+            # else:
+            #     self.df.loc[idx, 'surface'] = surface
             self.df.loc[idx, 'surface'] = surface
 
             self.calculate_orientations(idx)
@@ -601,6 +620,11 @@ class Orientations(GeometricData):
             if orientation is not None:
                 self.df.loc[idx, ['X', 'Y', 'Z', ]] = np.array([x, y, z], dtype=float)
                 self.df.loc[idx, ['azimuth', 'dip', 'polarity']] = np.array(orientation, dtype=float)
+                # if type(surface) is not str:
+                #     for s in surface:
+                #         self.df.loc[idx, 'surface'] = s
+                # else:
+                #     self.df.loc[idx, 'surface'] = surface
                 self.df.loc[idx, 'surface'] = surface
 
                 self.calculate_gradient(idx)

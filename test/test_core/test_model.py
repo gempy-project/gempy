@@ -118,6 +118,23 @@ def test_define_sequential_pile(map_sequential_pile):
     print(map_sequential_pile._surfaces)
 
 
+def test_sequential_pile_colors(load_model):
+    geo_model = load_model
+
+    gp.map_stack_to_surfaces(geo_model, {"Fault_Series": 'Main_Fault',
+                                          "Strat_Series": ('Sandstone_2', 'Siltstone',
+                                                           'Shale', 'Sandstone_1', 'basement')},
+                             remove_unused_series=True)
+
+    color1 = geo_model._surfaces.colors.colordict['Main_Fault']
+    geo_model.set_is_fault(['Fault_Series'], toggle=True)
+    color2 = geo_model._surfaces.colors.colordict['Main_Fault']
+    geo_model.set_is_fault(['Fault_Series'], toggle=True)
+    color3 = geo_model._surfaces.colors.colordict['Main_Fault']
+    assert color1 == color3
+    #print(color1, color2, color3)
+
+
 def test_compute_model(interpolator, map_sequential_pile):
     geo_model = map_sequential_pile
     geo_model.set_theano_graph(interpolator)
@@ -142,6 +159,17 @@ def test_compute_model(interpolator, map_sequential_pile):
                     direction='y', show_data=True)
 
     plt.savefig(os.path.dirname(__file__)+'/../figs/test_integration_scalar')
+
+
+def test_save_model(interpolator, map_sequential_pile):
+    geo_model = map_sequential_pile
+    geo_model.set_theano_function(interpolator)
+    gp.compute_model(geo_model, compute_mesh=False)
+    gp.save_model(geo_model, name='test_save_model', path=input_path+'/save_model/', save_solution=True,
+                  compress=False)
+
+    lith_block_sol = np.load(input_path+'/save_model/test_save_model/test_save_model_lith_block.npy')
+    np.testing.assert_array_almost_equal(geo_model.solutions.lith_block, lith_block_sol, decimal=0)
 
 
 def test_kriging_mutation(interpolator, map_sequential_pile):

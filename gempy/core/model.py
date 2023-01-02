@@ -519,11 +519,9 @@ class ImplicitCoKriging(object):
 
         """
         self._stack.add_series(features_list, reset_order_series)
-        self._surfaces.df['series'].cat.add_categories(features_list, inplace=True)
-        self._surface_points.df['series'].cat.add_categories(features_list,
-                                                             inplace=True)
-        self._orientations.df['series'].cat.add_categories(features_list,
-                                                           inplace=True)
+        self._surfaces.df['series'] = self._surfaces.df['series'].cat.add_categories(features_list)
+        self._surface_points.df['series'] = self._surface_points.df['series'].cat.add_categories(features_list)
+        self._orientations.df['series'] = self._orientations.df['series'].cat.add_categories(features_list)
 
         self.update_structure()
         self._interpolator.set_flow_control()
@@ -560,10 +558,9 @@ class ImplicitCoKriging(object):
                     self._surfaces.df.groupby('series').get_group(s)['surface'],
                     remove_data=remove_data)
 
-        self._surfaces.df['series'].cat.remove_categories(indices, inplace=True)
-        self._surface_points.df['series'].cat.remove_categories(indices,
-                                                                inplace=True)
-        self._orientations.df['series'].cat.remove_categories(indices, inplace=True)
+        self._surfaces.df['series'] = self._surfaces.df['series'].cat.remove_categories(indices)
+        self._surface_points.df['series'] = self._surface_points.df['series'].cat.remove_categories(indices)
+        self._orientations.df['series'] = self._orientations.df['series'].cat.remove_categories(indices)
         self.map_geometric_data_df(self._surface_points.df)
         self.map_geometric_data_df(self._orientations.df)
 
@@ -601,12 +598,9 @@ class ImplicitCoKriging(object):
 
         """
         self._stack.rename_series(new_categories)
-        self._surfaces.df['series'].cat.rename_categories(new_categories,
-                                                          inplace=True)
-        self._surface_points.df['series'].cat.rename_categories(new_categories,
-                                                                inplace=True)
-        self._orientations.df['series'].cat.rename_categories(new_categories,
-                                                              inplace=True)
+        self._surfaces.df['series'] = self._surfaces.df['series'].cat.rename_categories(new_categories)
+        self._surface_points.df['series'] = self._surface_points.df['series'].cat.rename_categories(new_categories)
+        self._orientations.df['series'] = self._orientations.df['series'].cat.rename_categories(new_categories)
         return self._stack
 
     @_setdoc(rename_features.__doc__, indent=False)
@@ -734,12 +728,22 @@ class ImplicitCoKriging(object):
                     ' True to suppress this error.'
 
         self._faults.set_is_fault(feature_fault, toggle=toggle)
+        if change_color:
+            print(
+                'Fault colors changed. If you do not like this behavior, set change_color to False.')
+            self._surfaces.colors.make_faults_black(feature_fault)
 
         if toggle is True:
             already_fault = self._stack.df.loc[
                                 feature_fault, 'BottomRelation'] == 'Fault'
             self._stack.df.loc[
                 feature_fault[already_fault], 'BottomRelation'] = 'Erosion'
+            print(feature_fault[already_fault])
+            faults_list = list(self.surfaces.df[self.surfaces.df.series.isin(feature_fault[already_fault])]['surface'])
+            for fault in faults_list:
+                f_color = self._surfaces.df.index[self._surfaces.df['surface'] == fault][0]
+                self._surfaces.colors.colordict[fault] = self._surfaces.colors._hexcolors_soft[f_color]
+                self._surfaces.colors._set_colors()
             self._stack.df.loc[
                 feature_fault[~already_fault], 'BottomRelation'] = 'Fault'
         else:
@@ -748,10 +752,7 @@ class ImplicitCoKriging(object):
         self._additional_data.structure_data.set_number_of_faults()
         self._interpolator.set_theano_shared_relations()
         self._interpolator.set_theano_shared_loop()
-        if change_color:
-            print(
-                'Fault colors changed. If you do not like this behavior, set change_color to False.')
-            self._surfaces.colors.make_faults_black(feature_fault)
+
         self.update_from_series(False, False, False)
         self.update_structure(update_theano='matrices')
         return self._faults
@@ -789,10 +790,8 @@ class ImplicitCoKriging(object):
     @_setdoc(Surfaces.add_surface.__doc__, indent=False)
     def add_surfaces(self, surface_list: Union[str, list], update_df=True):
         self._surfaces.add_surface(surface_list, update_df)
-        self._surface_points.df['surface'].cat.add_categories(surface_list,
-                                                              inplace=True)
-        self._orientations.df['surface'].cat.add_categories(surface_list,
-                                                            inplace=True)
+        self._surface_points.df['surface'] = self._surface_points.df['surface'].cat.add_categories(surface_list)
+        self._orientations.df['surface'] = self._orientations.df['surface'].cat.add_categories(surface_list)
         self.update_structure()
         return self._surfaces
 
@@ -828,10 +827,8 @@ class ImplicitCoKriging(object):
                 self._orientations.df[
                     self._orientations.df.surface.isin(surfaces_names)].index)
 
-        self._surface_points.df['surface'].cat.remove_categories(surfaces_names,
-                                                                 inplace=True)
-        self._orientations.df['surface'].cat.remove_categories(surfaces_names,
-                                                               inplace=True)
+        self._surface_points.df['surface'] = self._surface_points.df['surface'].cat.remove_categories(surfaces_names)
+        self._orientations.df['surface'] = self._orientations.df['surface'].cat.remove_categories(surfaces_names)
         self.map_geometric_data_df(self._surface_points.df)
         self.map_geometric_data_df(self._orientations.df)
         self._surfaces.colors.delete_colors(surfaces_names)
@@ -846,10 +843,8 @@ class ImplicitCoKriging(object):
     def rename_surfaces(self, to_replace: Union[dict], **kwargs):
 
         self._surfaces.rename_surfaces(to_replace, **kwargs)
-        self._surface_points.df['surface'].cat.rename_categories(to_replace,
-                                                                 inplace=True)
-        self._orientations.df['surface'].cat.rename_categories(to_replace,
-                                                               inplace=True)
+        self._surface_points.df['surface'] = self._surface_points.df['surface'].cat.rename_categories(to_replace)
+        self._orientations.df['surface'] = self._orientations.df['surface'].cat.rename_categories(to_replace)
         return self._surfaces
 
     @_setdoc(Surfaces.modify_order_surfaces.__doc__, indent=False)
@@ -934,7 +929,7 @@ class ImplicitCoKriging(object):
 
         # Here we remove the series that were not assigned to a surface
         if remove_unused_series is True:
-            self._surfaces.df['series'].cat.remove_unused_categories(inplace=True)
+            self._surfaces.df['series'] = self._surfaces.df['series'].cat.remove_unused_categories()
             unused_cat = self._stack.df.index[~self._stack.df.index.isin(
                 self._surfaces.df['series'].cat.categories)]
             self._stack.delete_series(unused_cat)
@@ -997,12 +992,20 @@ class ImplicitCoKriging(object):
 
         """
 
-        coord_x_name = kwargs.get('coord_x_name') if 'coord_x_name' in kwargs \
-            else self._check_possible_column_names(table, ['X', 'x'])
-        coord_y_name = kwargs.get('coord_y_name') if 'coord_y_name' in kwargs \
-            else self._check_possible_column_names(table, ['Y', 'y'])
-        coord_z_name = kwargs.get('coord_z_name') if 'coord_z_name' in kwargs \
-            else self._check_possible_column_names(table, ['Z', 'z'])
+        try:
+            coord_x_name = kwargs.get('coord_x_name') if 'coord_x_name' in kwargs \
+                else self._check_possible_column_names(table, ['X', 'x'])
+            coord_y_name = kwargs.get('coord_y_name') if 'coord_y_name' in kwargs \
+                else self._check_possible_column_names(table, ['Y', 'y'])
+        except IndexError:
+            raise ValueError('X and Y coordinates columns/values missing')
+
+        try:
+            coord_z_name = kwargs.get('coord_z_name') if 'coord_z_name' in kwargs \
+                else self._check_possible_column_names(table, ['Z', 'z'])
+        except IndexError:
+            raise ValueError('Z coordinates column/values missing')
+        
         surface_name = kwargs.get('surface_name') if 'surface_name' in kwargs \
             else self._check_possible_column_names(table,
                                                    ['surface', 'Surface', 'surfaces',
@@ -1663,13 +1666,14 @@ class Project(ImplicitCoKriging):
             model = pickle.load(f)
             return model
 
-    def save_model(self, name=None, path=None, compress=True):
+    def save_model(self, name=None, path=None, compress=True, save_solution=True):
         """
         Save model in new folder. Input data is saved as csv files. Solutions, extent and resolutions are saved as npy.
 
         Args:
             name (str): name of the newly created folder and the part of the files name
             path (str): path where save the model folder.
+            save_solution (bool): if True, save the solution
             compress (bool): If true create a zip
 
         Returns:
@@ -1700,13 +1704,21 @@ class Project(ImplicitCoKriging):
         if self._grid.topography is not None:
             self._grid.topography.save(f'{path}/{name}_topography.npy')
 
+        if self._grid.sections is not None:
+            self._grid.sections.df.to_csv(f'{path}/{name}_sections.csv')
+            np.save(f'{path}/{name}_sections.npy', self._grid.sections.values)
+
+        if save_solution:
+            self.save_solution(name, path)
+
         # if compress is True:
         #     shutil.make_archive(name, 'zip', path)
         #     shutil.rmtree(path)
         return True
 
-    def save_solution(self):
-        pass
+    def save_solution(self, name=None, path=None):
+        if self.solutions.lith_block is not None:
+            np.save(f'{path}/{name}_lith_block.npy', self.solutions.lith_block)
 
     def read_data(self, source_i=None, source_o=None, add_basement=True, **kwargs):
         """
