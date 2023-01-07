@@ -114,7 +114,7 @@ class LoadDEMGDAL:
         b = self.dem.bounds
         xr, yr = self.dem.width, self.dem.height
         X, Y = np.meshgrid(np.linspace(b.left, b.right, xr), np.linspace(b.top, b.bottom, yr))
-        xyz = np.hstack((X.ravel(), Y.ravel(), self.dem_zval))
+        xyz = np.hstack((X.ravel(), Y.ravel(), self.dem_zval.ravel()))
         self.values_3D = xyz.reshape((*shape, 3), order='C')
         # This is for 3D going from xyz to ijk
         self.values_3D = self.values_3D.swapaxes(0, 1)
