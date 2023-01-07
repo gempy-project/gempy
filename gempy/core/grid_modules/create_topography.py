@@ -112,7 +112,7 @@ class LoadDEMGDAL:
             shape = shape[1:]
         
         b = self.dem.bounds
-        xr, yr = self.dem.res
+        xr, yr = self.dem.width, self.dem.height
         X, Y = np.meshgrid(np.linspace(b.left, b.right, xr), np.linspace(b.top, b.bottom, yr))
         xyz = np.hstack((X.ravel(), Y.ravel(), self.dem_zval))
         self.values_3D = xyz.reshape((*shape, 3), order='C')
