@@ -1,5 +1,6 @@
 -r optional-requirements.txt
 
+rasterio
 # This are additional libraries necessary to run sphinx and all the test
 sphinx==3.5.4
 sphinx_gallery

@@ -23,7 +23,8 @@ setup(
         'pyqt5',
         'iPython',
         'pandas==1.3.4',
-        'xarray==2022.3.0'
+        'xarray==2022.3.0',
+        'rasterio'
     ],
     url='https://github.com/cgre-aachen/gempy',
     license='LGPL v3',
