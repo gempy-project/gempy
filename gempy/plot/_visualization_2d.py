@@ -40,7 +40,7 @@ sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 from gempy.core.solution import Solution
 from  gempy.plot import helpers as plothelp
 sns.set_context('talk')
-plt.style.use(['seaborn-white', 'seaborn-talk'])
+plt.style.use(['seaborn-v0_8-seaborn-white', 'seaborn-v0_8-seaborn-talk'])
 from scipy.interpolate import RegularGridInterpolator
 import matplotlib.patches as mpatches
 
