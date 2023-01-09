@@ -161,10 +161,10 @@ def set_orientation_from_surface_points(geo_model, indices_array):
         :attr:`orientations`: Already updated inplace
     """
 
-    if np.ndim(indices_array) is 1:
+    if np.ndim(indices_array) == 1:
         indices = indices_array
         form = geo_model._surface_points.df['surface'].loc[indices].unique()
-        assert form.shape[0] is 1, 'The interface points must belong to the same surface'
+        assert form.shape[0] == 1, 'The interface points must belong to the same surface'
         form = form[0]
 
         ori_parameters = geo_model._orientations.create_orientation_from_surface_points(
@@ -172,10 +172,10 @@ def set_orientation_from_surface_points(geo_model, indices_array):
         geo_model.add_orientations(X=ori_parameters[0], Y=ori_parameters[1], Z=ori_parameters[2],
                                    orientation=ori_parameters[3:6], pole_vector=ori_parameters[6:9],
                                    surface=form)
-    elif np.ndim(indices_array) is 2:
+    elif np.ndim(indices_array) == 2:
         for indices in indices_array:
             form = geo_model._surface_points.df['surface'].loc[indices].unique()
-            assert form.shape[0] is 1, 'The interface points must belong to the same surface'
+            assert form.shape[0] == 1, 'The interface points must belong to the same surface'
             form = form[0]
             ori_parameters = geo_model._orientations.create_orientation_from_surface_points(
                 geo_model._surface_points, indices)
