@@ -122,7 +122,7 @@ class GemPyToVista(WidgetsCallbacks, RenderChanges):
 
         # Private attributes
         self._grid_values = None
-        col = matplotlib.cm.get_cmap('viridis')(np.linspace(0, 1, 255)) * 255
+        col = matplotlib.colormaps['viridis'](np.linspace(0, 1, 255)) * 255
         nv = numpy_to_vtk(col, array_type=3)
         self._cmaps = {'viridis': nv}
 
