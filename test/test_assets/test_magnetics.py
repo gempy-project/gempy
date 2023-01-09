@@ -35,7 +35,6 @@ def test_magnetics_api(interpolator_magnetics):
     print(geo_model.solutions.fw_magnetics)
     np.testing.assert_almost_equal(geo_model.solutions.fw_magnetics,
                                    np.array([473.7836]), decimal=4)
-    return geo_model
 
 
 @pytest.fixture(scope="module")
