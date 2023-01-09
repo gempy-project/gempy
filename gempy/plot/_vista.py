@@ -36,7 +36,6 @@ import pandas as pn
 try:
     import pyvista as pv
     import pyvistaqt as pvqt
-    from pyvista.plotting import parse_color
     PYVISTA_IMPORT = True
 except ImportError:
     PYVISTA_IMPORT = False
@@ -314,9 +313,9 @@ class __Vista:
             plane1.SetCenter(new_center[0], new_center[1], new_center[2])
 
             plane1.GetPlaneProperty().SetColor(
-                parse_color(self.model._surfaces.df.set_index('id')['color'][new_values_df['id']]))  # self.C_LOT[new_values_df['id']])
+                pv.Color(self.model._surfaces.df.set_index('id')['color'][new_values_df['id']]).float_rgb)  # self.C_LOT[new_values_df['id']])
             plane1.GetHandleProperty().SetColor(
-                parse_color(self.model._surfaces.df.set_index('id')['color'][new_values_df['id']]))
+                pv.Color(self.model._surfaces.df.set_index('id')['color'][new_values_df['id']]).float_rgb)
         return True
 
     def plot_orientations(self, orientations=None, clear=True, **kwargs):
@@ -354,7 +353,7 @@ class __Vista:
 
             surf = pv.PolyData(val['vertices'], np.insert(val['edges'], 0, 3, axis=1).ravel())
             self.surf_polydata.at[idx] = surf
-            self.vista_surf_actor[idx] = self.p.add_mesh(surf, parse_color(val['color']), **kwargs)
+            self.vista_surf_actor[idx] = self.p.add_mesh(surf, pv.Color(val['color']).float_rgb, **kwargs)
 
         self.set_bounds()
         return self.surf_polydata
