@@ -208,12 +208,12 @@ class vtkVisualization(object):
     def key_callbacks(self, obj, event):
         key = self.interactor.GetKeySym()
 
-        if key is 'h' or key is 'p':
+        if key == 'h' or key == 'p':
             print('holding... Use vtk.resume to go back to the interactive window')
             self.interactor.ExitCallback()
             self.interactor.holding = True
 
-        if key is 'l':
+        if key == 'l':
             if self.layer_visualization is True:
                 for layer in self.surf_rend_1:
                     layer.VisibilityOff()
@@ -225,7 +225,7 @@ class vtkVisualization(object):
                 self.layer_visualization = True
                 self.interactor.Render()
 
-        if key is 't':
+        if key == 't':
             if self.topo_visualization is True:
                 self.topography_surface.VisibilityOff()
                 self.topo_visualization = False
@@ -235,7 +235,7 @@ class vtkVisualization(object):
                 self.topo_visualization = True
                 self.interactor.Render()
 
-        if key is 'q':
+        if key == 'q':
             print('closing vtk')
             self.close_window()
 
@@ -265,7 +265,7 @@ class vtkVisualization(object):
             #     r.AddActor(axe)
             #     r.ResetCamera()
 
-        if key is 'r':
+        if key == 'r':
             self.real_time = self.real_time ^ True
 
     def create_surface_points(self, vertices):
@@ -670,7 +670,7 @@ class vtkVisualization(object):
         self.slider_w.AddObserver('EndInteractionEvent', self.sliderCallback_interactor)
 
     def sliderCallback_interactor(self, obj, event):
-        if int(obj.GetRepresentation().GetValue()) is 0:
+        if int(obj.GetRepresentation().GetValue()) == 0:
             self.interactor.ExitCallback()
 
     def sliderCallback_traces(self, obj, event):
@@ -1383,7 +1383,7 @@ class steno3D():
     def plot3D_steno_surface(self, ver, sim):
 
         for surface in self.surfaces.iterrows():
-            if surface[1].values[0] is 0:
+            if surface[1].values[0] == 0:
                 pass
 
             #for vertices, simpleces in zip(ver[surface[1].values[0]], sim[surface[1].values[0]]):
