@@ -5,11 +5,13 @@ from gempy.addons.gempy_to_rexfile import GemPyToRex
 
 sys.path.append("../..")
 import gempy
+
 request = pytest.importorskip("requests")
 from gempy.addons import gempy_to_rexfile as gtr
 from gempy.addons import rex_api
+
 pyqrcode = pytest.importorskip("pyqrcode")
-input_path = os.path.dirname(__file__)+'/../input_data'
+input_path = os.path.dirname(__file__) + '/../input_data'
 
 
 @pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
@@ -39,20 +41,20 @@ class TestGemPyToREX:
 
         # Write header
         header_bytes = gtr.write_file_header_block(n_data_blocks=1,
-                                            size_data_blocks=data_block_size_no_header+gtr.rexDataBlockHeaderSize,
-                                            start_data=file_header_size)
+                                                   size_data_blocks=data_block_size_no_header + gtr.rexDataBlockHeaderSize,
+                                                   start_data=file_header_size)
 
         # Write data block
         data_bytes = gtr.write_data_block_header(size_data=data_block_size_no_header,
-                                          data_id=1, data_type=3, version_data=1)
+                                                 data_id=1, data_type=3, version_data=1)
 
         # Write mesh block
-        mesh_header_bytes = gtr.write_mesh_header(n_vtx_coord/3, n_triangles/3,
+        mesh_header_bytes = gtr.write_mesh_header(n_vtx_coord / 3, n_triangles / 3,
                                                   start_vtx_coord=gtr.mesh_header_size,
-                                                  start_nor_coord=gtr.mesh_header_size + n_vtx_coord*4,
-                                                  start_tex_coord=gtr.mesh_header_size + n_vtx_coord*4,
-                                                  start_vtx_colors=gtr.mesh_header_size + n_vtx_coord*4,
-                                                  start_triangles=gtr.mesh_header_size + n_vtx_coord*4,
+                                                  start_nor_coord=gtr.mesh_header_size + n_vtx_coord * 4,
+                                                  start_tex_coord=gtr.mesh_header_size + n_vtx_coord * 4,
+                                                  start_vtx_colors=gtr.mesh_header_size + n_vtx_coord * 4,
+                                                  start_triangles=gtr.mesh_header_size + n_vtx_coord * 4,
                                                   name='test_a')
 
         mesh_block_bytes = gtr.write_mesh_coordinates(ver_ravel, tri_ravel)
@@ -78,7 +80,8 @@ class TestGemPyToREX:
         gtr.write_rex(rex_bytes, path=os.path.dirname(__file__) + '/rexfiles/gtr_test')
 
     def test_rex_bytes_to_file_except(self):
-        model = gempy.create_data(extent=[0,10,0,10,0,10])
+        model = gempy.create_data(extent=[0, 10, 0, 10, 0, 10],
+                                  resolution=[50, 50, 50])
         model.set_default_surfaces()
         model._surfaces.df['isActive'] = False
         with pytest.raises(RuntimeError):

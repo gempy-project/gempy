@@ -177,7 +177,7 @@ def init_data(geo_model: Project, extent: Union[list, ndarray] = None,
     """
 
     if extent is None or resolution is None:
-        warnings.warn('Regular grid won\'t be initialize, you will have to create a gridafterwards. See gempy.set_grid')
+        warnings.warn('Regular grid won\'t be initialized, you will have to create a grid afterwards. See gempy.set_grid')
     else:
         geo_model.set_regular_grid(extent, resolution)
 

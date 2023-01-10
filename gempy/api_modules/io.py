@@ -202,9 +202,9 @@ def _load_surfaces(cat_series, geo_model, name, path):
     c_ = surf_df.columns[
         ~(surf_df.columns.isin(geo_model._surfaces._columns_vis_drop))]
     geo_model._surfaces.df[c_] = surf_df[c_]
-    geo_model._surfaces.df['series'].cat.reorder_categories(
+    geo_model._surfaces.df['series'] = geo_model._surfaces.df['series'].cat.reorder_categories(
         np.asarray(geo_model._stack.df.index),
-        ordered=False, inplace=True)
+        ordered=False)
     geo_model._surfaces.sort_surfaces()
     geo_model._surfaces.colors.generate_colordict()
     geo_model._surfaces.df['series'].cat.set_categories(cat_series, inplace=True)
