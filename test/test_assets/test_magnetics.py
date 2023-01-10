@@ -71,7 +71,7 @@ def test_magnetics_no_regular_grid(interpolator_magnetics):
     gp.compute_model(geo_model)
     np.testing.assert_almost_equal(geo_model.solutions.fw_magnetics,
                                    np.array([473.7836]), decimal=4)
-    gp.compute_model(geo_model)
+    
     return geo_model
 
 
