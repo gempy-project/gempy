@@ -9,11 +9,7 @@
 [![Travis Build](https://travis-ci.org/cgre-aachen/gempy.svg?branch=master)](https://travis-ci.org/github/cgre-aachen/gempy/branches)
 [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/cgre-aachen/gempy/master)
 [![DOI](https://zenodo.org/badge/96211155.svg)](https://zenodo.org/badge/latestdoi/96211155)
-[![DOCKER](https://img.shields.io/docker/cloud/automated/leguark/gempy.svg)](https://cloud.docker.com/repository/docker/leguark/gempy)
-
-:warning: **Warning: GemPy requires pandas version < 1.4.0. The new pandas release is not compatible with GemPy.  
-    We're actively working on this issue for a future release.  
-Please make sure to use Pandas version 1.3.x when working with GemPy for the time being.** 
+[![DOCKER](https://img.shields.io/docker/cloud/automated/leguark/gempy.svg)](https://cloud.docker.com/repository/docker/leguark/gempy) 
 
 **Using theano, GemPy requires numpy version < 1.22.0 as `blas_opt_info` was deprecated in newer numpy versions.**:warning:
 ## Overview
