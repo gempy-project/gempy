@@ -10,7 +10,6 @@ setup(
     packages=find_packages(exclude=('test', 'docs', 'examples')),
     include_package_data=True,
     install_requires=[
-        'pandas==1.3.4',
         'Theano>=1.0.4',
         'matplotlib',
         'numpy==1.21.6',
