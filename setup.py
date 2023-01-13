@@ -22,7 +22,7 @@ setup(
         'pyvistaqt',
         'pyqt5',
         'iPython',
-        'pandas==1.3.4',
+        'scikit-learn',
         'xarray==2022.3.0'
     ],
     url='https://github.com/cgre-aachen/gempy',
