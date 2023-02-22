@@ -1,4 +1,5 @@
 from setuptools import setup, find_packages
+
 version = '2.2.12'
 
 with open("README.md", "r") as fh:
@@ -30,5 +31,6 @@ setup(
     author='Miguel de la Varga, Alexander Zimmerman, Elisa Heim, Alexander Schaaf, Fabian Stamm, Florian Wellmann, Jan Niederau',
     author_email='varga@aices.rwth-aachen.de',
     description='An Open-source, Python-based 3-D structural geological modeling software.',
+    long_description=long_description,
     keywords=['geology', '3-D modeling', 'structural geology', 'uncertainty']
 )
