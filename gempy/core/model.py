@@ -1594,7 +1594,7 @@ def Model(project_name='default_project'):
       :class:`DataMutation` and :class:`MetaData`.
 
       """
-    warnings.warn('This C;ass is going to be deprecated in GemPy 2.3. '
+    warnings.warn('This Class is going to be deprecated in GemPy 2.3. '
                   'Use Project instead.',
                   DeprecationWarning)
     return Project(project_name)
