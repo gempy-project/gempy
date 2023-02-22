@@ -39,7 +39,6 @@ warnings.filterwarnings("ignore",
                         append=True)
 try:
     import vtk
-    from vtk.util.numpy_support import numpy_to_vtk
     VTK_IMPORT = True
 except ImportError:
     VTK_IMPORT = False
@@ -284,7 +283,7 @@ class vtkVisualization(object):
         # for v in vertices:
         #     v[-1] = self.ve * v[-1]
         #     Points.InsertNextPoint(v)
-        Points.SetData(numpy_to_vtk(vertices))
+        Points.SetData(pv.convert_array(vertices))
 
         return Points
 
@@ -494,7 +493,7 @@ class vtkVisualization(object):
         #     points.InsertNextPoint(v)
         if self.ve !=1:
             vertices[:, 2]= vertices[:, 2]*self.ve
-        points.SetData(numpy_to_vtk(vertices))
+        points.SetData(pv.convert_array(vertices))
 
         # Add the grid points to a polydata object
         polydata = vtk.vtkPolyData()
@@ -550,7 +549,7 @@ class vtkVisualization(object):
             arr_ = np.vstack((arr_, rgb))
 
         sel = np.round(self.geo_model.solutions.geological_map[0]).astype(int)[0]
-        nv = numpy_to_vtk(arr_[sel - 1], array_type=3)
+        nv = pv.convert_array(arr_[sel - 1].values, array_type=3)
         self._topography_delauny.GetOutput().GetPointData().SetScalars(nv)
 
     def set_surface_points(self, indices=None):

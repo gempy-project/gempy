@@ -48,7 +48,6 @@ warnings.filterwarnings("ignore",
                         append=True)
 try:
     import vtk
-    from vtk.util.numpy_support import numpy_to_vtk
 
     VTK_IMPORT = True
 except ImportError:
@@ -123,7 +122,7 @@ class GemPyToVista(WidgetsCallbacks, RenderChanges):
         # Private attributes
         self._grid_values = None
         col = matplotlib.colormaps['viridis'](np.linspace(0, 1, 255)) * 255
-        nv = numpy_to_vtk(col, array_type=3)
+        nv = pv.convert_array(col, array_type=3)
         self._cmaps = {'viridis': nv}
 
         # Topology properties
@@ -552,7 +551,7 @@ class GemPyToVista(WidgetsCallbacks, RenderChanges):
 
             sel = np.round(self.model.solutions.geological_map[0]).astype(int)[0]
 
-            scalars_val = numpy_to_vtk(colors_rgb.loc[sel], array_type=3)
+            scalars_val = pv.convert_array(colors_rgb.loc[sel].values, array_type=3)
             cm = mcolors.ListedColormap(list(self._get_color_lot(is_faults=True, is_basement=True)))
             rgb = True
 
@@ -790,10 +789,10 @@ class GemPyToVista(WidgetsCallbacks, RenderChanges):
                 n_colors = len(hex_colors)
                 cmap_ = mcolors.ListedColormap(hex_colors)
                 col = cmap_(np.linspace(0, 1, n_colors)) * 255
-                self._cmaps[cmap] = numpy_to_vtk(col, array_type=3)
+                self._cmaps[cmap] = pv.convert_array(col, array_type=3)
             if cmap not in self._cmaps.keys():
                 col = matplotlib.cm.get_cmap(cmap)(np.linspace(0, 1, 250)) * 255
-                nv = numpy_to_vtk(col, array_type=3)
+                nv = pv.convert_array(col, array_type=3)
                 self._cmaps[cmap] = nv
         else:
             raise AttributeError('cmap must be either a name of a matplotlib string or a dictionary containing the '
