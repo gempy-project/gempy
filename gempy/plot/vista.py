@@ -29,11 +29,9 @@ import warnings
 from typing import Union, Dict, List, Iterable, Set, Tuple
 
 import matplotlib.colors as mcolors
-from matplotlib import cm
 import numpy as np
 import pandas as pd
 import pyvista as pv
-from pyvista.plotting import parse_color
 # TODO Check if this is necessary if it is implemented in the API
 try:
     import pyvistaqt as pvqt
@@ -124,7 +122,7 @@ class GemPyToVista(WidgetsCallbacks, RenderChanges):
 
         # Private attributes
         self._grid_values = None
-        col = matplotlib.cm.get_cmap('viridis')(np.linspace(0, 1, 255)) * 255
+        col = matplotlib.colormaps['viridis'](np.linspace(0, 1, 255)) * 255
         nv = numpy_to_vtk(col, array_type=3)
         self._cmaps = {'viridis': nv}
 
@@ -465,7 +463,7 @@ class GemPyToVista(WidgetsCallbacks, RenderChanges):
             # surf['id'] = val['id']
             self.surface_poly[val['surface']] = surf
             self.surface_actors[val['surface']] = self.p.add_mesh(
-                surf, parse_color(val['color']), show_scalar_bar=True,
+                surf, pv.Color(val['color']).float_rgb, show_scalar_bar=True,
                 cmap=cmap, **kwargs)
         self.set_bounds()
 

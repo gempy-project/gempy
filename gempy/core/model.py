@@ -659,9 +659,9 @@ class ImplicitCoKriging(object):
             :class:`gempy.core.data_modules.stack.Stack`
         """
         self._stack.reorder_series(new_categories)
-        self._surfaces.df['series'].cat.reorder_categories(
+        self._surfaces.df['series'] = self._surfaces.df['series'].cat.reorder_categories(
             np.asarray(self._stack.df.index),
-            ordered=False, inplace=True)
+            ordered=False)
 
         self._surfaces.sort_surfaces()
         self._surfaces.set_basement()
@@ -1385,9 +1385,9 @@ class ImplicitCoKriging(object):
         """
 
         if reorder_series is True:
-            self._surfaces.df['series'].cat.reorder_categories(
+            self._surfaces.df['series'] = self._surfaces.df['series'].cat.reorder_categories(
                 np.asarray(self._stack.df.index),
-                ordered=False, inplace=True)
+                ordered=False)
             self._stack.df.index = self._stack.df.index.reorder_categories(
                 self._stack.df.index.array,
                 ordered=False)
@@ -1597,7 +1597,7 @@ def Model(project_name='default_project'):
       :class:`DataMutation` and :class:`MetaData`.
 
       """
-    warnings.warn('This C;ass is going to be deprecated in GemPy 2.3. '
+    warnings.warn('This Class is going to be deprecated in GemPy 2.3. '
                   'Use Project instead.',
                   DeprecationWarning)
     return Project(project_name)

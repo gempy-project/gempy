@@ -36,7 +36,7 @@ import scipy.spatial.distance as dd
 import seaborn as sns
 
 sns.set_context('talk')
-plt.style.use(['seaborn-white', 'seaborn-talk'])
+plt.style.use(['seaborn-v0_8-white', 'seaborn-v0_8-talk'])
 
 warnings.filterwarnings("ignore", message="No contour levels were found")
 
