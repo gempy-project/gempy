@@ -81,9 +81,7 @@ class Interpolator(object):
         if self.len_series_u.shape[0] == 0:
             self.len_series_u = np.zeros(1, dtype=int)
 
-        self.len_series_f = self.faults.faults_relations_df.sum(axis=0).values.astype('int32')[
-                            :self.additional_data.get_additional_data()['values'][
-                                'Structure', 'number series']]
+        self.len_series_f = self.faults.faults_relations_df.sum(axis=0).values.astype('int32')[:self.additional_data.get_additional_data()['values']['Structure', 'number series']]
         if self.len_series_f.shape[0] == 0:
             self.len_series_f = np.zeros(1, dtype=int)
 
@@ -153,7 +151,7 @@ class Interpolator(object):
 
         range_list = range_res * np.ones(
             self.additional_data.structure_data.df.loc['values',
-                                                       'number series'])
+            'number series'])
         #
         # if type(range_res) is np.float or type(range_res) is np.float64:
         #     range_list = range_res * np.ones(
@@ -175,7 +173,7 @@ class Interpolator(object):
             'values', 'rescaling factor']
         cov_list = cov_res * np.ones(
             self.additional_data.structure_data.df.loc['values',
-                                                       'number series']
+            'number series']
         )
         #
         #
