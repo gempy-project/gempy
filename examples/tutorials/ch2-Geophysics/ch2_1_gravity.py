@@ -97,7 +97,7 @@ tz
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # 
 # If geo_model has already a centered grid, the calculation of tz happens
-# automatically.  This theano graph will return gravity
+# automatically.  This aesara graph will return gravity
 # as well as the lithologies. In addition we need either to pass the density
 # block (see below). Or the position of density on the surface(in the
 # future the name) to compute the density block at running time.
@@ -112,7 +112,7 @@ geo_model.surfaces
 
 # New way
 gp.set_interpolator(geo_model, output=['gravity'], pos_density=1, gradient=False,
-                    theano_optimizer='fast_run')
+                    aesara_optimizer='fast_run')
 
 # %%
 # Once we have created a gravity interpolator we can call it from compute

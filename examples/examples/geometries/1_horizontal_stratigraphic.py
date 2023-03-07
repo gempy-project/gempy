@@ -41,8 +41,8 @@ gp.plot_2d(geo_data, direction=['y'])
 # 
 
 # %% 
-interp_data = gp.set_interpolator(geo_data, compile_theano=True,
-                                  theano_optimizer='fast_compile')
+interp_data = gp.set_interpolator(geo_data, compile_aesara=True,
+                                  aesara_optimizer='fast_compile')
 
 # %% 
 sol = gp.compute_model(geo_data)

@@ -175,7 +175,7 @@ class ImplicitCoKriging(object):
         """:class:`gempy.core.interpolator.InterpolatorModel` [s0]"""
         return RestrictingWrapper(self._interpolator,
                                   accepted_members=['__repr__', '_repr_html_',
-                                                    'theano_graph'])
+                                                    'aesara_graph'])
 
     def _add_valid_idx_s(self, idx):
         if idx is None:
@@ -204,18 +204,18 @@ class ImplicitCoKriging(object):
         return idx
 
     @_setdoc_pro([AdditionalData.update_structure.__doc__,
-                  InterpolatorModel.set_theano_shared_structure.__doc__,
+                  InterpolatorModel.set_aesara_shared_structure.__doc__,
                   InterpolatorModel.modify_results_matrices_pro.__doc__,
                   InterpolatorModel.modify_results_weights.__doc__])
-    def update_structure(self, update_theano=None, update_series_is_active=True,
+    def update_structure(self, update_aesara=None, update_series_is_active=True,
                          update_surface_is_active=True):
-        """Update python and theano structure parameters.
+        """Update python and aesara structure parameters.
 
         [s0]
         [s1]
 
         Args:
-            update_theano (str{'matrices', 'weights'}):
+            update_aesara (str{'matrices', 'weights'}):
 
                 * matrices [s2]
 
@@ -261,12 +261,12 @@ class ImplicitCoKriging(object):
                 self._surfaces.df['hasData'] = (
                         act_series | bool_surf_points)
 
-        if update_theano == 'matrices':
+        if update_aesara == 'matrices':
             self._interpolator.modify_results_matrices_pro()
-        elif update_theano == 'weights':
+        elif update_aesara == 'weights':
             self._interpolator.modify_results_weights()
 
-        self._interpolator.set_theano_shared_structure()
+        self._interpolator.set_aesara_shared_structure()
         return self._additional_data.structure_data
 
     # region Grid
@@ -277,12 +277,12 @@ class ImplicitCoKriging(object):
         self._rescaling.rescale_data()
         self._interpolator.set_initial_results_matrices()
 
-        if 'gravity' in self._interpolator.theano_graph.output or 'magnetics' in self._interpolator.theano_graph.output:
-            self._interpolator.set_theano_shared_l0_l1()
+        if 'gravity' in self._interpolator.aesara_graph.output or 'magnetics' in self._interpolator.aesara_graph.output:
+            self._interpolator.set_aesara_shared_l0_l1()
 
         # Check if grid is shared
-        if hasattr(self._interpolator.theano_graph.grid_val_T, 'get_value'):
-            self._interpolator.theano_graph.grid_val_T.set_value(
+        if hasattr(self._interpolator.aesara_graph.grid_val_T, 'get_value'):
+            self._interpolator.aesara_graph.grid_val_T.set_value(
                 self._grid.values_r.astype(self._interpolator.dtype))
 
     def set_active_grid(self, grid_name: Union[str, Iterable[str]], reset=False):
@@ -325,7 +325,7 @@ class ImplicitCoKriging(object):
     # @_setdoc(Grid.create_regular_grid.__doc__)
     @_setdoc_pro()
     def set_regular_grid(self, extent, resolution):
-        """Set a regular grid, rescale data and initialize theano solutions.
+        """Set a regular grid, rescale data and initialize aesara solutions.
 
         Args:
             extent: [s_extent]
@@ -357,7 +357,7 @@ class ImplicitCoKriging(object):
 
     @_setdoc_pro()
     def set_custom_grid(self, custom_grid):
-        """Set custom grid, rescale gird and initialize theano solutions. foo
+        """Set custom grid, rescale gird and initialize aesara solutions. foo
 
         Args:
             custom_grid: [s_coord]
@@ -503,7 +503,7 @@ class ImplicitCoKriging(object):
                             bottom_relation: Union[str, list]):
         """"""
         self._stack.set_bottom_relation(series, bottom_relation)
-        self._interpolator.set_theano_shared_relations()
+        self._interpolator.set_aesara_shared_relations()
         return self._stack
 
     @_setdoc_pro(Stack.reset_order_series.__doc__)
@@ -525,7 +525,7 @@ class ImplicitCoKriging(object):
 
         self.update_structure()
         self._interpolator.set_flow_control()
-        self._interpolator.set_theano_shared_kriging()
+        self._interpolator.set_aesara_shared_kriging()
         return self._stack
 
     @_setdoc(Series.add_series.__doc__, indent=False)
@@ -565,8 +565,8 @@ class ImplicitCoKriging(object):
         self.map_geometric_data_df(self._orientations.df)
 
         self.update_structure()
-        self._interpolator.set_theano_shared_relations()
-        self._interpolator.set_theano_shared_kriging()
+        self._interpolator.set_aesara_shared_relations()
+        self._interpolator.set_aesara_shared_kriging()
         self._interpolator.set_flow_control()
         return self._stack
 
@@ -672,7 +672,7 @@ class ImplicitCoKriging(object):
         self._orientations.sort_table()
 
         self._interpolator.set_flow_control()
-        self.update_structure(update_theano='weights')
+        self.update_structure(update_aesara='weights')
         return self._stack
 
     @_setdoc(reorder_features.__doc__, indent=False)
@@ -750,11 +750,14 @@ class ImplicitCoKriging(object):
             self._stack.df.loc[feature_fault, 'BottomRelation'] = 'Fault'
 
         self._additional_data.structure_data.set_number_of_faults()
-        self._interpolator.set_theano_shared_relations()
-        self._interpolator.set_theano_shared_loop()
-
+        self._interpolator.set_aesara_shared_relations()
+        self._interpolator.set_aesara_shared_loop()
+        if change_color:
+            print(
+                'Fault colors changed. If you do not like this behavior, set change_color to False.')
+            self._surfaces.colors.make_faults_black(feature_fault)
         self.update_from_series(False, False, False)
-        self.update_structure(update_theano='matrices')
+        self.update_structure(update_aesara='matrices')
         return self._faults
 
     @_setdoc([Faults.set_is_finite_fault.__doc__], indent=False)
@@ -762,8 +765,8 @@ class ImplicitCoKriging(object):
         """"""
         s = self._faults.set_is_finite_fault(series_fault,
                                              toggle)  # change df in Fault obj
-        # change shared theano variable for infinite factor
-        self._interpolator.set_theano_shared_is_finite()
+        # change shared aesara variable for infinite factor
+        self._interpolator.set_aesara_shared_is_finite()
         return s
 
     @_setdoc([Faults.set_fault_relation.__doc__], indent=False)
@@ -772,8 +775,8 @@ class ImplicitCoKriging(object):
         self._faults.set_fault_relation(rel_matrix)
 
         # Updating
-        self._interpolator.set_theano_shared_fault_relation()
-        self._interpolator.set_theano_shared_weights()
+        self._interpolator.set_aesara_shared_fault_relation()
+        self._interpolator.set_aesara_shared_weights()
         return self._faults.faults_relations_df
 
     # endregion
@@ -834,8 +837,8 @@ class ImplicitCoKriging(object):
         self._surfaces.colors.delete_colors(surfaces_names)
 
         if remove_data:
-            self.update_structure(update_theano='matrices')
-            self.update_structure(update_theano='weights')
+            self.update_structure(update_aesara='matrices')
+            self.update_structure(update_aesara='weights')
 
         return self._surfaces
 
@@ -866,7 +869,7 @@ class ImplicitCoKriging(object):
     def add_surface_values(self, values_array: Iterable,
                            properties_names: Iterable[str] = np.empty(0)):
         self._surfaces.add_surfaces_values(values_array, properties_names)
-        self.update_structure(update_theano='matrices')
+        self.update_structure(update_aesara='matrices')
         return self._surfaces
 
     @_setdoc(Surfaces.delete_surface_values.__doc__, indent=False)
@@ -1111,12 +1114,12 @@ class ImplicitCoKriging(object):
         if recompute_rescale_factor is True or idx < 20:
             # This will rescale all data again
             self._rescaling.rescale_data()
-            self._interpolator.set_theano_shared_kriging()
+            self._interpolator.set_aesara_shared_kriging()
         else:
             # This branch only recompute the added point
             self._rescaling.set_rescaled_surface_points(idx)
-        self.update_structure(update_theano='matrices')
-        self._interpolator.set_theano_shared_nuggets()
+        self.update_structure(update_aesara='matrices')
+        self._interpolator.set_aesara_shared_nuggets()
 
         return self._surface_points, idx
 
@@ -1124,7 +1127,7 @@ class ImplicitCoKriging(object):
     @plot_delete_surface_points
     def delete_surface_points(self, idx: Union[int, Iterable[int]]):
         self._surface_points.del_surface_points(idx)
-        self.update_structure(update_theano='matrices')
+        self.update_structure(update_aesara='matrices')
         return self._surface_points
 
     def delete_surface_points_basement(self):
@@ -1173,7 +1176,7 @@ class ImplicitCoKriging(object):
         if recompute_rescale_factor is True or np.atleast_1d(indices).shape[0] < 20:
             # This will rescale all data again
             self._rescaling.rescale_data()
-            self._interpolator.set_theano_shared_kriging()
+            self._interpolator.set_aesara_shared_kriging()
         else:
             # This branch only recompute the added point
             self._rescaling.set_rescaled_surface_points(indices)
@@ -1181,10 +1184,10 @@ class ImplicitCoKriging(object):
         keys = list(kwargs.keys())
         is_surface = np.isin('surface', keys).all()
         if is_surface == True:
-            self.update_structure(update_theano='matrices')
+            self.update_structure(update_aesara='matrices')
 
         if 'smooth' in kwargs:
-            self._interpolator.set_theano_shared_nuggets()
+            self._interpolator.set_aesara_shared_nuggets()
 
         return self._surface_points
 
@@ -1227,8 +1230,8 @@ class ImplicitCoKriging(object):
         else:
             # This branch only recompute the added point
             self._rescaling.set_rescaled_orientations(idx)
-        self.update_structure(update_theano='weights')
-        self._interpolator.set_theano_shared_nuggets()
+        self.update_structure(update_aesara='weights')
+        self._interpolator.set_aesara_shared_nuggets()
 
         return self._orientations, idx
 
@@ -1236,7 +1239,7 @@ class ImplicitCoKriging(object):
     @plot_delete_orientations
     def delete_orientations(self, idx: Union[list, int]):
         self._orientations.del_orientation(idx)
-        self.update_structure(update_theano='weights')
+        self.update_structure(update_aesara='weights')
         return self._orientations
 
     @_setdoc(Orientations.modify_orientations.__doc__, indent=False, position='beg')
@@ -1250,9 +1253,9 @@ class ImplicitCoKriging(object):
         self._rescaling.set_rescaled_orientations(idx)
 
         if is_surface:
-            self.update_structure(update_theano='weights')
+            self.update_structure(update_aesara='weights')
         if 'smooth' in kwargs:
-            self._interpolator.set_theano_shared_nuggets()
+            self._interpolator.set_aesara_shared_nuggets()
         return self._orientations
 
     # endregion
@@ -1262,7 +1265,7 @@ class ImplicitCoKriging(object):
     def modify_options(self, attribute, value):
         self._additional_data.options.modify_options(attribute, value)
         warnings.warn(
-            'You need to recompile the Theano code to make it the changes in options.')
+            'You need to recompile the aesara code to make it the changes in options.')
 
         return self._additional_data.options
 
@@ -1274,7 +1277,7 @@ class ImplicitCoKriging(object):
     def modify_kriging_parameters(self, attribute, value, **kwargs):
         self._additional_data.kriging_data.modify_kriging_parameters(attribute,
                                                                      value, **kwargs)
-        self._interpolator.set_theano_shared_kriging()
+        self._interpolator.set_aesara_shared_kriging()
         if attribute == 'drift equations':
             self._interpolator.set_initial_results()
             self.update_structure()
@@ -1375,7 +1378,7 @@ class ImplicitCoKriging(object):
 
             reorder_series (bool): if True reorder all pandas categories accordingly to the series.df
             sort_geometric_data (bool): It True sort the geometric data after mapping the new order
-            update_interpolator (bool): If True update the theano shared variables dependent on the structure
+            update_interpolator (bool): If True update the aesara shared variables dependent on the structure
 
         Returns:
             True
@@ -1417,7 +1420,7 @@ class ImplicitCoKriging(object):
         self._additional_data.update_default_kriging()
 
         if update_interpolator is True:
-            self._interpolator.set_theano_shared_structure(reset_ctrl=True)
+            self._interpolator.set_aesara_shared_structure(reset_ctrl=True)
 
         return True
 
@@ -1463,11 +1466,11 @@ class ImplicitCoKriging(object):
 
         return True
 
-    # region Theano interface
+    # region aesara interface
     @_setdoc(InterpolatorModel.__doc__)
-    def set_theano_graph(self, interpolator: InterpolatorModel,
+    def set_aesara_graph(self, interpolator: InterpolatorModel,
                          update_structure=True, update_kriging=True):
-        """ Pass a theano graph of a Interpolator instance other than the Model compose
+        """ Pass a aesara graph of a Interpolator instance other than the Model compose
 
         Use this method only if you know what are you doing!
 
@@ -1477,19 +1480,19 @@ class ImplicitCoKriging(object):
         Returns:
              True """
         warnings.warn(
-            'This function is going to be deprecated. Use Model.set_theano_function instead',
+            'This function is going to be deprecated. Use Model.set_aesara_function instead',
             DeprecationWarning)
-        self._interpolator.theano_graph = interpolator.theano_graph
-        self._interpolator.theano_function = interpolator.theano_function
+        self._interpolator.aesara_graph = interpolator.aesara_graph
+        self._interpolator.aesara_function = interpolator.aesara_function
         self.update_additional_data(update_structure=update_structure,
                                     update_kriging=update_kriging)
         self.update_to_interpolator()
         return True
 
     # @_setdoc(InterpolatorModel.__doc__)
-    def set_theano_function(self, interpolator: InterpolatorModel,
+    def set_aesara_function(self, interpolator: InterpolatorModel,
                             update_structure=True, update_kriging=True):
-        """Pass a theano function and its correspondent graph from an Interpolator
+        """Pass a aesara function and its correspondent graph from an Interpolator
          instance other than the Model compose
 
         Args:
@@ -1505,8 +1508,8 @@ class ImplicitCoKriging(object):
             :class:`gempy.core.interpolator.InterpolatorModel`
         """
 
-        self._interpolator.theano_graph = interpolator.theano_graph
-        self._interpolator.theano_function = interpolator.theano_function
+        self._interpolator.aesara_graph = interpolator.aesara_graph
+        self._interpolator.aesara_function = interpolator.aesara_function
         self.update_additional_data(update_structure=update_structure,
                                     update_kriging=update_kriging)
         self.update_to_interpolator()
@@ -1515,7 +1518,7 @@ class ImplicitCoKriging(object):
 
     def update_additional_data(self, update_structure=True, update_kriging=True):
         if update_structure is True:
-            self.update_structure(update_theano='matrices')
+            self.update_structure(update_aesara='matrices')
 
         if update_kriging is True:
             print('Setting kriging parameters to their default values.')

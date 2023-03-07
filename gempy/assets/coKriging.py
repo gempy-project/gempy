@@ -25,10 +25,10 @@ Created on 1/5/2017
 @author: Miguel de la Varga
 """
 
-import theano
-import theano.tensor as T
+import aesara
+import aesara.tensor  as T
 import matplotlib.pyplot as plt
-import pymc3 as pm
+import pymc as pm
 import numpy as np
 import pandas as pn
 
@@ -99,15 +99,15 @@ def transform_data(df_o, n_comp=1, log10=False):
     return df
 
 
-def theano_sed():
+def aesara_sed():
     """
-    Function to create a theano function to compute the euclidian distances efficiently
+    Function to create a aesara function to compute the euclidian distances efficiently
     Returns:
-        theano.compile.function_module.Function: Compiled function
+        aesara.compile.function_module.Function: Compiled function
 
     """
 
-    theano.config.compute_test_value = "ignore"
+    aesara.config.compute_test_value = "ignore"
 
     # Set symbolic variable as matrix (with the XYZ coords)
     coord_T_x1 = T.dmatrix()
@@ -123,13 +123,13 @@ def theano_sed():
         return sqd
 
     # Compiling function
-    f = theano.function([coord_T_x1, coord_T_x2],
+    f = aesara.function([coord_T_x1, coord_T_x2],
                         squared_euclidean_distances(coord_T_x1, coord_T_x2),
                         allow_input_downcast=False)
     return f
 
 
-# This is extremily ineficient. Try to vectorize it in theano, it is possible to gain X100
+# This is extremily ineficient. Try to vectorize it in aesara, it is possible to gain X100
 def compute_variogram(df, properties, euclidian_distances, tol=10, lags=np.logspace(0, 2.5, 100), plot=[]):
     """
     Compute the experimental variogram and cross variogram for a par of properties
@@ -220,12 +220,12 @@ def compute_crossvariogram(df, properties_names, euclidian_distances=None, **kwa
 
     # Compute euclidian distance
     if not euclidian_distances:
-        euclidian_distances = theano_sed()(df[['X', 'Y', 'Z']], df[['X', 'Y', 'Z']])
+        euclidian_distances = aesara_sed()(df[['X', 'Y', 'Z']], df[['X', 'Y', 'Z']])
 
     # Init dataframe to store the results
     experimental_variograms_frame = pn.DataFrame()
 
-    # This is extremily ineficient. Try to vectorize it in theano, it is possible to gain X100
+    # This is extremily ineficient. Try to vectorize it in aesara, it is possible to gain X100
     # Nested loop. DEPRECATED enumerate
     for i in properties_names:
         for j in properties_names:
@@ -279,9 +279,9 @@ class SGS(object):
         self.lithology = lithology
         self.geomodel = geomodel
 
-        # Theano functions
+        # aesara functions
         # ----------------
-        self.SED_f = theano_sed()
+        self.SED_f = aesara_sed()
 
         self._recursion_check = 0
 
@@ -931,10 +931,10 @@ def clustering_grid(grid_to_inter, n_clusters=50, plot=False):
     return clust
 
 
-def select_points(df, grid_to_inter, cluster, SED_f = theano_sed(), n_rep=10):
+def select_points(df, grid_to_inter, cluster, SED_f = aesara_sed(), n_rep=10):
 
     points_cluster = np.bincount(cluster.labels_)
-  #  SED_f = theano_sed()
+  #  SED_f = aesara_sed()
 
     for i in range(n_rep):
         for i_clust in range(cluster.n_clusters):
@@ -960,7 +960,7 @@ def select_points(df, grid_to_inter, cluster, SED_f = theano_sed(), n_rep=10):
 
 def SGS_compute_points(selected_coord_data, selected_grid_to_inter, selected_values_data,
                 trace, nuggets=None, n_var=1, n_exp=2, n_gaus=2):
-    #SED_f = theano_sed()
+    #SED_f = aesara_sed()
 
 
     #SED = SED_f(selected_coord_data, selected_coord_data)
@@ -1002,7 +1002,7 @@ def SGS_run(df, grid_to_inter, cluster,
     coord_data = df[['X', 'Y', 'Z']].values
     values_data = df[df.columns.difference(['X', 'Y', 'Z'])].values
 
-    SED_f = theano_sed()
+    SED_f = aesara_sed()
 
     for i in range(n_rep):
         for i_clust in range(cluster.n_clusters):
@@ -1056,7 +1056,7 @@ def SGS_run(df, grid_to_inter, cluster,
 
 # def SGS(coord_data, values_data, h_x0, select,
 #         trace, nuggets=None, n_var=1, n_exp=2, n_gaus=2):
-#     SED_f = theano_sed()
+#     SED_f = aesara_sed()
 #
 #     #for h_x0, select, grid_interpolating in selector:
 #

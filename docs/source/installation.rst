@@ -20,23 +20,23 @@ windows that required one extra step.
 Windows Installation
 ~~~~~~~~~~~~~~~~~~~~
 
-Windows does not have a **gcc compilers** pre-installed. The easiest way to get a ``theano``
-compatible compiler is by using the ``theano`` conda installation. Therefore the process
+Windows does not have a **gcc compilers** pre-installed. The easiest way to get a ``aesara``
+compatible compiler is by using the ``aesara`` conda installation. Therefore the process
 would be the following:
 
-``$ conda install theano``
+``$ conda install aesara``
 
 ``$ pip install gempy``
 
 **Notes:**
 
-- The conda version of ``theano`` comes with a non critical bug that will rise a warning (``scan_perform.c``)
-  when computing a model with gempy. Once the compiler is installed, installing the pip version of ``theano``
+- The conda version of ``aesara`` comes with a non critical bug that will rise a warning (``scan_perform.c``)
+  when computing a model with gempy. Once the compiler is installed, installing the pip version of ``aesara``
   will solve the problem:
 
-``$ pip install theano --force-reinstall``
+``$ pip install aesara --force-reinstall``
 
-- The conda version of ``theano`` is not compatible with Catalina MacOS. Use pip!
+- The conda version of ``aesara`` is not compatible with Catalina MacOS. Use pip!
 
 - For a more detailed description on the installation in case
   something does not work or for CUDA acceleration check `Windows installation guide (March 2020)`_ and
@@ -82,7 +82,7 @@ Dependencies
 ``GemPy`` requires Python 3.x and makes use of numerous open-source libraries:
 
 * pandas
-* Theano>=1.0.4
+* aesara>=1.0.4
 * matplotlib
 * numpy
 * pytest
@@ -108,24 +108,24 @@ its dependencies.
 Conflictive packages.
 ~~~~~~~~~~~~~~~~~~~~~
 
-Installing Theano (especially under Windows) and vtk can sometimes be difficult.
+Installing aesara (especially under Windows) and vtk can sometimes be difficult.
 Here, we provide advice that should use in most cases (but certainly not all):
 
 
-* ``Theano``\ :
-    install the following packages before installing theano:
+* ``aesara``\ :
+    install the following packages before installing aesara:
 
     ``$ conda install mingw libpython m2w64-toolchain``
 
-    Then install Theano via
+    Then install aesara via
 
-    ``$ conda install theano``
+    ``$ conda install aesara``
 
     If the installation fails at some point try to re-install anaconda for a single user (no administrator privileges)
     and with the Path Environment set.
-    To use Theano with ``numpy version 1.16.0`` or following, it has to be updated to ``Theano 1.0.4`` using
+    To use aesara with ``numpy version 1.16.0`` or following, it has to be updated to ``aesara 1.0.4`` using
 
-    ``$ pip install theano --upgrade``
+    ``$ pip install aesara --upgrade``
 
     Note that this is not yet available in the conda package manager.
 
@@ -219,7 +219,7 @@ Windows installation guide (March 2020)
         After this stage we should have a new empty environment attached to a user
 
 
-#. Install Theano and associated packages from the Anaconda prompt as administrator:
+#. Install aesara and associated packages from the Anaconda prompt as administrator:
 
     ``$ conda update --all``
 
@@ -229,10 +229,8 @@ Windows installation guide (March 2020)
 
     ``$ conda install git``
 
-    ``$ conda install -c conda-forge pygpu``
 
-
-    ``$ pip install theano==1.0.4``
+    ``$ pip install aesara``
 
 
 
@@ -264,11 +262,11 @@ Windows installation guide (March 2020)
 **Note**\ :
 
 
-* some other packages required by Theano are already included in Anaconda: numpy, scipy, mkl-service, nose, and sphinx.
-* ``pydot-ng`` (suggested on Theano web site) yields a lot of errors, therefore we dropped this.  It is needed to
+* some other packages required by aesara are already included in Anaconda: numpy, scipy, mkl-service, nose, and sphinx.
+* ``pydot-ng`` (suggested on aesara web site) yields a lot of errors, therefore we dropped this.  It is needed to
 handle large picture for gif/images and probably it is not needed by GemPy.
 * Trying to install all the packages in one go does not work, as well as doing the same in  Anaconda Navigator, or
-installing an older Anaconda release with Python 3.5 (Anaconda3 4.2.0) as indicated in some tutorial on Theano.
+installing an older Anaconda release with Python 3.5 (Anaconda3 4.2.0) as indicated in some tutorial on aesara.
 
 
 MacOS installation guide (May 2020)
@@ -308,7 +306,7 @@ It should work on MacOS 10.14 as well as 10.15 (Catalina).
 
 #. Install the Xcode command-line tools
 
-    In order for ``Theano`` to access the system compilers on MacOS, the Xcode command-line tools are required.
+    In order for ``aesara`` to access the system compilers on MacOS, the Xcode command-line tools are required.
     To automatically install the correct version for your OS, run:
 
     ``$ xcode-select --install``
@@ -321,18 +319,18 @@ It should work on MacOS 10.14 as well as 10.15 (Catalina).
 
     ``$ conda update --all``
 
-    Install theano via PyPi
+    Install aesara via PyPi
 
-    ``$ pip install theano==1.0.4``
+    ``$ pip install aesara``
 
-    Test the `theano` installation: run ``python``\ , then try ``import theano``\ .
+    Test the `aesara` installation: run ``python``\ , then try ``import aesara``\ .
     If you get an error (e.g. ``stdio.h`` not found), then:
 
     Test if the Xcode command-line tools are correctly installed and up-to-date.(info for
     example `here <https://osxdaily.com/2014/02/12/install-command-line-tools-mac-os-x>`_).
-    If this still fails, try installing ``theano`` through conda-forge instead:
+    If this still fails, try installing ``aesara`` through conda-forge instead:
 
-    ``$ conda install -c conda-forge theano``
+    ``$ conda install -c conda-forge aesara``
 
 
 #. ``Install GemPy``

@@ -32,7 +32,7 @@ rgeomod = pytest.importorskip("rgeomod")
 input_path = os.path.dirname(__file__)+'/../input_data'
 
 
-def TOUPDATE_rgeomod_integration(theano_f):
+def TOUPDATE_rgeomod_integration(aesara_f):
     geo_data=gp.create_data(extent=[612000, 622000, 2472000, 2480000, -1000, 1000],
                             resolution=[50, 50, 50],
                             path_f=input_path+"/gempy_foliations.csv",
@@ -52,8 +52,8 @@ def TOUPDATE_rgeomod_integration(theano_f):
     gp.plot_data(geo_data, direction="z")
 
 
-    #interp_data = gp.InterpolatorData(geo_model, compile_theano=True)
-    interp_data = theano_f
+    #interp_data = gp.InterpolatorData(geo_model, compile_aesara=True)
+    interp_data = aesara_f
     interp_data.update_interpolator(geo_data)
 
     lith_block, fault_block = gp.compute_model(interp_data)

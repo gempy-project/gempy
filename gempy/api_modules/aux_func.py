@@ -7,7 +7,7 @@ sys.path.append(path.dirname( path.dirname( path.abspath(__file__) ) ) )
 from gempy.core.model import *
 from gempy.utils.meta import _setdoc
 
-# This warning comes from numpy complaining about a theano optimization
+# This warning comes from numpy complaining about a aesara optimization
 warnings.filterwarnings("ignore",
                         message='.* a non-tuple sequence for multidimensional indexing is deprecated; use*.',
                         append=True)

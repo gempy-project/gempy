@@ -31,10 +31,10 @@ We provide the latest release version of GemPy via PyPi package services. We hig
 
 as it will take care of automatically installing all the required dependencies - except in windows that requires one extra step.
 
-Windows does not have a gcc compilers pre-installed. The easiest way to get a theano compatible compiler is by using 
-the theano conda installation. Therefore the process would be the following:
+Windows does not have a gcc compilers pre-installed. The easiest way to get a aesara compatible compiler is by using 
+the aesara conda installation. Therefore the process would be the following:
 
-`$ conda install theano`
+`$ conda install aesara`
 
 `$ pip install gempy`
 

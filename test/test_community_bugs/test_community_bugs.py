@@ -54,8 +54,8 @@ def test_issue_569(data_path):
     plt.show(block=False)
 
     gp.set_interpolator(geo_model,
-                        compile_theano=True,
-                        theano_optimizer='fast_compile',
+                        compile_aesara=True,
+                        aesara_optimizer='fast_compile',
                         )
     gp.get_data(geo_model, 'kriging')
 
@@ -85,8 +85,8 @@ def test_issue_564(data_path):
                              remove_unused_series=True)
 
     gp.set_interpolator(geo_model,
-                        compile_theano=True,
-                        theano_optimizer='fast_compile')
+                        compile_aesara=True,
+                        aesara_optimizer='fast_compile')
 
     sol = gp.compute_model(geo_model)
     gp.plot_2d(geo_model)

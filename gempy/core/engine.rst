@@ -29,7 +29,7 @@ Graph Logic
 Tensor super class
 ^^^^^^^^^^^^^^^^^^
 
-Theano, numpy and tensorflow have a very similar syntax but not 100% exact.
+aesara, numpy and tensorflow have a very similar syntax but not 100% exact.
 We could create a tensor wrapper that makes sure that it returns the right value.
 For example sin is the same in all 3:
 
@@ -39,10 +39,10 @@ For example sin is the same in all 3:
         def __init__(package='numpy')
             if package=='numpy':
                 _tt = np
-            elif package=='theano':
-                _tt = theano.tensor
+            elif package=='aesara':
+                _tt = aesara.tensor
 
-        # Same numpy-theano easy
+        # Same numpy-aesara easy
         def sin(x):
             return _tt.sin(x)
 
@@ -51,14 +51,14 @@ For example sin is the same in all 3:
             if package=='numpy':
                 x = new_slice
                 return x
-            if package == 'theano':
+            if package == 'aesara':
                 return _tt.set_subtensor(x , new_slice)
 
 Advantages
 ----------
 
 - Maintainability: Not having to write 3 different graphs
-- If we use theano syntax as base for `GemPyTensor` we do not need to rewrite even
+- If we use aesara syntax as base for `GemPyTensor` we do not need to rewrite even
   the current graph
 - If a function exist in one package, we can mock it on the others using the correspondent wrappers.
 

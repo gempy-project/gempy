@@ -69,8 +69,8 @@ ret = geo_model.set_fault_relation(fr)
 
 geo_model.set_topography(source='random')
 interp_data = gp.set_interpolator(geo_model,
-                                  compile_theano=True,
-                                  theano_optimizer='fast_run', gradient=False,
+                                  compile_aesara=True,
+                                  aesara_optimizer='fast_run', gradient=False,
                                   dtype='float32')
 gp.compute_model(geo_model)
 

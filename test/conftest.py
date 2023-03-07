@@ -19,20 +19,20 @@ def data_path():
 @pytest.fixture(scope='session')
 def interpolator():
     m = gp.create_model('JustInterpolator')
-    return gp.set_interpolator(m, theano_optimizer='fast_run')
+    return gp.set_interpolator(m, aesara_optimizer='fast_run')
 
 
 @pytest.fixture(scope='session')
 def interpolator_gravity():
     m = gp.create_model('InterpolatorGravity')
-    return gp.set_interpolator(m, theano_optimizer='fast_run', output=['gravity'],
+    return gp.set_interpolator(m, aesara_optimizer='fast_run', output=['gravity'],
                                gradient=False)
 
 
 @pytest.fixture(scope='session')
 def interpolator_magnetics():
     m = gp.create_model('InterpolatorMagnetics')
-    return gp.set_interpolator(m, theano_optimizer='fast_run', output=['magnetics'],
+    return gp.set_interpolator(m, aesara_optimizer='fast_run', output=['magnetics'],
                                gradient=False)
 
 
@@ -68,7 +68,7 @@ def one_fault_model(interpolator):
                              )
     model.set_is_fault(['Fault_Series'])
 
-    model.set_theano_function(interpolator)
+    model.set_aesara_function(interpolator)
 
     return model
 
@@ -105,7 +105,7 @@ def unconformity_model(interpolator):
 
     # with open("input_data/geomodel_jan_sol.p", "rb") as f:
     # geo_model.solutions = load(f)
-    geo_model.set_theano_function(interpolator)
+    geo_model.set_aesara_function(interpolator)
     gp.compute_model(geo_model)
     return geo_model
 
@@ -129,7 +129,7 @@ def unconformity_model_topo(interpolator):
 
     # with open("input_data/geomodel_jan_sol.p", "rb") as f:
     # geo_model.solutions = load(f)
-    geo_model.set_theano_function(interpolator)
+    geo_model.set_aesara_function(interpolator)
     gp.compute_model(geo_model)
     return geo_model
 
@@ -143,7 +143,7 @@ def model_horizontal_two_layers(interpolator):
                  path_o=input_path + "/GeoModeller/test_a/test_a_Foliations.csv",
                  path_i=input_path + "/GeoModeller/test_a/test_a_Points.csv")
 
-    geo_model.set_theano_function(interpolator)
+    geo_model.set_aesara_function(interpolator)
     gp.compute_model(geo_model)
     return geo_model
 
@@ -162,6 +162,6 @@ def model_complex(interpolator):
                               "Basement_Series": ('basement')})
 
     model.set_is_fault(['Fault_Series'])
-    model.set_theano_function(interpolator)
+    model.set_aesara_function(interpolator)
 
     return model

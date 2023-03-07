@@ -17,32 +17,32 @@
 
 DEP-- I need to update this string
 Function that generates the symbolic code to perform the interpolation. Calling this function creates
- both the theano functions for the potential field and the block.
+ both the aesara functions for the potential field and the block.
 
 Returns:
-    theano function for the potential field
-    theano function for the block
+    aesara function for the potential field
+    aesara function for the block
 """
-import theano
-import theano.tensor as T
+import aesara
+import aesara.tensor as T
 import numpy as np
 import sys
 
-theano.config.openmp_elemwise_minsize = 10000
-theano.config.openmp = True
+aesara.config.openmp_elemwise_minsize = 10000
+aesara.config.openmp = True
 
-theano.config.optimizer = 'fast_compile'
-theano.config.floatX = 'float64'
-theano.config.on_opt_error = 'ignore'
+aesara.config.optimizer = 'fast_compile'
+aesara.config.floatX = 'float64'
+aesara.config.on_opt_error = 'ignore'
 
-theano.config.exception_verbosity = 'high'
-theano.config.compute_test_value = 'off'
-theano.config.profile_memory = False
-theano.config.scan.debug = False
-theano.config.profile = False
+aesara.config.exception_verbosity = 'high'
+aesara.config.compute_test_value = 'off'
+aesara.config.profile_memory = False
+aesara.config.scan.debug = False
+aesara.config.profile = False
 
 
-class TheanoGraph(object):
+class aesaraGraph(object):
     """
     This class is used to help to divide the construction of the graph into sensical parts. All its methods buildDEP2 a part
     of the graph. Every method can be seen as a branch and collection of branches until the last method that will be the
@@ -75,8 +75,8 @@ class TheanoGraph(object):
             self.verbose = verbose
         self.dot_version = False
 
-        theano.config.floatX = dtype
-        theano.config.optimizer = optimizer
+        aesara.config.floatX = dtype
+        aesara.config.optimizer = optimizer
 
         # Creation of symbolic parameters
         # =============
@@ -84,8 +84,8 @@ class TheanoGraph(object):
         # =============
 
         # They weight the contribution of the surface_points against the orientations.
-        self.i_reescale = theano.shared(np.cast[dtype](4.))
-        self.gi_reescale = theano.shared(np.cast[dtype](2.))
+        self.i_reescale = aesara.shared(np.cast[dtype](4.))
+        self.gi_reescale = aesara.shared(np.cast[dtype](2.))
 
         # Number of dimensions. Now it is not too variable anymore
         self.n_dimensions = 3
@@ -99,36 +99,36 @@ class TheanoGraph(object):
 
         # SEMI-VARIABLES
         # --------------
-        self.grid_val_T = theano.shared(np.cast[dtype](np.zeros((2, 200))), 'Coordinates of the grid '
+        self.grid_val_T = aesara.shared(np.cast[dtype](np.zeros((2, 200))), 'Coordinates of the grid '
                                                                             'points to interpolate')
         # Shape is 9x2, 9 drift funcitons and 2 points
-        self.universal_grid_matrix_T = theano.shared(np.cast[dtype](np.zeros((9, 9)))) #TODO future DEP
+        self.universal_grid_matrix_T = aesara.shared(np.cast[dtype](np.zeros((9, 9)))) #TODO future DEP
 
         # FORMATIONS
         # ----------
-        self.n_surface = theano.shared(np.arange(2, 5, dtype='int32'), "ID of the surface")
+        self.n_surface = aesara.shared(np.arange(2, 5, dtype='int32'), "ID of the surface")
         self.n_surface_op = self.n_surface
-        self.surface_values = theano.shared((np.arange(2, 4, dtype=dtype).reshape(2, -1)), "Value of the surface to compute")
+        self.surface_values = aesara.shared((np.arange(2, 4, dtype=dtype).reshape(2, -1)), "Value of the surface to compute")
         self.n_surface_op_float = self.surface_values
 
         # FAULTS
         # ------
         # Init fault relation matrix
-        self.fault_relation = theano.shared(np.array([[0, 1, 0, 1],
+        self.fault_relation = aesara.shared(np.array([[0, 1, 0, 1],
                                                       [0, 0, 1, 1],
                                                       [0, 0, 0, 1],
                                                       [0, 0, 0, 0]]), 'fault relation matrix')
 
-        self.inf_factor = theano.shared(np.ones(200, dtype='int32') * 10, 'Arbitrary scalar to make df infinite')
+        self.inf_factor = aesara.shared(np.ones(200, dtype='int32') * 10, 'Arbitrary scalar to make df infinite')
 
         # KRIGING
         # -------
-        self.a_T = theano.shared(np.cast[dtype](-1.), "Range")
-        self.c_o_T = theano.shared(np.cast[dtype](-1.), 'Covariance at 0')
-        self.nugget_effect_grad_T = theano.shared(np.cast[dtype](-1), 'Nugget effect of gradients')
-        self.nugget_effect_scalar_T = theano.shared(np.cast[dtype](-1), 'Nugget effect of scalar')
-        self.n_universal_eq_T = theano.shared(np.zeros(5, dtype='int32'), "Grade of the universal drift")
-        self.n_universal_eq_T_op = theano.shared(3)
+        self.a_T = aesara.shared(np.cast[dtype](-1.), "Range")
+        self.c_o_T = aesara.shared(np.cast[dtype](-1.), 'Covariance at 0')
+        self.nugget_effect_grad_T = aesara.shared(np.cast[dtype](-1), 'Nugget effect of gradients')
+        self.nugget_effect_scalar_T = aesara.shared(np.cast[dtype](-1), 'Nugget effect of scalar')
+        self.n_universal_eq_T = aesara.shared(np.zeros(5, dtype='int32'), "Grade of the universal drift")
+        self.n_universal_eq_T_op = aesara.shared(3)
 
         # STRUCTURE
         # ---------
@@ -136,17 +136,17 @@ class TheanoGraph(object):
         # using these values to the different potential fields and surfaces
         self.is_fault = is_fault
         self.is_lith = is_lith
-        self.n_faults = theano.shared(0, 'Number of df')
-        self.n_surfaces_per_series = theano.shared(np.arange(2, dtype='int32'), 'List with the number of surfaces')
+        self.n_faults = aesara.shared(0, 'Number of df')
+        self.n_surfaces_per_series = aesara.shared(np.arange(2, dtype='int32'), 'List with the number of surfaces')
 
         # This is not accumulative
-        self.number_of_points_per_surface_T = theano.shared(np.zeros(3, dtype='int32')) #TODO is DEP?
+        self.number_of_points_per_surface_T = aesara.shared(np.zeros(3, dtype='int32')) #TODO is DEP?
         self.number_of_points_per_surface_T_op = self.number_of_points_per_surface_T
         # This is accumulative
-        self.npf = theano.shared(np.zeros(3, dtype='int32'), 'Number of points per surface accumulative')
+        self.npf = aesara.shared(np.zeros(3, dtype='int32'), 'Number of points per surface accumulative')
         self.npf_op = self.npf[[0, -2]]
-        self.len_series_i = theano.shared(np.arange(2, dtype='int32'), 'Length of surface_points in every series')
-        self.len_series_f = theano.shared(np.arange(2, dtype='int32'), 'Length of foliations in every series')
+        self.len_series_i = aesara.shared(np.arange(2, dtype='int32'), 'Length of surface_points in every series')
+        self.len_series_f = aesara.shared(np.arange(2, dtype='int32'), 'Length of foliations in every series')
 
         # VARIABLES
         # ---------
@@ -177,11 +177,11 @@ class TheanoGraph(object):
 
         # SOLUTION
         # --------
-        self.final_block = theano.shared(np.cast[dtype](np.zeros((1, 3))), "Final block computed")
+        self.final_block = aesara.shared(np.cast[dtype](np.zeros((1, 3))), "Final block computed")
 
-        self.final_scalar_field_at_surfaces = theano.shared(
+        self.final_scalar_field_at_surfaces = aesara.shared(
             np.zeros(self.n_surfaces_per_series.get_value().sum(), dtype=dtype))
-        self.final_scalar_field_at_faults = theano.shared(
+        self.final_scalar_field_at_faults = aesara.shared(
             np.zeros(self.n_surfaces_per_series.get_value().sum(), dtype=dtype))
 
         self.final_scalar_field_at_surfaces_op = self.final_scalar_field_at_surfaces
@@ -211,14 +211,14 @@ class TheanoGraph(object):
         # GRAVITY
         # -------
         if output is 'gravity':
-            self.densities = theano.shared(np.cast[dtype](np.zeros(3)), "List with the densities")
-            self.tz = theano.shared(np.cast[dtype](np.zeros((1, 3))), "Component z")
-            self.select = theano.shared(np.cast['int8'](np.zeros(3)), "Select nearby cells")
+            self.densities = aesara.shared(np.cast[dtype](np.zeros(3)), "List with the densities")
+            self.tz = aesara.shared(np.cast[dtype](np.zeros((1, 3))), "Component z")
+            self.select = aesara.shared(np.cast['int8'](np.zeros(3)), "Select nearby cells")
             # Init gray voxels for gravity
-            self.weigths_weigths = theano.shared(np.ones(0))
-            self.weigths_index = theano.shared(np.ones(0, dtype='int32'))
+            self.weigths_weigths = aesara.shared(np.ones(0))
+            self.weigths_index = aesara.shared(np.ones(0, dtype='int32'))
 
-        self.weights = theano.shared(None)
+        self.weights = aesara.shared(None)
 
     def set_rest_ref_matrix(self):
         ref_positions = T.cumsum(T.concatenate((T.stack(0), self.number_of_points_per_surface_T[:-1] + 1)))
@@ -231,7 +231,7 @@ class TheanoGraph(object):
 
     def input_parameters_list(self):
         """
-        Create a list with the symbolic variables to use when we compile the theano function
+        Create a list with the symbolic variables to use when we compile the aesara function
 
         Returns:
             list: [self.dips_position_all, self.dip_angles_all, self.azimuth_all, self.polarity_all,
@@ -247,11 +247,11 @@ class TheanoGraph(object):
         Compute the euclidian distances in 3D between all the points in x_1 and x_2
 
         Args:
-            x_1 (theano.tensor.matrix): shape n_points x number dimension
-            x_2 (theano.tensor.matrix): shape n_points x number dimension
+            x_1 (aesara.tensor.matrix): shape n_points x number dimension
+            x_2 (aesara.tensor.matrix): shape n_points x number dimension
 
         Returns:
-            theano.tensor.matrix: Distancse matrix. shape n_points x n_points
+            aesara.tensor.matrix: Distancse matrix. shape n_points x n_points
         """
 
         # T.maximum avoid negative numbers increasing stability
@@ -262,7 +262,7 @@ class TheanoGraph(object):
         ))
 
         if False:
-            sqd = theano.printing.Print('sed')(sqd)
+            sqd = aesara.printing.Print('sed')(sqd)
 
         return sqd
 
@@ -285,11 +285,11 @@ class TheanoGraph(object):
         length_of_C = length_of_CG + length_of_CGI + length_of_U_I + length_of_faults
 
         if 'matrices_shapes' in self.verbose:
-            length_of_CG = theano.printing.Print("length_of_CG")(length_of_CG)
-            length_of_CGI = theano.printing.Print("length_of_CGI")(length_of_CGI)
-            length_of_U_I = theano.printing.Print("length_of_U_I")(length_of_U_I)
-            length_of_faults = theano.printing.Print("length_of_faults")(length_of_faults)
-            length_of_C = theano.printing.Print("length_of_C")(length_of_C)
+            length_of_CG = aesara.printing.Print("length_of_CG")(length_of_CG)
+            length_of_CGI = aesara.printing.Print("length_of_CGI")(length_of_CGI)
+            length_of_U_I = aesara.printing.Print("length_of_U_I")(length_of_U_I)
+            length_of_faults = aesara.printing.Print("length_of_faults")(length_of_faults)
+            length_of_C = aesara.printing.Print("length_of_C")(length_of_C)
 
         return length_of_CG, length_of_CGI, length_of_U_I, length_of_faults, length_of_C
 
@@ -298,7 +298,7 @@ class TheanoGraph(object):
         Create covariance function for the surface_points
 
         Returns:
-            theano.tensor.matrix: covariance of the surface_points. Shape number of points in rest x number of
+            aesara.tensor.matrix: covariance of the surface_points. Shape number of points in rest x number of
             points in rest
 
         """
@@ -333,11 +333,11 @@ class TheanoGraph(object):
               3 / 4 * (sed_ref_ref / self.a_T) ** 7))))
 
         C_I += T.eye(C_I.shape[0]) * 2 * self.nugget_effect_scalar_T
-        # Add name to the theano node
+        # Add name to the aesara node
         C_I.name = 'Covariance SurfacePoints'
 
         if str(sys._getframe().f_code.co_name) in self.verbose:
-            C_I = theano.printing.Print('Cov surface_points')(C_I)
+            C_I = aesara.printing.Print('Cov surface_points')(C_I)
 
         return C_I
 
@@ -346,7 +346,7 @@ class TheanoGraph(object):
          Create covariance function for the gradients
 
          Returns:
-             theano.tensor.matrix: covariance of the gradients. Shape number of points in dip_pos x number of
+             aesara.tensor.matrix: covariance of the gradients. Shape number of points in dip_pos x number of
              points in dip_pos
 
          """
@@ -355,7 +355,7 @@ class TheanoGraph(object):
         sed_dips_dips = self.squared_euclidean_distances(self.dips_position_tiled, self.dips_position_tiled)
 
         if 'sed_dips_dips' in self.verbose:
-            sed_dips_dips = theano.printing.Print('sed_dips_dips')(sed_dips_dips)
+            sed_dips_dips = aesara.printing.Print('sed_dips_dips')(sed_dips_dips)
 
         # Cartesian distances between dips positions
         h_u = T.vertical_stack(
@@ -412,15 +412,15 @@ class TheanoGraph(object):
         # TODO: This function can be substitued by simply adding the nugget effect to the diag if I remove the condition
         C_G += T.eye(C_G.shape[0])*self.nugget_effect_grad_T
 
-        # Add name to the theano node
+        # Add name to the aesara node
         C_G.name = 'Covariance Gradient'
 
         if verbose > 1:
-            theano.printing.pydotprint(C_G, outfile="graphs/" + sys._getframe().f_code.co_name + ".png",
+            aesara.printing.pydotprint(C_G, outfile="graphs/" + sys._getframe().f_code.co_name + ".png",
                                        var_with_name_simple=True)
 
         if str(sys._getframe().f_code.co_name) in self.verbose:
-            C_G = theano.printing.Print('Cov Gradients')(C_G)
+            C_G = aesara.printing.Print('Cov Gradients')(C_G)
 
         return C_G
 
@@ -428,7 +428,7 @@ class TheanoGraph(object):
         """
         Create covariance function for the gradiens
         Returns:
-            theano.tensor.matrix: covariance of the gradients. Shape number of points in rest x number of
+            aesara.tensor.matrix: covariance of the gradients. Shape number of points in rest x number of
               points in dip_pos
         """
 
@@ -471,11 +471,11 @@ class TheanoGraph(object):
                               21 / 4 * sed_dips_ref ** 5 / self.a_T ** 7)))
         ).T
 
-        # Add name to the theano node
+        # Add name to the aesara node
         C_GI.name = 'Covariance gradient interface'
 
         if str(sys._getframe().f_code.co_name)+'_g' in self.verbose:
-            theano.printing.pydotprint(C_GI, outfile="graphs/" + sys._getframe().f_code.co_name + ".png",
+            aesara.printing.pydotprint(C_GI, outfile="graphs/" + sys._getframe().f_code.co_name + ".png",
                                        var_with_name_simple=True)
         return C_GI
 
@@ -484,10 +484,10 @@ class TheanoGraph(object):
         Create the drift matrices for the potential field and its gradient
 
         Returns:
-            theano.tensor.matrix: Drift matrix for the surface_points. Shape number of points in rest x 3**degree drift
+            aesara.tensor.matrix: Drift matrix for the surface_points. Shape number of points in rest x 3**degree drift
             (except degree 0 that is 0)
 
-            theano.tensor.matrix: Drift matrix for the gradients. Shape number of points in dips x 3**degree drift
+            aesara.tensor.matrix: Drift matrix for the gradients. Shape number of points in dips x 3**degree drift
             (except degree 0 that is 0)
         """
 
@@ -538,19 +538,19 @@ class TheanoGraph(object):
              )).T
 
         if 'U_I' in self.verbose:
-            U_I = theano.printing.Print('U_I')(U_I)
+            U_I = aesara.printing.Print('U_I')(U_I)
 
         if 'U_G' in self.verbose:
-            U_G = theano.printing.Print('U_G')(U_G)
+            U_G = aesara.printing.Print('U_G')(U_G)
 
         if str(sys._getframe().f_code.co_name)+'_g' in self.verbose:
-            theano.printing.pydotprint(U_I, outfile="graphs/" + sys._getframe().f_code.co_name + "_i.png",
+            aesara.printing.pydotprint(U_I, outfile="graphs/" + sys._getframe().f_code.co_name + "_i.png",
                                        var_with_name_simple=True)
 
-            theano.printing.pydotprint(U_G, outfile="graphs/" + sys._getframe().f_code.co_name + "_g.png",
+            aesara.printing.pydotprint(U_G, outfile="graphs/" + sys._getframe().f_code.co_name + "_g.png",
                                        var_with_name_simple=True)
 
-        # Add name to the theano node
+        # Add name to the aesara node
         if U_I:
             U_I.name = 'Drift surface_points'
             U_G.name = 'Drift foliations'
@@ -566,10 +566,10 @@ class TheanoGraph(object):
 
             list:
 
-            - theano.tensor.matrix: Drift matrix for the surface_points. Shape number of points in rest x n df. This drif
+            - aesara.tensor.matrix: Drift matrix for the surface_points. Shape number of points in rest x n df. This drif
               is a simple addition of an arbitrary number
 
-            - theano.tensor.matrix: Drift matrix for the gradients. Shape number of points in dips x n df. For
+            - aesara.tensor.matrix: Drift matrix for the gradients. Shape number of points in dips x n df. For
               discrete values this matrix will be null since the derivative of a constant is 0
         """
 
@@ -578,7 +578,7 @@ class TheanoGraph(object):
         # self.fault_matrix contains the df volume of the grid and the rest and ref points. For the drift we need
         # to make it relative to the reference point
         if 'fault matrix' in self.verbose:
-            self.fault_matrix = theano.printing.Print('self.fault_matrix')(self.fault_matrix)
+            self.fault_matrix = aesara.printing.Print('self.fault_matrix')(self.fault_matrix)
         interface_loc = self.fault_matrix.shape[1] - 2 * self.len_points
 
         fault_matrix_at_surface_points_rest = self.fault_matrix[:,
@@ -592,8 +592,8 @@ class TheanoGraph(object):
         F_G = T.zeros((length_of_faults, length_of_CG)) + 0.0001
 
         if str(sys._getframe().f_code.co_name) in self.verbose:
-            F_I = theano.printing.Print('Faults surface_points matrix')(F_I)
-            F_G = theano.printing.Print('Faults gradients matrix')(F_G)
+            F_I = aesara.printing.Print('Faults surface_points matrix')(F_I)
+            F_G = aesara.printing.Print('Faults gradients matrix')(F_G)
 
         return F_I, F_G
 
@@ -602,7 +602,7 @@ class TheanoGraph(object):
         Set all the previous covariances together in the universal cokriging matrix
 
         Returns:
-            theano.tensor.matrix: Multivariate covariance
+            aesara.tensor.matrix: Multivariate covariance
         """
 
         # Lengths
@@ -652,10 +652,10 @@ class TheanoGraph(object):
         C_matrix = T.set_subtensor(C_matrix[length_of_CG+length_of_CGI+length_of_U_I:, 0:length_of_CG], F_G)
         # Set F_I
         C_matrix = T.set_subtensor(C_matrix[length_of_CG+length_of_CGI+length_of_U_I:, length_of_CG:length_of_CG + length_of_CGI], F_I)
-        # Add name to the theano node
+        # Add name to the aesara node
         C_matrix.name = 'Block Covariance Matrix'
         if str(sys._getframe().f_code.co_name) in self.verbose:
-            C_matrix = theano.printing.Print('cov_function')(C_matrix)
+            C_matrix = aesara.printing.Print('cov_function')(C_matrix)
 
         return C_matrix
 
@@ -667,7 +667,7 @@ class TheanoGraph(object):
             verbose: -deprecated-
 
         Returns:
-            theano.tensor.vector: independent vector
+            aesara.tensor.vector: independent vector
         """
 
         length_of_C = self.matrices_shapes()[-1]
@@ -685,9 +685,9 @@ class TheanoGraph(object):
         b = T.set_subtensor(b[0:G.shape[0]], G)
 
         if str(sys._getframe().f_code.co_name) in self.verbose:
-            b = theano.printing.Print('b vector')(b)
+            b = aesara.printing.Print('b vector')(b)
 
-        # Add name to the theano node
+        # Add name to the aesara node
         b.name = 'b vector'
         return b
 
@@ -697,22 +697,22 @@ class TheanoGraph(object):
         decomposition in all likelihood
 
         Returns:
-            theano.tensor.vector: Dual kriging parameters
+            aesara.tensor.vector: Dual kriging parameters
 
         """
         C_matrix = self.covariance_matrix()
         b = self.b_vector()
         # Solving the kriging system
-        import theano.tensor.slinalg
+        import aesara.tensor .slinalg
         b2 = T.tile(b, (1, 1)).T
-        DK_parameters = theano.tensor.slinalg.solve(C_matrix, b2)
+        DK_parameters = aesara.tensor.slinalg.solve(C_matrix, b2)
         DK_parameters = DK_parameters.reshape((DK_parameters.shape[0],))
 
-        # Add name to the theano node
+        # Add name to the aesara node
         DK_parameters.name = 'Dual Kriging parameters'
 
         if str(sys._getframe().f_code.co_name) in self.verbose:
-            DK_parameters = theano.printing.Print(DK_parameters.name)(DK_parameters)
+            DK_parameters = aesara.printing.Print(DK_parameters.name)(DK_parameters)
         return DK_parameters
 
     def x_to_interpolate(self, verbose=0):
@@ -722,18 +722,18 @@ class TheanoGraph(object):
         to avoid to recompute.
 
         Returns:
-            theano.tensor.matrix: The 3D points of the given grid plus the reference and rest points
+            aesara.tensor.matrix: The 3D points of the given grid plus the reference and rest points
         """
 
         grid_val = T.concatenate([self.grid_val_T, self.rest_layer_points_all,
                                   self.ref_layer_points_all])[self.yet_simulated, :]
 
         if verbose > 1:
-            theano.printing.pydotprint(grid_val, outfile="graphs/" + sys._getframe().f_code.co_name + ".png",
+            aesara.printing.pydotprint(grid_val, outfile="graphs/" + sys._getframe().f_code.co_name + ".png",
                                        var_with_name_simple=True)
 
         if 'grid_val' in self.verbose:
-            grid_val = theano.printing.Print('Points to interpolate')(grid_val)
+            grid_val = aesara.printing.Print('Points to interpolate')(grid_val)
 
         return grid_val
 
@@ -743,7 +743,7 @@ class TheanoGraph(object):
         dimensions len(DK)x(grid) but in the future maybe I have to try to loop all this part so consume less memory
 
         Returns:
-            theano.tensor.matrix: Matrix with the Dk parameters repeated for all the points to interpolate
+            aesara.tensor.matrix: Matrix with the Dk parameters repeated for all the points to interpolate
         """
 
         grid_val = self.x_to_interpolate()
@@ -766,7 +766,7 @@ class TheanoGraph(object):
         Computation of the contribution of the foliations at every point to interpolate
 
         Returns:
-            theano.tensor.vector: Contribution of all foliations (input) at every point to interpolate
+            aesara.tensor.vector: Contribution of all foliations (input) at every point to interpolate
         """
         if weights is None:
             weights = self.extend_dual_kriging()
@@ -805,11 +805,11 @@ class TheanoGraph(object):
                                    35 / 2 * sed_dips_SimPoint ** 3 / self.a_T ** 5 +
                                    21 / 4 * sed_dips_SimPoint ** 5 / self.a_T ** 7))))
 
-        # Add name to the theano node
+        # Add name to the aesara node
         sigma_0_grad.name = 'Contribution of the foliations to the potential field at every point of the grid'
 
         if str(sys._getframe().f_code.co_name) in self.verbose:
-            sigma_0_grad = theano.printing.Print('interface_gradient_contribution')(sigma_0_grad)
+            sigma_0_grad = aesara.printing.Print('interface_gradient_contribution')(sigma_0_grad)
 
         return sigma_0_grad
 
@@ -818,7 +818,7 @@ class TheanoGraph(object):
         Computation of the contribution of the foliations at every point to interpolate
 
         Returns:
-            theano.tensor.vector: Contribution of all foliations (input) at every point to interpolate
+            aesara.tensor.vector: Contribution of all foliations (input) at every point to interpolate
         """
 
         if direction == 'x':
@@ -871,7 +871,7 @@ class TheanoGraph(object):
           Computation of the contribution of the surface_points at every point to interpolate
 
           Returns:
-              theano.tensor.vector: Contribution of all surface_points (input) at every point to interpolate
+              aesara.tensor.vector: Contribution of all surface_points (input) at every point to interpolate
           """
 
         if weights is None:
@@ -914,7 +914,7 @@ class TheanoGraph(object):
                                 7 / 2 * (sed_ref_SimPoint / self.a_T) ** 5 +
                                 3 / 4 * (sed_ref_SimPoint / self.a_T) ** 7))))))
 
-        # Add name to the theano node
+        # Add name to the aesara node
         sigma_0_interf.name = 'Contribution of the surface_points to the potential field at every point of the grid'
 
         return sigma_0_interf
@@ -927,7 +927,7 @@ class TheanoGraph(object):
             direction_val = 1
         if direction == 'z':
             direction_val = 2
-        self.gi_reescale = theano.shared(1)
+        self.gi_reescale = aesara.shared(1)
 
 
         if weights is None:
@@ -943,7 +943,7 @@ class TheanoGraph(object):
         sed_dips_SimPoint = self.squared_euclidean_distances(grid_val, self.dips_position_tiled).T
 
         if 'sed_dips_SimPoint' in self.verbose:
-            sed_dips_SimPoint = theano.printing.Print('sed_dips_SimPoint')(sed_dips_SimPoint)
+            sed_dips_SimPoint = aesara.printing.Print('sed_dips_SimPoint')(sed_dips_SimPoint)
 
         # Cartesian distances between dips positions
         h_u = T.tile(self.dips_position[:, direction_val] - grid_val[:, direction_val].reshape((grid_val[:, direction_val].shape[0], 1)), 3)
@@ -986,7 +986,7 @@ class TheanoGraph(object):
         Computation of the contribution of the universal drift at every point to interpolate
 
         Returns:
-            theano.tensor.vector: Contribution of the universal drift (input) at every point to interpolate
+            aesara.tensor.vector: Contribution of the universal drift (input) at every point to interpolate
         """
         if weights is None:
             weights = self.extend_dual_kriging()
@@ -1055,7 +1055,7 @@ class TheanoGraph(object):
             f_0.name = 'Contribution of the universal drift to the potential field at every point of the grid'
 
         if str(sys._getframe().f_code.co_name) in self.verbose:
-            f_0 = theano.printing.Print('Universal terms contribution')(f_0)
+            f_0 = aesara.printing.Print('Universal terms contribution')(f_0)
 
         return f_0
 
@@ -1065,7 +1065,7 @@ class TheanoGraph(object):
         if grid_val is None:
             grid_val = self.x_to_interpolate()
 
-        self.gi_reescale = theano.shared(2)
+        self.gi_reescale = aesara.shared(2)
 
         length_of_CG, length_of_CGI, length_of_U_I, length_of_faults, length_of_C = self.matrices_shapes()
 
@@ -1129,7 +1129,7 @@ class TheanoGraph(object):
         compute a whole block model with the df data
 
         Returns:
-            theano.tensor.vector: Contribution of the df drift (input) at every point to interpolate
+            aesara.tensor.vector: Contribution of the df drift (input) at every point to interpolate
         """
         if weights is None:
             weights = self.extend_dual_kriging()
@@ -1144,11 +1144,11 @@ class TheanoGraph(object):
             f_1 = T.dot(
                 weights[length_of_CG + length_of_CGI + length_of_U_I:], fault_matrix_selection_non_zero)
 
-        # Add name to the theano node
+        # Add name to the aesara node
         f_1.name = 'Faults contribution'
 
         if str(sys._getframe().f_code.co_name) in self.verbose:
-            f_1 = theano.printing.Print('Faults contribution')(f_1)
+            f_1 = aesara.printing.Print('Faults contribution')(f_1)
 
         return f_1
 
@@ -1211,7 +1211,7 @@ class TheanoGraph(object):
         """
         Compute the potential field at all the interpolation points, i.e. grid plus rest plus ref
         Returns:
-            theano.tensor.vector: Potential fields at all points
+            aesara.tensor.vector: Potential fields at all points
 
         """
         grid_val = self.x_to_interpolate()
@@ -1222,15 +1222,15 @@ class TheanoGraph(object):
         grid_shape = T.stack(grid_val.shape[0])
         Z_x_init = T.zeros(grid_shape, dtype='float32')
         if 'grid_shape' in self.verbose:
-            grid_shape = theano.printing.Print('grid_shape')(grid_shape)
+            grid_shape = aesara.printing.Print('grid_shape')(grid_shape)
 
         steps = 1e13/self.matrices_shapes()[-1]/grid_shape
         slices = T.concatenate((T.arange(0, grid_shape[0], steps[0], dtype='int64'), grid_shape))
 
         if 'slices' in self.verbose:
-            slices = theano.printing.Print('slices')(slices)
+            slices = aesara.printing.Print('slices')(slices)
 
-        Z_x_loop, updates3 = theano.scan(
+        Z_x_loop, updates3 = aesara.scan(
             fn=self.scalar_field_loop,
             outputs_info=[Z_x_init],
             sequences=[dict(input=slices, taps=[0, 1])],
@@ -1243,7 +1243,7 @@ class TheanoGraph(object):
         Z_x.name = 'Value of the potential field at every point'
 
         if str(sys._getframe().f_code.co_name) in self.verbose:
-            Z_x = theano.printing.Print('Potential field at all points')(Z_x)
+            Z_x = aesara.printing.Print('Potential field at all points')(Z_x)
 
         return Z_x
 
@@ -1257,18 +1257,18 @@ class TheanoGraph(object):
 
         Z_x_init = T.zeros(grid_shape, dtype='float32')
         if 'grid_shape' in self.verbose:
-            grid_shape = theano.printing.Print('grid_shape')(grid_shape)
+            grid_shape = aesara.printing.Print('grid_shape')(grid_shape)
 
         steps = 1e13 / self.matrices_shapes()[-1] / grid_shape
         slices = T.concatenate((T.arange(0, grid_shape[0], steps[0], dtype='int64'), grid_shape))
 
         if 'slices' in self.verbose:
-            slices = theano.printing.Print('slices')(slices)
+            slices = aesara.printing.Print('slices')(slices)
 
         G_field = T.zeros((3, self.grid_val_T.shape[0]))
 
         if 'Gx' in gradients:
-            Gx_loop, updates5 = theano.scan(
+            Gx_loop, updates5 = aesara.scan(
                 fn=self.gradient_field_loop_x,
                 outputs_info=[Z_x_init],
                 sequences=[dict(input=slices, taps=[0, 1])],
@@ -1282,7 +1282,7 @@ class TheanoGraph(object):
             G_field = T.set_subtensor(G_field[0, :], Gx)
 
         if 'Gy' in gradients:
-            Gy_loop, updates6 = theano.scan(
+            Gy_loop, updates6 = aesara.scan(
                 fn=self.gradient_field_loop_y,
                 outputs_info=[Z_x_init],
                 sequences=[dict(input=slices, taps=[0, 1])],
@@ -1296,7 +1296,7 @@ class TheanoGraph(object):
             G_field = T.set_subtensor(G_field[1, :], Gy)
 
         if 'Gz' in gradients:
-            Gz_loop, updates7 = theano.scan(
+            Gz_loop, updates7 = aesara.scan(
                 fn=self.gradient_field_loop_z,
                 outputs_info=[Z_x_init],
                 sequences=[dict(input=slices, taps=[0, 1])],
@@ -1310,7 +1310,7 @@ class TheanoGraph(object):
             G_field = T.set_subtensor(G_field[2, :], Gz)
 
         if str(sys._getframe().f_code.co_name) in self.verbose:
-            Z_x = theano.printing.Print('Potential field at all points')(Z_x)
+            Z_x = aesara.printing.Print('Potential field at all points')(Z_x)
 
         return G_field
 
@@ -1326,7 +1326,7 @@ class TheanoGraph(object):
             Zx (vector): Potential field values at all the interpolated points
 
         Returns:
-            theano.tensor.vector: segmented values
+            aesara.tensor.vector: segmented values
         """
 
         if True:
@@ -1337,13 +1337,13 @@ class TheanoGraph(object):
             drift = drift[:, slice_init:slice_init + 1]
 
             if 'compare' in self.verbose:
-                a = theano.printing.Print("a")(a)
-                b = theano.printing.Print("b")(b)
+                a = aesara.printing.Print("a")(a)
+                b = aesara.printing.Print("b")(b)
                 # l = 200/ (a - b)
-                slice_init = theano.printing.Print("slice_init")(slice_init)
-                n_surface_0 = theano.printing.Print("n_surface_0")(n_surface_0)
-                n_surface_1 = theano.printing.Print("n_surface_1")(n_surface_1)
-                drift = theano.printing.Print("drift[slice_init:slice_init+1][0]")(drift)
+                slice_init = aesara.printing.Print("slice_init")(slice_init)
+                n_surface_0 = aesara.printing.Print("n_surface_0")(n_surface_0)
+                n_surface_1 = aesara.printing.Print("n_surface_1")(n_surface_1)
+                drift = aesara.printing.Print("drift[slice_init:slice_init+1][0]")(drift)
 
             # drift = T.switch(slice_init == 0, n_surface_1, n_surface_0)
             #    drift = T.set_subtensor(n_surface[0], n_surface[1])
@@ -1352,8 +1352,8 @@ class TheanoGraph(object):
             sigm = (-n_surface_0.reshape((-1, 1)) / (1 + T.exp(-l * (Z_x - a)))) - \
                    (n_surface_1.reshape((-1, 1)) / (1 + T.exp(l * (Z_x - b)))) + drift.reshape((-1, 1))
             if False:
-                sigm = theano.printing.Print("middle point")(sigm)
-            #      n_surface = theano.printing.Print("n_surface")(n_surface)
+                sigm = aesara.printing.Print("middle point")(sigm)
+            #      n_surface = aesara.printing.Print("n_surface")(n_surface)
             return sigm
 
         else:
@@ -1390,17 +1390,17 @@ class TheanoGraph(object):
             (rotated_x[:, 1] - rotated_ctr[1])**2 / b_radius**2
 
         if "select_finite_faults" in self.verbose:
-            ellipse_factor = theano.printing.Print("h")(ellipse_factor)
+            ellipse_factor = aesara.printing.Print("h")(ellipse_factor)
 
         # h_factor = 1 - h
         # if "select_finite_faults" in self.verbose:
-        #     h_factor = theano.printing.Print("h_factor")(h_factor)
+        #     h_factor = aesara.printing.Print("h_factor")(h_factor)
 
         # because we select all grid points as rotated_x, the selection here is
         # a boolean for all grid points: True if in ellipse, False if outside ellipse
 
         # if "select_finite_faults" in self.verbose:
-        #     sel = theano.printing.Print("scalar_field_iter")(sel)
+        #     sel = aesara.printing.Print("scalar_field_iter")(sel)
             # sum of boolean array sel is in my example: 38301
             # so I guess this selects all grid points affected by this finite fault
 
@@ -1411,7 +1411,7 @@ class TheanoGraph(object):
         Compute the part of the block model of a given series (dictated by the bool array yet to be computed)
 
         Returns:
-            theano.tensor.vector: Value of lithology at every interpolated point
+            aesara.tensor.vector: Value of lithology at every interpolated point
         """
         # TODO: IMP set soft max in the borders
 
@@ -1428,10 +1428,10 @@ class TheanoGraph(object):
         self.scalar_field_at_surface_points_values = Z_x[-2*self.len_points: -self.len_points][self.npf_op]
 
         max_pot = T.max(Z_x)
-        #max_pot = theano.printing.Print("max_pot")(max_pot)
+        #max_pot = aesara.printing.Print("max_pot")(max_pot)
 
         min_pot = T.min(Z_x)
-   #     min_pot = theano.printing.Print("min_pot")(min_pot)
+   #     min_pot = aesara.printing.Print("min_pot")(min_pot)
 
 
         max_pot_sigm = 2 * max_pot - self.scalar_field_at_surface_points_values[0]
@@ -1448,7 +1448,7 @@ class TheanoGraph(object):
                                             ))
 
         if "scalar_field_iter" in self.verbose:
-            scalar_field_iter = theano.printing.Print("scalar_field_iter")(scalar_field_iter)
+            scalar_field_iter = aesara.printing.Print("scalar_field_iter")(scalar_field_iter)
 
         # Loop to segment the distinct lithologies
 
@@ -1466,10 +1466,10 @@ class TheanoGraph(object):
         drift = T.set_subtensor(n_surface_op_float_sigmoid[:, 0], n_surface_op_float_sigmoid[:, 1])
 
         if 'n_surface_op_float_sigmoid' in self.verbose:
-            n_surface_op_float_sigmoid = theano.printing.Print("n_surface_op_float_sigmoid")\
+            n_surface_op_float_sigmoid = aesara.printing.Print("n_surface_op_float_sigmoid")\
                 (n_surface_op_float_sigmoid)
 
-        partial_block, updates2 = theano.scan(
+        partial_block, updates2 = aesara.scan(
             fn=self.compare,
             outputs_info=None,
             sequences=[dict(input=scalar_field_iter, taps=[0, 1]), T.arange(0, n_surface_op_float_sigmoid.shape[1],
@@ -1482,10 +1482,10 @@ class TheanoGraph(object):
         # For every surface we get a vector so we need to sum compress them to one dimension
         partial_block = partial_block.sum(axis=0)
 
-        # Add name to the theano node
+        # Add name to the aesara node
         partial_block.name = 'The chunk of block model of a specific series'
         if str(sys._getframe().f_code.co_name) in self.verbose:
-            partial_block = theano.printing.Print(partial_block.name)(partial_block)
+            partial_block = aesara.printing.Print(partial_block.name)(partial_block)
 
         return Z_x, partial_block
 
@@ -1494,7 +1494,7 @@ class TheanoGraph(object):
         Compute the part of the block model of a given series (dictated by the bool array yet to be computed)
 
         Returns:
-            theano.tensor.vector: Value of lithology at every interpolated point
+            aesara.tensor.vector: Value of lithology at every interpolated point
         """
 
         # Graph to compute the potential field
@@ -1510,10 +1510,10 @@ class TheanoGraph(object):
         self.scalar_field_at_surface_points_values = Z_x[-2 *(self.len_points): -self.len_points][self.npf_op]
 
         max_pot = T.max(Z_x)
-        # max_pot = theano.printing.Print("max_pot")(max_pot)
+        # max_pot = aesara.printing.Print("max_pot")(max_pot)
 
         min_pot = T.min(Z_x)
-        # min_pot = theano.printing.Print("min_pot")(min_pot)
+        # min_pot = aesara.printing.Print("min_pot")(min_pot)
 
         # max_pot_sigm = 2 * max_pot - self.scalar_field_at_surface_points_values[0]
         # min_pot_sigm = 2 * min_pot - self.scalar_field_at_surface_points_values[-1]
@@ -1525,20 +1525,20 @@ class TheanoGraph(object):
         ellipse_factor_rectified = T.switch(ellipse_factor < 1., ellipse_factor, 1.)
 
         if "select_finite_faults" in self.verbose:
-            ellipse_factor_rectified = theano.printing.Print("h_factor_rectified")(ellipse_factor_rectified)
+            ellipse_factor_rectified = aesara.printing.Print("h_factor_rectified")(ellipse_factor_rectified)
 
         if "select_finite_faults" in self.verbose:
-            min_pot = theano.printing.Print("min_pot")(min_pot)
-            max_pot = theano.printing.Print("max_pot")(max_pot)
+            min_pot = aesara.printing.Print("min_pot")(min_pot)
+            max_pot = aesara.printing.Print("max_pot")(max_pot)
 
-        self.not_l = theano.shared(50.)
-        self.ellipse_factor_exponent = theano.shared(2)
+        self.not_l = aesara.shared(50.)
+        self.ellipse_factor_exponent = aesara.shared(2)
         # sigmoid_slope = (self.not_l * (1 / ellipse_factor_rectified)**3) / (max_pot - min_pot)
         sigmoid_slope = 950 - 950 * ellipse_factor_rectified ** self.ellipse_factor_exponent + self.not_l
         # l = T.switch(self.select_finite_faults(), 5000 / (max_pot - min_pot), 50 / (max_pot - min_pot))
 
         if "select_finite_faults" in self.verbose:
-            sigmoid_slope = theano.printing.Print("l")(sigmoid_slope)
+            sigmoid_slope = aesara.printing.Print("l")(sigmoid_slope)
 
         # A tensor with the values to segment
         scalar_field_iter = T.concatenate((
@@ -1548,7 +1548,7 @@ class TheanoGraph(object):
         ))
 
         if "scalar_field_iter" in self.verbose:
-            scalar_field_iter = theano.printing.Print("scalar_field_iter")(scalar_field_iter)
+            scalar_field_iter = aesara.printing.Print("scalar_field_iter")(scalar_field_iter)
 
         n_surface_op_float_sigmoid = T.repeat(self.n_surface_op_float[[0], :], 2, axis=1)
         # TODO: instead -1 at the border look for the average distance of the input!
@@ -1562,10 +1562,10 @@ class TheanoGraph(object):
         drift = T.set_subtensor(n_surface_op_float_sigmoid[:, 0], n_surface_op_float_sigmoid[:, 1])
 
         if 'n_surface_op_float_sigmoid' in self.verbose:
-            n_surface_op_float_sigmoid = theano.printing.Print("n_surface_op_float_sigmoid") \
+            n_surface_op_float_sigmoid = aesara.printing.Print("n_surface_op_float_sigmoid") \
                 (n_surface_op_float_sigmoid)
 
-        partial_block, updates2 = theano.scan(
+        partial_block, updates2 = aesara.scan(
             fn=self.compare,
             outputs_info=None,
             sequences=[dict(input=scalar_field_iter, taps=[0, 1]),
@@ -1578,10 +1578,10 @@ class TheanoGraph(object):
         # For every surface we get a vector so we need to sum compress them to one dimension
         partial_block = partial_block.sum(axis=0)
 
-        # Add name to the theano node
+        # Add name to the aesara node
         partial_block.name = 'The chunk of block model of a specific series'
         if str(sys._getframe().f_code.co_name) in self.verbose:
-            partial_block = theano.printing.Print(partial_block.name)(partial_block)
+            partial_block = aesara.printing.Print(partial_block.name)(partial_block)
 
         return [Z_x, partial_block]
 
@@ -1604,7 +1604,7 @@ class TheanoGraph(object):
             n_form_per_serie_1: Number of surfaces of the computed series
 
         Returns:
-            theano.tensor.matrix: block model derived from the df that afterwards is used as a drift for the "real"
+            aesara.tensor.matrix: block model derived from the df that afterwards is used as a drift for the "real"
             data
         """
 
@@ -1615,20 +1615,20 @@ class TheanoGraph(object):
 
         # compute the youngest fault and consecutively the others
 
-        # Theano shared
+        # aesara shared
         self.number_of_points_per_surface_T_op = self.number_of_points_per_surface_T[n_form_per_serie_0: n_form_per_serie_1]
         self.n_surface_op = self.n_surface[n_form_per_serie_0: n_form_per_serie_1]
         self.n_surface_op_float = self.surface_values[:, n_form_per_serie_0: n_form_per_serie_1 + 1]
         self.npf_op = self.npf[n_form_per_serie_0: n_form_per_serie_1]
         if 'n_surface' in self.verbose:
-            self.n_surface_op = theano.printing.Print('n_surface_fault')(self.n_surface_op)
+            self.n_surface_op = aesara.printing.Print('n_surface_fault')(self.n_surface_op)
 
         self.n_universal_eq_T_op = u_grade_iter
 
         self.dips_position = self.dips_position_all[len_f_0: len_f_1, :]
         self.dips_position_tiled = T.tile(self.dips_position, (self.n_dimensions, 1))
 
-        # Theano Var
+        # aesara Var
         self.dip_angles = self.dip_angles_all[len_f_0: len_f_1]
         self.azimuth = self.azimuth_all[len_f_0: len_f_1]
         self.polarity = self.polarity_all[len_f_0: len_f_1]
@@ -1641,23 +1641,23 @@ class TheanoGraph(object):
         self.len_i_1 = len_i_1
 
         if 'lengths' in self.verbose:
-            self.len_i_0 = theano.printing.Print('len_i_0')(self.len_i_0)
-            self.len_i_1 = theano.printing.Print('len_i_1')(self.len_i_1)
-            self.len_points = theano.printing.Print('len_points')(self.len_points)
+            self.len_i_0 = aesara.printing.Print('len_i_0')(self.len_i_0)
+            self.len_i_1 = aesara.printing.Print('len_i_1')(self.len_i_1)
+            self.len_points = aesara.printing.Print('len_points')(self.len_points)
 
         # Extracting a the subset of the fault matrix to the scalar field of the current iterations
         faults_relation_op = self.fault_relation[:, T.cast(self.n_surface_op-1, 'int8')]
         faults_relation_rep = T.repeat(faults_relation_op, 1)
 
         if 'faults_relation' in self.verbose:
-            faults_relation_rep = theano.printing.Print('SELECT')(faults_relation_rep)
+            faults_relation_rep = aesara.printing.Print('SELECT')(faults_relation_rep)
         if len(self.gradients) is not 0:
             self.fault_matrix = fault_matrix[::5][T.nonzero(T.cast(faults_relation_rep, "int8"))[0], :]
         else:
             self.fault_matrix = fault_matrix[::2][T.nonzero(T.cast(faults_relation_rep, "int8"))[0], :]
 
         if 'fault_matrix_loop' in self.verbose:
-            self.fault_matrix = theano.printing.Print('self fault matrix')(self.fault_matrix)
+            self.fault_matrix = aesara.printing.Print('self fault matrix')(self.fault_matrix)
 
         # ================================
         # Computing the fault scalar field
@@ -1719,7 +1719,7 @@ class TheanoGraph(object):
              n_form_per_serie_1: Number of surfaces of the computed series
 
         Returns:
-             theano.tensor.matrix: final block model
+             aesara.tensor.matrix: final block model
         """
 
         # Setting the fault contribution to kriging from the previous loop
@@ -1734,10 +1734,10 @@ class TheanoGraph(object):
         self.yet_simulated = T.nonzero(T.le(final_block[1, :], scalar_field_at_form[n_form_per_serie_0 - 1]))[0] # This -1 comes to get the last scalar field value (the bottom) of the previous series
         self.yet_simulated.name = 'Yet simulated LITHOLOGY node'
         if 'fault_mask' in self.verbose:
-            self.yet_simulated = theano.printing.Print('fault_mask')(self.yet_simulated)
-            scalar_field_at_form = theano.printing.Print('scalar_field_at_form_out')(scalar_field_at_form)
+            self.yet_simulated = aesara.printing.Print('fault_mask')(self.yet_simulated)
+            scalar_field_at_form = aesara.printing.Print('scalar_field_at_form_out')(scalar_field_at_form)
 
-        # Theano shared
+        # aesara shared
         self.number_of_points_per_surface_T_op = self.number_of_points_per_surface_T[n_form_per_serie_0: n_form_per_serie_1]
         self.n_surface_op = self.n_surface[n_form_per_serie_0: n_form_per_serie_1]
         self.n_surface_op_float = self.surface_values[:, n_form_per_serie_0: (n_form_per_serie_1 + 1)]
@@ -1748,7 +1748,7 @@ class TheanoGraph(object):
         self.dips_position = self.dips_position_all[len_f_0: len_f_1, :]
         self.dips_position_tiled = T.tile(self.dips_position, (self.n_dimensions, 1))
 
-        # Theano Var
+        # aesara Var
         self.dip_angles = self.dip_angles_all[len_f_0: len_f_1]
         self.azimuth = self.azimuth_all[len_f_0: len_f_1]
         self.polarity = self.polarity_all[len_f_0: len_f_1]
@@ -1757,10 +1757,10 @@ class TheanoGraph(object):
         self.rest_layer_points = self.rest_layer_points_all[len_i_0: len_i_1, :]
 
         if 'rest_layer_points' in self.verbose:
-            self.rest_layer_points = theano.printing.Print('rest_layer_points')(self.rest_layer_points)
+            self.rest_layer_points = aesara.printing.Print('rest_layer_points')(self.rest_layer_points)
 
         if 'ref_layer_points' in self.verbose:
-            self.ref_layer_points = theano.printing.Print('ref_layer_points')(self.ref_layer_points)
+            self.ref_layer_points = aesara.printing.Print('ref_layer_points')(self.ref_layer_points)
 
         # For the contribution of the df I did not find a better way
         self.len_i_0 = len_i_0
@@ -1768,12 +1768,12 @@ class TheanoGraph(object):
 
         # Printing
         if 'n_surface' in self.verbose:
-            self.n_surface_op = theano.printing.Print('n_surface_series')(self.n_surface_op)
+            self.n_surface_op = aesara.printing.Print('n_surface_series')(self.n_surface_op)
 
         if 'lengths' in self.verbose:
-            self.len_i_0 = theano.printing.Print('len_i_0')(self.len_i_0)
-            self.len_i_1 = theano.printing.Print('len_i_1')(self.len_i_1)
-            self.len_points = theano.printing.Print('len_points')(self.len_points)
+            self.len_i_0 = aesara.printing.Print('len_i_0')(self.len_i_0)
+            self.len_i_1 = aesara.printing.Print('len_i_1')(self.len_i_1)
+            self.len_points = aesara.printing.Print('len_points')(self.len_points)
         # ====================
         # Computing the series
         # ====================
@@ -1848,7 +1848,7 @@ class TheanoGraph(object):
         if self.n_faults.get_value() != 0 or self.is_fault:
 
             # Looping
-            fault_loop, updates3 = theano.scan(
+            fault_loop, updates3 = aesara.scan(
                 fn=self.compute_a_fault,
                     outputs_info=[
                               dict(initial=self.fault_matrix, taps=[-1]),
@@ -1878,7 +1878,7 @@ class TheanoGraph(object):
                                             self.grid_val_T.shape[0] + 2 * self.len_points))
 
             # Compute Lithologies
-            lith_loop, updates2 = theano.scan(
+            lith_loop, updates2 = aesara.scan(
                  fn=self.compute_a_series,
                  outputs_info=[self.lith_block_init, self.final_scalar_field_at_surfaces_op],
                  sequences=[dict(input=self.len_series_i[self.n_faults:], taps=[0, 1]),
@@ -1900,7 +1900,7 @@ class TheanoGraph(object):
     def compute_geological_model_gradient(self, gradients = [], weights=None):
         # TODO update it to several properties!!
 
-        self.gradients = ['Gx', 'Gy', 'Gz']#theano.shared(['Gx', 'Gy', 'Gz'])
+        self.gradients = ['Gx', 'Gy', 'Gz']#aesara.shared(['Gx', 'Gy', 'Gz'])
 
         # Change the flag to extend the graph in the compute fault and compute series function
         lith_matrix = T.zeros((0, 0, self.grid_val_T.shape[0] + 2 * self.len_points))
@@ -1917,7 +1917,7 @@ class TheanoGraph(object):
         if self.n_faults.get_value() != 0 or self.is_fault:
 
             # Looping
-            fault_loop, updates3 = theano.scan(
+            fault_loop, updates3 = aesara.scan(
                 fn=self.compute_a_fault,
                     outputs_info=[
                               dict(initial=self.fault_matrix, taps=[-1]),
@@ -1943,7 +1943,7 @@ class TheanoGraph(object):
         if len(self.len_series_f.get_value()) - 1 > self.n_faults.get_value() or self.is_lith:
 
             # Compute Lithologies
-            lith_loop, updates2 = theano.scan(
+            lith_loop, updates2 = aesara.scan(
                  fn=self.compute_a_series,
                  outputs_info=[self.lith_block_init, self.final_scalar_field_at_surfaces_op],
                  sequences=[dict(input=self.len_series_i[self.n_faults:], taps=[0, 1]),
@@ -1968,7 +1968,7 @@ class TheanoGraph(object):
     #                        n_form_per_serie_0, n_form_per_serie_1,
     #                        u_grade_iter,
     #                        weights):
-    #     # Theano shared
+    #     # aesara shared
     #     self.number_of_points_per_surface_T_op = self.number_of_points_per_surface_T[
     #                                                n_form_per_serie_0: n_form_per_serie_1]
     #     self.n_surface_op = self.n_surface[n_form_per_serie_0: n_form_per_serie_1]
@@ -1980,7 +1980,7 @@ class TheanoGraph(object):
     #     self.dips_position = self.dips_position_all[len_f_0: len_f_1, :]
     #     self.dips_position_tiled = T.tile(self.dips_position, (self.n_dimensions, 1))
     #
-    #     # Theano Var
+    #     # aesara Var
     #     self.dip_angles = self.dip_angles_all[len_f_0: len_f_1]
     #     self.azimuth = self.azimuth_all[len_f_0: len_f_1]
     #     self.polarity = self.polarity_all[len_f_0: len_f_1]
@@ -1998,7 +1998,7 @@ class TheanoGraph(object):
     # def compute_weights(self):
     #     weights_init = T.zeros((1, self.len_points + self.dips_position_tiled.shape[0]))
     #     # Compute Lithologies
-    #     weights_loop, updates2 = theano.scan(
+    #     weights_loop, updates2 = aesara.scan(
     #          fn=self.compute_weights_op,
     #          outputs_info=[weights_init],
     #          sequences=[dict(input=self.len_series_i, taps=[0, 1]),
@@ -2034,10 +2034,10 @@ class TheanoGraph(object):
         #     surfaces = T.concatenate([self.n_surface[:n_faults-1:-1], T.stack([0])])
         #
         #     if False:
-        #         surfaces = theano.printing.Print('surfaces')(surfaces)
+        #         surfaces = aesara.printing.Print('surfaces')(surfaces)
         #
         # # Substitue lithologies by its density
-        # density_block_loop, updates4 = theano.scan(self.switch_densities,
+        # density_block_loop, updates4 = aesara.scan(self.switch_densities,
         #                             outputs_info=[lith_matrix[0]],
         #                              sequences=[surfaces, self.densities],
         #                             return_list = True
@@ -2051,7 +2051,7 @@ class TheanoGraph(object):
 
 
         if 'density_block' in self.verbose:
-            density_block_loop_f = theano.printing.Print('density block')(density_block_loop_f)
+            density_block_loop_f = aesara.printing.Print('density block')(density_block_loop_f)
 
         n_measurements = self.tz.shape[0]
         # Tiling the density block for each measurent and picking just the closer to them. This has to be possible to
@@ -2071,7 +2071,7 @@ class TheanoGraph(object):
 
     def compute_grad(self, n_faults=None):
         sol = self.block_series()
-        return theano.grad(sol.sum(), self.rest_layer_points_all)
+        return aesara.grad(sol.sum(), self.rest_layer_points_all)
 
     # def compute_grad2(self, n_faults=None):
     #     sol = self.compute_a_series(
@@ -2082,17 +2082,17 @@ class TheanoGraph(object):
     #         self.lith_block_init, self.final_scalar_field_at_surfaces,
     #         self.fault_matrix
     #     )
-    #     return theano.grad(sol[0].sum(), self.rest_layer_points_all)
+    #     return aesara.grad(sol[0].sum(), self.rest_layer_points_all)
     #
     # def compute_grad3(self, n_faults=None
     #                   ):
     #     lith_matrix, fault_matrix, pfai = self.compute_geological_model(n_faults=n_faults)
-    #     return theano.grad(lith_matrix[0].sum(), self.rest_layer_points_all)
+    #     return aesara.grad(lith_matrix[0].sum(), self.rest_layer_points_all)
     #
     #
 
 
-class TheanoOptions(object):
+class aesaraOptions(object):
     def __init__(self,  output='geology', optimizer='fast_compile', verbose=[0], dtype='float32',
                  is_fault=None, is_lith=None):
         # OPTIONS
@@ -2103,11 +2103,11 @@ class TheanoOptions(object):
             self.verbose = verbose
         self.dot_version = False
 
-        theano.config.floatX = dtype
-        theano.config.optimizer = optimizer
+        aesara.config.floatX = dtype
+        aesara.config.optimizer = optimizer
 
 
-class TheanoGeometry(TheanoOptions):
+class aesaraGeometry(aesaraOptions):
     def __init__(self, output='geology', optimizer='fast_compile', verbose=[0], dtype='float32',
                  is_fault=None, is_lith=None):
 
@@ -2119,39 +2119,39 @@ class TheanoGeometry(TheanoOptions):
         #     self.verbose = verbose
         # self.dot_version = False
         #
-        # theano.config.floatX = dtype
-        # theano.config.optimizer = optimizer
-        super(TheanoGeometry, self).__init__(optimizer='fast_compile', verbose=[0], dtype='float32',)
+        # aesara.config.floatX = dtype
+        # aesara.config.optimizer = optimizer
+        super(aesaraGeometry, self).__init__(optimizer='fast_compile', verbose=[0], dtype='float32',)
 
         # Number of dimensions. Now it is not too variable anymore
         self.n_dimensions = 3
 
         # This is not accumulative
-        self.number_of_points_per_surface_T = theano.shared(np.zeros(3, dtype='int32')) #TODO is DEP?
+        self.number_of_points_per_surface_T = aesara.shared(np.zeros(3, dtype='int32')) #TODO is DEP?
         self.number_of_points_per_surface_T_op = T.vector('Number of points per surface used to split rest-ref',
                                                           dtype='int32')
         self.npf_op = T.cumsum(T.concatenate((T.stack(0), self.number_of_points_per_surface_T_op[:-1])))
 
         # # FORMATIONS
         # # ----------
-        # self.n_surface = theano.shared(np.arange(2, 5, dtype='int32'), "ID of the surface")
+        # self.n_surface = aesara.shared(np.arange(2, 5, dtype='int32'), "ID of the surface")
         # self.n_surface_op = self.n_surface
-        # self.surface_values = theano.shared((np.arange(2, 4, dtype=dtype).reshape(2, -1)), "Value of the surface to compute")
+        # self.surface_values = aesara.shared((np.arange(2, 4, dtype=dtype).reshape(2, -1)), "Value of the surface to compute")
         # self.n_surface_op_float = self.surface_values
 
 
         # KRIGING
         # -------
-        self.a_T = theano.shared(np.cast[dtype](-1.), "Range")
-        self.c_o_T = theano.shared(np.cast[dtype](-1.), 'Covariance at 0')
-        self.nugget_effect_grad_T = theano.shared(np.cast[dtype](-1), 'Nugget effect of gradients')
-        self.nugget_effect_scalar_T = theano.shared(np.cast[dtype](-1), 'Nugget effect of scalar')
-        self.n_universal_eq_T = theano.shared(np.zeros(5, dtype='int32'), "Grade of the universal drift")
-        self.n_universal_eq_T_op = theano.shared(3)
+        self.a_T = aesara.shared(np.cast[dtype](-1.), "Range")
+        self.c_o_T = aesara.shared(np.cast[dtype](-1.), 'Covariance at 0')
+        self.nugget_effect_grad_T = aesara.shared(np.cast[dtype](-1), 'Nugget effect of gradients')
+        self.nugget_effect_scalar_T = aesara.shared(np.cast[dtype](-1), 'Nugget effect of scalar')
+        self.n_universal_eq_T = aesara.shared(np.zeros(5, dtype='int32'), "Grade of the universal drift")
+        self.n_universal_eq_T_op = aesara.shared(3)
 
         # They weight the contribution of the surface_points against the orientations.
-        self.i_reescale = theano.shared(np.cast[dtype](4.))
-        self.gi_reescale = theano.shared(np.cast[dtype](2.))
+        self.i_reescale = aesara.shared(np.cast[dtype](4.))
+        self.gi_reescale = aesara.shared(np.cast[dtype](2.))
 
         # VARIABLES
         # ---------
@@ -2195,11 +2195,11 @@ class TheanoGeometry(TheanoOptions):
         Compute the euclidian distances in 3D between all the points in x_1 and x_2
 
         Args:
-            x_1 (theano.tensor.matrix): shape n_points x number dimension
-            x_2 (theano.tensor.matrix): shape n_points x number dimension
+            x_1 (aesara.tensor.matrix): shape n_points x number dimension
+            x_2 (aesara.tensor.matrix): shape n_points x number dimension
 
         Returns:
-            theano.tensor.matrix: Distancse matrix. shape n_points x n_points
+            aesara.tensor.matrix: Distancse matrix. shape n_points x n_points
         """
 
         # T.maximum avoid negative numbers increasing stability
@@ -2210,7 +2210,7 @@ class TheanoGeometry(TheanoOptions):
         ))
 
         if False:
-            sqd = theano.printing.Print('sed')(sqd)
+            sqd = aesara.printing.Print('sed')(sqd)
 
         return sqd
 
@@ -2233,10 +2233,10 @@ class TheanoGeometry(TheanoOptions):
         length_of_C = length_of_CG + length_of_CGI + length_of_U_I + length_of_faults
 
         if 'matrices_shapes' in self.verbose:
-            length_of_CG = theano.printing.Print("length_of_CG")(length_of_CG)
-            length_of_CGI = theano.printing.Print("length_of_CGI")(length_of_CGI)
-            length_of_U_I = theano.printing.Print("length_of_U_I")(length_of_U_I)
-            length_of_faults = theano.printing.Print("length_of_faults")(length_of_faults)
-            length_of_C = theano.printing.Print("length_of_C")(length_of_C)
+            length_of_CG = aesara.printing.Print("length_of_CG")(length_of_CG)
+            length_of_CGI = aesara.printing.Print("length_of_CGI")(length_of_CGI)
+            length_of_U_I = aesara.printing.Print("length_of_U_I")(length_of_U_I)
+            length_of_faults = aesara.printing.Print("length_of_faults")(length_of_faults)
+            length_of_C = aesara.printing.Print("length_of_C")(length_of_C)
 
         return length_of_CG, length_of_CGI, length_of_U_I, length_of_faults, length_of_C

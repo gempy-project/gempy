@@ -1,11 +1,11 @@
-import theano
-import theano.tensor as T
+import aesara
+import aesara.tensor  as T
 import numpy as np
 import sys
-from .theano_graph import TheanoGeometry 
+from .aesara_graph import aesaraGeometry 
 
 
-class TheanoKriging(TheanoGeometry):
+class aesaraKriging(aesaraGeometry):
     """
     This class is used to help to divide the construction of the graph into sensical parts. All its methods buildDEP2 a part
     of the graph. Every method can be seen as a branch and collection of branches until the last method that will be the
@@ -28,7 +28,7 @@ class TheanoKriging(TheanoGeometry):
             dtype (str): type of float either 32 or 64
         """
         
-        super(TheanoKriging, self).__init__(output='geology', optimizer='fast_compile', verbose=[0], dtype='float32',
+        super(aesaraKriging, self).__init__(output='geology', optimizer='fast_compile', verbose=[0], dtype='float32',
                  is_fault=None, is_lith=None)
         # Pass the verbose list as property
 
@@ -41,15 +41,15 @@ class TheanoKriging(TheanoGeometry):
 
 
         # # This is not accumulative
-        # self.number_of_points_per_surface_T = theano.shared(np.zeros(3, dtype='int32')) #TODO is DEP?
+        # self.number_of_points_per_surface_T = aesara.shared(np.zeros(3, dtype='int32')) #TODO is DEP?
         # self.number_of_points_per_surface_T_op = self.number_of_points_per_surface_T
         # This is accumulative
-        #self.npf = theano.shared(np.zeros(3, dtype='int32'), 'Number of points per surface accumulative')
+        #self.npf = aesara.shared(np.zeros(3, dtype='int32'), 'Number of points per surface accumulative')
         #self.npf_op = self.npf[[0, -2]]
 
     def input_parameters_kriging(self):
         """
-        Create a list with the symbolic variables to use when we compile the theano function
+        Create a list with the symbolic variables to use when we compile the aesara function
 
         Returns:
             list: [self.dips_position_all, self.dip_angles_all, self.azimuth_all, self.polarity_all,
@@ -65,7 +65,7 @@ class TheanoKriging(TheanoGeometry):
         Create covariance function for the surface_points
 
         Returns:
-            theano.tensor.matrix: covariance of the surface_points. Shape number of points in rest x number of
+            aesara.tensor.matrix: covariance of the surface_points. Shape number of points in rest x number of
             points in rest
 
         """
@@ -100,11 +100,11 @@ class TheanoKriging(TheanoGeometry):
                   3 / 4 * (sed_ref_ref / self.a_T) ** 7))))
 
         C_I += T.eye(C_I.shape[0]) * 2 * self.nugget_effect_scalar_T
-        # Add name to the theano node
+        # Add name to the aesara node
         C_I.name = 'Covariance SurfacePoints'
 
         if str(sys._getframe().f_code.co_name) in self.verbose:
-            C_I = theano.printing.Print('Cov surface_points')(C_I)
+            C_I = aesara.printing.Print('Cov surface_points')(C_I)
 
         return C_I
 
@@ -113,7 +113,7 @@ class TheanoKriging(TheanoGeometry):
          Create covariance function for the gradients
 
          Returns:
-             theano.tensor.matrix: covariance of the gradients. Shape number of points in dip_pos x number of
+             aesara.tensor.matrix: covariance of the gradients. Shape number of points in dip_pos x number of
              points in dip_pos
 
          """
@@ -122,7 +122,7 @@ class TheanoKriging(TheanoGeometry):
         sed_dips_dips = self.squared_euclidean_distances(self.dips_position_tiled, self.dips_position_tiled)
 
         if 'sed_dips_dips' in self.verbose:
-            sed_dips_dips = theano.printing.Print('sed_dips_dips')(sed_dips_dips)
+            sed_dips_dips = aesara.printing.Print('sed_dips_dips')(sed_dips_dips)
 
         # Cartesian distances between dips positions
         h_u = T.vertical_stack(
@@ -179,15 +179,15 @@ class TheanoKriging(TheanoGeometry):
         # TODO: This function can be substitued by simply adding the nugget effect to the diag if I remove the condition
         C_G += T.eye(C_G.shape[0]) * self.nugget_effect_grad_T
 
-        # Add name to the theano node
+        # Add name to the aesara node
         C_G.name = 'Covariance Gradient'
 
         if verbose > 1:
-            theano.printing.pydotprint(C_G, outfile="graphs/" + sys._getframe().f_code.co_name + ".png",
+            aesara.printing.pydotprint(C_G, outfile="graphs/" + sys._getframe().f_code.co_name + ".png",
                                        var_with_name_simple=True)
 
         if str(sys._getframe().f_code.co_name) in self.verbose:
-            C_G = theano.printing.Print('Cov Gradients')(C_G)
+            C_G = aesara.printing.Print('Cov Gradients')(C_G)
 
         return C_G
 
@@ -195,7 +195,7 @@ class TheanoKriging(TheanoGeometry):
         """
         Create covariance function for the gradiens
         Returns:
-            theano.tensor.matrix: covariance of the gradients. Shape number of points in rest x number of
+            aesara.tensor.matrix: covariance of the gradients. Shape number of points in rest x number of
               points in dip_pos
         """
 
@@ -238,11 +238,11 @@ class TheanoKriging(TheanoGeometry):
                                   21 / 4 * sed_dips_ref ** 5 / self.a_T ** 7)))
         ).T
 
-        # Add name to the theano node
+        # Add name to the aesara node
         C_GI.name = 'Covariance gradient interface'
 
         if str(sys._getframe().f_code.co_name) + '_g' in self.verbose:
-            theano.printing.pydotprint(C_GI, outfile="graphs/" + sys._getframe().f_code.co_name + ".png",
+            aesara.printing.pydotprint(C_GI, outfile="graphs/" + sys._getframe().f_code.co_name + ".png",
                                        var_with_name_simple=True)
         return C_GI
 
@@ -251,10 +251,10 @@ class TheanoKriging(TheanoGeometry):
         Create the drift matrices for the potential field and its gradient
 
         Returns:
-            theano.tensor.matrix: Drift matrix for the surface_points. Shape number of points in rest x 3**degree drift
+            aesara.tensor.matrix: Drift matrix for the surface_points. Shape number of points in rest x 3**degree drift
             (except degree 0 that is 0)
 
-            theano.tensor.matrix: Drift matrix for the gradients. Shape number of points in dips x 3**degree drift
+            aesara.tensor.matrix: Drift matrix for the gradients. Shape number of points in dips x 3**degree drift
             (except degree 0 that is 0)
         """
 
@@ -305,19 +305,19 @@ class TheanoKriging(TheanoGeometry):
              )).T
 
         if 'U_I' in self.verbose:
-            U_I = theano.printing.Print('U_I')(U_I)
+            U_I = aesara.printing.Print('U_I')(U_I)
 
         if 'U_G' in self.verbose:
-            U_G = theano.printing.Print('U_G')(U_G)
+            U_G = aesara.printing.Print('U_G')(U_G)
 
         if str(sys._getframe().f_code.co_name) + '_g' in self.verbose:
-            theano.printing.pydotprint(U_I, outfile="graphs/" + sys._getframe().f_code.co_name + "_i.png",
+            aesara.printing.pydotprint(U_I, outfile="graphs/" + sys._getframe().f_code.co_name + "_i.png",
                                        var_with_name_simple=True)
 
-            theano.printing.pydotprint(U_G, outfile="graphs/" + sys._getframe().f_code.co_name + "_g.png",
+            aesara.printing.pydotprint(U_G, outfile="graphs/" + sys._getframe().f_code.co_name + "_g.png",
                                        var_with_name_simple=True)
 
-        # Add name to the theano node
+        # Add name to the aesara node
         if U_I:
             U_I.name = 'Drift surface_points'
             U_G.name = 'Drift foliations'
@@ -333,10 +333,10 @@ class TheanoKriging(TheanoGeometry):
 
             list:
 
-            - theano.tensor.matrix: Drift matrix for the surface_points. Shape number of points in rest x n df. This drif
+            - aesara.tensor.matrix: Drift matrix for the surface_points. Shape number of points in rest x n df. This drif
               is a simple addition of an arbitrary number
 
-            - theano.tensor.matrix: Drift matrix for the gradients. Shape number of points in dips x n df. For
+            - aesara.tensor.matrix: Drift matrix for the gradients. Shape number of points in dips x n df. For
               discrete values this matrix will be null since the derivative of a constant is 0
         """
 
@@ -345,7 +345,7 @@ class TheanoKriging(TheanoGeometry):
         # self.fault_drift contains the df volume of the grid and the rest and ref points. For the drift we need
         # to make it relative to the reference point
         if 'fault matrix' in self.verbose:
-            self.fault_drift = theano.printing.Print('self.fault_drift')(self.fault_drift)
+            self.fault_drift = aesara.printing.Print('self.fault_drift')(self.fault_drift)
         interface_loc = self.fault_drift.shape[1] - 2 * self.len_points
 
         fault_drift_at_surface_points_rest = self.fault_drift
@@ -357,8 +357,8 @@ class TheanoKriging(TheanoGeometry):
         F_G = T.zeros((length_of_faults, length_of_CG)) + 0.0001
 
         if str(sys._getframe().f_code.co_name) in self.verbose:
-            F_I = theano.printing.Print('Faults surface_points matrix')(F_I)
-            F_G = theano.printing.Print('Faults gradients matrix')(F_G)
+            F_I = aesara.printing.Print('Faults surface_points matrix')(F_I)
+            F_G = aesara.printing.Print('Faults gradients matrix')(F_G)
 
         return F_I, F_G
 
@@ -367,7 +367,7 @@ class TheanoKriging(TheanoGeometry):
         Set all the previous covariances together in the universal cokriging matrix
 
         Returns:
-            theano.tensor.matrix: Multivariate covariance
+            aesara.tensor.matrix: Multivariate covariance
         """
 
         # Lengths
@@ -421,10 +421,10 @@ class TheanoKriging(TheanoGeometry):
         # Set F_I
         C_matrix = T.set_subtensor(
             C_matrix[length_of_CG + length_of_CGI + length_of_U_I:, length_of_CG:length_of_CG + length_of_CGI], F_I)
-        # Add name to the theano node
+        # Add name to the aesara node
         C_matrix.name = 'Block Covariance Matrix'
         if str(sys._getframe().f_code.co_name) in self.verbose:
-            C_matrix = theano.printing.Print('cov_function')(C_matrix)
+            C_matrix = aesara.printing.Print('cov_function')(C_matrix)
 
         return C_matrix
 
@@ -436,7 +436,7 @@ class TheanoKriging(TheanoGeometry):
             verbose: -deprecated-
 
         Returns:
-            theano.tensor.vector: independent vector
+            aesara.tensor.vector: independent vector
         """
 
         length_of_C = self.matrices_shapes()[-1]
@@ -454,9 +454,9 @@ class TheanoKriging(TheanoGeometry):
         b = T.set_subtensor(b[0:G.shape[0]], G)
 
         if str(sys._getframe().f_code.co_name) in self.verbose:
-            b = theano.printing.Print('b vector')(b)
+            b = aesara.printing.Print('b vector')(b)
 
-        # Add name to the theano node
+        # Add name to the aesara node
         b.name = 'b vector'
         return b
 
@@ -466,20 +466,20 @@ class TheanoKriging(TheanoGeometry):
         decomposition in all likelihood
 
         Returns:
-            theano.tensor.vector: Dual kriging parameters
+            aesara.tensor.vector: Dual kriging parameters
 
         """
         C_matrix = self.covariance_matrix()
         b = self.b_vector()
         # Solving the kriging system
-        import theano.tensor.slinalg
+        import aesara.tensor .slinalg
         b2 = T.tile(b, (1, 1)).T
-        DK_parameters = theano.tensor.slinalg.solve(C_matrix, b2)
+        DK_parameters = aesara.tensor.slinalg.solve(C_matrix, b2)
         DK_parameters = DK_parameters.reshape((DK_parameters.shape[0],))
 
-        # Add name to the theano node
+        # Add name to the aesara node
         DK_parameters.name = 'Dual Kriging parameters'
 
         if str(sys._getframe().f_code.co_name) in self.verbose:
-            DK_parameters = theano.printing.Print(DK_parameters.name)(DK_parameters)
+            DK_parameters = aesara.printing.Print(DK_parameters.name)(DK_parameters)
         return DK_parameters

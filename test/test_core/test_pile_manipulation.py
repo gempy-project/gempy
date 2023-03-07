@@ -71,7 +71,7 @@ def test_pile_geomodel(interpolator):
     geo_model._surface_points.df.reset_index(inplace=True, drop=True)
     geo_model._orientations.df.reset_index(inplace=True, drop=True)
 
-    geo_model.set_theano_function(interpolator)
+    geo_model.set_aesara_function(interpolator)
     gp.compute_model(geo_model)
 
     gp.plot.plot_2d(geo_model, cell_number=25,
@@ -125,7 +125,7 @@ def test_pile_geomodel_2(interpolator):
     geo_model._surface_points.df.reset_index(inplace=True, drop=True)
     geo_model._orientations.df.reset_index(inplace=True, drop=True)
 
-    geo_model.set_theano_function(interpolator)
+    geo_model.set_aesara_function(interpolator)
     gp.compute_model(geo_model)
 
     gp.plot.plot_2d(geo_model, cell_number=25,
@@ -163,7 +163,7 @@ def test_complete_model(tmpdir, interpolator):
     geo_model = gp.init_data(geo_model, extent=[0, 4000, 0, 2775, 200, 1200], resolution=[100, 10, 100])
 
     if compute is True:
-        geo_model.set_theano_function(interpolator)
+        geo_model.set_aesara_function(interpolator)
 
     from gempy.plot import visualization_2d as vv
 

@@ -9,7 +9,7 @@ Hecho
 import sys, os
 import urllib
 
-os.environ["THEANO_FLAGS"] = "mode=FAST_RUN,device=cpu"
+os.environ["aesara_FLAGS"] = "mode=FAST_RUN,device=cpu"
 # Importing gempy
 import gempy as gp
 
@@ -153,7 +153,7 @@ geo_model.set_is_fault(['Fault1', 'Fault2', 'Fault3'])
 # 
 
 # %% 
-gp.set_interpolator(geo_model, theano_optimizer='fast_run', dtype='float64')
+gp.set_interpolator(geo_model, aesara_optimizer='fast_run', dtype='float64')
 
 # %%
 # The default range is always the diagonal of the extent. Since in this

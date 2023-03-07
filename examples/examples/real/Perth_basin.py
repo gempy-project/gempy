@@ -10,7 +10,7 @@ import gempy as gp
 # Importing auxiliary libraries
 import matplotlib
 matplotlib.rcParams['figure.figsize'] = (20.0, 10.0)
-os.environ["THEANO_FLAGS"] = "mode=FAST_RUN,device=cuda"
+os.environ["aesara_FLAGS"] = "mode=FAST_RUN,device=cuda"
 
 # %%
 data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
@@ -127,8 +127,8 @@ gp.plot_3d(geo_model)
 
 # %% 
 interp_data = gp.set_interpolator(geo_model,
-                                  compile_theano=True,
-                                  theano_optimizer='fast_run', gradient=False,
+                                  compile_aesara=True,
+                                  aesara_optimizer='fast_run', gradient=False,
                                   dtype='float32')
 
 # %% 

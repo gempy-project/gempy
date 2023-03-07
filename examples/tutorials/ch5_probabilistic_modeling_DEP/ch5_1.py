@@ -10,7 +10,7 @@ GemPy parameters to final structural models.
 # %%
 import sys, os
 sys.path.append("../../gempy")
-os.environ["THEANO_FLAGS"] = "mode=FAST_RUN,device=cuda"
+os.environ["aesara_FLAGS"] = "mode=FAST_RUN,device=cuda"
 
 
 import gempy as gp

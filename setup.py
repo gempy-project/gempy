@@ -12,7 +12,8 @@ setup(
     include_package_data=True,
     install_requires=[
         'pandas==1.3.4',
-        'Theano>=1.0.4',
+        'aesara==2.7.7',
+        'pymc',
         'matplotlib',
         'numpy==1.21.6',
         'pytest',

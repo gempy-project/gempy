@@ -47,8 +47,8 @@ gp.map_stack_to_surfaces(geo_data, {"Strat_Series": ('rock2', 'rock1'),
 # 
 
 # %% 
-interp_data = gp.set_interpolator(geo_data, compile_theano=True,
-                                  theano_optimizer='fast_compile')
+interp_data = gp.set_interpolator(geo_data, compile_aesara=True,
+                                  aesara_optimizer='fast_compile')
 
 # %% 
 # no mesh computed as basically 2D model

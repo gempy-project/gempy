@@ -137,7 +137,7 @@ def test_sequential_pile_colors(load_model):
 
 def test_compute_model(interpolator, map_sequential_pile):
     geo_model = map_sequential_pile
-    geo_model.set_theano_graph(interpolator)
+    geo_model.set_aesara_graph(interpolator)
 
     gp.compute_model(geo_model, compute_mesh=False)
 
@@ -163,7 +163,7 @@ def test_compute_model(interpolator, map_sequential_pile):
 
 def test_save_model(interpolator, map_sequential_pile):
     geo_model = map_sequential_pile
-    geo_model.set_theano_function(interpolator)
+    geo_model.set_aesara_function(interpolator)
     gp.compute_model(geo_model, compute_mesh=False)
     gp.save_model(geo_model, name='test_save_model', path=input_path+'/save_model/', save_solution=True,
                   compress=False)
@@ -174,7 +174,7 @@ def test_save_model(interpolator, map_sequential_pile):
 
 def test_kriging_mutation(interpolator, map_sequential_pile):
     geo_model = map_sequential_pile
-    geo_model.set_theano_graph(interpolator)
+    geo_model.set_aesara_graph(interpolator)
 
     gp.compute_model(geo_model, compute_mesh=False)
     gp.plot.plot_2d(geo_model, cell_number=25, show_scalar=True, series_n=1, N=15,
@@ -189,8 +189,8 @@ def test_kriging_mutation(interpolator, map_sequential_pile):
     # copy dataframe before interpolator is calculated
     pre = geo_model._additional_data.kriging_data.df.copy()
 
-    gp.set_interpolator(geo_model, compile_theano=True,
-                        theano_optimizer='fast_compile', update_kriging=False)
+    gp.set_interpolator(geo_model, compile_aesara=True,
+                        aesara_optimizer='fast_compile', update_kriging=False)
     gp.compute_model(geo_model, compute_mesh=False)
 
     gp.plot.plot_2d(geo_model, cell_number=25, series_n=1, N=15, show_boundaries=False,

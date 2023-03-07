@@ -47,18 +47,18 @@ def get_interpolator(model: Project):
 
 
 def get_th_fn(model: Project):
-    """Get the compiled theano function
+    """Get the compiled aesara function
 
     Args:
         model (:class:`model.Project`)
 
     Returns:
-        :class:`theano.compile.function_module.Function`: Compiled function if C or CUDA which computes the interpolation given the input data
+        :class:`aesara.compile.function_module.Function`: Compiled function if C or CUDA which computes the interpolation given the input data
             (XYZ of dips, dip, azimuth, polarity, XYZ ref surface_points, XYZ rest surface_points)
     """
-    assert getattr(model._interpolator, 'theano_function', False) is not None, 'Theano has not been compiled yet'
+    assert getattr(model._interpolator, 'aesara_function', False) is not None, 'aesara has not been compiled yet'
 
-    return model._interpolator.theano_function
+    return model._interpolator.aesara_function
 
 
 def get_additional_data(model: Project):

@@ -15,7 +15,7 @@ def test_rescaled_marching_cube(interpolator):
                                  path_o=input_path + "/GeoModeller/test_a/test_a_Foliations.csv",
                                  path_i=input_path + "/GeoModeller/test_a/test_a_Points.csv")
 
-    geo_data.set_theano_function(interpolator)
+    geo_data.set_aesara_function(interpolator)
 
     # Compute model
     sol = gempy.compute_model(geo_data, compute_mesh_options={'rescale': True})
@@ -42,7 +42,7 @@ def test_custom_grid_solution(model_horizontal_two_layers):
                    [5, 5, -1]])
     values = geo_model.set_custom_grid(cg)
     assert geo_model._grid.active_grids[1]
-    # set the theano function
+    # set the aesara function
 
     # Compute model
     sol = gempy.compute_model(geo_model, compute_mesh=False)

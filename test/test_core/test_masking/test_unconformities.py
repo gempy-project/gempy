@@ -30,8 +30,8 @@ def geo_model(interpolator):
                                "Inclined_Series": 'Inclined',
                                "Fold_Series": ('Basefold', 'Topfold', 'basement')})
 
-    # Create the theano model
-    geo_model.set_theano_function(interpolator)
+    # Create the aesara model
+    geo_model.set_aesara_function(interpolator)
 
     return geo_model
 

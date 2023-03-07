@@ -2,7 +2,7 @@ import os
 import sys, os
 sys.path.append("../../..")
 
-os.environ["THEANO_FLAGS"] = "mode=FAST_RUN,device=cpu"
+os.environ["aesara_FLAGS"] = "mode=FAST_RUN,device=cpu"
 import warnings
 
 try:
@@ -68,8 +68,8 @@ def test_real_grid_ales():
 
         geo_model.set_is_fault(['fault_right', 'fault_left', 'fault_lr'], change_color=True)
         gp.set_interpolator(geo_model,
-                                  output=['geology'], compile_theano=True,
-                                  theano_optimizer='fast_run', dtype='float64',
+                                  output=['geology'], compile_aesara=True,
+                                  aesara_optimizer='fast_run', dtype='float64',
                                   verbose=[])
 
         gp.compute_model(geo_model, compute_mesh=True)
