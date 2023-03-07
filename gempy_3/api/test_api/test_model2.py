@@ -21,11 +21,13 @@ import sys, os
 sys.path.append("../..")
 
 
-def create_interpolator():
+@pytest.fixture(scope='module')
+def interpolator():
     m = gp.create_model('JustInterpolator')
     return gp.set_interpolator(m, theano_optimizer='fast_run')
 
 
+@pytest.fixture(scope="module")
 def load_model():
     verbose = False
     geo_model = gp.create_model('Model_Tuto1-1')
@@ -52,6 +54,7 @@ def load_model():
     return geo_model
 
 
+@pytest.fixture(scope='module')
 def map_sequential_pile(load_model):
     geo_model = load_model
 
@@ -66,12 +69,8 @@ def map_sequential_pile(load_model):
     return geo_model
 
 
-def test_compute_model():
-    geo_model = load_model()
-    geo_model = map_sequential_pile(geo_model)
-
-    interpolator = create_interpolator()
-
+def test_compute_model(interpolator, map_sequential_pile):
+    geo_model = map_sequential_pile
     geo_model.set_aesara_graph(interpolator)
 
     gp.compute_model(geo_model, compute_mesh=False)
@@ -91,3 +90,69 @@ def test_compute_model():
 
     gp.plot.plot_2d(geo_model, cell_number=25, series_n=1, N=15, show_scalar=True,
                     direction='y', show_data=True)
+
+
+def test_get_data(load_model):
+    geo_model = load_model
+    return gp.get_data(geo_model, 'orientations').head()
+
+
+def test_define_sequential_pile(map_sequential_pile):
+    print(map_sequential_pile._surfaces)
+
+
+def test_sequential_pile_colors(load_model):
+    geo_model = load_model
+
+    gp.map_stack_to_surfaces(geo_model, {"Fault_Series": 'Main_Fault',
+                                         "Strat_Series": ('Sandstone_2', 'Siltstone',
+                                                          'Shale', 'Sandstone_1', 'basement')},
+                             remove_unused_series=True)
+
+    color1 = geo_model._surfaces.colors.colordict['Main_Fault']
+    geo_model.set_is_fault(['Fault_Series'], toggle=True)
+    color2 = geo_model._surfaces.colors.colordict['Main_Fault']
+    geo_model.set_is_fault(['Fault_Series'], toggle=True)
+    color3 = geo_model._surfaces.colors.colordict['Main_Fault']
+    assert color1 == color3
+    # print(color1, color2, color3)
+
+
+def test_save_model(interpolator, map_sequential_pile):
+    geo_model = map_sequential_pile
+    geo_model.set_theano_function(interpolator)
+    gp.compute_model(geo_model, compute_mesh=False)
+    gp.save_model(geo_model, name='test_save_model', path=input_path + '/save_model/', save_solution=True,
+                  compress=False)
+
+    lith_block_sol = np.load(input_path + '/save_model/test_save_model/test_save_model_lith_block.npy')
+    np.testing.assert_array_almost_equal(geo_model.solutions.lith_block, lith_block_sol, decimal=0)
+
+
+def test_kriging_mutation(interpolator, map_sequential_pile):
+    geo_model = map_sequential_pile
+    geo_model.set_theano_graph(interpolator)
+
+    gp.compute_model(geo_model, compute_mesh=False)
+    gp.plot.plot_2d(geo_model, cell_number=25, show_scalar=True, series_n=1, N=15,
+                    direction='y', show_data=True)
+    print(geo_model.solutions.lith_block, geo_model._additional_data)
+    # plt.savefig(os.path.dirname(__file__)+'/figs/test_kriging_mutation')
+
+    geo_model.modify_kriging_parameters('range', 1)
+    geo_model.modify_kriging_parameters('drift equations', [0, 3])
+
+    print(geo_model.solutions.lith_block, geo_model._additional_data)
+    # copy dataframe before interpolator is calculated
+    pre = geo_model._additional_data.kriging_data.df.copy()
+
+    gp.set_interpolator(geo_model, compile_theano=True,
+                        theano_optimizer='fast_compile', update_kriging=False)
+    gp.compute_model(geo_model, compute_mesh=False)
+
+    gp.plot.plot_2d(geo_model, cell_number=25, series_n=1, N=15, show_boundaries=False,
+                    direction='y', show_data=True, show_lith=True)
+
+    print(geo_model.solutions.lith_block, geo_model._additional_data)
+    plt.savefig(os.path.dirname(__file__) + '/../figs/test_kriging_mutation2')
+    assert geo_model._additional_data.kriging_data.df['range'][0] == pre['range'][0]
