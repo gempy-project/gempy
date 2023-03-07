@@ -194,7 +194,7 @@ class SurfacePoints(GeometricData):
     flexibility to the origin of the data.
 
     Args:
-        surfaces (:class:`Surfaces`): [s0]
+        surfa ces (:class:`Surfaces`): [s0]
         coord (np.ndarray): [s1]
         surface (list[str]): [s2]
 

@@ -4,7 +4,8 @@ import pandas as pn
 import numpy as np
 import os
 import pytest
-input_path = os.path.dirname(__file__)+'/../input_data'
+
+input_path = os.path.dirname(__file__) + '/../../../test/input_data'
 
 # ## Preparing the Python environment
 #
@@ -16,7 +17,14 @@ input_path = os.path.dirname(__file__)+'/../input_data'
 
 # These two lines are necessary only if GemPy is not installed
 import sys, os
+
 sys.path.append("../..")
+
+
+@pytest.fixture(scope='module')
+def interpolator():
+    m = gp.create_model('JustInterpolator')
+    return gp.set_interpolator(m, theano_optimizer='fast_run')
 
 
 @pytest.fixture(scope="module")
@@ -25,9 +33,9 @@ def load_model():
     geo_model = gp.create_model('Model_Tuto1-1')
 
     # Importing the data from CSV-files and setting extent and resolution
-    gp.init_data(geo_model, [0, 2000., 0, 2000., 0, 2000.], [50 ,50 ,50],
-                 path_o=input_path+"/simple_fault_model_orientations.csv",
-                 path_i=input_path+"/simple_fault_model_points.csv", default_values=True)
+    gp.init_data(geo_model, [0, 2000., 0, 2000., 0, 2000.], [50, 50, 50],
+                 path_o=input_path + "/simple_fault_model_orientations.csv",
+                 path_i=input_path + "/simple_fault_model_points.csv", default_values=True)
 
     df_cmp_i = gp.get_data(geo_model, 'surface_points')
     df_cmp_o = gp.get_data(geo_model, 'orientations')
@@ -47,12 +55,11 @@ def load_model():
 
 
 def test_load_model_df():
-
     verbose = True
-    df_i = pn.DataFrame(np.random.randn(6,3), columns='X Y Z'.split())
+    df_i = pn.DataFrame(np.random.randn(6, 3), columns='X Y Z'.split())
     df_i['formation'] = ['surface_1' for _ in range(3)] + ['surface_2' for _ in range(3)]
 
-    df_o = pn.DataFrame(np.random.randn(6,6), columns='X Y Z azimuth dip polarity'.split())
+    df_o = pn.DataFrame(np.random.randn(6, 6), columns='X Y Z azimuth dip polarity'.split())
     df_o['formation'] = ['surface_1' for _ in range(3)] + ['surface_2' for _ in range(3)]
 
     geo_model = gp.create_model('test')
@@ -76,7 +83,7 @@ def test_load_model_df():
 
     geo_model = gp.create_model('test')
     # Importing the data directly from the dataframes
-    gp.init_data(geo_model, [0, 2000., 0, 2000., 0, 2000.], [50 ,50 ,50],
+    gp.init_data(geo_model, [0, 2000., 0, 2000., 0, 2000.], [50, 50, 50],
                  surface_points_df=df_i, orientations_df=df_o)
 
     df_cmp_i2 = gp.get_data(geo_model, 'surface_points')
@@ -101,8 +108,8 @@ def map_sequential_pile(load_model):
     # TODO decide what I do with the layer order
 
     gp.map_stack_to_surfaces(geo_model, {"Fault_Series": 'Main_Fault',
-                                          "Strat_Series": ('Sandstone_2', 'Siltstone',
-                                                           'Shale', 'Sandstone_1', 'basement')},
+                                         "Strat_Series": ('Sandstone_2', 'Siltstone',
+                                                          'Shale', 'Sandstone_1', 'basement')},
                              remove_unused_series=True)
 
     geo_model.set_is_fault(['Fault_Series'])
@@ -122,8 +129,8 @@ def test_sequential_pile_colors(load_model):
     geo_model = load_model
 
     gp.map_stack_to_surfaces(geo_model, {"Fault_Series": 'Main_Fault',
-                                          "Strat_Series": ('Sandstone_2', 'Siltstone',
-                                                           'Shale', 'Sandstone_1', 'basement')},
+                                         "Strat_Series": ('Sandstone_2', 'Siltstone',
+                                                          'Shale', 'Sandstone_1', 'basement')},
                              remove_unused_series=True)
 
     color1 = geo_model._surfaces.colors.colordict['Main_Fault']
@@ -132,7 +139,7 @@ def test_sequential_pile_colors(load_model):
     geo_model.set_is_fault(['Fault_Series'], toggle=True)
     color3 = geo_model._surfaces.colors.colordict['Main_Fault']
     assert color1 == color3
-    #print(color1, color2, color3)
+    # print(color1, color2, color3)
 
 
 def test_compute_model(interpolator, map_sequential_pile):
@@ -143,7 +150,7 @@ def test_compute_model(interpolator, map_sequential_pile):
 
     test_values = [45, 150, 2500]
     if False:
-        np.save(input_path+'/test_integration_lith_block.npy', geo_model.solutions.lith_block[test_values])
+        np.save(input_path + '/test_integration_lith_block.npy', geo_model.solutions.lith_block[test_values])
 
     # Load model
     real_sol = np.load(input_path + '/test_integration_lith_block.npy')
@@ -153,22 +160,22 @@ def test_compute_model(interpolator, map_sequential_pile):
 
     gp.plot.plot_2d(geo_model, cell_number=25,
                     direction='y', show_data=True)
-    plt.savefig(os.path.dirname(__file__)+'/../figs/test_integration_lith_block')
+    plt.savefig(os.path.dirname(__file__) + '/../figs/test_integration_lith_block')
 
     gp.plot.plot_2d(geo_model, cell_number=25, series_n=1, N=15, show_scalar=True,
                     direction='y', show_data=True)
 
-    plt.savefig(os.path.dirname(__file__)+'/../figs/test_integration_scalar')
+    plt.savefig(os.path.dirname(__file__) + '/../figs/test_integration_scalar')
 
 
 def test_save_model(interpolator, map_sequential_pile):
     geo_model = map_sequential_pile
     geo_model.set_theano_function(interpolator)
     gp.compute_model(geo_model, compute_mesh=False)
-    gp.save_model(geo_model, name='test_save_model', path=input_path+'/save_model/', save_solution=True,
+    gp.save_model(geo_model, name='test_save_model', path=input_path + '/save_model/', save_solution=True,
                   compress=False)
 
-    lith_block_sol = np.load(input_path+'/save_model/test_save_model/test_save_model_lith_block.npy')
+    lith_block_sol = np.load(input_path + '/save_model/test_save_model/test_save_model_lith_block.npy')
     np.testing.assert_array_almost_equal(geo_model.solutions.lith_block, lith_block_sol, decimal=0)
 
 
@@ -180,7 +187,7 @@ def test_kriging_mutation(interpolator, map_sequential_pile):
     gp.plot.plot_2d(geo_model, cell_number=25, show_scalar=True, series_n=1, N=15,
                     direction='y', show_data=True)
     print(geo_model.solutions.lith_block, geo_model._additional_data)
-    #plt.savefig(os.path.dirname(__file__)+'/figs/test_kriging_mutation')
+    # plt.savefig(os.path.dirname(__file__)+'/figs/test_kriging_mutation')
 
     geo_model.modify_kriging_parameters('range', 1)
     geo_model.modify_kriging_parameters('drift equations', [0, 3])
@@ -197,5 +204,5 @@ def test_kriging_mutation(interpolator, map_sequential_pile):
                     direction='y', show_data=True, show_lith=True)
 
     print(geo_model.solutions.lith_block, geo_model._additional_data)
-    plt.savefig(os.path.dirname(__file__)+'/../figs/test_kriging_mutation2')
+    plt.savefig(os.path.dirname(__file__) + '/../figs/test_kriging_mutation2')
     assert geo_model._additional_data.kriging_data.df['range'][0] == pre['range'][0]
