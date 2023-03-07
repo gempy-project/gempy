@@ -144,7 +144,7 @@ def test_sequential_pile_colors(load_model):
 
 def test_compute_model(interpolator, map_sequential_pile):
     geo_model = map_sequential_pile
-    geo_model.set_theano_graph(interpolator)
+    geo_model.set_aesara_graph(interpolator)
 
     gp.compute_model(geo_model, compute_mesh=False)
 
@@ -160,12 +160,9 @@ def test_compute_model(interpolator, map_sequential_pile):
 
     gp.plot.plot_2d(geo_model, cell_number=25,
                     direction='y', show_data=True)
-    plt.savefig(os.path.dirname(__file__) + '/../figs/test_integration_lith_block')
 
     gp.plot.plot_2d(geo_model, cell_number=25, series_n=1, N=15, show_scalar=True,
                     direction='y', show_data=True)
-
-    plt.savefig(os.path.dirname(__file__) + '/../figs/test_integration_scalar')
 
 
 def test_save_model(interpolator, map_sequential_pile):
