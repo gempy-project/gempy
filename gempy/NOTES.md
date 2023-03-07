@@ -1,0 +1,23 @@
+## Refactoring for v3 notes:
+
+- I want to make proper subpackages of the library
+- Once the subpackages are done we can start moving them out to different repos
+- First proposition:
+  - integration tests
+  - notebooks
+  - scripts
+  - examples
+  - GemPy
+    - Plugins:  
+      - Addons
+      - Assets
+      - Bayesian
+    - API
+      - API Modules
+      - gempy_api
+    - Plotting
+    - Core
+      - Data
+      - Interpolation
+        - Theano 
+        - GemPy Engine

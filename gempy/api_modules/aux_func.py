@@ -13,7 +13,7 @@ warnings.filterwarnings("ignore",
                         append=True)
 
 
-@_setdoc(Series.__doc__)
+@_setdoc(Series.__doc__) 
 def create_series(series_distribution=None, order=None):
     return Series(series_distribution=series_distribution, order=order)
 
