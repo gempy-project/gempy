@@ -632,11 +632,15 @@ class Plot2D:
                         self.model.solutions.scalar_field_at_surface_points[e] != 0)]
 
                     c_id2 = c_id + len(level)  # color id endpoint
-                    ax.contour(block.reshape(shape).T, 0, levels=np.sort(level),
-                               colors=self.cmap.colors[c_id:c_id2][::-1],
-                               linestyles='solid', origin='lower',
-                               extent=extent_val, zorder=zorder - (e + len(level))
-                               )
+                    ax.contour(
+                        block.reshape(shape).T, 0,
+                        levels=np.sort(level),
+                        colors=self.cmap.colors[c_id:c_id2][::-1],
+                        linestyles='solid',
+                        origin='lower',
+                        extent=extent_val,
+                        zorder=zorder - (e + len(level))
+                    )
                     c_id = c_id2
 
             else:
@@ -666,14 +670,12 @@ class Plot2D:
         elif cell_number is not None or block is not None:
             _slice = self._slice(direction, cell_number)[:3]
             shape = self.model._grid.regular_grid.resolution
-            c_id = 0  # color id startpoint
+            c_id = 0  # * color id startpoint
 
             for e, block in enumerate(self.model.solutions.scalar_field_matrix):
                 level = self.model.solutions.scalar_field_at_surface_points[e][np.where(
                     self.model.solutions.scalar_field_at_surface_points[e] != 0)]
-                # c_id = e
                 c_id2 = c_id + len(level)
-                #    print(c_id, c_id2)
 
                 color_list = self.model._surfaces.df.groupby('isActive').get_group(True)['color'][c_id:c_id2][::-1]
                 #    print(color_list)

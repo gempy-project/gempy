@@ -170,24 +170,50 @@ def test_set_gempy3_input():
             grid=solutions.octrees_output[octree_lvl].grid_centers.regular_grid
         )
 
-    scalar_number = 0
+    interp_output_scalar_1: InterpOutput = solutions.octrees_output[octree_lvl].outputs_centers[0]
+    interp_output_scalar_2: InterpOutput = solutions.octrees_output[octree_lvl].outputs_centers[1]
+    geo_model.solutions.block_matrix = np.vstack((
+        interp_output_scalar_1.values_block,
+        interp_output_scalar_2.values_block
+    ))
+    geo_model.solutions.lith_block = interp_output_scalar_2.ids_block
 
-    interp_output: InterpOutput = solutions.octrees_output[octree_lvl].outputs_centers[scalar_number]
-    geo_model.solutions.block_matrix = interp_output.values_block
-    geo_model.solutions.lith_block = interp_output.ids_block
+    geo_model.solutions.scalar_field_matrix = np.vstack((
+        interp_output_scalar_1.scalar_fields.exported_fields.scalar_field,
+        interp_output_scalar_2.scalar_fields.exported_fields.scalar_field
+    ))
 
-    field = interp_output.scalar_fields.exported_fields.scalar_field
-    geo_model.solutions.scalar_field_matrix = np.atleast_2d(field)  # todo these matrices expect all the series
-    geo_model.solutions.scalar_field_at_surface_points = np.atleast_2d(interp_output.scalar_field_at_sp)
+    geo_model.solutions.scalar_field_at_surface_points = [interp_output_scalar_1.scalar_fields.exported_fields.scalar_field_at_surface_points,
+                                                          interp_output_scalar_2.scalar_fields.exported_fields.scalar_field_at_surface_points]
+    gp.plot.plot_2d(
+        geo_model,
+        cell_number=25,
+        direction='y',
+        show_data=True,
+        show_block=True,
+        show_lith=False,
+        series_n=0
+    )
 
-    gp.plot.plot_2d(geo_model, cell_number=25, direction='y', show_data=True)
-    gp.plot.plot_2d(geo_model,
-                    cell_number=25,
-                    series_n=scalar_number,
-                    N=15,
-                    show_scalar=True, direction='y',
-                    show_data=True
-                    )
+    gp.plot.plot_2d(
+        geo_model,
+        cell_number=25,
+        series_n=1,
+        N=15,
+        show_scalar=True,
+        direction='y',
+        show_data=True
+    )
+
+    gp.plot.plot_2d(
+        geo_model,
+        cell_number=25,
+        direction='y',
+        show_data=True,
+        show_block=False,
+        show_lith=True,
+        series_n=1
+    )
 
 
 def test_compute_model():
