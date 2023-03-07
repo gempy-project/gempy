@@ -101,7 +101,7 @@ class Solution(inheritance):
 
     def __repr__(self):
         return '\nLithology ids \n  %s \n' \
-               % (np.array2string(self.lith_block))
+            % (np.array2string(self.lith_block))
 
     def set_solution_to_regular_grid(self, values: Union[list, np.ndarray],
                                      compute_mesh: bool = True,
@@ -196,33 +196,22 @@ class Solution(inheritance):
             :class:`gempy.core.solutions.Solutions`
 
         """
-        regular_grid_length_l0, regular_grid_length_l1 = self.grid.get_grid_args(
-            'regular')
+        regular_grid_length_l0, regular_grid_length_l1 = self.grid.get_grid_args('regular')
 
         # Lithology final block
-        self.lith_block = values[0][0,
-                          regular_grid_length_l0: regular_grid_length_l1]
+        self.lith_block = values[0][0, regular_grid_length_l0: regular_grid_length_l1]
 
         # Properties
-        self.values_matrix = values[0][1:,
-                             regular_grid_length_l0: regular_grid_length_l1]
+        self.values_matrix = values[0][1:, regular_grid_length_l0: regular_grid_length_l1]
 
         # Axis 0 is the series. Axis 1 is the value
-        self.block_matrix = values[1][:, :,
-                            regular_grid_length_l0: regular_grid_length_l1]
-
+        self.block_matrix = values[1][:, :, regular_grid_length_l0: regular_grid_length_l1]
         self.fault_block = values[2]
         # This here does not make any sense
         self.weights_vector = values[3]
-
-        self.scalar_field_matrix = values[4][:,
-                                   regular_grid_length_l0: regular_grid_length_l1]
-
-        self.mask_matrix = values[6][:,
-                           regular_grid_length_l0: regular_grid_length_l1]
-
-        self.fault_mask = values[7][:,
-                          regular_grid_length_l0: regular_grid_length_l1]
+        self.scalar_field_matrix = values[4][:, regular_grid_length_l0: regular_grid_length_l1]
+        self.mask_matrix = values[6][:, regular_grid_length_l0: regular_grid_length_l1]
+        self.fault_mask = values[7][:, regular_grid_length_l0: regular_grid_length_l1]
 
         # TODO add topology solutions
 
@@ -378,7 +367,7 @@ class Solution(inheritance):
         sfas = sfas[np.nonzero(sfas)]
         if masked_marching_cubes is True:
             if series_type[e - 1] == 'Onlap' and series_type[e - 2] == 'Erosion':
-                mask_array = self.mask_matrix_pad[e-1]
+                mask_array = self.mask_matrix_pad[e - 1]
             else:
                 mask_array = self.mask_matrix_pad[e]
 

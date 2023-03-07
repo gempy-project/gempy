@@ -1,16 +1,18 @@
+from matplotlib import pyplot as plt
+
 import gempy as gp
 import pandas as pn
 import numpy as np
 import os
 
 import gempy_engine
-from gempy.core.grid_modules.grid_types import RegularGrid
 from gempy_engine.core.data import SurfacePoints, Orientations, InterpolationOptions
-from gempy_engine.core.data.grid import Grid
+from gempy_engine.core.data.grid import Grid, RegularGrid
 from gempy_engine.core.data.input_data_descriptor import StacksStructure, StackRelationType, TensorsStructure, InputDataDescriptor
 from gempy_engine.core.data.interpolation_input import InterpolationInput
 from gempy_engine.core.data.kernel_classes.kernel_functions import AvailableKernelFunctions
 from gempy_engine.core.data.solutions import Solutions
+from gempy_engine.modules.octrees_topology.octrees_topology_interface import get_regular_grid_value_for_level, ValueType
 
 input_path = os.path.dirname(__file__) + '/../../../test/input_data'
 
@@ -88,7 +90,7 @@ def test_set_gempy3_input():
 
     regular_grid: RegularGrid = RegularGrid(
         extent=geo_model.grid.regular_grid.extent_r,
-        resolution=geo_model.grid.regular_grid.resolution,
+        regular_grid_shape=geo_model.grid.regular_grid.resolution,
     )
 
     grid: Grid = Grid(
@@ -105,14 +107,13 @@ def test_set_gempy3_input():
 
     print(interpolation_input)
 
-    faults_relations = geo_model._faults.faults_relations_df.values
     # @formatter:off
     stack_structure: StacksStructure = StacksStructure(
         number_of_points_per_stack       = geo_model.additional_data.structure_data.df.loc['values', 'len series surface_points'],
         number_of_orientations_per_stack = geo_model.additional_data.structure_data.df.loc['values', 'len series orientations'],
         number_of_surfaces_per_stack     = geo_model.additional_data.structure_data.df.loc['values', 'number surfaces per series'],
         masking_descriptor               = [StackRelationType.FAULT                                , StackRelationType.ERODE      , False],
-        faults_relations                 = faults_relations
+        faults_relations                 = geo_model._faults.faults_relations_df.values
     )
     # @formatter:on
 
@@ -131,15 +132,15 @@ def test_set_gempy3_input():
     rescaling_factor: float = geo_model._additional_data.rescaling_data.df.loc['values', 'rescaling factor']
 
     # @formatter:off
-    options = InterpolationOptions(
-        range             = geo_model._additional_data.kriging_data.df.loc['values', 'range'] / rescaling_factor,
-        c_o               = geo_model._additional_data.kriging_data.df.loc['values', '$C_o$'] / rescaling_factor,
-        uni_degree        = 1,
-        number_dimensions = 3,
-        kernel_function   = AvailableKernelFunctions.cubic,
-        dual_contouring=False,
-        compute_scalar_gradient=False,
-        number_octree_levels=3
+    options                     = InterpolationOptions(
+        range                   = geo_model._additional_data.kriging_data.df.loc['values', 'range'] / rescaling_factor,
+        c_o                     = geo_model._additional_data.kriging_data.df.loc['values', '$C_o$'] / rescaling_factor,
+        uni_degree              = 1,
+        number_dimensions       = 3,
+        kernel_function         = AvailableKernelFunctions.cubic,
+        dual_contouring         = False,
+        compute_scalar_gradient = False,
+        number_octree_levels    = 1
     )
     # @formatter:on
 
@@ -150,6 +151,27 @@ def test_set_gempy3_input():
         options=options,
         data_descriptor=input_data_descriptor
     )
+
+    if False:
+        regular_grid_scalar = get_regular_grid_value_for_level(
+            octree_list=solutions.octrees_output,
+            level=2,
+            value_type=ValueType.scalar
+            
+        )
+        _plot_block(
+            block=regular_grid_scalar,
+            grid=solutions.octrees_output[-1].grid_centers.regular_grid
+        )
+    else:
+        _plot_block(
+            block=solutions.octrees_output[-1].last_output_center.values_block,
+            grid=solutions.octrees_output[-1].grid_centers.regular_grid
+        )
+
+    geo_model.solutions.block_matrix = solutions.octrees_output[-1].last_output_center.values_block
+    geo_model.solutions.lith_block = solutions.octrees_output[-1].last_output_center.ids_block
+    gp.plot.plot_2d(geo_model, cell_number=25, direction='y', show_data=True)
 
 
 def test_compute_model():
@@ -170,8 +192,32 @@ def test_compute_model():
     # We only compare the block because the absolute pot field I changed it
     np.testing.assert_array_almost_equal(np.round(geo_model.solutions.lith_block[test_values]), real_sol, decimal=0)
 
-    gp.plot.plot_2d(geo_model, cell_number=25,
-                    direction='y', show_data=True)
+    gp.plot.plot_2d(geo_model, cell_number=25, direction='y', show_data=True)
 
-    gp.plot.plot_2d(geo_model, cell_number=25, series_n=1, N=15, show_scalar=True,
-                    direction='y', show_data=True)
+    gp.plot.plot_2d(geo_model, cell_number=25, series_n=1, N=15, show_scalar=True, direction='y', show_data=True)
+
+
+def _plot_block(block, grid: RegularGrid, interpolation_input=None, direction="y"):
+    resolution = grid.resolution
+    extent = grid.extent
+    if direction == "y":
+        plt.imshow(block.reshape(resolution)[:, resolution[1] // 2, :].T, extent=extent[[0, 1, 4, 5]], origin="lower")
+    if direction == "x":
+        plt.imshow(block.reshape(resolution)[resolution[0] // 2, :, :].T, extent=extent[[2, 3, 4, 5]], origin="lower")
+
+    if interpolation_input is not None:
+        _plot_data(interpolation_input)
+
+    plt.show()
+
+
+def _plot_data(interpolation_input):
+    xyz = interpolation_input.surface_points.sp_coords
+    plt.plot(xyz[:, 0], xyz[:, 2], "o")
+    plt.colorbar()
+    plt.quiver(interpolation_input.orientations.dip_positions[:, 0],
+               interpolation_input.orientations.dip_positions[:, 2],
+               interpolation_input.orientations.dip_gradients[:, 0],
+               interpolation_input.orientations.dip_gradients[:, 2],
+               scale=10
+               )
