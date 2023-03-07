@@ -156,7 +156,7 @@ class Plot2D:
 
         figsize, self.ax_labelsize, _, self.xt_labelsize, self.linewidth, _ = _scale_fig_size(
             figsize, textsize, rows, cols)
-        self.fig = plt.figure( figsize=figsize, constrained_layout=False)
+        self.fig = plt.figure(figsize=figsize, constrained_layout=False)
         self.fig.is_legend = False
         # TODO make grid variable
         # self.gs_0 = gridspect.GridSpec(2, 2, figure=self.fig, hspace=.9)
@@ -456,13 +456,12 @@ class Plot2D:
         points_df['colors'] = points_df['surface'].map(self._color_lot)
 
         points_df.plot.scatter(x=x, y=y, ax=ax, c=points_df['surface'].map(self._color_lot),
-                               s=70,  zorder=102, edgecolors='white',
+                               s=70, zorder=102, edgecolors='white',
                                colorbar=False)
         # points_df.plot.scatter(x=x, y=y, ax=ax, c='white', s=80,  zorder=101,
         #                        colorbar=False)
 
         if self.fig.is_legend is False and legend is True or legend == 'force':
-
             markers = [plt.Line2D([0, 0], [0, 0], color=color, marker='o',
                                   linestyle='') for color in
                        self._color_lot.values()]
@@ -606,7 +605,7 @@ class Plot2D:
                 ax.fill(line[:, 0], line[:, 1], color='k')
             except IndexError:
                 warnings.warn('Topography needs to be a raster to be able to plot it'
-                                     'in 2D sections')
+                              'in 2D sections')
         return ax
 
     def plot_contacts(self, ax, section_name=None, cell_number=None, direction='y', block=None,

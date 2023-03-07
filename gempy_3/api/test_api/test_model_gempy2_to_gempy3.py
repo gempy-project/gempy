@@ -152,26 +152,42 @@ def test_set_gempy3_input():
         data_descriptor=input_data_descriptor
     )
 
+    octree_lvl = -1
     if False:
         regular_grid_scalar = get_regular_grid_value_for_level(
             octree_list=solutions.octrees_output,
             level=2,
             value_type=ValueType.scalar
-            
+
         )
         _plot_block(
             block=regular_grid_scalar,
-            grid=solutions.octrees_output[-1].grid_centers.regular_grid
+            grid=solutions.octrees_output[octree_lvl].grid_centers.regular_grid
         )
     else:
         _plot_block(
-            block=solutions.octrees_output[-1].last_output_center.values_block,
-            grid=solutions.octrees_output[-1].grid_centers.regular_grid
+            block=solutions.octrees_output[octree_lvl].last_output_center.values_block,
+            grid=solutions.octrees_output[octree_lvl].grid_centers.regular_grid
         )
 
-    geo_model.solutions.block_matrix = solutions.octrees_output[-1].last_output_center.values_block
-    geo_model.solutions.lith_block = solutions.octrees_output[-1].last_output_center.ids_block
+    scalar_number = 0
+
+    interp_output: InterpOutput = solutions.octrees_output[octree_lvl].outputs_centers[scalar_number]
+    geo_model.solutions.block_matrix = interp_output.values_block
+    geo_model.solutions.lith_block = interp_output.ids_block
+
+    field = interp_output.scalar_fields.exported_fields.scalar_field
+    geo_model.solutions.scalar_field_matrix = np.atleast_2d(field)  # todo these matrices expect all the series
+    geo_model.solutions.scalar_field_at_surface_points = np.atleast_2d(interp_output.scalar_field_at_sp)
+
     gp.plot.plot_2d(geo_model, cell_number=25, direction='y', show_data=True)
+    gp.plot.plot_2d(geo_model,
+                    cell_number=25,
+                    series_n=scalar_number,
+                    N=15,
+                    show_scalar=True, direction='y',
+                    show_data=True
+                    )
 
 
 def test_compute_model():
@@ -193,7 +209,6 @@ def test_compute_model():
     np.testing.assert_array_almost_equal(np.round(geo_model.solutions.lith_block[test_values]), real_sol, decimal=0)
 
     gp.plot.plot_2d(geo_model, cell_number=25, direction='y', show_data=True)
-
     gp.plot.plot_2d(geo_model, cell_number=25, series_n=1, N=15, show_scalar=True, direction='y', show_data=True)
 
 
