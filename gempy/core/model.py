@@ -257,7 +257,7 @@ class ImplicitCoKriging(object):
                 # This is necessary to find the intersection between orientations
                 # (series) and  surface points
                 self._surfaces.df['isActive'] = (
-                    act_series & bool_surf_points) | self._surfaces.df['isBasement']
+                                                        act_series & bool_surf_points) | self._surfaces.df['isBasement']
                 self._surfaces.df['hasData'] = (
                         act_series | bool_surf_points)
 
@@ -1008,7 +1008,7 @@ class ImplicitCoKriging(object):
                 else self._check_possible_column_names(table, ['Z', 'z'])
         except IndexError:
             raise ValueError('Z coordinates column/values missing')
-        
+
         surface_name = kwargs.get('surface_name') if 'surface_name' in kwargs \
             else self._check_possible_column_names(table,
                                                    ['surface', 'Surface', 'surfaces',
@@ -1479,9 +1479,8 @@ class ImplicitCoKriging(object):
 
         Returns:
              True """
-        warnings.warn(
-            'This function is going to be deprecated. Use Model.set_aesara_function instead',
-            DeprecationWarning)
+        warnings.warn('This function is going to be deprecated. Use Model.set_aesara_function instead',
+                      DeprecationWarning)
         self._interpolator.aesara_graph = interpolator.aesara_graph
         self._interpolator.aesara_function = interpolator.aesara_function
         self.update_additional_data(update_structure=update_structure,
@@ -1575,10 +1574,9 @@ class ImplicitCoKriging(object):
                 sfai_order = field_at_surface_points.sum(axis=0)
             case list:
                 # concatenate
-                sfai_order = np.concatenate(field_at_surface_points, axis=0) 
-        
-            
-        # Check if the order has changed
+                sfai_order = np.concatenate(field_at_surface_points, axis=0)
+
+                # Check if the order has changed
         if not np.array_equal(sfai_order, self._sfai_order_0):
             self._sfai_order_0 = sfai_order
             sel = self._surfaces.df['isActive'] & ~self._surfaces.df['isBasement']
