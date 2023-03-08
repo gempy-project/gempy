@@ -56,7 +56,7 @@ def test_set_gempy3_gempy2_bridge():
     input_data_descriptor: InputDataDescriptor  = gempy_project_to_input_data_descriptor(geo_model)
     options              : InterpolationOptions = gempy_project_to_interpolation_options(geo_model)
     # @on
-
+    
     print(interpolation_input)
     print(input_data_descriptor)
     print(options)

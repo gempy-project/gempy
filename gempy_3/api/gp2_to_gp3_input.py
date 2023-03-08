@@ -17,10 +17,11 @@ def gempy_project_to_interpolation_input(geo_model: Project) -> InterpolationInp
         dip_positions=geo_model._orientations.df[['X_c', 'Y_c', 'Z_c']].values,
         dip_gradients=geo_model._orientations.df[['G_x', 'G_y', 'G_z']].values
     )
-
+    
     regular_grid: RegularGrid = RegularGrid(
         extent=geo_model.grid.regular_grid.extent_r,
-        regular_grid_shape=geo_model.grid.regular_grid.resolution,
+        # regular_grid_shape=geo_model.grid.regular_grid.resolution,
+        regular_grid_shape=[2, 2, 2],
     )
 
     grid: Grid = Grid(
@@ -34,18 +35,18 @@ def gempy_project_to_interpolation_input(geo_model: Project) -> InterpolationInp
         grid=grid,
         unit_values=geo_model._surfaces.df['id'].values,  # * This can be optional
     )
-    
+
     return interpolation_input
 
 
 def gempy_project_to_input_data_descriptor(geo_model: Project) -> InputDataDescriptor:
     # @formatter:off
     stack_structure: StacksStructure = StacksStructure(
-        number_of_points_per_stack       = geo_model.additional_data.structure_data.df.loc['values', 'len series surface_points'],
-        number_of_orientations_per_stack = geo_model.additional_data.structure_data.df.loc['values', 'len series orientations'],
-        number_of_surfaces_per_stack     = geo_model.additional_data.structure_data.df.loc['values', 'number surfaces per series'],
-        masking_descriptor               = [StackRelationType.FAULT                                , StackRelationType.ERODE      , False],
-        faults_relations                 = geo_model._faults.faults_relations_df.values
+        number_of_points_per_stack=geo_model.additional_data.structure_data.df.loc['values', 'len series surface_points'],
+        number_of_orientations_per_stack=geo_model.additional_data.structure_data.df.loc['values', 'len series orientations'],
+        number_of_surfaces_per_stack=geo_model.additional_data.structure_data.df.loc['values', 'number surfaces per series'],
+        masking_descriptor=[StackRelationType.FAULT, StackRelationType.ERODE, False],
+        faults_relations=geo_model._faults.faults_relations_df.values
     )
     # @formatter:on
 
@@ -59,13 +60,12 @@ def gempy_project_to_input_data_descriptor(geo_model: Project) -> InputDataDescr
         tensors_structure=tensor_struct,
         stack_structure=stack_structure
     )
-    
+
     return input_data_descriptor
 
 
 def gempy_project_to_interpolation_options(geo_model: Project) -> InterpolationOptions:
     rescaling_factor: float = geo_model._additional_data.rescaling_data.df.loc['values', 'rescaling factor']
-    shift: np.array = geo_model._additional_data.rescaling_data.df.loc['values', 'centers']
 
     # @off
     options                     = InterpolationOptions(
@@ -76,11 +76,10 @@ def gempy_project_to_interpolation_options(geo_model: Project) -> InterpolationO
         kernel_function         = AvailableKernelFunctions.cubic,
         dual_contouring         = True,
         compute_scalar_gradient = False,
-        number_octree_levels    = 2
+        number_octree_levels    = 3
     )
     # @on
-
-    options.dual_contouring_fancy = True
+    
+    options.dual_contouring_fancy = True # bug: I am testing fancy dual contouring
 
     return options
-    
