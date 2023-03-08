@@ -13,7 +13,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-pd.set_option('precision', 2)
+pd.set_option('display.precision', 2)
 
 # %%
 # The description of the methods nomenclature remains the same as for the

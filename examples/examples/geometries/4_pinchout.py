@@ -14,7 +14,7 @@ Model 4 - Pinchout
 import gempy as gp
 
 import pandas as pd
-pd.set_option('precision', 2)
+pd.set_option('display.precision', 2)
 
 # %%
 # Creating the model by importing the input data and displaying it:

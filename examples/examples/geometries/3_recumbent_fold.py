@@ -15,7 +15,7 @@ import gempy as gp
 
 # Importing auxiliary libraries
 import pandas as pd
-pd.set_option('precision', 2)
+pd.set_option('display.precision', 2)
 
 # %%
 # Creating the model by importing the input data and displaying it:

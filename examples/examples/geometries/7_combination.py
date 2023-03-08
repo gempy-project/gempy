@@ -14,7 +14,7 @@ Model 7 - Combination
 import gempy as gp
 
 import pandas as pd
-pd.set_option('precision', 2)
+pd.set_option('display.precision', 2)
 
 # %%
 # Creating the model by importing the input data and displaying it:
@@ -72,4 +72,4 @@ gp.plot_2d(geo_data, cell_number=5,
 
 # %%
 gp.plot_3d(geo_data)
-gp.save_model(geo_data)
+#gp.save_model(geo_data)

@@ -16,7 +16,7 @@ import os
 import matplotlib.pyplot as plt
 
 np.random.seed(1515)
-pd.set_option('precision', 2)
+pd.set_option('display.precision', 2)
 
 # %%
 cwd = os.getcwd()

@@ -18,7 +18,7 @@ from gempy.utils.input_manipulation import find_interfaces_from_block_bottoms
 import matplotlib.pyplot as plt
 
 np.random.seed(1515)
-pd.set_option('precision', 2)
+pd.set_option('display.precision', 2)
 
 # %%
 # We import a model from an existing folder.

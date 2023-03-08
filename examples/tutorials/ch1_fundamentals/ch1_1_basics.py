@@ -15,7 +15,7 @@ import os
 
 # Setting options
 np.random.seed(1515)
-pd.set_option('precision', 2)
+pd.set_option('display.precision', 2)
 
 # %%
 # Importing and creating a set of input data

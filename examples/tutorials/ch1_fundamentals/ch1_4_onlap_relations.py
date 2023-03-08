@@ -14,7 +14,7 @@ import pandas as pd
 import os
 
 np.random.seed(1515)
-pd.set_option('precision', 2)
+pd.set_option('display.precision', 2)
 
 # %%
 # We import a model from an existing folder, representing a subduction
