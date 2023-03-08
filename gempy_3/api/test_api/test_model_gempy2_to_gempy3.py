@@ -81,7 +81,7 @@ def map_sequential_pile(load_model):
 
 def test_set_gempy3_input():
     BackendTensor.change_backend(AvailableBackends.numpy, use_gpu=False, pykeops_enabled=True)
-    
+
     geo_model = load_model()
     geo_model = map_sequential_pile(geo_model)
 
@@ -136,6 +136,7 @@ def test_set_gempy3_input():
 
     print(input_data_descriptor)
     rescaling_factor: float = geo_model._additional_data.rescaling_data.df.loc['values', 'rescaling factor']
+    shift: np.array = geo_model._additional_data.rescaling_data.df.loc['values', 'centers']
 
     # @formatter:off
     options                     = InterpolationOptions(
@@ -159,7 +160,7 @@ def test_set_gempy3_input():
     )
 
     octree_lvl = -1
-    
+
     _plot_block(
         block=solutions.octrees_output[octree_lvl].last_output_center.values_block,
         grid=solutions.octrees_output[octree_lvl].grid_centers.regular_grid
@@ -173,9 +174,9 @@ def test_set_gempy3_input():
     ))
 
     block = interp_output_scalar_2.ids_block
-    
+
     block[block == 0] = 6
-    
+
     geo_model.solutions.lith_block = block
 
     geo_model.solutions.scalar_field_matrix = np.vstack((
@@ -185,55 +186,25 @@ def test_set_gempy3_input():
 
     geo_model.solutions.scalar_field_at_surface_points = [interp_output_scalar_1.scalar_fields.exported_fields.scalar_field_at_surface_points,
                                                           interp_output_scalar_2.scalar_fields.exported_fields.scalar_field_at_surface_points]
-    
+
     meshes = solutions.dc_meshes
-    
+
     geo_model.solutions.vertices = [mesh.vertices for mesh in meshes]
     geo_model.solutions.edges = [mesh.edges for mesh in meshes]
 
-    geo_model.solutions.surfaces.df.loc[4, 'vertices'] = [meshes[0].vertices * rescaling_factor]
+    geo_model.solutions.surfaces.df.loc[4, 'vertices'] = [meshes[0].vertices * rescaling_factor - shift]
     geo_model.solutions.surfaces.df.loc[4, 'edges'] = [meshes[0].edges]
-    
-    # geo_model.solutions.surfaces.df.loc[1, 'vertices'] = [meshes[1].vertices]
-    # geo_model.solutions.surfaces.df.loc[1, 'edges'] = [meshes[1].edges]
-    # 
+
+    geo_model.solutions.surfaces.df.loc[1, 'vertices'] = [meshes[1].vertices * rescaling_factor - shift]
+    geo_model.solutions.surfaces.df.loc[1, 'edges'] = [meshes[1].edges]
+
     geo_model.set_surface_order_from_solution()
-    
-    gp.plot.plot_2d(
-        geo_model,
-        cell_number=25,
-        direction='y',
-        show_data=True,
-        show_block=True,
-        show_lith=False,
-        series_n=0
-    )
 
-    gp.plot.plot_2d(
-        geo_model,
-        cell_number=25,
-        series_n=1,
-        N=15,
-        show_scalar=True,
-        direction='y',
-        show_data=True
-    )
+    gp.plot.plot_2d(geo_model, cell_number=25, direction='y', show_data=True, show_block=True, show_lith=False, series_n=0)
+    gp.plot.plot_2d(geo_model, cell_number=25, series_n=1, N=15, show_scalar=True, direction='y', show_data=True)
+    gp.plot.plot_2d(geo_model, cell_number=25, direction='y', show_data=True, show_block=False, show_lith=True, series_n=1)
 
-    gp.plot.plot_2d(
-        geo_model,
-        cell_number=25,
-        direction='y',
-        show_data=True,
-        show_block=False,
-        show_lith=True,
-        series_n=1
-    )
-    
-    plot_object: GemPyToVista = gp.plot.plot_3d(geo_model, show_surfaces=True, show_lith=False, off_screen=True)
-    # import pyvista as pv
-    # fancy_mesh_complete = pv.PolyData(meshes[0].vertices * rescaling_factor, np.insert(meshes[0].edges, 0, 3, axis=1).ravel())
-    # plot_object.p.add_mesh(fancy_mesh_complete, silhouette=False, show_edges=True)
-    # plot_object.p.show()    
+    plot_object: GemPyToVista = gp.plot.plot_3d(geo_model, show_surfaces=True, show_lith=False, off_screen=False)
 
 
 def test_compute_model_gempy2():
@@ -259,7 +230,6 @@ def test_compute_model_gempy2():
     gp.plot.plot_2d(geo_model, cell_number=25, series_n=1, N=15, show_scalar=True, direction='y', show_data=True)
 
     gp.plot.plot_3d(geo_model, show_surfaces=True, show_lith=True)
-    
 
 
 def _plot_block(block, grid: RegularGrid, interpolation_input=None, direction="y"):
