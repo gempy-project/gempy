@@ -6,9 +6,12 @@ import numpy as np
 import os
 
 import gempy_engine
+from gempy_engine.config import AvailableBackends
+from gempy_engine.core.backend_tensor import BackendTensor
 from gempy_engine.core.data import SurfacePoints, Orientations, InterpolationOptions
 from gempy_engine.core.data.grid import Grid, RegularGrid
 from gempy_engine.core.data.input_data_descriptor import StacksStructure, StackRelationType, TensorsStructure, InputDataDescriptor
+from gempy_engine.core.data.interp_output import InterpOutput
 from gempy_engine.core.data.interpolation_input import InterpolationInput
 from gempy_engine.core.data.kernel_classes.kernel_functions import AvailableKernelFunctions
 from gempy_engine.core.data.solutions import Solutions
@@ -32,7 +35,7 @@ sys.path.append("../..")
 
 def create_interpolator():
     m = gp.create_model('JustInterpolator')
-    return gp.set_interpolator(m, theano_optimizer='fast_run')
+    return gp.set_interpolator(m, theano_optimizer='fast_compile')
 
 
 def load_model():
@@ -76,6 +79,8 @@ def map_sequential_pile(load_model):
 
 
 def test_set_gempy3_input():
+    BackendTensor.change_backend(AvailableBackends.numpy, use_gpu=False, pykeops_enabled=True)
+    
     geo_model = load_model()
     geo_model = map_sequential_pile(geo_model)
 
@@ -153,22 +158,11 @@ def test_set_gempy3_input():
     )
 
     octree_lvl = -1
-    if False:
-        regular_grid_scalar = get_regular_grid_value_for_level(
-            octree_list=solutions.octrees_output,
-            level=2,
-            value_type=ValueType.scalar
-
-        )
-        _plot_block(
-            block=regular_grid_scalar,
-            grid=solutions.octrees_output[octree_lvl].grid_centers.regular_grid
-        )
-    else:
-        _plot_block(
-            block=solutions.octrees_output[octree_lvl].last_output_center.values_block,
-            grid=solutions.octrees_output[octree_lvl].grid_centers.regular_grid
-        )
+    
+    _plot_block(
+        block=solutions.octrees_output[octree_lvl].last_output_center.values_block,
+        grid=solutions.octrees_output[octree_lvl].grid_centers.regular_grid
+    )
 
     interp_output_scalar_1: InterpOutput = solutions.octrees_output[octree_lvl].outputs_centers[0]
     interp_output_scalar_2: InterpOutput = solutions.octrees_output[octree_lvl].outputs_centers[1]
@@ -178,7 +172,9 @@ def test_set_gempy3_input():
     ))
 
     block = interp_output_scalar_2.ids_block
-
+    
+    block[block == 0] = 6
+    
     geo_model.solutions.lith_block = block
 
     geo_model.solutions.scalar_field_matrix = np.vstack((
@@ -219,15 +215,18 @@ def test_set_gempy3_input():
         show_lith=True,
         series_n=1
     )
+    
+    gp.plot.plot_3d(geo_model, show_surfaces=True, show_lith=True)
 
 
-def test_compute_model():
+def test_compute_model_gempy2():
     geo_model = load_model()
     geo_model = map_sequential_pile(geo_model)
+
     interpolator = create_interpolator()
     geo_model.set_aesara_graph(interpolator)
 
-    gp.compute_model(geo_model, compute_mesh=False)
+    gp.compute_model(geo_model, compute_mesh=True)
 
     test_values = [45, 150, 2500]
     if False:
@@ -241,6 +240,9 @@ def test_compute_model():
 
     gp.plot.plot_2d(geo_model, cell_number=25, direction='y', show_data=True)
     gp.plot.plot_2d(geo_model, cell_number=25, series_n=1, N=15, show_scalar=True, direction='y', show_data=True)
+
+    gp.plot.plot_3d(geo_model, show_surfaces=False, show_lith=True)
+    
 
 
 def _plot_block(block, grid: RegularGrid, interpolation_input=None, direction="y"):
