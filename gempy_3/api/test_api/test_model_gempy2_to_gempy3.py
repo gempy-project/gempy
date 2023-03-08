@@ -143,7 +143,7 @@ def test_set_gempy3_input():
         uni_degree              = 1,
         number_dimensions       = 3,
         kernel_function         = AvailableKernelFunctions.cubic,
-        dual_contouring         = False,
+        dual_contouring         = True,
         compute_scalar_gradient = False,
         number_octree_levels    = 1
     )
@@ -184,8 +184,20 @@ def test_set_gempy3_input():
 
     geo_model.solutions.scalar_field_at_surface_points = [interp_output_scalar_1.scalar_fields.exported_fields.scalar_field_at_surface_points,
                                                           interp_output_scalar_2.scalar_fields.exported_fields.scalar_field_at_surface_points]
+    
+    meshes = solutions.dc_meshes
+    
+    geo_model.solutions.vertices = [mesh.vertices for mesh in meshes]
+    geo_model.solutions.edges = [mesh.edges for mesh in meshes]
 
+    geo_model.solutions.surfaces.df.loc[4, 'vertices'] = [meshes[0].vertices]
+    geo_model.solutions.surfaces.df.loc[4, 'edges'] = [meshes[0].edges]
+    
+    # geo_model.solutions.surfaces.df.loc[1, 'vertices'] = [meshes[1].vertices]
+    # geo_model.solutions.surfaces.df.loc[1, 'edges'] = [meshes[1].edges]
+    # 
     geo_model.set_surface_order_from_solution()
+    
     gp.plot.plot_2d(
         geo_model,
         cell_number=25,
@@ -216,7 +228,7 @@ def test_set_gempy3_input():
         series_n=1
     )
     
-    gp.plot.plot_3d(geo_model, show_surfaces=True, show_lith=True)
+    gp.plot.plot_3d(geo_model, show_surfaces=True, show_lith=False)
 
 
 def test_compute_model_gempy2():

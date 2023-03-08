@@ -310,7 +310,7 @@ class Solution(inheritance):
             mask_topography=mask_topography
         )
         series_type = self.stack.df['BottomRelation']
-        s_n = 0
+        series_number = 0
         active_indices = self.surfaces.df.groupby('isActive').groups[True]
         rescale = kwargs.pop('rescale', False)
 
@@ -322,15 +322,15 @@ class Solution(inheritance):
                                                                 masked_marching_cubes,
                                                                 series_type)
             for level in sfas:
-                s, v = self.try_compute_marching_cubes_on_the_regular_grid(
+                simpleces, vertices = self.try_compute_marching_cubes_on_the_regular_grid(
                     level,
                     mask_array,
                     rescale,
-                    s_n,
+                    series_number,
                     scalar_field,
                     kwargs
                 )
-                s_n = self.set_vertices_edges(active_indices, s, s_n, v)
+                series_number = self.set_vertices_edges(active_indices, simpleces, series_number, vertices)
         return self.vertices, self.edges
 
     def try_compute_marching_cubes_on_the_regular_grid(
