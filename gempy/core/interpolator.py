@@ -1117,8 +1117,8 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
         if grid == 'shared' or grid is not None:
             self.set_aesara_shared_grid(grid)
 
-        th_fn = aesara.function(input_data_T,
-                                self.aesara_graph.aesara_output(),
+        th_fn = aesara.function(inputs=input_data_T,
+                                outputs=self.aesara_graph.aesara_output(),
                                 updates=[
                                     (self.aesara_graph.block_matrix, self.aesara_graph.new_block),
                                     (self.aesara_graph.weights_vector,
