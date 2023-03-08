@@ -176,7 +176,10 @@ def test_set_gempy3_input():
         interp_output_scalar_1.values_block,
         interp_output_scalar_2.values_block
     ))
-    geo_model.solutions.lith_block = interp_output_scalar_2.ids_block
+
+    block = interp_output_scalar_2.ids_block
+
+    geo_model.solutions.lith_block = block
 
     geo_model.solutions.scalar_field_matrix = np.vstack((
         interp_output_scalar_1.scalar_fields.exported_fields.scalar_field,
@@ -185,6 +188,8 @@ def test_set_gempy3_input():
 
     geo_model.solutions.scalar_field_at_surface_points = [interp_output_scalar_1.scalar_fields.exported_fields.scalar_field_at_surface_points,
                                                           interp_output_scalar_2.scalar_fields.exported_fields.scalar_field_at_surface_points]
+
+    geo_model.set_surface_order_from_solution()
     gp.plot.plot_2d(
         geo_model,
         cell_number=25,

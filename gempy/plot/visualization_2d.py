@@ -279,9 +279,7 @@ class Plot2D:
 
         elif cell_number is not None or block is not None:
             _a, _b, _c, _, x, y = self._slice(direction, cell_number)[:-2]
-            if resolution is None:
-                resolution = self.model._grid.regular_grid.resolution
-
+            
             plot_block = block.reshape(self.model._grid.regular_grid.resolution)
             image = plot_block[_a, _b, _c].T
         else:

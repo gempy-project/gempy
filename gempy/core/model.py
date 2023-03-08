@@ -1569,7 +1569,15 @@ class ImplicitCoKriging(object):
             Surfaces
         """
 
-        sfai_order = self.solutions.scalar_field_at_surface_points.sum(axis=0)
+        field_at_surface_points = self.solutions.scalar_field_at_surface_points
+        match type(field_at_surface_points):
+            case np.ndarray:
+                sfai_order = field_at_surface_points.sum(axis=0)
+            case list:
+                # concatenate
+                sfai_order = np.concatenate(field_at_surface_points, axis=0) 
+        
+            
         # Check if the order has changed
         if not np.array_equal(sfai_order, self._sfai_order_0):
             self._sfai_order_0 = sfai_order
