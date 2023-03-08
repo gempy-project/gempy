@@ -6,6 +6,7 @@ import numpy as np
 import os
 
 import gempy_engine
+from gempy.plot.vista import GemPyToVista
 from gempy_engine.config import AvailableBackends
 from gempy_engine.core.backend_tensor import BackendTensor
 from gempy_engine.core.data import SurfacePoints, Orientations, InterpolationOptions
@@ -190,7 +191,7 @@ def test_set_gempy3_input():
     geo_model.solutions.vertices = [mesh.vertices for mesh in meshes]
     geo_model.solutions.edges = [mesh.edges for mesh in meshes]
 
-    geo_model.solutions.surfaces.df.loc[4, 'vertices'] = [meshes[0].vertices]
+    geo_model.solutions.surfaces.df.loc[4, 'vertices'] = [meshes[0].vertices * rescaling_factor]
     geo_model.solutions.surfaces.df.loc[4, 'edges'] = [meshes[0].edges]
     
     # geo_model.solutions.surfaces.df.loc[1, 'vertices'] = [meshes[1].vertices]
@@ -228,7 +229,11 @@ def test_set_gempy3_input():
         series_n=1
     )
     
-    gp.plot.plot_3d(geo_model, show_surfaces=True, show_lith=False)
+    plot_object: GemPyToVista = gp.plot.plot_3d(geo_model, show_surfaces=True, show_lith=False, off_screen=True)
+    # import pyvista as pv
+    # fancy_mesh_complete = pv.PolyData(meshes[0].vertices * rescaling_factor, np.insert(meshes[0].edges, 0, 3, axis=1).ravel())
+    # plot_object.p.add_mesh(fancy_mesh_complete, silhouette=False, show_edges=True)
+    # plot_object.p.show()    
 
 
 def test_compute_model_gempy2():
@@ -253,7 +258,7 @@ def test_compute_model_gempy2():
     gp.plot.plot_2d(geo_model, cell_number=25, direction='y', show_data=True)
     gp.plot.plot_2d(geo_model, cell_number=25, series_n=1, N=15, show_scalar=True, direction='y', show_data=True)
 
-    gp.plot.plot_3d(geo_model, show_surfaces=False, show_lith=True)
+    gp.plot.plot_3d(geo_model, show_surfaces=True, show_lith=True)
     
 
 

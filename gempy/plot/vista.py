@@ -463,9 +463,10 @@ class GemPyToVista(WidgetsCallbacks, RenderChanges):
         select_active = surfaces_df['isActive']
         for idx, val in surfaces_df[select_active][['vertices', 'edges', 'color', 'surface', 'id']].dropna().iterrows():
             vertices_ = val['vertices']
+            edges_ = val['edges']
             if isinstance(vertices_, list): vertices_ = vertices_[0]
-
-            surf = pv.PolyData(vertices_, np.insert(val['edges'], 0, 3, axis=1).ravel())
+            if isinstance(edges_, list): edges_ = edges_[0]
+            surf = pv.PolyData(vertices_, np.insert(edges_, 0, 3, axis=1).ravel())
             self.surface_poly[val['surface']] = surf
             self.surface_actors[val['surface']] = self.p.add_mesh(
                 surf,
