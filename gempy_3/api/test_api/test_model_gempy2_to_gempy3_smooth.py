@@ -20,7 +20,7 @@ sys.path.append("../..")
 
 
 def test_set_gempy3_gempy2_bridge_smooth():
-    BackendTensor.change_backend(AvailableBackends.numpy, use_gpu=False, pykeops_enabled=True)
+    BackendTensor.change_backend(AvailableBackends.numpy, use_gpu=False, pykeops_enabled=False)
 
     geo_model: Project = load_model()
     geo_model = map_sequential_pile(geo_model)
@@ -29,6 +29,7 @@ def test_set_gempy3_gempy2_bridge_smooth():
     interpolation_input  : InterpolationInput   = gempy_project_to_interpolation_input(geo_model)
     input_data_descriptor: InputDataDescriptor  = gempy_project_to_input_data_descriptor(geo_model)
     options              : InterpolationOptions = gempy_project_to_interpolation_options(geo_model)
+    
     # @on
             
     print(interpolation_input)

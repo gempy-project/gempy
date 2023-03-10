@@ -65,7 +65,7 @@ def gempy_project_to_interpolation_options(geo_model: Project) -> InterpolationO
     rescaling_factor: float = geo_model._additional_data.rescaling_data.df.loc['values', 'rescaling factor']
 
     # @off
-    options                     = InterpolationOptions(
+    options = InterpolationOptions(
         range                   = geo_model._additional_data.kriging_data.df.loc['values', 'range'] / rescaling_factor,
         c_o                     = geo_model._additional_data.kriging_data.df.loc['values', '$C_o$'] / rescaling_factor,
         uni_degree              = 1,
@@ -73,7 +73,8 @@ def gempy_project_to_interpolation_options(geo_model: Project) -> InterpolationO
         kernel_function         = AvailableKernelFunctions.cubic,
         dual_contouring         = True,
         compute_scalar_gradient = False,
-        number_octree_levels    = 1
+        number_octree_levels    = 1,
+        compute_condition_number= True
     )
     # @on
     
