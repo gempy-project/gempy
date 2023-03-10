@@ -13,7 +13,7 @@ from gempy_engine.core.data.input_data_descriptor import InputDataDescriptor
 from gempy_engine.core.data.interpolation_input import InterpolationInput
 from gempy_engine.core.data.solutions import Solutions
 
-input_path = os.path.dirname(__file__) + '/../../../test/input_data'
+
 import sys  # These two lines are necessary only if GemPy is not installed
 
 sys.path.append("../..")
@@ -56,6 +56,13 @@ def test_set_gempy3_gempy2_bridge_smooth():
 
 
 def test_compute_model_gempy2_smooth():
+    """
+    Default :
+    - grad: 0.01
+    - scalar: 2e-06
+    
+    """
+    
     geo_model = load_model()
     geo_model = map_sequential_pile(geo_model)
 

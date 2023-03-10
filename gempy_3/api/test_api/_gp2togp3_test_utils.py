@@ -1,6 +1,10 @@
+import os
+
 import gempy as gp
 from gempy import Project
 
+
+input_path = os.path.dirname(__file__) + '/../../../test/input_data'
 
 def create_interpolator():
     m = gp.create_model('JustInterpolator')

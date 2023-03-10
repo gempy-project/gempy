@@ -201,10 +201,8 @@ class aesaraGraphPro(object):
                         'This is used for finding the different' \
                         'surface points withing a layer.'
 
-        self.nugget_effect_grad_T = aesara.shared(np.cast[dtype](np.ones(4)),
-                                                  'Nugget effect of gradients')
-        self.nugget_effect_scalar_T = aesara.shared(np.cast[dtype](np.ones(4)),
-                                                    'Nugget effect of scalar')
+        self.nugget_effect_grad_T = aesara.shared(np.cast[dtype](np.ones(4)), 'Nugget effect of gradients')
+        self.nugget_effect_scalar_T = aesara.shared(np.cast[dtype](np.ones(4)), 'Nugget effect of scalar')
 
         self.nugget_effect_grad_T_op = self.nugget_effect_grad_T
 
@@ -1391,7 +1389,7 @@ class aesaraGraphPro(object):
             DK_parameters = aesara.gpuarray.linalg.gpu_solve(C_matrix, b2)
 
         else:
-            import aesara.tensor .slinalg
+            import aesara.tensor.slinalg
 
             DK_parameters = aesara.tensor.slinalg.solve(C_matrix, b)
 
@@ -1610,7 +1608,6 @@ class aesaraGraphPro(object):
         else:
             universal_kernel = self.gi_reescale * _aux_magic_term * \
                                universal_grid_surface_points_matrix[:self.n_universal_eq_T_op]
-
 
             # Drift contribution
             f_0 = (T.sum(
@@ -2263,7 +2260,7 @@ class aesaraGraphPro(object):
                                scalar_field_at_surface_points)
 
         return block_matrix, weights_vector, scalar_field_matrix, sfai, mask_matrix, \
-               mask_matrix_f, fault_matrix, nsle
+            mask_matrix_f, fault_matrix, nsle
 
     def compute_forward_gravity(self, densities=None,
                                 pos_density=None):  # densities, tz, select,
