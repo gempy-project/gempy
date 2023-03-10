@@ -20,7 +20,7 @@ sys.path.append("../..")
 
 
 def test_set_gempy3_gempy2_bridge_smooth():
-    BackendTensor.change_backend(AvailableBackends.numpy, use_gpu=False, pykeops_enabled=False)
+    BackendTensor.change_backend(AvailableBackends.numpy, use_gpu=False, pykeops_enabled=True)
 
     geo_model: Project = load_model()
     geo_model = map_sequential_pile(geo_model)
