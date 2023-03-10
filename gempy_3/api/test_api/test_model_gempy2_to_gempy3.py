@@ -57,6 +57,8 @@ def test_set_gempy3_gempy2_bridge():
     options              : InterpolationOptions = gempy_project_to_interpolation_options(geo_model)
     # @on
     
+    #geo_model.set_regular_grid(extent=[0, 2000., 0, 2000., 0, 2000.], resolution=[16, 16, 16])
+        
     print(interpolation_input)
     print(input_data_descriptor)
     print(options)
@@ -70,12 +72,15 @@ def test_set_gempy3_gempy2_bridge():
     )
 
     set_gp3_solutions_to_gp2_solution(gp3_solution=solutions, geo_model=geo_model)
-
-    gp.plot.plot_2d(geo_model, cell_number=25, direction='y', show_data=True, show_block=True, show_lith=False, series_n=0)
-    gp.plot.plot_2d(geo_model, cell_number=25, series_n=1, N=15, show_scalar=True, direction='y', show_data=True)
-    gp.plot.plot_2d(geo_model, cell_number=25, direction='y', show_data=True, show_block=False, show_lith=True, series_n=1)
-
-    plot_object: GemPyToVista = gp.plot.plot_3d(geo_model, show_surfaces=True, show_lith=False, off_screen=False)
+    
+    if plot_2d := True:
+        gp.plot.plot_2d(geo_model, cell_number=25, direction='y', show_data=True, show_block=True, show_lith=False, series_n=0)
+        gp.plot.plot_2d(geo_model, cell_number=25, series_n=1, N=15, show_scalar=True, direction='y', show_data=True)
+        gp.plot.plot_2d(geo_model, cell_number=25, direction='y', show_data=True, show_block=False, show_lith=True, series_n=1)
+    
+    plot_object: GemPyToVista = gp.plot.plot_3d(
+        geo_model, show_surfaces=True, show_lith=True, off_screen=False
+    )
 
 
 def test_compute_model_gempy2():

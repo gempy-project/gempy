@@ -4,6 +4,7 @@ from gempy import Project, Solution
 from gempy_engine.core.data.dual_contouring_mesh import DualContouringMesh
 from gempy_engine.core.data.octree_level import OctreeLevel
 from gempy_engine.core.data.solutions import Solutions
+from gempy_engine.modules.octrees_topology.octrees_topology_interface import get_regular_grid_value_for_level
 
 
 def set_gp3_solutions_to_gp2_solution(gp3_solution: Solutions, geo_model: Project) -> Solution:
@@ -11,15 +12,21 @@ def set_gp3_solutions_to_gp2_solution(gp3_solution: Solutions, geo_model: Projec
 
     octree_output: OctreeLevel = gp3_solution.octrees_output[octree_lvl]
     
+    regular_grid_scalar = get_regular_grid_value_for_level(gp3_solution.octrees_output).astype("int8")
+
     _set_block_matrix(geo_model, octree_output)
-    _set_lith_block(geo_model, octree_output)
+    _set_lith_block(geo_model, octree_output, regular_grid_scalar)
     _set_scalar_field(geo_model, octree_output)
+
+    # geo_model.solutions.scalar_field_at_surface_points = [octree_output.outputs_centers[0].scalar_fields.exported_fields.scalar_field_at_surface_points,
+    #                                                       octree_output.outputs_centers[1].scalar_fields.exported_fields.scalar_field_at_surface_points]
+    _set_scalar_field_at_surface_points(geo_model, octree_output)
     
     meshes: list[DualContouringMesh] = gp3_solution.dc_meshes
 
-    _set_surfaces_meshes(geo_model, meshes)
-
     geo_model.set_surface_order_from_solution()
+    
+    _set_surfaces_meshes(geo_model, meshes)
     
     return geo_model.solutions
 
@@ -30,12 +37,18 @@ def _set_surfaces_meshes(geo_model: Project, meshes: list[DualContouringMesh]) -
     
     rescaling_factor: float = geo_model._additional_data.rescaling_data.df.loc['values', 'rescaling factor']
     shift: np.array = geo_model._additional_data.rescaling_data.df.loc['values', 'centers']
+        
+    surfaces_df = geo_model.solutions.surfaces.df
+    idx_of_vertices = surfaces_df.columns.get_loc('vertices')
+    idx_of_edges = surfaces_df.columns.get_loc('edges')
+
+    # flip mesh 4 and 5
+    # meshed_flipped = [ meshes[0], meshes[1], meshes[2], meshes[4], meshes[3]]  bug: meshes are not in the right order yet
+    in_ = meshes
     
-    # TODO: Here we need to look exactly in which surface we add the mesh
-    geo_model.solutions.surfaces.df.loc[4, 'vertices'] = [meshes[0].vertices * rescaling_factor - shift]
-    geo_model.solutions.surfaces.df.loc[4, 'edges'] = [meshes[0].edges]
-    geo_model.solutions.surfaces.df.loc[1, 'vertices'] = [meshes[1].vertices * rescaling_factor - shift]
-    geo_model.solutions.surfaces.df.loc[1, 'edges'] = [meshes[1].edges]
+    for i in range(0, len(meshes)):  
+        surfaces_df.iloc[i, idx_of_vertices] = [in_[i].vertices * rescaling_factor - shift]
+        surfaces_df.iloc[i, idx_of_edges] = [in_[i].edges]
     
     return geo_model
 
@@ -60,7 +73,16 @@ def _set_scalar_field(geo_model: Project, octree_output: OctreeLevel) -> Project
     return geo_model
 
 
-def _set_lith_block(geo_model: Project, octree_output: OctreeLevel) -> Project:
+def _set_scalar_field_at_surface_points(geo_model: Project, octree_output: OctreeLevel) -> Project:
+    temp_list = []
+    for i in range(octree_output.number_of_outputs):
+        temp_list.append(octree_output.outputs_centers[i].scalar_fields.exported_fields.scalar_field_at_surface_points)
+    
+    geo_model.solutions.scalar_field_at_surface_points = temp_list
+    return geo_model
+
+
+def _set_lith_block(geo_model: Project, octree_output: OctreeLevel, scalar) -> Project:
     block = octree_output.last_output_center.ids_block
     block[block == 0] = block.max() + 1
     geo_model.solutions.lith_block = block

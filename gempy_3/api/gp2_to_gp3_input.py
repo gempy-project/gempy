@@ -1,5 +1,3 @@
-import numpy as np
-
 from gempy import Project
 from gempy_engine.core.data import SurfacePoints, Orientations, InterpolationOptions
 from gempy_engine.core.data.grid import RegularGrid, Grid
@@ -20,8 +18,8 @@ def gempy_project_to_interpolation_input(geo_model: Project) -> InterpolationInp
     
     regular_grid: RegularGrid = RegularGrid(
         extent=geo_model.grid.regular_grid.extent_r,
-        # regular_grid_shape=geo_model.grid.regular_grid.resolution,
-        regular_grid_shape=[2, 2, 2],
+        regular_grid_shape=geo_model.grid.regular_grid.resolution,
+        #regular_grid_shape=[2, 2, 2],
     )
 
     grid: Grid = Grid(
@@ -40,15 +38,15 @@ def gempy_project_to_interpolation_input(geo_model: Project) -> InterpolationInp
 
 
 def gempy_project_to_input_data_descriptor(geo_model: Project) -> InputDataDescriptor:
-    # @formatter:off
+    # @off
     stack_structure: StacksStructure = StacksStructure(
-        number_of_points_per_stack=geo_model.additional_data.structure_data.df.loc['values', 'len series surface_points'],
-        number_of_orientations_per_stack=geo_model.additional_data.structure_data.df.loc['values', 'len series orientations'],
-        number_of_surfaces_per_stack=geo_model.additional_data.structure_data.df.loc['values', 'number surfaces per series'],
-        masking_descriptor=[StackRelationType.FAULT, StackRelationType.ERODE, False],
-        faults_relations=geo_model._faults.faults_relations_df.values
+        number_of_points_per_stack       = geo_model.additional_data.structure_data.df.loc['values', 'len series surface_points'],
+        number_of_orientations_per_stack = geo_model.additional_data.structure_data.df.loc['values', 'len series orientations'],
+        number_of_surfaces_per_stack     = geo_model.additional_data.structure_data.df.loc['values', 'number surfaces per series'],
+        masking_descriptor               = [StackRelationType.FAULT                                , StackRelationType.ERODE      , False],
+        faults_relations                 = geo_model._faults.faults_relations_df.values
     )
-    # @formatter:on
+    # @on
 
     print(stack_structure)
 
@@ -76,10 +74,10 @@ def gempy_project_to_interpolation_options(geo_model: Project) -> InterpolationO
         kernel_function         = AvailableKernelFunctions.cubic,
         dual_contouring         = True,
         compute_scalar_gradient = False,
-        number_octree_levels    = 3
+        number_octree_levels    = 1
     )
     # @on
     
-    options.dual_contouring_fancy = True # bug: I am testing fancy dual contouring
+    options.dual_contouring_fancy = False  # bug: I am testing fancy dual contouring
 
     return options
