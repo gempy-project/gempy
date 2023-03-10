@@ -19,7 +19,6 @@ def gempy_project_to_interpolation_input(geo_model: Project) -> InterpolationInp
     regular_grid: RegularGrid = RegularGrid(
         extent=geo_model.grid.regular_grid.extent_r,
         regular_grid_shape=geo_model.grid.regular_grid.resolution,
-        #regular_grid_shape=[2, 2, 2],
     )
 
     grid: Grid = Grid(

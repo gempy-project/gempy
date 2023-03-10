@@ -46,7 +46,7 @@ def map_sequential_pile(geo_model: Project) -> Project:
 
 
 def test_set_gempy3_gempy2_bridge():
-    BackendTensor.change_backend(AvailableBackends.numpy, use_gpu=False, pykeops_enabled=True)
+    BackendTensor.change_backend(AvailableBackends.numpy, use_gpu=False, pykeops_enabled=False)
 
     geo_model: Project = load_model()
     geo_model = map_sequential_pile(geo_model)
@@ -56,9 +56,7 @@ def test_set_gempy3_gempy2_bridge():
     input_data_descriptor: InputDataDescriptor  = gempy_project_to_input_data_descriptor(geo_model)
     options              : InterpolationOptions = gempy_project_to_interpolation_options(geo_model)
     # @on
-    
-    #geo_model.set_regular_grid(extent=[0, 2000., 0, 2000., 0, 2000.], resolution=[16, 16, 16])
-        
+            
     print(interpolation_input)
     print(input_data_descriptor)
     print(options)
@@ -79,7 +77,7 @@ def test_set_gempy3_gempy2_bridge():
         gp.plot.plot_2d(geo_model, cell_number=25, direction='y', show_data=True, show_block=False, show_lith=True, series_n=1)
     
     plot_object: GemPyToVista = gp.plot.plot_3d(
-        geo_model, show_surfaces=True, show_lith=True, off_screen=False
+        geo_model, show_surfaces=True, show_lith=True, off_screen=False, kwargs_plot_structured_grid={"show_edges": False}
     )
 
 

@@ -252,7 +252,9 @@ class Solution(inheritance):
         spacing = self.grid.regular_grid.get_dx_dy_dz(rescale=rescale)
         vertices, simplices, normals, values = measure.marching_cubes(
             scalar_field.reshape(rg.resolution),
-            level, spacing=spacing, mask=mask_array, **kwargs)
+            level,
+            spacing=spacing,
+            mask=mask_array, **kwargs)
         idx = [0, 2, 4]
         loc_0 = rg.extent_r[idx] if rescale else rg.extent[idx]
         loc_0 = loc_0 + np.array(spacing) / 2

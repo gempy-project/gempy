@@ -18,8 +18,6 @@ def set_gp3_solutions_to_gp2_solution(gp3_solution: Solutions, geo_model: Projec
     _set_lith_block(geo_model, octree_output, regular_grid_scalar)
     _set_scalar_field(geo_model, octree_output)
 
-    # geo_model.solutions.scalar_field_at_surface_points = [octree_output.outputs_centers[0].scalar_fields.exported_fields.scalar_field_at_surface_points,
-    #                                                       octree_output.outputs_centers[1].scalar_fields.exported_fields.scalar_field_at_surface_points]
     _set_scalar_field_at_surface_points(geo_model, octree_output)
     
     meshes: list[DualContouringMesh] = gp3_solution.dc_meshes
@@ -47,7 +45,7 @@ def _set_surfaces_meshes(geo_model: Project, meshes: list[DualContouringMesh]) -
     in_ = meshes
     
     for i in range(0, len(meshes)):  
-        surfaces_df.iloc[i, idx_of_vertices] = [in_[i].vertices * rescaling_factor - shift]
+        surfaces_df.iloc[i, idx_of_vertices] = [(in_[i].vertices - 0.5001) * rescaling_factor + shift] # ! remember the 0.5001
         surfaces_df.iloc[i, idx_of_edges] = [in_[i].edges]
     
     return geo_model
