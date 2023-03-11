@@ -15,6 +15,7 @@ from gempy_3.api.gp2_to_gp3_input import gempy_project_to_interpolation_options,
 from gempy_3.api.gp3_to_gp2_output import set_gp3_solutions_to_gp2_solution
 from gempy_engine.core.data import InterpolationOptions
 from gempy_engine.core.data.input_data_descriptor import InputDataDescriptor
+from gempy_engine.core.data.interp_output import InterpOutput
 from gempy_engine.core.data.interpolation_input import InterpolationInput
 from gempy_engine.core.data.solutions import Solutions
 
@@ -61,20 +62,25 @@ def test_all_erosion(geo_model):
 
     # sol = gp.compute_model(geo_model, compute_mesh=True)
     sol = geo_model.solutions
-
+    
+    # TODO: find matrix pad equivalent
+    mask_lith_0: np.ndarray = solutions.octrees_output[0].outputs_centers[0].mask_components.mask_lith
+    mask_lith_1: np.ndarray = solutions.octrees_output[0].outputs_centers[1].squeezed_mask_array
+    mask_lith_2: np.ndarray = solutions.octrees_output[0].outputs_centers[2].squeezed_mask_array
+    
     gp.plot.plot_2d(geo_model, cell_number=2)
 
-    if False:
+    if True:
+        
         gp.plot_2d(geo_model, cell_number=[2],
-                   regular_grid=geo_model.solutions.mask_matrix_pad[0],
+                   regular_grid=mask_lith_0,
                    show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
-
         gp.plot_2d(geo_model, cell_number=[2],
-                   regular_grid=geo_model.solutions.mask_matrix_pad[1],
+                   regular_grid=mask_lith_1,
                    show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
     
         gp.plot_2d(geo_model, cell_number=[2],
-                   regular_grid=geo_model.solutions.mask_matrix_pad[2],
+                   regular_grid=mask_lith_2,
                    show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
 
     p3d = gp.plot_3d(geo_model, show_surfaces=True, show_data=True,
