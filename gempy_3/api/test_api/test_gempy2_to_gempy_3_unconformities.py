@@ -62,23 +62,22 @@ def test_all_erosion(geo_model):
 
     # sol = gp.compute_model(geo_model, compute_mesh=True)
     sol = geo_model.solutions
-    
+
     # TODO: find matrix pad equivalent
     mask_lith_0: np.ndarray = solutions.octrees_output[0].outputs_centers[0].squeezed_mask_array
     mask_lith_1: np.ndarray = solutions.octrees_output[0].outputs_centers[1].squeezed_mask_array
     mask_lith_2: np.ndarray = solutions.octrees_output[0].outputs_centers[2].squeezed_mask_array
-    
+
     gp.plot.plot_2d(geo_model, cell_number=2)
 
     if True:
-        
         gp.plot_2d(geo_model, cell_number=[2],
                    regular_grid=mask_lith_0,
                    show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
         gp.plot_2d(geo_model, cell_number=[2],
                    regular_grid=mask_lith_1,
                    show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
-    
+
         gp.plot_2d(geo_model, cell_number=[2],
                    regular_grid=mask_lith_2,
                    show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
@@ -118,10 +117,52 @@ def test_one_onlap(geo_model):
 
     gp.plot.plot_2d(geo_model, cell_number=2)
 
+    gp.plot_2d(geo_model, cell_number=[2], regular_grid=mask_lith_0,
+               show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
+
+    gp.plot_2d(geo_model, cell_number=[2], regular_grid=mask_lith_1,
+               show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
+
+    gp.plot_2d(geo_model, cell_number=[2], regular_grid=mask_lith_2,
+               show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
+
+    if plot_3d := False:
+        p3d = gp.plot_3d(geo_model, show_surfaces=True, show_data=True,
+                         image=True, kwargs_plot_structured_grid={'opacity': .2})
+
+
+def test_two_onlap(geo_model):
+    geo_model.set_bottom_relation(['Flat_Series', 'Inclined_Series'], bottom_relation='Onlap')
+
+    # @off
+    interpolation_input  : InterpolationInput   = gempy_project_to_interpolation_input(geo_model)
+    input_data_descriptor: InputDataDescriptor  = gempy_project_to_input_data_descriptor(geo_model)
+    options              : InterpolationOptions = gempy_project_to_interpolation_options(geo_model)
+    # @on
+
+    solutions: Solutions = gempy_engine.compute_model(
+        # @off
+        interpolation_input = interpolation_input,
+        options             = options,
+        data_descriptor     = input_data_descriptor
+        # @on
+    )
+
+    set_gp3_solutions_to_gp2_solution(gp3_solution=solutions, geo_model=geo_model)
+
+    sol = geo_model.solutions
+
+    # TODO: find matrix pad equivalent
+    mask_lith_0: np.ndarray = solutions.octrees_output[0].outputs_centers[0].squeezed_mask_array
+    mask_lith_1: np.ndarray = solutions.octrees_output[0].outputs_centers[1].squeezed_mask_array
+    mask_lith_2: np.ndarray = solutions.octrees_output[0].outputs_centers[2].squeezed_mask_array
+
+    gp.plot.plot_2d(geo_model, cell_number=2)
+
     gp.plot_2d(geo_model, cell_number=[2],
                regular_grid=mask_lith_0,
                show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
-    
+
     gp.plot_2d(geo_model, cell_number=[2],
                regular_grid=mask_lith_1,
                show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
@@ -130,55 +171,9 @@ def test_one_onlap(geo_model):
                regular_grid=mask_lith_2,
                show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
 
-    # gp.plot_2d(geo_model, cell_number=[2],
-    #            regular_grid=solutions.octrees_output[0].outputs_centers[0].mask_components.mask_lith,
-    #            show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
-    # 
-    # gp.plot_2d(geo_model, cell_number=[2],
-    #            regular_grid=solutions.octrees_output[0].outputs_centers[1].mask_components.mask_lith,
-    #            show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
-    # 
-    # gp.plot_2d(geo_model, cell_number=[2],
-    #            regular_grid=solutions.octrees_output[0].outputs_centers[2].mask_components.mask_lith,
-    #            show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
-
-
-
-    if False:
-        p3d = gp.plot_3d(geo_model, show_surfaces=True, show_data=True,
-                     image=True,
-                     kwargs_plot_structured_grid={'opacity': .2})
-
-
-def test_two_onlap(geo_model):
-    geo_model.set_bottom_relation(['Flat_Series', 'Inclined_Series'], bottom_relation='Onlap')
-    sol = gp.compute_model(geo_model, compute_mesh=True)
-    gp.plot.plot_2d(geo_model, cell_number=2)
-
-    gp.plot_2d(geo_model, cell_number=[2],
-               regular_grid=geo_model.solutions.mask_matrix_pad[0],
-               show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
-
-    gp.plot_2d(geo_model, cell_number=[2],
-               regular_grid=geo_model.solutions.mask_matrix_pad[1],
-               show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
-
-    gp.plot_2d(geo_model, cell_number=[2],
-               regular_grid=geo_model.solutions.mask_matrix_pad[2],
-               show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
-
     p3d = gp.plot_3d(geo_model, show_surfaces=True, show_data=True,
                      image=True,
                      kwargs_plot_structured_grid={'opacity': .2})
-
-    if save:
-        np.save(os.path.dirname(__file__) + '/two_onlap', sol.lith_block)
-
-    check = np.load(os.path.dirname(__file__) + '/two_onlap.npy')
-    np.testing.assert_allclose(sol.lith_block, check)
-
-    plt.savefig(os.path.dirname(__file__) + '/two_onlap')
-    print(sol)
 
 
 def test_masked_marching_cubes():
