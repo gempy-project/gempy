@@ -500,8 +500,7 @@ class aesaraGraphPro(object):
         self.sfai_op = series[3][-1]
 
         mask = series[4][-1]
-        mask_rev_cumprod = T.vertical_stack(mask[[-1]],
-                                            T.cumprod(T.invert(mask[:-1]), axis=0))
+        mask_rev_cumprod = T.vertical_stack(mask[[-1]], T.cumprod(T.invert(mask[:-1]), axis=0))
         self.mask_op2 = mask_rev_cumprod
         block_mask = mask * mask_rev_cumprod
 
@@ -2153,8 +2152,8 @@ class aesaraGraphPro(object):
         mask_e = tif.ifelse(is_erosion,  # If is erosion
                             T.gt(Z_x, T.min(scalar_field_at_surface_points)),
                             # It is True the values over the last surface
-                            ~ self.is_fault[n_series] * T.ones_like(Z_x,
-                                                                    dtype='bool'))  # else: all False if is Fault else all ones
+                            ~ self.is_fault[n_series] * T.ones_like(Z_x, dtype='bool')
+                            )  # else: all False if is Fault else all ones
 
         if 'mask_e' in self.verbose:
             mask_e = aesara.printing.Print('mask_e')(mask_e)
@@ -2171,8 +2170,7 @@ class aesaraGraphPro(object):
         is_onlap_or_fault = self.is_onlap[n_series] + self.is_fault[n_series]
 
         # This adds a counter  --- check series onlap-fault --- check the chain starts with onlap
-        nsle = (nsle + is_onlap_or_fault) * is_onlap_or_fault * \
-               self.is_onlap[n_series - nsle]
+        nsle = (nsle + is_onlap_or_fault) * is_onlap_or_fault * self.is_onlap[n_series - nsle]
         nsle_op = nsle  # T.max([nsle, 1])
 
         if 'nsle' in self.verbose:
@@ -2180,12 +2178,13 @@ class aesaraGraphPro(object):
 
         mask_o = tif.ifelse(is_onlap,
                             T.gt(Z_x, T.max(scalar_field_at_surface_points)),
-                            mask_matrix[n_series - 1,
-                            shift:x_to_interpolate_shape + shift])
+                            mask_matrix[n_series - 1, shift:x_to_interpolate_shape + shift]
+                            )
 
         mask_f = tif.ifelse(self.is_fault[n_series],
                             T.gt(Z_x, T.min(scalar_field_at_surface_points)),
-                            T.zeros_like(Z_x, dtype='bool'))
+                            T.zeros_like(Z_x, dtype='bool')
+                            )
 
         if self.gradient is False:
             block = tif.ifelse(
@@ -2223,18 +2222,17 @@ class aesaraGraphPro(object):
             fault_matrix[n_series, :, shift:x_to_interpolate_shape + shift], block)
 
         # LITH MASK
-        mask_matrix = T.set_subtensor(mask_matrix[n_series - 1: n_series,
-                                      shift:x_to_interpolate_shape + shift], mask_o)
-
-        mask_matrix = T.set_subtensor(mask_matrix[n_series - nsle_op: n_series,
-                                      shift:x_to_interpolate_shape + shift],
-                                      T.cumprod(
-                                          mask_matrix[n_series - nsle_op: n_series,
-                                          shift:x_to_interpolate_shape + shift][
-                                          ::-1], axis=0)[::-1])
+        mask_matrix = T.set_subtensor(
+            x=mask_matrix[n_series - 1: n_series, shift:x_to_interpolate_shape + shift],
+            y=mask_o
+        )
 
         mask_matrix = T.set_subtensor(
-            mask_matrix[n_series, shift:x_to_interpolate_shape + shift], mask_e)
+            x=mask_matrix[n_series - nsle_op: n_series, shift:x_to_interpolate_shape + shift],
+            y=T.cumprod(mask_matrix[n_series - nsle_op: n_series, shift:x_to_interpolate_shape + shift][::-1], axis=0)[::-1]
+        )
+
+        mask_matrix = T.set_subtensor( mask_matrix[n_series, shift:x_to_interpolate_shape + shift], mask_e)
 
         if 'mask_matrix_loop' in self.verbose:
             mask_matrix = aesara.printing.Print('mask_matrix_loop')(mask_matrix)

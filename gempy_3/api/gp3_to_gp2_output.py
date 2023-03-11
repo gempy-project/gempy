@@ -24,12 +24,13 @@ def set_gp3_solutions_to_gp2_solution(gp3_solution: Solutions, geo_model: Projec
 
     geo_model.set_surface_order_from_solution()
     
-    _set_surfaces_meshes(geo_model, meshes)
+    if meshes: _set_surfaces_meshes(geo_model, meshes)
     
     return geo_model.solutions
 
 
 def _set_surfaces_meshes(geo_model: Project, meshes: list[DualContouringMesh]) -> Project:
+    
     geo_model.solutions.vertices = [mesh.vertices for mesh in meshes]
     geo_model.solutions.edges = [mesh.edges for mesh in meshes]
     

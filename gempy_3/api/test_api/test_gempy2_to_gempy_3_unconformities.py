@@ -121,13 +121,22 @@ def test_one_onlap(geo_model):
     gp.plot_2d(geo_model, cell_number=[2],
                regular_grid=mask_lith_0,
                show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
+    gp.plot_2d(geo_model, cell_number=[2],
+               regular_grid=solutions.octrees_output[0].outputs_centers[0].mask_components.mask_lith,
+               show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
 
     gp.plot_2d(geo_model, cell_number=[2],
                regular_grid=mask_lith_1,
                show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
+    gp.plot_2d(geo_model, cell_number=[2],
+               regular_grid=solutions.octrees_output[0].outputs_centers[1].mask_components.mask_lith,
+               show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
 
     gp.plot_2d(geo_model, cell_number=[2],
                regular_grid=mask_lith_2,
+               show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
+    gp.plot_2d(geo_model, cell_number=[2],
+               regular_grid=solutions.octrees_output[0].outputs_centers[2].mask_components.mask_lith,
                show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
     
     if False:

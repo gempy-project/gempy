@@ -19,7 +19,7 @@ def data_path():
 @pytest.fixture(scope='session')
 def interpolator():
     m = gp.create_model('JustInterpolator')
-    return gp.set_interpolator(m, aesara_optimizer='fast_run')
+    return gp.set_interpolator(m, aesara_optimizer='fast_run', verbose=["nsle", "mask_matrix_loop"])
 
 
 @pytest.fixture(scope='session')

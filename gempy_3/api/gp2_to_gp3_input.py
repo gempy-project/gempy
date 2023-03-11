@@ -82,7 +82,7 @@ def gempy_project_to_interpolation_options(geo_model: Project) -> InterpolationO
         uni_degree              = 1,
         number_dimensions       = 3,
         kernel_function         = AvailableKernelFunctions.cubic,
-        dual_contouring         = True,
+        dual_contouring         = False,
         
         compute_scalar_gradient = False,
         number_octree_levels    = 1,
