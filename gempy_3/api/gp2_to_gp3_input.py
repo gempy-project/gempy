@@ -40,7 +40,11 @@ def gempy_project_to_interpolation_input(geo_model: Project) -> InterpolationInp
 
 
 def gempy_project_to_input_data_descriptor(geo_model: Project) -> InputDataDescriptor:
-    gp2_masking_descriptor: np.ndarray = geo_model._stack.df["BottomRelation"].values
+    # Select bottom relation (geo_model._stack.df["BottomRelation"].values) filtered by the column "isActive"
+
+
+    stack_df = geo_model._stack.df
+    gp2_masking_descriptor: np.ndarray = stack_df["BottomRelation"].values[stack_df["isActive"]]
     gp3_masking_descriptor = np.select(
         condlist = [gp2_masking_descriptor == "Fault", gp2_masking_descriptor == "Erosion", gp2_masking_descriptor == "Onlap"],
         choicelist=[StackRelationType.FAULT, StackRelationType.ERODE, StackRelationType.ONLAP],
