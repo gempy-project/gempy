@@ -84,10 +84,6 @@ def test_one_onlap(geo_model):
                regular_grid=geo_model.solutions.mask_matrix_pad[2],
                show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
 
-    p3d = gp.plot_3d(geo_model, show_surfaces=True, show_data=True,
-                     image=True,
-                     kwargs_plot_structured_grid={'opacity': .2})
-
     if save:
         np.save(os.path.dirname(__file__)+'/one_onlap', sol.lith_block)
 
