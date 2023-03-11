@@ -20,6 +20,9 @@ sys.path.append("../..")
 
 
 def test_set_gempy3_gempy2_bridge():
+    """
+    This test is based on gempy/test/test_core/test_model.py:test_compute_model
+    """
     BackendTensor.change_backend(AvailableBackends.numpy, use_gpu=False, pykeops_enabled=False)
 
     geo_model: Project = load_model()
@@ -53,18 +56,3 @@ def test_set_gempy3_gempy2_bridge():
     plot_object: GemPyToVista = gp.plot.plot_3d(
         geo_model, show_surfaces=True, show_lith=True, off_screen=False, kwargs_plot_structured_grid={"show_edges": False}
     )
-
-
-def test_compute_model_gempy2():
-    geo_model = load_model()
-    geo_model = map_sequential_pile(geo_model)
-
-    interpolator = create_interpolator()
-    geo_model.set_aesara_function(interpolator)
-
-    gp.compute_model(geo_model, compute_mesh=True)
-    
-    gp.plot.plot_2d(geo_model, cell_number=25, direction='y', show_data=True)
-    gp.plot.plot_2d(geo_model, cell_number=25, series_n=1, N=15, show_scalar=True, direction='y', show_data=True)
-
-    gp.plot.plot_3d(geo_model, show_surfaces=True, show_lith=True)

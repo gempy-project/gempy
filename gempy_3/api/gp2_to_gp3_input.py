@@ -1,9 +1,12 @@
+import numpy as np
+
 from gempy import Project
 from gempy_engine.core.data import SurfacePoints, Orientations, InterpolationOptions
 from gempy_engine.core.data.grid import RegularGrid, Grid
 from gempy_engine.core.data.input_data_descriptor import InputDataDescriptor, StacksStructure, StackRelationType, TensorsStructure
 from gempy_engine.core.data.interpolation_input import InterpolationInput
 from gempy_engine.core.data.kernel_classes.kernel_functions import AvailableKernelFunctions
+from gempy_engine.core.data.options import DualContouringMaskingOptions
 
 
 def gempy_project_to_interpolation_input(geo_model: Project) -> InterpolationInput:
@@ -37,12 +40,20 @@ def gempy_project_to_interpolation_input(geo_model: Project) -> InterpolationInp
 
 
 def gempy_project_to_input_data_descriptor(geo_model: Project) -> InputDataDescriptor:
+    gp2_masking_descriptor: np.ndarray = geo_model._stack.df["BottomRelation"].values
+    gp3_masking_descriptor = np.select(
+        condlist = [gp2_masking_descriptor == "Fault", gp2_masking_descriptor == "Erosion", gp2_masking_descriptor == "Onlap"],
+        choicelist=[StackRelationType.FAULT, StackRelationType.ERODE, StackRelationType.ONLAP],
+        default=False
+    )
+    gp3_masking_descriptor[-1] = False
+    
     # @off
     stack_structure: StacksStructure = StacksStructure(
         number_of_points_per_stack       = geo_model.additional_data.structure_data.df.loc['values', 'len series surface_points'],
         number_of_orientations_per_stack = geo_model.additional_data.structure_data.df.loc['values', 'len series orientations'],
         number_of_surfaces_per_stack     = geo_model.additional_data.structure_data.df.loc['values', 'number surfaces per series'],
-        masking_descriptor               = [StackRelationType.FAULT                                , StackRelationType.ERODE      , False],
+        masking_descriptor               = list(gp3_masking_descriptor),
         faults_relations                 = geo_model._faults.faults_relations_df.values
     )
     # @on
@@ -72,6 +83,7 @@ def gempy_project_to_interpolation_options(geo_model: Project) -> InterpolationO
         number_dimensions       = 3,
         kernel_function         = AvailableKernelFunctions.cubic,
         dual_contouring         = True,
+        
         compute_scalar_gradient = False,
         number_octree_levels    = 1,
         compute_condition_number= True
@@ -79,5 +91,6 @@ def gempy_project_to_interpolation_options(geo_model: Project) -> InterpolationO
     # @on
     
     options.dual_contouring_fancy = False  # bug: I am testing fancy dual contouring
+    options.dual_contouring_masking_options = DualContouringMaskingOptions.DISJOINT
 
     return options
