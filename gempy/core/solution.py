@@ -277,11 +277,14 @@ class Solution(inheritance):
         self.mask_matrix_pad = []
         series_type = self.stack.df['BottomRelation']
         for e, mask_series in enumerate(self.mask_matrix):
-            mask_series_reshape = mask_series.reshape(
-                self.grid.regular_grid.resolution)
+            mask_series_reshape = mask_series.reshape(self.grid.regular_grid.resolution)
 
-            mask_pad = (mask_series_reshape + find_interfaces_from_block_bottoms(
-                mask_series_reshape, True, shift=shift))
+            interfaces_from_block_bottoms = find_interfaces_from_block_bottoms(
+                block=mask_series_reshape,
+                value=True,
+                shift=shift
+            )
+            mask_pad = mask_series_reshape + interfaces_from_block_bottoms
 
             if series_type[e] == 'Fault':
                 mask_pad = np.invert(mask_pad)
@@ -318,31 +321,26 @@ class Solution(inheritance):
 
         # We loop the scalar fields
         for e, scalar_field in enumerate(self.scalar_field_matrix):
-
             # Drop
-            mask_array, sfas = self.prepare_marching_cubes_args(e,
-                                                                masked_marching_cubes,
-                                                                series_type)
+            mask_array, sfas = self._prepare_marching_cubes_args(
+                stack_number=e,
+                masked_marching_cubes=masked_marching_cubes,
+                series_type=series_type
+            )
+            
             for level in sfas:
-                simpleces, vertices = self.try_compute_marching_cubes_on_the_regular_grid(
-                    level,
-                    mask_array,
-                    rescale,
-                    series_number,
-                    scalar_field,
-                    kwargs
+                simpleces, vertices = self._try_compute_marching_cubes_on_the_regular_grid(
+                    level=level,
+                    mask_array=mask_array,
+                    rescale=rescale,
+                    s_n=series_number,
+                    scalar_field=scalar_field,
+                    kwargs=kwargs
                 )
                 series_number = self.set_vertices_edges(active_indices, simpleces, series_number, vertices)
         return self.vertices, self.edges
 
-    def try_compute_marching_cubes_on_the_regular_grid(
-            self,
-            level,
-            mask_array,
-            rescale,
-            s_n,
-            scalar_field,
-            kwargs):
+    def _try_compute_marching_cubes_on_the_regular_grid(self, level, mask_array, rescale, s_n, scalar_field, kwargs):
         try:
             v, s, norm, val = self.compute_marching_cubes_regular_grid(
                 level, scalar_field, mask_array, rescale=rescale, **kwargs)
@@ -363,15 +361,15 @@ class Solution(inheritance):
         s_n += 1
         return s_n
 
-    def prepare_marching_cubes_args(self, e, masked_marching_cubes, series_type):
+    def _prepare_marching_cubes_args(self, stack_number, masked_marching_cubes, series_type):
 
-        sfas = self.scalar_field_at_surface_points[e]
+        sfas = self.scalar_field_at_surface_points[stack_number]
         sfas = sfas[np.nonzero(sfas)]
         if masked_marching_cubes is True:
-            if series_type[e - 1] == 'Onlap' and series_type[e - 2] == 'Erosion':
-                mask_array = self.mask_matrix_pad[e - 1]
+            if series_type[stack_number - 1] == 'Onlap' and series_type[stack_number - 2] == 'Erosion':
+                mask_array = self.mask_matrix_pad[stack_number - 1]
             else:
-                mask_array = self.mask_matrix_pad[e]
+                mask_array = self.mask_matrix_pad[stack_number]
 
         else:
             mask_array = None

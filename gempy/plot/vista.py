@@ -466,6 +466,9 @@ class GemPyToVista(WidgetsCallbacks, RenderChanges):
             edges_ = val['edges']
             if isinstance(vertices_, list): vertices_ = vertices_[0]
             if isinstance(edges_, list): edges_ = edges_[0]
+            
+            if vertices_.shape[0] == 0 or edges_.shape[0] == 0:
+                continue
             surf = pv.PolyData(vertices_, np.insert(edges_, 0, 3, axis=1).ravel())
             self.surface_poly[val['surface']] = surf
             self.surface_actors[val['surface']] = self.p.add_mesh(

@@ -83,7 +83,7 @@ def test_all_erosion(geo_model):
                    show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
 
     p3d = gp.plot_3d(geo_model, show_surfaces=True, show_data=True,
-                     image=True,
+                     image=False,
                      kwargs_plot_structured_grid={'opacity': .2})
 
     print(sol)
@@ -126,9 +126,9 @@ def test_one_onlap(geo_model):
     gp.plot_2d(geo_model, cell_number=[2], regular_grid=mask_lith_2,
                show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
 
-    if plot_3d := False:
+    if plot_3d := True:
         p3d = gp.plot_3d(geo_model, show_surfaces=True, show_data=True,
-                         image=True, kwargs_plot_structured_grid={'opacity': .2})
+                         image=False, kwargs_plot_structured_grid={'opacity': .2})
 
 
 def test_two_onlap(geo_model):
@@ -172,7 +172,7 @@ def test_two_onlap(geo_model):
                show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
 
     p3d = gp.plot_3d(geo_model, show_surfaces=True, show_data=True,
-                     image=True,
+                     image=False,
                      kwargs_plot_structured_grid={'opacity': .2})
 
 
@@ -185,7 +185,7 @@ def test_masked_marching_cubes():
         recompile=False
     )
 
-    geo_model.set_regular_grid([-200, 1000, -500, 500, -1000, 0], [50, 50, 50])
+    geo_model.set_regular_grid([-200, 1000, -500, 500, -1000, 0], [25, 25, 25])
 
     # @off
     interpolation_input  : InterpolationInput   = gempy_project_to_interpolation_input(geo_model)
@@ -230,5 +230,5 @@ def test_masked_marching_cubes():
                show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
 
     p3d = gp.plot_3d(geo_model, show_surfaces=True, show_data=True,
-                     image=True,
+                     image=False,
                      kwargs_plot_structured_grid={'opacity': .2})
