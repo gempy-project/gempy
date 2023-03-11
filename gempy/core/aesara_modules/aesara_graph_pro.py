@@ -2250,7 +2250,8 @@ class aesaraGraphPro(object):
 
         mask_matrix_f = T.set_subtensor(
             mask_matrix_f[idx_e, shift:x_to_interpolate_shape + shift],
-            mask_e + mask_f)
+            mask_e + mask_f
+        )
         # mask_matrix_f = T.set_subtensor(mask_matrix_f[idx_o, :], mask_o + mask_matrix_f[n_series-1])
 
         # Scalar field at interfaces

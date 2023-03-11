@@ -64,7 +64,7 @@ def test_all_erosion(geo_model):
     sol = geo_model.solutions
     
     # TODO: find matrix pad equivalent
-    mask_lith_0: np.ndarray = solutions.octrees_output[0].outputs_centers[0].mask_components.mask_lith
+    mask_lith_0: np.ndarray = solutions.octrees_output[0].outputs_centers[0].squeezed_mask_array
     mask_lith_1: np.ndarray = solutions.octrees_output[0].outputs_centers[1].squeezed_mask_array
     mask_lith_2: np.ndarray = solutions.octrees_output[0].outputs_centers[2].squeezed_mask_array
     
@@ -121,24 +121,29 @@ def test_one_onlap(geo_model):
     gp.plot_2d(geo_model, cell_number=[2],
                regular_grid=mask_lith_0,
                show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
-    gp.plot_2d(geo_model, cell_number=[2],
-               regular_grid=solutions.octrees_output[0].outputs_centers[0].mask_components.mask_lith,
-               show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
-
+    
     gp.plot_2d(geo_model, cell_number=[2],
                regular_grid=mask_lith_1,
-               show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
-    gp.plot_2d(geo_model, cell_number=[2],
-               regular_grid=solutions.octrees_output[0].outputs_centers[1].mask_components.mask_lith,
                show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
 
     gp.plot_2d(geo_model, cell_number=[2],
                regular_grid=mask_lith_2,
                show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
-    gp.plot_2d(geo_model, cell_number=[2],
-               regular_grid=solutions.octrees_output[0].outputs_centers[2].mask_components.mask_lith,
-               show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
-    
+
+    # gp.plot_2d(geo_model, cell_number=[2],
+    #            regular_grid=solutions.octrees_output[0].outputs_centers[0].mask_components.mask_lith,
+    #            show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
+    # 
+    # gp.plot_2d(geo_model, cell_number=[2],
+    #            regular_grid=solutions.octrees_output[0].outputs_centers[1].mask_components.mask_lith,
+    #            show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
+    # 
+    # gp.plot_2d(geo_model, cell_number=[2],
+    #            regular_grid=solutions.octrees_output[0].outputs_centers[2].mask_components.mask_lith,
+    #            show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
+
+
+
     if False:
         p3d = gp.plot_3d(geo_model, show_surfaces=True, show_data=True,
                      image=True,
