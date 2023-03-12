@@ -563,7 +563,7 @@ class GemPyToVista(WidgetsCallbacks, RenderChanges):
             colors_rgb_ = colors_hex.apply(lambda val: list(mcolors.hex2color(val)))
             colors_rgb = pd.DataFrame(colors_rgb_.to_list(), index=colors_hex.index) * 255
 
-            sel = np.round(self.model.solutions.geological_map[0]).astype(int)[0]
+            sel = np.round(self.model.solutions.geological_map[0]).astype(int)
 
             scalars_val = numpy_to_vtk(colors_rgb.loc[sel], array_type=3)
             cm = mcolors.ListedColormap(list(self._get_color_lot(is_faults=True, is_basement=True)))

@@ -168,9 +168,9 @@ class GeometricData(object):
             self.df['surface'].cat.set_categories(self.surfaces.df['surface'].values, inplace=True)
 
         # Check if elements in surface are categories in self.df['surface'] and if not add them
-        for s in surface:
-            if s not in self.df['surface'].cat.categories:
-                self.df['surface'] = self.df['surface'].cat.add_categories(s)
+        # for s in surface:
+        #     if s not in self.df['surface'].cat.categories:
+        #         self.df['surface'] = self.df['surface'].cat.add_categories(s)
 
         if type(idx) is int:
             self.df.loc[idx, 'surface'] = surface[0]

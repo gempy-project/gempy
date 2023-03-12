@@ -46,7 +46,7 @@ def test_custom_grid_solution(model_horizontal_two_layers):
 
     # Compute model
     sol = gempy.compute_model(geo_model, compute_mesh=False)
-    assert sol.custom.shape == (2,1,5)
+    assert sol.custom.shape == (2, 1, 5)
 
 
 def test_masked_marching_cubes(unconformity_model_topo):
@@ -55,23 +55,19 @@ def test_masked_marching_cubes(unconformity_model_topo):
     plt.show()
 
     gp.plot_2d(geo_model, regular_grid=geo_model.solutions.mask_matrix_pad[0],
-               kwargs_regular_grid={'cmap': 'viridis',
-                                    'norm': None}
-               )
+               kwargs_regular_grid={'cmap': 'viridis', 'norm': None})
+    
     print(geo_model.solutions.mask_matrix_pad[0])
     plt.show()
 
     gp.plot_2d(geo_model, regular_grid=geo_model.solutions.mask_matrix_pad[1],
-               kwargs_regular_grid={'cmap': 'viridis',
-                                     'norm': None}
+               kwargs_regular_grid={'cmap': 'viridis', 'norm': None}
                )
     print(geo_model.solutions.mask_matrix_pad[1])
     plt.show()
 
     gp.plot_2d(geo_model, regular_grid=geo_model.solutions.mask_matrix[0],
-               kwargs_regular_grid={'cmap': 'viridis',
-                                     'norm': None}
-               )
+               kwargs_regular_grid={'cmap': 'viridis', 'norm': None})
     print(geo_model.solutions.mask_matrix[0])
     plt.show()
 

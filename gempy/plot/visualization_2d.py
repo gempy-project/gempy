@@ -626,7 +626,7 @@ class Plot2D:
             if section_name == 'topography':
                 shape = self.model._grid.topography.resolution
 
-                scalar_fields = self.model.solutions.geological_map[1]
+                scalar_fields = self.model.solutions.geological_map[1:]
                 c_id = 0  # color id startpoint
 
                 for e, block in enumerate(scalar_fields):

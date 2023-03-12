@@ -245,8 +245,7 @@ class ImplicitCoKriging(object):
             self._stack.df['isActive'] = bool_vec
 
         if update_surface_is_active is True:
-            act_series = self._surfaces.df['series'].map(
-                self._stack.df['isActive']).astype(bool)
+            act_series = self._surfaces.df['series'].map(self._stack.df['isActive']).astype(bool)
             unique_surf_points = np.unique(self._surface_points.df['id'])
             if len(unique_surf_points) != 0:
                 bool_surf_points = np.zeros_like(act_series, dtype=bool)

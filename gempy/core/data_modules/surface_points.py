@@ -120,11 +120,10 @@ class SurfacePoints(GeometricData):
 
             self._add_surface_to_list_from_new_surface_points_or_orientations(idx, surface)
 
-        except ValueError as error:  # ToDO test this
+        except TypeError as error:  # ToDO test this
             self.del_surface_points(idx)
-            print('The surface passed does not exist in the pandas categories. This may imply that'
+            raise TypeError('The surface passed does not exist in the pandas categories. This may imply that'
                   'does not exist in the surface object either.')
-            raise ValueError(error)
 
         self.df.loc[idx, ['smooth']] = 1e-6
         

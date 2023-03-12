@@ -13,11 +13,11 @@ import gempy.utils.docstring as ds
 try:
     from gempy.core.xsolution import XSolution
 
-    _xsolution_imported = True
+    xsolution_imported = True
     inheritance = XSolution
 except ImportError:
     inheritance = object
-    _xsolution_imported = False
+    xsolution_imported = False
 
 
 @_setdoc_pro(
@@ -64,7 +64,7 @@ class Solution(inheritance):
                  series: Series = None,
                  ):
 
-        if _xsolution_imported:
+        if xsolution_imported:
             super().__init__(grid, surfaces, series)
 
         self.grid = grid
@@ -163,7 +163,7 @@ class Solution(inheritance):
         #  populate the topology object?
         self.fw_magnetics = sol[13]
 
-        if _xsolution_imported and to_subsurface is True:
+        if xsolution_imported and to_subsurface is True:
             self.set_values(sol)
             if compute_mesh is True:
                 try:
@@ -174,21 +174,21 @@ class Solution(inheritance):
 
     def set_solution_to_custom(self, values: Union[list, np.ndarray]):
         l0, l1 = self.grid.get_grid_args('custom')
-        self.custom = np.vstack(
+        self.custom = np.stack(  # * This has been changed recently. It could give problems how we slice the field
             [values[0][:, l0: l1],
              values[4][:, l0: l1].astype(float)]
         )
 
     def set_solution_to_topography(self, values: Union[list, np.ndarray]):
         l0, l1 = self.grid.get_grid_args('topography')
-        self.geological_map = np.vstack(
+        self.geological_map = np.vstack(  # * This has been changed recently. It could give problems how we slice the field
             [values[0][:, l0: l1],
              values[4][:, l0: l1].astype(float)]
         )
 
     def set_solution_to_sections(self, values: Union[list, np.ndarray]):
         l0, l1 = self.grid.get_grid_args('sections')
-        self.sections = np.vstack(
+        self.sections = np.vstack(  # * This has been changed recently. It could give problems how we slice the field
             [values[0][:, l0: l1],
              values[4][:, l0: l1].astype(float)]
         )
