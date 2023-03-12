@@ -22,9 +22,12 @@ SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.
 sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
 
 # =================== Core ===================
-from gempy.core.model import Project   , ImplicitCoKriging, AdditionalData, Faults           , Grid, \
-    Orientations                       , ScalingSystem    , Series        , SurfacePoints    , \
-    Surfaces                           , Options          , Structure     , KrigingParameters
+from gempy.core.model import Project   , ImplicitCoKriging, AdditionalData, Faults           , Series        , Options          , Structure     , KrigingParameters
+from gempy.core.grid import Grid
+from gempy.core.surfaces import Surfaces
+from gempy.core.data_modules.scaling_system import ScalingSystem
+from gempy.core.data_modules.orientations import Orientations
+from gempy.core.data_modules.surface_points import SurfacePoints
 from gempy.core.solution import Solution
 
 # =================== API ===================

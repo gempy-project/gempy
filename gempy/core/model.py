@@ -1,23 +1,19 @@
-import os
-import shutil
-import sys
-from abc import ABC
+import warnings
+from typing import Union, Iterable
 
 import numpy as np
 import pandas as pn
-from typing import Union, Iterable
-import warnings
+import sys
 
-from gempy.core.data_modules.geometric_data import Orientations, SurfacePoints, \
-    ScalingSystem, Surfaces, Grid
-from gempy.core.data_modules.stack import Stack, Faults, Series
-from gempy.core.data import AdditionalData, MetaData, Options, Structure, \
-    KrigingParameters
-from gempy.core.solution import Solution
-from gempy.core.interpolator import InterpolatorModel, InterpolatorGravity
-from gempy.utils.meta import _setdoc, _setdoc_pro
 import gempy.utils.docstring as ds
+from gempy import SurfacePoints, Orientations, ScalingSystem, Surfaces, Grid
+from gempy.core.data import AdditionalData, Options, KrigingParameters
+from gempy.core.meta_data import MetaData
+from gempy.core.data_modules.stack import Stack, Faults, Series
+from gempy.core.interpolator import InterpolatorModel
+from gempy.core.solution import Solution
 from gempy.plot.decorators import *
+from gempy.utils.meta import _setdoc, _setdoc_pro
 
 pn.options.mode.chained_assignment = None
 
@@ -37,22 +33,19 @@ class RestrictingWrapper(object):
             raise AttributeError(item)
 
 
-@_setdoc_pro([Grid.__doc__, Faults.__doc__, Series.__doc__, Surfaces.__doc__,
-              SurfacePoints.__doc__,
-              Orientations.__doc__, ScalingSystem.__doc__, AdditionalData.__doc__,
-              InterpolatorModel.__doc__,
-              Solution.__doc__])
+@_setdoc_pro([Grid.__doc__, Faults.__doc__, Series.__doc__, Surfaces.__doc__, SurfacePoints.__doc__,Orientations.__doc__,
+              ScalingSystem.__doc__, AdditionalData.__doc__, InterpolatorModel.__doc__, Solution.__doc__])
 class ImplicitCoKriging(object):
     """This class handles all the mutation of the data objects of the model involved on the
      implicit cokriging ensuring the synchronization of all the members.
 
     Attributes:
-        _grid (:class:`gempy.core.data.Grid`): [s0]
-        _faults (:class:`gempy.core.data.Grid`): [s1]
+        _grid (:class:`gempy.Grid`): [s0]
+        _faults (:class:`gempy.Grid`): [s1]
         _stack (:class:`gempy.core.data_modules.stack.Stack`): [s2]
-        _surfaces (:class:`gempy.core.data.Surfaces`): [s3]
-        _surface_points (:class:`gempy.core.data_modules.geometric_data.SurfacePoints`): [s4]
-        _orientations (:class:`gempy.core.data_modules.geometric_data.Orientations`): [s5]
+        _surfaces (:class:`gempy.Surfaces`): [s3]
+        _surface_points (:class:`gempy.SurfacePoints`): [s4]
+        _orientations (:class:`gempy.Orientations`): [s5]
         _rescaling (:class:`gempy.core.data_modules.geometric_data.Rescaling`): [s6]
         _additional_data (:class:`gempy.core.data.AdditionalData`): [s7]
         _interpolator (:class:`gempy.core.interpolator.InterpolatorModel`): [s8]

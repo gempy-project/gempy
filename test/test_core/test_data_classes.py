@@ -8,8 +8,13 @@ import pandas as pn
 import matplotlib.pyplot as plt
 import pytest
 
+import gempy.core.grid
+import gempy.core.surfaces
 import gempy.core.data_modules.geometric_data
+import gempy.core.data_modules.orientations
+import gempy.core.data_modules.scaling_system
 import gempy.core.data_modules.stack
+import gempy.core.data_modules.surface_points
 
 
 @pytest.fixture(scope='module')
@@ -43,7 +48,7 @@ def create_series(create_faults):
 @pytest.fixture(scope='module')
 def create_surfaces(create_series):
     series = create_series
-    surfaces = gp.Surfaces(series)
+    surfaces = gempy.core.Surfaces.Surfaces(series)
     surfaces.set_surfaces_names(['foo', 'foo2', 'foo5'])
 
     print(series)
@@ -140,7 +145,7 @@ def create_surface_points(create_surfaces, create_series):
     # These two DataFrames (df from now on) will contain the individual information of each point at an interface or
     # orientation. Some properties of this table are mapped from the *df* below.
     surfaces = create_surfaces
-    surface_points = gempy.core.data_modules.geometric_data.SurfacePoints(surfaces)
+    surface_points = gempy.core.data_modules.surface_points.SurfacePoints(surfaces)
 
     print(surface_points)
 
@@ -169,7 +174,7 @@ def create_orientations(create_surfaces, create_series):
     surfaces = create_surfaces
 
     # ### Orientations
-    orientations = gempy.core.data_modules.geometric_data.Orientations(surfaces)
+    orientations = gempy.core.data_modules.orientations.Orientations(surfaces)
 
     print(orientations)
 
@@ -204,7 +209,7 @@ def create_orientations(create_surfaces, create_series):
 
 
 def test_add_orientation_with_pole(create_surfaces):
-    orientations = gempy.core.data_modules.geometric_data.Orientations(create_surfaces)
+    orientations = gempy.core.data_modules.orientations.Orientations(create_surfaces)
     orientations.add_orientation(1, 1, 1, 'foo', pole_vector=(1, 0, 1))
     orientations.add_orientation(2, 2, 2, 'foo', orientation=(0, 0, 1))
     orientations.add_orientation(1, 1, 1, 'foo', pole_vector=(.45, 0, .45))
@@ -216,7 +221,7 @@ def test_add_orientation_with_pole(create_surfaces):
 @pytest.fixture(scope='module')
 def create_grid():
     # Test creating an empty list
-    grid = gp.Grid()
+    grid = gempy.core.grid.Grid()
     # Test set regular grid by hand
     grid.create_regular_grid([0, 2000, 0, 2000, -2000, 0], [50, 50, 50])
     return grid
@@ -224,7 +229,7 @@ def create_grid():
 
 @pytest.fixture(scope='module')
 def create_rescaling(create_surface_points, create_orientations, create_grid):
-    rescaling = gempy.core.data_modules.geometric_data.ScalingSystem(create_surface_points, create_orientations, create_grid)
+    rescaling = gempy.core.data_modules.scaling_system.ScalingSystem(create_surface_points, create_orientations, create_grid)
     return rescaling
 
 

@@ -32,6 +32,4 @@ def test_gravity(interpolator_gravity):
     print(geo_model._additional_data)
     gp.compute_model(geo_model, set_solutions=True, compute_mesh=False)
     print(geo_model.solutions.fw_gravity)
-    np.testing.assert_almost_equal(geo_model.solutions.fw_gravity,
-                                   np.array([-1624.1714]), decimal=4)
-
+    np.testing.assert_almost_equal(geo_model.solutions.fw_gravity, np.array([-1624.1714]), decimal=4)

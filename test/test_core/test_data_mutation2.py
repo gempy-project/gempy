@@ -2,6 +2,9 @@
 
 # These two lines are necessary only if GemPy is not installed
 import sys, os
+
+import gempy.core.surfaces
+
 sys.path.append("../..")
 
 # Importing GemPy
@@ -32,7 +35,7 @@ def test_add_point():
 
 def test_restricting_wrapper():
     from gempy.core.model import RestrictingWrapper
-    surface = gp.Surfaces(gp.core.data_modules.stack.Series(gp.core.data_modules.stack.Faults()))
+    surface = gempy.core.Surfaces.Surfaces(gp.core.data_modules.stack.Series(gp.core.data_modules.stack.Faults()))
 
     s = RestrictingWrapper(surface)
 

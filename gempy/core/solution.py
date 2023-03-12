@@ -3,7 +3,7 @@ from typing import Union
 import warnings
 from skimage import measure
 from gempy.utils.input_manipulation import find_interfaces_from_block_bottoms
-from gempy.core.data import Grid, Surfaces
+from gempy import Surfaces, Grid
 from gempy.core.data_modules.stack import Series, Stack
 from gempy.utils.meta import _setdoc_pro
 import gempy.utils.docstring as ds

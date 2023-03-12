@@ -5,7 +5,7 @@
 
 import numpy as np
 import pandas as pd
-from gempy.core.data import Grid
+from gempy import Grid
 from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 unused import
 import matplotlib.pyplot as plt
 
