@@ -275,7 +275,7 @@ class Plot2D:
 
                 l0, l1 = self.model._grid.sections.get_section_args(section_name)
                 shape = self.model._grid.sections.df.loc[section_name, 'resolution']
-                image = self.model.solutions.sections[0][0][l0:l1].reshape(shape[0], shape[1]).T
+                image = self.model.solutions.sections[0][l0:l1].reshape(shape[0], shape[1]).T
 
         elif cell_number is not None or block is not None:
             _a, _b, _c, _, x, y = self._slice(direction, cell_number)[:-2]
@@ -456,13 +456,9 @@ class Plot2D:
         points_df.plot.scatter(x=x, y=y, ax=ax, c=points_df['surface'].map(self._color_lot),
                                s=70, zorder=102, edgecolors='white',
                                colorbar=False)
-        # points_df.plot.scatter(x=x, y=y, ax=ax, c='white', s=80,  zorder=101,
-        #                        colorbar=False)
-
+        
         if self.fig.is_legend is False and legend is True or legend == 'force':
-            markers = [plt.Line2D([0, 0], [0, 0], color=color, marker='o',
-                                  linestyle='') for color in
-                       self._color_lot.values()]
+            markers = [plt.Line2D([0, 0], [0, 0], color=color, marker='o', linestyle='') for color in self._color_lot.values()]
             ax.legend(markers, self._color_lot.keys(), numpoints=1)
             self.fig.is_legend = True
         ax.xaxis.label = temp_label
@@ -644,7 +640,7 @@ class Plot2D:
             else:
                 l0, l1 = self.model._grid.sections.get_section_args(section_name)
                 shape = self.model._grid.sections.df.loc[section_name, 'resolution']
-                scalar_fields = self.model.solutions.sections[1][:, l0:l1]
+                scalar_fields = self.model.solutions.sections[1:][:, l0:l1]
 
                 c_id = 0  # color id startpoint
 
