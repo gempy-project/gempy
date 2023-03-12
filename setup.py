@@ -11,11 +11,11 @@ setup(
     packages=find_packages(exclude=('test', 'docs', 'examples')),
     include_package_data=True,
     install_requires=[
-        'pandas==1.3.4',
+        'pandas',
         'aesara==2.7.7',
         'pymc',
         'matplotlib',
-        'numpy==1.21.6',
+        'numpy',
         'pytest',
         'seaborn>=0.9',
         'networkx',
