@@ -3,9 +3,11 @@ from typing import Union
 import numpy as np
 import pandas as pn
 
-from gempy import SurfacePoints, Orientations, Grid
-from gempy.utils import docstring as ds
-from gempy.utils.meta import _setdoc_pro
+from ..grid import Grid
+from .surface_points import SurfacePoints
+from .orientations import Orientations
+from ...utils import docstring as ds
+from ...utils.meta import _setdoc_pro
 
 
 @_setdoc_pro([SurfacePoints.__doc__, Orientations.__doc__, Grid.__doc__])

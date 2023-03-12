@@ -2,10 +2,12 @@ import numpy as np
 from typing import Union
 import warnings
 from skimage import measure
-from gempy.utils.input_manipulation import find_interfaces_from_block_bottoms
-from gempy import Surfaces, Grid
-from gempy.core.data_modules.stack import Series, Stack
-from gempy.utils.meta import _setdoc_pro
+
+from ..utils.input_manipulation import find_interfaces_from_block_bottoms
+from .surfaces import Surfaces
+from .grid import Grid
+from .data_modules.stack import Series, Stack
+from ..utils.meta import _setdoc_pro
 import gempy.utils.docstring as ds
 
 try:

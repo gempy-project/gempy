@@ -5,15 +5,20 @@ import numpy as np
 import pandas as pn
 import sys
 
-import gempy.utils.docstring as ds
-from gempy import SurfacePoints, Orientations, ScalingSystem, Surfaces, Grid
-from gempy.core.data import AdditionalData, Options, KrigingParameters
-from gempy.core.meta_data import MetaData
-from gempy.core.data_modules.stack import Stack, Faults, Series
-from gempy.core.interpolator import InterpolatorModel
-from gempy.core.solution import Solution
-from gempy.plot.decorators import *
-from gempy.utils.meta import _setdoc, _setdoc_pro
+from .data import AdditionalData, Options, KrigingParameters
+from .meta_data import MetaData
+from .data_modules.stack import Stack, Faults, Series
+from .interpolator import InterpolatorModel
+from .solution import Solution
+from ..plot.decorators import *
+from ..utils.meta import _setdoc, _setdoc_pro
+from ..utils.docstring import recompute_rf
+from .surfaces import Surfaces
+from .grid import Grid
+from .data_modules.surface_points import SurfacePoints
+from .data_modules.orientations import Orientations
+from .data_modules.scaling_system import ScalingSystem
+
 
 pn.options.mode.chained_assignment = None
 
@@ -1084,7 +1089,7 @@ class ImplicitCoKriging(object):
 
         return self._orientations
 
-    @_setdoc_pro(ds.recompute_rf)
+    @_setdoc_pro(recompute_rf)
     @_setdoc(SurfacePoints.add_surface_points.__doc__, indent=False, position='beg')
     @plot_add_surface_points
     def add_surface_points(self, X, Y, Z, surface,

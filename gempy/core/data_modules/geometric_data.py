@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pandas as pn
 
-from ... import Surfaces
+from ..surfaces import Surfaces
 from ...utils.meta import _setdoc_pro, _setdoc
 
 

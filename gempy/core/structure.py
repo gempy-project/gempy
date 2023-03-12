@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pn
 
-from gempy import Surfaces
+from .surfaces import Surfaces
 
 
 class Structure(object):

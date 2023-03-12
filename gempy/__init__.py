@@ -6,9 +6,9 @@ Created on 21/10/2016
 """
 import sys
 import os
-import pandas
 
 import warnings
+
 
 try:
     import faulthandler
@@ -22,31 +22,36 @@ SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.
 sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
 
 # =================== Core ===================
-from gempy.core.model import Project   , ImplicitCoKriging, AdditionalData, Faults           , Series        , Options          , Structure     , KrigingParameters
-from gempy.core.grid import Grid
-from gempy.core.surfaces import Surfaces
-from gempy.core.data_modules.scaling_system import ScalingSystem
-from gempy.core.data_modules.orientations import Orientations
-from gempy.core.data_modules.surface_points import SurfacePoints
-from gempy.core.solution import Solution
+from .core.model import Project, ImplicitCoKriging
+from .core.data import AdditionalData, Options, KrigingParameters
+from .core.data_modules.stack import Faults, Series
+from .core.structure import Structure
+
+from .core.grid import Grid
+from .core.surfaces import Surfaces
+from .core.data_modules.scaling_system import ScalingSystem
+from .core.data_modules.orientations import Orientations
+from .core.data_modules.surface_points import SurfacePoints
+from .core.solution import Solution
 
 # =================== API ===================
-from gempy.gempy_api import *
-from gempy.api_modules.getters import *
-from gempy.api_modules.setters import *
-from gempy.api_modules.io import *
+from .gempy_api import *
+from .api_modules.getters import *
+from .api_modules.setters import *
+from .api_modules.io import *
 
 # =================== Addons ===================
-from gempy.addons.gempy_to_rexfile import geomodel_to_rex
+from .addons.gempy_to_rexfile import geomodel_to_rex
 
 # =================== Plotting ===================
 import gempy.plot.plot_api as plot
-from gempy.plot.plot_api import plot_2d, plot_3d
-from gempy.plot import _plot as _plot
+from .plot.plot_api import plot_2d, plot_3d
+from .plot import _plot as _plot
 
-assert sys.version_info[0] >= 3, "GemPy requires Python 3.X"  # sys.version_info[1] for minor e.g. 6
+# Assert at least pyton 3.10
+assert sys.version_info[0] >= 3 and sys.version_info[1] >= 10, "GemPy requires Python 3.10 or higher"
 
-__version__ = '2.2.12'
+__version__ = '2.3.1'
 
 if __name__ == '__main__':
     pass

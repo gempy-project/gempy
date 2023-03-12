@@ -5,8 +5,8 @@ import sys
 import numpy as np
 import pandas as pn
 
-from gempy.core.colors import Colors
-from gempy.utils.meta import _setdoc_pro
+from .colors import Colors
+from ..utils.meta import _setdoc_pro
 
 
 class Surfaces(object):

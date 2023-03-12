@@ -3,18 +3,12 @@ import warnings
 import numpy as np
 import pandas as pn
 
-from gempy import Surfaces, Grid
-from gempy.core.structure import Structure
-
-try:
-    import ipywidgets as widgets
-
-    ipywidgets_import = True
-except ModuleNotFoundError:
-    VTK_IMPORT = False
+from .surfaces import Surfaces
+from .grid import Grid
+from .structure import Structure
 
 # This is for sphenix to find the packages
-from gempy.utils.meta import _setdoc_pro
+from ..utils.meta import _setdoc_pro
 
 pn.options.mode.chained_assignment = None
 

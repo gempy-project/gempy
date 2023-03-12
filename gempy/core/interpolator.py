@@ -1,9 +1,12 @@
 from typing import Union
-from gempy.core.data import AdditionalData
-from gempy import SurfacePoints, Orientations, Surfaces, Grid
-from gempy.core.data_modules.stack import Faults, Series
-from gempy.utils.meta import _setdoc_pro, _setdoc
+from .data import AdditionalData
+from .data_modules.stack import Faults, Series
+from ..utils.meta import _setdoc_pro, _setdoc
 import gempy.utils.docstring as ds
+from .surfaces import Surfaces
+from .grid import Grid
+from .data_modules.surface_points import SurfacePoints
+from .data_modules.orientations import Orientations
 
 import numpy as np
 import aesara

@@ -6,11 +6,12 @@ import sys
 
 import numpy as np
 
-from gempy import Surfaces, SurfacePoints
-from gempy.core.checkers import check_for_nans
-from gempy.core.data_modules.geometric_data import GeometricData
-from gempy.utils import docstring as ds
-from gempy.utils.meta import _setdoc_pro
+from ..surfaces import Surfaces
+from .surface_points import SurfacePoints
+from ..checkers import check_for_nans
+from .geometric_data import GeometricData
+from ...utils import docstring as ds
+from ...utils.meta import _setdoc_pro
 
 
 @_setdoc_pro([Surfaces.__doc__, ds.coord_ori, ds.surface_sp, ds.pole_vector, ds.orientations])
@@ -150,7 +151,7 @@ class Orientations(GeometricData):
             raise AttributeError('At least pole_vector or orientation should have been passed to reach'
                                  'this point. Check previous condition')
         
-        self._add_surface_to_list_from_new_surface_points_or_orientations(surface, idx)
+        self._add_surface_to_list_from_new_surface_points_or_orientations(idx=idx, surface=surface)
         # if type(idx) is int:
         #     self.df.loc[idx, 'surface'] = surface[0]
         # elif type(idx) is list:

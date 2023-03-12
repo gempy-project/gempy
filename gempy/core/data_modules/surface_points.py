@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pn
 
 from .geometric_data import GeometricData
-from ... import Surfaces
+from ..surfaces import Surfaces
 from ...utils import docstring as ds
 from ...utils.meta import _setdoc_pro
 

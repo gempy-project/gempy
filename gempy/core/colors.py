@@ -5,7 +5,12 @@ import numpy as np
 import seaborn as sns
 from IPython.core.display_functions import display
 
-from gempy.core.data import ipywidgets_import
+try:
+    import ipywidgets as widgets
+
+    ipywidgets_import = True
+except ModuleNotFoundError:
+    VTK_IMPORT = False
 
 
 class Colors:
