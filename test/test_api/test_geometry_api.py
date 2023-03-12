@@ -19,6 +19,7 @@ def test_set_orientations():
     geo_data._orientations.create_orientation_from_surface_points(geo_data.surface_points, [0, 1, 2])
 
     gp.set_orientation_from_surface_points(geo_data, [0, 1, 2])
+    
 
 def test_select_nearest_surface_points():
     data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
@@ -86,6 +87,7 @@ def test_set_orientation_from_neighbours():
     reference = [90-np.arctan(0.5)/np.pi*180, 90]
 
     assert np.array_equal(reference, test)
+
 
 def test_set_orientation_from_neighbours_all():
     data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'

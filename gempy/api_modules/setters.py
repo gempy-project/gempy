@@ -8,6 +8,7 @@ from gempy.core.model import Model, InterpolatorModel
 from typing import Union
 import warnings
 import numpy as np
+
 # This warning comes from numpy complaining about a aesara optimization
 warnings.filterwarnings("ignore",
                         message='.* a non-tuple sequence for multidimensional '
@@ -167,11 +168,15 @@ def set_orientation_from_surface_points(geo_model, indices_array):
         assert form.shape[0] == 1, 'The interface points must belong to the same surface'
         form = form[0]
 
-        ori_parameters = geo_model._orientations.create_orientation_from_surface_points(
-            geo_model._surface_points, indices)
-        geo_model.add_orientations(X=ori_parameters[0], Y=ori_parameters[1], Z=ori_parameters[2],
-                                   orientation=ori_parameters[3:6], pole_vector=ori_parameters[6:9],
-                                   surface=form)
+        ori_parameters = geo_model._orientations.create_orientation_from_surface_points(geo_model._surface_points, indices)
+        geo_model.add_orientations(
+            X=ori_parameters[0],
+            Y=ori_parameters[1],
+            Z=ori_parameters[2],
+            orientation=ori_parameters[3:6],
+            pole_vector=ori_parameters[6:9],
+            surface=form
+        )
     elif np.ndim(indices_array) == 2:
         for indices in indices_array:
             form = geo_model._surface_points.df['surface'].loc[indices].unique()
@@ -184,6 +189,7 @@ def set_orientation_from_surface_points(geo_model, indices_array):
                                        surface=form)
 
     return geo_model._orientations
+
 
 def select_nearest_surfaces_points(geo_model, surface_points, searchcrit):
     """
@@ -219,7 +225,7 @@ def select_nearest_surfaces_points(geo_model, surface_points, searchcrit):
             Tree.fit(p_surfaces)
             # find neighbours
             neighbours_surfaces = Tree.kneighbors(p_surfaces, n_neighbors=searchcrit,
-                                            return_distance=False)
+                                                  return_distance=False)
             # add neighbours with initial index to total list
             for n in neighbours_surfaces:
                 neighbours.append(p_surfaces.index[n])
@@ -235,8 +241,8 @@ def select_nearest_surfaces_points(geo_model, surface_points, searchcrit):
             Tree.fit(p_surfaces)
             # find neighbours (attention: relativ index!)
             neighbours_surfaces = Tree.radius_neighbors(p_surfaces,
-                                                  radius=searchcrit,
-                                                  return_distance=False)
+                                                        radius=searchcrit,
+                                                        return_distance=False)
             # add neighbours with initial index to total list
             for n in neighbours_surfaces:
                 neighbours.append(p_surfaces.index[n])
@@ -244,7 +250,6 @@ def select_nearest_surfaces_points(geo_model, surface_points, searchcrit):
 
 
 def set_orientation_from_neighbours(geo_model, neighbours):
-
     """
     Calculates the orientation of one point with its neighbour points
     of the same surface.
@@ -268,7 +273,7 @@ def set_orientation_from_neighbours(geo_model, neighbours):
         normvec = normalize(np.cross(cov[0].T, cov[1].T).reshape(1, -1))[0]
         # check orientation of normal vector (has to be oriented to sky)
         if normvec[2] < 0:
-            normvec = normvec*(-1)
+            normvec = normvec * (-1)
         # append to the GemPy-model
         geo_model.add_orientations(geo_model._surface_points.df['X'][neighbours[0]],
                                    geo_model._surface_points.df['Y'][neighbours[0]],
@@ -288,7 +293,6 @@ def set_orientation_from_neighbours(geo_model, neighbours):
 
 
 def set_orientation_from_neighbours_all(geo_model, neighbours):
-
     """
     Calculates the orientations for all points with given neighbours.
     Parameters

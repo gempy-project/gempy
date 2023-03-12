@@ -29,7 +29,7 @@ class TestGemPyToREX:
     def test_write_header(self):
         header_bytes = gtr.write_file_header_block(3, 1)
         if False:
-            gtr.write_file(header_bytes, './rexfiles/header_test')
+            gtr.write_file(header_bytes, 'DEP/rexfiles/header_test')
 
     def test_write_mesh(self, geo_model):
         mesh_header_size = 128
@@ -62,7 +62,7 @@ class TestGemPyToREX:
         all_bytes = header_bytes + data_bytes + mesh_header_bytes + mesh_block_bytes
 
         if False:
-            gtr.write_file(all_bytes, './rexfiles/one_mesh_test')
+            gtr.write_file(all_bytes, 'DEP/rexfiles/one_mesh_test')
 
     def TEST_rex_cloud_api(self):
         import datetime

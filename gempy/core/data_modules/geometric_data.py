@@ -1,4 +1,6 @@
 import copy
+
+import pandas as pd
 import sys
 import warnings
 from typing import Union, Iterable
@@ -605,33 +607,26 @@ class Orientations(GeometricData):
 
         if pole_vector is not None:
             self.df.loc[idx, ['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z']] = np.array([x, y, z, *pole_vector], dtype=float)
-            # if type(surface) is numpy.ndarray:
-            #     for s in surface:
-            #         self.df.loc[idx, 'surface'] = s
-            # else:
-            #     self.df.loc[idx, 'surface'] = surface
-            self.df.loc[idx, 'surface'] = surface
-
             self.calculate_orientations(idx)
 
             if orientation is not None:
                 warnings.warn('If pole_vector and orientation are passed pole_vector is used/')
+        elif orientation is not None:
+            self.df.loc[idx, ['X', 'Y', 'Z', ]] = np.array([x, y, z], dtype=float)
+            self.df.loc[idx, ['azimuth', 'dip', 'polarity']] = np.array(orientation, dtype=float)
+            self.calculate_gradient(idx)
         else:
-            if orientation is not None:
-                self.df.loc[idx, ['X', 'Y', 'Z', ]] = np.array([x, y, z], dtype=float)
-                self.df.loc[idx, ['azimuth', 'dip', 'polarity']] = np.array(orientation, dtype=float)
-                # if type(surface) is not str:
-                #     for s in surface:
-                #         self.df.loc[idx, 'surface'] = s
-                # else:
-                #     self.df.loc[idx, 'surface'] = surface
-                self.df.loc[idx, 'surface'] = surface
+            raise AttributeError('At least pole_vector or orientation should have been passed to reach'
+                                 'this point. Check previous condition')
 
-                self.calculate_gradient(idx)
-            else:
-                raise AttributeError('At least pole_vector or orientation should have been passed to reach'
-                                     'this point. Check previous condition')
+        if type(idx) is int:
+            self.df.loc[idx, 'surface'] = surface[0]
+        elif type(idx) is list:
+            self.df.loc[idx, 'surface'] = surface
+        
         self.df.loc[idx, ['smooth']] = 0.01
+        
+        # create new pandas categories from slef.df.['surface']
         self.df['surface'] = self.df['surface'].astype('category', copy=True)
         self.df['surface'].cat.set_categories(self.surfaces.df['surface'].values, inplace=True)
 
