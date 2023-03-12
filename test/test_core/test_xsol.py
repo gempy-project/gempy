@@ -11,6 +11,8 @@ import numpy as np
 from gempy.core.solution import Solution
 from gempy.core.xsolution import XSolution
 
+# tests skip if subsurface is not installed
+pytest.importorskip("subsurface")
 
 @pytest.fixture(scope='module')
 def a_grid():

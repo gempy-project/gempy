@@ -25,7 +25,7 @@ def save_model(model: Project, name=None, path=None, compress=True,
                solution=False, **kwargs):
     name, path = default_path_and_name(model, name, path)
     model.save_model(name, path, compress)
-    if solution is True:
+    if solution is True:       
         solution_to_netcdf(kwargs, model, name, path)
     if compress is True:
         shutil.make_archive(name, 'zip', path)

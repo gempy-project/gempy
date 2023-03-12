@@ -2,6 +2,7 @@ import os
 
 import pytest
 
+import gempy
 import gempy as gp
 import pooch
 
@@ -31,6 +32,8 @@ def test_save_model(one_fault_model_no_interp, tmpdir):
     gp.save_model(one_fault_model_no_interp, path=tmpdir)
 
 
+# skip test is subsurface is not installed
+@pytest.mark.skipif(not gempy.Solution._xsolution_imported, reason="Subsurface not installed")
 def test_save_model_solution(one_fault_model_topo_solution, tmpdir):
     """Save a model in a zip file with the default name and path"""
     gp.save_model(
