@@ -159,7 +159,9 @@ class GeometricData(object):
 
             self.df.loc[idx, attribute] = self.df.loc[idx, 'surface'].map(surfaces.df.set_index('surface')[attribute])
 
-    def _add_surface_to_list_from_new_surface_points_or_orientations(self, idx, surface: list):
+    def _add_surface_to_list_from_new_surface_points_or_orientations(self, idx, surface: list | str):
+        if type(surface) is str: surface = [surface]
+        
         # Check is self.df['surface'] is a category
         if not isinstance(self.df['surface'].dtype, pd.CategoricalDtype):
             self.df['surface'] = self.df['surface'].astype('category', copy=True)

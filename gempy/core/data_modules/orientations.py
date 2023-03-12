@@ -104,7 +104,7 @@ class Orientations(GeometricData):
                                                  'object. %s' % self.df['surface'][self.df['surface'].isna()]
 
     @_setdoc_pro([ds.x, ds.y, ds.z, ds.surface_sp, ds.pole_vector, ds.orientations, ds.idx_sp])
-    def add_orientation(self, x, y, z, surface, pole_vector: Union[list, tuple, np.ndarray] = None,
+    def add_orientation(self, x, y, z, surface: list[str] | str, pole_vector: Union[list, tuple, np.ndarray] = None,
                         orientation: Union[list, np.ndarray] = None, idx=None):
         """
         Add orientation.

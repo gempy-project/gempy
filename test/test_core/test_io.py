@@ -33,10 +33,13 @@ def test_save_model(one_fault_model_no_interp, tmpdir):
 
 def test_save_model_solution(one_fault_model_topo_solution, tmpdir):
     """Save a model in a zip file with the default name and path"""
-    gp.save_model(one_fault_model_topo_solution,
-                  path=tmpdir,
-                  solution=True)
-    print('foo')
+    gp.save_model(
+        model=one_fault_model_topo_solution,
+        path=tmpdir,
+        solution=True
+    )
+    print('Done')
+
 
 def test_load_model_compressed():
     geo_model = gp.load_model(name="one_fault_model")
@@ -79,7 +82,7 @@ def test_pooch():
         version_dev="master",
         # We'll load it from a file later
         registry={
-        "Tutorial_ch1-8_Onlap_relations_faults.csv": "19uheidhlkjdwhoiwuhc0uhcwljchw9ochwochw89dcgw9dcgwc"
-    },
+            "Tutorial_ch1-8_Onlap_relations_faults.csv": "19uheidhlkjdwhoiwuhc0uhcwljchw9ochwochw89dcgw9dcgwc"
+        },
     )
     print(goodboy)

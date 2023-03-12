@@ -48,7 +48,7 @@ def create_series(create_faults):
 @pytest.fixture(scope='module')
 def create_surfaces(create_series):
     series = create_series
-    surfaces = gempy.core.Surfaces.Surfaces(series)
+    surfaces = gempy.Surfaces(series)
     surfaces.set_surfaces_names(['foo', 'foo2', 'foo5'])
 
     print(series)
@@ -209,7 +209,7 @@ def create_orientations(create_surfaces, create_series):
 
 
 def test_add_orientation_with_pole(create_surfaces):
-    orientations = gempy.core.data_modules.orientations.Orientations(create_surfaces)
+    orientations = gempy.Orientations(create_surfaces)
     orientations.add_orientation(1, 1, 1, 'foo', pole_vector=(1, 0, 1))
     orientations.add_orientation(2, 2, 2, 'foo', orientation=(0, 0, 1))
     orientations.add_orientation(1, 1, 1, 'foo', pole_vector=(.45, 0, .45))

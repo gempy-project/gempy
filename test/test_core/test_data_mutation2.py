@@ -35,7 +35,7 @@ def test_add_point():
 
 def test_restricting_wrapper():
     from gempy.core.model import RestrictingWrapper
-    surface = gempy.core.Surfaces.Surfaces(gp.core.data_modules.stack.Series(gp.core.data_modules.stack.Faults()))
+    surface = gempy.Surfaces(gp.Series(gp.Faults()))
 
     s = RestrictingWrapper(surface)
 

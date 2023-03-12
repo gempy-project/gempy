@@ -3,7 +3,7 @@ import sys, os
 
 from gempy.addons.gempy_to_rexfile import GemPyToRex
 
-sys.path.append("../..")
+sys.path.append("../../..")
 import gempy
 
 request = pytest.importorskip("requests")

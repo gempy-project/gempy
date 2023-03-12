@@ -179,7 +179,7 @@ class Solution(inheritance):
 
     def set_solution_to_topography(self, values: Union[list, np.ndarray]):
         l0, l1 = self.grid.get_grid_args('topography')
-        self.geological_map = np.array([values[0][:, l0: l1], values[4][:, l0: l1].astype(float)])
+        self.geological_map = np.vstack([values[0][:, l0: l1], values[4][:, l0: l1].astype(float)])
 
     def set_solution_to_sections(self, values: Union[list, np.ndarray]):
         l0, l1 = self.grid.get_grid_args('sections')
