@@ -17,7 +17,7 @@ def test_plot_2d_data_default_all_none(one_fault_model_no_interp):
 def test_basic(one_fault_model_no_interp):
     fig = plt.figure()
     ax = fig.add_subplot(111)
-    ax.imshow(np.arange(25).reshape(5,5))
+    ax.imshow(np.arange(25).reshape(5, 5))
     fig.show()
 
 
@@ -28,13 +28,15 @@ def test_plot_2d_test_labels(one_fault_model_no_interp):
     geo_model.set_section_grid(section_dict)
     geo_model.set_topography(fd=1.2, d_z=np.array([600, 2000]), resolution=np.array([60, 60]))
 
-    gp.plot_2d(geo_model,
-               section_names=['section_NW-SE', 'section_NW-SE', 'topography'],
-               direction=['x'], cell_number=['mid'],
-               show_topography=True,
-               )
+    gp.plot_2d(
+        model=geo_model,
+        section_names=['section_NW-SE', 'section_NW-SE', 'topography'],
+        direction=['x'], cell_number=['mid'],
+        show_topography=True,
+        show_section_traces=True
+    )
     plt.show()
-
+    
     gp.plot_2d(geo_model,
                section_names=['section_NW-SE', 'section_NW-SE', 'topography'],
                direction=['x'], cell_number=['mid'],
@@ -49,7 +51,7 @@ def test_plot_2d_test_labels(one_fault_model_no_interp):
                projection_distance=1000)
     plt.show()
 
-    gp.plot.plot_section_traces(geo_model)
+# gp.plot.plot_section_traces(geo_model)
     plt.show()
 
 

@@ -385,24 +385,25 @@ class Plot2D:
 
         if section_name is not None:
             if section_name == 'topography':
-
                 topo_comp = kwargs.get('topo_comp', 5000)
                 decimation_aux = int(self.model._grid.topography.values.shape[0] / topo_comp)
                 tpp = self.model._grid.topography.values[::decimation_aux + 1, :]
-                cartesian_point_dist = (dd.cdist(tpp, self.model._surface_points.df[['X', 'Y', 'Z']])
-                                        < projection_distance).sum(axis=0).astype(bool)
-                cartesian_ori_dist = (dd.cdist(tpp, self.model._orientations.df[['X', 'Y', 'Z']])
-                                      < projection_distance).sum(axis=0).astype(bool)
-                x, y, Gx, Gy = 'X', 'Y', 'G_x', 'G_y'
+                
+                cdist_sp = dd.cdist(tpp, self.model._surface_points.df[['X', 'Y', 'Z']])
+                cartesian_point_dist = (cdist_sp < projection_distance).sum(axis=0).astype(bool)
 
+                cdist_ori = dd.cdist(tpp, self.model._orientations.df[['X', 'Y', 'Z']])
+                cartesian_ori_dist = (cdist_ori < projection_distance).sum(axis=0).astype(bool)
+
+                x, y, Gx, Gy = 'X', 'Y', 'G_x', 'G_y'
             else:
                 # Project points:
                 shift = np.asarray(self.model._grid.sections.df.loc[section_name, 'start'])
                 end_point = np.atleast_2d(np.asarray(self.model._grid.sections.df.loc[section_name, 'stop']) - shift)
                 A_rotate = np.dot(end_point.T, end_point) / self.model._grid.sections.df.loc[section_name, 'dist'] ** 2
 
-                cartesian_point_dist = np.sqrt(((np.dot(
-                    A_rotate, (points[['X', 'Y']]).T).T - points[['X', 'Y']]) ** 2).sum(axis=1))
+                perpe_sqdist = ((np.dot(A_rotate, (points[['X', 'Y']]).T).T - points[['X', 'Y']]) ** 2).sum(axis=1)
+                cartesian_point_dist = np.sqrt(perpe_sqdist)
 
                 cartesian_ori_dist = np.sqrt(((np.dot(
                     A_rotate, (orientations[['X', 'Y']]).T).T - orientations[['X', 'Y']]) ** 2).sum(axis=1))
@@ -451,11 +452,17 @@ class Plot2D:
         temp_label = copy.copy(ax.xaxis.label)
 
         points_df = points[select_projected_p]
-        points_df['colors'] = points_df['surface'].map(self._color_lot)
+        
+        _colors = points_df['surface'].map(self._color_lot)
+        points_df['colors'] = _colors
 
-        points_df.plot.scatter(x=x, y=y, ax=ax, c=points_df['surface'].map(self._color_lot),
-                               s=70, zorder=102, edgecolors='white',
-                               colorbar=False)
+        points_df.plot.scatter(x=x, y=y, ax=ax,
+                               c=_colors,
+                               s=70, 
+                               zorder=102,
+                               edgecolors='white',
+                               colorbar=False
+                               )
         
         if self.fig.is_legend is False and legend is True or legend == 'force':
             markers = [plt.Line2D([0, 0], [0, 0], color=color, marker='o', linestyle='') for color in self._color_lot.values()]
@@ -548,6 +555,7 @@ class Plot2D:
             ax.fill(xy[:, 0], xy[:, 1], 'k', zorder=10)
 
         elif section_name == 'topography':
+            
             import skimage
             from gempy.plot.helpers import add_colorbar
             topo = self.model._grid.topography

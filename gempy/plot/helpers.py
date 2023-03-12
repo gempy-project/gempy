@@ -19,16 +19,12 @@ def add_colorbar(im=None, axes=None, cs=None, label = None, aspect=30, location=
     """
     if axes is None:
         axes = im.axes
-    divider = axes_grid1.make_axes_locatable(axes)
-    width = axes_grid1.axes_size.AxesY(axes, aspect=2. / aspect)
-    pad = axes_grid1.axes_size.Fraction(pad_fraction, width)
-    current_ax = plt.gca()
-    cax = divider.append_axes(location, size=width, pad=pad)
-    plt.sca(current_ax)
+  
+    cax = axes.inset_axes([1.04, 0.2, 0.05, 0.6])
     if cs:
-        cbar = axes.figure.colorbar(cs, cax=cax, **kwargs)
+        cbar = axes.figure.colorbar(cs, ax=axes, cax=cax, location="right", **kwargs)
     else:
         if im is not None:
-            cbar = axes.figure.colorbar(im, cax=cax, **kwargs)
+            cbar = axes.figure.colorbar(im, cax=cax, location="right",  **kwargs)
     cbar.set_label(label)
     return cbar
