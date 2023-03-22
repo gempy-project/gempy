@@ -994,7 +994,10 @@ class ImplicitCoKriging(object):
             :class:`gempy.core.data_modules.geometric_data.SurfacePoints`
 
         """
-
+        if isinstance(table,pn.DataFrame):
+            table = table.reset_index(drop=True)
+        else:
+            raise ValueError('Input must be Pandas Dataframe')
         try:
             coord_x_name = kwargs.get('coord_x_name') if 'coord_x_name' in kwargs \
                 else self._check_possible_column_names(table, ['X', 'x'])
@@ -1052,6 +1055,10 @@ class ImplicitCoKriging(object):
             :class:`gempy.core.data_modules.geometric_data.Orientations`
 
         """
+        if isinstance(table,pn.DataFrame):
+            table = table.reset_index(drop=True)
+        else:
+            raise ValueError('Input must be Pandas Dataframe')
         g_x_name = kwargs.get('G_x_name', 'G_x')
         g_y_name = kwargs.get('G_y_name', 'G_y')
         g_z_name = kwargs.get('G_z_name', 'G_z')

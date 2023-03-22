@@ -211,7 +211,8 @@ class Solution(inheritance):
         self.block_matrix = values[1][:, :,
                             regular_grid_length_l0: regular_grid_length_l1]
 
-        self.fault_block = values[2]
+        self.fault_block = values[2][0,
+                          regular_grid_length_l0: regular_grid_length_l1]
         # This here does not make any sense
         self.weights_vector = values[3]
 
