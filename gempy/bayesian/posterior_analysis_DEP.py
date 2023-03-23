@@ -95,8 +95,8 @@ def change_input_data(db, interp_data, i):
 
     # update interpolator
     interp_data.update_interpolator()
-    if verbose:
-        print("interp_data parameters changed.")
+    #if verbose:
+    #    print("interp_data parameters changed.")
     return interp_data
 
 
@@ -372,8 +372,8 @@ class PosteriorPyMC3(Posterior):
 
         self.verbose = verbose
         # load db
-        with pymc3.Model() as model:
-            self.db = pymc3.backends.hdf5.load(dbname)
+        with pymc.Model() as model:
+            self.db = pymc.backends.hdf5.load(dbname)
             # model environment required? / alternatives?
 
         self.n_iter = self.db.get_values(pymc_model_f).shape[0]-1
