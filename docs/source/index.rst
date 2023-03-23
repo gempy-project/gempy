@@ -159,10 +159,14 @@ available commercial packages is the full integration of stochastic
 geological modeling methods.
 ``GemPy`` was designed from the ground up to support stochastic geological
 modeling for uncertainty analysis (e.g. Monte Carlo simulations, Bayesian
-inference). This was achieved by writing ``GemPy``'s core architecture
-using the numerical computation library `aesara <http://deeplearning.net/software/aesara/>`_
+inference). This was originally achieved by writing ``GemPy``'s core architecture
+using the now deprecated numerical computation library `theano <https://pypi.org/project/Theano/>`_
 to couple it with the probabilistic programming
-framework `PyMC3 <https://pymc-devs.github.io/pymc3/notebooks/getting_started.html>`_.
+framework `PyMC3 <https://pymc-devs.github.io/pymc3/notebooks/getting_started.html>`_. 
+Active theano development stopped in 2020, but the project was picked up by the pymc community and
+is continued under the name `aesara <https://aesara.readthedocs.io/en/latest/>`_. This successor is
+also used in gempy together with `PyMC <https://www.pymc.io/blog/v4_announcement.html>`_, i.e. v4.0 of
+PyMC3.
 This enables the use of advanced sampling methods (e.g. Hamiltonian Monte
 Carlo) and is of particular relevance when considering uncertainties in
 the model input data and making use of additional secondary information
