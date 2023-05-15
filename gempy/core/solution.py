@@ -213,8 +213,15 @@ class Solution(inheritance):
         self.values_matrix = values[0][1:, regular_grid_length_l0: regular_grid_length_l1]
 
         # Axis 0 is the series. Axis 1 is the value
+
         self.block_matrix = values[1][:, :, regular_grid_length_l0: regular_grid_length_l1]
         self.fault_block = values[2]
+        #self.block_matrix = values[1][:, :,
+        #                    regular_grid_length_l0: regular_grid_length_l1]
+
+        #self.fault_block = values[2][0,
+        #                  regular_grid_length_l0: regular_grid_length_l1]
+
         # This here does not make any sense
         self.weights_vector = values[3]
         self.scalar_field_matrix = values[4][:, regular_grid_length_l0: regular_grid_length_l1]
