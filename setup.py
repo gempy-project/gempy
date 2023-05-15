@@ -12,7 +12,7 @@ setup(
     include_package_data=True,
     install_requires=[
         'pandas',
-        'aesara==2.7.7',
+        'aesara',
         'pymc',
         'matplotlib',
         'numpy',
@@ -25,7 +25,7 @@ setup(
         'pyqt5',
         'iPython',
         'scikit-learn',
-        'xarray==2022.3.0'
+        'xarray'
     ],
     url='https://github.com/cgre-aachen/gempy',
     license='LGPL v3',
