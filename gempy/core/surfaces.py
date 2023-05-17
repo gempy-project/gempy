@@ -48,7 +48,7 @@ class Surfaces(object):
         if (np.array(sys.version_info[:2]) <= np.array([3, 6])).all():
             self.df: pn.DataFrame
 
-        self.df['series'].cat.add_categories(['Default series'], inplace=True)
+        self.df['series'] = self.df['series'].cat.add_categories(['Default series'])
         if surface_names is not None:
             self.set_surfaces_names(surface_names)
 
@@ -312,7 +312,7 @@ class Surfaces(object):
         """
 
         # Updating surfaces['series'] categories
-        self.df['series'].cat.set_categories(self.series.df.index, inplace=True)
+        self.df['series'] = self.df['series'].cat.set_categories(self.series.df.index)
         # TODO Fixing this. It is overriding the formations already mapped
         if mapping_object is not None:
             # If none is passed and series exists we will take the name of the first series as a default

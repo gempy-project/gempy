@@ -66,7 +66,7 @@ class Orientations(GeometricData):
                                         'azimuth', 'polarity', 'surface'], dtype=float)
 
         self.df['surface'] = self.df['surface'].astype('category', copy=True)
-        self.df['surface'].cat.set_categories(self.surfaces.df['surface'].values, inplace=True)
+        self.df['surface'] = self.df['surface'].cat.set_categories(self.surfaces.df['surface'].values)
 
         pole_vector = check_for_nans(pole_vector)
         orientation = check_for_nans(orientation)
@@ -94,7 +94,7 @@ class Orientations(GeometricData):
                                          'this point. Check previous condition')
 
         self.df['surface'] = self.df['surface'].astype('category', copy=True)
-        self.df['surface'].cat.set_categories(self.surfaces.df['surface'].values, inplace=True)
+        self.df['surface'] = self.df['surface'].cat.set_categories(self.surfaces.df['surface'].values)
 
         self.init_dependent_properties()
 
@@ -161,10 +161,10 @@ class Orientations(GeometricData):
         
         # create new pandas categories from slef.df.['surface']
         self.df['surface'] = self.df['surface'].astype('category', copy=True)
-        self.df['surface'].cat.set_categories(self.surfaces.df['surface'].values, inplace=True)
+        self.df['surface'] = self.df['surface'].cat.set_categories(self.surfaces.df['surface'].values)
 
         self.df['series'] = self.df['series'].astype('category', copy=True)
-        self.df['series'].cat.set_categories(self.surfaces.df['series'].cat.categories, inplace=True)
+        self.df['series'] = self.df['series'].cat.set_categories(self.surfaces.df['series'].cat.categories)
 
         self.map_data_from_surfaces(self.surfaces, 'series', idx=idx)
         self.map_data_from_surfaces(self.surfaces, 'id', idx=idx)

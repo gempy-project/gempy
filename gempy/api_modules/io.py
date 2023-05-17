@@ -183,9 +183,8 @@ def _load_orientations(cat_series, cat_surfaces, geo_model, name, path):
                                                     'series': 'category',
                                                     'id': 'int64',
                                                     'order_series': 'int64'})
-    geo_model._orientations.df['surface'].cat.set_categories(cat_surfaces,
-                                                             inplace=True)
-    geo_model._orientations.df['series'].cat.set_categories(cat_series, inplace=True)
+    geo_model._orientations.df['surface'] = geo_model._orientations.df['surface'].cat.set_categories(cat_surfaces)
+    geo_model._orientations.df['series'] = geo_model._orientations.df['series'].cat.set_categories(cat_series)
 
     try:
         geo_model._orientations.df['smooth']
@@ -207,7 +206,7 @@ def _load_surfaces(cat_series, geo_model, name, path):
         ordered=False)
     geo_model._surfaces.sort_surfaces()
     geo_model._surfaces.colors.generate_colordict()
-    geo_model._surfaces.df['series'].cat.set_categories(cat_series, inplace=True)
+    geo_model._surfaces.df['series'] = geo_model._surfaces.df['series'].cat.set_categories(cat_series)
     try:
         geo_model._surfaces.df['isActive']
     except KeyError:
