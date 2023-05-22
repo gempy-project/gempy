@@ -20,11 +20,10 @@ setup(
         'seaborn>=0.9',
         'networkx',
         'scikit-image>=0.17',
+        'scikit-learn',
         'pyvista>=0.25',
-        'pyvistaqt',
         'pyqt5',
         'iPython',
-        'scikit-learn',
         'xarray'
     ],
     url='https://github.com/cgre-aachen/gempy',

@@ -17,7 +17,5 @@ mplstereonet
 welly
 # gdal # install gdal with conda! `conda install gdal`
 
-sklearn
-
 # Subsurface
 subsurface
