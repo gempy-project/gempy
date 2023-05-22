@@ -1,8 +1,8 @@
 import os
 import pytest
 
-IN_GITHUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
-
+#IN_GITHUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
+IN_GITHUB_ACTIONS = True
 
 import gempy as gp
 from gempy import Project

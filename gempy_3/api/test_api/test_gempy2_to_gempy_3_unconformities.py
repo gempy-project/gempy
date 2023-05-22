@@ -10,7 +10,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pytest
 
-IN_GITHUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
+# IN_GITHUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
+IN_GITHUB_ACTIONS = True
 
 if not IN_GITHUB_ACTIONS:
     import gempy_engine
