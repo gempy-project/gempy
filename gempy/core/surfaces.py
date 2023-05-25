@@ -354,6 +354,7 @@ class Surfaces(object):
         self.reset_order_surfaces()
         self.sort_surfaces()
         self.set_basement()
+
         return self
 
     # endregion

@@ -621,9 +621,8 @@ class ImplicitCoKriging(object):
         """
         self._stack.modify_order_series(new_value, idx)
 
-        self._surfaces.df['series'].cat.reorder_categories(
-            np.asarray(self._stack.df.index),
-            ordered=False, inplace=True)
+        self._surfaces.df['series'] = self._surfaces.df['series'].cat.reorder_categories(
+            np.asarray(self._stack.df.index), ordered=False)
 
         self._surfaces.sort_surfaces()
         self._surfaces.set_basement()
