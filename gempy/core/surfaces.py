@@ -326,11 +326,11 @@ class Surfaces(object):
                         s.append(k)
                         f.append(form)
 
-                new_series_mapping = pn.DataFrame([pn.Categorical(s, self.series.df.index)],
-                                                  f, columns=['series'])
+                #new_series_mapping = pn.DataFrame([pn.Categorical(s, self.series.df.index)],
+                #                                  f, columns=['series'])
                 # with pandas 2.0.1 something along the lines of
-                new_series_mapping = pn.DataFrame(list(zip(pn.Categorical(s, self.series.df.index),
-                                                           f)), columns=['series'])
+                new_series_mapping = pn.DataFrame(list(zip(pn.Categorical(s, self.series.df.index))),
+                                                 index=f, columns=['series'])
 
             elif isinstance(mapping_object, pn.Categorical):
                 # This condition is for the case we have surface on the index and in 'series' the category
