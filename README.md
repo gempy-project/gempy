@@ -37,7 +37,7 @@ For more information, refer to the [installation documentation](https://docs.gem
 
 ## Requirements
 
-THe following versions are required/strongly recommended for the main dependencies of GemPy (as of June 2023):
+The following versions are required/strongly recommended for the main dependencies of GemPy (as of June 2023):
 - python>=3.10
 - pandas>=2.0
 - matplotlib>=3.7
