@@ -1,5 +1,7 @@
 import gempy as gp
 import pyvista as pv
+import matplotlib as mpl
+mpl.use('Agg')
 import matplotlib.pyplot as plt
 import warnings
 
