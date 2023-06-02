@@ -5,6 +5,8 @@ import sys, os
 
 sys.path.append("../..")
 import gempy
+import matplotlib as mpl
+mpl.use('Agg')
 import matplotlib.pyplot as plt
 
 input_path = os.path.dirname(__file__) + '/../input_data'

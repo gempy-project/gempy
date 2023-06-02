@@ -157,10 +157,8 @@ def _load_surface_points(cat_series, cat_surfaces, geo_model, name, path):
                                                       'series': 'category',
                                                       'id': 'int64',
                                                       'order_series': 'int64'})
-    geo_model._surface_points.df['surface'].cat.set_categories(cat_surfaces,
-                                                               inplace=True)
-    geo_model._surface_points.df['series'].cat.set_categories(cat_series,
-                                                              inplace=True)
+    geo_model._surface_points.df['surface'] = geo_model._surface_points.df['surface'].cat.set_categories(cat_surfaces)
+    geo_model._surface_points.df['series'] = geo_model._surface_points.df['series'].cat.set_categories(cat_series)
     # Code to add smooth columns for models saved before gempy 2.0bdev4
     try:
         geo_model._surface_points.df['smooth']
@@ -183,9 +181,8 @@ def _load_orientations(cat_series, cat_surfaces, geo_model, name, path):
                                                     'series': 'category',
                                                     'id': 'int64',
                                                     'order_series': 'int64'})
-    geo_model._orientations.df['surface'].cat.set_categories(cat_surfaces,
-                                                             inplace=True)
-    geo_model._orientations.df['series'].cat.set_categories(cat_series, inplace=True)
+    geo_model._orientations.df['surface'] = geo_model._orientations.df['surface'].cat.set_categories(cat_surfaces)
+    geo_model._orientations.df['series'] = geo_model._orientations.df['series'].cat.set_categories(cat_series)
 
     try:
         geo_model._orientations.df['smooth']
@@ -207,7 +204,7 @@ def _load_surfaces(cat_series, geo_model, name, path):
         ordered=False)
     geo_model._surfaces.sort_surfaces()
     geo_model._surfaces.colors.generate_colordict()
-    geo_model._surfaces.df['series'].cat.set_categories(cat_series, inplace=True)
+    geo_model._surfaces.df['series'] = geo_model._surfaces.df['series'].cat.set_categories(cat_series)
     try:
         geo_model._surfaces.df['isActive']
     except KeyError:
@@ -228,8 +225,8 @@ def _load_stack(geo_model, name, path):
     series_index = pn.CategoricalIndex(geo_model._stack.df.index.values)
     # geo_model.series.df.index = pn.CategoricalIndex(series_index)
     geo_model._stack.df.index = series_index
-    geo_model._stack.df['BottomRelation'].cat.set_categories(
-        ['Erosion', 'Onlap', 'Fault'], inplace=True)
+    geo_model._stack.df['BottomRelation'] = geo_model._stack.df['BottomRelation'].cat.set_categories(
+        ['Erosion', 'Onlap', 'Fault'])
     try:
         geo_model._stack.df['isActive']
     except KeyError:
@@ -259,15 +256,14 @@ def _load_additional_data(geo_model, name, path):
                                                                'aesara_optimizer': 'category',
                                                                'device': 'category',
                                                                'verbosity': object})
-    geo_model._additional_data.options.df['dtype'].cat.set_categories(
-        ['float32', 'float64'], inplace=True)
-    geo_model._additional_data.options.df['aesara_optimizer'].cat.set_categories(
-        ['fast_run', 'fast_compile'],
-        inplace=True)
-    geo_model._additional_data.options.df['device'].cat.set_categories(
-        ['cpu', 'cuda'], inplace=True)
-    geo_model._additional_data.options.df['output'].cat.set_categories(
-        ['geology', 'gradients'], inplace=True)
+    geo_model._additional_data.options.df['dtype'] = geo_model._additional_data.options.df['dtype'].cat.set_categories(
+        ['float32', 'float64'])
+    geo_model._additional_data.options.df['aesara_optimizer'] = geo_model._additional_data.options.df['aesara_optimizer'].cat.set_categories(
+        ['fast_run', 'fast_compile'])
+    geo_model._additional_data.options.df['device'] = geo_model._additional_data.options.df['device'].cat.set_categories(
+        ['cpu', 'cuda'])
+    geo_model._additional_data.options.df['output'] = geo_model._additional_data.options.df['output'].cat.set_categories(
+        ['geology', 'gradients'])
     geo_model._additional_data.options.df.loc['values', 'verbosity'] = None
 
 

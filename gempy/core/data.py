@@ -31,9 +31,9 @@ class Options(object):
                               'aesara_optimizer': 'category', 'device': 'category',
                               'verbosity': object})
 
-        self.df['dtype'].cat.set_categories(['float32', 'float64'], inplace=True)
-        self.df['aesara_optimizer'].cat.set_categories(['fast_run', 'fast_compile'], inplace=True)
-        self.df['device'].cat.set_categories(['cpu', 'cuda'], inplace=True)
+        self.df['dtype'] = self.df['dtype'].cat.set_categories(['float32', 'float64'])
+        self.df['aesara_optimizer'] = self.df['aesara_optimizer'].cat.set_categories(['fast_run', 'fast_compile'])
+        self.df['device'] = self.df['device'].cat.set_categories(['cpu', 'cuda'])
 
         self.default_options()
 

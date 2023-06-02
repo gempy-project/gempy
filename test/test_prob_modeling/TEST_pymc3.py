@@ -6,6 +6,8 @@ pm = pytest.importorskip("rgeomod")
 # import pymc as pm
 import arviz as az
 import numpy as np
+import matplotlib as mpl
+mpl.use('Agg')
 import matplotlib.pyplot as plt
 import aesara
 np.random.seed(4003)

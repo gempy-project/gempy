@@ -42,7 +42,7 @@ class GeometricData(object):
         self.df['series'] = 'Default series'
         self.df['series'] = self.df['series'].astype('category', copy=True)
 
-        self.df['series'].cat.set_categories(self.surfaces.df['series'].cat.categories, inplace=True)
+        self.df['series'] = self.df['series'].cat.set_categories(self.surfaces.df['series'].cat.categories)
 
         # id
         self.df['id'] = np.nan
@@ -80,12 +80,12 @@ class GeometricData(object):
         Args:
             series (:class:`Series`): [s0]
         """
-        self.df['series'].cat.set_categories(series.df.index, inplace=True)
+        self.df['series'] = self.df['series'].cat.set_categories(series.df.index)
         return True
 
     def update_series_category(self):
         """Update the series categorical columns with the series categories of the :class:`Surfaces` attribute."""
-        self.df['series'].cat.set_categories(self.surfaces.df['series'].cat.categories, inplace=True)
+        self.df['series'] = self.df['series'].cat.set_categories(self.surfaces.df['series'].cat.categories)
 
         return True
 
@@ -98,7 +98,7 @@ class GeometricData(object):
 
         """
 
-        self.df['surface'].cat.set_categories(surfaces.df['surface'], inplace=True)
+        self.df['surface'] = self.df['surface'].cat.set_categories(surfaces.df['surface'])
         return True
 
     # @_setdoc_pro(Series.__doc__)
@@ -126,7 +126,7 @@ class GeometricData(object):
 
         if type(self.df['order_series'].dtype) is pn.CategoricalDtype:
 
-            self.df['order_series'].cat.remove_unused_categories(inplace=True)
+            self.df['order_series'] = self.df['order_series'].cat.remove_unused_categories()
         return self
 
     @_setdoc_pro(Surfaces.__doc__)
@@ -165,7 +165,7 @@ class GeometricData(object):
         # Check is self.df['surface'] is a category
         if not isinstance(self.df['surface'].dtype, pd.CategoricalDtype):
             self.df['surface'] = self.df['surface'].astype('category', copy=True)
-            self.df['surface'].cat.set_categories(self.surfaces.df['surface'].values, inplace=True)
+            self.df['surface'] = self.df['surface'].cat.set_categories(self.surfaces.df['surface'].values)
 
         # Check if elements in surface are categories in self.df['surface'] and if not add them
         # for s in surface:

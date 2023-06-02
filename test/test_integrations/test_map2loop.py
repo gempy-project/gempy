@@ -2,6 +2,8 @@ import gempy as gp
 import numpy as np
 import pandas as pd
 import pytest
+import matplotlib as mpl
+mpl.use('Agg')
 import matplotlib.pyplot as plt
 import os
 

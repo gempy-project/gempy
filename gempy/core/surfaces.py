@@ -48,7 +48,7 @@ class Surfaces(object):
         if (np.array(sys.version_info[:2]) <= np.array([3, 6])).all():
             self.df: pn.DataFrame
 
-        self.df['series'].cat.add_categories(['Default series'], inplace=True)
+        self.df['series'] = self.df['series'].cat.add_categories(['Default series'])
         if surface_names is not None:
             self.set_surfaces_names(surface_names)
 
@@ -64,7 +64,7 @@ class Surfaces(object):
     def _repr_html_(self):
         c_ = self.df.columns[~(self.df.columns.isin(self._columns_vis_drop))]
 
-        return self.df[c_].style.applymap(self.background_color, subset=['color']).render()
+        return self.df[c_].style.applymap(self.background_color, subset=['color']).to_html()
 
     @property
     def properties_val(self):
@@ -312,7 +312,7 @@ class Surfaces(object):
         """
 
         # Updating surfaces['series'] categories
-        self.df['series'].cat.set_categories(self.series.df.index, inplace=True)
+        self.df['series'] = self.df['series'].cat.set_categories(self.series.df.index)
         # TODO Fixing this. It is overriding the formations already mapped
         if mapping_object is not None:
             # If none is passed and series exists we will take the name of the first series as a default
@@ -326,8 +326,8 @@ class Surfaces(object):
                         s.append(k)
                         f.append(form)
 
-                new_series_mapping = pn.DataFrame([pn.Categorical(s, self.series.df.index)],
-                                                  f, columns=['series'])
+                new_series_mapping = pn.DataFrame(list(zip(pn.Categorical(s, self.series.df.index))),
+                                                 index=f, columns=['series'])
 
             elif isinstance(mapping_object, pn.Categorical):
                 # This condition is for the case we have surface on the index and in 'series' the category
@@ -351,6 +351,7 @@ class Surfaces(object):
         self.reset_order_surfaces()
         self.sort_surfaces()
         self.set_basement()
+
         return self
 
     # endregion

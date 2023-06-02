@@ -2,6 +2,8 @@ import pytest
 from gempy.assets import topology as tp
 import numpy as np
 import gempy as gp
+import matplotlib as mpl
+mpl.use('Agg')
 import matplotlib.pyplot as plt
 
 

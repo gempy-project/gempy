@@ -60,7 +60,7 @@ jobs:
 
       - name: Run tests with pytest
         run: |
-          pytest
+          pytest --ignore-glob=/home/runner/work/gempy/gempy/gempy_3/api/test*_gempy3.py
 
   testing_pip:
     name: Pip install ${{ matrix.case.os }} py${{ matrix.case.python-version }} ${{ matrix.case.name }}
@@ -108,4 +108,4 @@ jobs:
 
       - name: Run tests with pytest
         run: |
-          pytest
+          pytest --ignore-glob=/home/runner/work/gempy/gempy/gempy_3/api/test*_gempy3.py

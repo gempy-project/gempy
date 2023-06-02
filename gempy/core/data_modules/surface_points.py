@@ -63,7 +63,7 @@ class SurfacePoints(GeometricData):
             self.df['surface'] = surface
 
         self.df['surface'] = self.df['surface'].astype('category', copy=True)
-        self.df['surface'].cat.set_categories(self.surfaces.df['surface'].values, inplace=True)
+        self.df['surface'] = self.df['surface'].cat.set_categories(self.surfaces.df['surface'].values)
 
         # Choose types
         self.init_dependent_properties()
@@ -128,10 +128,10 @@ class SurfacePoints(GeometricData):
         self.df.loc[idx, ['smooth']] = 1e-6
         
         self.df['surface'] = self.df['surface'].astype('category', copy=True)
-        self.df['surface'].cat.set_categories(self.surfaces.df['surface'].values, inplace=True)
+        self.df['surface'] = self.df['surface'].cat.set_categories(self.surfaces.df['surface'].values)
 
         self.df['series'] = self.df['series'].astype('category', copy=True)
-        self.df['series'].cat.set_categories(self.surfaces.df['series'].cat.categories, inplace=True)
+        self.df['series'] = self.df['series'].cat.set_categories(self.surfaces.df['series'].cat.categories)
 
         self.map_data_from_surfaces(self.surfaces, 'series', idx=idx)
         self.map_data_from_surfaces(self.surfaces, 'id', idx=idx)

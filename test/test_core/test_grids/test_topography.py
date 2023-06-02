@@ -2,6 +2,8 @@ import os
 import sys
 
 import gempy as gp
+import matplotlib as mpl
+mpl.use('Agg')
 import matplotlib.pyplot as plt
 
 from gempy.core.grid_modules.create_topography import GDAL_IMPORT

@@ -1,24 +1,31 @@
 import os
+import pytest
+
+#IN_GITHUB_ACTIONS = os.getenv("GITHUB_ACTIONS") == "true"
+IN_GITHUB_ACTIONS = True
+
 import gempy as gp
-import gempy_engine
 from gempy import Project
 from gempy.plot.vista import GemPyToVista
 from gempy_3.api.gp2_to_gp3_input import gempy_project_to_interpolation_input, gempy_project_to_input_data_descriptor, gempy_project_to_interpolation_options
 from gempy_3.api.gp3_to_gp2_output import set_gp3_solutions_to_gp2_solution
 from gempy_3.api.test_api._gp2togp3_test_utils import create_interpolator, load_model, map_sequential_pile
-from gempy_engine.config import AvailableBackends
-from gempy_engine.core.backend_tensor import BackendTensor
-from gempy_engine.core.data import InterpolationOptions
-from gempy_engine.core.data.input_data_descriptor import InputDataDescriptor
-from gempy_engine.core.data.interpolation_input import InterpolationInput
-from gempy_engine.core.data.solutions import Solutions
+
+if not IN_GITHUB_ACTIONS:
+    import gempy_engine
+    from gempy_engine.config import AvailableBackends
+    from gempy_engine.core.backend_tensor import BackendTensor
+    from gempy_engine.core.data import InterpolationOptions
+    from gempy_engine.core.data.input_data_descriptor import InputDataDescriptor
+    from gempy_engine.core.data.interpolation_input import InterpolationInput
+    from gempy_engine.core.data.solutions import Solutions
 
 input_path = os.path.dirname(__file__) + '/../../../test/input_data'
 import sys  # These two lines are necessary only if GemPy is not installed
 
 sys.path.append("../..")
 
-
+@pytest.mark.skipif(IN_GITHUB_ACTIONS, reason="Only runs once gempy 3 is published.")
 def test_set_gempy3_gempy2_bridge():
     """
     This test is based on gempy/test/test_core/test_model.py:test_compute_model

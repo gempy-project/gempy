@@ -11,7 +11,7 @@ setup(
     packages=find_packages(exclude=('test', 'docs', 'examples')),
     include_package_data=True,
     install_requires=[
-        'pandas',
+        'pandas==2.0.1',
         'aesara',
         'pymc',
         'matplotlib',
