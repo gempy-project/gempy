@@ -24,14 +24,14 @@ jobs:
       matrix:
         os: [ ubuntu, ]  # macos, windows]  # Only Linux currently.
         case:
-          - python-version: 3.10
+          - python-version: '3.10'
             name: basic
             os: ubuntu
 
     env:
       DISPLAY: ':99.0'
       PYVISTA_OFF_SCREEN: 'True'
-      ALLOW_PLOTTING: true
+      ALLOW_PLOTTING: false
       SHELLOPTS: 'errexit:pipefail'
       OS: ${{ matrix.case.os }}
       PYTHON: ${{ matrix.case.python-version }}
@@ -54,6 +54,7 @@ jobs:
 
       - name: Install dependencies
         run: |
+            wait 30
             conda install gdal aesara pymc -c conda-forge
             python -m pip install --upgrade pip
             pip install -r dev-requirements.txt
@@ -74,14 +75,14 @@ jobs:
       matrix:
         os: [ ubuntu, ]  # macos, windows]  # Only Linux currently.
         case:
-          - python-version: 3.10
+          - python-version: '3.10'
             name: basic
             os: ubuntu
 
     env:
       DISPLAY: ':99.0'
       PYVISTA_OFF_SCREEN: 'True'
-      ALLOW_PLOTTING: true
+      ALLOW_PLOTTING: false
       SHELLOPTS: 'errexit:pipefail'
       OS: ${{ matrix.case.os }}
       PYTHON: ${{ matrix.case.python-version }}
