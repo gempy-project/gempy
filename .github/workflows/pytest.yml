@@ -54,7 +54,6 @@ jobs:
 
       - name: Install dependencies
         run: |
-            wait 30
             conda install gdal aesara pymc -c conda-forge
             python -m pip install --upgrade pip
             pip install -r dev-requirements.txt
