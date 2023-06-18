@@ -373,7 +373,9 @@ class GemPyToVista(WidgetsCallbacks, RenderChanges):
             r = self.surface_points_widgets
         else:
             poly = pv.PolyData(surface_points[["X", "Y", "Z"]].values)
-            poly['id'] = surface_points['id'] - 1  # TODO: Check if this is the final solution
+            
+            # TODO: Check if this is the final solution
+            poly['id'] = surface_points['id'] - 1  # This seems to fix the surface points colors 
             self.surface_points_mesh = poly
             cmap = mcolors.ListedColormap(list(self._get_color_lot(is_faults=True, is_basement=True)))
             self.surface_points_actor = self.p.add_mesh(

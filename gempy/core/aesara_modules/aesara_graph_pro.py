@@ -289,7 +289,7 @@ class aesaraGraphPro(object):
             self.sig_slope = aesara.shared(np.array(50, dtype=dtype),
                                            'Sigmoid slope for gradient')
         else:
-            self.sig_slope = aesara.shared(np.array(50000, dtype=dtype),
+            self.sig_slope = aesara.shared(np.array(1000000, dtype=dtype),
                                            'Sigmoid slope')
             self.not_l = aesara.shared(np.array(50., dtype=dtype), 'Sigmoid Outside')
             self.ellipse_factor_exponent = aesara.shared(np.array(2., dtype=dtype),
