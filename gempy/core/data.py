@@ -27,9 +27,9 @@ class Options(object):
                            index=['values'],
                            columns=['dtype', 'output', 'aesara_optimizer', 'device', 'verbosity'])
 
-        self.df = df_.astype({'dtype': 'category', 'output': 'category',
+        self.df = df_.astype({'dtype'           : 'category', 'output': 'category',
                               'aesara_optimizer': 'category', 'device': 'category',
-                              'verbosity': object})
+                              'verbosity'       : object})
 
         self.df['dtype'] = self.df['dtype'].cat.set_categories(['float32', 'float64'])
         self.df['aesara_optimizer'] = self.df['aesara_optimizer'].cat.set_categories(['fast_run', 'fast_compile'])
@@ -102,8 +102,8 @@ class KrigingParameters(object):
                                     ])
 
         self.df = df_.astype({'drift equations': object,
-                              'range': object,
-                              '$C_o$': object})
+                              'range'          : object,
+                              '$C_o$'          : object})
         self.set_default_range()
         self.set_default_c_o()
         self.set_u_grade()
@@ -147,9 +147,10 @@ class KrigingParameters(object):
                 print('u_grade length must be the same as the number of series')
 
         else:
-            self.df = self.df.astype({'drift equations': object,
-                                  'range': object,
-                                  '$C_o$': object})
+            self.df = self.df.astype({
+                'drift equations': object,
+                'range'          : object,
+                '$C_o$'          : object})
 
             self.df.at['values', attribute] = value
 

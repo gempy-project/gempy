@@ -1277,8 +1277,7 @@ class ImplicitCoKriging(object):
     @_setdoc(KrigingParameters.modify_kriging_parameters.__doc__, indent=False,
              position='beg')
     def modify_kriging_parameters(self, attribute, value, **kwargs):
-        self._additional_data.kriging_data.modify_kriging_parameters(attribute,
-                                                                     value, **kwargs)
+        self._additional_data.kriging_data.modify_kriging_parameters(attribute, value, **kwargs)
         self._interpolator.set_aesara_shared_kriging()
         if attribute == 'drift equations':
             self._interpolator.set_initial_results()
