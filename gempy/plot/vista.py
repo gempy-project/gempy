@@ -392,7 +392,7 @@ class GemPyToVista(WidgetsCallbacks, RenderChanges):
 
     def plot_orientations(self, surfaces: Union[str, Iterable[str]] = 'all',
                           orientations: pd.DataFrame = None,
-                          clear=True, arrow_size=10, **kwargs):
+                          clear=True, **kwargs):
         """
 
         Args:
@@ -402,6 +402,8 @@ class GemPyToVista(WidgetsCallbacks, RenderChanges):
             arrow_size:
             **kwargs:
         """
+        arrow_size = kwargs.get('arrow_size', 10)
+        
         if orientations is None:
             orientations = self._select_surfaces_data(self.model._orientations.df, surfaces)
 
@@ -425,7 +427,8 @@ class GemPyToVista(WidgetsCallbacks, RenderChanges):
             min_axes = np.min(np.diff(self.extent)[[0, 2, 4]])
 
             arrows = poly.glyph(orient='vectors', scale=False,
-                                factor=min_axes / (100 / arrow_size))
+                                factor=min_axes / (100 / arrow_size)
+                                )
 
             cmap = mcolors.ListedColormap(list(self._get_color_lot(is_faults=True, is_basement=True)))
             self.orientations_actor = self.p.add_mesh(arrows, cmap=cmap,

@@ -475,7 +475,6 @@ class Plot2D:
         aspect = np.subtract(*ax.get_ylim()) / np.subtract(*ax.get_xlim())
         min_axis = 'width' if aspect < 1 else 'height'
 
-        # Eli options
         ax.quiver(sel_ori[x], sel_ori[y], sel_ori[Gx], sel_ori[Gy],
                   pivot="tail", scale_units=min_axis, scale=30, color=sel_ori['surface'].map(self._color_lot),
                   edgecolor='k', headwidth=8, linewidths=1, zorder=102)

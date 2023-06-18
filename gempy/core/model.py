@@ -1011,8 +1011,7 @@ class ImplicitCoKriging(object):
         surface_name = kwargs.get('surface_name') if 'surface_name' in kwargs \
             else self._check_possible_column_names(table,
                                                    ['surface', 'Surface', 'surfaces',
-                                                    'surfaces', 'formations',
-                                                    'formation'])
+                                                    'surfaces', 'formations', 'formation'])
         update_surfaces = kwargs.get('update_surfaces', True)
 
         if update_surfaces is True:
