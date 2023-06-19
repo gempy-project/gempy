@@ -1,6 +1,6 @@
 
 from matplotlib.cm import ScalarMappable as SM
-from gempy.plot._visualization_2d import PlotData2D
+from plot import PlotData2D
 import numpy as np
 import os
 import itertools as it

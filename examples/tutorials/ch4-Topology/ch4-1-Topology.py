@@ -6,7 +6,6 @@ Chapter 4: Analyzing Geomodel Topology
 import gempy as gp
 from gempy.assets import topology as tp
 
-import numpy as np
 import matplotlib.pyplot as plt
 
 import warnings
@@ -141,7 +140,7 @@ tp.plot_adjacency_matrix(geo_model, M)
 # 
 
 # %% 
-from gempy.plot._vista import Vista
+from plot import Vista
 gpv = Vista(geo_model)
 gpv.plot_topology(edges, centroids)
 gpv.show()

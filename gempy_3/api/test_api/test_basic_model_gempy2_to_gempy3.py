@@ -6,10 +6,10 @@ IN_GITHUB_ACTIONS = True
 
 import gempy as gp
 from gempy import Project
-from gempy.plot.vista import GemPyToVista
+from plot import GemPyToVista
 from gempy_3.api.gp2_to_gp3_input import gempy_project_to_interpolation_input, gempy_project_to_input_data_descriptor, gempy_project_to_interpolation_options
 from gempy_3.api.gp3_to_gp2_output import set_gp3_solutions_to_gp2_solution
-from gempy_3.api.test_api._gp2togp3_test_utils import create_interpolator, load_model, map_sequential_pile
+from gempy_3.api.test_api._gp2togp3_test_utils import load_model, map_sequential_pile
 
 if not IN_GITHUB_ACTIONS:
     import gempy_engine
