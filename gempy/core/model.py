@@ -10,7 +10,7 @@ from .meta_data import MetaData
 from .data_modules.stack import Stack, Faults, Series
 from .interpolator import InterpolatorModel
 from .solution import Solution
-from plot.decorators import *
+from gempy_viewer.decorators import *
 from ..utils.meta import _setdoc, _setdoc_pro
 from ..utils.docstring import recompute_rf
 from .surfaces import Surfaces

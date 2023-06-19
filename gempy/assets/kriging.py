@@ -14,8 +14,8 @@ except ImportError:
 
 import numpy as np
 import pandas as pd
-from plot import _plot
-from plot import helpers, _visualization_2d
+from gempy_viewer import _plot
+from gempy_viewer import helpers, _visualization_2d
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 from copy import deepcopy

@@ -1,4 +1,4 @@
-from plot import visualization_2d as vv
+from gempy_viewer import visualization_2d as vv
 import numpy as np
 
 

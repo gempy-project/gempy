@@ -140,7 +140,7 @@ tp.plot_adjacency_matrix(geo_model, M)
 # 
 
 # %% 
-from plot import Vista
+from gempy_viewer import Vista
 gpv = Vista(geo_model)
 gpv.plot_topology(edges, centroids)
 gpv.show()

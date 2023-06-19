@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib as mpl
 mpl.use('Agg')
 import matplotlib.pyplot as plt
-from plot import GemPyToVista
+from gempy_viewer import GemPyToVista
 
 input_path = os.path.dirname(__file__) + '/../../notebooks/data'
 
@@ -19,7 +19,7 @@ class TestVista:
         Args:
             one_fault_model:
         """
-        from plot import GemPyToVista
+        from gempy_viewer import GemPyToVista
 
         return GemPyToVista(one_fault_model_no_interp,
                             #plotter_type='background')
@@ -31,7 +31,7 @@ class TestVista:
         Args:
             one_fault_model:
         """
-        from plot import GemPyToVista
+        from gempy_viewer import GemPyToVista
 
         return GemPyToVista(one_fault_model_no_interp,
                             plotter_type='background')
@@ -42,7 +42,7 @@ class TestVista:
         Args:
             one_fault_model_solution:
         """
-        from plot import GemPyToVista
+        from gempy_viewer import GemPyToVista
 
         return GemPyToVista(one_fault_model_solution, plotter_type='basic',
                             off_screen=True
@@ -55,7 +55,7 @@ class TestVista:
             one_fault_model_solution:
         """
 
-        from plot import GemPyToVista
+        from gempy_viewer import GemPyToVista
         one_fault_model_solution.update_additional_data()
         one_fault_model_solution.update_to_interpolator()
         one_fault_model_solution.set_topography()
