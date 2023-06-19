@@ -1,14 +1,11 @@
 import pytest
 import sys, os
 
-from gempy.addons.gempy_to_rexfile import GemPyToRex
-
 sys.path.append("../../..")
 import gempy
 
 request = pytest.importorskip("requests")
-from gempy.addons import gempy_to_rexfile as gtr
-from gempy.addons import rex_api
+from gempy_plugins.addons import gempy_to_rexfile as gtr, rex_api
 
 pyqrcode = pytest.importorskip("pyqrcode")
 input_path = os.path.dirname(__file__) + '/../input_data'

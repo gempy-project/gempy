@@ -1,7 +1,7 @@
 import pytest
-import sys, os
+import os
 
-from gempy.addons.gempy_to_rexfile import GemPyToRex, geomodel_to_rex
+from gempy_plugins.addons.gempy_to_rexfile import GemPyToRex, geomodel_to_rex
 
 import gempy
 

@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import os
 
 # Input files
-from gempy.addons.map2gempy import loop2gempy
+from gempy_plugins.addons.map2gempy import loop2gempy
 from gempy.core.grid_modules.create_topography import GDAL_IMPORT
 
 root = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/data/input_data/turner_syncline/'

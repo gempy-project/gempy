@@ -20,7 +20,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # new for this
-from gempy.assets import kriging
+from gempy_plugins.assets import kriging
 
 np.random.seed(5555)
 

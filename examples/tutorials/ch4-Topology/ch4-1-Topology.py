@@ -4,7 +4,7 @@ Chapter 4: Analyzing Geomodel Topology
 
 """
 import gempy as gp
-from gempy.assets import topology as tp
+from gempy_plugins.assets import topology as tp
 
 import matplotlib.pyplot as plt
 

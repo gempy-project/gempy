@@ -9,7 +9,7 @@ GeMpy/__pycache__/__init__.cpython-36.pyc
 GeMpy/__pycache__/geomodeller_xml_obj.cpython-36.pyc
 GeMpy/geomodeller_xml_obj.py.bak
 GeMpy/qgrid/__pycache__/
-gempy/addons/RexCloud_Api_key.txt
+../gempy_plugins/gempy_plugins/addons/RexCloud_Api_key.txt
 docs/source/Notebooks/Erosion.rst
 docs/source/Notebooks/Example_1_Sandstone_files/Example_1_Sandstone_39_0.png
 docs/source/Notebooks/Example_1_Sandstone_files/Example_1_Sandstone_41_0.png

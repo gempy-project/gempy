@@ -32,7 +32,7 @@ the forward gravity by simply operate:
 # %%
 
 # Importing gempy
-from gempy.assets.geophysics import GravityPreprocessing
+from gempy_plugins.assets.geophysics import GravityPreprocessing
 
 # Aux imports
 import numpy as np
