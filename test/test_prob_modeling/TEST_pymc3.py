@@ -1,6 +1,6 @@
 import os
 import gempy as gp
-from bayesian.aesara_op import GemPyThOp
+from gempy_probability.aesara_op import GemPyThOp
 import pytest
 pm = pytest.importorskip("rgeomod")
 # import pymc as pm

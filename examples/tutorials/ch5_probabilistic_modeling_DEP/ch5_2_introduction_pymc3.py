@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 import pymc as pm
 import arviz as az
 
-from bayesian import plot_posterior as pp
+from gempy_probability import plot_posterior as pp
 from importlib import reload
 from matplotlib.ticker import StrMethodFormatter
 

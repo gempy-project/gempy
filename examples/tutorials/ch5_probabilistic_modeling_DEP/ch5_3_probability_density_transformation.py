@@ -6,8 +6,8 @@
 
 # Importing GemPy
 import gempy as gp
-from bayesian import plot_posterior as pp
-from bayesian.plot_posterior import default_red, default_blue
+from gempy_probability import plot_posterior as pp
+from gempy_probability.plot_posterior import default_red, default_blue
 
 # Importing auxiliary libraries
 import numpy as np
