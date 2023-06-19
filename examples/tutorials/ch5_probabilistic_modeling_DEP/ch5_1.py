@@ -14,7 +14,7 @@ os.environ["aesara_FLAGS"] = "mode=FAST_RUN,device=cuda"
 
 
 import gempy as gp
-from gempy.bayesian.fields import compute_prob, calculate_ie_masked
+from bayesian.fields import compute_prob, calculate_ie_masked
 import numpy as np
 import matplotlib.pyplot as plt
 

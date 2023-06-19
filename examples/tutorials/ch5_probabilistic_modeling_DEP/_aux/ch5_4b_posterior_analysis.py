@@ -106,7 +106,7 @@ az.plot_joint(data, var_names=['depth_1', 'depth_2'])
 
 # %% 
 # !git pull
-from gempy.bayesian import plot_posterior as pp
+from bayesian import plot_posterior as pp
 
 from ipywidgets import interact
 
@@ -134,7 +134,7 @@ import numpy as np
 import imageio
 
 # !git pull
-from gempy.bayesian import plot_posterior as pp
+from bayesian import plot_posterior as pp
 
 # %% 
 p = pp.PlotPosterior(data)
