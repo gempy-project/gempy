@@ -9,7 +9,6 @@ import os
 
 # Input files
 from gempy.addons.map2gempy import loop2gempy
-from gempy.core.grid_modules.create_topography import GDAL_IMPORT
 
 root = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/data/input_data/turner_syncline/'
 root2 = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/data/input_data/australia/'
@@ -71,11 +70,11 @@ def test_map2loop2relmatrix():
 
 
 @pytest.mark.skipif(("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true") or
-                    ("GITHUBACTION" in os.environ and os.environ["GITHUBACTION"] == "true" or
-                     GDAL_IMPORT is False),
+                    ("GITHUBACTION" in os.environ and os.environ["GITHUBACTION"] == "true",
                     reason="Skipping this test on Travis CI. For some reason there is a linalg "
                            "error.")
 def test_loop2gempy2():
+    skipnorasterio = pytest.importorskip("rasterio")
     topo = fp2
     # topo = None
 
@@ -93,12 +92,11 @@ def test_loop2gempy2():
 
 
 @pytest.mark.skipif(("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true") or
-                    ("GITHUBACTION" in os.environ and os.environ["GITHUBACTION"] == "true" or 
-                     GDAL_IMPORT is False
-                     ),
+                    ("GITHUBACTION" in os.environ and os.environ["GITHUBACTION"] == "true"),
                     reason="Skipping this test on Travis CI. For some reason there is a linalg "
                            "error.")
 def test_map2loop_model_import_data():
+    skipnorasterio = pytest.importorskip("rasterio")
     geo_model = gp.create_model('test_map2Loop')
     gp.init_data(
         geo_model,
@@ -122,12 +120,11 @@ def test_map2loop_model_import_data():
 
 # skip test i
 @pytest.mark.skipif(("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true") or
-                    ("GITHUBACTION" in os.environ and os.environ["GITHUBACTION"] == "true" or
-                     GDAL_IMPORT is False
-                     ),
+                    ("GITHUBACTION" in os.environ and os.environ["GITHUBACTION"] == "true"),
                     reason="Skipping this test on Travis CI. For some reason there is a linalg "
                            "error.")
 def test_map2loop_model_no_faults():
+    skipnorasterio = pytest.importorskip("rasterio")
     # Location box
     bbox = (500000, 7490000, 545000, 7520000)
     model_base = -3200  # Original 3200

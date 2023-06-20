@@ -58,7 +58,7 @@ install:
   # Install subsurface
   - pip install subsurface
 
-  - conda install -c conda-forge gdal
+  - conda install -c conda-forge rasterio
 
   - python -c "import pyvista as pv;print(pv.Report())"
 

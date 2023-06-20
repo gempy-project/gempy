@@ -93,7 +93,7 @@ Dependencies
 
 Optional requirements:
 
-* gdal
+* rasterio
 * qgrid==1.3.0
 * pymc3
 * pyevtk
@@ -256,7 +256,7 @@ Windows installation guide (March 2020)
 
     ``$ pip install pyevtk``
 
-    ``$ conda install gdal``
+    ``$ conda install rasterio``
 
 
 **Note**\ :
@@ -349,7 +349,7 @@ It should work on MacOS 10.14 as well as 10.15 (Catalina).
 
     ``$ pip install pyevtk``
 
-    ``$ conda install gdal``
+    ``$ conda install rasterio``
 
 
 

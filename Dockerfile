@@ -83,7 +83,7 @@ RUN conda install --quiet --yes \
     && conda clean -tipsy
 
 # Install aesara
-RUN conda install aesara pymc gdal -c conda-forge 
+RUN conda install aesara pymc rasterio -c conda-forge 
 
 ENV MKL_THREADING_LAYER GNU
 
