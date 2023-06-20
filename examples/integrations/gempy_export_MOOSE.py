@@ -58,8 +58,8 @@ geo_model.surfaces
 # %% 
 # set up interpolator
 gp.set_interpolator(geo_model,
-                    compile_theano=True,
-                    theano_optimizer='fast_compile',
+                    compile_aesara=True,
+                    aesara_optimizer='fast_compile',
                     verbose=[])
 
 # %% 

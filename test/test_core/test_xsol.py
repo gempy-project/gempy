@@ -1,5 +1,7 @@
 import pytest
-from gempy.core.data import Surfaces
+
+import gempy.core.grid
+from gempy import Surfaces
 
 from gempy.core.data_modules.stack import Stack
 
@@ -9,13 +11,15 @@ import numpy as np
 from gempy.core.solution import Solution
 from gempy.core.xsolution import XSolution
 
+# tests skip if subsurface is not installed
+pytest.importorskip("subsurface")
 
 @pytest.fixture(scope='module')
 def a_grid():
     # Or we can init one of the default grids since the beginning by passing
     # the correspondant attributes
-    grid = gp.Grid(extent=[0, 2000, 0, 2000, -2000, 0],
-                   resolution=[50, 50, 50])
+    grid = gempy.core.grid.Grid(extent=[0, 2000, 0, 2000, -2000, 0],
+                                resolution=[50, 50, 50])
     grid.set_active('regular')
 
     grid.create_custom_grid(np.arange(12).reshape(-1, 3))

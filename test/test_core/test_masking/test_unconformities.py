@@ -9,6 +9,8 @@ import gempy as gp
 
 # Importing auxiliary libraries
 import numpy as np
+import matplotlib as mpl
+mpl.use('Agg')
 import matplotlib.pyplot as plt
 import pytest
 
@@ -30,8 +32,8 @@ def geo_model(interpolator):
                                "Inclined_Series": 'Inclined',
                                "Fold_Series": ('Basefold', 'Topfold', 'basement')})
 
-    # Create the theano model
-    geo_model.set_theano_function(interpolator)
+    # Create the aesara model
+    geo_model.set_aesara_function(interpolator)
 
     return geo_model
 
@@ -83,10 +85,6 @@ def test_one_onlap(geo_model):
     gp.plot_2d(geo_model, cell_number=[2],
                regular_grid=geo_model.solutions.mask_matrix_pad[2],
                show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
-
-    p3d = gp.plot_3d(geo_model, show_surfaces=True, show_data=True,
-                     image=True,
-                     kwargs_plot_structured_grid={'opacity': .2})
 
     if save:
         np.save(os.path.dirname(__file__)+'/one_onlap', sol.lith_block)

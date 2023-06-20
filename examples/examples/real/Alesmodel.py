@@ -65,8 +65,8 @@ geo_model.set_is_fault(['fault_right', 'fault_left', 'fault_lr'], change_color=T
 
 # %% 
 gp.set_interpolator(geo_model,
-                    output=['geology'], compile_theano=True,
-                    theano_optimizer='fast_run', dtype='float64',
+                    output=['geology'], compile_aesara=True,
+                    aesara_optimizer='fast_run', dtype='float64',
                     verbose=[])
 
 # %%

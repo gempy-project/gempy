@@ -36,14 +36,14 @@ geo_model = gp.init_data(geo_model, extent=[0, 791, 0, 200, -582, 0], resolution
 # %%
 # GemPy core code is written in Python. However for efficiency (and other
 # reasons) most of heavy computations happend in optimize compile code,
-# either C or CUDA for GPU. To do so, GemPy rely on the library theano. To
-# guarantee maximum optimization theano requires to compile the code for
+# either C or CUDA for GPU. To do so, GemPy rely on the library aesara. To
+# guarantee maximum optimization aesara requires to compile the code for
 # every Python kernel. The compilation is done by calling the following
 # line at any point (before computing the model):
 # 
 
 # %% 
-gp.set_interpolator(geo_model, theano_optimizer='fast_compile', verbose=[])
+gp.set_interpolator(geo_model, aesara_optimizer='fast_compile', verbose=[])
 
 # %%
 # Creating figure:
@@ -390,7 +390,7 @@ geo_model.set_centered_grid(centers=[[400, 0, 0]], resolution=[10, 10, 100], rad
 # 
 
 # %% 
-gp.set_interpolator(geo_model, output=['gravity'], theano_optimizer='fast_run')
+gp.set_interpolator(geo_model, output=['gravity'], aesara_optimizer='fast_run')
 
 # %%
 # But now additionally to the interpolation we also compute the forward

@@ -2,8 +2,11 @@ import os
 
 import pytest
 
+import gempy
 import gempy as gp
 import pooch
+
+from gempy.core.solution import xsolution_imported
 
 
 def test_load_model(recompute=False):
@@ -31,19 +34,24 @@ def test_save_model(one_fault_model_no_interp, tmpdir):
     gp.save_model(one_fault_model_no_interp, path=tmpdir)
 
 
+# skip test is subsurface is not installed
+@pytest.mark.skipif(not xsolution_imported, reason="Subsurface not installed")
 def test_save_model_solution(one_fault_model_topo_solution, tmpdir):
     """Save a model in a zip file with the default name and path"""
-    gp.save_model(one_fault_model_topo_solution,
-                  path=tmpdir,
-                  solution=True)
-    print('foo')
+    gp.save_model(
+        model=one_fault_model_topo_solution,
+        path=tmpdir,
+        solution=True
+    )
+    print('Done')
+
 
 def test_load_model_compressed():
     geo_model = gp.load_model(name="one_fault_model")
 
 
 def test_load_model_compressed_remote():
-    model_file = pooch.retrieve(url="https://github.com/cgre-aachen/gempy_data/raw/master/"
+    model_file = pooch.retrieve(url="https://github.com/cgre-aachen/gempy_data/raw/aesara_data/"
                                     "data/gempy_models/viz_3d.zip",
                                 known_hash=None)
 
@@ -59,7 +67,7 @@ def test_load_model_compressed_remote_fail():
 
 
 def test_load_model_compressed_remote2():
-    model_file = pooch.retrieve(url="https://github.com/cgre-aachen/gempy_data/raw/master/"
+    model_file = pooch.retrieve(url="https://github.com/cgre-aachen/gempy_data/raw/aesara_data/"
                                     "data/gempy_models/Onlap_relations.zip",
                                 known_hash=None)
 
@@ -79,7 +87,7 @@ def test_pooch():
         version_dev="master",
         # We'll load it from a file later
         registry={
-        "Tutorial_ch1-8_Onlap_relations_faults.csv": "19uheidhlkjdwhoiwuhc0uhcwljchw9ochwochw89dcgw9dcgwc"
-    },
+            "Tutorial_ch1-8_Onlap_relations_faults.csv": "19uheidhlkjdwhoiwuhc0uhcwljchw9ochwochw89dcgw9dcgwc"
+        },
     )
     print(goodboy)

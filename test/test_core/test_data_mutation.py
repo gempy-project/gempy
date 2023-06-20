@@ -12,7 +12,7 @@ mm.add_surfaces(['surface1', 'foo1', 'foo2', 'foo3'])
 
 
 def test_add_surface_points_raise_non_surface():
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError, match=r'.*surface passed does not exist in the pandas categories..*'):
         mm.add_surface_points(400, 300, -500, 'surface5')
 
 

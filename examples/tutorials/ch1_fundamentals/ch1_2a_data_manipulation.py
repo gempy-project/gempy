@@ -10,7 +10,14 @@ import gempy
 # Importing auxiliary libraries
 import numpy as np
 import pandas as pd
-pd.set_option('precision', 2)
+
+import gempy.core.grid
+import gempy.core.surfaces
+import gempy.core.data_modules.orientations
+import gempy.core.data_modules.scaling_system
+import gempy.core.data_modules.surface_points
+
+pd.set_option('display.precision', 2)
 
 # %%
 # Series
@@ -169,7 +176,7 @@ faults.set_fault_relation()
 # 
 
 # %% 
-surfaces = gp.Surfaces(series)
+surfaces = gempy.core.Surfaces.Surfaces(series)
 
 # %%
 # We can set any number of formations by passing a list with the names. By
@@ -364,7 +371,7 @@ surfaces.colors.change_colors(new_colors)
 # 
 
 # %% 
-surface_points = gempy.core.data_modules.geometric_data.SurfacePoints(surfaces)
+surface_points = gempy.core.data_modules.surface_points.SurfacePoints(surfaces)
 
 # %%
 surface_points
@@ -404,7 +411,7 @@ faults
 # 
 
 # %% 
-orientations = gempy.core.data_modules.geometric_data.Orientations(surfaces)
+orientations = gempy.core.data_modules.orientations.Orientations(surfaces)
 
 # %% 
 orientations
@@ -463,7 +470,7 @@ orientations.update_annotations()
 # 
 
 # %% 
-grid = gp.Grid()
+grid = gempy.core.grid.Grid()
 grid.create_regular_grid([0, 10, 0, 10, 0, 10], [50, 50, 50])
 
 # %% 
@@ -475,7 +482,7 @@ grid.values
 # 
 
 # %% 
-rescaling = gempy.core.data_modules.geometric_data.ScalingSystem(
+rescaling = gempy.core.data_modules.scaling_system.ScalingSystem(
     surface_points, orientations, grid)
 
 # %%
@@ -529,4 +536,4 @@ interp = gp.InterpolatorModel(surface_points, orientations, grid, surfaces, seri
 interp.compile_th_fn_geo()
 
 # %% 
-interp.print_theano_shared()
+interp.print_aesara_shared()

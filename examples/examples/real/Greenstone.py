@@ -38,8 +38,8 @@ geo_model.add_surface_values([2.61, 2.92, 3.1, 2.92, 2.61])
 
 # %% 
 gp.set_interpolator(geo_model,
-                    compile_theano=True,
-                    theano_optimizer='fast_compile',
+                    compile_aesara=True,
+                    aesara_optimizer='fast_compile',
                     verbose=[])
 
 # %% 

@@ -177,7 +177,7 @@ def init_data(geo_model: Project, extent: Union[list, ndarray] = None,
     """
 
     if extent is None or resolution is None:
-        warnings.warn('Regular grid won\'t be initialize, you will have to create a gridafterwards. See gempy.set_grid')
+        warnings.warn('Regular grid won\'t be initialized, you will have to create a grid afterwards. See gempy.set_grid')
     else:
         geo_model.set_regular_grid(extent, resolution)
 
@@ -288,7 +288,7 @@ def compute_model(model: Project, output=None, at: np.ndarray = None, compute_me
     i = model._interpolator.get_python_input_block(append_control=True, fault_drift=None)
     model._interpolator.reset_flow_control_initial_results(reset_weights, reset_scalar, reset_block)
 
-    sol = model._interpolator.theano_function(*i)
+    sol = model._interpolator.aesara_function(*i)
 
     if debug is True or set_solutions is False:
         return sol
@@ -307,7 +307,7 @@ def compute_model(model: Project, output=None, at: np.ndarray = None, compute_me
 
 
 def _check_valid_model_input(model):
-    if model._interpolator.theano_function is None:
+    if model._interpolator.aesara_function is None:
         raise ValueError('You need to compile graph before. '
                          'See `gempy.set_interpolator`.')
     if model._additional_data.structure_data.df.loc[

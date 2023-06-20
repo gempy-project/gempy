@@ -160,7 +160,7 @@ geological modeling methods.
 ``GemPy`` was designed from the ground up to support stochastic geological
 modeling for uncertainty analysis (e.g. Monte Carlo simulations, Bayesian
 inference). This was achieved by writing ``GemPy``'s core architecture
-using the numerical computation library `Theano <http://deeplearning.net/software/theano/>`_
+using the numerical computation library `aesara <http://deeplearning.net/software/aesara/>`_
 to couple it with the probabilistic programming
 framework `PyMC3 <https://pymc-devs.github.io/pymc3/notebooks/getting_started.html>`_.
 This enables the use of advanced sampling methods (e.g. Hamiltonian Monte
@@ -184,12 +184,12 @@ via PyMC will then result in different model realizations.
    -->
 
 
-Theano allows the automated computation of gradients, opening the door to
+aesara allows the automated computation of gradients, opening the door to
  the use of advanced gradient-based sampling methods
 coupling ``GemPy`` and
 `PyMC3 <https://pymc-devs.github.io/pymc3/notebooks/getting_started.html>`_
-for advanced stochastic modeling. Also, the use of Theano allows making
-use of GPUs through cuda (see the Theano documentation for more information.
+for advanced stochastic modeling. Also, the use of aesara allows making
+use of GPUs through cuda (see the aesara documentation for more information.
 
 Making use of vtk interactivity and `Qgrid <https://github.com/quantopian/qgrid>`_ ,
 ``GemPy`` provides a functional interface to interact with input data and models.

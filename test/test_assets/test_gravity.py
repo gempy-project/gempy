@@ -27,11 +27,9 @@ def test_gravity(interpolator_gravity):
     device_loc = np.array([[6, 0, 4]])
 
     geo_model.set_centered_grid(device_loc, resolution=[10, 10, 100], radius=16000)
-    geo_model.set_theano_function(interpolator_gravity)
-    geo_model._interpolator.set_theano_shared_gravity(pos_density=2)
+    geo_model.set_aesara_function(interpolator_gravity)
+    geo_model._interpolator.set_aesara_shared_gravity(pos_density=2)
     print(geo_model._additional_data)
     gp.compute_model(geo_model, set_solutions=True, compute_mesh=False)
     print(geo_model.solutions.fw_gravity)
-    np.testing.assert_almost_equal(geo_model.solutions.fw_gravity,
-                                   np.array([-1624.1714]), decimal=4)
-
+    np.testing.assert_almost_equal(geo_model.solutions.fw_gravity, np.array([-1624.1714]), decimal=4)

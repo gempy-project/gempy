@@ -1,13 +1,15 @@
 import os
 import gempy as gp
-from gempy.bayesian.theano_op import GemPyThOp
+from gempy.bayesian.aesara_op import GemPyThOp
 import pytest
 pm = pytest.importorskip("rgeomod")
-# import pymc3 as pm
+# import pymc as pm
 import arviz as az
 import numpy as np
+import matplotlib as mpl
+mpl.use('Agg')
 import matplotlib.pyplot as plt
-import theano
+import aesara
 np.random.seed(4003)
 
 
@@ -24,7 +26,7 @@ def test_basic():
         trace = pm.sample(1000, discard_tuned_samples=False, cores=1)
         post = pm.sample_posterior_predictive(trace)
 
-    pm.plot_posterior(trace)
+    az.plot_posterior(trace)
     plt.show()
 
 
@@ -44,4 +46,4 @@ def test_gempy_th_op_set_grav():
     gto = GemPyThOp(geo_model)
     th_op_grav = gto.set_th_op('gravity')
     i = geo_model.interpolator.get_python_input_block()
-    th_f = theano.function([], th_op_grav(*i), on_unused_input='warn')
+    th_f = aesara.function([], th_op_grav(*i), on_unused_input='warn')

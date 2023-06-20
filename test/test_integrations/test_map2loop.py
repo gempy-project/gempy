@@ -2,11 +2,14 @@ import gempy as gp
 import numpy as np
 import pandas as pd
 import pytest
+import matplotlib as mpl
+mpl.use('Agg')
 import matplotlib.pyplot as plt
 import os
 
 # Input files
 from gempy.addons.map2gempy import loop2gempy
+from gempy.core.grid_modules.create_topography import GDAL_IMPORT
 
 root = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/data/input_data/turner_syncline/'
 root2 = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/data/input_data/australia/'
@@ -68,7 +71,8 @@ def test_map2loop2relmatrix():
 
 
 @pytest.mark.skipif(("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true") or
-                    ("GITHUBACTION" in os.environ and os.environ["GITHUBACTION"] == "true"),
+                    ("GITHUBACTION" in os.environ and os.environ["GITHUBACTION"] == "true" or
+                     GDAL_IMPORT is False),
                     reason="Skipping this test on Travis CI. For some reason there is a linalg "
                            "error.")
 def test_loop2gempy2():
@@ -89,7 +93,9 @@ def test_loop2gempy2():
 
 
 @pytest.mark.skipif(("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true") or
-                    ("GITHUBACTION" in os.environ and os.environ["GITHUBACTION"] == "true"),
+                    ("GITHUBACTION" in os.environ and os.environ["GITHUBACTION"] == "true" or 
+                     GDAL_IMPORT is False
+                     ),
                     reason="Skipping this test on Travis CI. For some reason there is a linalg "
                            "error.")
 def test_map2loop_model_import_data():
@@ -114,9 +120,11 @@ def test_map2loop_model_import_data():
                )
     print(geo_model.orientations)
 
-
+# skip test i
 @pytest.mark.skipif(("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true") or
-                    ("GITHUBACTION" in os.environ and os.environ["GITHUBACTION"] == "true"),
+                    ("GITHUBACTION" in os.environ and os.environ["GITHUBACTION"] == "true" or
+                     GDAL_IMPORT is False
+                     ),
                     reason="Skipping this test on Travis CI. For some reason there is a linalg "
                            "error.")
 def test_map2loop_model_no_faults():

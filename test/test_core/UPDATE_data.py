@@ -4,13 +4,17 @@ import numpy as np
 import os
 import pytest
 
+import gempy.core.grid
+import gempy.core.surfaces
 import gempy.core.data_modules.geometric_data
+import gempy.core.data_modules.orientations
 import gempy.core.data_modules.stack
+import gempy.core.data_modules.surface_points
 
 
 @pytest.fixture(scope="module")
 def test_read_surface_points():
-    surface_points = gempy.core.data_modules.geometric_data.SurfacePoints()
+    surface_points = gempy.core.data_modules.surface_points.SurfacePoints()
     surface_points.read_surface_points(os.pardir + "/input_data/FabLessPoints_Points.csv", inplace=True)
 
     # Test setting series
@@ -41,8 +45,8 @@ def test_create_faults(test_create_series):
 
 @pytest.fixture()
 def test_create_formations():
-    formations = gp.Surfaces(values_array=np.arange(1, 8).reshape(-1, 1),
-                             properties_names=np.array(['density']))
+    formations = gempy.core.Surfaces.Surfaces(values_array=np.arange(1, 8).reshape(-1, 1),
+                                              properties_names=np.array(['density']))
    # formations.set_surfaces_names(['MainFault', 'SecondaryReservoir','Seal',
    #                                 'Reservoir', 'Overlying'])
 
@@ -83,7 +87,7 @@ class Testsurface_points:
 class TestOrientations:
     @pytest.fixture(scope='class')
     def test_read_orientations(self):
-        orientations = gempy.core.data_modules.geometric_data.Orientations()
+        orientations = gempy.core.data_modules.orientations.Orientations()
         orientations.read_orientations(os.pardir + "/input_data/FabLessPoints_Foliations.csv", inplace=True)
         return orientations
 
@@ -104,7 +108,7 @@ class TestOrientations:
 class TestGrid:
     def test_set_regular_grid(self):
         # Test creating an empty list
-        grid = gp.Grid()
+        grid = gempy.core.grid.Grid()
         print(grid.create_regular_grid_3d([0,2000, 0, 2000, -2000, 0], [50, 50, 50]))
 
         # Test set regular grid by hand
@@ -113,8 +117,8 @@ class TestGrid:
     def test_grid_init(self):
         # Or we can init one of the default grids since the beginning by passing
         # the correspondant attributes
-        grid = gp.Grid('regular_grid', extent=[0, 2000, 0, 2000, -2000, 0],
-                       resolution=[50, 50, 50])
+        grid = gempy.core.grid.Grid('regular_grid', extent=[0, 2000, 0, 2000, -2000, 0],
+                                    resolution=[50, 50, 50])
 
     def test_grid_front(self):
         gp.create_grid('regular_grid', extent=[0, 2000, 0, 2000, -2000, 0],
@@ -187,7 +191,7 @@ class TestFormations:
         print(test_create_formations)
 
     def test_map_formations_from_series2(self, test_create_series):
-        formations = gp.Surfaces()
+        formations = gempy.core.Surfaces.Surfaces()
         formations.map_formations_from_series(test_create_series)
         print(formations)
 
@@ -196,15 +200,15 @@ class TestFormations:
                                 'Reservoir', 'Overlying'])
 
         print(test_create_formations)
-        formations = gp.Surfaces(values_array=np.arange(1, 8).reshape(-1, 1),
-                                 properties_names=np.array(['density']))
+        formations = gempy.core.Surfaces.Surfaces(values_array=np.arange(1, 8).reshape(-1, 1),
+                                                  properties_names=np.array(['density']))
 
         formations.set_surfaces_names(['MainFault', 'SecondaryReservoir', 'Seal',
                                 'Reservoir', 'Overlying'])
         print(formations)
 
-        formations = gp.Surfaces(values_array=np.arange(1, 2).reshape(-1, 1),
-                                 properties_names=np.array(['density']))
+        formations = gempy.core.Surfaces.Surfaces(values_array=np.arange(1, 2).reshape(-1, 1),
+                                                  properties_names=np.array(['density']))
 
         formations.set_surfaces_names(['MainFault', 'SecondaryReservoir', 'Seal',
                                         'Reservoir', 'Overlying'])

@@ -1,23 +1,22 @@
 import os
-import sys, os
-sys.path.append("../../..")
-
-os.environ["THEANO_FLAGS"] = "mode=FAST_RUN,device=cpu"
-import warnings
-
-try:
-    import faulthandler
-    faulthandler.enable()
-except Exception as e:  # pragma: no cover
-    warnings.warn('Unable to enable faulthandler:\n%s' % str(e))
+import sys
 
 import gempy as gp
+import matplotlib as mpl
+mpl.use('Agg')
 import matplotlib.pyplot as plt
+
+from gempy.core.grid_modules.create_topography import GDAL_IMPORT
 from gempy.core.grid_modules.topography import Topography
 import pytest
 
 import numpy as np
-data_path = os.path.dirname(__file__)+'/../../input_data'
+
+sys.path.append("../../..")
+os.environ["aesara_FLAGS"] = "mode=FAST_RUN,device=cpu"
+data_path = os.path.dirname(__file__) + '/../../input_data'
+
+pytest.importorskip("osgeo.gdal")
 
 
 @pytest.fixture(scope='module')
@@ -56,18 +55,18 @@ def test_real_grid_ales():
     plt.show()
 
     if False:
-        gp.map_stack_to_surfaces(geo_model, {'fault_left': ('fault_left'),
-                                              'fault_right': ('fault_right'),
-                                              'fault_lr': ('fault_lr'),
-                                              'Trias_Series': ('TRIAS', 'LIAS'),
-                                              'Carbon_Series': ('CARBO'),
-                                              'Basement_Series': ('basement')}, remove_unused_series=True)
+        gp.map_stack_to_surfaces(geo_model, {'fault_left'     : ('fault_left'),
+                                             'fault_right'    : ('fault_right'),
+                                             'fault_lr'       : ('fault_lr'),
+                                             'Trias_Series'   : ('TRIAS', 'LIAS'),
+                                             'Carbon_Series'  : ('CARBO'),
+                                             'Basement_Series': ('basement')}, remove_unused_series=True)
 
         geo_model.set_is_fault(['fault_right', 'fault_left', 'fault_lr'], change_color=True)
         gp.set_interpolator(geo_model,
-                                  output=['geology'], compile_theano=True,
-                                  theano_optimizer='fast_run', dtype='float64',
-                                  verbose=[])
+                            output=['geology'], compile_aesara=True,
+                            aesara_optimizer='fast_run', dtype='float64',
+                            verbose=[])
 
         gp.compute_model(geo_model, compute_mesh=True)
 
@@ -79,7 +78,7 @@ def test_real_grid_ales():
                           show_scalar=False,
                           show_lith=True,
                           show_surfaces=False,
-                          kwargs_plot_structured_grid={'opacity': 1,
+                          kwargs_plot_structured_grid={'opacity'   : 1,
                                                        'show_edges': False},
                           ve=10,
                           image=True,
@@ -94,7 +93,7 @@ def test_real_grid_ales():
 
 def test_plot_2d_topography(one_fault_model_no_interp, artificial_grid):
     geo_model = one_fault_model_no_interp
-    #geo_model._grid.topography = artificial_grid
+    # geo_model._grid.topography = artificial_grid
     geo_model.set_topography()
     p2d = gp.plot_2d(geo_model, section_names=['topography'], show_topography=True,
                      kwargs_topography={'hillshade': False})
@@ -110,7 +109,6 @@ def test_plot_2d_topography(one_fault_model_no_interp, artificial_grid):
 
 
 def test_plot_3d_structure_topo2(unconformity_model_topo, artificial_grid):
-
     geo_model = unconformity_model_topo
     with pytest.raises(AssertionError):
         geo_model._grid.regular_grid.set_topography_mask(artificial_grid)
@@ -128,7 +126,7 @@ def test_plot_3d_structure_topo2(unconformity_model_topo, artificial_grid):
                           show_scalar=False,
                           show_lith=True,
                           show_surfaces=True,
-                          kwargs_plot_structured_grid={'opacity': .5,
+                          kwargs_plot_structured_grid={'opacity'   : .5,
                                                        'show_edges': True},
                           image=True,
                           kwargs_plot_topography={'scalars': 'topography'})

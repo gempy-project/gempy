@@ -18,7 +18,7 @@ from gempy.utils.input_manipulation import find_interfaces_from_block_bottoms
 import matplotlib.pyplot as plt
 
 np.random.seed(1515)
-pd.set_option('precision', 2)
+pd.set_option('display.precision', 2)
 
 # %%
 # We import a model from an existing folder.
@@ -114,7 +114,7 @@ gp.plot_2d(geo_model_graben, cell_number=[25], show_scalar=True, series_n=1)
 #
 
 # %%
-geo_model_graben._interpolator.theano_graph.offset.set_value(1)
+geo_model_graben._interpolator.aesara_graph.offset.set_value(1)
 gp.compute_model(geo_model_graben, compute_mesh=False)
 
 

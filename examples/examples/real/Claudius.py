@@ -6,7 +6,7 @@ Claudius
 
 # %%
 import sys, os
-os.environ["THEANO_FLAGS"] = "mode=FAST_RUN,device=cpu"
+os.environ["aesara_FLAGS"] = "mode=FAST_RUN,device=cpu"
 
 # Importing gempy
 import gempy as gp
@@ -189,8 +189,8 @@ geo_model.faults.faults_relations_df
 # 
 
 # %% 
-gp.set_interpolator(geo_model, theano_optimizer='fast_run',
-                    compile_theano=True)
+gp.set_interpolator(geo_model, aesara_optimizer='fast_run',
+                    compile_aesara=True)
 
 # %% 
 gp.compute_model(geo_model)

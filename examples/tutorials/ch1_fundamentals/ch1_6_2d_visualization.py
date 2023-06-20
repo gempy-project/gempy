@@ -14,7 +14,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 np.random.seed(1515)
-pd.set_option('precision', 2)
+pd.set_option('display.precision', 2)
 
 # %%
 # Model interpolation
@@ -48,7 +48,7 @@ gp.plot.plot_section_traces(geo_data)
 geo_data.grid.sections
 
 # %% 
-gp.set_interpolator(geo_data, theano_optimizer='fast_compile')
+gp.set_interpolator(geo_data, aesara_optimizer='fast_compile')
 
 # %% 
 gp.map_stack_to_surfaces(geo_data, {"Fault_Series": 'fault',

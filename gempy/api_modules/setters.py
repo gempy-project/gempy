@@ -8,7 +8,8 @@ from gempy.core.model import Model, InterpolatorModel
 from typing import Union
 import warnings
 import numpy as np
-# This warning comes from numpy complaining about a theano optimization
+
+# This warning comes from numpy complaining about a aesara optimization
 warnings.filterwarnings("ignore",
                         message='.* a non-tuple sequence for multidimensional '
                                 'indexing is deprecated; use*.',
@@ -16,22 +17,22 @@ warnings.filterwarnings("ignore",
 
 
 @_setdoc([InterpolatorModel.__doc__])
-@_setdoc_pro([Model.__doc__, ds.compile_theano, ds.theano_optimizer])
-def set_interpolator(geo_model: Model, output: list = None, compile_theano: bool = True,
-                     theano_optimizer=None, verbose: list = None, grid=None, type_=None,
+@_setdoc_pro([Model.__doc__, ds.compile_aesara, ds.aesara_optimizer])
+def set_interpolator(geo_model: Model, output: list = None, compile_aesara: bool = True,
+                     aesara_optimizer=None, verbose: list = None, grid=None, type_=None,
                      update_structure=True, update_kriging=True,
                      **kwargs):
     """
-    Method to create a graph and compile the theano code to compute the interpolation.
+    Method to create a graph and compile the aesara code to compute the interpolation.
 
     Args:
         geo_model (:class:`gempy.core.model.Project`): [s0]
         output (list[str:{geo, grav}]): type of interpolation.
-        compile_theano (bool): [s1]
-        theano_optimizer (str {'fast_run', 'fast_compile'}): [s2]
+        compile_aesara (bool): [s1]
+        aesara_optimizer (str {'fast_run', 'fast_compile'}): [s2]
         verbose:
         update_kriging (bool): reset kriging values to its default.
-        update_structure (bool): sync Structure instance before setting theano graph.
+        update_structure (bool): sync Structure instance before setting aesara graph.
 
     Keyword Args:
         -  pos_density (Optional[int]): Only necessary when type='grav'. Location on the Surfaces().df
@@ -60,8 +61,8 @@ def set_interpolator(geo_model: Model, output: list = None, compile_theano: bool
         warnings.warn('type warn is going to be deprecated. Use output insted', FutureWarning)
         output = type_
 
-    if theano_optimizer is not None:
-        geo_model._additional_data.options.df.at['values', 'theano_optimizer'] = theano_optimizer
+    if aesara_optimizer is not None:
+        geo_model._additional_data.options.df.at['values', 'aesara_optimizer'] = aesara_optimizer
     if verbose is not None:
         geo_model._additional_data.options.df.at['values', 'verbosity'] = verbose
     if 'dtype' in kwargs:
@@ -76,14 +77,14 @@ def set_interpolator(geo_model: Model, output: list = None, compile_theano: bool
     geo_model._surface_points.sort_table()
     geo_model._orientations.sort_table()
 
-    geo_model._interpolator.create_theano_graph(geo_model._additional_data, inplace=True,
+    geo_model._interpolator.create_aesara_graph(geo_model._additional_data, inplace=True,
                                                 output=output, **kwargs)
 
     if 'gravity' in output:
         pos_density = kwargs.get('pos_density', 1)
         tz = kwargs.get('tz', 'auto')
         if geo_model._grid.centered_grid is not None:
-            geo_model._interpolator.set_theano_shared_gravity(tz, pos_density)
+            geo_model._interpolator.set_aesara_shared_gravity(tz, pos_density)
 
     if 'magnetics' in output:
         pos_magnetics = kwargs.get('pos_magnetics', 1)
@@ -92,23 +93,23 @@ def set_interpolator(geo_model: Model, output: list = None, compile_theano: bool
         decl = kwargs.get('decl')
         B_ext = kwargs.get('B_ext', 52819.8506939139e-9)
         if geo_model._grid.centered_grid is not None:
-            geo_model._interpolator.set_theano_shared_magnetics(Vs, pos_magnetics, incl, decl, B_ext)
+            geo_model._interpolator.set_aesara_shared_magnetics(Vs, pos_magnetics, incl, decl, B_ext)
 
     if 'topology' in output:
         # This id is necessary for topology
         id_list = geo_model._surfaces.df.groupby('isFault').cumcount() + 1
         geo_model.add_surface_values(id_list, 'topology_id')
-        geo_model._interpolator.set_theano_shared_topology()
+        geo_model._interpolator.set_aesara_shared_topology()
 
-        # TODO it is missing to pass to theano the position of topology_id
+        # TODO it is missing to pass to aesara the position of topology_id
 
-    if compile_theano is True:
+    if compile_aesara is True:
         geo_model._interpolator.set_all_shared_parameters(reset_ctrl=True)
 
         geo_model._interpolator.compile_th_fn_geo(inplace=True, grid=grid)
     else:
         if grid == 'shared':
-            geo_model._interpolator.set_theano_shared_grid(grid)
+            geo_model._interpolator.set_aesara_shared_grid(grid)
 
     print('Kriging values: \n', geo_model._additional_data.kriging_data)
     return geo_model._interpolator
@@ -161,21 +162,25 @@ def set_orientation_from_surface_points(geo_model, indices_array):
         :attr:`orientations`: Already updated inplace
     """
 
-    if np.ndim(indices_array) is 1:
+    if np.ndim(indices_array) == 1:
         indices = indices_array
         form = geo_model._surface_points.df['surface'].loc[indices].unique()
-        assert form.shape[0] is 1, 'The interface points must belong to the same surface'
+        assert form.shape[0] == 1, 'The interface points must belong to the same surface'
         form = form[0]
 
-        ori_parameters = geo_model._orientations.create_orientation_from_surface_points(
-            geo_model._surface_points, indices)
-        geo_model.add_orientations(X=ori_parameters[0], Y=ori_parameters[1], Z=ori_parameters[2],
-                                   orientation=ori_parameters[3:6], pole_vector=ori_parameters[6:9],
-                                   surface=form)
-    elif np.ndim(indices_array) is 2:
+        ori_parameters = geo_model._orientations.create_orientation_from_surface_points(geo_model._surface_points, indices)
+        geo_model.add_orientations(
+            X=ori_parameters[0],
+            Y=ori_parameters[1],
+            Z=ori_parameters[2],
+            orientation=ori_parameters[3:6],
+            pole_vector=ori_parameters[6:9],
+            surface=form
+        )
+    elif np.ndim(indices_array) == 2:
         for indices in indices_array:
             form = geo_model._surface_points.df['surface'].loc[indices].unique()
-            assert form.shape[0] is 1, 'The interface points must belong to the same surface'
+            assert form.shape[0] == 1, 'The interface points must belong to the same surface'
             form = form[0]
             ori_parameters = geo_model._orientations.create_orientation_from_surface_points(
                 geo_model._surface_points, indices)
@@ -184,6 +189,7 @@ def set_orientation_from_surface_points(geo_model, indices_array):
                                        surface=form)
 
     return geo_model._orientations
+
 
 def select_nearest_surfaces_points(geo_model, surface_points, searchcrit):
     """
@@ -219,7 +225,7 @@ def select_nearest_surfaces_points(geo_model, surface_points, searchcrit):
             Tree.fit(p_surfaces)
             # find neighbours
             neighbours_surfaces = Tree.kneighbors(p_surfaces, n_neighbors=searchcrit,
-                                            return_distance=False)
+                                                  return_distance=False)
             # add neighbours with initial index to total list
             for n in neighbours_surfaces:
                 neighbours.append(p_surfaces.index[n])
@@ -235,8 +241,8 @@ def select_nearest_surfaces_points(geo_model, surface_points, searchcrit):
             Tree.fit(p_surfaces)
             # find neighbours (attention: relativ index!)
             neighbours_surfaces = Tree.radius_neighbors(p_surfaces,
-                                                  radius=searchcrit,
-                                                  return_distance=False)
+                                                        radius=searchcrit,
+                                                        return_distance=False)
             # add neighbours with initial index to total list
             for n in neighbours_surfaces:
                 neighbours.append(p_surfaces.index[n])
@@ -244,7 +250,6 @@ def select_nearest_surfaces_points(geo_model, surface_points, searchcrit):
 
 
 def set_orientation_from_neighbours(geo_model, neighbours):
-
     """
     Calculates the orientation of one point with its neighbour points
     of the same surface.
@@ -268,7 +273,7 @@ def set_orientation_from_neighbours(geo_model, neighbours):
         normvec = normalize(np.cross(cov[0].T, cov[1].T).reshape(1, -1))[0]
         # check orientation of normal vector (has to be oriented to sky)
         if normvec[2] < 0:
-            normvec = normvec*(-1)
+            normvec = normvec * (-1)
         # append to the GemPy-model
         geo_model.add_orientations(geo_model._surface_points.df['X'][neighbours[0]],
                                    geo_model._surface_points.df['Y'][neighbours[0]],
@@ -288,7 +293,6 @@ def set_orientation_from_neighbours(geo_model, neighbours):
 
 
 def set_orientation_from_neighbours_all(geo_model, neighbours):
-
     """
     Calculates the orientations for all points with given neighbours.
     Parameters

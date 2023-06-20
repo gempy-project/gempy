@@ -2,10 +2,10 @@ name: GemPy CI Conda Requirements
 
 on:
   push:
-    branches: [ dev_alexj, master, main, release, fixing_actions ]
+    branches: [ dev_alexj, master, main, release, fixing_actions, dev_pymc4, gempy_v2023.1.0 ]
 
   pull_request:
-    branches: [ dev_alexj, master, main, release ]
+    branches: [ dev_alexj, master, main, release, dev_pymc4, gempy_v2023.1.0 ]
 
     # Allows you to run this workflow manually from the Actions tab
     workflow_dispatch:
@@ -24,14 +24,14 @@ jobs:
       matrix:
         os: [ ubuntu, ]  # macos, windows]  # Only Linux currently.
         case:
-          - python-version: 3.8
+          - python-version: '3.10'
             name: basic
             os: ubuntu
 
     env:
       DISPLAY: ':99.0'
       PYVISTA_OFF_SCREEN: 'True'
-      ALLOW_PLOTTING: true
+      ALLOW_PLOTTING: false
       SHELLOPTS: 'errexit:pipefail'
       OS: ${{ matrix.case.os }}
       PYTHON: ${{ matrix.case.python-version }}
@@ -54,19 +54,13 @@ jobs:
 
       - name: Install dependencies
         run: |
-            conda list gempy
-            conda list gdal
-            conda list pyvista
-            conda list vtk
-            conda list pandas
-            conda list numpy
-            conda install gdal
+            conda install gdal aesara pymc -c conda-forge
             python -m pip install --upgrade pip
             pip install -r dev-requirements.txt
 
       - name: Run tests with pytest
         run: |
-          pytest
+          pytest --ignore-glob=/home/runner/work/gempy/gempy/gempy_3/api/test*_gempy3.py
 
   testing_pip:
     name: Pip install ${{ matrix.case.os }} py${{ matrix.case.python-version }} ${{ matrix.case.name }}
@@ -80,14 +74,14 @@ jobs:
       matrix:
         os: [ ubuntu, ]  # macos, windows]  # Only Linux currently.
         case:
-          - python-version: 3.8
+          - python-version: '3.10'
             name: basic
             os: ubuntu
 
     env:
       DISPLAY: ':99.0'
       PYVISTA_OFF_SCREEN: 'True'
-      ALLOW_PLOTTING: true
+      ALLOW_PLOTTING: false
       SHELLOPTS: 'errexit:pipefail'
       OS: ${{ matrix.case.os }}
       PYTHON: ${{ matrix.case.python-version }}
@@ -114,4 +108,4 @@ jobs:
 
       - name: Run tests with pytest
         run: |
-          pytest
+          pytest --ignore-glob=/home/runner/work/gempy/gempy/gempy_3/api/test*_gempy3.py

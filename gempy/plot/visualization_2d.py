@@ -36,7 +36,7 @@ import scipy.spatial.distance as dd
 import seaborn as sns
 
 sns.set_context('talk')
-plt.style.use(['seaborn-white', 'seaborn-talk'])
+plt.style.use(['seaborn-v0_8-white', 'seaborn-v0_8-talk'])
 
 warnings.filterwarnings("ignore", message="No contour levels were found")
 
@@ -156,7 +156,7 @@ class Plot2D:
 
         figsize, self.ax_labelsize, _, self.xt_labelsize, self.linewidth, _ = _scale_fig_size(
             figsize, textsize, rows, cols)
-        self.fig = plt.figure( figsize=figsize, constrained_layout=False)
+        self.fig = plt.figure(figsize=figsize, constrained_layout=False)
         self.fig.is_legend = False
         # TODO make grid variable
         # self.gs_0 = gridspect.GridSpec(2, 2, figure=self.fig, hspace=.9)
@@ -275,13 +275,11 @@ class Plot2D:
 
                 l0, l1 = self.model._grid.sections.get_section_args(section_name)
                 shape = self.model._grid.sections.df.loc[section_name, 'resolution']
-                image = self.model.solutions.sections[0][0][l0:l1].reshape(shape[0], shape[1]).T
+                image = self.model.solutions.sections[0][l0:l1].reshape(shape[0], shape[1]).T
 
         elif cell_number is not None or block is not None:
             _a, _b, _c, _, x, y = self._slice(direction, cell_number)[:-2]
-            if resolution is None:
-                resolution = self.model._grid.regular_grid.resolution
-
+            
             plot_block = block.reshape(self.model._grid.regular_grid.resolution)
             image = plot_block[_a, _b, _c].T
         else:
@@ -387,24 +385,25 @@ class Plot2D:
 
         if section_name is not None:
             if section_name == 'topography':
-
                 topo_comp = kwargs.get('topo_comp', 5000)
                 decimation_aux = int(self.model._grid.topography.values.shape[0] / topo_comp)
                 tpp = self.model._grid.topography.values[::decimation_aux + 1, :]
-                cartesian_point_dist = (dd.cdist(tpp, self.model._surface_points.df[['X', 'Y', 'Z']])
-                                        < projection_distance).sum(axis=0).astype(bool)
-                cartesian_ori_dist = (dd.cdist(tpp, self.model._orientations.df[['X', 'Y', 'Z']])
-                                      < projection_distance).sum(axis=0).astype(bool)
-                x, y, Gx, Gy = 'X', 'Y', 'G_x', 'G_y'
+                
+                cdist_sp = dd.cdist(tpp, self.model._surface_points.df[['X', 'Y', 'Z']])
+                cartesian_point_dist = (cdist_sp < projection_distance).sum(axis=0).astype(bool)
 
+                cdist_ori = dd.cdist(tpp, self.model._orientations.df[['X', 'Y', 'Z']])
+                cartesian_ori_dist = (cdist_ori < projection_distance).sum(axis=0).astype(bool)
+
+                x, y, Gx, Gy = 'X', 'Y', 'G_x', 'G_y'
             else:
                 # Project points:
                 shift = np.asarray(self.model._grid.sections.df.loc[section_name, 'start'])
                 end_point = np.atleast_2d(np.asarray(self.model._grid.sections.df.loc[section_name, 'stop']) - shift)
                 A_rotate = np.dot(end_point.T, end_point) / self.model._grid.sections.df.loc[section_name, 'dist'] ** 2
 
-                cartesian_point_dist = np.sqrt(((np.dot(
-                    A_rotate, (points[['X', 'Y']]).T).T - points[['X', 'Y']]) ** 2).sum(axis=1))
+                perpe_sqdist = ((np.dot(A_rotate, (points[['X', 'Y']]).T).T - points[['X', 'Y']]) ** 2).sum(axis=1)
+                cartesian_point_dist = np.sqrt(perpe_sqdist)
 
                 cartesian_ori_dist = np.sqrt(((np.dot(
                     A_rotate, (orientations[['X', 'Y']]).T).T - orientations[['X', 'Y']]) ** 2).sum(axis=1))
@@ -453,19 +452,20 @@ class Plot2D:
         temp_label = copy.copy(ax.xaxis.label)
 
         points_df = points[select_projected_p]
-        points_df['colors'] = points_df['surface'].map(self._color_lot)
+        
+        _colors = points_df['surface'].map(self._color_lot)
+        points_df['colors'] = _colors
 
-        points_df.plot.scatter(x=x, y=y, ax=ax, c=points_df['surface'].map(self._color_lot),
-                               s=70,  zorder=102, edgecolors='white',
-                               colorbar=False)
-        # points_df.plot.scatter(x=x, y=y, ax=ax, c='white', s=80,  zorder=101,
-        #                        colorbar=False)
-
+        points_df.plot.scatter(x=x, y=y, ax=ax,
+                               c=_colors,
+                               s=70, 
+                               zorder=102,
+                               edgecolors='white',
+                               colorbar=False
+                               )
+        
         if self.fig.is_legend is False and legend is True or legend == 'force':
-
-            markers = [plt.Line2D([0, 0], [0, 0], color=color, marker='o',
-                                  linestyle='') for color in
-                       self._color_lot.values()]
+            markers = [plt.Line2D([0, 0], [0, 0], color=color, marker='o', linestyle='') for color in self._color_lot.values()]
             ax.legend(markers, self._color_lot.keys(), numpoints=1)
             self.fig.is_legend = True
         ax.xaxis.label = temp_label
@@ -555,6 +555,7 @@ class Plot2D:
             ax.fill(xy[:, 0], xy[:, 1], 'k', zorder=10)
 
         elif section_name == 'topography':
+            
             import skimage
             from gempy.plot.helpers import add_colorbar
             topo = self.model._grid.topography
@@ -606,7 +607,7 @@ class Plot2D:
                 ax.fill(line[:, 0], line[:, 1], color='k')
             except IndexError:
                 warnings.warn('Topography needs to be a raster to be able to plot it'
-                                     'in 2D sections')
+                              'in 2D sections')
         return ax
 
     def plot_contacts(self, ax, section_name=None, cell_number=None, direction='y', block=None,
@@ -625,7 +626,7 @@ class Plot2D:
             if section_name == 'topography':
                 shape = self.model._grid.topography.resolution
 
-                scalar_fields = self.model.solutions.geological_map[1]
+                scalar_fields = self.model.solutions.geological_map[1:]
                 c_id = 0  # color id startpoint
 
                 for e, block in enumerate(scalar_fields):
@@ -633,17 +634,21 @@ class Plot2D:
                         self.model.solutions.scalar_field_at_surface_points[e] != 0)]
 
                     c_id2 = c_id + len(level)  # color id endpoint
-                    ax.contour(block.reshape(shape).T, 0, levels=np.sort(level),
-                               colors=self.cmap.colors[c_id:c_id2][::-1],
-                               linestyles='solid', origin='lower',
-                               extent=extent_val, zorder=zorder - (e + len(level))
-                               )
+                    ax.contour(
+                        block.reshape(shape).T, 0,
+                        levels=np.sort(level),
+                        colors=self.cmap.colors[c_id:c_id2][::-1],
+                        linestyles='solid',
+                        origin='lower',
+                        extent=extent_val,
+                        zorder=zorder - (e + len(level))
+                    )
                     c_id = c_id2
 
             else:
                 l0, l1 = self.model._grid.sections.get_section_args(section_name)
                 shape = self.model._grid.sections.df.loc[section_name, 'resolution']
-                scalar_fields = self.model.solutions.sections[1][:, l0:l1]
+                scalar_fields = self.model.solutions.sections[1:][:, l0:l1]
 
                 c_id = 0  # color id startpoint
 
@@ -667,14 +672,12 @@ class Plot2D:
         elif cell_number is not None or block is not None:
             _slice = self._slice(direction, cell_number)[:3]
             shape = self.model._grid.regular_grid.resolution
-            c_id = 0  # color id startpoint
+            c_id = 0  # * color id startpoint
 
             for e, block in enumerate(self.model.solutions.scalar_field_matrix):
                 level = self.model.solutions.scalar_field_at_surface_points[e][np.where(
                     self.model.solutions.scalar_field_at_surface_points[e] != 0)]
-                # c_id = e
                 c_id2 = c_id + len(level)
-                #    print(c_id, c_id2)
 
                 color_list = self.model._surfaces.df.groupby('isActive').get_group(True)['color'][c_id:c_id2][::-1]
                 #    print(color_list)

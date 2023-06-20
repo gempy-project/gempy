@@ -15,7 +15,7 @@ import os
 
 # Setting options
 np.random.seed(1515)
-pd.set_option('precision', 2)
+pd.set_option('display.precision', 2)
 
 # %%
 # Importing and creating a set of input data
@@ -277,8 +277,8 @@ gpv = gp.plot_3d(geo_model, image=False, plotter_type='basic')
 
 # %% 
 gp.set_interpolator(geo_model,
-                    compile_theano=True,
-                    theano_optimizer='fast_compile',
+                    compile_aesara=True,
+                    aesara_optimizer='fast_compile',
                     )
 
 # %%
@@ -286,9 +286,9 @@ gp.set_interpolator(geo_model,
 # (and stores it in the attribute ``geo_data_res`` which behaves as a usual
 # ``InputData`` object) and adds mathematical parameters that are needed
 # for conducting the interpolation. The computation of this step may take
-# a while, as it also compiles a theano function which is required for the
+# a while, as it also compiles a aesara function which is required for the
 # model computation. However, should this not be needed, we can skip it by
-# declaring ``compile_theano = False`` in the function.
+# declaring ``compile_aesara = False`` in the function.
 # 
 # Furthermore, this preparation process includes an assignment of numbers
 # to each formation. Note that GemPy always creates a default basement

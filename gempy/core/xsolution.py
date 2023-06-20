@@ -1,7 +1,8 @@
 from typing import Union
 
 from gempy.core.data_modules.stack import Stack
-from gempy.core.data import Grid, Surfaces
+from gempy import Surfaces, Grid
+
 try:
     import xarray as xr
     import subsurface

@@ -2,6 +2,8 @@ import numpy as np
 import pytest
 
 import gempy as gp
+import matplotlib as mpl
+mpl.use('Agg')
 import matplotlib.pyplot as plt
 import os
 
@@ -119,7 +121,7 @@ def test_axial_anisotropy(model):
         smooth=0.001
     )
 
-    gp.set_interpolator(geo_model, theano_optimizer='fast_run', dtype='float64')
+    gp.set_interpolator(geo_model, aesara_optimizer='fast_run', dtype='float64')
     gp.compute_model(geo_model, compute_mesh_options={'mask_topography': False,
                                                       'masked_marching_cubes': False})
 

@@ -1,5 +1,6 @@
-from setuptools import setup, find_packages
-version = '2.2.12'
+from setuptools import setup, find_packages, Extension
+
+version = '2.3.0'
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -10,26 +11,28 @@ setup(
     packages=find_packages(exclude=('test', 'docs', 'examples')),
     include_package_data=True,
     install_requires=[
-        'pandas==1.3.4',
-        'Theano>=1.0.4',
+        'pandas==2.0.1',
+        'aesara',
+        'pymc',
         'matplotlib',
-        'numpy==1.21.6',
+        'numpy',
         'pytest',
         'seaborn>=0.9',
         'networkx',
         'scikit-image>=0.17',
-        'pyvista>=0.25',
-        'pyvistaqt',
+        'scikit-learn',
+        'pyvista==0.39.1',
+        'pyvistaqt==0.10.0',
         'pyqt5',
         'iPython',
-        'pandas==1.3.4',
-        'xarray==2022.3.0',
-        'rasterio'
+        'rasterio',
+        'xarray'
     ],
     url='https://github.com/cgre-aachen/gempy',
     license='LGPL v3',
-    author='Miguel de la Varga, Alexander Zimmerman, Elisa Heim, Alexander Schaaf, Fabian Stamm, Florian Wellmann, Jan Niederau',
-    author_email='varga@aices.rwth-aachen.de',
+    author='Miguel de la Varga, Alexander Zimmerman, Elisa Heim, Alexander Schaaf, Fabian Stamm, Florian Wellmann, Jan Niederau, Andrew Annex, Alexander Juestel',
+    author_email='miguel@terranigma-solutions.com',
     description='An Open-source, Python-based 3-D structural geological modeling software.',
+    long_description='GemPy is a Python-based, open-source geomodeling library. It is capable of constructing complex 3D geological models of folded structures, fault networks and unconformities, based on the underlying powerful implicit representation approach.' ,
     keywords=['geology', '3-D modeling', 'structural geology', 'uncertainty']
 )

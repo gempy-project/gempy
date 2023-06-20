@@ -6,16 +6,10 @@
 [![PyPI](https://img.shields.io/badge/pypi-1.0-blue.svg)](https://pypi.org/project/gempy/)
 [![license: LGPL v3](https://img.shields.io/badge/license-LGPL%20v3-blue.svg)](https://github.com/cgre-aachen/gempy/blob/master/LICENSE)
 [![Documentation Status](https://assets.readthedocs.org/static/projects/badges/passing-flat.svg)](http://docs.gempy.org)
-[![Travis Build](https://travis-ci.org/cgre-aachen/gempy.svg?branch=master)](https://travis-ci.org/github/cgre-aachen/gempy/branches)
 [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/cgre-aachen/gempy/master)
 [![DOI](https://zenodo.org/badge/96211155.svg)](https://zenodo.org/badge/latestdoi/96211155)
 [![DOCKER](https://img.shields.io/docker/cloud/automated/leguark/gempy.svg)](https://cloud.docker.com/repository/docker/leguark/gempy)
 
-:warning: **Warning: GemPy requires pandas version < 1.4.0. The new pandas release is not compatible with GemPy.  
-    We're actively working on this issue for a future release.  
-Please make sure to use Pandas version 1.3.x when working with GemPy for the time being.** 
-
-**Using theano, GemPy requires numpy version < 1.22.0 as `blas_opt_info` was deprecated in newer numpy versions.**:warning:
 ## Overview
 
 [GemPy](https://www.gempy.org/) is a Python-based, **open-source geomodeling library**. It is
@@ -31,18 +25,26 @@ We provide the latest release version of GemPy via PyPi package services. We hig
 
 as it will take care of automatically installing all the required dependencies - except in windows that requires one extra step.
 
-Windows does not have a gcc compilers pre-installed. The easiest way to get a theano compatible compiler is by using 
-the theano conda installation. Therefore the process would be the following:
+Windows does not have a gcc compilers pre-installed. The easiest way to get a aesara compatible compiler is by using 
+the aesara conda installation. Therefore the process would be the following:
 
-`$ conda install theano`
+`$ conda install aesara`
 
 `$ pip install gempy`
 
 For more information, refer to the [installation documentation](https://docs.gempy.org/installation.html).
 
+## Requirements
+
+The following versions are required/strongly recommended for the main dependencies of GemPy (as of June 2023):
+- python>=3.10
+- pandas=2.0.1
+- matplotlib>=3.7
+- pyvista>=0.39
+
 ## Resources
 
-After installation you can either check the [notebook tutorials](https://docs.gempy.org/getting_started/get_started.html#sphx-glr-getting-started-get-started-py) 
+After installation, you can either check the [notebook tutorials](https://docs.gempy.org/getting_started/get_started.html#sphx-glr-getting-started-get-started-py) 
 or the [video introduction](https://www.youtube.com/watch?v=n0btC5Zilyc) to get started.
 
 Go to the [documentation site](http://docs.gempy.org/) for further information and enjoy the [tutorials and examples](https://www.gempy.org/tutorials).
@@ -58,8 +60,8 @@ Follow these [guidelines](https://github.com/cgre-aachen/gempy/blob/WIP_readme-u
 
 * de la Varga, M., Schaaf, A., and Wellmann, F. (2019). [GemPy 1.0: open-source stochastic geological modeling and inversion](https://gmd.copernicus.org/articles/12/1/2019/gmd-12-1-2019.pdf), Geosci. Model Dev., 12, 1-32.
 * Wellmann, F., & Caumon, G. (2018). [3-D Structural geological models: Concepts, methods, and uncertainties.](https://hal.univ-lorraine.fr/hal-01921494/file/structural_models_for_geophysicsHAL.pdf) In Advances in Geophysics (Vol. 59, pp. 1-121). Elsevier.
-* Calcagno, P., Chilès, J. P., Courrioux, G., & Guillen, A. (2008). Geological modelling from field data and geological knowledge: Part I. Modelling method coupling 3D potential-field interpolation and geological rules. Physics of the Earth and Planetary Interiors, 171(1-4), 147-157.
-* Lajaunie, C., Courrioux, G., & Manuel, L. (1997). Foliation fields and 3D cartography in geology: principles of a method based on potential interpolation. Mathematical Geology, 29(4), 571-584.
+* Calcagno, P., Chilès, J. P., Courrioux, G., & Guillen, A. (2008). [Geological modelling from field data and geological knowledge: Part I. Modelling method coupling 3D potential-field interpolation and geological rules](https://www.sciencedirect.com/science/article/abs/pii/S0031920108001258). Physics of the Earth and Planetary Interiors, 171(1-4), 147-157.
+* Lajaunie, C., Courrioux, G., & Manuel, L. (1997). [Foliation fields and 3D cartography in geology: principles of a method based on potential interpolation](https://link.springer.com/article/10.1007/BF02775087). Mathematical Geology, 29(4), 571-584.
 
 ## Publications using GemPy
 

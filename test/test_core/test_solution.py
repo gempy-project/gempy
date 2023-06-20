@@ -2,6 +2,8 @@ import gempy
 import os
 import numpy as np
 import gempy as gp
+import matplotlib as mpl
+mpl.use('Agg')
 import matplotlib.pyplot as plt
 input_path = os.path.dirname(__file__)+'/../input_data'
 
@@ -15,7 +17,7 @@ def test_rescaled_marching_cube(interpolator):
                                  path_o=input_path + "/GeoModeller/test_a/test_a_Foliations.csv",
                                  path_i=input_path + "/GeoModeller/test_a/test_a_Points.csv")
 
-    geo_data.set_theano_function(interpolator)
+    geo_data.set_aesara_function(interpolator)
 
     # Compute model
     sol = gempy.compute_model(geo_data, compute_mesh_options={'rescale': True})
@@ -42,11 +44,11 @@ def test_custom_grid_solution(model_horizontal_two_layers):
                    [5, 5, -1]])
     values = geo_model.set_custom_grid(cg)
     assert geo_model._grid.active_grids[1]
-    # set the theano function
+    # set the aesara function
 
     # Compute model
     sol = gempy.compute_model(geo_model, compute_mesh=False)
-    assert sol.custom.shape == (2,1,5)
+    assert sol.custom.shape == (2, 1, 5)
 
 
 def test_masked_marching_cubes(unconformity_model_topo):
@@ -55,23 +57,19 @@ def test_masked_marching_cubes(unconformity_model_topo):
     plt.show()
 
     gp.plot_2d(geo_model, regular_grid=geo_model.solutions.mask_matrix_pad[0],
-               kwargs_regular_grid={'cmap': 'viridis',
-                                    'norm': None}
-               )
+               kwargs_regular_grid={'cmap': 'viridis', 'norm': None})
+    
     print(geo_model.solutions.mask_matrix_pad[0])
     plt.show()
 
     gp.plot_2d(geo_model, regular_grid=geo_model.solutions.mask_matrix_pad[1],
-               kwargs_regular_grid={'cmap': 'viridis',
-                                     'norm': None}
+               kwargs_regular_grid={'cmap': 'viridis', 'norm': None}
                )
     print(geo_model.solutions.mask_matrix_pad[1])
     plt.show()
 
     gp.plot_2d(geo_model, regular_grid=geo_model.solutions.mask_matrix[0],
-               kwargs_regular_grid={'cmap': 'viridis',
-                                     'norm': None}
-               )
+               kwargs_regular_grid={'cmap': 'viridis', 'norm': None})
     print(geo_model.solutions.mask_matrix[0])
     plt.show()
 

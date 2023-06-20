@@ -29,31 +29,31 @@ class RegularGrid:
     """
 
     def __init__(self, extent=None, resolution=None, **kwargs):
-        self.resolution = np.ones((0, 3), dtype='int64')
-        self.extent = np.zeros(6, dtype='float64')
-        self.extent_r = np.zeros(6, dtype='float64')
-        self.values = np.zeros((0, 3))
-        self.values_r = np.zeros((0, 3))
-        self.mask_topo = np.zeros((0, 3), dtype=bool)
-        self.x = None
-        self.y = None
-        self.z = None
-
+        # @ formatter:off
+        self.resolution = np.ones((0 , 3)   , dtype       = 'int64')
+        self.extent     = np.zeros(6 , dtype = 'float64')
+        self.extent_r   = np.zeros(6 , dtype = 'float64')
+        self.values     = np.zeros((0, 3))
+        self.values_r   = np.zeros((0, 3))
+        self.mask_topo  = np.zeros((0, 3)   , dtype       = bool)
+        self.x          = None
+        self.y          = None
+        self.z          = None
+        
         if extent is not None and resolution is not None:
             self.set_regular_grid(extent, resolution)
             self.dx, self.dy, self.dz = self.get_dx_dy_dz()
+        
+        # @ formatter:on
 
     def set_coord(self, extent, resolution):
         dx = (extent[1] - extent[0]) / resolution[0]
         dy = (extent[3] - extent[2]) / resolution[1]
         dz = (extent[5] - extent[4]) / resolution[2]
 
-        self.x = np.linspace(extent[0] + dx / 2, extent[1] - dx / 2, resolution[0],
-                             dtype="float64")
-        self.y = np.linspace(extent[2] + dy / 2, extent[3] - dy / 2, resolution[1],
-                             dtype="float64")
-        self.z = np.linspace(extent[4] + dz / 2, extent[5] - dz / 2, resolution[2],
-                             dtype="float64")
+        self.x = np.linspace(extent[0] + dx / 2, extent[1] - dx / 2, resolution[0], dtype="float64")
+        self.y = np.linspace(extent[2] + dy / 2, extent[3] - dy / 2, resolution[1], dtype="float64")
+        self.z = np.linspace(extent[4] + dz / 2, extent[5] - dz / 2, resolution[2], dtype="float64")
 
         return self.x, self.y, self.z
 

@@ -2,20 +2,22 @@ import numpy as np
 from typing import Union
 import warnings
 from skimage import measure
-from gempy.utils.input_manipulation import find_interfaces_from_block_bottoms
-from gempy.core.data import Grid, Surfaces
-from gempy.core.data_modules.stack import Series, Stack
-from gempy.utils.meta import _setdoc_pro
+
+from ..utils.input_manipulation import find_interfaces_from_block_bottoms
+from .surfaces import Surfaces
+from .grid import Grid
+from .data_modules.stack import Series, Stack
+from ..utils.meta import _setdoc_pro
 import gempy.utils.docstring as ds
 
 try:
     from gempy.core.xsolution import XSolution
 
-    _xsolution_imported = True
+    xsolution_imported = True
     inheritance = XSolution
 except ImportError:
     inheritance = object
-    _xsolution_imported = False
+    xsolution_imported = False
 
 
 @_setdoc_pro(
@@ -62,7 +64,7 @@ class Solution(inheritance):
                  series: Series = None,
                  ):
 
-        if _xsolution_imported:
+        if xsolution_imported:
             super().__init__(grid, surfaces, series)
 
         self.grid = grid
@@ -101,7 +103,7 @@ class Solution(inheritance):
 
     def __repr__(self):
         return '\nLithology ids \n  %s \n' \
-               % (np.array2string(self.lith_block))
+            % (np.array2string(self.lith_block))
 
     def set_solution_to_regular_grid(self, values: Union[list, np.ndarray],
                                      compute_mesh: bool = True,
@@ -109,7 +111,7 @@ class Solution(inheritance):
         """If regular grid is active set all the solution objects dependent on them and compute mesh.
 
         Args:
-            values (list[np.array]): list with result of the theano evaluation (values returned by
+            values (list[np.array]): list with result of the aesara evaluation (values returned by
              :func:`gempy.compute_model` function):
 
                  - block_matrix
@@ -161,7 +163,7 @@ class Solution(inheritance):
         #  populate the topology object?
         self.fw_magnetics = sol[13]
 
-        if _xsolution_imported and to_subsurface is True:
+        if xsolution_imported and to_subsurface is True:
             self.set_values(sol)
             if compute_mesh is True:
                 try:
@@ -172,18 +174,24 @@ class Solution(inheritance):
 
     def set_solution_to_custom(self, values: Union[list, np.ndarray]):
         l0, l1 = self.grid.get_grid_args('custom')
-        self.custom = np.array(
-            [values[0][:, l0: l1], values[4][:, l0: l1].astype(float)])
+        self.custom = np.stack(  # * This has been changed recently. It could give problems how we slice the field
+            [values[0][:, l0: l1],
+             values[4][:, l0: l1].astype(float)]
+        )
 
     def set_solution_to_topography(self, values: Union[list, np.ndarray]):
         l0, l1 = self.grid.get_grid_args('topography')
-        self.geological_map = np.array(
-            [values[0][:, l0: l1], values[4][:, l0: l1].astype(float)])
+        self.geological_map = np.vstack(  # * This has been changed recently. It could give problems how we slice the field
+            [values[0][:, l0: l1],
+             values[4][:, l0: l1].astype(float)]
+        )
 
     def set_solution_to_sections(self, values: Union[list, np.ndarray]):
         l0, l1 = self.grid.get_grid_args('sections')
-        self.sections = np.array(
-            [values[0][:, l0: l1], values[4][:, l0: l1].astype(float)])
+        self.sections = np.vstack(  # * This has been changed recently. It could give problems how we slice the field
+            [values[0][:, l0: l1],
+             values[4][:, l0: l1].astype(float)]
+        )
 
     def set_values_to_regular_grid(self, values: Union[list, np.ndarray]):
         """Set all solution values to the correspondent attribute.
@@ -196,33 +204,29 @@ class Solution(inheritance):
             :class:`gempy.core.solutions.Solutions`
 
         """
-        regular_grid_length_l0, regular_grid_length_l1 = self.grid.get_grid_args(
-            'regular')
+        regular_grid_length_l0, regular_grid_length_l1 = self.grid.get_grid_args('regular')
 
         # Lithology final block
-        self.lith_block = values[0][0,
-                          regular_grid_length_l0: regular_grid_length_l1]
+        self.lith_block = values[0][0, regular_grid_length_l0: regular_grid_length_l1]
 
         # Properties
-        self.values_matrix = values[0][1:,
-                             regular_grid_length_l0: regular_grid_length_l1]
+        self.values_matrix = values[0][1:, regular_grid_length_l0: regular_grid_length_l1]
 
         # Axis 0 is the series. Axis 1 is the value
-        self.block_matrix = values[1][:, :,
-                            regular_grid_length_l0: regular_grid_length_l1]
 
+        self.block_matrix = values[1][:, :, regular_grid_length_l0: regular_grid_length_l1]
         self.fault_block = values[2]
+        #self.block_matrix = values[1][:, :,
+        #                    regular_grid_length_l0: regular_grid_length_l1]
+
+        #self.fault_block = values[2][0,
+        #                  regular_grid_length_l0: regular_grid_length_l1]
+
         # This here does not make any sense
         self.weights_vector = values[3]
-
-        self.scalar_field_matrix = values[4][:,
-                                   regular_grid_length_l0: regular_grid_length_l1]
-
-        self.mask_matrix = values[6][:,
-                           regular_grid_length_l0: regular_grid_length_l1]
-
-        self.fault_mask = values[7][:,
-                          regular_grid_length_l0: regular_grid_length_l1]
+        self.scalar_field_matrix = values[4][:, regular_grid_length_l0: regular_grid_length_l1]
+        self.mask_matrix = values[6][:, regular_grid_length_l0: regular_grid_length_l1]
+        self.fault_mask = values[7][:, regular_grid_length_l0: regular_grid_length_l1]
 
         # TODO add topology solutions
 
@@ -263,7 +267,9 @@ class Solution(inheritance):
         spacing = self.grid.regular_grid.get_dx_dy_dz(rescale=rescale)
         vertices, simplices, normals, values = measure.marching_cubes(
             scalar_field.reshape(rg.resolution),
-            level, spacing=spacing, mask=mask_array, **kwargs)
+            level,
+            spacing=spacing,
+            mask=mask_array, **kwargs)
         idx = [0, 2, 4]
         loc_0 = rg.extent_r[idx] if rescale else rg.extent[idx]
         loc_0 = loc_0 + np.array(spacing) / 2
@@ -286,11 +292,14 @@ class Solution(inheritance):
         self.mask_matrix_pad = []
         series_type = self.stack.df['BottomRelation']
         for e, mask_series in enumerate(self.mask_matrix):
-            mask_series_reshape = mask_series.reshape(
-                self.grid.regular_grid.resolution)
+            mask_series_reshape = mask_series.reshape(self.grid.regular_grid.resolution)
 
-            mask_pad = (mask_series_reshape + find_interfaces_from_block_bottoms(
-                mask_series_reshape, True, shift=shift))
+            interfaces_from_block_bottoms = find_interfaces_from_block_bottoms(
+                block=mask_series_reshape,
+                value=True,
+                shift=shift
+            )
+            mask_pad = mask_series_reshape + interfaces_from_block_bottoms
 
             if series_type[e] == 'Fault':
                 mask_pad = np.invert(mask_pad)
@@ -321,37 +330,32 @@ class Solution(inheritance):
             mask_topography=mask_topography
         )
         series_type = self.stack.df['BottomRelation']
-        s_n = 0
+        series_number = 0
         active_indices = self.surfaces.df.groupby('isActive').groups[True]
         rescale = kwargs.pop('rescale', False)
 
         # We loop the scalar fields
         for e, scalar_field in enumerate(self.scalar_field_matrix):
-
             # Drop
-            mask_array, sfas = self.prepare_marching_cubes_args(e,
-                                                                masked_marching_cubes,
-                                                                series_type)
+            mask_array, sfas = self._prepare_marching_cubes_args(
+                stack_number=e,
+                masked_marching_cubes=masked_marching_cubes,
+                series_type=series_type
+            )
+            
             for level in sfas:
-                s, v = self.try_compute_marching_cubes_on_the_regular_grid(
-                    level,
-                    mask_array,
-                    rescale,
-                    s_n,
-                    scalar_field,
-                    kwargs
+                simpleces, vertices = self._try_compute_marching_cubes_on_the_regular_grid(
+                    level=level,
+                    mask_array=mask_array,
+                    rescale=rescale,
+                    s_n=series_number,
+                    scalar_field=scalar_field,
+                    kwargs=kwargs
                 )
-                s_n = self.set_vertices_edges(active_indices, s, s_n, v)
+                series_number = self.set_vertices_edges(active_indices, simpleces, series_number, vertices)
         return self.vertices, self.edges
 
-    def try_compute_marching_cubes_on_the_regular_grid(
-            self,
-            level,
-            mask_array,
-            rescale,
-            s_n,
-            scalar_field,
-            kwargs):
+    def _try_compute_marching_cubes_on_the_regular_grid(self, level, mask_array, rescale, s_n, scalar_field, kwargs):
         try:
             v, s, norm, val = self.compute_marching_cubes_regular_grid(
                 level, scalar_field, mask_array, rescale=rescale, **kwargs)
@@ -372,15 +376,15 @@ class Solution(inheritance):
         s_n += 1
         return s_n
 
-    def prepare_marching_cubes_args(self, e, masked_marching_cubes, series_type):
+    def _prepare_marching_cubes_args(self, stack_number, masked_marching_cubes, series_type):
 
-        sfas = self.scalar_field_at_surface_points[e]
+        sfas = self.scalar_field_at_surface_points[stack_number]
         sfas = sfas[np.nonzero(sfas)]
         if masked_marching_cubes is True:
-            if series_type[e - 1] == 'Onlap' and series_type[e - 2] == 'Erosion':
-                mask_array = self.mask_matrix_pad[e-1]
+            if series_type[stack_number - 1] == 'Onlap' and series_type[stack_number - 2] == 'Erosion':
+                mask_array = self.mask_matrix_pad[stack_number - 1]
             else:
-                mask_array = self.mask_matrix_pad[e]
+                mask_array = self.mask_matrix_pad[stack_number]
 
         else:
             mask_array = None

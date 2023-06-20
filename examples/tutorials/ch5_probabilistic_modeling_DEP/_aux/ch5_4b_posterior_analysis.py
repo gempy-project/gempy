@@ -5,7 +5,7 @@
  # These two lines are necessary only if GemPy is not installed
 import sys, os
 sys.path.append("../../gempy")
-os.environ["THEANO_FLAGS"] = "mode=FAST_RUN,device=cuda"
+os.environ["aesara_FLAGS"] = "mode=FAST_RUN,device=cuda"
 
 # Importing GemPy
 import gempy as gp
@@ -17,7 +17,7 @@ from examples.tutorials.ch5_probabilistic_modeling_DEP.aux_functions.DEP_aux_fun
 # Importing auxiliary libraries
 import numpy as np
 import matplotlib.pyplot as plt
-import pymc3 as pm
+import pymc as pm
 import arviz as az
 
 
@@ -187,7 +187,7 @@ geo_model.set_active_grid('regular', reset=True)
 
 # %% 
 gp.set_interpolator(geo_model, output=['geology'],  gradient=False,
-                    theano_optimizer='fast_run') 
+                    aesara_optimizer='fast_run') 
 
 # %% 
 gp.compute_model(geo_model)

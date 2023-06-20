@@ -5,11 +5,11 @@
 
 import numpy as np
 import pandas as pd
-from gempy.core.data import Grid
+from gempy import Grid
 from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 unused import
 import matplotlib.pyplot as plt
 
-pd.set_option('precision', 2)
+pd.set_option('display.precision', 2)
 np.random.seed(55500)
 
 # %%

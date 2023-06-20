@@ -14,7 +14,7 @@ Model 7 - Combination
 import gempy as gp
 
 import pandas as pd
-pd.set_option('precision', 2)
+pd.set_option('display.precision', 2)
 
 # %%
 # Creating the model by importing the input data and displaying it:
@@ -52,7 +52,7 @@ gp.plot_2d(geo_data, direction='y')
 #
 
 # %%
-interp_data = gp.set_interpolator(geo_data, theano_optimizer='fast_compile')
+interp_data = gp.set_interpolator(geo_data, aesara_optimizer='fast_compile')
 
 # %%
 sol = gp.compute_model(geo_data)
@@ -72,4 +72,4 @@ gp.plot_2d(geo_data, cell_number=5,
 
 # %%
 gp.plot_3d(geo_data)
-gp.save_model(geo_data)
+#gp.save_model(geo_data)

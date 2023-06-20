@@ -12,7 +12,7 @@ import gempy as gp
 import numpy as np
 import pandas as pn
 import matplotlib
-import theano
+import aesara
 
 # %%
 # Choose a model and load the corresponding data set in the line below
@@ -102,10 +102,10 @@ def create_example(name_model, interpolator=None, save_pickle=False, plot_sectio
 
     # Interpolation and Computation
     if interpolator is None:
-        interp_data = gp.set_interpolator(geo_data, theano_optimizer='fast_run')
+        interp_data = gp.set_interpolator(geo_data, aesara_optimizer='fast_run')
     else:
         interp_data = interpolator
-        geo_data.set_theano_function(interpolator)
+        geo_data.set_aesara_function(interpolator)
     sol = gp.compute_model(geo_data)
 
     if plot_section is True:
