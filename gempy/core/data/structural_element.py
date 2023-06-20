@@ -1,5 +1,6 @@
 ﻿import re
 from dataclasses import dataclass
+from typing import Optional
 
 import numpy as np
 
@@ -28,7 +29,7 @@ class StructuralElement:
     edges: np.ndarray
     scalar_field: float
 
-    def __init__(self, name, is_active, color):
+    def __init__(self, name: str, is_active: Optional[bool] = True, color: Optional[str] = None):
         self.name = name
         self.is_active = is_active
         self.color = color

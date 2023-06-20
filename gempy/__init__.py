@@ -21,12 +21,13 @@ SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.
 sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
 
 # =================== Core ===================
+from .core.data.geo_model import GeoModel
 # from .core.model import Project, ImplicitCoKriging
 # from .core.data import AdditionalData, Options, KrigingParameters
 # from .core.data_modules.stack import Faults, Series
 # from .core.structure import Structure
 # 
-# from .core.grid import Grid
+from .core.grid import Grid
 # from .core.surfaces import Surfaces
 # from .core.data_modules.scaling_system import ScalingSystem
 # from .core.data_modules.orientations import Orientations
