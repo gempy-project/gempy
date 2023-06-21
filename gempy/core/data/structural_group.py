@@ -1,9 +1,10 @@
-﻿from dataclasses import dataclass
+﻿from abc import ABC
+from dataclasses import dataclass
 from gempy.core.data.structural_element import StructuralElement
 
 
 @dataclass
-class StructuralGroup:
+class StructuralGroup(ABC):
     name: str
     elements: list[StructuralElement]
 
@@ -14,8 +15,8 @@ class StructuralGroup:
 
 @dataclass
 class Stack(StructuralGroup): 
-    pass
-
+    def __int__(self, name: str, elements: list[StructuralElement]):
+        super().__init__(name, elements)
 
 @dataclass
 class Fault(StructuralGroup): 

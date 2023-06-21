@@ -14,8 +14,6 @@ TODO:
 """
 
 
-
-
 @dataclass
 class StructuralElement:
     name: str
@@ -25,12 +23,19 @@ class StructuralElement:
     orientations: Orientations
 
     # Output
-    vertices: np.ndarray
-    edges: np.ndarray
-    scalar_field: float
-
-    def __init__(self, name: str, is_active: Optional[bool] = True, color: Optional[str] = None):
+    # ? Should we extract this to a separate class?
+    vertices: Optional[np.ndarray] = None
+    edges: Optional[np.ndarray] = None
+    scalar_field: Optional[float] = None
+    
+    
+    def __init__(self, name: str, surface_points: SurfacePoints, orientations: Orientations,
+                 is_active: Optional[bool] = True, color: Optional[str] = None):
         self.name = name
+        
+        self.surface_points = surface_points
+        self.orientations = orientations
+        
         self.is_active = is_active
         self.color = color
 

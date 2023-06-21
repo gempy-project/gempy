@@ -23,6 +23,10 @@ class GeoModel:
     input_data_descriptor: InputDataDescriptor  # ? This maybe is just a property
     interpolation_options: InterpolationOptions
     
-    def __init__(self, name):
+    def __init__(self, name: str, structural_frame: StructuralFrame, grid: Grid, 
+                 interpolation_options: InterpolationOptions):
         self.name = name
-        self.structural_frame = StructuralFrame()
+        self.structural_frame = structural_frame  # ? This could be Optional
+        
+        self.grid = grid
+        self.interpolation_options = interpolation_options
