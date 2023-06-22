@@ -7,6 +7,7 @@ from gempy.core.data.structural_element import StructuralElement
 from gempy.core.data.structural_frame import StructuralFrame
 from gempy.core.data.structural_group import Stack
 from gempy.core.data.surface_points import SurfacePoints
+from gempy_viewer.optional_dependencies import require_gempy_viewer
 
 """
 - [x] create data
@@ -115,5 +116,7 @@ def test_get_surface_df():
 
 
 def test_plot_input():
-    geo_model = test_create_geomodel()
-    gp.plot_2d(geo_model, direction=['y'])
+    geo_model: GeoModel = test_create_geomodel()
+    gp_viewer = require_gempy_viewer()
+    gp_viewer.plot_2d(geo_model, direction=['y'])
+    

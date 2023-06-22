@@ -18,6 +18,7 @@ class Stack(StructuralGroup):
     def __int__(self, name: str, elements: list[StructuralElement]):
         super().__init__(name, elements)
 
+
 @dataclass
 class Fault(StructuralGroup): 
     pass
