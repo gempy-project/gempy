@@ -8,6 +8,15 @@ from gempy.core.data.structural_frame import StructuralFrame
 from gempy.core.data.structural_group import Stack
 from gempy.core.data.surface_points import SurfacePoints
 
+"""
+- [x] create data
+- [x] map series
+- [ ] plot data
+- [ ] compute
+- [ ] plot results
+
+"""
+
 
 def test_read_input_points():
     data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
@@ -78,7 +87,13 @@ def test_create_structural_frame() -> StructuralFrame:
 
 
 def test_create_interpolation_options() -> gp.InterpolationOptions:
-    pass
+    
+    interpolation_options: gp.InterpolationOptions = gp.InterpolationOptions(
+        range=1,
+        c_o=1,
+    )
+    
+    return interpolation_options
     
 
 
@@ -91,3 +106,8 @@ def test_create_geomodel() -> GeoModel:
     )
     
     return geo_model
+
+
+def test_plot_input():
+    geo_model = test_create_geomodel()
+    gp.plot_2d(geo_model, direction=['y'])

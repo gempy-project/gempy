@@ -22,6 +22,7 @@ sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
 
 # =================== Core ===================
 from .core.data.geo_model import GeoModel
+from gempy_engine.core.data.options import InterpolationOptions
 # from .core.model import Project, ImplicitCoKriging
 # from .core.data import AdditionalData, Options, KrigingParameters
 # from .core.data_modules.stack import Faults, Series
@@ -47,6 +48,9 @@ from .core.grid import Grid
 # import gempy.plot.plot_api as plot
 # from .plot.plot_api import plot_2d, plot_3d
 # from .plot import _plot as _plot
+from gempy_viewer.plot_api import plot_2d, plot_3d
+
+__all__ = ['InterpolationOptions']
 
 # Assert at least pyton 3.10
 assert sys.version_info[0] >= 3 and sys.version_info[1] >= 10, "GemPy requires Python 3.10 or higher"

@@ -5,6 +5,7 @@ import numpy as np
 
 DEFAULT_NUGGET = 0.01
 
+# ? Maybe we should merge this with the SurfacePoints class from gempy_engine
 
 @dataclass
 class Orientations:

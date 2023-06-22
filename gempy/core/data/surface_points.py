@@ -6,6 +6,8 @@ import numpy as np
 DEFAULT_NUGGET = 0.00001
 
 
+# ? Maybe we should merge this with the SurfacePoints class from gempy_engine
+
 @dataclass
 class SurfacePoints:
     data: np.ndarray  # * (x, y, z, id, nugget) # 

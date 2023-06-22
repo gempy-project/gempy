@@ -1,7 +1,6 @@
 ﻿from dataclasses import dataclass
 
 from gempy_engine.core.data import InterpolationOptions
-from gempy_engine.core.data.input_data_descriptor import InputDataDescriptor
 from .structural_frame import StructuralFrame
 from ..grid import Grid
 
@@ -18,15 +17,16 @@ class GeoModel:
     name: str
     structural_frame: StructuralFrame
     grid: Grid
-    
+
     # GemPy engine data types?
-    input_data_descriptor: InputDataDescriptor  # ? This maybe is just a property
     interpolation_options: InterpolationOptions
-    
-    def __init__(self, name: str, structural_frame: StructuralFrame, grid: Grid, 
+
+    def __init__(self, name: str, structural_frame: StructuralFrame, grid: Grid,
                  interpolation_options: InterpolationOptions):
         self.name = name
         self.structural_frame = structural_frame  # ? This could be Optional
-        
+
         self.grid = grid
         self.interpolation_options = interpolation_options
+
+    
