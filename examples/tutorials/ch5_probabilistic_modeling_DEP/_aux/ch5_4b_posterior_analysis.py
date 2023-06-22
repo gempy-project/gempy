@@ -276,7 +276,7 @@ imageio.mimsave('./learning_cheap.gif', pictures[:500:3], fps=24)
 # 
 
 # %% 
-from gempy_viewer import vista
+from gempy_viewer.modules.plot_3d import vista
 import pyvista as pv
 from importlib import reload
 reload(vista)

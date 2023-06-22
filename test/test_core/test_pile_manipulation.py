@@ -128,7 +128,7 @@ def test_pile_geomodel_2(interpolator):
     gp.plot.plot_2d(geo_model, cell_number=25,
                          direction='y', show_data=True)
 
-    from gempy_viewer.plot_api import plot_2d
+    from gempy_viewer.API.plot_api import plot_2d
 
     p = plot_2d(geo_model, cell_number=[25])
 
@@ -162,7 +162,7 @@ def test_complete_model(tmpdir, interpolator):
     if compute is True:
         geo_model.set_aesara_function(interpolator)
 
-    from gempy_viewer import visualization_2d as vv
+    from gempy_viewer.modules.plot_2d import visualization_2d as vv
 
     # In this case perpendicular to the z axes
     p2d = vv.Plot2D(geo_model)

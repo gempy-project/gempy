@@ -48,7 +48,6 @@ from .core.grid import Grid
 # import gempy.plot.plot_api as plot
 # from .plot.plot_api import plot_2d, plot_3d
 # from .plot import _plot as _plot
-from gempy_viewer.plot_api import plot_2d, plot_3d
 
 __all__ = ['InterpolationOptions']
 
