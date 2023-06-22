@@ -108,6 +108,12 @@ def test_create_geomodel() -> GeoModel:
     return geo_model
 
 
+def test_get_surface_df():
+    geo_model = test_create_geomodel()
+    surfaces_df = "foo"
+    print(surfaces_df)
+
+
 def test_plot_input():
     geo_model = test_create_geomodel()
     gp.plot_2d(geo_model, direction=['y'])

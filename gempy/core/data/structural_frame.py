@@ -36,3 +36,23 @@ class StructuralFrame:
             tensors_structure=tensor_struct,
             stack_structure=stack_structure
         )
+
+    @property
+    def surfaces(self) -> list[StructuralElement]:
+        return self.structural_elements
+    
+    @property
+    def elements_names(self) -> list[str]:
+        return [element.name for element in self.structural_elements]
+    
+    @property
+    def elements_colors(self) -> list[str]:
+        return [element.color for element in self.structural_elements]
+    
+    @property
+    def surfaces_df(self) -> 'pd.DataFrame':
+        # TODO: Loop every structural element. Each element should be a row in the dataframe
+        # TODO: The columns have to be ['element, 'group', 'color']
+        
+        raise NotImplementedError
+        
