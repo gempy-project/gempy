@@ -55,4 +55,12 @@ class StructuralFrame:
         # TODO: The columns have to be ['element, 'group', 'color']
         
         raise NotImplementedError
+    
+    @property
+    def surfaces_points_df(self) -> 'pd.DataFrame':
+        raise NotImplementedError
+    
+    @property
+    def orientations_df(self) -> 'pd.DataFrame':
+        raise NotImplementedError
         

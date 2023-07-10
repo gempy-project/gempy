@@ -2,6 +2,7 @@
 
 from gempy_engine.core.data import InterpolationOptions
 from .structural_frame import StructuralFrame
+from .transforms import Transform
 from ..grid import Grid
 
 """
@@ -20,6 +21,7 @@ class GeoModel:
 
     # GemPy engine data types?
     interpolation_options: InterpolationOptions
+    transform: Transform
 
     def __init__(self, name: str, structural_frame: StructuralFrame, grid: Grid,
                  interpolation_options: InterpolationOptions):
@@ -28,5 +30,6 @@ class GeoModel:
 
         self.grid = grid
         self.interpolation_options = interpolation_options
+        self.transform = Transform()
 
     
