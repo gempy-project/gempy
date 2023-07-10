@@ -1,5 +1,6 @@
 ﻿import pooch
 import gempy as gp
+import gempy_viewer
 from gempy import GeoModel
 from gempy.API.io_API import read_orientations, read_surface_points
 from gempy.core.data.orientations import Orientations
@@ -117,6 +118,10 @@ def test_get_surface_df():
 
 def test_plot_input():
     geo_model: GeoModel = test_create_geomodel()
-    gp_viewer = require_gempy_viewer()
-    gp_viewer.plot_2d(geo_model, direction=['y'])
+    gp_viewer: gempy_viewer = require_gempy_viewer()
+    # TODO: Add all the plot data in a plot options class
+    
+    plot_options: gp_viewer.Plotting2DOptions = gp_viewer.Plotting2DOptions()
+    # TODO: Make options required
+    gp_viewer.plot_2d(geo_model, direction=['y'], plot_options=plot_options)
     
