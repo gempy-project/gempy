@@ -126,3 +126,14 @@ def test_plot_input():
     # TODO: Make options required
     gp_viewer.plot_2d(geo_model, direction=['y'], plot_options=plot_options, show_results=False)
     
+
+def test_interpolate_numpy():
+    geo_model: GeoModel = test_create_geomodel()
+
+
+def test_interpolate_aesara():
+    geo_model: GeoModel = test_create_geomodel()
+
+
+def test_plot_results():
+    pass

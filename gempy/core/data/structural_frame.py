@@ -2,13 +2,13 @@
 
 import numpy as np
 
+from gempy_engine.core.data.input_data_descriptor import InputDataDescriptor, TensorsStructure, StacksStructure, StackRelationType
+
 from .orientations import OrientationsTable
 from .structural_element import StructuralElement
 from .structural_group import StructuralGroup
-from gempy_engine.core.data.input_data_descriptor import InputDataDescriptor, TensorsStructure, StacksStructure, StackRelationType
 from .surface_points import SurfacePointsTable
 from ..color_generator import ColorsGenerator
-from ..colors import Colors
 
 
 @dataclass
@@ -19,6 +19,7 @@ class StructuralFrame:
     input_data_descriptor: InputDataDescriptor  # ? This maybe is just a property
     
     color_gen: ColorsGenerator = ColorsGenerator()  # ? Do I need a method to regenerate this?
+    is_dirty: bool = True  # This changes when the structural frame is modified
     
     def __init__(self, structural_groups: list[StructuralGroup], structural_elements: list[StructuralElement]):
         self.structural_groups = structural_groups  # ? This maybe could be optional
@@ -54,6 +55,11 @@ class StructuralFrame:
     @property
     def elements_colors(self) -> list[str]:
         return [element.color for element in self.structural_elements]
+    
+    @property
+    def elements_ids(self) -> list[int]:
+        """Return id given by the order of the structural elements"""
+        return list(range(len(self.structural_elements)))
     
     @property
     def surface_points(self) -> SurfacePointsTable:

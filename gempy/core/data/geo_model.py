@@ -32,10 +32,11 @@ class GeoModel:
     transform: Transform
     
     # region GemPy engine data types
-    _interpolationInput: InterpolationInput  # * This has to be fed by structural_frame
     interpolation_options: InterpolationOptions  # * This has to be fed by USER
-    _input_data_descriptor: InputDataDescriptor  # * This has to be fed by structural_frame
     interpolation_grid: gempy_engine.core.data.grid.Grid
+    
+    _interpolationInput: InterpolationInput  # * This has to be fed by structural_frame
+    _input_data_descriptor: InputDataDescriptor  # * This has to be fed by structural_frame
     
     # endregion
 
@@ -62,3 +63,12 @@ class GeoModel:
     @property
     def orientations(self):
         return self.structural_frame.orientations
+    
+    @property
+    def interpolation_input(self):
+        if self.structural_frame.is_dirty:
+            self._interpolationInput = InterpolationInput.from_structural_frame(
+                structural_frame=self.structural_frame,
+                grid=self.grid
+            )
+        return self._interpolationInput
