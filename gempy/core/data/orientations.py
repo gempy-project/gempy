@@ -14,7 +14,10 @@ DEFAULT_NUGGET = 0.01
 class OrientationsTable:
     data: np.ndarray
     name_id_map: Optional[dict[str, int]] = None  # ? Do I need this here or this should be a field of StructuralFrame?
-    
+
+    def __len__(self):
+        return len(self.data)
+
     @classmethod
     def from_arrays(cls, x: np.ndarray, y: np.ndarray, z: np.ndarray,
                     G_x: np.ndarray, G_y: np.ndarray, G_z: np.ndarray,

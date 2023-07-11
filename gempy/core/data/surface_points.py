@@ -36,7 +36,6 @@ class SurfacePointsTable:
     def xyz(self) -> np.ndarray:
         return np.array([self.data['X'], self.data['Y'], self.data['Z']]).T
     
-    # define len() for this class
     def __len__(self):
         return len(self.data)
     
