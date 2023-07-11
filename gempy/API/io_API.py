@@ -86,6 +86,6 @@ def _add_gradient_columns(df):
         # Convert azimuth, dip, polarity to gradient
         df['G_x'] = np.sin(np.deg2rad(df['dip'])) * np.sin(np.deg2rad(df['azimuth'])) * df['polarity']
         df['G_y'] = np.sin(np.deg2rad(df['dip'])) * np.cos(np.deg2rad(df['azimuth'])) * df['polarity']
-        df['G_z'] = -np.cos(np.deg2rad(df['dip'])) * df['polarity']
+        df['G_z'] = np.cos(np.deg2rad(df['dip'])) * df['polarity']
 
     return df
