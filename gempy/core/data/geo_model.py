@@ -32,9 +32,9 @@ class GeoModel:
     transform: Transform
     
     # region GemPy engine data types
-    interpolationInput: InterpolationInput
-    interpolation_options: InterpolationOptions
-    _input_data_descriptor: InputDataDescriptor
+    _interpolationInput: InterpolationInput  # * This has to be fed by structural_frame
+    interpolation_options: InterpolationOptions  # * This has to be fed by USER
+    _input_data_descriptor: InputDataDescriptor  # * This has to be fed by structural_frame
     interpolation_grid: gempy_engine.core.data.grid.Grid
     
     # endregion

@@ -3,11 +3,11 @@ import gempy as gp
 import gempy_viewer
 from gempy import GeoModel
 from gempy.API.io_API import read_orientations, read_surface_points
-from gempy.core.data.orientations import Orientations
+from gempy.core.data.orientationstable import OrientationsTable
 from gempy.core.data.structural_element import StructuralElement
 from gempy.core.data.structural_frame import StructuralFrame
 from gempy.core.data.structural_group import Stack
-from gempy.core.data.surface_points import SurfacePoints
+from gempy.core.data.surface_points import SurfacePointsTable
 from gempy_viewer.optional_dependencies import require_gempy_viewer
 
 """
@@ -35,11 +35,11 @@ def test_read_input_points():
     print(pooch.file_hash(surface_points_file))
     print(pooch.file_hash(orientations_file))
 
-    surface_points: SurfacePoints = read_surface_points(
+    surface_points: SurfacePointsTable = read_surface_points(
         path=surface_points_file,
     )
 
-    orientations: Orientations = read_orientations(
+    orientations: OrientationsTable = read_orientations(
         path=orientations_file
     )
 
@@ -110,10 +110,10 @@ def test_create_geomodel() -> GeoModel:
     return geo_model
 
 
-def test_get_surface_df():
-    geo_model = test_create_geomodel()
-    surfaces_df = "foo"
-    print(surfaces_df)
+def test_structural_frame_surface_points():
+    structural_frame: StructuralFrame = test_create_structural_frame()
+    print(structural_frame.surface_points)
+    pass
 
 
 def test_plot_input():

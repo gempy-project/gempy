@@ -4,8 +4,8 @@ from typing import Optional
 
 import numpy as np
 
-from .orientations import Orientations
-from .surface_points import SurfacePoints
+from .orientationstable import OrientationsTable
+from .surface_points import SurfacePointsTable
 
 """
 TODO:
@@ -19,8 +19,8 @@ class StructuralElement:
     name: str
     is_active: bool
     _color: str
-    surface_points: SurfacePoints
-    orientations: Orientations
+    surface_points: SurfacePointsTable
+    orientations: OrientationsTable
 
     # Output
     # ? Should we extract this to a separate class?
@@ -29,7 +29,7 @@ class StructuralElement:
     scalar_field: Optional[float] = None
     
     
-    def __init__(self, name: str, surface_points: SurfacePoints, orientations: Orientations,
+    def __init__(self, name: str, surface_points: SurfacePointsTable, orientations: OrientationsTable,
                  is_active: Optional[bool] = True, color: Optional[str] = None):
         self.name = name
         
