@@ -68,7 +68,8 @@ def test_create_structural_frame() -> StructuralFrame:
             name="layer1",
             surface_points=surface_points_groups[i],
             orientations=orientations_groups[i],
-            color="#000000"
+            color= next(StructuralFrame.color_gen),
+            # color="#000000"  # TODO: We need a generator for the colors
         )
 
         structural_elements.append(structural_element)

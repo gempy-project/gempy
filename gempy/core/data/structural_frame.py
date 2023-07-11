@@ -7,6 +7,8 @@ from .structural_element import StructuralElement
 from .structural_group import StructuralGroup
 from gempy_engine.core.data.input_data_descriptor import InputDataDescriptor, TensorsStructure, StacksStructure, StackRelationType
 from .surface_points import SurfacePointsTable
+from ..color_generator import ColorsGenerator
+from ..colors import Colors
 
 
 @dataclass
@@ -15,7 +17,9 @@ class StructuralFrame:
     structural_elements: list[StructuralElement]
 
     input_data_descriptor: InputDataDescriptor  # ? This maybe is just a property
-
+    
+    color_gen: ColorsGenerator = ColorsGenerator()  # ? Do I need a method to regenerate this?
+    
     def __init__(self, structural_groups: list[StructuralGroup], structural_elements: list[StructuralElement]):
         self.structural_groups = structural_groups  # ? This maybe could be optional
         self.structural_elements = structural_elements
@@ -86,14 +90,5 @@ class StructuralFrame:
         # TODO: The columns have to be ['element, 'group', 'color']
         
         raise NotImplementedError
-    
-    @property
-    def surfaces_points_df(self) -> 'pd.DataFrame':
-        raise NotImplementedError
-    
-    @property
-    def orientations_df(self) -> 'pd.DataFrame':
-        raise NotImplementedError
-    
     # endregion
         
