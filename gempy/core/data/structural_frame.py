@@ -2,6 +2,7 @@
 
 import numpy as np
 
+from .orientations import OrientationsTable
 from .structural_element import StructuralElement
 from .structural_group import StructuralGroup
 from gempy_engine.core.data.input_data_descriptor import InputDataDescriptor, TensorsStructure, StacksStructure, StackRelationType
@@ -55,14 +56,10 @@ class StructuralFrame:
         all_data: np.ndarray = np.concatenate([element.surface_points.data for element in self.structural_elements])
         return SurfacePointsTable(data=all_data)
         
-    
     @property
-    def orientations_list(self) -> list[np.ndarray]:
-        return [element.orientations for element in self.structural_elements]
-    
-    @property
-    def orientations(self) -> np.ndarray:
-        return np.concatenate(self.orientations_list)
+    def orientations(self) -> OrientationsTable:
+        all_data: np.ndarray = np.concatenate([element.orientations.data for element in self.structural_elements])
+        return OrientationsTable(data=all_data)
     
     # region Depends on Pandas
     @property

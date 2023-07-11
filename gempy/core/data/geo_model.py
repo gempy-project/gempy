@@ -54,3 +54,11 @@ class GeoModel:
         self.grid = grid
         self.interpolation_options = interpolation_options
         self.transform = Transform()
+    
+    @property
+    def surface_points(self):
+        return self.structural_frame.surface_points
+    
+    @property
+    def orientations(self):
+        return self.structural_frame.orientations

@@ -4,7 +4,7 @@ from typing import Optional
 
 import numpy as np
 
-from .orientationstable import OrientationsTable
+from .orientations import OrientationsTable
 from .surface_points import SurfacePointsTable
 
 """

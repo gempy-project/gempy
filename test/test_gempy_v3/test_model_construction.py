@@ -3,7 +3,7 @@ import gempy as gp
 import gempy_viewer
 from gempy import GeoModel
 from gempy.API.io_API import read_orientations, read_surface_points
-from gempy.core.data.orientationstable import OrientationsTable
+from gempy.core.data.orientations import OrientationsTable
 from gempy.core.data.structural_element import StructuralElement
 from gempy.core.data.structural_frame import StructuralFrame
 from gempy.core.data.structural_group import Stack

@@ -1,6 +1,6 @@
 ﻿import numpy as np
 
-from gempy.core.data.orientationstable import OrientationsTable
+from gempy.core.data.orientations import OrientationsTable
 from gempy.core.data.surface_points import SurfacePointsTable
 from gempy.optional_dependencies import require_pandas
 
@@ -52,7 +52,7 @@ def read_orientations(
         G_x=csv_with_gradient[gx_name].values,
         G_y=csv_with_gradient[gy_name].values,
         G_z=csv_with_gradient[gz_name].values,
-        id=csv_with_gradient[surface_name].values  # TODO: This we will have to map it with StructuralFrame
+        names=csv_with_gradient[surface_name].values  # TODO: This we will have to map it with StructuralFrame
     )
 
     return orientations
