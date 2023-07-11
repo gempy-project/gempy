@@ -49,6 +49,7 @@ class StructuralFrame:
     def elements_colors(self) -> list[str]:
         return [element.color for element in self.structural_elements]
     
+    # region Depends on Pandas
     @property
     def surfaces_df(self) -> 'pd.DataFrame':
         # TODO: Loop every structural element. Each element should be a row in the dataframe
@@ -63,4 +64,6 @@ class StructuralFrame:
     @property
     def orientations_df(self) -> 'pd.DataFrame':
         raise NotImplementedError
+    
+    # endregion
         

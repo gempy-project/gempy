@@ -1,6 +1,9 @@
 ﻿from dataclasses import dataclass
 
+import gempy_engine.core.data.grid
 from gempy_engine.core.data import InterpolationOptions
+from gempy_engine.core.data.input_data_descriptor import InputDataDescriptor
+from gempy_engine.core.data.interpolation_input import InterpolationInput
 from .structural_frame import StructuralFrame
 from .transforms import Transform
 from ..grid import Grid
@@ -13,23 +16,41 @@ TODO:
 """
 
 
+@dataclass
+class GeoModelMeta:
+    name: str
+    creation_date: str
+    last_modification_date: str
+    owner: str
+
+
 @dataclass(init=False)
 class GeoModel:
-    name: str
+    meta: GeoModelMeta
     structural_frame: StructuralFrame
-    grid: Grid
-
-    # GemPy engine data types?
-    interpolation_options: InterpolationOptions
+    grid: Grid  # * This is the general gempy grid
     transform: Transform
+    
+    # region GemPy engine data types
+    interpolationInput: InterpolationInput
+    interpolation_options: InterpolationOptions
+    _input_data_descriptor: InputDataDescriptor
+    interpolation_grid: gempy_engine.core.data.grid.Grid
+    
+    # endregion
 
     def __init__(self, name: str, structural_frame: StructuralFrame, grid: Grid,
                  interpolation_options: InterpolationOptions):
-        self.name = name
+        # TODO: Fill the arguments properly
+        self.meta = GeoModelMeta(
+            name=name,
+            creation_date=None,
+            last_modification_date=None,
+            owner=None
+        )
+        
         self.structural_frame = structural_frame  # ? This could be Optional
 
         self.grid = grid
         self.interpolation_options = interpolation_options
         self.transform = Transform()
-
-    
