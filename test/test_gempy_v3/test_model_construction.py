@@ -123,5 +123,5 @@ def test_plot_input():
     
     plot_options: gp_viewer.Plotting2DOptions = gp_viewer.Plotting2DOptions()
     # TODO: Make options required
-    gp_viewer.plot_2d(geo_model, direction=['y'], plot_options=plot_options)
+    gp_viewer.plot_2d(geo_model, direction=['y'], plot_options=plot_options, show_results=False)
     

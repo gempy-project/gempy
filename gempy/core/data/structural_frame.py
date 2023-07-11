@@ -57,6 +57,15 @@ class StructuralFrame:
         return SurfacePointsTable(data=all_data)
         
     @property
+    def surface_points_colors(self) -> list[str]:
+        """Using the id record of surface_points map the elements colors to each point"""
+        elements_colors = self.elements_colors
+        surface_points = self.surface_points
+        surface_points_id = surface_points.data['id']
+        
+        return [elements_colors[surface_points_id[i]] for i in range(len(surface_points))]
+        
+    @property
     def orientations(self) -> OrientationsTable:
         all_data: np.ndarray = np.concatenate([element.orientations.data for element in self.structural_elements])
         return OrientationsTable(data=all_data)

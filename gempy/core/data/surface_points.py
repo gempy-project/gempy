@@ -36,6 +36,10 @@ class SurfacePointsTable:
     def xyz(self) -> np.ndarray:
         return np.array([self.data['X'], self.data['Y'], self.data['Z']]).T
     
+    # define len() for this class
+    def __len__(self):
+        return len(self.data)
+    
     def get_surface_points_by_name(self, name: str) -> 'SurfacePointsTable':
         return self.get_surface_points_by_id(self.name_id_map[name])
 
