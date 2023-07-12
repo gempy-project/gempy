@@ -57,6 +57,10 @@ class StructuralFrame:
         return self.structural_elements
     
     @property
+    def number_of_elements(self) -> int:
+        return len(self.structural_elements)
+    
+    @property
     def elements_names(self) -> list[str]:
         return [element.name for element in self.structural_elements]
     

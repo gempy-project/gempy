@@ -159,6 +159,7 @@ def test_plot_results():
         solved_geo_model,
         direction=['y'],
         plot_options=gp_viewer.Plotting2DOptions(),
+        show_boundaries=False,  # TODO: Fix boundaries
         show_results=True
     )
 

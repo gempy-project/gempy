@@ -49,7 +49,7 @@ from .core.grid import Grid
 # from .plot.plot_api import plot_2d, plot_3d
 # from .plot import _plot as _plot
 
-__all__ = ['InterpolationOptions']
+__all__ = ['InterpolationOptions', 'GeoModel', 'Grid']
 
 # Assert at least pyton 3.10
 assert sys.version_info[0] >= 3 and sys.version_info[1] >= 10, "GemPy requires Python 3.10 or higher"
