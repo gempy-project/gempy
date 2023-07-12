@@ -38,6 +38,14 @@ class StructuralElement:
         
         self.is_active = is_active
         self.color = color
+    
+    @property
+    def number_of_points(self) -> int:
+        return len(self.surface_points)
+    
+    @property
+    def number_of_orientations(self) -> int:
+        return len(self.orientations)
 
     @property
     def color(self):

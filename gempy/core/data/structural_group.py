@@ -11,6 +11,18 @@ class StructuralGroup(ABC):
     @property
     def id(self):
         raise NotImplementedError
+    
+    @property
+    def number_of_points(self) -> int:
+        return sum([element.number_of_points for element in self.elements])
+    
+    @property
+    def number_of_orientations(self) -> int:
+        return sum([element.number_of_orientations for element in self.elements])
+    
+    @property
+    def number_of_elements(self) -> int:
+        return len(self.elements)
 
 
 @dataclass

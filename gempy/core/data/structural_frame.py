@@ -18,6 +18,8 @@ class StructuralFrame:
     structural_groups: list[StructuralGroup]  # ? should this be lazy?
     structural_elements: list[StructuralElement]
 
+    # ? Should I create some sort of structural options class? For example, the masking descriptor and faults relations pointer
+
     input_data_descriptor: InputDataDescriptor  # ? This maybe is just a property
     
     color_gen: ColorsGenerator = ColorsGenerator()  # ? Do I need a method to regenerate this?
@@ -29,22 +31,25 @@ class StructuralFrame:
 
     @property
     def input_data_descriptor(self) -> InputDataDescriptor:
-        tensor_struct = TensorsStructure(
-            number_of_points_per_surface=np.array([9, 12, 12, 13, 12, 12])
-        )
-
-        stack_structure = StacksStructure(
-            number_of_points_per_stack=np.array([9, 24, 37]),
-            number_of_orientations_per_stack=np.array([1, 4, 6]),
-            number_of_surfaces_per_stack=np.array([1, 2, 3]),
-            masking_descriptor=[StackRelationType.FAULT, StackRelationType.ERODE, StackRelationType.ERODE],
-            faults_relations=None
-        )
-
-        return InputDataDescriptor(
-            tensors_structure=tensor_struct,
-            stack_structure=stack_structure
-        )
+        # * If I want to have this property I need to have the masking descriptor and faults relations pointer in this class
+        # ? Should I create some sort of structural options class?
+        raise NotImplementedError
+    
+    @property
+    def number_of_points_per_element(self) -> np.ndarray:
+        return np.array([element.number_of_points for element in self.structural_elements])
+    
+    @property
+    def number_of_points_per_group(self) -> np.ndarray:
+        return np.array([group.number_of_points for group in self.structural_groups])
+    
+    @property
+    def number_of_orientations_per_group(self) -> np.ndarray:
+        return np.array([group.number_of_orientations for group in self.structural_groups])
+    
+    @property
+    def number_of_elements_per_group(self) -> np.ndarray:
+        return np.array([group.number_of_elements for group in self.structural_groups])
 
     @property
     def surfaces(self) -> list[StructuralElement]:
