@@ -1,5 +1,6 @@
 ﻿import pooch
 import gempy as gp
+import gempy_engine.core.data.solutions
 import gempy_viewer
 from gempy import GeoModel
 from gempy.API.io_API import read_orientations, read_surface_points
@@ -69,7 +70,6 @@ def test_create_structural_frame() -> StructuralFrame:
             surface_points=surface_points_groups[i],
             orientations=orientations_groups[i],
             color= next(StructuralFrame.color_gen),
-            # color="#000000"  # TODO: We need a generator for the colors
         )
 
         structural_elements.append(structural_element)
@@ -129,6 +129,14 @@ def test_plot_input():
 
 def test_interpolate_numpy():
     geo_model: GeoModel = test_create_geomodel()
+    
+    solutions: gempy_engine.core.data.solutions.Solutions = gempy_engine.compute_model(
+        interpolation_input=geo_model.interpolation_input,
+        options=geo_model.interpolation_options,
+        data_descriptor=geo_model.input_data_descriptor
+    )
+    
+    return solutions
 
 
 def test_interpolate_aesara():

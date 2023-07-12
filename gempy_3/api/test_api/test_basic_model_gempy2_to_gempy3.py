@@ -25,6 +25,7 @@ import sys  # These two lines are necessary only if GemPy is not installed
 
 sys.path.append("../..")
 
+
 @pytest.mark.skipif(IN_GITHUB_ACTIONS, reason="Only runs once gempy 3 is published.")
 def test_set_gempy3_gempy2_bridge():
     """

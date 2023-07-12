@@ -2,7 +2,7 @@
 
 import gempy_engine.core.data.grid
 from gempy_engine.core.data import InterpolationOptions
-from gempy_engine.core.data.input_data_descriptor import InputDataDescriptor
+from gempy_engine.core.data.input_data_descriptor import InputDataDescriptor, StackRelationType
 from gempy_engine.core.data.interpolation_input import InterpolationInput
 from .structural_frame import StructuralFrame
 from .transforms import Transform
@@ -72,3 +72,15 @@ class GeoModel:
                 grid=self.grid
             )
         return self._interpolationInput
+    
+    
+    @property
+    def input_data_descriptor(self):
+        # TODO: This should have the exact same dirty logic as interpolation_input
+        return InputDataDescriptor.from_structural_frame(
+            structural_frame=self.structural_frame,
+            making_descriptor=[StackRelationType.ERODE],
+            faults_relations=None
+        )
+        
+        
