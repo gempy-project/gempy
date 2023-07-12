@@ -52,7 +52,7 @@ def test_create_grid() -> gp.Grid:
         extent=[0, 1000, 0, 1000, 0, 1000],
         resolution=[50, 50, 50]
     )
-    
+
     return grid
 
 
@@ -69,7 +69,7 @@ def test_create_structural_frame() -> StructuralFrame:
             name="layer1",
             surface_points=surface_points_groups[i],
             orientations=orientations_groups[i],
-            color= next(StructuralFrame.color_gen),
+            color=next(StructuralFrame.color_gen),
         )
 
         structural_elements.append(structural_element)
@@ -90,14 +90,12 @@ def test_create_structural_frame() -> StructuralFrame:
 
 
 def test_create_interpolation_options() -> gp.InterpolationOptions:
-    
     interpolation_options: gp.InterpolationOptions = gp.InterpolationOptions(
         range=1,
         c_o=1,
     )
-    
+
     return interpolation_options
-    
 
 
 def test_create_geomodel() -> GeoModel:
@@ -105,9 +103,9 @@ def test_create_geomodel() -> GeoModel:
         name="horizontal",
         structural_frame=test_create_structural_frame(),
         grid=test_create_grid(),
-        interpolation_options = test_create_interpolation_options()
+        interpolation_options=test_create_interpolation_options()
     )
-    
+
     return geo_model
 
 
@@ -121,24 +119,24 @@ def test_plot_input():
     geo_model: GeoModel = test_create_geomodel()
     gp_viewer: gempy_viewer = require_gempy_viewer()
     # TODO: Add all the plot data in a plot options class
-    
+
     plot_options: gp_viewer.Plotting2DOptions = gp_viewer.Plotting2DOptions()
     # TODO: Make options required
     gp_viewer.plot_2d(geo_model, direction=['y'], plot_options=plot_options, show_results=False)
-    
+
 
 def test_interpolate_numpy():
     geo_model: GeoModel = test_create_geomodel()
-    
+
     solutions: gempy_engine.core.data.solutions.Solutions = gempy_engine.compute_model(
         interpolation_input=geo_model.interpolation_input,
         options=geo_model.interpolation_options,
         data_descriptor=geo_model.input_data_descriptor
     )
     print(solutions)
-    
+
     # TODO: Use gempy API
-    
+
     return solutions
 
 
@@ -147,4 +145,5 @@ def test_interpolate_aesara():
 
 
 def test_plot_results():
-    pass
+    solutions: gempy_engine.core.data.solutions.Solutions = test_interpolate_numpy()
+   

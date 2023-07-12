@@ -15,7 +15,7 @@ def set_gp3_solutions_to_gp2_solution(gp3_solution: Solutions, geo_model: Projec
     regular_grid_scalar = get_regular_grid_value_for_level(gp3_solution.octrees_output).astype("int8")
 
     _set_block_matrix(geo_model, octree_output)
-    _set_lith_block(geo_model, octree_output, regular_grid_scalar)
+    _set_lith_block(geo_model, octree_output)
     _set_scalar_field(geo_model, octree_output)
 
     _set_scalar_field_at_surface_points(geo_model, octree_output)
@@ -81,7 +81,7 @@ def _set_scalar_field_at_surface_points(geo_model: Project, octree_output: Octre
     return geo_model
 
 
-def _set_lith_block(geo_model: Project, octree_output: OctreeLevel, scalar) -> Project:
+def _set_lith_block(geo_model: Project, octree_output: OctreeLevel) -> Project:
     block = octree_output.last_output_center.ids_block
     block[block == 0] = block.max() + 1
     geo_model.solutions.lith_block = block
