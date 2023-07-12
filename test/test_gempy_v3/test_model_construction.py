@@ -50,7 +50,7 @@ def test_read_input_points():
 def test_create_grid() -> gp.Grid:
     grid: gp.Grid = gp.Grid(
         extent=[0, 1000, 0, 1000, 0, 1000],
-        resolution=[50, 50, 50]
+        resolution=[50, 5, 50]
     )
 
     return grid
@@ -90,9 +90,10 @@ def test_create_structural_frame() -> StructuralFrame:
 
 
 def test_create_interpolation_options() -> gp.InterpolationOptions:
+    range_ = 1000.0
     interpolation_options: gp.InterpolationOptions = gp.InterpolationOptions(
-        range=1,
-        c_o=1,
+        range=range_,
+        c_o=( range_ ** 2 ) / 14 / 3,
     )
 
     return interpolation_options
