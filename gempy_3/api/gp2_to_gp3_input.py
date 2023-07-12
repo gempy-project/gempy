@@ -1,9 +1,10 @@
 import numpy as np
 
 from gempy import Project
-from gempy_engine.core.data import SurfacePoints, Orientations, InterpolationOptions
+from gempy_engine.core.data import SurfacePoints, Orientations, InterpolationOptions, TensorsStructure
 from gempy_engine.core.data.grid import RegularGrid, Grid
-from gempy_engine.core.data.input_data_descriptor import InputDataDescriptor, StacksStructure, StackRelationType, TensorsStructure
+from gempy_engine.core.data.input_data_descriptor import InputDataDescriptor, StackRelationType
+from gempy_engine.core.data.stacks_structure import StacksStructure
 from gempy_engine.core.data.interpolation_input import InterpolationInput
 from gempy_engine.core.data.kernel_classes.kernel_functions import AvailableKernelFunctions
 from gempy_engine.core.data.options import DualContouringMaskingOptions

@@ -2,7 +2,9 @@
 
 import numpy as np
 
-from gempy_engine.core.data.input_data_descriptor import InputDataDescriptor, TensorsStructure, StacksStructure, StackRelationType
+from gempy_engine.core.data.input_data_descriptor import InputDataDescriptor, StackRelationType
+from gempy_engine.core.data import TensorsStructure
+from gempy_engine.core.data.stacks_structure import StacksStructure
 
 from .orientations import OrientationsTable
 from .structural_element import StructuralElement
