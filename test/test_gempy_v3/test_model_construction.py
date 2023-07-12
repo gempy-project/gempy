@@ -57,6 +57,7 @@ def test_create_grid() -> gp.Grid:
 
 
 def test_create_structural_frame() -> StructuralFrame:
+    
     # * Structural elements
     surface_points, orientations = test_read_input_points()
     surface_points_groups = surface_points.get_surface_points_by_id_groups()

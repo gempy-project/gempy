@@ -15,6 +15,8 @@ class OrientationsTable:
     data: np.ndarray
     name_id_map: Optional[dict[str, int]] = None  # ? Do I need this here or this should be a field of StructuralFrame?
 
+    dt = np.dtype([('X', 'f8'), ('Y', 'f8'), ('Z', 'f8'), ('G_x', 'f8'), ('G_y', 'f8'), ('G_z', 'f8'), ('id', 'i4'), ('nugget', 'f8')])
+
     def __len__(self):
         return len(self.data)
 
@@ -26,8 +28,7 @@ class OrientationsTable:
         if nugget is None:
             nugget = np.zeros_like(x) + DEFAULT_NUGGET
 
-        dt = np.dtype([('X', 'f8'), ('Y', 'f8'), ('Z', 'f8'), ('G_x', 'f8'), ('G_y', 'f8'), ('G_z', 'f8'), ('id', 'i4'), ('nugget', 'f8')])
-        data = np.zeros(len(x), dtype=dt)
+        data = np.zeros(len(x), dtype=OrientationsTable.dt)
 
         name_id_map = {name: i for i, name in enumerate(np.unique(names))}
         ids = np.array([name_id_map[name] for name in names])

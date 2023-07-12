@@ -17,14 +17,15 @@ class SurfacePointsTable:
     data: np.ndarray
     name_id_map: Optional[dict[str, int]] = None  # ? Do I need this here or this should be a field of StructuralFrame?
 
+    dt = np.dtype([('X', 'f8'), ('Y', 'f8'), ('Z', 'f8'), ('id', 'i4'), ('nugget', 'f8')])
+
     @classmethod
     def from_arrays(cls, x: np.ndarray, y: np.ndarray, z: np.ndarray,
                     names: np.ndarray, nugget: Optional[np.ndarray] = None) -> 'SurfacePointsTable':
         if nugget is None:
             nugget = np.zeros_like(x) + DEFAULT_NUGGET
 
-        dt = np.dtype([('X', 'f8'), ('Y', 'f8'), ('Z', 'f8'), ('id', 'i4'), ('nugget', 'f8')])
-        data = np.zeros(len(x), dtype=dt)
+        data = np.zeros(len(x), dtype=SurfacePointsTable.dt)
 
         name_id_map = {name: i for i, name in enumerate(np.unique(names))}
         ids = np.array([name_id_map[name] for name in names])

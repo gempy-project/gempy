@@ -70,3 +70,7 @@ class ColorsGenerator:
 
         while True:
             return self._random_hexcolor()
+    
+    def up_next(self) -> str:
+        """Returns the next color without incrementing the index."""
+        return self.hex_colors[self._index]
