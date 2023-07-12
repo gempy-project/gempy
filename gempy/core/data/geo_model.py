@@ -40,6 +40,8 @@ class GeoModel:
     _input_data_descriptor: InputDataDescriptor  # * This has to be fed by structural_frame
     
     # endregion
+    
+    solutions: gempy_engine.core.data.solutions.Solutions
 
     def __init__(self, name: str, structural_frame: StructuralFrame, grid: Grid,
                  interpolation_options: InterpolationOptions):

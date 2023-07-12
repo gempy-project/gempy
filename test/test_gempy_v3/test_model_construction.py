@@ -115,14 +115,6 @@ def test_structural_frame_surface_points():
     pass
 
 
-def test_plot_input():
-    geo_model: GeoModel = test_create_geomodel()
-    gp_viewer: gempy_viewer = require_gempy_viewer()
-    # TODO: Add all the plot data in a plot options class
-
-    plot_options: gp_viewer.Plotting2DOptions = gp_viewer.Plotting2DOptions()
-    # TODO: Make options required
-    gp_viewer.plot_2d(geo_model, direction=['y'], plot_options=plot_options, show_results=False)
 
 
 def test_interpolate_numpy():
@@ -134,16 +126,50 @@ def test_interpolate_numpy():
         data_descriptor=geo_model.input_data_descriptor
     )
     print(solutions)
-
+    geo_model.solutions = solutions
     # TODO: Use gempy API
 
-    return solutions
+    return geo_model
 
 
 def test_interpolate_aesara():
     geo_model: GeoModel = test_create_geomodel()
 
 
+def test_plot_input():
+    geo_model: GeoModel = test_create_geomodel()
+    gp_viewer: gempy_viewer = require_gempy_viewer()
+    # TODO: Add all the plot data in a plot options class
+
+    # TODO: Make options required
+    gp_viewer.plot_2d(
+        geo_model,
+        direction=['y'],
+        plot_options=gp_viewer.Plotting2DOptions(),
+        show_results=False
+    )
+    
+
 def test_plot_results():
-    solutions: gempy_engine.core.data.solutions.Solutions = test_interpolate_numpy()
+    solved_geo_model: gempy_engine.core.data.solutions.Solutions = test_interpolate_numpy()
+    gp_viewer: gempy_viewer = require_gempy_viewer()
+
+
+    gp_viewer.plot_2d(
+        solved_geo_model,
+        direction=['y'],
+        plot_options=gp_viewer.Plotting2DOptions(),
+        show_results=True
+    )
+
+    
+   
+   
+   
+   
+   
+   
+   
+   
+   
    
