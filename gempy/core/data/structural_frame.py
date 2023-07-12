@@ -21,8 +21,6 @@ class StructuralFrame:
 
     # ? Should I create some sort of structural options class? For example, the masking descriptor and faults relations pointer
 
-    input_data_descriptor: InputDataDescriptor  # ? This maybe is just a property
-
     color_gen: ColorsGenerator = ColorsGenerator()  # ? Do I need a method to regenerate this?
     is_dirty: bool = True  # This changes when the structural frame is modified
 
@@ -41,10 +39,13 @@ class StructuralFrame:
         )
 
     @property
-    def input_data_descriptor(self) -> InputDataDescriptor:
-        # * If I want to have this property I need to have the masking descriptor and faults relations pointer in this class
-        # ? Should I create some sort of structural options class?
-        raise NotImplementedError
+    def input_data_descriptor(self):
+        # TODO: This should have the exact same dirty logic as interpolation_input
+        return InputDataDescriptor.from_structural_frame(
+            structural_frame=self,
+            making_descriptor=[StackRelationType.ERODE],
+            faults_relations=None
+        )
 
     @property
     def number_of_points_per_element(self) -> np.ndarray:

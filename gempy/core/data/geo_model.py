@@ -34,15 +34,16 @@ class GeoModel:
     
     # region GemPy engine data types
     interpolation_options: InterpolationOptions  # * This has to be fed by USER
-    interpolation_grid: gempy_engine.core.data.grid.Grid
-    
-    _interpolationInput: InterpolationInput  # * This has to be fed by structural_frame
-    _input_data_descriptor: InputDataDescriptor  # * This has to be fed by structural_frame
-    
-    # endregion
-    
-    solutions: gempy_engine.core.data.solutions.Solutions
 
+    # ? Are this more caching fields than actual fields?
+    interpolation_grid: gempy_engine.core.data.grid.Grid = None
+    _interpolationInput: InterpolationInput = None  # * This has to be fed by structural_frame
+    _input_data_descriptor: InputDataDescriptor = None # * This has to be fed by structural_frame
+
+    # endregion
+
+    solutions: gempy_engine.core.data.solutions.Solutions = None
+    
     def __init__(self, name: str, structural_frame: StructuralFrame, grid: Grid,
                  interpolation_options: InterpolationOptions):
         # TODO: Fill the arguments properly
@@ -80,10 +81,6 @@ class GeoModel:
     @property
     def input_data_descriptor(self):
         # TODO: This should have the exact same dirty logic as interpolation_input
-        return InputDataDescriptor.from_structural_frame(
-            structural_frame=self.structural_frame,
-            making_descriptor=[StackRelationType.ERODE],
-            faults_relations=None
-        )
+        return self.structural_frame.input_data_descriptor
         
         
