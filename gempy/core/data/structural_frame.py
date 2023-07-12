@@ -65,9 +65,9 @@ class StructuralFrame:
         return [element.color for element in self.structural_elements]
     
     @property
-    def elements_ids(self) -> list[int]:
+    def elements_ids(self) -> np.ndarray:
         """Return id given by the order of the structural elements"""
-        return list(range(len(self.structural_elements)))
+        return np.arange(len(self.structural_elements))
     
     @property
     def surface_points(self) -> SurfacePointsTable:

@@ -135,6 +135,9 @@ def test_interpolate_numpy():
         options=geo_model.interpolation_options,
         data_descriptor=geo_model.input_data_descriptor
     )
+    print(solutions)
+    
+    # TODO: Use gempy API
     
     return solutions
 
