@@ -1,6 +1,6 @@
 ﻿from gempy_engine.config import *
 
-DEFAULT_BACKEND = AvailableBackends.aesara
+DEFAULT_BACKEND = AvailableBackends.numpy
 
 DEBUG_MODE = DEBUG_MODE
 OPTIMIZE_MEMORY = OPTIMIZE_MEMORY
