@@ -14,6 +14,7 @@ DEFAULT_NUGGET = 0.00001
 @dataclass  
 class SurfacePointsTable:
     data: np.ndarray
+    # TODO: Make this a property if is None?
     name_id_map: Optional[dict[str, int]] = None  # ? Do I need this here or this should be a field of StructuralFrame?
 
     dt = np.dtype([('X', 'f8'), ('Y', 'f8'), ('Z', 'f8'), ('id', 'i4'), ('nugget', 'f8')])

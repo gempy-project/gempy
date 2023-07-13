@@ -43,9 +43,9 @@ class StructuralFrame:
             orientations=OrientationsTable(data=np.zeros(0, dtype=OrientationsTable.dt)),
             color=StructuralFrame.color_gen.up_next(),
         )
-         
+   
         return basement
-    
+
     @property
     def input_data_descriptor(self):
         # TODO: This should have the exact same dirty logic as interpolation_input
@@ -96,7 +96,15 @@ class StructuralFrame:
     @property
     def surface_points(self) -> SurfacePointsTable:
         all_data: np.ndarray = np.concatenate([element.surface_points.data for element in self.structural_elements])
-        return SurfacePointsTable(data=all_data)
+        return SurfacePointsTable(data=all_data, name_id_map=self.element_name_id_map)
+    
+    @property
+    def element_id_name_map(self) -> dict[int, str]:
+        return {i: element.name for i, element in enumerate(self.structural_elements)}
+    
+    @property
+    def element_name_id_map(self) -> dict[str, int]:
+        return {element.name: i for i, element in enumerate(self.structural_elements)}
 
     @property
     def surface_points_colors(self) -> list[str]:
