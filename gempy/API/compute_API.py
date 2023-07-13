@@ -34,6 +34,7 @@ def compute_model(gempy_model: GeoModel, output: Optional[list[str]] = None) -> 
 def _legacy_compute_model(gempy_model: GeoModel):
     # TODO: import gempy_legacy as optional requirement
     gempy_legacy = require_gempy_legacy()
+    pass
 
 
     # TODO: Convert GeoModel to geo_data

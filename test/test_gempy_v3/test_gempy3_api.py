@@ -19,7 +19,7 @@ def _create_data():
     geo_data: GeoModel = gp.create_data(
         project_name='horizontal',
         extent=[0, 1000, 0, 1000, 0, 1000],
-        resolution=[50, 50, 50],
+        resolution=[50, 5, 50],
         path_o=data_path + "/data/input_data/jan_models/model1_orientations.csv",
         path_i=data_path + "/data/input_data/jan_models/model1_surface_points.csv"
     )
