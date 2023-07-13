@@ -83,8 +83,7 @@ def test_create_structural_frame() -> StructuralFrame:
 
     # ? Should I move this to the constructor?
     structural_frame: StructuralFrame = StructuralFrame(
-        structural_groups=[default_formation],
-        structural_elements=structural_elements
+        structural_groups=[default_formation]
     )
 
     return structural_frame

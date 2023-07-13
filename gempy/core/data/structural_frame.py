@@ -17,27 +17,35 @@ from ..color_generator import ColorsGenerator
 @dataclass
 class StructuralFrame:
     structural_groups: list[StructuralGroup]  # ? should this be lazy?
-    structural_elements: list[StructuralElement]
 
     # ? Should I create some sort of structural options class? For example, the masking descriptor and faults relations pointer
 
     color_gen: ColorsGenerator = ColorsGenerator()  # ? Do I need a method to regenerate this?
     is_dirty: bool = True  # This changes when the structural frame is modified
 
-    def __init__(self, structural_groups: list[StructuralGroup], structural_elements: list[StructuralElement]):
+    def __init__(self, structural_groups: list[StructuralGroup]):
         self.structural_groups = structural_groups  # ? This maybe could be optional
-        self.structural_elements = structural_elements
 
-        # Append basement element
-        self.structural_elements.append(
-            StructuralElement(
-                name="basement",
-                surface_points=SurfacePointsTable(data=np.zeros(0, dtype=SurfacePointsTable.dt)),
-                orientations=OrientationsTable(data=np.zeros(0, dtype=OrientationsTable.dt)),
-                color=next(StructuralFrame.color_gen),
-            )
+    @property
+    def structural_elements(self) -> list[StructuralElement]:
+        elements = []
+        for group in self.structural_groups:
+            elements.extend(group.elements)
+        elements.sort(key=lambda x: x.name)  # replace with your sort function
+        elements.append(self._basement_element)
+        return elements
+
+    @property
+    def _basement_element(self) -> StructuralElement:
+        basement = StructuralElement(
+            name="basement",
+            surface_points=SurfacePointsTable(data=np.zeros(0, dtype=SurfacePointsTable.dt)),
+            orientations=OrientationsTable(data=np.zeros(0, dtype=OrientationsTable.dt)),
+            color=StructuralFrame.color_gen.up_next(),
         )
-
+         
+        return basement
+    
     @property
     def input_data_descriptor(self):
         # TODO: This should have the exact same dirty logic as interpolation_input
