@@ -4,9 +4,6 @@ import numpy as np
 
 from gempy_engine.core.data.input_data_descriptor import InputDataDescriptor
 from gempy_engine.core.data.stack_relation_type import StackRelationType
-from gempy_engine.core.data import TensorsStructure
-from gempy_engine.core.data.stacks_structure import StacksStructure
-
 from .orientations import OrientationsTable
 from .structural_element import StructuralElement
 from .structural_group import StructuralGroup
@@ -129,6 +126,14 @@ class StructuralFrame:
         all_data: np.ndarray = np.concatenate([element.orientations.data for element in self.structural_elements])
         return OrientationsTable(data=all_data)
 
+    @property
+    def groups_to_mapper(self) -> dict[str, list[str]]:
+        result_dict = {}
+        for group in self.structural_groups:
+            element_names = [element.name for element in group.elements]
+            result_dict[group.name] = element_names
+        return result_dict
+    
     # region Depends on Pandas
     @property
     def surfaces_df(self) -> 'pd.DataFrame':

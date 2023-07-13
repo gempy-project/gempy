@@ -27,11 +27,11 @@ def gempy3_to_gempy2(geo_model: GeoModel) -> "gempy_legacy.Project":
 
 
     # # * Map StructuralFrame
-    # gl.map_stack_to_surfaces(
-    #     geo_model=legacy_model,
-    #     mapping_object=
-    # )
-    # 
+    gl.map_stack_to_surfaces(
+        geo_model=legacy_model,
+        mapping_object=geo_model.structural_frame.groups_to_mapper
+    )
+
     
     return legacy_model
     
