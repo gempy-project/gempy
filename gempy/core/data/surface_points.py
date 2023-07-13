@@ -38,6 +38,9 @@ class SurfacePointsTable:
         data['X'], data['Y'], data['Z'], data['id'], data['nugget'] = x, y, z, ids, nugget
         return cls(data, name_id_map)
 
+    def id_to_name(self, id: int) -> str:
+        return list(self.name_id_map.keys())[id]
+    
     @property
     def xyz(self) -> np.ndarray:
         return np.array([self.data['X'], self.data['Y'], self.data['Z']]).T

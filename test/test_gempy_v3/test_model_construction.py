@@ -2,6 +2,7 @@
 import gempy as gp
 import gempy_engine.core.data.solutions
 import gempy_viewer
+from gempy_engine.core.data import InterpolationOptions
 from gempy import GeoModel
 from gempy.API.io_API import read_orientations, read_surface_points
 from gempy.core.data.orientations import OrientationsTable
@@ -89,9 +90,9 @@ def test_create_structural_frame() -> StructuralFrame:
     return structural_frame
 
 
-def test_create_interpolation_options() -> gp.InterpolationOptions:
+def test_create_interpolation_options() -> InterpolationOptions:
     range_ = 1000.0
-    interpolation_options: gp.InterpolationOptions = gp.InterpolationOptions(
+    interpolation_options: InterpolationOptions = InterpolationOptions(
         range=range_,
         c_o=( range_ ** 2 ) / 14 / 3,
     )

@@ -31,5 +31,5 @@ def test_map_stack_to_surfaces():
         mapping_object={"Strat_Series": ('rock2', 'rock1')}
     )
     
-    pprint(geo_data)
+    pprint(geo_data.structural_frame)
 

@@ -53,14 +53,13 @@ def _initialize_structural_frame(surface_points_path: str, orientations_path: st
         surface_points_path=surface_points_path,
         orientations_path=orientations_path
     )
-
-    surface_points_groups = surface_points.get_surface_points_by_id_groups()
+    
+    surface_points_groups: list[SurfacePointsTable] = surface_points.get_surface_points_by_id_groups()
     orientations_groups = orientations.get_orientations_by_id_groups()
     structural_elements = []
     for i in range(len(surface_points_groups)):
-        # TODO: Split surface points and orientations by id
         structural_element: StructuralElement = StructuralElement(
-            name="layer1",
+            name=surface_points.id_to_name(i),
             surface_points=surface_points_groups[i],
             orientations=orientations_groups[i],
             color=next(StructuralFrame.color_gen),
