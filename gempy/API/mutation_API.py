@@ -18,6 +18,10 @@ def map_stack_to_surfaces(gempy_model: GeoModel, mapping_object: Union[dict[str,
             structural_groups.insert(index, new_group)
         # endregion
 
+        # Make sure elements is a list or tuple
+        if isinstance(elements, str):
+            elements = [elements]
+            
         for element_name in elements:
             # Here we need to find out the current group of the element.
             # This can be done by looking up the element in each group.

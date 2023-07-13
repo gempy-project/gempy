@@ -12,9 +12,7 @@ Model 1 - Horizontal stratigraphic
 # %%
 # Importing GemPy
 import gempy as gp
-
-import pandas as pd
-pd.set_option('display.precision', 2)
+import gempy_viewer as gpv
 
 # %%
 # Creating the model by importing the input data and displaying it:
@@ -22,27 +20,30 @@ pd.set_option('display.precision', 2)
 
 # %%
 data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
-geo_data = gp.create_data('horizontal', extent=[0, 1000, 0, 1000, 0, 1000], resolution=[50, 50, 50],
-                          path_o=data_path + "/data/input_data/jan_models/model1_orientations.csv",
-                          path_i=data_path + "/data/input_data/jan_models/model1_surface_points.csv")
+geo_data = gp.create_data(
+    project_name='horizontal',
+    extent=[0, 1000, 0, 1000, 0, 1000],
+    resolution=[50, 50, 50],
+    path_o=data_path + "/data/input_data/jan_models/model1_orientations.csv",
+    path_i=data_path + "/data/input_data/jan_models/model1_surface_points.csv"
+)
 
 # %%
 # Setting and ordering the units and series:
 # 
 
 # %% 
-gp.map_stack_to_surfaces(geo_data, {"Strat_Series": ('rock2', 'rock1'), "Basement_Series": ('basement')})
+gp.map_stack_to_surfaces(
+    gempy_model=geo_data,
+    mapping_object={"Strat_Series": ('rock2', 'rock1')}
+)
 
 # %% 
-gp.plot_2d(geo_data, direction=['y'])
+gpv.plot_2d(geo_data, direction=['y'])
 
 # %%
 # Calculating the model:
 # 
-
-# %% 
-interp_data = gp.set_interpolator(geo_data, compile_aesara=True,
-                                  aesara_optimizer='fast_compile')
 
 # %% 
 sol = gp.compute_model(geo_data)
@@ -52,10 +53,8 @@ sol = gp.compute_model(geo_data)
 # 
 
 # %%
-gp.plot_2d(geo_data, cell_number=[25], direction=['x'], show_data=True)
+gpv.plot_2d(geo_data, cell_number=[25], direction=['x'], show_data=True, show_boundaries=False)
 
 # %%
 # sphinx_gallery_thumbnail_number = 2
-gp.plot_2d(geo_data, cell_number=[25], direction=['y'], show_data=True)
-
-gp.save_model(geo_data)
+gpv.plot_2d(geo_data, cell_number=[25], direction=['y'], show_data=True, show_boundaries=False)
