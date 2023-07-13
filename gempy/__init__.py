@@ -35,9 +35,9 @@ from .core.grid import Grid
 # from .core.solution import Solution
 
 # =================== API ===================
-from .API import *
 
-# from .gempy_api import *
+from .API import *
+#from .gempy_api import *
 # from .api_modules.getters import *
 # from .api_modules.setters import *
 # from .api_modules.io import *

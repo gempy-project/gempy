@@ -5,6 +5,13 @@ from gempy import GeoModel
 
 
 def test_api_create_data():
+    geo_data = _create_data()
+
+    pprint(geo_data)
+    return geo_data
+
+
+def _create_data():
     data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
     geo_data: GeoModel = gp.create_data(
         project_name='horizontal',
@@ -13,13 +20,11 @@ def test_api_create_data():
         path_o=data_path + "/data/input_data/jan_models/model1_orientations.csv",
         path_i=data_path + "/data/input_data/jan_models/model1_surface_points.csv"
     )
-    
-    pprint(geo_data)
     return geo_data
 
 
 def test_map_stack_to_surfaces():
-    geo_data = test_api_create_data()
+    geo_data = _create_data()
     
     gp.map_stack_to_surfaces(
         gempy_model=geo_data,

@@ -17,6 +17,12 @@ class OrientationsTable:
 
     dt = np.dtype([('X', 'f8'), ('Y', 'f8'), ('Z', 'f8'), ('G_x', 'f8'), ('G_y', 'f8'), ('G_z', 'f8'), ('id', 'i4'), ('nugget', 'f8')])
 
+    def __str__(self):
+        return "\n" + np.array2string(self.data, precision=2, separator=',', suppress_small=True)
+
+    def __repr__(self):
+        return self.__str__()
+
     def __len__(self):
         return len(self.data)
 

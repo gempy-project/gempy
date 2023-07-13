@@ -1,6 +1,5 @@
 ﻿from dataclasses import dataclass
 from typing import Optional
-
 import numpy as np
 
 from gempy.optional_dependencies import require_pandas
@@ -18,7 +17,13 @@ class SurfacePointsTable:
     name_id_map: Optional[dict[str, int]] = None  # ? Do I need this here or this should be a field of StructuralFrame?
 
     dt = np.dtype([('X', 'f8'), ('Y', 'f8'), ('Z', 'f8'), ('id', 'i4'), ('nugget', 'f8')])
-
+    
+    def __str__(self):
+        return "\n" + np.array2string(self.data, precision=2, separator=',', suppress_small=True)
+    
+    def __repr__(self):
+        return self.__str__()
+    
     @classmethod
     def from_arrays(cls, x: np.ndarray, y: np.ndarray, z: np.ndarray,
                     names: np.ndarray, nugget: Optional[np.ndarray] = None) -> 'SurfacePointsTable':
