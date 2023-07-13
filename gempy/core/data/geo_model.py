@@ -3,7 +3,6 @@
 import gempy_engine.core.data.grid
 from gempy_engine.core.data import InterpolationOptions
 from gempy_engine.core.data.input_data_descriptor import InputDataDescriptor
-from gempy_engine.core.data.stack_relation_type import StackRelationType
 from gempy_engine.core.data.interpolation_input import InterpolationInput
 from .structural_frame import StructuralFrame
 from .transforms import Transform
