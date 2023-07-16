@@ -57,7 +57,10 @@ class GeoModel:
 
         self.grid = grid
         self.interpolation_options = interpolation_options
-        self.transform = Transform()
+        self.transform = Transform.from_input_points(
+            surface_points=self.surface_points,
+            orientations=self.orientations
+        )
 
 
     def __repr__(self):
