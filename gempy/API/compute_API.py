@@ -17,16 +17,10 @@ def compute_model(gempy_model: GeoModel, output: Optional[list[str]] = None) -> 
     # Make match switch for enumerator BackendTensor.engine_backend
     match config.DEFAULT_BACKEND:
         case AvailableBackends.numpy:
-
-            extent = gempy_model.transform.apply(gempy_model.grid.regular_grid.extent.reshape(-1, 3)).reshape(-1)
-            default_range = np.sqrt(
-                (extent[0] - extent[1]) ** 2 +
-                (extent[2] - extent[3]) ** 2 +
-                (extent[4] - extent[5]) ** 2)
-
+            # BUG: This is a hack to test the interpolation options
             interpolation_options: InterpolationOptions = InterpolationOptions(
-                range=default_range,
-                c_o=(default_range ** 2) / 14 / 3,
+                range=0.8660254,
+                c_o=35.71428571, # * This shuld not affect the final result just the value of the scalar field
             )
             
             gempy_model.solutions = gempy_engine.compute_model(
