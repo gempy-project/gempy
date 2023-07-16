@@ -12,6 +12,7 @@ Model 2 - Anticline
 # Importing GemPy
 import gempy as gp
 import gempy_viewer as gpv
+from gempy import GeoModel
 from gempy.optional_dependencies import require_gempy_legacy
 from gempy_3.gp3_to_gp2_input import gempy3_to_gempy2
 
@@ -22,7 +23,7 @@ from gempy_3.gp3_to_gp2_input import gempy3_to_gempy2
 # %%
 data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
 path_to_data = data_path + "/data/input_data/jan_models/"
-geo_data = gp.create_data(
+geo_data: GeoModel = gp.create_data(
     project_name='fold',
     extent=[0, 1000, 0, 1000, 0, 1000],
     resolution=[50, 5, 50],
@@ -55,7 +56,7 @@ geo_data.orientations
 
 # %% 
 
-if COMPUTE_LEGACY := True:
+if COMPUTE_LEGACY := False:
     gpl = require_gempy_legacy()
     legacy_model: gpl.Project = gempy3_to_gempy2(geo_data)
     gpl.set_interpolator(legacy_model, verbose=['cov_gradients', 'cov_surface_points', 'cov_interface_gradients',

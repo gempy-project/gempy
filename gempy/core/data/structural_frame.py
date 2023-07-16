@@ -84,10 +84,6 @@ class StructuralFrame:
     def elements_names(self) -> list[str]:
         return [element.name for element in self.structural_elements]
 
-    @property
-    def elements_colors(self) -> list[str]:
-        # reversed
-        return [element.color for element in self.structural_elements]
 
     @property
     def elements_ids(self) -> np.ndarray:
@@ -107,10 +103,16 @@ class StructuralFrame:
     def element_name_id_map(self) -> dict[str, int]:
         return {element.name: i for i, element in enumerate(self.structural_elements)}
 
+
+    @property
+    def elements_colors(self) -> list[str]:
+        # reversed
+        return [element.color for element in self.structural_elements][::-1]
+    
     @property
     def surface_points_colors(self) -> list[str]:
         """Using the id record of surface_points map the elements colors to each point"""
-        elements_colors = self.elements_colors[1::-1]  # remove first element (basement)
+        elements_colors = self.elements_colors[1:]  # remove first element (basement)
         surface_points = self.surface_points
         surface_points_id = surface_points.data['id']
 
@@ -119,7 +121,7 @@ class StructuralFrame:
     @property
     def orientations_colors(self) -> list[str]:
         """Using the id record of orientations map the elements colors to each point"""
-        elements_colors = self.elements_colors[1::-1]  # remove first element (basement)
+        elements_colors = self.elements_colors[1:]  # remove first element (basement)
         orientations = self.orientations
         orientations_id = orientations.data['id']
 

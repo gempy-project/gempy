@@ -48,7 +48,7 @@ def test_fold_model():
     if COMPUTE_LEGACY := False:
         gpl = require_gempy_legacy()
         legacy_model: gpl.Project = gempy3_to_gempy2(geo_data)
-        gpl.set_interpolator(legacy_model, verbose=['cov_gradients', 'cov_surface_points', 'cov_interface_gradients',
+        gpl.set_interpolator(legacy_model, verbose=['cov_gradients', 'sed_dips_dips', 'cov_surface_points', 'cov_interface_gradients',
                                                     'U_I', 'U_G'])
         gpl.compute_model(legacy_model)
         gpl.plot_2d(legacy_model, direction=['y'])
