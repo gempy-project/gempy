@@ -18,7 +18,7 @@ def compute_model(gempy_model: GeoModel, output: Optional[list[str]] = None) -> 
     match config.DEFAULT_BACKEND:
         case AvailableBackends.numpy:
 
-            extent = gempy_model.transform.apply(gempy_model.grid.regular_grid.extent)
+            extent = gempy_model.transform.apply(gempy_model.grid.regular_grid.extent.reshape(-1, 3)).reshape(-1)
             default_range = np.sqrt(
                 (extent[0] - extent[1]) ** 2 +
                 (extent[2] - extent[3]) ** 2 +
