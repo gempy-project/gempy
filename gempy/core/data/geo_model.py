@@ -43,8 +43,7 @@ class GeoModel:
 
     solutions: gempy_engine.core.data.solutions.Solutions = None
     
-    def __init__(self, name: str, structural_frame: StructuralFrame, grid: Grid,
-                 interpolation_options: InterpolationOptions):
+    def __init__(self, name: str, structural_frame: StructuralFrame, grid: Grid, interpolation_options: InterpolationOptions):
         # TODO: Fill the arguments properly
         self.meta = GeoModelMeta(
             name=name,
@@ -81,5 +80,4 @@ class GeoModel:
     def input_data_descriptor(self):
         # TODO: This should have the exact same dirty logic as interpolation_input
         return self.structural_frame.input_data_descriptor
-        
         
