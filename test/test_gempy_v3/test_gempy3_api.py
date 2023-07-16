@@ -51,7 +51,7 @@ def test_api_compute_model():
     
     sol: Solutions = gp.compute_model(geo_data)
     
-    gempy_viewer.plot_2d(geo_data,  direction=['y'], show_data=True, show_boundaries=False)
+    gempy_viewer.plot_2d(geo_data,  direction=['y'], show_data=True, show_boundaries=True, show_lith=False)
     gempy_viewer.plot_2d(geo_data,  direction=['y'], show_data=False, show_scalar=True)
     
 
