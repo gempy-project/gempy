@@ -1,4 +1,5 @@
-﻿from dataclasses import dataclass
+﻿import pprint
+from dataclasses import dataclass
 
 import gempy_engine.core.data.grid
 from gempy_engine.core.data import InterpolationOptions
@@ -57,6 +58,10 @@ class GeoModel:
         self.grid = grid
         self.interpolation_options = interpolation_options
         self.transform = Transform()
+
+
+    def __repr__(self):
+        return pprint.pformat(self.__dict__)
     
     @property
     def surface_points(self):

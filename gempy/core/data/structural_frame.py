@@ -1,4 +1,5 @@
-﻿from dataclasses import dataclass
+﻿import pprint
+from dataclasses import dataclass
 
 import numpy as np
 
@@ -23,6 +24,9 @@ class StructuralFrame:
     def __init__(self, structural_groups: list[StructuralGroup]):
         self.structural_groups = structural_groups  # ? This maybe could be optional
 
+    def __repr__(self):
+        return pprint.pformat(self.__dict__)
+
     @property
     def structural_elements(self) -> list[StructuralElement]:
         elements = []
@@ -40,7 +44,7 @@ class StructuralFrame:
             orientations=OrientationsTable(data=np.zeros(0, dtype=OrientationsTable.dt)),
             color=StructuralFrame.color_gen.up_next(),
         )
-   
+
         return basement
 
     @property
@@ -94,11 +98,11 @@ class StructuralFrame:
     def surface_points(self) -> SurfacePointsTable:
         all_data: np.ndarray = np.concatenate([element.surface_points.data for element in self.structural_elements])
         return SurfacePointsTable(data=all_data, name_id_map=self.element_name_id_map)
-    
+
     @property
     def element_id_name_map(self) -> dict[int, str]:
         return {i: element.name for i, element in enumerate(self.structural_elements)}
-    
+
     @property
     def element_name_id_map(self) -> dict[str, int]:
         return {element.name: i for i, element in enumerate(self.structural_elements)}
@@ -133,7 +137,7 @@ class StructuralFrame:
             element_names = [element.name for element in group.elements]
             result_dict[group.name] = element_names
         return result_dict
-    
+
     # region Depends on Pandas
     @property
     def surfaces_df(self) -> 'pd.DataFrame':

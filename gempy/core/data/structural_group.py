@@ -1,4 +1,5 @@
-﻿from abc import ABC
+﻿import pprint
+from abc import ABC
 from dataclasses import dataclass
 from gempy.core.data.structural_element import StructuralElement
 
@@ -8,6 +9,9 @@ class StructuralGroup(ABC):
     name: str
     elements: list[StructuralElement]
 
+    def __repr__(self):
+        return pprint.pformat(self.__dict__)
+    
     @property
     def id(self):
         raise NotImplementedError

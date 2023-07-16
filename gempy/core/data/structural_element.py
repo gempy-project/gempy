@@ -1,4 +1,5 @@
-﻿import re
+﻿import pprint
+import re
 from dataclasses import dataclass
 from typing import Optional
 
@@ -38,6 +39,10 @@ class StructuralElement:
         
         self.is_active = is_active
         self.color = color
+
+
+    def __repr__(self):
+        return pprint.pformat(self.__dict__)
     
     @property
     def number_of_points(self) -> int:

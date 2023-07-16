@@ -54,18 +54,20 @@ gpv.plot_2d(geo_data, direction=['y'])
 geo_data.orientations
 
 # %% 
-    
-geo_data.interpolation_options.tensor_dtype = 'float64'
-sol = gp.compute_model(geo_data)
 
-if COMPUTE_LEGACY := False:
+if COMPUTE_LEGACY := True:
     gpl = require_gempy_legacy()
     legacy_model: gpl.Project = gempy3_to_gempy2(geo_data)
-    gpl.set_interpolator(legacy_model)
+    gpl.set_interpolator(legacy_model, verbose=['cov_gradients', 'cov_surface_points', 'cov_interface_gradients',
+    'U_I', 'U_G']) 
     gpl.compute_model(legacy_model)
     gpl.plot_2d(legacy_model, direction=['y'])
 
     gpl.plot_2d(legacy_model, direction=['y'], show_data=True, show_scalar=True)
+    
+geo_data.interpolation_options.tensor_dtype = 'float64'
+sol = gp.compute_model(geo_data)
+
 
 # %%
 # Displaying the result in y and x direction:
@@ -73,6 +75,7 @@ if COMPUTE_LEGACY := False:
 
 # %%
 gpv.plot_2d(geo_data, direction='y', show_data=True)
+gpv.plot_2d(geo_data, direction='y', show_scalar=True)
 
 # %%
 # sphinx_gallery_thumbnail_number = 2
