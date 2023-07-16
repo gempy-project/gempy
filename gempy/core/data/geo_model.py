@@ -79,7 +79,8 @@ class GeoModel:
         if self.structural_frame.is_dirty:
             self._interpolationInput = InterpolationInput.from_structural_frame(
                 structural_frame=self.structural_frame,
-                grid=self.grid
+                grid=self.grid,
+                transform=self.transform
             )
         return self._interpolationInput
     

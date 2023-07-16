@@ -1,7 +1,10 @@
 ﻿from typing import Optional
 
+import numpy as np
+
 import config
 import gempy_engine
+from core.data import InterpolationOptions
 from gempy_engine.core.data import Solutions
 from gempy_engine.config import AvailableBackends
 from ..core.data.geo_model import GeoModel
@@ -14,9 +17,22 @@ def compute_model(gempy_model: GeoModel, output: Optional[list[str]] = None) -> 
     # Make match switch for enumerator BackendTensor.engine_backend
     match config.DEFAULT_BACKEND:
         case AvailableBackends.numpy:
+
+            extent = gempy_model.transform.apply(gempy_model.grid.regular_grid.extent)
+            default_range = np.sqrt(
+                (extent[0] - extent[1]) ** 2 +
+                (extent[2] - extent[3]) ** 2 +
+                (extent[4] - extent[5]) ** 2)
+
+            interpolation_options: InterpolationOptions = InterpolationOptions(
+                range=default_range,
+                c_o=(default_range ** 2) / 14 / 3,
+            )
+            
             gempy_model.solutions = gempy_engine.compute_model(
                 interpolation_input=gempy_model.interpolation_input,
-                options=gempy_model.interpolation_options,
+                # options=gempy_model.interpolation_options, # BUG: Hacking this here to test
+                options=interpolation_options,
                 data_descriptor=gempy_model.input_data_descriptor
             )
         case AvailableBackends.aesara:
