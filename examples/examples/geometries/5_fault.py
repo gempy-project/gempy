@@ -43,7 +43,7 @@ gp.map_stack_to_surfaces(
     }
 )
 
-geo_data.set_is_fault(['Fault_Series'])
+# geo_data.set_is_fault(['Fault_Series'])
 
 # %%
 gpv.plot_2d(geo_data, direction='y')
