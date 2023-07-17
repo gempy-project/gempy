@@ -1,6 +1,6 @@
 ﻿from typing import Union
 
-from core.data.stack_relation_type import StackRelationType
+from gempy_engine.core.data.stack_relation_type import StackRelationType
 from ..core.data.geo_model import GeoModel
 from ..core.data.structural_frame import StructuralFrame
 from ..core.data.structural_group import StructuralGroup

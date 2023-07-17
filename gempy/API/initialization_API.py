@@ -2,7 +2,7 @@
 
 from numpy import ndarray
 
-from core.data.stack_relation_type import StackRelationType
+from gempy_engine.core.data.stack_relation_type import StackRelationType
 from gempy_engine.core.data import InterpolationOptions
 
 from gempy.API.io_API import read_surface_points, read_orientations
