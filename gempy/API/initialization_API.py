@@ -27,13 +27,8 @@ def create_data(
         resolution=resolution
     )
 
-    # default_range = np.sqrt(
-    #     (extent[0] - extent[1]) ** 2 +
-    #     (extent[2] - extent[3]) ** 2 +
-    #     (extent[4] - extent[5]) ** 2)
-
     interpolation_options: InterpolationOptions = InterpolationOptions(
-        range=1,
+        range=1.73205,
         c_o=10,
         dual_contouring=False
     )
