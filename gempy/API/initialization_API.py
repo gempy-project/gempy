@@ -34,8 +34,8 @@ def create_data(
         (extent[4] - extent[5]) ** 2)
     
     interpolation_options: InterpolationOptions = InterpolationOptions(
-        range=default_range,
-        c_o=(default_range ** 2) / 14 / 3,
+        range=1,
+        c_o=10,
     )
 
     geo_model: GeoModel = GeoModel(

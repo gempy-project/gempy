@@ -12,9 +12,9 @@ Model 2 - Anticline
 # Importing GemPy
 import gempy as gp
 import gempy_viewer as gpv
+from config import AvailableBackends
+from core.data import Solutions
 from gempy import GeoModel
-from gempy.optional_dependencies import require_gempy_legacy
-from gempy_3.gp3_to_gp2_input import gempy3_to_gempy2
 
 # %%
 # Creating the model by importing the input data and displaying it:
@@ -57,16 +57,13 @@ geo_data.orientations
 # %% 
 
 if COMPUTE_LEGACY := False:
-    gpl = require_gempy_legacy()
-    legacy_model: gpl.Project = gempy3_to_gempy2(geo_data)
-    gpl.set_interpolator(legacy_model, verbose=['cov_gradients', 'cov_surface_points', 'cov_interface_gradients',
-    'U_I', 'U_G']) 
-    gpl.compute_model(legacy_model)
-    gpl.plot_2d(legacy_model, direction=['y'])
+    import gempy_legacy as gpl
 
+    solutions: Solutions = gp.compute_model(geo_data, backend=AvailableBackends.legacy)
+    legacy_model = geo_data.legacy_model
+    gpl.plot_2d(legacy_model, direction=['y'])
     gpl.plot_2d(legacy_model, direction=['y'], show_data=True, show_scalar=True)
     
-geo_data.interpolation_options.tensor_dtype = 'float64'
 sol = gp.compute_model(geo_data)
 
 

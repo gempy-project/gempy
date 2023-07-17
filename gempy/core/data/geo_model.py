@@ -44,6 +44,8 @@ class GeoModel:
 
     solutions: gempy_engine.core.data.solutions.Solutions = None
     
+    legacy_model: "gpl.Project" = None
+    
     def __init__(self, name: str, structural_frame: StructuralFrame, grid: Grid, interpolation_options: InterpolationOptions):
         # TODO: Fill the arguments properly
         self.meta = GeoModelMeta(
