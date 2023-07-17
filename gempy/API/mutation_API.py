@@ -1,5 +1,6 @@
 ﻿from typing import Union
 
+from core.data.stack_relation_type import StackRelationType
 from ..core.data.geo_model import GeoModel
 from ..core.data.structural_frame import StructuralFrame
 from ..core.data.structural_group import StructuralGroup
@@ -14,7 +15,11 @@ def map_stack_to_surfaces(gempy_model: GeoModel, mapping_object: Union[dict[str,
         # region Create new series if needed
         group_already_exists = any(group.name == group_name for group in structural_groups)
         if set_series and not group_already_exists:
-            new_group = StructuralGroup(name=group_name, elements=[])
+            new_group = StructuralGroup(
+                name=group_name,
+                elements=[],
+                structural_relation=StackRelationType.ERODE
+            )
             structural_groups.insert(index, new_group)
         # endregion
 

@@ -52,7 +52,7 @@ class StructuralFrame:
         # TODO: This should have the exact same dirty logic as interpolation_input
         return InputDataDescriptor.from_structural_frame(
             structural_frame=self,
-            making_descriptor=[StackRelationType.ERODE],
+            making_descriptor=self.groups_structural_relation,
             faults_relations=None
         )
 
@@ -81,9 +81,12 @@ class StructuralFrame:
         return len(self.structural_elements)
 
     @property
+    def groups_structural_relation(self) -> list[StackRelationType]:
+        return [group.structural_relation for group in self.structural_groups]
+    
+    @property
     def elements_names(self) -> list[str]:
         return [element.name for element in self.structural_elements]
-
 
     @property
     def elements_ids(self) -> np.ndarray:

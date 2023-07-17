@@ -31,22 +31,23 @@ class GeoModel:
     structural_frame: StructuralFrame
     grid: Grid  # * This is the general gempy grid
     transform: Transform
-    
+
     # region GemPy engine data types
     interpolation_options: InterpolationOptions  # * This has to be fed by USER
 
     # ? Are this more caching fields than actual fields?
     interpolation_grid: gempy_engine.core.data.grid.Grid = None
     _interpolationInput: InterpolationInput = None  # * This has to be fed by structural_frame
-    _input_data_descriptor: InputDataDescriptor = None # * This has to be fed by structural_frame
+    _input_data_descriptor: InputDataDescriptor = None  # * This has to be fed by structural_frame
 
     # endregion
 
     solutions: gempy_engine.core.data.solutions.Solutions = None
-    
+
     legacy_model: "gpl.Project" = None
-    
-    def __init__(self, name: str, structural_frame: StructuralFrame, grid: Grid, interpolation_options: InterpolationOptions):
+
+    def __init__(self, name: str, structural_frame: StructuralFrame, grid: Grid,
+                 interpolation_options: InterpolationOptions):
         # TODO: Fill the arguments properly
         self.meta = GeoModelMeta(
             name=name,
@@ -54,7 +55,7 @@ class GeoModel:
             last_modification_date=None,
             owner=None
         )
-        
+
         self.structural_frame = structural_frame  # ? This could be Optional
 
         self.grid = grid
@@ -64,18 +65,17 @@ class GeoModel:
             orientations=self.orientations
         )
 
-
     def __repr__(self):
         return pprint.pformat(self.__dict__)
-    
+
     @property
     def surface_points(self):
         return self.structural_frame.surface_points
-    
+
     @property
     def orientations(self):
         return self.structural_frame.orientations
-    
+
     @property
     def interpolation_input(self):
         if self.structural_frame.is_dirty:
@@ -85,10 +85,8 @@ class GeoModel:
                 transform=self.transform
             )
         return self._interpolationInput
-    
-    
+
     @property
     def input_data_descriptor(self):
         # TODO: This should have the exact same dirty logic as interpolation_input
         return self.structural_frame.input_data_descriptor
-        

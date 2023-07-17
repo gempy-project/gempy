@@ -1,6 +1,8 @@
 ﻿import pprint
 from abc import ABC
 from dataclasses import dataclass
+
+from core.data.stack_relation_type import StackRelationType
 from gempy.core.data.structural_element import StructuralElement
 
 
@@ -8,7 +10,8 @@ from gempy.core.data.structural_element import StructuralElement
 class StructuralGroup(ABC):
     name: str
     elements: list[StructuralElement]
-
+    structural_relation: StackRelationType
+    
     def __repr__(self):
         return pprint.pformat(self.__dict__)
     

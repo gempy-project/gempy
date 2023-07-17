@@ -2,6 +2,7 @@
 
 from numpy import ndarray
 
+from core.data.stack_relation_type import StackRelationType
 from gempy_engine.core.data import InterpolationOptions
 
 from gempy.API.io_API import read_surface_points, read_orientations
@@ -68,7 +69,8 @@ def _initialize_structural_frame(surface_points_path: str, orientations_path: st
     # * Structural groups definitions
     default_formation: Stack = Stack(
         name="default_formation",
-        elements=structural_elements
+        elements=structural_elements,
+        structural_relation=StackRelationType.ERODE
     )
     # ? Should I move this to the constructor?
     structural_frame: StructuralFrame = StructuralFrame(
