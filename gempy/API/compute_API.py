@@ -18,7 +18,7 @@ def compute_model(gempy_model: GeoModel, backend: Optional[AvailableBackends] = 
         case AvailableBackends.numpy:
             gempy_model.solutions = gempy_engine.compute_model(
                 interpolation_input=gempy_model.interpolation_input,
-                options=gempy_model.interpolation_options, # BUG: Hacking this here to test
+                options=gempy_model.interpolation_options,
                 data_descriptor=gempy_model.input_data_descriptor
             )
         

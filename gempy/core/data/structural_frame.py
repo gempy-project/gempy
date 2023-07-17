@@ -81,7 +81,9 @@ class StructuralFrame:
 
     @property
     def groups_structural_relation(self) -> list[StackRelationType]:
-        return [group.structural_relation for group in self.structural_groups]
+        groups_ = [group.structural_relation for group in self.structural_groups]
+        groups_[-1] = False
+        return groups_
     
     @property
     def elements_names(self) -> list[str]:

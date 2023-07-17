@@ -72,6 +72,7 @@ def _initialize_structural_frame(surface_points_path: str, orientations_path: st
         elements=structural_elements,
         structural_relation=StackRelationType.ERODE
     )
+    
     # ? Should I move this to the constructor?
     structural_frame: StructuralFrame = StructuralFrame(
         structural_groups=[default_formation]
