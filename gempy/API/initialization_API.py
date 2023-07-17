@@ -1,11 +1,10 @@
 ﻿from typing import Union
 
-import numpy as np
 from numpy import ndarray
 
 from gempy_engine.core.data import InterpolationOptions
 
-from .io_API import read_surface_points, read_orientations
+from gempy.API.io_API import read_surface_points, read_orientations
 from .. import GeoModel, Grid
 from ..core.data.orientations import OrientationsTable
 from ..core.data.structural_element import StructuralElement
@@ -36,6 +35,7 @@ def create_data(
     interpolation_options: InterpolationOptions = InterpolationOptions(
         range=1,
         c_o=10,
+        dual_contouring=False
     )
 
     geo_model: GeoModel = GeoModel(
