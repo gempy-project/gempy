@@ -58,6 +58,17 @@ class SurfacePointsTable:
     def get_surface_points_by_id_groups(self) -> list['SurfacePointsTable']:
         ids = np.unique(self.data['id'])
         return [self.get_surface_points_by_id(id) for id in ids]
+
+    @property
+    def id(self) -> int:
+        # Check id is the same in the whole column and return it or throw an error
+        ids = np.unique(self.data['id'])
+        if len(ids) > 1:
+            raise ValueError(f"OrientationsTable contains more than one id: {ids}")
+        if len(ids) == 0:
+            raise ValueError(f"OrientationsTable contains no ids")
+        return ids[0]
+    
     
     @property
     def df(self) -> 'pd.DataFrame':

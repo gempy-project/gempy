@@ -28,11 +28,11 @@ def create_data(
         resolution=resolution
     )
 
-    default_range = np.sqrt(
-        (extent[0] - extent[1]) ** 2 +
-        (extent[2] - extent[3]) ** 2 +
-        (extent[4] - extent[5]) ** 2)
-    
+    # default_range = np.sqrt(
+    #     (extent[0] - extent[1]) ** 2 +
+    #     (extent[2] - extent[3]) ** 2 +
+    #     (extent[4] - extent[5]) ** 2)
+
     interpolation_options: InterpolationOptions = InterpolationOptions(
         range=1,
         c_o=10,
@@ -44,7 +44,7 @@ def create_data(
         grid=grid,
         interpolation_options=interpolation_options
     )
-    
+
     return geo_model
 
 
@@ -53,9 +53,12 @@ def _initialize_structural_frame(surface_points_path: str, orientations_path: st
         surface_points_path=surface_points_path,
         orientations_path=orientations_path
     )
-    
+
     surface_points_groups: list[SurfacePointsTable] = surface_points.get_surface_points_by_id_groups()
-    orientations_groups = orientations.get_orientations_by_id_groups()
+    orientations_groups: list[OrientationsTable] = orientations.get_orientations_by_id_groups()
+
+    orientations_groups = OrientationsTable.fill_missing_orientations_groups(orientations_groups, surface_points_groups)
+
     structural_elements = []
     for i in range(len(surface_points_groups)):
         structural_element: StructuralElement = StructuralElement(
@@ -120,5 +123,3 @@ def _read_input_points(surface_points_path: str, orientations_path: str) -> (Sur
     )
 
     return surface_points, orientations
-
-
