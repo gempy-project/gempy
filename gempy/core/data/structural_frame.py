@@ -32,7 +32,6 @@ class StructuralFrame:
         elements = []
         for group in self.structural_groups:
             elements.extend(group.elements)
-        elements.sort(key=lambda x: x.name)  # replace with your sort function
         elements.append(self._basement_element)
         return elements
 

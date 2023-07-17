@@ -36,6 +36,9 @@ class StructuralGroup(ABC):
 class Stack(StructuralGroup): 
     def __int__(self, name: str, elements: list[StructuralElement]):
         super().__init__(name, elements)
+        
+    def __repr__(self):
+        return pprint.pformat(self.__dict__)
 
 
 @dataclass
