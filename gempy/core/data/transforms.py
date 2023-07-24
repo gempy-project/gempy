@@ -63,7 +63,7 @@ class Transform:
     @property
     def isometric_scale(self):
         # TODO: double check how was done in old gempy
-        return np.mean(self.scale)
+        return 1/np.mean(self.scale)
 
     def get_transform_matrix(self, transform_type: TransformOpsOrder = TransformOpsOrder.SRT) -> np.ndarray:
         T = np.eye(4)
