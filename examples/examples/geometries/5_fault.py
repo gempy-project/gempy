@@ -14,9 +14,9 @@ Model 5 - Fault
 import gempy as gp
 import gempy_viewer as gpv
 from gempy_engine.core.data.stack_relation_type import StackRelationType
-from gempy_engine.test.helper_functions import plot_block_and_input_2d
 
 from gempy_engine.modules.octrees_topology.octrees_topology_interface import ValueType
+from plugins.plotting.helper_functions import plot_block_and_input_2d
 
 # %%
 # Creating the model by importing the input data and displaying it:
@@ -37,11 +37,6 @@ geo_data = gp.create_data(
 # %%
 # Setting and ordering the units and series:
 # 
-plot_block_and_input_2d(0, geo_data.interpolation_input, geo_data.solutions.outputs,
-geo_data.solutions.structure.stack_structure, ValueType.values_block)
-
-
-# %% 
 gp.map_stack_to_surfaces(
     geo_data,
     {
@@ -53,7 +48,6 @@ gp.map_stack_to_surfaces(
 # geo_data.set_is_fault(['Fault_Series'])
 # TODO: Get the fault running
 geo_data.structural_frame.structural_groups[0].structural_relation = StackRelationType.FAULT
-
 
 # %%
 gpv.plot_2d(geo_data, direction='y')
@@ -71,8 +65,21 @@ sol = gp.compute_model(geo_data)
 
 # %%
 
-_plot_stack_values_block(interpolation_input, outputs, structure)
+plot_block_and_input_2d(
+    stack_number=1,
+    interpolation_input=geo_data.interpolation_input,
+    outputs=geo_data.solutions.octrees_output,
+    structure=geo_data.structural_frame.input_data_descriptor.stack_structure,
+    value_type=ValueType.values_block
+)
 
+plot_block_and_input_2d(
+    stack_number=1,
+    interpolation_input=geo_data.interpolation_input,
+    outputs=geo_data.solutions.octrees_output,
+    structure=geo_data.structural_frame.input_data_descriptor.stack_structure,
+    value_type=ValueType.ids
+)
 # %%
 # sphinx_gallery_thumbnail_number = 2
 gpv.plot_2d(geo_data, cell_number=25, direction='y', show_data=True)
