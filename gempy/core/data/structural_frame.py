@@ -1,5 +1,6 @@
 ﻿import pprint
 from dataclasses import dataclass
+from typing import Optional
 
 import numpy as np
 
@@ -15,6 +16,7 @@ from ..color_generator import ColorsGenerator
 @dataclass
 class StructuralFrame:
     structural_groups: list[StructuralGroup]  # ? should this be lazy?
+    fault_relations: Optional[np.ndarray] = None
 
     # ? Should I create some sort of structural options class? For example, the masking descriptor and faults relations pointer
 
@@ -49,13 +51,12 @@ class StructuralFrame:
     @property
     def input_data_descriptor(self):
         # TODO: This should have the exact same dirty logic as interpolation_input
+
+        self._validate_faults_relations()
         return InputDataDescriptor.from_structural_frame(
             structural_frame=self,
             making_descriptor=self.groups_structural_relation,
-            faults_relations= np.array([  # BUG: This has to be set properly
-                [False, True],
-                [False, False]
-            ])
+            faults_relations=self.fault_relations
         )
 
     @property
@@ -85,9 +86,9 @@ class StructuralFrame:
     @property
     def groups_structural_relation(self) -> list[StackRelationType]:
         groups_ = [group.structural_relation for group in self.structural_groups]
-        groups_[-1] = StackRelationType.ERODE
+        groups_[-1] = False
         return groups_
-    
+
     @property
     def elements_names(self) -> list[str]:
         return [element.name for element in self.structural_elements]
@@ -109,7 +110,6 @@ class StructuralFrame:
     @property
     def element_name_id_map(self) -> dict[str, int]:
         return {element.name: i for i, element in enumerate(self.structural_elements)}
-
 
     @property
     def elements_colors(self) -> list[str]:
@@ -149,4 +149,15 @@ class StructuralFrame:
         # TODO: The columns have to be ['element, 'group', 'color']
 
         raise NotImplementedError
+
     # endregion
+   
+    def _validate_faults_relations(self):
+        """Check that if there are any StackRelationType.FAULT in the structural groups the fault relation matrix is
+        given and shape is the right one, i.e. a square matrix of size equals to len(groups)"""
+
+        if any([group.structural_relation == StackRelationType.FAULT for group in self.structural_groups]):
+            if self.fault_relations is None:
+                raise ValueError("The fault relations matrix is not given")
+            if self.fault_relations.shape != (len(self.structural_groups), len(self.structural_groups)):
+                raise ValueError("The fault relations matrix is not the right shape")

@@ -3,6 +3,7 @@ Model 5 - Fault
 ===============
 
 """
+import numpy as np
 
 # %%
 # A simple fault model with constant offset. We start by importing the
@@ -45,9 +46,10 @@ gp.map_stack_to_surfaces(
     }
 )
 
-# geo_data.set_is_fault(['Fault_Series'])
-# TODO: Get the fault running
+# %%
+# Define fault groups
 geo_data.structural_frame.structural_groups[0].structural_relation = StackRelationType.FAULT
+geo_data.structural_frame.fault_relations = np.array([[0, 1], [0, 0]])
 
 # %%
 gpv.plot_2d(geo_data, direction='y')
