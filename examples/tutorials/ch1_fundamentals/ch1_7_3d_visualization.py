@@ -21,14 +21,14 @@ import matplotlib.pyplot as plt
 
 data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
 
-geo_model = gp.create_data('viz_3d',
-                           [0, 2000, 0, 2000, 0, 1600],
-                           [50, 50, 50],
-                           path_o=data_path + "data/input_data/lisa_models/foliations" + str(
+geo_model = gp.create_data_legacy('viz_3d',
+                                  [0, 2000, 0, 2000, 0, 1600],
+                                  [50, 50, 50],
+                                  path_o=data_path + "data/input_data/lisa_models/foliations" + str(
                                7) + ".csv",
-                           path_i=data_path + "data/input_data/lisa_models/interfaces" + str(
+                                  path_i=data_path + "data/input_data/lisa_models/interfaces" + str(
                                7) + ".csv"
-                           )
+                                  )
 
 gp.map_stack_to_surfaces(
     geo_model,

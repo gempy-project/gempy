@@ -12,7 +12,7 @@ def test_fold_model():
 
     data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
     path_to_data = data_path + "/data/input_data/jan_models/"
-    geo_data = gp.create_data(
+    geo_data = gp.create_data_legacy(
         project_name='fold',
         extent=[0, 1000, 0, 1000, 0, 1000],
         resolution=[50, 5, 50],
@@ -73,7 +73,7 @@ def test_fold_model():
 def test_compare_input_values():
     data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
     path_to_data = data_path + "/data/input_data/jan_models/"
-    geo_data = gp.create_data(
+    geo_data = gp.create_data_legacy(
         project_name='fold',
         extent=[0, 1000, 0, 1000, 0, 1000],
         resolution=[50, 5, 50],

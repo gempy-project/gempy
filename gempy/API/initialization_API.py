@@ -1,4 +1,5 @@
-﻿from typing import Union
+﻿import warnings
+from typing import Union
 
 from numpy import ndarray
 
@@ -7,6 +8,7 @@ from gempy_engine.core.data import InterpolationOptions
 
 from gempy.API.io_API import read_surface_points, read_orientations
 from .. import GeoModel, Grid
+from ..core.data.importer_helper import ImporterHelper
 from ..core.data.orientations import OrientationsTable
 from ..core.data.structural_element import StructuralElement
 from ..core.data.structural_frame import StructuralFrame
@@ -20,8 +22,8 @@ def create_data(
         project_name: str = 'default_project',
         extent: Union[list, ndarray] = None,
         resolution: Union[list, ndarray] = None,
-        path_i: str = None,
-        path_o: str = None) -> GeoModel:  # ? Do I need to pass pandas read kwargs?
+        importer_helper: ImporterHelper = None,
+) -> GeoModel:  # ? Do I need to pass pandas read kwargs?
 
     grid: Grid = Grid(
         extent=extent,
@@ -36,7 +38,7 @@ def create_data(
 
     geo_model: GeoModel = GeoModel(
         name=project_name,
-        structural_frame=_initialize_structural_frame(path_i, path_o),  # * Structural elements
+        structural_frame=_initialize_structural_frame(importer_helper),  # * Structural elements
         grid=grid,
         interpolation_options=interpolation_options
     )
@@ -44,11 +46,28 @@ def create_data(
     return geo_model
 
 
-def _initialize_structural_frame(surface_points_path: str, orientations_path: str) -> StructuralFrame:
-    surface_points, orientations = _read_input_points(
-        surface_points_path=surface_points_path,
-        orientations_path=orientations_path
+def create_data_legacy(
+        *,
+        project_name: str = 'default_project',
+        extent: Union[list, ndarray] = None,
+        resolution: Union[list, ndarray] = None,
+        path_i: str = None,
+        path_o: str = None) -> GeoModel:  # ? Do I need to pass pandas read kwargs?
+
+    warnings.warn("This method is deprecated. Use create_data instead.", DeprecationWarning)
+    return create_data(
+        project_name=project_name,
+        extent=extent,
+        resolution=resolution,
+        importer_helper=ImporterHelper(
+            path_to_surface_points=path_i,
+            path_to_orientations=path_o
+        )
     )
+
+
+def _initialize_structural_frame(importer_helper: ImporterHelper) -> StructuralFrame:
+    surface_points, orientations = _read_input_points(importer_helper)
 
     surface_points_groups: list[SurfacePointsTable] = surface_points.get_surface_points_by_id_groups()
     orientations_groups: list[OrientationsTable] = orientations.get_orientations_by_id_groups()
@@ -72,7 +91,7 @@ def _initialize_structural_frame(surface_points_path: str, orientations_path: st
         elements=structural_elements,
         structural_relation=StackRelationType.ERODE
     )
-    
+
     # ? Should I move this to the constructor?
     structural_frame: StructuralFrame = StructuralFrame(
         structural_groups=[default_formation]
@@ -80,37 +99,13 @@ def _initialize_structural_frame(surface_points_path: str, orientations_path: st
     return structural_frame
 
 
-def _read_input_points(surface_points_path: str, orientations_path: str) -> (SurfacePointsTable, OrientationsTable):
-    from urllib.parse import urlparse
-
-    def is_url(url):
-        try:
-            result = urlparse(url)
-            return all([result.scheme, result.netloc])
-        except ValueError:
-            return False
-
-    pooch = require_pooch() if is_url(surface_points_path) or is_url(orientations_path) else None
-
-    # * Fetch or define path for surface points
-    if is_url(surface_points_path):
-        surface_points_file = pooch.retrieve(
-            url=surface_points_path,
-            known_hash=None,
-        )
-        print(pooch.file_hash(surface_points_file))
-    else:
-        surface_points_file = surface_points_path
-
-    # * Fetch or define path for orientations
-    if is_url(orientations_path):
-        orientations_file = pooch.retrieve(
-            url=orientations_path,
-            known_hash=None,
-        )
-        print(pooch.file_hash(orientations_file))
-    else:
-        orientations_file = orientations_path
+def _read_input_points(importer_helper: ImporterHelper) -> (SurfacePointsTable, OrientationsTable):
+    orientations_file, surface_points_file = _fetch_data_with_pooch(
+        orientations_hash=importer_helper.hash_orientations,
+        orientations_path=importer_helper.path_to_orientations,
+        surface_points_hash=importer_helper.hash_surface_points,
+        surface_points_path=importer_helper.path_to_surface_points
+    )
 
     surface_points: SurfacePointsTable = read_surface_points(
         path=surface_points_file,
@@ -121,3 +116,34 @@ def _read_input_points(surface_points_path: str, orientations_path: str) -> (Sur
     )
 
     return surface_points, orientations
+
+
+def _fetch_data_with_pooch(orientations_hash, orientations_path, surface_points_hash, surface_points_path):
+    def is_url(url):
+        from urllib.parse import urlparse
+        try:
+            result = urlparse(url)
+            return all([result.scheme, result.netloc])
+        except ValueError:
+            return False
+
+    pooch = require_pooch() if is_url(surface_points_path) or is_url(orientations_path) else None
+    # * Fetch or define path for surface points
+    if is_url(surface_points_path):
+        surface_points_file = pooch.retrieve(
+            url=surface_points_path,
+            known_hash=surface_points_hash
+        )
+        print(pooch.file_hash(surface_points_file))
+    else:
+        surface_points_file = surface_points_path
+    # * Fetch or define path for orientations
+    if is_url(orientations_path):
+        orientations_file = pooch.retrieve(
+            url=orientations_path,
+            known_hash=orientations_hash
+        )
+        print(pooch.file_hash(orientations_file))
+    else:
+        orientations_file = orientations_path
+    return orientations_file, surface_points_file

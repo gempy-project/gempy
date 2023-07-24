@@ -30,9 +30,9 @@ np.random.seed(5555)
 
 # %% 
 data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
-geo_data = gp.create_data('kriging', extent=[0, 1000, 0, 50, 0, 1000], resolution=[50, 1, 50],
-                          path_o=data_path + "/data/input_data/jan_models/model1_orientations.csv",
-                          path_i=data_path + "/data/input_data/jan_models/model1_surface_points.csv")
+geo_data = gp.create_data_legacy('kriging', extent=[0, 1000, 0, 50, 0, 1000], resolution=[50, 1, 50],
+                                 path_o=data_path + "/data/input_data/jan_models/model1_orientations.csv",
+                                 path_i=data_path + "/data/input_data/jan_models/model1_surface_points.csv")
 
 # %%
 # Setting and ordering the units and series:

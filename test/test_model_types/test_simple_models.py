@@ -24,9 +24,9 @@ class TestNoFaults:
         2 Horizontal layers with drift 0
         """
         # Importing the data from csv files and settign extent and resolution
-        geo_data = gempy.create_data(extent=[0, 10, 0, 10, -10, 0], resolution=[50, 50, 50],
-                                     path_o=input_path + "/GeoModeller/test_a/test_a_Foliations.csv",
-                                     path_i=input_path + "/GeoModeller/test_a/test_a_Points.csv")
+        geo_data = gempy.create_data_legacy(extent=[0, 10, 0, 10, -10, 0], resolution=[50, 50, 50],
+                                            path_o=input_path + "/GeoModeller/test_a/test_a_Foliations.csv",
+                                            path_i=input_path + "/GeoModeller/test_a/test_a_Points.csv")
 
         geo_data.set_aesara_function(interpolator)
 
@@ -54,9 +54,9 @@ class TestNoFaults:
         """
 
         # Importing the data from csv files and settign extent and resolution
-        geo_data = gempy.create_data(extent=[0, 10, 0, 10, -10, 0], resolution=[50, 50, 50],
-                                     path_o=input_path + "/GeoModeller/test_b/test_b_Foliations.csv",
-                                     path_i=input_path + "/GeoModeller/test_b/test_b_Points.csv")
+        geo_data = gempy.create_data_legacy(extent=[0, 10, 0, 10, -10, 0], resolution=[50, 50, 50],
+                                            path_o=input_path + "/GeoModeller/test_b/test_b_Foliations.csv",
+                                            path_i=input_path + "/GeoModeller/test_b/test_b_Points.csv")
 
         geo_data.set_aesara_function(interpolator)
 
@@ -84,9 +84,9 @@ class TestNoFaults:
         """
 
         # Importing the data from csv files and settign extent and resolution
-        geo_data = gempy.create_data(extent=[0, 10, 0, 10, -10, 0], resolution=[50, 50, 50],
-                                     path_o=input_path + "/GeoModeller/test_c/test_c_Foliations.csv",
-                                     path_i=input_path + "/GeoModeller/test_c/test_c_Points.csv")
+        geo_data = gempy.create_data_legacy(extent=[0, 10, 0, 10, -10, 0], resolution=[50, 50, 50],
+                                            path_o=input_path + "/GeoModeller/test_c/test_c_Foliations.csv",
+                                            path_i=input_path + "/GeoModeller/test_c/test_c_Points.csv")
 
         geo_data.set_aesara_function(interpolator)
 
@@ -118,9 +118,9 @@ class TestFaults:
         """
 
         # Importing the data from csv files and settign extent and resolution
-        geo_data = gempy.create_data(extent=[0, 10, 0, 10, -10, 0], resolution=[50, 50, 50],
-                                     path_o=input_path + "/GeoModeller/test_d/test_d_Foliations.csv",
-                                     path_i=input_path + "/GeoModeller/test_d/test_d_Points.csv")
+        geo_data = gempy.create_data_legacy(extent=[0, 10, 0, 10, -10, 0], resolution=[50, 50, 50],
+                                            path_o=input_path + "/GeoModeller/test_d/test_d_Foliations.csv",
+                                            path_i=input_path + "/GeoModeller/test_d/test_d_Points.csv")
 
         gempy.map_stack_to_surfaces(geo_data, {'fault1': 'f1', 'series': ('A', 'B')})
 
@@ -148,9 +148,9 @@ class TestFaults:
         Two layers a bit curvy, 1 fault
         """
         # Importing the data from csv files and settign extent and resolution
-        geo_data = gempy.create_data(extent=[0, 10, 0, 10, -10, 0], resolution=[50, 50, 50],
-                                     path_o=input_path + "/GeoModeller/test_e/test_e_Foliations.csv",
-                                     path_i=input_path + "/GeoModeller/test_e/test_e_Points.csv")
+        geo_data = gempy.create_data_legacy(extent=[0, 10, 0, 10, -10, 0], resolution=[50, 50, 50],
+                                            path_o=input_path + "/GeoModeller/test_e/test_e_Foliations.csv",
+                                            path_i=input_path + "/GeoModeller/test_e/test_e_Points.csv")
 
         gempy.map_stack_to_surfaces(geo_data, {'fault1': 'f1', 'series': ('A', 'B')})
         geo_data.set_is_fault('fault1')
@@ -178,9 +178,9 @@ class TestFaults:
         """
 
         # Importing the data from csv files and settign extent and resolution
-        geo_data = gempy.create_data(extent=[0, 2000, 0, 2000, -2000, 0], resolution=[50, 50, 50],
-                                     path_o=input_path + "/GeoModeller/test_f/test_f_Foliations.csv",
-                                     path_i=input_path + "/GeoModeller/test_f/test_f_Points.csv")
+        geo_data = gempy.create_data_legacy(extent=[0, 2000, 0, 2000, -2000, 0], resolution=[50, 50, 50],
+                                            path_o=input_path + "/GeoModeller/test_f/test_f_Foliations.csv",
+                                            path_i=input_path + "/GeoModeller/test_f/test_f_Points.csv")
 
         gempy.map_stack_to_surfaces(geo_data, {'fault1': 'MainFault',
                                                'series': ('Reservoir',
@@ -222,9 +222,9 @@ class TestFaults:
     def test_compute_model_multiple_ranges(self, interpolator):
 
         # Importing the data from csv files and settign extent and resolution
-        geo_data = gempy.create_data(extent=[0, 2000, 0, 2000, -2000, 0], resolution=[50, 50, 50],
-                                     path_o=input_path + "/GeoModeller/test_f/test_f_Foliations.csv",
-                                     path_i=input_path + "/GeoModeller/test_f/test_f_Points.csv")
+        geo_data = gempy.create_data_legacy(extent=[0, 2000, 0, 2000, -2000, 0], resolution=[50, 50, 50],
+                                            path_o=input_path + "/GeoModeller/test_f/test_f_Foliations.csv",
+                                            path_i=input_path + "/GeoModeller/test_f/test_f_Points.csv")
 
         gempy.map_stack_to_surfaces(geo_data, {'fault1': 'MainFault',
                                                'series': ('Reservoir',
@@ -249,7 +249,7 @@ def test_simple_model_gempy_engine():
     import numpy
     numpy.set_printoptions(precision=3, linewidth=200)
 
-    g = gempy.create_data("test_engine", extent=[-4, 4, -4, 4, -4, 4], resolution=[4, 1, 4])
+    g = gempy.create_data_legacy("test_engine", extent=[-4, 4, -4, 4, -4, 4], resolution=[4, 1, 4])
     sp = np.array([[-3, 0, 0],
                    [0, 0, 0],
                    [2, 0, 0.5],

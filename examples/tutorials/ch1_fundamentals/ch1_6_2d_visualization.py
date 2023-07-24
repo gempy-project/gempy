@@ -25,9 +25,9 @@ pd.set_option('display.precision', 2)
 # Data Preparation
 data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
 
-geo_data = gp.create_data('viz_2d', [0, 1000, 0, 1000, 0, 1000], resolution=[10, 10, 10],
-                          path_o=data_path + "/data/input_data/jan_models/model5_orientations.csv",
-                          path_i=data_path + "/data/input_data/jan_models/model5_surface_points.csv")
+geo_data = gp.create_data_legacy('viz_2d', [0, 1000, 0, 1000, 0, 1000], resolution=[10, 10, 10],
+                                 path_o=data_path + "/data/input_data/jan_models/model5_orientations.csv",
+                                 path_i=data_path + "/data/input_data/jan_models/model5_surface_points.csv")
 
 # %% 
 gp.plot_2d(geo_data)

@@ -31,9 +31,9 @@ import matplotlib.pyplot as plt
 
 path_to_data = os.pardir+"/../data/input_data/jan_models/"
 
-geo_data = gp.create_data([0,1000,0,1000,0,1000],resolution=[50,50,50], 
-                          path_o = path_to_data + "model2_orientations.csv",
-                          path_i = path_to_data + "model2_surface_points.csv") 
+geo_data = gp.create_data_legacy([0, 1000, 0, 1000, 0, 1000], resolution=[50, 50, 50],
+                                 path_o = path_to_data + "model2_orientations.csv",
+                                 path_i = path_to_data + "model2_surface_points.csv") 
 
 geo_data.get_data().head()
 

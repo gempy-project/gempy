@@ -59,9 +59,9 @@ def create_example(name_model, interpolator=None, save_pickle=False, plot_sectio
     n_model = name_model[-1]
 
     # Load right gempy geodata
-    geo_data = gp.create_data(name_model, extent=[0, 2000, 0, 2000, 0, 1600], resolution=[50, 50, 50],
-                              path_o=data_path + "/data/input_data/lisa_models/foliations" + n_model + ".csv",
-                              path_i=data_path + "/data/input_data/lisa_models/interfaces" + n_model + ".csv")
+    geo_data = gp.create_data_legacy(name_model, extent=[0, 2000, 0, 2000, 0, 1600], resolution=[50, 50, 50],
+                                     path_o=data_path + "/data/input_data/lisa_models/foliations" + n_model + ".csv",
+                                     path_i=data_path + "/data/input_data/lisa_models/interfaces" + n_model + ".csv")
 
     # Set the right sequential pile
     subset_list_1 = np.array(['Model 1'])

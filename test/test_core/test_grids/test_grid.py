@@ -23,7 +23,7 @@ class TestGrid:
                                     resolution=[50, 50, 50])
 
     def test_section_grid(self):
-        geo_data = gp.create_data('section_grid', [0, 1000, 0, 1000, 0, 1000], resolution=[10, 10, 10])
+        geo_data = gp.create_data_legacy('section_grid', [0, 1000, 0, 1000, 0, 1000], resolution=[10, 10, 10])
         geo_data.set_topography()
         section_dict = {'section1': ([0, 0], [1000, 1000], [100, 80]),
                         'section2': ([800, 0], [800, 1000], [150, 100]),
@@ -36,7 +36,7 @@ class TestGrid:
                                        decimal=4)
 
     def test_set_section_twice(self):
-        geo_data = gp.create_data(extent=[0, 1000, 0, 1000, 0, 1000], resolution=[10, 10, 10])
+        geo_data = gp.create_data_legacy(extent=[0, 1000, 0, 1000, 0, 1000], resolution=[10, 10, 10])
         section_dict = {'section1': ([0, 0], [1000, 1000], [100, 80]),
                         'section2': ([800, 0], [800, 1000], [150, 100]),
                         'section3': ([50, 200], [100, 500], [200, 150])}

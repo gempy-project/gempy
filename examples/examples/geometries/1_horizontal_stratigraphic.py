@@ -20,7 +20,7 @@ import gempy_viewer as gpv
 
 # %%
 data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
-geo_data = gp.create_data(
+geo_data = gp.create_data_legacy(
     project_name='horizontal',
     extent=[0, 1000, 0, 1000, 0, 1000],
     resolution=[50, 50, 50],

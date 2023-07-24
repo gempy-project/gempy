@@ -24,7 +24,7 @@ from gempy_engine.core.data.stack_relation_type import StackRelationType
 data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
 path_to_data = data_path + "/data/input_data/jan_models/"
 
-geo_data = gp.create_data(
+geo_data = gp.create_data_legacy(
     project_name='combination',
     extent=[0, 2500, 0, 1000, 0, 1000],
     resolution=[125, 50, 50],

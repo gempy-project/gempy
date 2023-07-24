@@ -25,7 +25,7 @@ from gempy_engine.plugins.plotting.helper_functions import plot_block_and_input_
 data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
 path_to_data = data_path + "/data/input_data/jan_models/"
 
-geo_data = gp.create_data(
+geo_data = gp.create_data_legacy(
     project_name='unconformity',
     extent=[0, 1000, 0, 1000, 0, 1000],
     resolution=[50, 5, 50],

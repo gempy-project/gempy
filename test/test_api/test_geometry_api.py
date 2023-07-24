@@ -6,9 +6,9 @@ input_path = os.path.dirname(__file__) + '/../../examples/data'
 
 def test_set_orientations():
     # Importing the data from CSV-files and setting extent and resolution
-    geo_data = gp.create_data(extent=[0, 2000, 0, 2000, 0, 2000], resolution=[50, 50, 50],
-                              path_o=input_path + '/input_data/tut_chapter1/simple_fault_model_orientations.csv',
-                              path_i=input_path + '/input_data/tut_chapter1/simple_fault_model_points.csv')
+    geo_data = gp.create_data_legacy(extent=[0, 2000, 0, 2000, 0, 2000], resolution=[50, 50, 50],
+                                     path_o=input_path + '/input_data/tut_chapter1/simple_fault_model_orientations.csv',
+                                     path_i=input_path + '/input_data/tut_chapter1/simple_fault_model_points.csv')
 
     gp.get_data(geo_data)
 
@@ -25,10 +25,10 @@ def test_select_nearest_surface_points():
     data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
     path_to_data = data_path + "/data/input_data/jan_models/"
 
-    geo_data = gp.create_data('fault', extent=[0, 1000, 0, 1000, 0, 1000],
-                              resolution=[50, 50, 50],
-                              path_o=path_to_data + "model5_orientations.csv",
-                              path_i=path_to_data + "model5_surface_points.csv")
+    geo_data = gp.create_data_legacy('fault', extent=[0, 1000, 0, 1000, 0, 1000],
+                                     resolution=[50, 50, 50],
+                                     path_o=path_to_data + "model5_orientations.csv",
+                                     path_i=path_to_data + "model5_surface_points.csv")
 
     # Assigning series to formations as well as their order (timewise)
     gp.map_stack_to_surfaces(geo_data, {"Fault_Series": 'fault',
@@ -60,10 +60,10 @@ def test_set_orientation_from_neighbours():
     data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
     path_to_data = data_path + "/data/input_data/jan_models/"
 
-    geo_data = gp.create_data('fault', extent=[0, 1000, 0, 1000, 0, 1000],
-                              resolution=[50, 50, 50],
-                          path_o=path_to_data + "model5_orientations.csv",
-                          path_i=path_to_data + "model5_surface_points.csv")
+    geo_data = gp.create_data_legacy('fault', extent=[0, 1000, 0, 1000, 0, 1000],
+                                     resolution=[50, 50, 50],
+                                     path_o=path_to_data + "model5_orientations.csv",
+                                     path_i=path_to_data + "model5_surface_points.csv")
 
     # Assigning series to formations as well as their order (timewise)
     gp.map_stack_to_surfaces(geo_data, {"Fault_Series": 'fault',
@@ -93,10 +93,10 @@ def test_set_orientation_from_neighbours_all():
     data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
     path_to_data = data_path + "/data/input_data/jan_models/"
 
-    geo_data = gp.create_data('fault', extent=[0, 1000, 0, 1000, 0, 1000],
-                              resolution=[50, 50, 50],
-                          path_o=path_to_data + "model5_orientations.csv",
-                          path_i=path_to_data + "model5_surface_points.csv")
+    geo_data = gp.create_data_legacy('fault', extent=[0, 1000, 0, 1000, 0, 1000],
+                                     resolution=[50, 50, 50],
+                                     path_o=path_to_data + "model5_orientations.csv",
+                                     path_i=path_to_data + "model5_surface_points.csv")
 
     # count orientations before orientation calculation
     length_pre = geo_data._orientations.df.shape[0]
