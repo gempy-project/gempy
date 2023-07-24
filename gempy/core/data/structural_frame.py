@@ -52,7 +52,10 @@ class StructuralFrame:
         return InputDataDescriptor.from_structural_frame(
             structural_frame=self,
             making_descriptor=self.groups_structural_relation,
-            faults_relations=None
+            faults_relations= np.array([  # BUG: This has to be set properly
+                [False, True],
+                [False, False]
+            ])
         )
 
     @property

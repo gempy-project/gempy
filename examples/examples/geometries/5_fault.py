@@ -13,7 +13,7 @@ Model 5 - Fault
 # Importing GemPy
 import gempy as gp
 import gempy_viewer as gpv
-from core.data.stack_relation_type import StackRelationType
+from gempy_engine.core.data.stack_relation_type import StackRelationType
 
 # %%
 # Creating the model by importing the input data and displaying it:
@@ -47,6 +47,7 @@ gp.map_stack_to_surfaces(
 # geo_data.set_is_fault(['Fault_Series'])
 # TODO: Get the fault running
 geo_data.structural_frame.structural_groups[0].structural_relation = StackRelationType.FAULT
+
 
 # %%
 gpv.plot_2d(geo_data, direction='y')
