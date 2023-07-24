@@ -2,6 +2,7 @@
 
 import config
 import gempy_engine
+from gempy_engine.core.data.stack_relation_type import StackRelationType
 from gempy_3.gp3_to_gp2_input import gempy3_to_gempy2
 from gempy_engine.config import AvailableBackends
 from gempy_engine.core.data import Solutions
@@ -16,6 +17,12 @@ def compute_model(gempy_model: GeoModel, backend: Optional[AvailableBackends] = 
     backend = backend or config.DEFAULT_BACKEND
     match backend:
         case AvailableBackends.numpy:
+            # gempy_model.input_data_descriptor.stack_structure.masking_descriptor = [
+            #     StackRelationType.FAULT, StackRelationType.ERODE, False]
+
+            gempy_model.input_data_descriptor.stack_structure.masking_descriptor = [
+                StackRelationType.FAULT, False]
+
             gempy_model.solutions = gempy_engine.compute_model(
                 interpolation_input=gempy_model.interpolation_input,
                 options=gempy_model.interpolation_options,

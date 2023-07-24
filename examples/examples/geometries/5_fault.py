@@ -65,7 +65,7 @@ sol = gp.compute_model(geo_data)
 
 # %%
 # sphinx_gallery_thumbnail_number = 2
-gpv.plot_2d(geo_data, cell_number=25, direction='y', show_data=False, show_all_data=True)
+gpv.plot_2d(geo_data, cell_number=25, direction='y', show_data=True)
 
 # %%
 gpv.plot_2d(geo_data, cell_number=25, direction='x', show_data=True)

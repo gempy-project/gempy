@@ -87,6 +87,6 @@ class GeoModel:
         return self._interpolationInput
 
     @property
-    def input_data_descriptor(self):
+    def input_data_descriptor(self) -> InputDataDescriptor:
         # TODO: This should have the exact same dirty logic as interpolation_input
         return self.structural_frame.input_data_descriptor
