@@ -5,6 +5,7 @@ Created on 16.04.2019
 
 @author: Elisa Heim
 """
+from typing import Optional
 
 import numpy as np
 from scipy import fftpack
@@ -13,6 +14,7 @@ import os
 
 try:
     from osgeo import gdal
+
     GDAL_IMPORT = True
 except ImportError as e:
     GDAL_IMPORT = False
@@ -180,7 +182,18 @@ class LoadDEMGDAL:
         return np.array([upleft, lowleft, upright, lowright])
 
 
-class LoadDEMArtificial:
+def create_random_topography(extent: np.array, resolution: np.array, dz: Optional[np.array] = None,
+                             fractal_dimension: Optional[float] = 2.0) -> np.array:
+ 
+    dem = _LoadDEMArtificial(extent=extent,
+                             resolution=resolution,
+                             d_z=dz,
+                             fd=fractal_dimension)
+
+    return dem.get_values()
+
+
+class _LoadDEMArtificial:  # * Cannot think of a good reason to be a class
 
     def __init__(self, grid=None, fd=2.0, extent=None, resolution=None, d_z=None):
         """Class to create a random topography based on a fractal grid algorithm.

@@ -1,7 +1,5 @@
-from gempy.core.grid_modules.create_topography import LoadDEMArtificial, LoadDEMGDAL
 import numpy as np
 import skimage.transform
-import matplotlib.pyplot as plt
 from scipy.constants import G
 from scipy import interpolate
 from gempy.utils.meta import _setdoc_pro

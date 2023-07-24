@@ -1,5 +1,10 @@
+import warnings
+from typing import Optional
+
 import numpy as np
-from .create_topography import LoadDEMArtificial, LoadDEMGDAL
+
+from gempy.core.grid_modules.grid_types import RegularGrid
+from gempy.modules.grids.create_topography import _LoadDEMArtificial, LoadDEMGDAL
 import skimage
 
 
@@ -11,20 +16,11 @@ class Topography:
         This always assumes that the topography we pass fits perfectly the extent
 
     """
-    def __init__(self, regular_grid=None, regular_grid_extent=None, regular_grid_resolution=None):
 
-        if regular_grid is None and (regular_grid_extent is None or regular_grid_resolution is None):
-            raise AttributeError('You need to pass either a regular grid or'
-                                 'extent and resolution')
+    def __init__(self, regular_grid: RegularGrid, values_2d: Optional[np.ndarray] = None):
 
-        # Set the extent and resolution of the grid
-        if regular_grid_resolution is None:
-            self.regular_grid_resolution = regular_grid.resolution[:2]
-        else:
-            self.regular_grid_resolution = regular_grid_resolution
-        assert all(np.asarray(self.regular_grid_resolution) >= 2), 'The regular grid needs to be at least of size 2 on all ' \
-                                                      'directions.'
-        self.extent = regular_grid.extent[:] if regular_grid_extent is None else regular_grid_extent
+        self.extent = regular_grid.extent[:]
+        self.regular_grid_resolution = regular_grid.resolution[:]
 
         # Values (n, 3)
         self.values = np.zeros((0, 3))
@@ -44,6 +40,9 @@ class Topography:
         # Coords
         self._x = None
         self._y = None
+       
+        if values_2d is not None:
+            self.set_values(values_2d)
 
     @property
     def x(self):
@@ -106,14 +105,15 @@ class Topography:
         return regular_grid_topo
 
     def load_random_hills(self, **kwargs):
+        warnings.warn('This function is deprecated. Use load_from_random instead', DeprecationWarning)
         if 'extent' in kwargs:
             self.extent = kwargs.pop('extent')
 
         if 'resolution' in kwargs:
             self.regular_grid_resolution = kwargs.pop('resolution')
 
-        dem = LoadDEMArtificial(extent=self.extent,
-                                resolution=self.regular_grid_resolution, **kwargs)
+        dem = _LoadDEMArtificial(extent=self.extent,
+                                 resolution=self.regular_grid_resolution, **kwargs)
 
         self._x, self._y = dem.x, dem.y
         self.set_values(dem.get_values())
@@ -134,5 +134,3 @@ class Topography:
 
     def load_from_saved(self, *args, **kwargs):
         self.load(*args, **kwargs)
-
-
