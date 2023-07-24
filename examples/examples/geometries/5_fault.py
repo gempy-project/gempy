@@ -14,6 +14,9 @@ Model 5 - Fault
 import gempy as gp
 import gempy_viewer as gpv
 from gempy_engine.core.data.stack_relation_type import StackRelationType
+from gempy_engine.test.helper_functions import plot_block_and_input_2d
+
+from gempy_engine.modules.octrees_topology.octrees_topology_interface import ValueType
 
 # %%
 # Creating the model by importing the input data and displaying it:
@@ -34,6 +37,9 @@ geo_data = gp.create_data(
 # %%
 # Setting and ordering the units and series:
 # 
+plot_block_and_input_2d(0, geo_data.interpolation_input, geo_data.solutions.outputs,
+geo_data.solutions.structure.stack_structure, ValueType.values_block)
+
 
 # %% 
 gp.map_stack_to_surfaces(
@@ -62,6 +68,10 @@ sol = gp.compute_model(geo_data)
 # %%
 # Displaying the result in x and y direction:
 # 
+
+# %%
+
+_plot_stack_values_block(interpolation_input, outputs, structure)
 
 # %%
 # sphinx_gallery_thumbnail_number = 2
