@@ -41,7 +41,7 @@ geo_data = gp.create_data(
 gp.map_stack_to_surfaces(
     gempy_model=geo_data,
     mapping_object={
-        "Strat_Series1": ('rock3'),
+        "Strat_Series1": 'rock3',
         "Strat_Series2": ('rock2', 'rock1')
     }
 )
@@ -62,13 +62,28 @@ sol = gp.compute_model(geo_data)
 
 # %%
 plot_block_and_input_2d(
+    stack_number=0,
+    interpolation_input=geo_data.interpolation_input,
+    outputs=geo_data.solutions.octrees_output,
+    structure=geo_data.structural_frame.input_data_descriptor.stack_structure,
+    value_type=ValueType.mask_component
+)
+
+plot_block_and_input_2d(
+    stack_number=0,
+    interpolation_input=geo_data.interpolation_input,
+    outputs=geo_data.solutions.octrees_output,
+    structure=geo_data.structural_frame.input_data_descriptor.stack_structure,
+    value_type=ValueType.squeeze_mask
+)
+
+plot_block_and_input_2d(
     stack_number=1,
     interpolation_input=geo_data.interpolation_input,
     outputs=geo_data.solutions.octrees_output,
     structure=geo_data.structural_frame.input_data_descriptor.stack_structure,
-    value_type=ValueType.ids
+    value_type=ValueType.squeeze_mask
 )
-
 # %%
 # Displaying the result in x and y direction:
 # 
