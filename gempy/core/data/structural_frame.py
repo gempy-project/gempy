@@ -115,7 +115,15 @@ class StructuralFrame:
     def elements_colors(self) -> list[str]:
         # reversed
         return [element.color for element in self.structural_elements][::-1]
-        # return [element.color for element in self.structural_elements]
+    
+    @property
+    def elements_colors_volumes(self) -> list[str]:
+        return self.elements_colors
+    
+    @property
+    def elements_colors_contacts(self) -> list[str]:
+        elements_ = [element.color for element in self.structural_elements]
+        return elements_
 
     @property
     def surface_points_colors(self) -> list[str]:
