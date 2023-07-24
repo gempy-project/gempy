@@ -1,3 +1,5 @@
+import enum
+import warnings
 from typing import Union
 
 import numpy as np
@@ -5,6 +7,14 @@ import numpy as np
 from gempy.core.grid_modules import grid_types, topography
 from gempy.utils import docstring as ds
 from gempy.utils.meta import _setdoc_pro, _setdoc
+
+
+class GridTypes(enum.Enum):
+    REGULAR = 0
+    CUSTOM = 1
+    TOPOGRAPHY = 2
+    SECTIONS = 3
+    CENTERED = 4
 
 
 @_setdoc_pro([grid_types.RegularGrid.__doc__, grid_types.CustomGrid.__doc__])
@@ -184,6 +194,8 @@ class Grid(object):
             grid_name (str, list):
 
         """
+        warnings.warn('This function is deprecated. Use gempy.set_active_grid instead', DeprecationWarning)
+        
         where = self.grid_types == grid_name
         self.active_grids[where] = True
         self.update_grid_values()
