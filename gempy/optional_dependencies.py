@@ -20,3 +20,12 @@ def require_gempy_legacy():
     except ImportError:
         raise ImportError("The gempy_legacy library is required to use this function.")
     return gempy_legacy
+
+
+def require_gempy_viewer():
+    try:
+        import gempy_viewer
+    except ImportError:
+        raise ImportError("The gempy_viewer package is required to run this function.")
+    return gempy_viewer
+
