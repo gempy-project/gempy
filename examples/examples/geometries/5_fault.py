@@ -48,6 +48,7 @@ gp.map_stack_to_surfaces(
 
 # %%
 # Define fault groups
+# TODO: Abstract this away with the old set_fault method
 geo_data.structural_frame.structural_groups[0].structural_relation = StackRelationType.FAULT
 geo_data.structural_frame.fault_relations = np.array([[0, 1], [0, 0]])
 
