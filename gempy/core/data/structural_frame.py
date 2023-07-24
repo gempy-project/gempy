@@ -115,24 +115,19 @@ class StructuralFrame:
     def elements_colors(self) -> list[str]:
         # reversed
         return [element.color for element in self.structural_elements][::-1]
-    
+        # return [element.color for element in self.structural_elements]
+
     @property
     def surface_points_colors(self) -> list[str]:
         """Using the id record of surface_points map the elements colors to each point"""
-        elements_colors = self.elements_colors[1:]  # remove first element (basement)
-        surface_points = self.surface_points
-        surface_points_id = surface_points.data['id']
-
-        return [elements_colors[surface_points_id[i]] for i in range(len(surface_points))]
+        surface_points_colors = [element.color for element in self.structural_elements for _ in range(element.number_of_points)]
+        return surface_points_colors
 
     @property
     def orientations_colors(self) -> list[str]:
         """Using the id record of orientations map the elements colors to each point"""
-        elements_colors = self.elements_colors[1:]  # remove first element (basement)
-        orientations = self.orientations
-        orientations_id = orientations.data['id']
-
-        return [elements_colors[orientations_id[i]] for i in range(len(orientations))]
+        orientations_colors = [element.color for element in self.structural_elements for _ in range(element.number_of_orientations)]
+        return orientations_colors
 
     @property
     def orientations(self) -> OrientationsTable:
