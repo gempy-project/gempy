@@ -17,7 +17,7 @@ from ..core.data.surface_points import SurfacePointsTable
 from ..optional_dependencies import require_pooch
 
 
-def create_data(
+def create_geomodel(
         *,
         project_name: str = 'default_project',
         extent: Union[list, ndarray] = None,
@@ -54,8 +54,8 @@ def create_data_legacy(
         path_i: str = None,
         path_o: str = None) -> GeoModel:  # ? Do I need to pass pandas read kwargs?
 
-    warnings.warn("This method is deprecated. Use create_data instead.", DeprecationWarning)
-    return create_data(
+    warnings.warn("This method is deprecated. Use create_geomodel instead.", DeprecationWarning)
+    return create_geomodel(
         project_name=project_name,
         extent=extent,
         resolution=resolution,
