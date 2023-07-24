@@ -13,6 +13,9 @@ Model 6 - Unconformity
 # Importing GemPy
 import gempy as gp
 import gempy_viewer as gpv
+from gempy_engine.core.data.stack_relation_type import StackRelationType
+from gempy_engine.modules.octrees_topology.octrees_topology_interface import ValueType
+from gempy_engine.plugins.plotting.helper_functions import plot_block_and_input_2d
 
 # %%
 # Creating the model by importing the input data and displaying it:
@@ -25,7 +28,7 @@ path_to_data = data_path + "/data/input_data/jan_models/"
 geo_data = gp.create_data(
     project_name='unconformity',
     extent=[0, 1000, 0, 1000, 0, 1000],
-    resolution=[50, 50, 50],
+    resolution=[50, 5, 50],
     path_o=path_to_data + "model6_orientations.csv",
     path_i=path_to_data + "model6_surface_points.csv"
 )
@@ -44,6 +47,10 @@ gp.map_stack_to_surfaces(
 )
 
 # %%
+geo_data.structural_frame.structural_groups[0].structural_relation = StackRelationType.ERODE
+
+
+# %%
 gpv.plot_2d(geo_data, direction='y')
 
 # %%
@@ -54,12 +61,21 @@ gpv.plot_2d(geo_data, direction='y')
 sol = gp.compute_model(geo_data)
 
 # %%
+plot_block_and_input_2d(
+    stack_number=1,
+    interpolation_input=geo_data.interpolation_input,
+    outputs=geo_data.solutions.octrees_output,
+    structure=geo_data.structural_frame.input_data_descriptor.stack_structure,
+    value_type=ValueType.ids
+)
+
+# %%
 # Displaying the result in x and y direction:
 # 
 
 # %%
-gpv.plot_2d(geo_data, cell_number=25, direction='y', show_data=True)
+gpv.plot_2d(geo_data, direction='y', show_data=True)
 
 # %%
 # sphinx_gallery_thumbnail_number = 2
-gpv.plot_2d(geo_data, cell_number=25, direction='x', show_data=True)
+gpv.plot_2d(geo_data, direction='x', show_data=True)
