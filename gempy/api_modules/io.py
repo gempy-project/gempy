@@ -11,7 +11,7 @@ import numpy as np
 
 # region Save
 from gempy import Project, create_model, init_data
-from gempy.utils.meta import _setdoc
+from gempy_plugins.utils import _setdoc
 
 
 @_setdoc(Project.save_model_pickle.__doc__)

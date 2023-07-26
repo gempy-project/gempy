@@ -2,10 +2,9 @@
 
 """
 from gempy import get_data
-from gempy.utils.meta import _setdoc, _setdoc_pro
-from gempy.utils import docstring as ds
+from gempy_plugins.utils import _setdoc, _setdoc_pro
+from gempy_plugins.utils import docstring as ds
 from gempy.core.model import Model, InterpolatorModel
-from typing import Union
 import warnings
 import numpy as np
 

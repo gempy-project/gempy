@@ -16,7 +16,7 @@ from typing import Union
 import warnings
 from gempy.core.model import Project
 from gempy.core.solution import Solution
-from gempy.utils.meta import _setdoc, _setdoc_pro
+from gempy_plugins.utils import _setdoc_pro
 
 
 # region get

@@ -2,8 +2,8 @@ import numpy as np
 import skimage.transform
 from scipy.constants import G
 from scipy import interpolate
-from gempy.utils.meta import _setdoc_pro
-import gempy.utils.docstring as ds
+from gempy_plugins.utils import _setdoc_pro
+import gempy_plugins.utils.docstring as ds
 import pandas as pn
 
 

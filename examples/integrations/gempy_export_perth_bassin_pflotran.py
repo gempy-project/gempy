@@ -95,7 +95,7 @@ gp.plot_3d(geo_model, show_topography=True)
 # 
 
 # sphinx_gallery_thumbnail_path = '_static/permeability_pflotran.png'
-import gempy.utils.export as export
+import gempy_plugins.utils.export as export
 export.export_pflotran_input(geo_model, path='', filename="perth_basin_mesh.ugi")
 
 

@@ -6,8 +6,8 @@ import numpy as np
 
 from gempy.core.grid_modules import grid_types, topography
 from gempy.core.grid_modules.topography import Topography
-from gempy.utils import docstring as ds
-from gempy.utils.meta import _setdoc_pro, _setdoc
+from gempy_plugins.utils import docstring as ds
+from gempy_plugins.utils import _setdoc_pro, _setdoc
 
 
 class GridTypes(enum.Enum):
