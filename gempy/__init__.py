@@ -9,6 +9,7 @@ import os
 
 import warnings
 
+
 try:
     import faulthandler
     faulthandler.enable()
@@ -28,6 +29,7 @@ from .core.data.geo_model import GeoModel
 # from .core.structure import Structure
 # 
 from .core.grid import Grid
+from .core.data.importer_helper import ImporterHelper
 # from .core.surfaces import Surfaces
 # from .core.data_modules.scaling_system import ScalingSystem
 # from .core.data_modules.orientations import Orientations
@@ -55,7 +57,7 @@ from .API import *
 # from gempy_engine.core.data.options import InterpolationOptions
 from gempy_engine.core.data.stack_relation_type import StackRelationType
 
-__all__ = ['GeoModel', 'Grid', 'StackRelationType']
+__all__ = ['GeoModel', 'Grid', 'StackRelationType', 'ImporterHelper']
 
 # Assert at least pyton 3.10
 assert sys.version_info[0] >= 3 and sys.version_info[1] >= 10, "GemPy requires Python 3.10 or higher"
