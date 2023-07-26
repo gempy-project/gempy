@@ -128,7 +128,7 @@ def test_pile_geomodel_2(interpolator):
     gp.plot.plot_2d(geo_model, cell_number=25,
                          direction='y', show_data=True)
 
-    from gempy_viewer.API.plot_api import plot_2d
+    from gempy_viewer.API._plot_others import plot_2d
 
     p = plot_2d(geo_model, cell_number=[25])
 
