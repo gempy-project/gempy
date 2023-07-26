@@ -50,6 +50,10 @@ class OrientationsTable:
     def grads(self) -> np.ndarray:
         return np.array([self.data['G_x'], self.data['G_y'], self.data['G_z']]).T
 
+    @property
+    def ids(self) -> np.ndarray:
+        return self.data['id']
+    
     def get_orientations_by_name(self, name: str) -> 'OrientationsTable':
         return self.get_orientations_by_id(self.name_id_map[name])
 
