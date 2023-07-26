@@ -60,6 +60,10 @@ class SurfacePointsTable:
         return [self.get_surface_points_by_id(id) for id in ids]
 
     @property
+    def ids(self) -> np.ndarray:
+        return self.data['id']
+        
+    @property
     def id(self) -> int:
         # Check id is the same in the whole column and return it or throw an error
         ids = np.unique(self.data['id'])
