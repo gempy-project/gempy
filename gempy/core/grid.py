@@ -1,10 +1,11 @@
 import enum
 import warnings
-from typing import Union
+from typing import Union, Optional
 
 import numpy as np
 
 from gempy.core.grid_modules import grid_types, topography
+from gempy.core.grid_modules.topography import Topography
 from gempy.utils import docstring as ds
 from gempy.utils.meta import _setdoc_pro, _setdoc
 
@@ -64,7 +65,7 @@ class Grid(object):
         # Init optional grids
         self.custom_grid = None
         self.custom_grid_grid_active = False
-        self.topography = None
+        self.topography: Optional[Topography] = None
         self.topography_grid_active = False
         self.sections_grid_active = False
         self.centered_grid = None
