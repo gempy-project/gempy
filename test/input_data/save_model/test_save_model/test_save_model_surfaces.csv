@@ -1,7 +1,0 @@
-,surface,series,order_surfaces,isBasement,isFault,isActive,hasData,color,vertices,edges,sfai,id
-4,Main_Fault,Fault_Series,1,False,True,True,True,#527682,,,-0.5576859101910903,1
-3,Sandstone_2,Strat_Series,1,False,False,True,True,#728f02,,,0.8179798867859052,2
-2,Siltstone,Strat_Series,2,False,False,True,True,#ffbe00,,,0.7304871029635517,3
-0,Shale,Strat_Series,3,False,False,True,True,#015482,,,0.6496588766461112,4
-1,Sandstone_1,Strat_Series,4,False,False,True,True,#9f0052,,,0.5520920084971693,5
-5,basement,Strat_Series,5,True,False,True,True,#ff3f20,,,,6

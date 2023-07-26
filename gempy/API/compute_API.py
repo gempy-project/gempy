@@ -2,7 +2,7 @@
 
 import config
 import gempy_engine
-from gempy_3.gp3_to_gp2_input import gempy3_to_gempy2
+from gempy.API.gp2_gp3_compatibility.gp3_to_gp2_input import gempy3_to_gempy2
 from gempy_engine.config import AvailableBackends
 from gempy_engine.core.data import Solutions
 from ..core.data.geo_model import GeoModel
