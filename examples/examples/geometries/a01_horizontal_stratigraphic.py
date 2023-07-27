@@ -24,7 +24,7 @@ def generate_horizontal_stratigraphic_model() -> gp.GeoModel:
     geo_data = gp.create_geomodel(
         project_name='horizontal',
         extent=[0, 1000, 0, 1000, 0, 1000],
-        resolution=[50, 50, 50],
+        resolution=[50, 5, 50],
         importer_helper=gp.ImporterHelper(
             path_to_orientations=data_path + "/data/input_data/jan_models/model1_orientations.csv",
             path_to_surface_points=data_path + "/data/input_data/jan_models/model1_surface_points.csv"
@@ -41,7 +41,6 @@ def generate_horizontal_stratigraphic_model() -> gp.GeoModel:
     gp.compute_model(geo_data)
 
     return geo_data
-
 
 # %%
 # Generate the model

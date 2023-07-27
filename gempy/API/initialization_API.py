@@ -8,6 +8,7 @@ from gempy_engine.core.data import InterpolationOptions
 
 from gempy.API.io_API import read_surface_points, read_orientations
 from .. import GeoModel, Grid
+from ..core.color_generator import ColorsGenerator
 from ..core.data.importer_helper import ImporterHelper
 from ..core.data.orientations import OrientationsTable
 from ..core.data.structural_element import StructuralElement
@@ -74,13 +75,15 @@ def _initialize_structural_frame(importer_helper: ImporterHelper) -> StructuralF
 
     orientations_groups = OrientationsTable.fill_missing_orientations_groups(orientations_groups, surface_points_groups)
 
+    colors_generator = ColorsGenerator()
     structural_elements = []
+    
     for i in range(len(surface_points_groups)):
         structural_element: StructuralElement = StructuralElement(
             name=surface_points.id_to_name(i),
             surface_points=surface_points_groups[i],
             orientations=orientations_groups[i],
-            color=next(StructuralFrame.color_gen),
+            color=next(colors_generator)
         )
 
         structural_elements.append(structural_element)
@@ -94,7 +97,8 @@ def _initialize_structural_frame(importer_helper: ImporterHelper) -> StructuralF
 
     # ? Should I move this to the constructor?
     structural_frame: StructuralFrame = StructuralFrame(
-        structural_groups=[default_formation]
+        structural_groups=[default_formation],
+        color_gen=colors_generator
     )
     return structural_frame
 

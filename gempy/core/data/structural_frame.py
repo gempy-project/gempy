@@ -1,4 +1,4 @@
-﻿from dataclasses import dataclass
+﻿from dataclasses import dataclass, field
 from typing import Optional
 
 import numpy as np
@@ -15,14 +15,16 @@ from ..color_generator import ColorsGenerator
 @dataclass
 class StructuralFrame:
     structural_groups: list[StructuralGroup]  # ? should this be lazy?
+    color_gen: ColorsGenerator
+
     fault_relations: Optional[np.ndarray] = None
 
     # ? Should I create some sort of structural options class? For example, the masking descriptor and faults relations pointer
-    color_gen: ColorsGenerator = ColorsGenerator()  # ? Do I need a method to regenerate this?
     is_dirty: bool = True  # This changes when the structural frame is modified
 
-    def __init__(self, structural_groups: list[StructuralGroup]):
+    def __init__(self, structural_groups: list[StructuralGroup], color_gen: ColorsGenerator):
         self.structural_groups = structural_groups  # ? This maybe could be optional
+        self.color_gen = color_gen
 
     def __repr__(self):
         structural_groups_repr = ',\n'.join([repr(g) for g in self.structural_groups])
@@ -46,7 +48,7 @@ class StructuralFrame:
             name="basement",
             surface_points=SurfacePointsTable(data=np.zeros(0, dtype=SurfacePointsTable.dt)),
             orientations=OrientationsTable(data=np.zeros(0, dtype=OrientationsTable.dt)),
-            color=StructuralFrame.color_gen.up_next(),
+            color=self.color_gen.up_next(),
         )
 
         return basement

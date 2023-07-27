@@ -1,8 +1,10 @@
-﻿from typing import Optional
+﻿from dataclasses import dataclass
+from typing import Optional
 
 import numpy as np
 
 
+@dataclass
 class ColorsGenerator:
     """
     Object that handles the color management.
