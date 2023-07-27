@@ -33,7 +33,7 @@ def create_geomodel(
     interpolation_options: InterpolationOptions = InterpolationOptions(
         range=1.73205,
         c_o=10,
-        dual_contouring=False
+        dual_contouring=True,
     )
 
     geo_model: GeoModel = GeoModel(

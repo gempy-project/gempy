@@ -79,7 +79,7 @@ class GeoModel:
         for e, group in enumerate(self.structural_frame.structural_groups):
             
             dc_mesh = self._solutions.dc_meshes[e] if self._solutions.dc_meshes is not None else None
-            group.solution = LegacySolution(  # ? Maybe I need to add more fields but I am not sure yet
+            group.solution = LegacySolution(  # ? Maybe I need to add more fields, but I am not sure yet
                 scalar_field_matrix=self._solutions.raw_arrays.scalar_field_matrix[e],
                 block_matrix=self._solutions.raw_arrays.block_matrix[e],
 
