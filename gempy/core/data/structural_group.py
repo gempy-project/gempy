@@ -14,7 +14,7 @@ class StructuralGroup(ABC):
     elements: list[StructuralElement]
     structural_relation: StackRelationType
 
-    group_solution: Optional[LegacySolution] = None
+    solution: Optional[LegacySolution] = None
     
     def __repr__(self):
         return pprint.pformat(self.__dict__)

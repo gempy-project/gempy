@@ -77,15 +77,15 @@ class GeoModel:
     def solutions(self, value):
         self._solutions = value
         for e, group in enumerate(self.structural_frame.structural_groups):
-            
-            dc_mesh = self._solutions.dc_meshes[e] if self._solutions.dc_meshes is not None else None
             group.solution = LegacySolution(  # ? Maybe I need to add more fields, but I am not sure yet
                 scalar_field_matrix=self._solutions.raw_arrays.scalar_field_matrix[e],
                 block_matrix=self._solutions.raw_arrays.block_matrix[e],
-
-                vertices=(dc_mesh.vertices if dc_mesh is not None else None),
-                edges=(dc_mesh.edges if dc_mesh is not None else None)
             )
+        
+        for e, element in enumerate(self.structural_frame.structural_elements[:-1]):  # * Ignore basement
+            dc_mesh = self._solutions.dc_meshes[e] if self._solutions.dc_meshes is not None else None
+            element.vertices = (dc_mesh.vertices if dc_mesh is not None else None)
+            element.edges = (dc_mesh.edges if dc_mesh is not None else None)
             
         
     @property
