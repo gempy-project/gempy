@@ -6,8 +6,6 @@ import numpy as np
 
 from gempy.core.grid_modules import grid_types, topography
 from gempy.core.grid_modules.topography import Topography
-from gempy_plugins.utils import docstring as ds
-from gempy_plugins.utils import _setdoc_pro, _setdoc
 
 
 class GridTypes(enum.Enum):
@@ -18,7 +16,7 @@ class GridTypes(enum.Enum):
     CENTERED = 4
 
 
-@_setdoc_pro([grid_types.RegularGrid.__doc__, grid_types.CustomGrid.__doc__])
+
 class Grid(object):
     """ Class to generate grids.
 
@@ -86,7 +84,6 @@ class Grid(object):
     def __repr__(self):
         return 'Grid Object. Values: \n' + np.array_repr(self.values)
 
-    @_setdoc(grid_types.RegularGrid.__doc__)
     def create_regular_grid(self, extent=None, resolution=None, set_active=True, *args, **kwargs):
         """
         Set a new regular grid and activate it.
@@ -102,7 +99,6 @@ class Grid(object):
             self.set_active('regular')
         return self.regular_grid
 
-    @_setdoc_pro(ds.coord)
     def create_custom_grid(self, custom_grid: np.ndarray):
         """
         Set a new regular grid and activate it.
@@ -166,13 +162,11 @@ class Grid(object):
 
         self.set_active('topography')
 
-    @_setdoc(grid_types.Sections.__doc__)
     def create_section_grid(self, section_dict):
         self.sections = grid_types.Sections(regular_grid=self.regular_grid, section_dict=section_dict)
         self.set_active('sections')
         return self.sections
 
-    @_setdoc(grid_types.CenteredGrid.set_centered_grid.__doc__)
     def create_centered_grid(self, centers, radius, resolution=None):
         """Initialize gravity grid. Deactivate the rest of the grids"""
         self.centered_grid = grid_types.CenteredGrid(centers, radius, resolution)
