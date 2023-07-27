@@ -108,3 +108,11 @@ class Transform:
         homogeneous_points = np.concatenate([points, np.ones((points.shape[0], 1))], axis=1)
         transformed_points = (self.get_transform_matrix(transform_op_order) @ homogeneous_points.T).T
         return transformed_points[:, :3]
+    
+    def apply_inverse(self, points: np.ndarray, transform_op_order: TransformOpsOrder = TransformOpsOrder.SRT):
+        # * NOTE: to compare with legacy we would have to add 0.5 to the coords
+        assert points.shape[1] == 3
+        homogeneous_points = np.concatenate([points, -np.ones((points.shape[0], 1))], axis=1)
+        transformed_points = (np.linalg.inv(self.get_transform_matrix(transform_op_order)) @ homogeneous_points.T).T
+        return transformed_points[:, :3]
+    
