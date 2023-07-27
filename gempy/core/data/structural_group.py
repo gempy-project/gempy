@@ -1,8 +1,10 @@
 ﻿import pprint
 from abc import ABC
 from dataclasses import dataclass
+from typing import Optional
 
-from core.data.stack_relation_type import StackRelationType
+from gempy_engine.core.data.legacy_solutions import LegacySolution
+from gempy_engine.core.data.stack_relation_type import StackRelationType
 from gempy.core.data.structural_element import StructuralElement
 
 
@@ -11,6 +13,8 @@ class StructuralGroup(ABC):
     name: str
     elements: list[StructuralElement]
     structural_relation: StackRelationType
+
+    group_solution: Optional[LegacySolution] = None
     
     def __repr__(self):
         return pprint.pformat(self.__dict__)

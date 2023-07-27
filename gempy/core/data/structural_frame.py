@@ -19,7 +19,6 @@ class StructuralFrame:
     fault_relations: Optional[np.ndarray] = None
 
     # ? Should I create some sort of structural options class? For example, the masking descriptor and faults relations pointer
-
     color_gen: ColorsGenerator = ColorsGenerator()  # ? Do I need a method to regenerate this?
     is_dirty: bool = True  # This changes when the structural frame is modified
 

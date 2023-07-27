@@ -1,7 +1,8 @@
 ﻿import pprint
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 import gempy_engine.core.data.grid
+from core.data.legacy_solutions import LegacySolution
 from gempy_engine.core.data import InterpolationOptions
 from gempy_engine.core.data.input_data_descriptor import InputDataDescriptor
 from gempy_engine.core.data.interpolation_input import InterpolationInput
@@ -42,7 +43,7 @@ class GeoModel:
 
     # endregion
 
-    solutions: gempy_engine.core.data.solutions.Solutions = None
+    _solutions: gempy_engine.core.data.solutions.Solutions = field(init=False)
 
     legacy_model: "gpl.Project" = None
 
@@ -68,6 +69,27 @@ class GeoModel:
     def __repr__(self):
         return pprint.pformat(self.__dict__)
 
+    @property
+    def solutions(self):
+        return self._solutions
+    
+    @solutions.setter
+    def solutions(self, value):
+        self._solutions = value
+        for e, group in enumerate(self.structural_frame.structural_groups):
+            group.solution = LegacySolution(
+                scalar_field_matrix=self._solutions.raw_arrays.scalar_field_matrix[e],
+                block_matrix=self._solutions.raw_arrays.block_matrix[e],
+                mask_matrix=self._solutions.raw_arrays.mask_matrix[e],
+                mask_matrix_pad=self._solutions.raw_arrays.mask_matrix_pad[e],
+                values_matrix=self._solutions.raw_arrays.values_matrix[e],
+                gradient=self._solutions.raw_arrays.gradient[e],
+                
+                vertices=self._solutions.dc_meshes[e].vertices,
+                edges=self._solutions.dc_meshes[e].edges,
+            )
+            
+        
     @property
     def surface_points(self):
         return self.structural_frame.surface_points
