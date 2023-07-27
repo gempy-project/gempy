@@ -1,5 +1,4 @@
-﻿import pprint
-from dataclasses import dataclass
+﻿from dataclasses import dataclass
 from typing import Optional
 
 import numpy as np
@@ -26,8 +25,13 @@ class StructuralFrame:
         self.structural_groups = structural_groups  # ? This maybe could be optional
 
     def __repr__(self):
-        return pprint.pformat(self.__dict__)
-
+        structural_groups_repr = ',\n'.join([repr(g) for g in self.structural_groups])
+        fault_relations_str = np.array2string(self.fault_relations) if self.fault_relations is not None else 'None'
+        return (f"StructuralFrame(\n"
+                f"\tstructural_groups=[\n{structural_groups_repr}\n],\n"
+                f"\tfault_relations={fault_relations_str},\n"
+                )
+        
     @property
     def structural_elements(self) -> list[StructuralElement]:
         elements = []
@@ -114,11 +118,11 @@ class StructuralFrame:
     def elements_colors(self) -> list[str]:
         # reversed
         return [element.color for element in self.structural_elements][::-1]
-    
+
     @property
     def elements_colors_volumes(self) -> list[str]:
         return self.elements_colors
-    
+
     @property
     def elements_colors_contacts(self) -> list[str]:
         elements_ = [element.color for element in self.structural_elements]
@@ -158,7 +162,7 @@ class StructuralFrame:
         raise NotImplementedError
 
     # endregion
-   
+
     def _validate_faults_relations(self):
         """Check that if there are any StackRelationType.FAULT in the structural groups the fault relation matrix is
         given and shape is the right one, i.e. a square matrix of size equals to len(groups)"""

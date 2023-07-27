@@ -29,7 +29,7 @@ def generate_fault_model() -> gp.GeoModel:
     geo_data = gp.create_geomodel(
         project_name='fault',
         extent=[0, 1000, 0, 1000, 0, 1000],
-        resolution=[50, 50, 50],
+        resolution=[20, 5, 20],
         importer_helper=gp.ImporterHelper(
             path_to_orientations=path_to_data + "model5_orientations.csv",
             path_to_surface_points=path_to_data + "model5_surface_points.csv"
@@ -82,5 +82,5 @@ plot_block_and_input_2d(
 )
 
 # Plot the result of the model in the x and y direction with data
-gpv.plot_2d(geo_data, cell_number=25, direction='y', show_data=True)
-gpv.plot_2d(geo_data, cell_number=25, direction='x', show_data=True)
+gpv.plot_2d(geo_data, direction='y', show_data=True)
+gpv.plot_2d(geo_data, direction='x', show_data=True)

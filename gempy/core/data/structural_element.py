@@ -1,6 +1,6 @@
 ﻿import pprint
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Optional
 
 import numpy as np
@@ -42,8 +42,10 @@ class StructuralElement:
 
 
     def __repr__(self):
-        return pprint.pformat(self.__dict__)
-    
+        r, g, b = int(self._color[1:3], 16), int(self._color[3:5], 16), int(self._color[5:7], 16)
+        colored_color = f'\033[38;2;{r};{g};{b}m' + self._color + '\033[0m'
+        return f"Element(\n\tname={self.name},\n\tcolor={colored_color},\n\tis_active={self.is_active}\n)"
+
     @property
     def number_of_points(self) -> int:
         return len(self.surface_points)

@@ -67,6 +67,7 @@ class GeoModel:
         )
 
     def __repr__(self):
+        # TODO: Improve this
         return pprint.pformat(self.__dict__)
 
     @property
