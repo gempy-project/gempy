@@ -105,7 +105,8 @@ class GeoModel:
             self._interpolationInput = InterpolationInput.from_structural_frame(
                 structural_frame=self.structural_frame,
                 grid=self.grid,
-                transform=self.transform
+                transform=self.transform,
+                octrees=self.interpolation_options.number_octree_levels > 1
             )
         return self._interpolationInput
 
