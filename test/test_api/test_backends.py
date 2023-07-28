@@ -16,7 +16,7 @@ class TestBackends:
             compute_model=False
         )
 
-        geo_model.interpolation_options.number_octree_levels = 4
+        geo_model.interpolation_options.number_octree_levels = 5
         return geo_model
     
     def test_backends_numpy(self, geo_model):
