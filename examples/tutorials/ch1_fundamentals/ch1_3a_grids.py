@@ -33,7 +33,7 @@ grid = Grid()
 
 
 # %%
-# .. image:: /../../../_static/grids.jpg
+# .. image:: /_static/grids.jpg
 # 
 
 # %% 
