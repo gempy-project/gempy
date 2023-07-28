@@ -200,7 +200,7 @@ html_theme_options = {
     'github_type': 'star',
     'logo': 'logos/gempy.png',
     'logo_name': False,
-    'travis_button': True,
+    'travis_button': False,
     'page_width': '1200px',
     'fixed_sidebar': False,
     'show_related': True,

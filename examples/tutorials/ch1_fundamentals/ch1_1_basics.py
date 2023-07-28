@@ -26,7 +26,7 @@ import gempy_viewer as gpv
 #     -  Additional data
 #     -  Faults
 #
-# We will see each of these classes in further detail in the future.
+# Weeeeaaag will see each of these classes in further detail in the future.
 # 
 # Most of data can also be generated from raw data that comes in the form
 # of CSV-files (CSV = comma-separated values). Such files might be
