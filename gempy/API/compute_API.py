@@ -1,21 +1,27 @@
 ﻿from typing import Optional
 
-import config
 import gempy_engine
+from gempy_engine.core.backend_tensor import BackendTensor
 from gempy.API.gp2_gp3_compatibility.gp3_to_gp2_input import gempy3_to_gempy2
 from gempy_engine.config import AvailableBackends
 from gempy_engine.core.data import Solutions
+from ..core.data.gempy_engine_config import GempyEngineConfig
 from ..core.data.geo_model import GeoModel
 from ..optional_dependencies import require_gempy_legacy
 
 
-def compute_model(gempy_model: GeoModel, backend: Optional[AvailableBackends] = None, output: Optional[list[str]] = None) -> Solutions:
+def compute_model(gempy_model: GeoModel, engine_config: Optional[GempyEngineConfig] = None) -> Solutions:
     # TODO: output should be deprecated and use instead interpolation options
     # Make match switch for enumerator BackendTensor.engine_backend
     
-    backend = backend or config.DEFAULT_BACKEND
-    match backend:
-        case AvailableBackends.numpy:
+    match engine_config.backend:
+        case AvailableBackends.numpy | AvailableBackends.tensorflow:
+
+            BackendTensor.change_backend(
+                engine_backend=engine_config.backend,
+                use_gpu=engine_config.use_gpu,
+                pykeops_enabled=engine_config.pykeops_enabled)
+
             gempy_model.solutions = gempy_engine.compute_model(
                 interpolation_input=gempy_model.interpolation_input,
                 options=gempy_model.interpolation_options,
@@ -24,12 +30,8 @@ def compute_model(gempy_model: GeoModel, backend: Optional[AvailableBackends] = 
         
         case AvailableBackends.aesara | AvailableBackends.legacy:
             gempy_model.legacy_model = _legacy_compute_model(gempy_model)
-        case AvailableBackends.jax:
-            raise NotImplementedError()
-        case AvailableBackends.tensorflow:
-            raise NotImplementedError()
         case _:
-            raise ValueError(f'Backend {backend} not supported')
+            raise ValueError(f'Backend {engine_config} not supported')
 
 
     return gempy_model.solutions
