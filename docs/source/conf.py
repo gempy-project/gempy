@@ -66,17 +66,18 @@ extensions = [
     'sphinx_gallery.gen_gallery',
 ]
 
-intersphinx_mapping = {
-    'numpy': ('https://numpy.org/doc/stable/', None),
-    'python': ('https://docs.python.org/{.major}'.format(sys.version_info), None),
-    'matplotlib': ('https://matplotlib.org/', None),
-    'mayavi': ('http://docs.enthought.com/mayavi/mayavi', None),
-    'sklearn': ('https://scikit-learn.org/stable', None),
-    'skimage': ('https://scikit-image.org/docs/dev/', None),
-    'pyvista': ('https://docs.pyvista.org/', None),
-    'sphinx': ('http://www.sphinx-doc.org/en/stable', None),
-    'pandas': ('https://pandas.pydata.org/pandas-docs/stable/', None),
-}
+if run_intersphinx:=False:
+    intersphinx_mapping = {
+        'numpy': ('https://numpy.org/doc/stable/', None),
+        'python': ('https://docs.python.org/{.major}'.format(sys.version_info), None),
+        'matplotlib': ('https://matplotlib.org/stable/', None),
+        'mayavi': ('http://docs.enthought.com/mayavi/mayavi', None),
+        'sklearn': ('https://scikit-learn.org/stable', None),
+        'skimage': ('https://scikit-image.org/docs/dev/', None),
+        'pyvista': ('https://docs.pyvista.org/', None),
+        'sphinx': ('https://www.sphinx-doc.org/en/master/', None),
+        'pandas': ('https://pandas.pydata.org/pandas-docs/stable/', None),
+    }
 
 napoleon_google_docstring = True
 
@@ -88,7 +89,7 @@ autodoc_default_options = {
     'undoc-members': True,
     'exclude-members': '__weakref__'
 }
-autosummary_generate = True
+autosummary_generate = False
 autosummary_imported_members = False
 
 # Add any paths that contain templates here, relative to this directory.
@@ -124,12 +125,12 @@ release = gempy.__version__
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = 'en'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This patterns also effect to html_static_path and html_extra_path
-exclude_patterns = ['_build', '**.ipynb_checkpoints']
+exclude_patterns = ['_build', '**.ipynb_checkpoints', 'Thumbs.db', '.DS_Store', 'errors.txt',]
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
@@ -145,20 +146,20 @@ todo_include_todos = True
 sphinx_gallery_conf = {
     # path to your examples scripts
     "examples_dirs": [
-        "../../examples/getting_started",
+        # "../../examples/getting_started",
         "../../examples/tutorials",
-        "../../examples/examples",
-        "../../examples/integrations",
+        # "../../examples/examples",
+        # "../../examples/integrations",
     ],
     # path where to save gallery generated examples
     "gallery_dirs": [
-        'getting_started',
+        # 'getting_started',
         'tutorials',
-        "examples",
-        'integrations'
+        # "examples",
+        # 'integrations'
     ],
     # Patter to search for example files
-    "filename_pattern": r"\.py",
+    "filename_pattern": r"ch1_1.*\.py$",
     # Remove the "Download all examples" button from the top level gallery
     "download_all_examples": False,
     # Sort gallery example by file name instead of number of lines (default)
@@ -197,7 +198,7 @@ html_theme_options = {
     'github_user': 'cgre-aachen',
     'github_repo': 'gempy',
     'github_type': 'star',
-    'logo': './logos/gempy.png',
+    'logo': 'logos/gempy.png',
     'logo_name': False,
     'travis_button': True,
     'page_width': '1200px',

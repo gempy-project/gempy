@@ -2,7 +2,7 @@
 from dataclasses import dataclass, field
 
 import gempy_engine.core.data.grid
-from core.data.legacy_solutions import LegacySolution
+from gempy_engine.core.data.legacy_solutions import LegacySolution
 from gempy_engine.core.data import InterpolationOptions
 from gempy_engine.core.data.input_data_descriptor import InputDataDescriptor
 from gempy_engine.core.data.interpolation_input import InterpolationInput
