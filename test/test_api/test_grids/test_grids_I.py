@@ -3,7 +3,7 @@ import gempy as gp
 import gempy_viewer as gpv
 from gempy.core.data.enumerators import ExampleModel
 from gempy_engine.modules.octrees_topology.octrees_topology_interface import ValueType
-from plugins.plotting.helper_functions import plot_block_and_input_2d
+from gempy_engine.plugins.plotting.helper_functions import plot_block_and_input_2d
 
 
 def  test_octree():
