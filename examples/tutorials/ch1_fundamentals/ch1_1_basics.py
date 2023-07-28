@@ -3,19 +3,12 @@
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 """
-# %%
-# Importing GemPy
-import gempy as gp
-
-# Importing auxiliary libraries
 import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-import os
 
-# Setting options
-np.random.seed(1515)
-pd.set_option('display.precision', 2)
+# %%
+# Import necessary libraries
+import gempy as gp
+import gempy_viewer as gpv
 
 # %%
 # Importing and creating a set of input data
@@ -67,21 +60,22 @@ pd.set_option('display.precision', 2)
 # compute.
 #
 
-# %% 
-geo_model = gp.create_model('Tutorial_ch1_1_Basics')
-
 # %%
 data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
-# Importing the data from CSV-files and setting extent and resolution
-gp.init_data(geo_model, [0, 2000., 0, 2000., 0, 750.], [50, 50, 50],
-             path_o=data_path + "/data/input_data/getting_started/"
-                                "simple_fault_model_orientations.csv",
-             path_i=data_path + "/data/input_data/getting_started/"
-                                "simple_fault_model_points.csv",
-             default_values=True)
+
+geo_model: gp.GeoModel = gp.create_geomodel(
+    project_name='Tutorial_ch1_1_Basics',
+    extent=[0, 2000, 0, 2000, 0, 750],
+    # resolution=None,  # * When resolution is not given, octrees are used 
+    resolution=[50, 5, 50],
+    importer_helper=gp.ImporterHelper(
+        path_to_orientations=data_path + "/data/input_data/getting_started/simple_fault_model_orientations.csv",
+        path_to_surface_points=data_path + "/data/input_data/getting_started/simple_fault_model_points.csv"
+    )
+)
 
 # %%
-geo_model.surfaces
+geo_model.structural_frame
 
 # %%
 # The input data can then be listed using the command ``get_data``. Note
@@ -91,10 +85,10 @@ geo_model.surfaces
 
 
 # %% 
-gp.get_data(geo_model, 'surface_points').head()
+geo_model.surface_points.df.head()
 
 # %% 
-gp.get_data(geo_model, 'orientations').head()
+geo_model.orientations.df.head()
 
 # %%
 # Declaring the sequential order of geological formations
@@ -154,33 +148,37 @@ gp.get_data(geo_model, 'orientations').head()
 # input data.
 # 
 
-# %% 
-geo_model.surfaces
 
 # %%
-gp.map_stack_to_surfaces(geo_model,
-                         {"Fault_Series": 'Main_Fault',
-                          "Strat_Series": ('Sandstone_2', 'Siltstone',
-                                           'Shale', 'Sandstone_1', 'basement')},
-                         remove_unused_series=True)
+# Map geological series to surfaces
+gp.map_stack_to_surfaces(
+    gempy_model=geo_model,
+    mapping_object=  # TODO: This mapping I do not like it too much. We should be able to do it passing the data objects directly
+    {
+        "Fault_Series": 'Main_Fault',
+        "Strat_Series": ('Sandstone_2', 'Siltstone', 'Shale', 'Sandstone_1')
+    }
+
+)
 
 # %% 
-geo_model.surfaces
+geo_model.structural_frame
 
 # %% 
-geo_model.stack
+# TODO: Revive API call
+# geo_model.set_is_fault(['Fault_Series'])
+geo_model.structural_frame.structural_groups[0].structural_relation = gp.StackRelationType.FAULT
+geo_model.structural_frame.fault_relations = np.array([[0, 1], [0, 0]])
 
-# %% 
-geo_model.set_is_fault(['Fault_Series'])
-
-# %% 
-geo_model.faults.faults_relations_df
-
-# %% 
-geo_model.faults
-
-# %%
-geo_model.faults.faults_relations_df
+# TODO: Revive Fault visualization
+# # %% 
+# geo_model.faults.faults_relations_df
+# 
+# # %% 
+# geo_model.faults
+# 
+# # %%
+# geo_model.faults.faults_relations_df
 
 # %%
 # Returning information from our input data
@@ -213,7 +211,8 @@ geo_model.grid
 # 
 
 # %% 
-gp.get_data(geo_model, 'surface_points').head()
+
+geo_model.surface_points.df.head()
 
 # %%
 # Orientations Dataframe:
@@ -221,7 +220,7 @@ gp.get_data(geo_model, 'surface_points').head()
 # 
 
 # %% 
-gp.get_data(geo_model, 'orientations')
+geo_model.orientations.df.head()
 
 # %%
 # Notice that now all **surfaces** have been assigned to a **series** and
@@ -238,8 +237,7 @@ gp.get_data(geo_model, 'orientations')
 # 
 
 # %%
-plot = gp.plot_2d(geo_model, show_lith=False, show_boundaries=False)
-plt.show()
+plot = gpv.plot_2d(geo_model, show_lith=False, show_boundaries=False)
 
 # %%
 # Using ``plot_data_3D``\ , we can also visualize this data in 3D. Note that
@@ -258,7 +256,7 @@ plt.show()
 
 
 # %%
-gpv = gp.plot_3d(geo_model, image=False, plotter_type='basic')
+gpv.plot_3d(geo_model, image=False, plotter_type='basic')
 
 # %%
 # Model generation
@@ -275,11 +273,6 @@ gpv = gp.plot_3d(geo_model, image=False, plotter_type='basic')
 # the following function:
 # 
 
-# %% 
-gp.set_interpolator(geo_model,
-                    compile_aesara=True,
-                    aesara_optimizer='fast_compile',
-                    )
 
 # %%
 # This function rescales the extent and coordinates of the original data
@@ -308,7 +301,7 @@ gp.set_interpolator(geo_model,
 # 
 
 # %% 
-gp.get_data(geo_model, 'kriging')
+geo_model.interpolation_options
 
 # %%
 # At this point, we have all we need to compute our full model via
@@ -355,8 +348,8 @@ geo_model.solutions
 #
 
 # %%
-gp.plot_2d(geo_model, show_data=True)
-plt.show()
+gpv.plot_2d(geo_model, show_data=True)
+
 # %% 
 
 
@@ -374,12 +367,10 @@ plt.show()
 # 
 
 # %%
-gp.plot_2d(geo_model, show_data=False, show_scalar=True, show_lith=False)
-plt.show()
+gpv.plot_2d(geo_model, show_data=False, show_scalar=True, show_lith=False)
 
 # %%
-gp.plot_2d(geo_model, series_n=1, show_data=False, show_scalar=True, show_lith=False)
-plt.show()
+gpv.plot_2d(geo_model, series_n=1, show_data=False, show_scalar=True, show_lith=False)
 
 # %%
 # This illustrates well the fold-related deformation of the stratigraphy,
@@ -388,97 +379,97 @@ plt.show()
 # The fault network modeling solutions can be visualized in the same way:
 # 
 
-# %% 
-geo_model.solutions.scalar_field_at_surface_points
-
-# %%
-gp.plot_2d(geo_model, show_block=True, show_lith=False)
-plt.show()
-
-# %%
-gp.plot_2d(geo_model, series_n=1, show_block=True, show_lith=False)
-plt.show()
-
-# %%
-# Marching cubes and vtk visualization
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# # %% 
+# geo_model.solutions.scalar_field_at_surface_points
 # 
-# In addition to 2D sections we can extract surfaces to visualize in 3D
-# renderers. Surfaces can be visualized as 3D triangle complexes in VTK
-# (see function plot\_surfaces\_3D below). To create these triangles, we
-# need to extract respective vertices and simplices from the potential
-# fields of lithologies and faults. This process is automatized in GemPy
-# with the function ``get_surface``\ .
+# # %%
+# gp.plot_2d(geo_model, show_block=True, show_lith=False)
+# plt.show()
 # 
-
-# %% 
-ver, sim = gp.get_surfaces(geo_model)
-gpv = gp.plot_3d(geo_model, image=False, plotter_type='basic')
-
-# %%
-# Using the rescaled interpolation data, we can also run our 3D VTK
-# visualization in an interactive mode which allows us to alter and update
-# our model in real time. Similarly to the interactive 3D visualization of
-# our input data, the changes are permanently saved (in the
-# ``InterpolationInput.dataframe`` object). Additionally, the resulting changes
-# in the geological models are re-computed in real time.
+# # %%
+# gp.plot_2d(geo_model, series_n=1, show_block=True, show_lith=False)
+# plt.show()
 # 
-
-
-# %%
-# Adding topography
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-geo_model.set_topography(d_z=(350, 750))
-
-# %%
-gp.compute_model(geo_model)
-gp.plot_2d(geo_model, show_topography=True)
-plt.show()
-
-
-# sphinx_gallery_thumbnail_number = 9
-gpv = gp.plot_3d(geo_model, plotter_type='basic', show_topography=True, show_surfaces=True,
-                 show_lith=True,
-                 image=False)
-
-# %%
-# Compute at a given location
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# # %%
+# # Marching cubes and vtk visualization
+# # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# # 
+# # In addition to 2D sections we can extract surfaces to visualize in 3D
+# # renderers. Surfaces can be visualized as 3D triangle complexes in VTK
+# # (see function plot\_surfaces\_3D below). To create these triangles, we
+# # need to extract respective vertices and simplices from the potential
+# # fields of lithologies and faults. This process is automatized in GemPy
+# # with the function ``get_surface``\ .
+# # 
 # 
-# This is done by modifying the grid to a custom grid and recomputing.
-# Notice that the results are given as *grid + surfaces\_points\_ref +
-# surface\_points\_rest locations*
+# # %% 
+# ver, sim = gp.get_surfaces(geo_model)
+gpv = gpv.plot_3d(geo_model, image=False, plotter_type='basic')
 # 
-
-# %% 
-x_i = np.array([[3, 5, 6]])
-sol = gp.compute_model(geo_model, at=x_i)
-
-# %%
-# Therefore if we just want the value at **x\_i**:
-
-# %%
-sol.custom
-
-# %%
-# This return the id, and the scalar field values for each series
-
-# %%
-# Save the model
-# ~~~~~~~~~~~~~~
+# # %%
+# # Using the rescaled interpolation data, we can also run our 3D VTK
+# # visualization in an interactive mode which allows us to alter and update
+# # our model in real time. Similarly to the interactive 3D visualization of
+# # our input data, the changes are permanently saved (in the
+# # ``InterpolationInput.dataframe`` object). Additionally, the resulting changes
+# # in the geological models are re-computed in real time.
+# # 
 # 
-
-# %%
-# GemPy uses Python [pickle] for fast storing temporary objects
-# (https://docs.python.org/3/library/pickle.html). However, module version
-# consistency is required. For loading a pickle into GemPy, you have to
-# make sure that you are using the same version of pickle and dependent
-# modules (e.g.: ``Pandas``, ``NumPy``) as were used when the data was
-# originally stored.
 # 
-# For long term-safer storage we can export the ``pandas.DataFrames`` to
-# csv by using:
+# # %%
+# # Adding topography
+# # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# geo_model.set_topography(d_z=(350, 750))
 # 
-
-# %% 
-gp.save_model(geo_model)
+# # %%
+# gp.compute_model(geo_model)
+# gp.plot_2d(geo_model, show_topography=True)
+# plt.show()
+# 
+# 
+# # sphinx_gallery_thumbnail_number = 9
+# gpv = gp.plot_3d(geo_model, plotter_type='basic', show_topography=True, show_surfaces=True,
+#                  show_lith=True,
+#                  image=False)
+# 
+# # %%
+# # Compute at a given location
+# # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# # 
+# # This is done by modifying the grid to a custom grid and recomputing.
+# # Notice that the results are given as *grid + surfaces\_points\_ref +
+# # surface\_points\_rest locations*
+# # 
+# 
+# # %% 
+# x_i = np.array([[3, 5, 6]])
+# sol = gp.compute_model(geo_model, at=x_i)
+# 
+# # %%
+# # Therefore if we just want the value at **x\_i**:
+# 
+# # %%
+# sol.custom
+# 
+# # %%
+# # This return the id, and the scalar field values for each series
+# 
+# # %%
+# # Save the model
+# # ~~~~~~~~~~~~~~
+# # 
+# 
+# # %%
+# # GemPy uses Python [pickle] for fast storing temporary objects
+# # (https://docs.python.org/3/library/pickle.html). However, module version
+# # consistency is required. For loading a pickle into GemPy, you have to
+# # make sure that you are using the same version of pickle and dependent
+# # modules (e.g.: ``Pandas``, ``NumPy``) as were used when the data was
+# # originally stored.
+# # 
+# # For long term-safer storage we can export the ``pandas.DataFrames`` to
+# # csv by using:
+# # 
+# 
+# # %% 
+# gp.save_model(geo_model)

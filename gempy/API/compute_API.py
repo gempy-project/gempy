@@ -11,8 +11,11 @@ from ..optional_dependencies import require_gempy_legacy
 
 
 def compute_model(gempy_model: GeoModel, engine_config: Optional[GempyEngineConfig] = None) -> Solutions:
-    # TODO: output should be deprecated and use instead interpolation options
-    # Make match switch for enumerator BackendTensor.engine_backend
+    engine_config = engine_config or GempyEngineConfig(
+        backend=AvailableBackends.numpy, 
+        use_gpu=False, 
+        pykeops_enabled=False
+    )
     
     match engine_config.backend:
         case AvailableBackends.numpy | AvailableBackends.tensorflow:
