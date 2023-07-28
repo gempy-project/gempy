@@ -28,6 +28,8 @@ def compute_model(gempy_model: GeoModel, backend: Optional[AvailableBackends] = 
             raise NotImplementedError()
         case AvailableBackends.tensorflow:
             raise NotImplementedError()
+        case _:
+            raise ValueError(f'Backend {backend} not supported')
 
 
     return gempy_model.solutions

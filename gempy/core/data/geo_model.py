@@ -43,7 +43,7 @@ class GeoModel:
 
     # endregion
 
-    _solutions: gempy_engine.core.data.solutions.Solutions = field(init=False)
+    _solutions: gempy_engine.core.data.solutions.Solutions = field(init=False, default=None)
 
     legacy_model: "gpl.Project" = None
 
