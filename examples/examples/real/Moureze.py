@@ -157,13 +157,6 @@ gp.plot_2d(geo_model, cell_number=16, show_data=True, direction='y')
 gp.plot_3d(geo_model)
 
 
-# %%
-# |image0|
-# 
-# .. |image0| image:: ./Moureze.png
-# 
-# 
-
 
 # %%
 # Export data:

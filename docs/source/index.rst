@@ -9,7 +9,7 @@
 About
 =====
 Open-source software for implicit 3D structural geological modeling in Python.
-****************************************************************
+******************************************************************************
 
 Overview
 --------

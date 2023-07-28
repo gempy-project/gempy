@@ -253,7 +253,7 @@ gp.plot_3d(geo_model, kwargs_plot_structured_grid={'opacity': .2})
 
 # %%
 # Adding a Fault
-# --------------
+# ~~~~~~~~~~~~~~
 # 
 # So far the model is simply a depositional unit. GemPy allows for
 # unconformities and faults to build complex models. This input is given
@@ -335,7 +335,7 @@ gp.plot_3d(geo_model, kwargs_plot_structured_grid={'opacity': .2})
 # Here we will show some of them:
 # 
 # Topography
-# ----------
+# ~~~~~~~~~~
 # 
 # GemPy has a built-in capabilities to read and manipulate topographic
 # data (through gdal). To show an example we can just create a random
@@ -367,7 +367,7 @@ gp.plot_3d(geo_model, show_topography=True)
 
 # %%
 # Gravity inversion
-# -----------------
+# ~~~~~~~~~~~~~~~~~
 # 
 # GemPy also allows for inversions (in production only gravity so far). We
 # can see a small demo how this works.

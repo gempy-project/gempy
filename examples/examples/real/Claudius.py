@@ -1,6 +1,6 @@
 """
 Claudius
-~~~~~~~~
+========
 
 """
 
@@ -255,7 +255,7 @@ geo_model.surfaces
 # ~~~~~
 # 
 # Dense 20k input, 62k voxels
-# ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# 
 # 
 # -  CPU Memory 8 Gb 44.9 s ± 150 ms per loop (mean ± std. dev. of 7 runs,
 #    1 loop each)

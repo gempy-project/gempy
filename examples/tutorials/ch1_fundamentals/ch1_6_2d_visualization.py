@@ -74,7 +74,7 @@ gp.plot.plot_2d(geo_data, section_names=['section1'])
 
 # %%
 # Plot 2d: Object oriented:
-# ------------------------
+# -------------------------
 # 
 
 
