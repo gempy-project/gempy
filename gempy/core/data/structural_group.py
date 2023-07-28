@@ -22,7 +22,31 @@ class StructuralGroup(ABC):
                f"\tname={self.name},\n" \
                f"\tstructural_relation={self.structural_relation},\n" \
                f"\telements=[\n{elements_repr}\n]\n)"
-    
+
+    def _repr_html_(self):
+        elements_html = '<br>'.join([e._repr_html_() for e in self.elements])
+        html = f"""
+    <table style="border-left:1.2px solid black;>
+      <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+      <tr><td>Name:</td><td>{self.name}</td></tr>
+      <tr><td>Structural Relation:</td><td>{self.structural_relation}</td></tr>
+      <tr><td>Elements:</td><td>{elements_html}</td></tr>
+    </table>
+        """
+        return html
+
+    def _repr_html_2(self):
+        elements_html = ''.join([e._repr_html_() for e in self.elements])
+        html = f"""<pre>
+    <b>StructuralGroup:</b>
+      Name: {self.name}
+      Structural Relation: {self.structural_relation}
+      Elements:
+    {elements_html}
+      Solution: {self.solution}
+    </pre>"""
+        return html
+
     @property
     def id(self):
         raise NotImplementedError

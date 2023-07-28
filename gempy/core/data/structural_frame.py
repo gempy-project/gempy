@@ -33,7 +33,19 @@ class StructuralFrame:
                 f"\tstructural_groups=[\n{structural_groups_repr}\n],\n"
                 f"\tfault_relations={fault_relations_str},\n"
                 )
-        
+
+    def _repr_html_(self):
+        structural_groups_html = '<br>'.join([g._repr_html_() for g in self.structural_groups])
+        fault_relations_str = np.array2string(self.fault_relations) if self.fault_relations is not None else 'None'
+        html = f"""
+    <table >
+      <tr><td>Structural Groups:</td><td>{structural_groups_html}</td></tr>
+      <tr><td>Fault Relations:</td><td>{fault_relations_str}</td></tr>
+    </table>
+        """
+        return html
+
+
     @property
     def structural_elements(self) -> list[StructuralElement]:
         elements = []

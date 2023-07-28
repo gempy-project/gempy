@@ -46,6 +46,24 @@ class StructuralElement:
         colored_color = f'\033[38;2;{r};{g};{b}m' + self._color + '\033[0m'
         return f"Element(\n\tname={self.name},\n\tcolor={colored_color},\n\tis_active={self.is_active}\n)"
 
+    def _repr_html_(self):
+        html = f"""
+    <table width="50%" style="border-left:15px solid {self._color};">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>{self.name}</td></tr>
+    </table>
+        """
+        return html
+
+    def _repr_html_2(self):
+        html = f"""<pre>
+    <b>StructuralElement:</b>
+      Name: {self.name}
+      Color: <div style='display: inline-block; width: 20px; height: 20px; background-color: {self._color};'></div>
+      Is Active: {'Yes' if self.is_active else 'No'}
+    </pre>"""
+        return html
+
     @property
     def number_of_points(self) -> int:
         return len(self.surface_points)
