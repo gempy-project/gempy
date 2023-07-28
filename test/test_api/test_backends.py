@@ -16,7 +16,7 @@ class TestBackends:
             compute_model=False
         )
 
-        geo_model.interpolation_options.number_octree_levels = 5
+        geo_model.interpolation_options.number_octree_levels = 6
         return geo_model
     
     def test_backends_numpy(self, geo_model):
@@ -28,7 +28,7 @@ class TestBackends:
             show_lith=False,
             image=True
         )
-    
+
     
     def test_numpy_pykeops(self, geo_model):
         gp.compute_model(
