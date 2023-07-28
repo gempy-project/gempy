@@ -175,12 +175,12 @@ Notice that we are running the notebook on the port  8899 to try to avoid confli
 your system. If everything worked fine, the address to the jupyter notebook will be display on the console. It
 has to look something like this (Just be aware of the  brackets):
 
-.. code-block::
+.. code-block:: none
 
    To access the notebook, open this file in a browser:
            file:///root/.local/share/jupyter/runtime/nbserver-286-open.html
    Or copy and paste one of these URLs:
-       http://(ce2cdcc55bb0 or 127.0.0.1):8899/?token=97d52c1dc321c42083d8c1b4d
+      http://(ce2cdcc55bb0 or 127.0.0.1):8899/?token=97d52c1dc321c42083d8c1b4d
 
 
 
@@ -259,14 +259,13 @@ Windows installation guide (March 2020)
     ``$ conda install gdal``
 
 
-**Note**\ :
-
+**Note** :b
 
 * some other packages required by aesara are already included in Anaconda: numpy, scipy, mkl-service, nose, and sphinx.
-* ``pydot-ng`` (suggested on aesara web site) yields a lot of errors, therefore we dropped this.  It is needed to
-handle large picture for gif/images and probably it is not needed by GemPy.
-* Trying to install all the packages in one go does not work, as well as doing the same in  Anaconda Navigator, or
-installing an older Anaconda release with Python 3.5 (Anaconda3 4.2.0) as indicated in some tutorial on aesara.
+* ``pydot-ng`` (suggested on aesara web site) yields a lot of errors, therefore we dropped this.
+  It is needed to handle large picture for gif/images and probably it is not needed by GemPy.
+* Trying to install all the packages in one go does not work, as well as doing the same in  Anaconda Navigator,
+  or installing an older Anaconda release with Python 3.5 (Anaconda3 4.2.0) as indicated in some tutorial on aesara.
 
 
 MacOS installation guide (May 2020)

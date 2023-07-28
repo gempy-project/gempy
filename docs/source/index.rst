@@ -21,10 +21,7 @@ powerful **implicit** approach. From the ground up, ``GemPy`` was designed to be
 uncertainty analysis regarding subsurface structures.
 
 .. Check out the documentation either in `gempy.org <https://www.gempy.org/>`_
-(better option), or `read the docs <http://gempy.readthedocs.io/>`_.
-
-
-
+ (better option), or `read the docs <http://gempy.readthedocs.io/>`_.
 
 3D models created with GemPy may look like this:
 
@@ -185,7 +182,7 @@ via PyMC will then result in different model realizations.
 
 
 aesara allows the automated computation of gradients, opening the door to
- the use of advanced gradient-based sampling methods
+the use of advanced gradient-based sampling methods
 coupling ``GemPy`` and
 `PyMC3 <https://pymc-devs.github.io/pymc3/notebooks/getting_started.html>`_
 for advanced stochastic modeling. Also, the use of aesara allows making
