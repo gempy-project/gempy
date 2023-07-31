@@ -115,8 +115,10 @@ class GeoModel:
                         message="You are using octrees and passing a regular grid. The resolution of the regular grid will be overwritten",
                         category=UserWarning
                     )
-                    
-                self.grid.regular_grid.resolution = np.array([2 ** n_octree_lvl] * 3)
+                self.grid.regular_grid.set_regular_grid(
+                    extent=self.grid.regular_grid.extent,
+                    resolution=np.array([2 ** n_octree_lvl] * 3)
+                )
                 
             self._interpolationInput = InterpolationInput.from_structural_frame(
                 structural_frame=self.structural_frame,

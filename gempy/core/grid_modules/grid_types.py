@@ -89,7 +89,13 @@ class RegularGrid:
              extent (list, np.ndarry):  [x_min, x_max, y_min, y_max, z_min, z_max]
             resolution (list, np.ndarray): [nx, ny, nz]
         """
-
+        # * Check extent and resolution are not the same
+        extent_equal = np.array_equal(extent, self.extent)
+        resolution_equal = np.array_equal(resolution, self.resolution)
+        
+        if extent_equal and resolution_equal:
+            return self.values
+        
         self.extent = np.asarray(extent, dtype='float64')
         self.resolution = np.asarray(resolution)
         self.values = self.create_regular_grid_3d(extent, resolution)
