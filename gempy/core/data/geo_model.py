@@ -2,6 +2,8 @@
 import warnings
 from dataclasses import dataclass, field
 
+import numpy as np
+
 import gempy_engine.core.data.grid
 from gempy_engine.core.data.legacy_solutions import LegacySolution
 from gempy_engine.core.data import InterpolationOptions
@@ -103,12 +105,19 @@ class GeoModel:
     @property
     def interpolation_input(self):
         if self.structural_frame.is_dirty:
-            compute_octrees: bool = self.interpolation_options.number_octree_levels > 1
-            if compute_octrees and self.grid.regular_grid.resolution is None:
-                warnings.warn(
-                    "You are using octrees and passing a regular grid. The resolution of the regular grid will be ignored"
-                )
+            n_octree_lvl = self.interpolation_options.number_octree_levels
+            compute_octrees: bool = n_octree_lvl > 1
             
+            # * Set regular grid to the octree resolution. ? Probably a better way to do this would be to make regular_grid resolution a property
+            if compute_octrees:
+                if self.grid.regular_grid.resolution is not None:
+                    warnings.warn(
+                        message="You are using octrees and passing a regular grid. The resolution of the regular grid will be overwritten",
+                        category=UserWarning
+                    )
+                    
+                self.grid.regular_grid.resolution = np.array([2 ** n_octree_lvl] * 3)
+                
             self._interpolationInput = InterpolationInput.from_structural_frame(
                 structural_frame=self.structural_frame,
                 grid=self.grid,
@@ -118,6 +127,7 @@ class GeoModel:
             
         return self._interpolationInput
 
+        
     @property
     def input_data_descriptor(self) -> InputDataDescriptor:
         # TODO: This should have the exact same dirty logic as interpolation_input
