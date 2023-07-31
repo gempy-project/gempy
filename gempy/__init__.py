@@ -23,7 +23,8 @@ except Exception as e:  # pragma: no cover
 
 # =================== Core ===================
 from .core.data.geo_model import GeoModel
-# from .core.model import Project, ImplicitCoKriging
+from .core.data.structural_frame import StructuralFrame
+from .core.data.structural_group import StructuralGroup
 # from .core.data import AdditionalData, Options, KrigingParameters
 # from .core.data_modules.stack import Faults, Series
 # from .core.structure import Structure

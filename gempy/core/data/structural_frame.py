@@ -17,7 +17,7 @@ class StructuralFrame:
     structural_groups: list[StructuralGroup]  # ? should this be lazy?
     color_gen: ColorsGenerator
 
-    fault_relations: Optional[np.ndarray] = None
+    # fault_relations: Optional[np.ndarray] = None
 
     # ? Should I create some sort of structural options class? For example, the masking descriptor and faults relations pointer
     is_dirty: bool = True  # This changes when the structural frame is modified
@@ -45,7 +45,6 @@ class StructuralFrame:
         """
         return html
 
-
     @property
     def structural_elements(self) -> list[StructuralElement]:
         elements = []
@@ -66,51 +65,53 @@ class StructuralFrame:
         return basement
 
     @property
-    def fault_relation(self):
+    def fault_relations(self):
         # Initialize an empty boolean array with dimensions len(structural_groups) x len(structural_groups)
         fault_relations = np.zeros((len(self.structural_groups), len(self.structural_groups)), dtype=bool)
 
         # We assume that the list is ordered from older to younger
         # Iterate over the list of structural_groups
         for i, group in enumerate(self.structural_groups):
-            # If the group is a fault
-            if group.structural_relation == StackRelationType.FAULT:
-                # It affects groups based on the type of fault_relation
-                match group.fault_relations:
-                    case FaultsRelationSpecialCase.OFFSET_ALL:
-                        # It affects all younger groups
-                        fault_relations[i, i + 1:] = True
-                    case FaultsRelationSpecialCase.OFFSET_NONE:
-                        # It affects no groups
-                        pass
-                    case list(fault_groups) if fault_groups:
-                        # It affects only the specified groups
-                        for fault_group in fault_groups:
-                            j = self.structural_groups.index(fault_group)
-                            if j > i:
-                                raise ValueError(f"Fault {group.name} cannot affect younger fault {fault_group.name}")
-                            fault_relations[i, j] = True
+            match (group.structural_relation, group.fault_relations):
+                case (StackRelationType.FAULT, FaultsRelationSpecialCase.OFFSET_ALL):
+                    # It affects all younger groups
+                    fault_relations[i, i + 1:] = True
+                case (StackRelationType.FAULT, FaultsRelationSpecialCase.OFFSET_NONE):
+                    # It affects no groups
+                    pass
+                case (StackRelationType.FAULT, list(fault_groups)) if fault_groups:
+                    # It affects only the specified groups
+                    for fault_group in fault_groups:
+                        j = self.structural_groups.index(fault_group)
+                        if j <= i:  # Only consider groups that are 
+                            raise ValueError(f"Fault {group.name} cannot affect older fault {fault_group.name}")
+                case (StackRelationType.FAULT, _):
+                    raise ValueError(f"Fault {group.name} has an invalid fault relation")
+                case _:
+                    pass  # If not a fault or fault relation is not specified, do nothing
         return fault_relations
 
-    @fault_relation.setter
-    def fault_relation(self, matrix: np.ndarray):
+    @fault_relations.setter
+    def fault_relations(self, matrix: np.ndarray):
         assert matrix.shape == (len(self.structural_groups), len(self.structural_groups))
 
         # Iterate over each StructuralGroup
         for i, group in enumerate(self.structural_groups):
-            # If the group is a fault
-            if group.structural_relation == StackRelationType.FAULT:
-                affected_groups = matrix[i, :]
-                # If all younger groups are affected
-                if np.all(affected_groups[i + 1:]):
-                    group.fault_relation = FaultsRelationSpecialCase.OFFSET_ALL
-                # If no groups are affected
-                elif not np.any(affected_groups):
-                    group.fault_relation = FaultsRelationSpecialCase.OFFSET_NONE
-                else:  # A specific set of groups are affected
-                    group.fault_relation = [g for j, g in enumerate(self.structural_groups) if affected_groups[j]]
-    
-    
+                
+            affected_groups = matrix[i, :]  # * If the group is a fault
+            # If all younger groups are affected
+            all_younger_groups_affected = np.all(affected_groups[i + 1:])
+            any_younger_groups_affected = np.any(affected_groups[i + 1:])
+            
+            if all_younger_groups_affected:
+                group.fault_relations = FaultsRelationSpecialCase.OFFSET_ALL
+                group.structural_relation = StackRelationType.FAULT
+            elif not any_younger_groups_affected:
+                group.fault_relations = FaultsRelationSpecialCase.OFFSET_NONE
+            else:  # * A specific set of groups are affected
+                group.fault_relations = [g for j, g in enumerate(self.structural_groups) if affected_groups[j]]
+                group.structural_relation = StackRelationType.FAULT
+
     @property
     def input_data_descriptor(self):
         # TODO: This should have the exact same dirty logic as interpolation_input
