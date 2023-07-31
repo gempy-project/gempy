@@ -1,19 +1,26 @@
 ﻿import pprint
 from abc import ABC
 from dataclasses import dataclass, field
-from typing import Optional
+from enum import Enum, auto
+from typing import Optional, Union
 
 from gempy_engine.core.data.legacy_solutions import LegacySolution
 from gempy_engine.core.data.stack_relation_type import StackRelationType
 from gempy.core.data.structural_element import StructuralElement
 
 
+class FaultsRelationSpecialCase(Enum):
+    OFFSET_NONE = auto()
+    OFFSET_ALL = auto()
+    
+    
 @dataclass
 class StructuralGroup(ABC):
     name: str
     elements: list[StructuralElement] = field(repr=False)
     structural_relation: StackRelationType
-
+    
+    fault_relations: Optional[Union[list["StructuralGroup"], FaultsRelationSpecialCase]] = field(default=None, repr=False)
     solution: Optional[LegacySolution] = field(init=False, default=None, repr=False)
     
     def __repr__(self):
@@ -64,6 +71,8 @@ class StructuralGroup(ABC):
         return len(self.elements)
 
 
+
+# ? I think these two subclasses are not necessary
 @dataclass
 class Stack(StructuralGroup): 
     def __int__(self, name: str, elements: list[StructuralElement]):
