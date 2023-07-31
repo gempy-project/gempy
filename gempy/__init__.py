@@ -58,7 +58,7 @@ from .API import *
 # from gempy_engine.core.data.options import InterpolationOptions
 from gempy_engine.core.data.stack_relation_type import StackRelationType
 
-__all__ = ['GeoModel', 'Grid', 'StackRelationType', 'ImporterHelper']
+__all__ = ['GeoModel', 'Grid', 'StackRelationType', 'ImporterHelper', 'StructuralFrame', 'StructuralGroup']
 
 # Assert at least pyton 3.10
 assert sys.version_info[0] >= 3 and sys.version_info[1] >= 10, "GemPy requires Python 3.10 or higher"
