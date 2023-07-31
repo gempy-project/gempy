@@ -6,14 +6,14 @@ from gempy import GeoModel, StructuralFrame
 from gempy.core.data.structural_group import StructuralGroup, FaultsRelationSpecialCase
 
 
-def set_is_fault(frame: Union[GeoModel, StructuralFrame], feature_fault: Union[list[str], list[StructuralGroup]],
+def set_is_fault(frame: Union[GeoModel, StructuralFrame], fault_groups: Union[list[str], list[StructuralGroup]],
                  change_color: bool = True) -> StructuralFrame:
     if isinstance(frame, GeoModel):
         frame = frame.structural_frame
 
     frame = _find_and_set_fields(
         frame=frame,
-        feature_fault=feature_fault,
+        fault_groups=fault_groups,
         faults_relation_type=FaultsRelationSpecialCase.OFFSET_ALL,
         stack_relation_type=StackRelationType.FAULT,
         change_color=change_color
@@ -24,13 +24,13 @@ def set_is_fault(frame: Union[GeoModel, StructuralFrame], feature_fault: Union[l
     return frame
 
 
-def unset_is_fault(frame: Union[GeoModel, StructuralFrame], feature_fault: Union[list[str], list[StructuralGroup]]) -> StructuralFrame:
+def unset_is_fault(frame: Union[GeoModel, StructuralFrame], fault_groups: Union[list[str], list[StructuralGroup]]) -> StructuralFrame:
     if isinstance(frame, GeoModel):
         frame = frame.structural_frame
 
     frame = _find_and_set_fields(
         frame=frame,
-        feature_fault=feature_fault,
+        fault_groups=fault_groups,
         faults_relation_type=FaultsRelationSpecialCase.OFFSET_NONE,
         stack_relation_type=StackRelationType.ERODE,
         change_color=False
@@ -58,10 +58,10 @@ def set_is_finite_fault(self, series_fault=None, toggle: bool = True):
     return s
 
 
-def _find_and_set_fields(frame: StructuralFrame, feature_fault: list[StructuralGroup],
+def _find_and_set_fields(frame: StructuralFrame, fault_groups: list[StructuralGroup],
                          faults_relation_type: FaultsRelationSpecialCase, stack_relation_type: StackRelationType,
                          change_color: bool) -> StructuralFrame:
-    for index, group in enumerate(feature_fault):
+    for index, group in enumerate(fault_groups):
         if isinstance(group, str):
             group = next((g for g in frame.structural_groups if g.name == group), None)
         if isinstance(group, StructuralGroup):

@@ -114,7 +114,11 @@ def _generate_one_fault_model(compute_model: bool) -> gp.GeoModel:
     # Define fault groups
     geo_data.structural_frame.structural_groups[0].structural_relation = StackRelationType.FAULT
     geo_data.structural_frame.fault_relations = np.array([[0, 1], [0, 0]])
-
+    gp.set_is_fault(
+        frame=geo_data,
+        fault_groups=['Fault_Series']
+    )
+    
     if compute_model:
         # Compute the geological model
         gp.compute_model(geo_data)
