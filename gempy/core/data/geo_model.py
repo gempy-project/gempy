@@ -1,4 +1,5 @@
 ﻿import pprint
+import warnings
 from dataclasses import dataclass, field
 
 import gempy_engine.core.data.grid
@@ -102,12 +103,19 @@ class GeoModel:
     @property
     def interpolation_input(self):
         if self.structural_frame.is_dirty:
+            compute_octrees: bool = self.interpolation_options.number_octree_levels > 1
+            if compute_octrees and self.grid.regular_grid.resolution is None:
+                warnings.warn(
+                    "You are using octrees and passing a regular grid. The resolution of the regular grid will be ignored"
+                )
+            
             self._interpolationInput = InterpolationInput.from_structural_frame(
                 structural_frame=self.structural_frame,
                 grid=self.grid,
                 transform=self.transform,
-                octrees=self.interpolation_options.number_octree_levels > 1
+                octrees=compute_octrees
             )
+            
         return self._interpolationInput
 
     @property
