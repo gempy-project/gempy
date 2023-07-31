@@ -76,7 +76,7 @@ class GeoModel:
     @property
     def solutions(self):
         return self._solutions
-    
+
     @solutions.setter
     def solutions(self, value):
         self._solutions = value
@@ -85,15 +85,14 @@ class GeoModel:
                 scalar_field_matrix=self._solutions.raw_arrays.scalar_field_matrix[e],
                 block_matrix=self._solutions.raw_arrays.block_matrix[e],
             )
-        
+
         for e, element in enumerate(self.structural_frame.structural_elements[:-1]):  # * Ignore basement
-            
+
             dc_mesh = self._solutions.dc_meshes[e] if self._solutions.dc_meshes is not None else None
             # TODO: This meshes are in the order of the scalar field
             element.vertices = (self.transform.apply_inverse(dc_mesh.vertices) if dc_mesh is not None else None)
             element.edges = (dc_mesh.edges if dc_mesh is not None else None)
-            
-        
+
     @property
     def surface_points(self):
         return self.structural_frame.surface_points
@@ -107,7 +106,7 @@ class GeoModel:
         if self.structural_frame.is_dirty:
             n_octree_lvl = self.interpolation_options.number_octree_levels
             compute_octrees: bool = n_octree_lvl > 1
-            
+
             # * Set regular grid to the octree resolution. ? Probably a better way to do this would be to make regular_grid resolution a property
             if compute_octrees:
                 if self.grid.regular_grid.resolution is not None:
@@ -119,17 +118,16 @@ class GeoModel:
                     extent=self.grid.regular_grid.extent,
                     resolution=np.array([2 ** n_octree_lvl] * 3)
                 )
-                
+
             self._interpolationInput = InterpolationInput.from_structural_frame(
                 structural_frame=self.structural_frame,
                 grid=self.grid,
                 transform=self.transform,
                 octrees=compute_octrees
             )
-            
+
         return self._interpolationInput
 
-        
     @property
     def input_data_descriptor(self) -> InputDataDescriptor:
         # TODO: This should have the exact same dirty logic as interpolation_input
