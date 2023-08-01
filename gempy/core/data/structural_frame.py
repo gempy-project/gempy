@@ -32,15 +32,15 @@ class StructuralFrame:
                 f"\tfault_relations=\n{fault_relations_str},\n"
                 )
 
+
     def _repr_html_(self):
         structural_groups_html = '<br>'.join([g._repr_html_() for g in self.structural_groups])
-
-        true_color = '#527682'
-        false_color = '#FFB6C1'
         if self.fault_relations is not None:
             # Define the colors for True and False values
+            true_color = '#527682'
+            false_color = '#FFB6C1'
 
-            table_headers = '<th></th>' + ''.join('<th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">{}</th>'.format(g.name) for g in self.structural_groups)
+            table_headers = '<th></th>' + ''.join('<th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">{}</th>'.format((g.name[:10] + '...') if len(g.name) > 10 else g.name) for g in self.structural_groups)
             table_rows = ''.join('<tr><th>{}</th>{}</tr>'.format(self.structural_groups[i].name, ''.join('<td style="background-color: {}; width: 20px; height: 20px; border: 1px solid black;"></td>'.format(true_color if cell else false_color) for cell in row)) for i, row in enumerate(self.fault_relations))
             fault_relations_str = '<table style="border-collapse: collapse; table-layout: fixed;">{}{}</table>'.format(table_headers, table_rows)
         else:
@@ -50,8 +50,8 @@ class StructuralFrame:
         legend = f"""
         <table>
           <tr>
-            <td><div style="display: inline-block; background-color: {true_color}; width: 20px; height: 20px; border: 1px solid black;"></div> Offsets</td>
-            <td><div style="display: inline-block; background-color: {false_color}; width: 20px; height: 20px; border: 1px solid black;"></div> Ignores</td>
+            <td><div style="display: inline-block; background-color: {true_color}; width: 20px; height: 20px; border: 1px solid black;"></div> True</td>
+            <td><div style="display: inline-block; background-color: {false_color}; width: 20px; height: 20px; border: 1px solid black;"></div> False</td>
           </tr>
         </table>
         """
@@ -64,6 +64,7 @@ class StructuralFrame:
         </table>
         """
         return html
+
 
     @property
     def structural_elements(self) -> list[StructuralElement]:

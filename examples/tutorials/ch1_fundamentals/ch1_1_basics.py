@@ -187,7 +187,7 @@ gp.set_is_fault(
 geo_model.grid
 
 # %% 
-# As mentioned before, GemPy's core algorithm is based on interpolation of
+# As mentioned before, GemPy's core algorithm is based on interpolation of 
 # two types of data: - surface\_points and - orientation measurements  
 # 
 # (if you want to know more on how this this interpolation algorithm
