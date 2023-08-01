@@ -17,8 +17,6 @@ class StructuralFrame:
     structural_groups: list[StructuralGroup]  # ? should this be lazy?
     color_gen: ColorsGenerator
 
-    # fault_relations: Optional[np.ndarray] = None
-
     # ? Should I create some sort of structural options class? For example, the masking descriptor and faults relations pointer
     is_dirty: bool = True  # This changes when the structural frame is modified
 
@@ -28,20 +26,42 @@ class StructuralFrame:
 
     def __repr__(self):
         structural_groups_repr = ',\n'.join([repr(g) for g in self.structural_groups])
-        fault_relations_str = np.array2string(self.fault_relations) if self.fault_relations is not None else 'None'
+        fault_relations_str = np.array2string(self.fault_relations, precision=2, separator=', ', suppress_small=True) if self.fault_relations is not None else 'None'
         return (f"StructuralFrame(\n"
                 f"\tstructural_groups=[\n{structural_groups_repr}\n],\n"
-                f"\tfault_relations={fault_relations_str},\n"
+                f"\tfault_relations=\n{fault_relations_str},\n"
                 )
 
     def _repr_html_(self):
         structural_groups_html = '<br>'.join([g._repr_html_() for g in self.structural_groups])
-        fault_relations_str = np.array2string(self.fault_relations) if self.fault_relations is not None else 'None'
+
+        true_color = '#527682'
+        false_color = '#FFB6C1'
+        if self.fault_relations is not None:
+            # Define the colors for True and False values
+
+            table_headers = '<th></th>' + ''.join('<th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">{}</th>'.format(g.name) for g in self.structural_groups)
+            table_rows = ''.join('<tr><th>{}</th>{}</tr>'.format(self.structural_groups[i].name, ''.join('<td style="background-color: {}; width: 20px; height: 20px; border: 1px solid black;"></td>'.format(true_color if cell else false_color) for cell in row)) for i, row in enumerate(self.fault_relations))
+            fault_relations_str = '<table style="border-collapse: collapse; table-layout: fixed;">{}{}</table>'.format(table_headers, table_rows)
+        else:
+            fault_relations_str = 'None'
+
+        # Define the legend
+        legend = f"""
+        <table>
+          <tr>
+            <td><div style="display: inline-block; background-color: {true_color}; width: 20px; height: 20px; border: 1px solid black;"></div> Offsets</td>
+            <td><div style="display: inline-block; background-color: {false_color}; width: 20px; height: 20px; border: 1px solid black;"></div> Ignores</td>
+          </tr>
+        </table>
+        """
+
         html = f"""
-    <table >
-      <tr><td>Structural Groups:</td><td>{structural_groups_html}</td></tr>
-      <tr><td>Fault Relations:</td><td>{fault_relations_str}</td></tr>
-    </table>
+        <table>
+          <tr><td>Structural Groups:</td><td>{structural_groups_html}</td></tr>
+          <tr><td>Fault Relations:</td><td>{fault_relations_str}</td></tr>
+          <tr><td>Legend:</td><td>{legend}</td></tr>
+        </table>
         """
         return html
 
@@ -65,7 +85,7 @@ class StructuralFrame:
         return basement
 
     @property
-    def fault_relations(self):
+    def fault_relations(self) -> np.ndarray:
         # Initialize an empty boolean array with dimensions len(structural_groups) x len(structural_groups)
         fault_relations = np.zeros((len(self.structural_groups), len(self.structural_groups)), dtype=bool)
 
@@ -97,12 +117,12 @@ class StructuralFrame:
 
         # Iterate over each StructuralGroup
         for i, group in enumerate(self.structural_groups):
-                
+
             affected_groups = matrix[i, :]  # * If the group is a fault
             # If all younger groups are affected
             all_younger_groups_affected = np.all(affected_groups[i + 1:])
             any_younger_groups_affected = np.any(affected_groups[i + 1:])
-            
+
             if all_younger_groups_affected:
                 group.fault_relations = FaultsRelationSpecialCase.OFFSET_ALL
                 group.structural_relation = StackRelationType.FAULT

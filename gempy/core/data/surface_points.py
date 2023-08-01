@@ -31,13 +31,13 @@ class SurfacePointsTable:
         html += "<tr><th>X</th><th>Y</th><th>Z</th><th>id</th><th>nugget</th></tr>"
         if len(self.data) > 2*rows_to_display:
             for point in self.data[:rows_to_display]:
-                html += "<tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>".format(*point)
+                html += "<tr><td>{:.2f}</td><td>{:.2f}</td><td>{:.2f}</td><td>{}</td><td>{:.2f}</td></tr>".format(*point)
             html += "<tr><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td></tr>"
             for point in self.data[-rows_to_display:]:
-                html += "<tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>".format(*point)
+                html += "<tr><td>{:.2f}</td><td>{:.2f}</td><td>{:.2f}</td><td>{}</td><td>{:.2f}</td></tr>".format(*point)
         else:
             for point in self.data:
-                html += "<tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>".format(*point)
+                html += "<tr><td>{:.2f}</td><td>{:.2f}</td><td>{:.2f}</td><td>{}</td><td>{:.2f}</td></tr>".format(*point)
         html += "</table>"
         return html
     

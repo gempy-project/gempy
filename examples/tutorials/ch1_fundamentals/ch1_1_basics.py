@@ -145,7 +145,7 @@ geo_model.orientations
 # fault, we declare a respective "Fault\_Series" as the first key entry in
 # the ``set_series`` dictionary. We could give any other names to these
 # series, the formations however have to be referred to as named in the
-# input data.
+# input data. 
 # 
 
 
@@ -161,24 +161,15 @@ gp.map_stack_to_surfaces(
 
 )
 
-# %% 
 geo_model.structural_frame
 
 # %% 
 # TODO: Revive API call
-# geo_model.set_is_fault(['Fault_Series'])
-geo_model.structural_frame.structural_groups[0].structural_relation = gp.StackRelationType.FAULT
-geo_model.structural_frame.fault_relations = np.array([[0, 1], [0, 0]])
+gp.set_is_fault(
+    frame=geo_model.structural_frame,
+    fault_groups=['Fault_Series']
+)   
 
-# TODO: Revive Fault visualization
-# # %% 
-# geo_model.faults.faults_relations_df
-# 
-# # %% 
-# geo_model.faults
-# 
-# # %%
-# geo_model.faults.faults_relations_df
 
 # %%
 # Returning information from our input data
