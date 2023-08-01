@@ -32,13 +32,18 @@ def test_section_grids():
     gpv.plot_2d(
         model=geo_model,
         section_names=['section_SW-NE', 'section_NW-SE', 'topography'],
-        direction=['x', 'y', 'y'], cell_number=['mid', 'mid', 'mid'],
+        direction=['x'], cell_number=['mid'],
         show_lith=[False, False, False, True],
         show_boundaries=[False, False, False, True],
-        series_n=[0, 0, 0, 0, 0, 0],
         show_topography=True,
         show_section_traces=True  # TODO: Test this one
     )
 
     gpv.plot_2d(geo_model, show_boundaries=False, section_names=['topography'])
-    gpv.plot_3d(geo_model, show_data=True, show_boundaries=True, show_lith=False, image=True)
+    gpv.plot_3d(
+        geo_model,
+        show_data=True,
+        show_boundaries=True,
+        show_lith=False,
+        image=False
+    )
