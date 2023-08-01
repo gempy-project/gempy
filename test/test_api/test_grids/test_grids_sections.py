@@ -1,10 +1,8 @@
 ﻿import numpy as np
-import pytest
+
 import gempy as gp
 import gempy_viewer as gpv
 from gempy.core.data.enumerators import ExampleModel
-from gempy_engine.modules.octrees_topology.octrees_topology_interface import ValueType
-from gempy_engine.plugins.plotting.helper_functions import plot_block_and_input_2d
 
 
 def test_section_grids():
@@ -17,8 +15,10 @@ def test_section_grids():
 
     gp.set_section_grid(
         grid=geo_model.grid,
-        section_dict={'section_SW-NE': ([250, 250], [1750, 1750], [100, 100]),
-                      'section_NW-SE': ([250, 1750], [1750, 250], [100, 100])}
+        section_dict={
+            'section_SW-NE': ([250, 250], [1750, 1750], [100, 100]),
+            'section_NW-SE': ([250, 1750], [1750, 250], [100, 100])
+        }
     )
 
     gp.set_topography_from_random(
@@ -33,7 +33,7 @@ def test_section_grids():
         model=geo_model,
         section_names=['section_SW-NE', 'section_NW-SE', 'topography'],
         direction=['x'], cell_number=['mid'],
-        show_lith=[False, False, False, True],
+        show_lith=[False, True, False, True],
         show_boundaries=[False, False, False, True],
         show_topography=True,
         show_section_traces=True  # TODO: Test this one

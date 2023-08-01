@@ -23,7 +23,8 @@ def compute_model(gempy_model: GeoModel, engine_config: Optional[GempyEngineConf
             BackendTensor.change_backend(
                 engine_backend=engine_config.backend,
                 use_gpu=engine_config.use_gpu,
-                pykeops_enabled=engine_config.pykeops_enabled)
+                pykeops_enabled=engine_config.pykeops_enabled
+            )
 
             gempy_model.solutions = gempy_engine.compute_model(
                 interpolation_input=gempy_model.interpolation_input,
