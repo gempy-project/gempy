@@ -18,12 +18,29 @@ class SurfacePointsTable:
     name_id_map: Optional[dict[str, int]] = None  # ? Do I need this here or this should be a field of StructuralFrame?
 
     dt = np.dtype([('X', 'f8'), ('Y', 'f8'), ('Z', 'f8'), ('id', 'i4'), ('nugget', 'f8')])
-    
+
     def __str__(self):
         return "\n" + np.array2string(self.data, precision=2, separator=',', suppress_small=True)
-    
+
     def __repr__(self):
-        return self.__str__()
+        return f"SurfacePointsTable(data=\n{np.array2string(self.data, precision=2, separator=',', suppress_small=True)},\nname_id_map={self.name_id_map})"
+    
+    def _repr_html_(self):
+        rows_to_display = 10  # Define the number of rows to display from beginning and end
+        html = "<table>"
+        html += "<tr><th>X</th><th>Y</th><th>Z</th><th>id</th><th>nugget</th></tr>"
+        if len(self.data) > 2*rows_to_display:
+            for point in self.data[:rows_to_display]:
+                html += "<tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>".format(*point)
+            html += "<tr><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td></tr>"
+            for point in self.data[-rows_to_display:]:
+                html += "<tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>".format(*point)
+        else:
+            for point in self.data:
+                html += "<tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>".format(*point)
+        html += "</table>"
+        return html
+    
     
     @classmethod
     def from_arrays(cls, x: np.ndarray, y: np.ndarray, z: np.ndarray,

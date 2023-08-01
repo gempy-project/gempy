@@ -161,7 +161,7 @@ class Sections:
         self.dist = []
         self.df = pn.DataFrame()
         self.df['dist'] = self.dist
-        self.values = []
+        self.values = np.empty((0, 3))
         self.extent = None
 
         if section_dict is not None:

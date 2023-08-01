@@ -83,12 +83,12 @@ geo_model.structural_frame
 # still completely arbitrary. We will fix this in the following.
 # 
 
+# %% 
+geo_model.surface_points
+
 
 # %% 
-geo_model.surface_points.df.head()
-
-# %% 
-geo_model.orientations.df.head()
+geo_model.orientations
 
 # %%
 # Declaring the sequential order of geological formations
