@@ -174,21 +174,21 @@ gp.set_is_fault(
 # %%
 # Returning information from our input data
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# 
+#  
 # Our model input data, here named "*geo\_model*", contains all the
 # information that is essential for the construction of our model. You can
 # access different types of information by using ``gp.get_data`` or simply
 # by accessiong the atrributes.
-# 
+#  
 # We can, for example, return the coordinates of our modeling grid via:
 # 
 
 # %% 
 geo_model.grid
 
-# %%
+# %% 
 # As mentioned before, GemPy's core algorithm is based on interpolation of
-# two types of data: - surface\_points and - orientation measurements
+# two types of data: - surface\_points and - orientation measurements  
 # 
 # (if you want to know more on how this this interpolation algorithm
 # works, checkout our paper: https://www.geosci-model-dev.net/12/1/2019/gmd-12-1-2019.pdf).

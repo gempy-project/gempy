@@ -79,10 +79,28 @@ class Grid(object):
         self.update_grid_values()
 
     def __str__(self):
-        return 'Grid Object. Values: \n' + np.array2string(self.values)
+        grid_summary = [f"{g_type} (active: {getattr(self, g_type + '_grid_active')}): {len(getattr(self, g_type + '_grid').values)} points"
+                        for g_type in self.grid_types]
+        grid_summary_str = "\n".join(grid_summary)
+        return f"Grid Object:\n{grid_summary_str}"
 
     def __repr__(self):
-        return 'Grid Object. Values: \n' + np.array_repr(self.values)
+        grid_summary = [f"{g_type} (active: {getattr(self, g_type + '_grid_active')}): {len(getattr(self, g_type + '_grid').values)} points"
+                        for g_type in self.grid_types]
+        grid_summary_repr = ",\n".join(grid_summary)
+        return f"Grid(\n{grid_summary_repr}\n)"
+
+    def _repr_html_(self):
+        grid_summary = [f"<tr><td>{g_type}</td><td>{'Active' if getattr(self, g_type + '_grid_active') else 'Inactive'}</td><td>{len(getattr(self, g_type + '_grid').values)} points</td></tr>"
+                        for g_type in self.grid_types]
+        grid_summary_html = "\n".join(grid_summary)
+        return f"""
+        <table >
+          <tr><th>Grid Type</th><th>Status</th><th>Points</th></tr>
+          {grid_summary_html}
+        </table>
+            """
+
 
     def create_regular_grid(self, extent=None, resolution=None, set_active=True, *args, **kwargs):
         """

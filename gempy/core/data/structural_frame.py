@@ -60,7 +60,7 @@ class StructuralFrame:
         <table>
           <tr><td>Structural Groups:</td><td>{structural_groups_html}</td></tr>
           <tr><td>Fault Relations:</td><td>{fault_relations_str}</td></tr>
-          <tr><td>Legend:</td><td>{legend}</td></tr>
+          <tr><td></td><td>{legend}</td></tr>
         </table>
         """
         return html
