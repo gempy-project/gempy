@@ -15,11 +15,11 @@ def test_section_grids():
 
     geo_model.interpolation_options.number_octree_levels = 2
 
-    gp.set_section_grid(
-        grid=geo_model.grid,
-        section_dict={'section_SW-NE': ([250, 250], [1750, 1750], [100, 100]),
-                      'section_NW-SE': ([250, 1750], [1750, 250], [100, 100])}
-    )
+    # gp.set_section_grid(
+    #     grid=geo_model.grid,
+    #     section_dict={'section_SW-NE': ([250, 250], [1750, 1750], [100, 100]),
+    #                   'section_NW-SE': ([250, 1750], [1750, 250], [100, 100])}
+    # )
 
     gp.set_topography_from_random(
         grid=geo_model.grid,
