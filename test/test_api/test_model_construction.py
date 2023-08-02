@@ -3,6 +3,7 @@ import gempy as gp
 import gempy_engine.core.data.solutions
 import gempy_viewer
 from core.data.stack_relation_type import StackRelationType
+from gempy.core.color_generator import ColorsGenerator
 from gempy_engine.core.data import InterpolationOptions
 from gempy.core.data import GeoModel
 from gempy.API.io_API import read_orientations, read_surface_points
@@ -59,20 +60,20 @@ def test_create_grid() -> gp.data.Grid:
 
 
 def test_create_structural_frame() -> StructuralFrame:
-    
     # * Structural elements
     surface_points, orientations = test_read_input_points()
     surface_points_groups = surface_points.get_surface_points_by_id_groups()
     orientations_groups = orientations.get_orientations_by_id_groups()
 
     structural_elements = []
+    color_gen = ColorsGenerator()
     for i in range(len(surface_points_groups)):
         # TODO: Split surface points and orientations by id
         structural_element: StructuralElement = StructuralElement(
             name="layer1",
             surface_points=surface_points_groups[i],
             orientations=orientations_groups[i],
-            color=next(StructuralFrame.color_gen),
+            color=next(color_gen)
         )
 
         structural_elements.append(structural_element)
@@ -86,7 +87,8 @@ def test_create_structural_frame() -> StructuralFrame:
 
     # ? Should I move this to the constructor?
     structural_frame: StructuralFrame = StructuralFrame(
-        structural_groups=[default_formation]
+        structural_groups=[default_formation],
+        color_gen=color_gen
     )
 
     return structural_frame
@@ -96,7 +98,7 @@ def test_create_interpolation_options() -> InterpolationOptions:
     range_ = 1000.0
     interpolation_options: InterpolationOptions = InterpolationOptions(
         range=range_,
-        c_o=( range_ ** 2 ) / 14 / 3,
+        c_o=(range_ ** 2) / 14 / 3,
     )
 
     return interpolation_options
@@ -119,8 +121,6 @@ def test_structural_frame_surface_points():
     pass
 
 
-
-
 def test_interpolate_numpy():
     geo_model: GeoModel = test_create_geomodel()
 
@@ -132,7 +132,16 @@ def test_interpolate_numpy():
     print(solutions)
     geo_model.solutions = solutions
     # TODO: Use gempy API
-
+    if PLOT := True:
+        from gempy_engine.modules.octrees_topology.octrees_topology_interface import ValueType
+        from gempy_engine.plugins.plotting.helper_functions import plot_block_and_input_2d
+        plot_block_and_input_2d(
+            stack_number=0,
+            interpolation_input=geo_model.interpolation_input,
+            outputs=geo_model.solutions.octrees_output,
+            structure=geo_model.structural_frame.input_data_descriptor.stack_structure,
+            value_type=ValueType.ids
+        )
     return geo_model
 
 
@@ -152,12 +161,11 @@ def test_plot_input():
         plot_options=gp_viewer.Plotting2DOptions(),
         show_results=False
     )
-    
+
 
 def test_plot_results():
     solved_geo_model: gempy_engine.core.data.solutions.Solutions = test_interpolate_numpy()
     gp_viewer: gempy_viewer = require_gempy_viewer()
-
 
     gp_viewer.plot_2d(
         solved_geo_model,
@@ -166,15 +174,3 @@ def test_plot_results():
         show_boundaries=False,  # TODO: Fix boundaries
         show_results=True
     )
-
-    
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   

@@ -62,7 +62,7 @@ data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
 geo_model: gp.data.GeoModel = gp.create_geomodel(
     project_name='Tutorial_ch1_1_Basics',
     extent=[0, 2000, 0, 2000, 0, 750],
-    resolution=[50, 50, 50],  # * Here we define the resolution of the voxels
+    resolution=[20, 20, 20],  # * Here we define the resolution of the voxels
     number_octree_levels=4,  # * Here we define the number of octree levels. If octree levels are defined, the resolution is ignored.
     importer_helper=gp.data.ImporterHelper(
         path_to_orientations=data_path + "/data/input_data/getting_started/simple_fault_model_orientations.csv",
@@ -246,6 +246,17 @@ geo_model.solutions
 # Model solutions can be easily visualized in 2D sections in GemPy
 # directly. Let's take a look at our lithology block:
 #
+
+# %%
+from gempy_engine.modules.octrees_topology.octrees_topology_interface import ValueType
+from gempy_engine.plugins.plotting.helper_functions import plot_block_and_input_2d
+plot_block_and_input_2d(
+    stack_number=1,
+    interpolation_input=geo_model.interpolation_input,
+    outputs=geo_model.solutions.octrees_output,
+    structure=geo_model.structural_frame.input_data_descriptor.stack_structure,
+    value_type=ValueType.ids
+)
 
 # %%
 gpv.plot_2d(geo_model, show_data=True)
