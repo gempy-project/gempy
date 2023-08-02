@@ -21,21 +21,22 @@ except Exception as e:  # pragma: no cover
 # sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
 
 # =================== Core ===================
-from .core.data.geo_model import GeoModel
-from .core.data.structural_frame import StructuralFrame
-from .core.data.structural_group import StructuralGroup
+# from .core.data.geo_model import GeoModel
+# from .core.data.structural_frame import StructuralFrame
+# from .core.data.structural_group import StructuralGroup
 # from .core.data import AdditionalData, Options, KrigingParameters
 # from .core.data_modules.stack import Faults, Series
 # from .core.structure import Structure
 # 
-from gempy.core.data.grid import Grid
-from .core.data.importer_helper import ImporterHelper
+# from gempy.core.data.grid import Grid
+# from .core.data.importer_helper import ImporterHelper
 # from .core.surfaces import Surfaces
 # from .core.data_modules.scaling_system import ScalingSystem
 # from .core.data_modules.orientations import Orientations
 # from .core.data_modules.surface_points import SurfacePoints
 # from .core.solution import Solution
 
+from .core import data
 # =================== API ===================
 
 from .API import *
@@ -55,9 +56,9 @@ from .API import *
 # =================== Engine ===================
 # * (NOTE: miguel (July 2023) For now I am not going to import here any of the engine modules)
 # from gempy_engine.core.data.options import InterpolationOptions
-from gempy_engine.core.data.stack_relation_type import StackRelationType
+# from gempy_engine.core.data.stack_relation_type import StackRelationType
 
-__all__ = ['GeoModel', 'Grid', 'StackRelationType', 'ImporterHelper', 'StructuralFrame', 'StructuralGroup']
+# __all__ = ['GeoModel', 'Grid', 'StackRelationType', 'ImporterHelper', 'StructuralFrame', 'StructuralGroup']
 
 # Assert at least pyton 3.10
 assert sys.version_info[0] >= 3 and sys.version_info[1] >= 10, "GemPy requires Python 3.10 or higher"

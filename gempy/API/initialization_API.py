@@ -7,7 +7,8 @@ from gempy_engine.core.data.stack_relation_type import StackRelationType
 from gempy_engine.core.data import InterpolationOptions
 
 from gempy.API.io_API import read_surface_points, read_orientations
-from .. import GeoModel, Grid
+from ..core.data.geo_model import GeoModel
+from ..core.data.grid import Grid
 from ..core.color_generator import ColorsGenerator
 from ..core.data.importer_helper import ImporterHelper
 from ..core.data.orientations import OrientationsTable

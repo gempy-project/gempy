@@ -16,13 +16,13 @@ import gempy_viewer as gpv
 # :obj:`gempy.GeoModel`
 # GemPy uses Python objects to store the data that builds the geological model. The main data classes include:
 #
-#     -  :obj:`gempy.GeoModel`
-#     -  :obj:`gempy.StructuralFrame`
-#     -  :obj:`gempy.Grid`
-#     -  :obj:`gempy.StructuralGroup`
-#     -  :obj:`gempy.StructuralElement`
-#     -  :obj:`gempy.SurfacePointsTable`
-#     -  :obj:`gempy.OrientationsTable`
+#     -  :obj:`gempy.data.GeoModel`
+#     -  :obj:`gempy.data.StructuralFrame`
+#     -  :obj:`gempy.data.Grid`
+#     -  :obj:`gempy.data.StructuralGroup`
+#     -  :obj:`gempy.data.StructuralElement`
+#     -  :obj:`gempy.data.SurfacePointsTable`
+#     -  :obj:`gempy.data.OrientationsTable`
 #
 # Each of these classes will be covered in more depth in a later tutorial :doc:`ch1_2a_data_manipulation`.
 #
@@ -59,12 +59,12 @@ import gempy_viewer as gpv
 # %%
 data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
 
-geo_model: gp.GeoModel = gp.create_geomodel(
+geo_model: gp.data.GeoModel = gp.create_geomodel(
     project_name='Tutorial_ch1_1_Basics',
     extent=[0, 2000, 0, 2000, 0, 750],
     resolution=[50, 50, 50],  # * Here we define the resolution of the voxels
     number_octree_levels=4,  # * 
-    importer_helper=gp.ImporterHelper(
+    importer_helper=gp.data.ImporterHelper(
         path_to_orientations=data_path + "/data/input_data/getting_started/simple_fault_model_orientations.csv",
         path_to_surface_points=data_path + "/data/input_data/getting_started/simple_fault_model_points.csv"
     )

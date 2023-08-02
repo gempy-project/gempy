@@ -105,9 +105,10 @@ master_doc = 'index'
 project = 'GemPy'
 year = datetime.date.today().year
 copyright = u'2017-{}, Gempy Developers'.format(year)
-with (os.path.join(os.path.dirname(__file__), '..', '..', 'AUTHORS.rst')) as f:
-    author = f.read()
 
+with open(os.path.join(os.path.dirname(__file__), '../../AUTHORS.rst'), 'r') as f:
+    author = f.read()
+    
 version = gempy.__version__  # The short X.Y version.
 release = gempy.__version__  # The full version, including alpha/beta/rc tags.
 language = 'en'
@@ -124,7 +125,7 @@ exclude_patterns = ['_build', '**.ipynb_checkpoints', 'Thumbs.db', '.DS_Store', 
 pygments_style = 'sphinx'
 highlight_language = 'python3'
 
-todo_include_todos = True # If true, `todo` and `todoList` produce output, else they produce nothing.
+todo_include_todos = True  # If true, `todo` and `todoList` produce output, else they produce nothing.
 
 # -- Sphinx Gallery Options
 sphinx_gallery_conf = {
@@ -142,23 +143,17 @@ sphinx_gallery_conf = {
         # "examples",
         # 'integrations'
     ],
-    # Patter to search for example files
-    "filename_pattern"       : r"ch1_1.*\.py$",
-    # Remove the "Download all examples" button from the top level gallery
-    "download_all_examples"  : False,
-    # Sort gallery example by file name instead of number of lines (default)
-    "within_subsection_order": FileNameSortKey,
-    # directory where function granular galleries are stored
-    "backreferences_dir"     : 'gen_modules/backreferences',
-    # Modules for which function level galleries are created.  In
-    "doc_module"             : ("gempy", 'numpy', 'pandas', 'matplotlib'),
+    "filename_pattern"       : r"ch1_1.*\.py$",  # Patter to search for example files
+    "download_all_examples"  : False,  # Remove the "Download all examples" button from the top level gallery
+    "within_subsection_order": FileNameSortKey,  # Sort gallery example by file name instead of number of lines (default)
+    "backreferences_dir"     : 'gen_modules/backreferences',  # directory where function granular galleries are stored
+    "doc_module"             : ("gempy", 'numpy', 'pandas', 'matplotlib'),  # Modules for which function level galleries are created.  In
     "image_scrapers"         : ('pyvista', 'matplotlib'),
     'first_notebook_cell'    : ("%matplotlib inline\n"
                                 "from pyvista import set_plot_theme\n"
                                 "set_plot_theme('document')"),
     'reference_url'          : {
-        # The module you locally document uses None
-        'gempy': None,
+        'gempy': None,  # The module you locally document uses None
         'numpy': 'https://numpy.org/doc/stable/'
 
     },
@@ -212,8 +207,7 @@ htmlhelp_basename = 'GemPydoc'
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [ (master_doc, 'gempy', 'GemPy Documentation', [author], 1) ]
-
+man_pages = [(master_doc, 'gempy', 'GemPy Documentation', [author], 1)]
 
 # region other options
 # Remove matplotlib agg warnings from generated doc when using plt.show

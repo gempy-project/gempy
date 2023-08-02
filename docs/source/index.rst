@@ -49,7 +49,7 @@ Contents:
    :maxdepth: 2
    :caption: API Reference
 
-   code
+   api_reference
 
 
 Features
