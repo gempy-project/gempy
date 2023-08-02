@@ -198,49 +198,45 @@ plot = gpv.plot_2d(geo_model, show_lith=False, show_boundaries=False)
 gpv.plot_3d(geo_model, image=False, plotter_type='basic')
 
 # %%
-# Model generation
+# Model Generation
 # ~~~~~~~~~~~~~~~~
-# 
-# Once we have made sure that we have defined all our primary information
-# as desired in our object :obj:`gempy.core.data.GeoModel` (named
-# ``geo_model`` in these tutorials), we can continue with the next step
-# towards creating our geological model: preparing the input data for
-# interpolation.
-# 
-# 
+# Once we've correctly defined all our primary information in our 
+# `gempy.core.data.GeoModel` object (referred to as `geo_model` in these tutorials),
+# we can proceed to the next step: preparing the input data for interpolation.
+#
+#
 # .. admonition:: New in GemPy 3!
 #
-#    GemPy 3 does not use either ``theano`` or ``asera`` anymore. Instead, it uses ``numpy`` or ``tensorflow``. For
-#    this reason, we do not need to we do need to recompile all the theano fuctions anymore (tensorflow uses eager
-#    execution after having profile the XLA compiler and not notice any speed difference).
-#
-
+#    Unlike previous versions, GemPy 3 doesn't rely on `theano` or `asera`. 
+#    Instead, it utilizes `numpy` or `tensorflow`. Consequently, we no longer need 
+#    to recompile all theano functions (TensorFlow uses eager execution; we found no 
+#    notable speed difference after profiling the XLA compiler).
 
 # %%
-# The parameters used for the interpolation can be found on :obj:`gempy.core.data.GeoModel.interpolation_options`.
-# These fields have meaningful default values, but can be changed if needed. However, users
-# should be careful doing so, if they do not fully understand their significance.
-# 
+# The parameters used for the interpolation are stored in 
+# `gempy.core.data.GeoModel.interpolation_options`. These parameters have sensible default values 
+# that you can modify if necessary. However, we advise caution when changing these parameters 
+# unless you fully understand their implications.
 
-# %% 
+# %%
+# Display the current interpolation options
 geo_model.interpolation_options
 
 # %%
-# At this point, we have all we need to compute our full model via
-# :obj:`gempy.compute_model`. This funtion will return a :obj:`gempy.core.data.Solutions` object
+# With all our prerequisites in place, we can now compute our complete geological model 
+# using :func:`gempy.compute_model`. This function returns a :obj:`gempy.core.data.Solutions` object.
+#
+# The following sections illustrate these different model solutions and how to utilize them.
 
-# Below, we illustrate these different model solutions and how they can be
-# used.
-# 
-
-
-# %% 
+# %%
+# Compute the geological model and get the solutions
 sol = gp.compute_model(geo_model)
-
-# %% 
 sol
 
 # %% 
+# Solutions are also stored within the :obj:`gempy.core.data.GeoModel` object, for future reference.
+
+# %%
 geo_model.solutions
 
 # %%
