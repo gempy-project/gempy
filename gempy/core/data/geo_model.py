@@ -9,6 +9,7 @@ from gempy_engine.core.data.legacy_solutions import LegacySolution
 from gempy_engine.core.data import InterpolationOptions
 from gempy_engine.core.data.input_data_descriptor import InputDataDescriptor
 from gempy_engine.core.data.interpolation_input import InterpolationInput
+from .orientations import OrientationsTable
 from .structural_frame import StructuralFrame
 from .transforms import Transform
 from .grid import Grid
@@ -23,6 +24,16 @@ TODO:
 
 @dataclass
 class GeoModelMeta:
+    """
+    Container for metadata associated with a GeoModel.
+
+    Attributes:
+        name (str): Name of the geological model.
+        creation_date (str): Date of creation of the model.
+        last_modification_date (str): Last modification date of the model.
+        owner (str): Owner of the geological model.
+    """
+
     name: str
     creation_date: str
     last_modification_date: str
@@ -31,24 +42,27 @@ class GeoModelMeta:
 
 @dataclass(init=False)
 class GeoModel:
-    meta: GeoModelMeta
-    structural_frame: StructuralFrame
-    grid: Grid  # * This is the general gempy grid
-    transform: Transform
+    """
+    Class representing a geological model.
+
+    """
+
+    meta: GeoModelMeta  #: Meta-information about the geological model, like its name, creation and modification dates, and owner.
+    structural_frame: StructuralFrame  #: The structural information of the geological model.
+    grid: Grid  #: The general grid used in the geological model.
+    transform: Transform  #: The transformation used in the geological model for input points.
 
     # region GemPy engine data types
-    interpolation_options: InterpolationOptions  # * This has to be fed by USER
+    interpolation_options: InterpolationOptions  #: The interpolation options provided by the user.
 
-    # ? Are this more caching fields than actual fields?
-    interpolation_grid: gempy_engine.core.data.grid.Grid = None
-    _interpolationInput: InterpolationInput = None  # * This has to be fed by structural_frame
-    _input_data_descriptor: InputDataDescriptor = None  # * This has to be fed by structural_frame
+    interpolation_grid: gempy_engine.core.data.grid.Grid = None  #: Optional grid used for interpolation. Can be seen as a cache field.
+    _interpolationInput: InterpolationInput = None  #: Input data for interpolation. Fed by the structural frame and can be seen as a cache field.
+    _input_data_descriptor: InputDataDescriptor = None  #: Descriptor of the input data. Fed by the structural frame and can be seen as a cache field.
 
     # endregion
+    _solutions: gempy_engine.core.data.solutions.Solutions = field(init=False, default=None)  #: The computed solutions of the geological model. 
 
-    _solutions: gempy_engine.core.data.solutions.Solutions = field(init=False, default=None)
-
-    legacy_model: "gpl.Project" = None
+    legacy_model: "gpl.Project" = None  #: Legacy model (if available). Allows for backward compatibility.
 
     def __init__(self, name: str, structural_frame: StructuralFrame, grid: Grid,
                  interpolation_options: InterpolationOptions):
@@ -98,7 +112,7 @@ class GeoModel:
         return self.structural_frame.surface_points
 
     @property
-    def orientations(self):
+    def orientations(self) -> OrientationsTable:
         return self.structural_frame.orientations
 
     @property
