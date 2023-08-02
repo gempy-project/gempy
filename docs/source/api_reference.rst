@@ -46,9 +46,10 @@ Modeling Classes
     StructuralElement
     SurfacePointsTable
     OrientationsTable
+    InterpolationOptions
     Grid
     Solutions
-    InterpolationOptions
+    RawArraysSolution
 
 Helper Classes
 --------------
