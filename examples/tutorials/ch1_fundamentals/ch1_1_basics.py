@@ -59,6 +59,7 @@ import gempy_viewer as gpv
 # voxels), as higher resolutions will become increasingly expensive to
 # compute.
 #
+# Testing making links in the text :obj:`numpy.sin` :obj:`gempy.create_geomodel` foo bar
 
 # %%
 data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'

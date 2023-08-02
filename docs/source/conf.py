@@ -40,7 +40,6 @@ pyvista.BUILDING_GALLERY = True
 if not os.path.exists(pyvista.FIGURE_PATH):
     os.makedirs(pyvista.FIGURE_PATH)
 
-
 sys.path.insert(0, os.path.abspath('.'))
 
 # -- General configuration ------------------------------------------------
@@ -66,28 +65,28 @@ extensions = [
     'sphinx_gallery.gen_gallery',
 ]
 
-if run_intersphinx:=False:
+if run_intersphinx := False:  # Example configuration for intersphinx: refer to the Python standard library.
     intersphinx_mapping = {
-        'numpy': ('https://numpy.org/doc/stable/', None),
-        'python': ('https://docs.python.org/{.major}'.format(sys.version_info), None),
+        'numpy'     : ('https://numpy.org/doc/stable/', None),
+        'python'    : ('https://docs.python.org/{.major}'.format(sys.version_info), None),
         'matplotlib': ('https://matplotlib.org/stable/', None),
-        'mayavi': ('http://docs.enthought.com/mayavi/mayavi', None),
-        'sklearn': ('https://scikit-learn.org/stable', None),
-        'skimage': ('https://scikit-image.org/docs/dev/', None),
-        'pyvista': ('https://docs.pyvista.org/', None),
-        'sphinx': ('https://www.sphinx-doc.org/en/master/', None),
-        'pandas': ('https://pandas.pydata.org/pandas-docs/stable/', None),
+        'mayavi'    : ('http://docs.enthought.com/mayavi/mayavi', None),
+        'sklearn'   : ('https://scikit-learn.org/stable', None),
+        'skimage'   : ('https://scikit-image.org/docs/dev/', None),
+        'pyvista'   : ('https://docs.pyvista.org/', None),
+        'sphinx'    : ('https://www.sphinx-doc.org/en/master/', None),
+        'pandas'    : ('https://pandas.pydata.org/pandas-docs/stable/', None),
     }
 
 napoleon_google_docstring = True
 
 autodoc_default_options = {
     'autodoc_default_flags': ['members'],
-    'members': None,
-    'member-order': 'bysource',
-    'special-members': '__init__',
-    'undoc-members': True,
-    'exclude-members': '__weakref__'
+    'members'              : None,
+    'member-order'         : 'bysource',
+    'special-members'      : '__init__',
+    'undoc-members'        : True,
+    'exclude-members'      : '__weakref__'
 }
 autosummary_generate = True
 autosummary_imported_members = True
@@ -100,7 +99,6 @@ templates_path = ['_templates']
 #
 
 source_suffix = ['.rst']
-
 
 # The master toctree document.
 master_doc = 'index'
@@ -130,7 +128,7 @@ language = 'en'
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This patterns also effect to html_static_path and html_extra_path
-exclude_patterns = ['_build', '**.ipynb_checkpoints', 'Thumbs.db', '.DS_Store', 'errors.txt',]
+exclude_patterns = ['_build', '**.ipynb_checkpoints', 'Thumbs.db', '.DS_Store', 'errors.txt', ]
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
@@ -139,40 +137,37 @@ highlight_language = 'python3'
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = True
 
-# Example configuration for intersphinx: refer to the Python standard library.
-
-
 # -- Sphinx Gallery Options
 sphinx_gallery_conf = {
     # path to your examples scripts
-    "examples_dirs": [
+    "examples_dirs"          : [
         # "../../examples/getting_started",
         "../../examples/tutorials",
         # "../../examples/examples",
         # "../../examples/integrations",
     ],
     # path where to save gallery generated examples
-    "gallery_dirs": [
+    "gallery_dirs"           : [
         # 'getting_started',
         'tutorials',
         # "examples",
         # 'integrations'
     ],
     # Patter to search for example files
-    "filename_pattern": r"ch1_1.*\.py$",
+    "filename_pattern"       : r"ch1_1.*\.py$",
     # Remove the "Download all examples" button from the top level gallery
-    "download_all_examples": False,
+    "download_all_examples"  : False,
     # Sort gallery example by file name instead of number of lines (default)
     "within_subsection_order": FileNameSortKey,
     # directory where function granular galleries are stored
-    "backreferences_dir": 'gen_modules/backreferences',
+    "backreferences_dir"     : 'gen_modules/backreferences',
     # Modules for which function level galleries are created.  In
-    "doc_module": ("gempy", 'numpy', 'pandas', 'matplotlib'),
-    "image_scrapers": ('pyvista', 'matplotlib'),
-    'first_notebook_cell': ("%matplotlib inline\n"
-                            "from pyvista import set_plot_theme\n"
-                            "set_plot_theme('document')"),
-    'reference_url': {
+    "doc_module"             : ("gempy", 'numpy', 'pandas', 'matplotlib'),
+    "image_scrapers"         : ('pyvista', 'matplotlib'),
+    'first_notebook_cell'    : ("%matplotlib inline\n"
+                                "from pyvista import set_plot_theme\n"
+                                "set_plot_theme('document')"),
+    'reference_url'          : {
         # The module you locally document uses None
         'gempy': None,
         'numpy': 'https://numpy.org/doc/stable/'
@@ -195,15 +190,15 @@ html_theme = 'alabaster'
 # documentation.
 #
 html_theme_options = {
-    'github_user': 'cgre-aachen',
-    'github_repo': 'gempy',
-    'github_type': 'star',
-    'logo': 'logos/gempy.png',
-    'logo_name': False,
-    'travis_button': False,
-    'page_width': '1200px',
-    'fixed_sidebar': False,
-    'show_related': True,
+    'github_user'     : 'cgre-aachen',
+    'github_repo'     : 'gempy',
+    'github_type'     : 'star',
+    'logo'            : 'logos/gempy.png',
+    'logo_name'       : False,
+    'travis_button'   : False,
+    'page_width'      : '1200px',
+    'fixed_sidebar'   : False,
+    'show_related'    : True,
     'sidebar_collapse': True,
 }
 
