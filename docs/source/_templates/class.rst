@@ -7,7 +7,6 @@
    :no-undoc-members:
 
    {% block examples%}
-   .. rubric:: Examples using {{name}}
    .. include:: ../gen_modules/backreferences/{{fullname}}.examples
    .. raw:: html
 

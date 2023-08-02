@@ -84,7 +84,7 @@ geo_model.structural_frame
 # that the order of formations and respective allocation to series is
 # still completely arbitrary. We will fix this in the following.
 # 
-# foo
+# foo bar foo bar
 
 # %% 
 geo_model.surface_points
