@@ -47,6 +47,8 @@ Modeling Classes
     SurfacePointsTable
     OrientationsTable
     Grid
+    Solutions
+    InterpolationOptions
 
 Helper Classes
 --------------

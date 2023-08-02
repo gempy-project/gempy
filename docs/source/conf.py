@@ -127,7 +127,7 @@ highlight_language = 'python3'
 
 todo_include_todos = True  # If true, `todo` and `todoList` produce output, else they produce nothing.
 
-# -- Sphinx Gallery Options
+# * -- Sphinx Gallery Options
 sphinx_gallery_conf = {
     # path to your examples scripts
     "examples_dirs"          : [
@@ -147,7 +147,7 @@ sphinx_gallery_conf = {
     "download_all_examples"  : False,  # Remove the "Download all examples" button from the top level gallery
     "within_subsection_order": FileNameSortKey,  # Sort gallery example by file name instead of number of lines (default)
     "backreferences_dir"     : 'gen_modules/backreferences',  # directory where function granular galleries are stored
-    "doc_module"             : ("gempy", 'numpy', 'pandas', 'matplotlib'),  # Modules for which function level galleries are created.  In
+    "doc_module"             : ("gempy", "gempy_viewer", 'numpy', 'pandas', 'matplotlib'),  # Modules for which function level galleries are created.  In
     "image_scrapers"         : ('pyvista', 'matplotlib'),
     'first_notebook_cell'    : ("%matplotlib inline\n"
                                 "from pyvista import set_plot_theme\n"
@@ -157,7 +157,6 @@ sphinx_gallery_conf = {
         'numpy': 'https://numpy.org/doc/stable/'
 
     },
-
 }
 
 # endregion

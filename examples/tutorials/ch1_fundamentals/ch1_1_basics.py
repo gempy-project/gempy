@@ -160,7 +160,7 @@ gp.set_is_fault(
 # %%
 # Now, all surfaces have been assigned to a series and are displayed in the correct order 
 # (from young to old).
-
+#
 # Returning Information from Our Input Data
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Our model input data, named "geo_model", contains all essential information for constructing 
@@ -207,11 +207,7 @@ gpv.plot_3d(geo_model, image=False, plotter_type='basic')
 # towards creating our geological model: preparing the input data for
 # interpolation.
 # 
-# This is done by generating an ``InterpolatorData`` object (named
-# ``interp_data`` in these tutorials) from our ``InputData`` object via
-# the following function:
 # 
-# %% 
 # .. admonition:: New in GemPy 3!
 #
 #    GemPy 3 does not use either ``theano`` or ``asera`` anymore. Instead, it uses ``numpy`` or ``tensorflow``. For
@@ -231,23 +227,8 @@ geo_model.interpolation_options
 
 # %%
 # At this point, we have all we need to compute our full model via
-# :obj:`gempy.compute_model`. This funtion will return a
-# 
-# 1. Lithology block model solution:
-# 
-#    -  Entry [0]: This array shows what kind of lithological formation is
-#       found in each voxel, as indicated by a respective
-#       formation\_number.
-#    -  Entry [1]: Potential field array that represents the orientation
-#       of lithological units and layers in the block model.
-# 
-# 2. Fault network block model solution:
-# 
-#    -  Entry [0]: Array in which all fault-separated areas of the model
-#       are represented by a distinct number contained in each voxel.
-#    -  Entry [1]: Potential field array related to the fault network in
-#       the block model.
-# 
+# :obj:`gempy.compute_model`. This funtion will return a :obj:`gempy.core.data.Solutions` object
+
 # Below, we illustrate these different model solutions and how they can be
 # used.
 # 
