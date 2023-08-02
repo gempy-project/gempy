@@ -14,6 +14,11 @@ from ..color_generator import ColorsGenerator
 
 @dataclass
 class StructuralFrame:
+    """
+    A data class that represents the structural framework of a geological model. 
+    
+    """
+    
     structural_groups: list[StructuralGroup]  #: List of structural groups that constitute the geological model.
     color_gen: ColorsGenerator  #: Instance of ColorsGenerator used for assigning distinct colors to different structural elements.
     # ? Should I create some sort of structural options class? For example, the masking descriptor and faults relations pointer

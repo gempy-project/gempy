@@ -8,7 +8,8 @@ from .grid import Grid
 
 from .importer_helper import ImporterHelper
 from gempy_engine.core.data.stack_relation_type import StackRelationType
+from gempy_engine.core.data.options import InterpolationOptions
 
 __all__ = ['GeoModel', 'Grid', 'StackRelationType', 'ImporterHelper',
            'StructuralFrame', 'StructuralGroup', 'StructuralElement',
-           'OrientationsTable', 'SurfacePointsTable']
+           'OrientationsTable', 'SurfacePointsTable', 'InterpolationOptions']

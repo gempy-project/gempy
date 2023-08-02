@@ -63,7 +63,7 @@ geo_model: gp.data.GeoModel = gp.create_geomodel(
     project_name='Tutorial_ch1_1_Basics',
     extent=[0, 2000, 0, 2000, 0, 750],
     resolution=[50, 50, 50],  # * Here we define the resolution of the voxels
-    number_octree_levels=4,  # * 
+    number_octree_levels=4,  # * Here we define the number of octree levels. If octree levels are defined, the resolution is ignored.
     importer_helper=gp.data.ImporterHelper(
         path_to_orientations=data_path + "/data/input_data/getting_started/simple_fault_model_orientations.csv",
         path_to_surface_points=data_path + "/data/input_data/getting_started/simple_fault_model_points.csv",
@@ -78,16 +78,11 @@ geo_model: gp.data.GeoModel = gp.create_geomodel(
 #    GemPy 3 has introduced the ``ImporterHelper`` class to streamline importing data from various sources. This class
 #    simplifies the process of passing multiple arguments needed for importing data and will likely see further 
 #    extensions in the future. Currently, one of its uses is to handle `pooch` arguments for downloading data from the internet.
-
-# %%
-geo_model.structural_frame
-
-# %%
-# The input data can then be listed using the command ``get_data``. Note
-# that the order of formations and respective allocation to series is
-# still completely arbitrary. We will fix this in the following.
+#
 # 
-#13 2322vd 3ddvfoosd bar foo bar
+
+# The input data can be reviewed using the properties `surface_points` and `orientations`. However, note that at this point,
+# the sequence of formations and their assignment to series are still arbitrary. We will rectify this in the subsequent steps.
 
 # %% 
 geo_model.surface_points
@@ -95,51 +90,39 @@ geo_model.surface_points
 # %% 
 geo_model.orientations
 
+
 # %%
-# Declaring the sequential order of geological formations
+# Declaring the Sequential Order of Geological Formations
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# 
-# -  TODO update this section
-# 
-# We want our geological units to appear in the correct order relative to
-# age. Such order might for example be given by a depositional sequence of
-# stratigraphy, unconformities due to erosion or other lithological
-# genesis events such as igneous intrusions. A similar age-related order
-# is to be declared for the faults in our model. In GemPy, the function
-# ``set_series`` is used to assign formations to different sequential
-# series via declaration in a Python dictionary.
-# 
-# Defining the correct order of series is vital to the construction of the
-# model! If you are using Python >3.6, the age-related order will already
-# be defined by the order of key entries, i.e. the first entry is the
-# youngest series, the last one the oldest. For older versions of Python,
-# you will have to specify the correct order as a separate list attribute
-# "``order_series``\ " (see cell below).
-# 
-# You can assign several surfaces to one series. The order of the units
-# within such as series is only relevant for the color code, thus we
-# recommend being consistent. You can define this order via another
-# attribute "``order_formations``/ " or by using the specific command
-# ``set_order_formations``. (If the order of the pile differs from the
-# final result the color of the interfaces and input data will be
-# different.)
-# 
-# Every fault is treated as an independent series and has to be at set at
-# the **top of the pile**. The relative order between the distinct faults
-# defines the tectonic relation between them (first entry is the
-# youngest).
-# 
-# In a model with simple sequential stratigraphy, all layer formations can
-# be assigned to one single series without a problem. All unit boundaries
-# and their order would then be given by interface points. However, to
-# model more complex lithostratigraphical relations and interactions, the
-# definition of separate series becomes important. For example, you would
-# need to declare a "newer" series to model an unconformity or an
-# intrusion that disturbs older stratigraphy.
-# 
-# By default we create a simple sequence inferred by the data:
+# In our model, we want the geological units to appear in the correct chronological order. 
+# Such order could be determined by a sequence of stratigraphic deposition, unconformities 
+# due to erosion, or other lithological genesis events like igneous intrusions. A similar 
+# age-related order is declared for faults in our model. In GemPy, we use the function 
+# `gempy.map_stack_to_surfaces` to assign formations or faults to different sequential series 
+# by declaring them in a Python dictionary.
+
+# The correct ordering of series is crucial for model construction! It's possible to assign 
+# several surfaces to one series. The order of units within a series only affects the color 
+# code, so we recommend maintaining consistency. The order can be defined by simply changing 
+# the order of the lists within `gempy.core.data.StructuralFrame.structural_groups` and 
+# `gempy.core.data.StructuralGroups.elements` attributes.
+
+# Faults are treated as independent groups and must be younger than the groups they affect. 
+# The relative order between different faults defines their tectonic relationship 
+# (the first entry is the youngest).
+
+# For a model with simple sequential stratigraphy, all layer formations can be assigned to 
+# one series without an issue. All unit boundaries and their order would then be determined 
+# by interface points. However, to model more complex lithostratigraphical relations and 
+# interactions, separate series definition becomes important. For example, modeling an 
+# unconformity or an intrusion that disrupts older stratigraphy would require declaring a 
+# "newer" series.
+
+# By default, we create a simple sequence inferred from the data:
 # 
 
+# %%
+geo_model.structural_frame
 
 # %%
 # Our example model comprises four main layers (plus an underlying
@@ -148,14 +131,13 @@ geo_model.orientations
 # younger unit was deposited onto the underlying older one, we can assign
 # these layer formations to one series called "Strat\_Series". For the
 # fault, we declare a respective "Fault\_Series" as the first key entry in
-# the ``set_series`` dictionary. We could give any other names to these
+# the mapping  dictionary. We could give any other names to these
 # series, the formations however have to be referred to as named in the
 # input data. 
 # 
 
 
 # %%
-# Map geological series to surfaces
 gp.map_stack_to_surfaces(
     gempy_model=geo_model,
     mapping_object=  # TODO: This mapping I do not like it too much. We should be able to do it passing the data objects directly
@@ -166,67 +148,38 @@ gp.map_stack_to_surfaces(
 
 )
 
-geo_model.structural_frame
+geo_model.structural_frame  # Display the resulting structural frame
+
 
 # %% 
-# TODO: Revive API call
 gp.set_is_fault(
     frame=geo_model.structural_frame,
     fault_groups=['Fault_Series']
 )
 
 # %%
-# Returning information from our input data
+# Now, all surfaces have been assigned to a series and are displayed in the correct order 
+# (from young to old).
+
+# Returning Information from Our Input Data
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#  
-# Our model input data, here named "*geo\_model*", contains all the
-# information that is essential for the construction of our model. You can
-# access different types of information by using ``gp.get_data`` or simply
-# by accessiong the atrributes.
-#  
-# We can, for example, return the coordinates of our modeling grid via:
-# 
+# Our model input data, named "geo_model", contains all essential information for constructing 
+# our model. You can access different types of information by accessing the attributes.
+# For instance, you can retrieve the coordinates of our modeling grid as follows:
+
 
 # %% 
 geo_model.grid
 
-# %% 
-# As mentioned before, GemPy's core algorithm is based on interpolation of 
-# two types of data: - surface\_points and - orientation measurements  
-# 
-# (if you want to know more on how this this interpolation algorithm
-# works, checkout our paper: https://www.geosci-model-dev.net/12/1/2019/gmd-12-1-2019.pdf).
-# 
-# We introduced the function ``get\_data`` above. You can also specify which
-# kind of data you want to call, by declaring the string attribute
-# "*dtype*" to be either ``'surface_points'`` (interfaces) or ``'orientations'``\ .
-# 
-# Interfaces Dataframe:
-# ~~~~~~~~~~~~~~~~~~~~~
-# 
-
-# %% 
-
-geo_model.surface_points.df.head()
 
 # %%
-# Orientations Dataframe:
-# ~~~~~~~~~~~~~~~~~~~~~~~
-# 
-
-# %% 
-geo_model.orientations.df.head()
-
-# %%
-# Notice that now all **surfaces** have been assigned to a **series** and
-# are displayed in the correct order (from young to old).
 # 
 # Visualizing input data
 # ~~~~~~~~~~~~~~~~~~~~~~
 # 
 # We can also visualize our input data. This might for example be useful
 # to check if all points and measurements are defined the way we want them
-# to. Using the function ``plot_data``\ , we attain a 2D projection of our
+# to. Using the function :obj:`gempy_viewer.plot2d`, we attain a 2D projection of our
 # data points onto a plane of chosen *direction* (we can choose this
 # attribute to be either :math:`x`, :math:`y` or :math:`z`).
 # 
@@ -234,21 +187,12 @@ geo_model.orientations.df.head()
 # %%
 plot = gpv.plot_2d(geo_model, show_lith=False, show_boundaries=False)
 
+
 # %%
-# Using ``plot_data_3D``\ , we can also visualize this data in 3D. Note that
+# Using  :obj:`gempy_viewer.plot_3d`, # we can also visualize this data in 3D. Note that
 # direct 3D visualization in GemPy requires `the Visualization
 # Toolkit <https://www.vtk.org/>`__ (VTK) to be installed.
 # 
-# All 3D plots in GemPy are interactive. This means that we can drag
-# and drop any data point and measurement. The perpendicular axis views in
-# VTK are particularly useful to move points solely on a desired 2D plane.
-# Any changes will then be stored permanently in the "InputData"
-# dataframe. If we want to reset our data points, we will then need to
-# reload our original input data.
-# 
-# Executing the cell below will open a new window with a 3D interactive
-# plot of our data.
-
 
 # %%
 gpv.plot_3d(geo_model, image=False, plotter_type='basic')
@@ -258,8 +202,8 @@ gpv.plot_3d(geo_model, image=False, plotter_type='basic')
 # ~~~~~~~~~~~~~~~~
 # 
 # Once we have made sure that we have defined all our primary information
-# as desired in our object ``DataManagement.InputData`` (named
-# ``geo_data`` in these tutorials), we can continue with the next step
+# as desired in our object :obj:`gempy.core.data.GeoModel` (named
+# ``geo_model`` in these tutorials), we can continue with the next step
 # towards creating our geological model: preparing the input data for
 # interpolation.
 # 
@@ -267,32 +211,19 @@ gpv.plot_3d(geo_model, image=False, plotter_type='basic')
 # ``interp_data`` in these tutorials) from our ``InputData`` object via
 # the following function:
 # 
+# %% 
+# .. admonition:: New in GemPy 3!
+#
+#    GemPy 3 does not use either ``theano`` or ``asera`` anymore. Instead, it uses ``numpy`` or ``tensorflow``. For
+#    this reason, we do not need to we do need to recompile all the theano fuctions anymore (tensorflow uses eager
+#    execution after having profile the XLA compiler and not notice any speed difference).
+#
 
 
 # %%
-# This function rescales the extent and coordinates of the original data
-# (and stores it in the attribute ``geo_data_res`` which behaves as a usual
-# ``InputData`` object) and adds mathematical parameters that are needed
-# for conducting the interpolation. The computation of this step may take
-# a while, as it also compiles a aesara function which is required for the
-# model computation. However, should this not be needed, we can skip it by
-# declaring ``compile_aesara = False`` in the function.
-# 
-# Furthermore, this preparation process includes an assignment of numbers
-# to each formation. Note that GemPy always creates a default basement
-# formation as the last formation number. Afterwards, numbers are
-# allocated from youngest to oldest as defined by the sequence of series
-# and formations. On the property ``formations`` on our interpolation
-# data, we can find out which number has been assigned to which formation:
-# 
-
-
-# %%
-# The parameters used for the interpolation can be returned using the
-# function ``get_kriging_parameters``. These are generated automatically
-# from the original data, but can be changed if needed. However, users
-# should be careful doing so, if they do not fully understand their
-# significance.
+# The parameters used for the interpolation can be found on :obj:`gempy.core.data.GeoModel.interpolation_options`.
+# These fields have meaningful default values, but can be changed if needed. However, users
+# should be careful doing so, if they do not fully understand their significance.
 # 
 
 # %% 
@@ -300,10 +231,7 @@ geo_model.interpolation_options
 
 # %%
 # At this point, we have all we need to compute our full model via
-# ``compute_model``. By default, this will return two separate solutions
-# in the form of arrays. The first gives information on the lithological
-# formations, the second on the fault network in the model. These arrays
-# consist of two subarrays as entries described here:
+# :obj:`gempy.compute_model`. This funtion will return a
 # 
 # 1. Lithology block model solution:
 # 

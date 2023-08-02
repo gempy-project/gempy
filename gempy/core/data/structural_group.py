@@ -18,6 +18,7 @@ class FaultsRelationSpecialCase(Enum):
 class StructuralGroup(ABC):
     """
     An abstract base class that represents a structural group within a geological model.
+    
     """
     name: str  #: The name of the structural group.
     

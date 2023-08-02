@@ -27,7 +27,21 @@ def create_geomodel(
         number_octree_levels: int = 1,
         importer_helper: ImporterHelper = None,
 ) -> GeoModel:  # ? Do I need to pass pandas read kwargs?
+    """
+    Creates a GeoModel instance.
 
+    This function initializes a GeoModel object, including its grid and interpolation options.
+
+    Args:
+        project_name (str, optional): The name of the project. Defaults to 'default_project'.
+        extent (Union[list, ndarray], optional): The 3D extent of the grid. Defaults to None.
+        resolution (Union[list, ndarray], optional): The resolution of the grid. Defaults to None.
+        number_octree_levels (int, optional): The number of octree levels for the dual contouring interpolation method. Defaults to 1.
+        importer_helper (ImporterHelper, optional): Helper object to import structural elements. Defaults to None.
+
+    Returns:
+        GeoModel: The initialized GeoModel object.
+    """
     grid: Grid = Grid(
         extent=extent,
         resolution=resolution

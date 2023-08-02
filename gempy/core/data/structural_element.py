@@ -19,6 +19,7 @@ TODO:
 class StructuralElement:
     """
     Class that represents a structural element in a geological model.
+    
     """
     
     name: str  #: The name of the structural element.

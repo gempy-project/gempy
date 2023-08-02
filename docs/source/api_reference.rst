@@ -27,8 +27,8 @@ Plot
     plot_2d
     plot_3d
 
-Public Data Classes
-===================
+Data Classes
+============
 
 .. toctree::
     :maxdepth: 3

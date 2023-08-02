@@ -13,6 +13,10 @@ DEFAULT_NUGGET = 0.00001
 
 @dataclass  
 class SurfacePointsTable:
+    """
+    A dataclass to represent a table of surface points in a geological model.
+    
+    """
     data: np.ndarray  #: A structured NumPy array holding the X, Y, Z coordinates, id, and nugget of each surface point.
     name_id_map: Optional[dict[str, int]] = None  #: A mapping between surface point names and ids.
 

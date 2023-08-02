@@ -12,6 +12,10 @@ DEFAULT_NUGGET = 0.01
 
 @dataclass
 class OrientationsTable:
+    """
+    A dataclass to represent a table of orientations in a geological model.
+    
+    """ 
     data: np.ndarray  #: A structured NumPy array holding the X, Y, Z coordinates, gradients G_x, G_y, G_z, id, and nugget of each orientation.
     name_id_map: Optional[dict[str, int]] = None  #: A mapping between orientation names and ids.
     

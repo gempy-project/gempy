@@ -8,6 +8,17 @@ from gempy.core.data.structural_group import StructuralGroup, FaultsRelationSpec
 
 def set_is_fault(frame: Union[GeoModel, StructuralFrame], fault_groups: Union[list[str], list[StructuralGroup]],
                  change_color: bool = True) -> StructuralFrame:
+    """
+    Sets given groups as fault in the structural frame of the GeoModel. It can optionally change the color of these groups.
+
+    Args:
+        frame (Union[GeoModel, StructuralFrame]): GeoModel or its StructuralFrame to be modified.
+        fault_groups (Union[list[str], list[StructuralGroup]]): Groups to be set as faults.
+        change_color (bool, optional): If True, changes the color of the fault groups. Defaults to True.
+
+    Returns:
+        StructuralFrame: The updated StructuralFrame object.
+    """
     if isinstance(frame, GeoModel):
         frame = frame.structural_frame
 
@@ -25,6 +36,16 @@ def set_is_fault(frame: Union[GeoModel, StructuralFrame], fault_groups: Union[li
 
 
 def unset_is_fault(frame: Union[GeoModel, StructuralFrame], fault_groups: Union[list[str], list[StructuralGroup]]) -> StructuralFrame:
+    """
+    Unsets given groups as fault in the structural frame of the GeoModel.
+
+    Args:
+        frame (Union[GeoModel, StructuralFrame]): GeoModel or its StructuralFrame to be modified.
+        fault_groups (Union[list[str], list[StructuralGroup]]): Groups to be unset as faults.
+
+    Returns:
+        StructuralFrame: The updated StructuralFrame object.
+    """
     if isinstance(frame, GeoModel):
         frame = frame.structural_frame
 
@@ -40,7 +61,17 @@ def unset_is_fault(frame: Union[GeoModel, StructuralFrame], fault_groups: Union[
 
 
 def set_fault_relation(frame: Union[GeoModel, StructuralFrame], rel_matrix: np.ndarray) -> StructuralFrame:
-    """"""
+    """
+    Sets the fault relations in the structural frame of the GeoModel.
+
+    Args:
+        frame (Union[GeoModel, StructuralFrame]): GeoModel or its StructuralFrame to be modified.
+        rel_matrix (np.ndarray): Fault relation matrix to be set.
+
+    Returns:
+        StructuralFrame: The updated StructuralFrame object.
+    """
+    
     if isinstance(frame, GeoModel):
         frame = frame.structural_frame
 

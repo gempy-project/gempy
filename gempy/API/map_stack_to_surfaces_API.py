@@ -8,6 +8,22 @@ from ..core.data.structural_group import StructuralGroup
 
 def map_stack_to_surfaces(gempy_model: GeoModel, mapping_object: Union[dict[str, list[str]] | dict[str, tuple]],
                           set_series: bool = True, remove_unused_series=True) -> StructuralFrame:
+    """
+    Map stack (series) to surfaces by reorganizing elements between groups in a GeoModel's structural frame.
+
+    This function reorganizes structural elements (surfaces) based on a mapping object 
+    and updates the structural frame of the GeoModel. It can also create new series 
+    and remove unused ones.
+
+    Args:
+        gempy_model (GeoModel): The GeoModel object whose structural frame is to be modified.
+        mapping_object (Union[dict[str, list[str]] | dict[str, tuple]]): Dictionary mapping group names to element names.
+        set_series (bool, optional): If True, creates new series for groups not present in the GeoModel. Defaults to True.
+        remove_unused_series (bool, optional): If True, removes groups without any elements. Defaults to True.
+
+    Returns:
+        StructuralFrame: The updated StructuralFrame object.
+    """
     structural_groups: list[StructuralGroup] = gempy_model.structural_frame.structural_groups
 
     for index, (group_name, elements) in enumerate(mapping_object.items()):
