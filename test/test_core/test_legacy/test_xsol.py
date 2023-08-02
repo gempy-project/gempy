@@ -1,6 +1,6 @@
 import pytest
 
-import gempy.core.grid
+import gempy.core.data.grid
 from gempy import Surfaces
 
 from gempy.core.data_modules.stack import Stack
@@ -18,8 +18,8 @@ pytest.importorskip("subsurface")
 def a_grid():
     # Or we can init one of the default grids since the beginning by passing
     # the correspondant attributes
-    grid = gempy.core.grid.Grid(extent=[0, 2000, 0, 2000, -2000, 0],
-                                resolution=[50, 50, 50])
+    grid = gempy.core.data.grid.Grid(extent=[0, 2000, 0, 2000, -2000, 0],
+                                     resolution=[50, 50, 50])
     grid.set_active('regular')
 
     grid.create_custom_grid(np.arange(12).reshape(-1, 3))

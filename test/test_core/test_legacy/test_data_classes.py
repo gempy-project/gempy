@@ -5,10 +5,9 @@ import gempy as gp
 # Importing auxiliary libraries
 import numpy as np
 import pandas as pn
-import matplotlib.pyplot as plt
 import pytest
 
-import gempy.core.grid
+import gempy.core.data.grid
 import gempy.core.surfaces
 import gempy.core.data_modules.geometric_data
 import gempy.core.data_modules.orientations
@@ -221,7 +220,7 @@ def test_add_orientation_with_pole(create_surfaces):
 @pytest.fixture(scope='module')
 def create_grid():
     # Test creating an empty list
-    grid = gempy.core.grid.Grid()
+    grid = gempy.core.data.grid.Grid()
     # Test set regular grid by hand
     grid.create_regular_grid([0, 2000, 0, 2000, -2000, 0], [50, 50, 50])
     return grid

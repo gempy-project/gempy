@@ -5,13 +5,13 @@ import gempy as gp
 # Importing auxiliary libraries
 import numpy as np
 
-import gempy.core.grid
+import gempy.core.data.grid
 
 
 class TestGrid:
     def test_set_regular_grid(self):
         # Test creating an empty list
-        grid = gempy.core.grid.Grid()
+        grid = gempy.core.data.grid.Grid()
 
         # Test set regular grid by hand
         grid.create_regular_grid([0, 2000, 0, 2000, -2000, 0], [50, 50, 50])
@@ -19,8 +19,8 @@ class TestGrid:
     def test_grid_init(self):
         # Or we can init one of the default grids since the beginning by passing
         # the correspondant attributes
-        grid = gempy.core.grid.Grid(extent=[0, 2000, 0, 2000, -2000, 0],
-                                    resolution=[50, 50, 50])
+        grid = gempy.core.data.grid.Grid(extent=[0, 2000, 0, 2000, -2000, 0],
+                                         resolution=[50, 50, 50])
 
     def test_section_grid(self):
         geo_data = gp.create_data_legacy('section_grid', [0, 1000, 0, 1000, 0, 1000], resolution=[10, 10, 10])
@@ -47,7 +47,7 @@ class TestGrid:
 
     def test_custom_grid(self):
         # create custom grid
-        grid = gempy.core.grid.Grid()
+        grid = gempy.core.data.grid.Grid()
         cg = np.array([[1, 2, 3],
                         [4, 5, 6],
                         [7, 8, 9]])

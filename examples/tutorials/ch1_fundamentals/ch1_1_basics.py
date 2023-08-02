@@ -13,9 +13,8 @@ import gempy_viewer as gpv
 # %%
 # Importing and Defining Input Data
 # """""""""""""""""""""""""""""""""
+# :obj:`gempy.GeoModel`
 # GemPy uses Python objects to store the data that builds the geological model. The main data classes include:
-#
-# ::
 #
 #     -  :obj:`gempy.GeoModel`
 #     -  :obj:`gempy.StructuralFrame`
@@ -56,10 +55,6 @@ import gempy_viewer as gpv
 #     escalating computational costs.
 #
 #
-# .. admonition:: New in GemPy 3!
-#    GemPy 3 has introduced the ``ImporterHelper`` class to streamline importing data from various sources. This class
-#    simplifies the process of passing multiple arguments needed for importing data and will likely see further 
-#    extensions in the future. Currently, one of its uses is to handle `pooch` arguments for downloading data from the internet.
 
 # %%
 data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
@@ -75,6 +70,12 @@ geo_model: gp.GeoModel = gp.create_geomodel(
     )
 )
 
+# %% 
+# .. admonition:: New in GemPy 3!
+#    GemPy 3 has introduced the ``ImporterHelper`` class to streamline importing data from various sources. This class
+#    simplifies the process of passing multiple arguments needed for importing data and will likely see further 
+#    extensions in the future. Currently, one of its uses is to handle `pooch` arguments for downloading data from the internet.
+
 # %%
 geo_model.structural_frame
 
@@ -83,6 +84,7 @@ geo_model.structural_frame
 # that the order of formations and respective allocation to series is
 # still completely arbitrary. We will fix this in the following.
 # 
+# foo
 
 # %% 
 geo_model.surface_points

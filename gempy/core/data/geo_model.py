@@ -11,7 +11,7 @@ from gempy_engine.core.data.input_data_descriptor import InputDataDescriptor
 from gempy_engine.core.data.interpolation_input import InterpolationInput
 from .structural_frame import StructuralFrame
 from .transforms import Transform
-from ..grid import Grid
+from gempy.core.data.grid import Grid
 
 """
 TODO:

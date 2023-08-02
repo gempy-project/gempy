@@ -1,24 +1,24 @@
-import gempy.core.grid_modules.diamond_square
+import gempy.core.data.grid_modules.diamond_square
 import pytest  # to add fixtures and to test error raises
 import numpy as np  # as another testing environment
 
 
 def test_class_nocrash():
     """Simply check if class can be instantiated"""
-    gempy.core.grid_modules.diamond_square.DiaomondSquare(size=(5, 5))
+    gempy.core.data.grid_modules.diamond_square.DiaomondSquare(size=(5, 5))
 
 
 def test_grid_generation():
     """Test grid generation and extension for non-suitable grid sizes"""
-    ds = gempy.core.grid_modules.diamond_square.DiaomondSquare(size=(5, 5))
+    ds = gempy.core.data.grid_modules.diamond_square.DiaomondSquare(size=(5, 5))
     assert ds.grid.shape == (5, 5)
-    ds = gempy.core.grid_modules.diamond_square.DiaomondSquare(size=(8, 10))
+    ds = gempy.core.data.grid_modules.diamond_square.DiaomondSquare(size=(8, 10))
     assert ds.grid.shape == (9, 17)
 
 
 def test_diamond_selection():
     """Test selection of diamond positions"""
-    ds = gempy.core.grid_modules.diamond_square.DiaomondSquare(size=(5, 5))
+    ds = gempy.core.data.grid_modules.diamond_square.DiaomondSquare(size=(5, 5))
     z = ds.get_selection_diamond(1)
     assert np.all(z == np.array([[2, 0, 0, 0, 2],
                                  [0, 0, 0, 0, 0],
@@ -35,7 +35,7 @@ def test_diamond_selection():
 
 def test_square_selection():
     """Test selection of diamond positions"""
-    ds = gempy.core.grid_modules.diamond_square.DiaomondSquare(size=(5, 5))
+    ds = gempy.core.data.grid_modules.diamond_square.DiaomondSquare(size=(5, 5))
     z = ds.get_selection_square(0)
     assert np.all(z == np.array([[0, 0, 2, 0, 2, 0, 0],
                                  [0, 2, 1, 2, 1, 2, 0],
@@ -58,7 +58,7 @@ def test_square_selection():
 
 def test_random_initialization():
     """Test random initialization of corner points"""
-    ds = gempy.core.grid_modules.diamond_square.DiaomondSquare(size=(5, 6), seed=52062)
+    ds = gempy.core.data.grid_modules.diamond_square.DiaomondSquare(size=(5, 6), seed=52062)
     ds.random_initialization()
     m_pow_max = min(ds.n, ds.m)
     step_size = int(2 ** m_pow_max)
@@ -69,7 +69,7 @@ def test_random_initialization():
 
 def test_random_initialization_level():
     """Test random initialization on lower level"""
-    ds = gempy.core.grid_modules.diamond_square.DiaomondSquare(size=(33, 33), seed=52062)
+    ds = gempy.core.data.grid_modules.diamond_square.DiaomondSquare(size=(33, 33), seed=52062)
     level = 3
     ds.random_initialization(level=level)
     step_size = int(2 ** level)
@@ -81,7 +81,7 @@ def test_random_initialization_level():
                                                    [0.64707457, 0.44744272, 0.36504945, 0.52473407, 0.27948164]]))
 
 def test_reset_grid():
-    ds = gempy.core.grid_modules.diamond_square.DiaomondSquare(size=(5, 6), seed=52062)
+    ds = gempy.core.data.grid_modules.diamond_square.DiaomondSquare(size=(5, 6), seed=52062)
     ds.random_initialization()
     ds.reset_grid()
     np.testing.assert_array_almost_equal(ds.grid,
@@ -94,7 +94,7 @@ def test_reset_grid():
 
 def test_random_func():
     """Test random function implementation"""
-    ds = gempy.core.grid_modules.diamond_square.DiaomondSquare(size=(33, 33), seed=52062)
+    ds = gempy.core.data.grid_modules.diamond_square.DiaomondSquare(size=(33, 33), seed=52062)
     np.testing.assert_array_almost_equal(ds.random_func(2, 2),
                                          np.array([-0.14872995, 0.05476571]))
     # testing for correct default implementation
@@ -116,7 +116,7 @@ def test_random_func():
 
 def test_random_func_raises_error():
     """Test if random function raises NonImplementedError correctly"""
-    ds = gempy.core.grid_modules.diamond_square.DiaomondSquare(size=(33, 33), seed=52062)
+    ds = gempy.core.data.grid_modules.diamond_square.DiaomondSquare(size=(33, 33), seed=52062)
     ds.r_type = 'fail'
 
     with pytest.raises(NotImplementedError):
@@ -125,7 +125,7 @@ def test_random_func_raises_error():
 
 def test_interpolate():
     """Test interpolation step itself"""
-    ds = gempy.core.grid_modules.diamond_square.DiaomondSquare(size=(9, 9), seed=52062)
+    ds = gempy.core.data.grid_modules.diamond_square.DiaomondSquare(size=(9, 9), seed=52062)
     ds.interpolate()
     np.testing.assert_array_almost_equal(ds.grid,
                                          np.array([[0., 0.2951411, 0.21781267, 0.29361906, 0.01037812,

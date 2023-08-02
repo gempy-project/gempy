@@ -93,7 +93,7 @@ plt.show()
 # 
 
 # %% 
-from gempy.core.grid_modules import section_utils
+from gempy.core.data.grid_modules import section_utils
 
 # %% 
 polygondict, cdict, extent = section_utils.get_polygon_dictionary(geo_model, 'section1')

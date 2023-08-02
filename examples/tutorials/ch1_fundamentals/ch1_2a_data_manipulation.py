@@ -5,16 +5,12 @@
 """
 # Importing GemPy
 import gempy as gp
-import gempy
 
 # Importing auxiliary libraries
 import numpy as np
 import pandas as pd
 
-import gempy.core.grid
-import gempy.core.surfaces
-import gempy.core.data_modules.orientations
-import gempy.core.data_modules.scaling_system
+import gempy.core.data.grid
 import gempy.core.data_modules.surface_points
 
 pd.set_option('display.precision', 2)
@@ -470,7 +466,7 @@ orientations.update_annotations()
 # 
 
 # %% 
-grid = gempy.core.grid.Grid()
+grid = gempy.core.data.grid.Grid()
 grid.create_regular_grid([0, 10, 0, 10, 0, 10], [50, 50, 50])
 
 # %% 

@@ -5,7 +5,6 @@ Created on 06.19.2023
 @author: Miguel de la Varga
 """
 import sys
-import os
 
 import warnings
 
@@ -29,7 +28,7 @@ from .core.data.structural_group import StructuralGroup
 # from .core.data_modules.stack import Faults, Series
 # from .core.structure import Structure
 # 
-from .core.grid import Grid
+from gempy.core.data.grid import Grid
 from .core.data.importer_helper import ImporterHelper
 # from .core.surfaces import Surfaces
 # from .core.data_modules.scaling_system import ScalingSystem

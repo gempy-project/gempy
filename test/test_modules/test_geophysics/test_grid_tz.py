@@ -4,7 +4,7 @@ import sys
 sys.path.append("../../..")
 
 # Importing GemPy
-from gempy.core.grid_modules.grid_types import CenteredGrid
+from gempy.core.data.grid_modules import CenteredGrid
 
 # Importing auxiliary libraries
 import numpy as np

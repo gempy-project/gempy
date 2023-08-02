@@ -4,8 +4,8 @@ from typing import Union, Optional
 
 import numpy as np
 
-from gempy.core.grid_modules import grid_types, topography
-from gempy.core.grid_modules.topography import Topography
+from gempy.core.data.grid_modules import topography, grid_types
+from gempy.core.data.grid_modules.topography import Topography
 
 
 class GridTypes(enum.Enum):

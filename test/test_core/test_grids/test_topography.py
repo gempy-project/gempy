@@ -6,7 +6,7 @@ import matplotlib as mpl
 mpl.use('Agg')
 import matplotlib.pyplot as plt
 
-from gempy.core.grid_modules.topography import Topography
+from gempy.core.data.grid_modules import Topography
 import pytest
 
 import numpy as np

@@ -3,7 +3,7 @@ from typing import Optional
 
 import numpy as np
 
-from gempy.core.grid_modules.grid_types import RegularGrid
+from gempy.core.data.grid_modules.grid_types import RegularGrid
 from gempy.modules.grids.create_topography import _LoadDEMArtificial, LoadDEMGDAL
 import skimage
 
