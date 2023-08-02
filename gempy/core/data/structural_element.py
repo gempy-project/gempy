@@ -17,18 +17,21 @@ TODO:
 
 @dataclass
 class StructuralElement:
-    name: str
-    is_active: bool
-    _color: str
-    surface_points: SurfacePointsTable
-    orientations: OrientationsTable
+    """
+    Class that represents a structural element in a geological model.
+    """
+    
+    name: str  #: The name of the structural element.
+    is_active: bool  #: The active state of the structural element.
+    _color: str  #: The color of the structural element in hexadecimal format.
+    surface_points: SurfacePointsTable  #: The points on the surface of the structural element.
+    orientations: OrientationsTable  #: The orientations of the structural element.
 
     # Output
     # ? Should we extract this to a separate class?
-    vertices: Optional[np.ndarray] = None
-    edges: Optional[np.ndarray] = None
-    scalar_field: Optional[float] = None
-    
+    vertices: Optional[np.ndarray] = None  #: The vertices of the element in 3D space.
+    edges: Optional[np.ndarray] = None  #: The edges of the element in 3D space.
+    scalar_field: Optional[float] = None  #: The scalar field value for the element.
     
     def __init__(self, name: str, surface_points: SurfacePointsTable, orientations: OrientationsTable,
                  is_active: Optional[bool] = True, color: Optional[str] = None):

@@ -141,7 +141,7 @@ def _fetch_data_with_pooch(orientations_hash, orientations_path, surface_points_
             url=surface_points_path,
             known_hash=surface_points_hash
         )
-        print(pooch.file_hash(surface_points_file))
+        print("Surface points hash: ", pooch.file_hash(surface_points_file))
     else:
         surface_points_file = surface_points_path
     # * Fetch or define path for orientations
@@ -150,7 +150,7 @@ def _fetch_data_with_pooch(orientations_hash, orientations_path, surface_points_
             url=orientations_path,
             known_hash=orientations_hash
         )
-        print(pooch.file_hash(orientations_file))
+        print("Orientations hash: ", pooch.file_hash(orientations_file))
     else:
         orientations_file = orientations_path
     return orientations_file, surface_points_file

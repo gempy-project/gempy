@@ -66,12 +66,15 @@ geo_model: gp.data.GeoModel = gp.create_geomodel(
     number_octree_levels=4,  # * 
     importer_helper=gp.data.ImporterHelper(
         path_to_orientations=data_path + "/data/input_data/getting_started/simple_fault_model_orientations.csv",
-        path_to_surface_points=data_path + "/data/input_data/getting_started/simple_fault_model_points.csv"
+        path_to_surface_points=data_path + "/data/input_data/getting_started/simple_fault_model_points.csv",
+        hash_surface_points="4cdd54cd510cf345a583610585f2206a2936a05faaae05595b61febfc0191563",
+        hash_orientations="7ba1de060fc8df668d411d0207a326bc94a6cdca9f5fe2ed511fd4db6b3f3526"
     )
 )
 
 # %% 
 # .. admonition:: New in GemPy 3!
+#
 #    GemPy 3 has introduced the ``ImporterHelper`` class to streamline importing data from various sources. This class
 #    simplifies the process of passing multiple arguments needed for importing data and will likely see further 
 #    extensions in the future. Currently, one of its uses is to handle `pooch` arguments for downloading data from the internet.
@@ -84,7 +87,7 @@ geo_model.structural_frame
 # that the order of formations and respective allocation to series is
 # still completely arbitrary. We will fix this in the following.
 # 
-#1 32d 3dvfoosd bar foo bar
+#13 2322vd 3ddvfoosd bar foo bar
 
 # %% 
 geo_model.surface_points

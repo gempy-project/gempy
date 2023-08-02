@@ -16,12 +16,18 @@ class FaultsRelationSpecialCase(Enum):
     
 @dataclass
 class StructuralGroup(ABC):
-    name: str
-    elements: list[StructuralElement] = field(repr=False)
-    structural_relation: StackRelationType
+    """
+    An abstract base class that represents a structural group within a geological model.
+    """
+    name: str  #: The name of the structural group.
     
+    elements: list[StructuralElement] = field(repr=False)  #: A list of structural elements within the group.
+    structural_relation: StackRelationType  #: The type of relation between the structural elements in the group.
+
+    #: Relations with other groups in terms of faults.
     fault_relations: Optional[Union[list["StructuralGroup"], FaultsRelationSpecialCase]] = field(default=None, repr=False)
-    solution: Optional[LegacySolution] = field(init=False, default=None, repr=False)
+    
+    solution: Optional[LegacySolution] = field(init=False, default=None, repr=False)  #: Solution related to this group from geological computations.
     
     def __repr__(self):
         elements_repr = ',\n'.join([repr(e) for e in self.elements])

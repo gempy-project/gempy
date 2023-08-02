@@ -14,12 +14,12 @@ from ..color_generator import ColorsGenerator
 
 @dataclass
 class StructuralFrame:
-    structural_groups: list[StructuralGroup]  # ? should this be lazy?
-    color_gen: ColorsGenerator
-
+    structural_groups: list[StructuralGroup]  #: List of structural groups that constitute the geological model.
+    color_gen: ColorsGenerator  #: Instance of ColorsGenerator used for assigning distinct colors to different structural elements.
     # ? Should I create some sort of structural options class? For example, the masking descriptor and faults relations pointer
-    is_dirty: bool = True  # This changes when the structural frame is modified
-
+    is_dirty: bool = True  #: Boolean flag indicating if the structural frame has been modified.
+    
+    
     def __init__(self, structural_groups: list[StructuralGroup], color_gen: ColorsGenerator):
         self.structural_groups = structural_groups  # ? This maybe could be optional
         self.color_gen = color_gen
@@ -68,6 +68,7 @@ class StructuralFrame:
 
     @property
     def structural_elements(self) -> list[StructuralElement]:
+        """Returns a list of all structural elements across the structural groups."""
         elements = []
         for group in self.structural_groups:
             elements.extend(group.elements)
@@ -87,6 +88,7 @@ class StructuralFrame:
 
     @property
     def fault_relations(self) -> np.ndarray:
+        """Returns a  array describing the fault relations between the structural groups."""
         # Initialize an empty boolean array with dimensions len(structural_groups) x len(structural_groups)
         fault_relations = np.zeros((len(self.structural_groups), len(self.structural_groups)), dtype=bool)
 
@@ -114,6 +116,7 @@ class StructuralFrame:
 
     @fault_relations.setter
     def fault_relations(self, matrix: np.ndarray):
+        """Sets the fault relations between structural groups using the provided matrix."""
         assert matrix.shape == (len(self.structural_groups), len(self.structural_groups))
 
         # Iterate over each StructuralGroup
@@ -135,6 +138,7 @@ class StructuralFrame:
 
     @property
     def input_data_descriptor(self):
+        """Returns a descriptor for the input data, detailing the relations and faults between groups."""
         # TODO: This should have the exact same dirty logic as interpolation_input
 
         self._validate_faults_relations()
@@ -146,89 +150,105 @@ class StructuralFrame:
 
     @property
     def number_of_points_per_element(self) -> np.ndarray:
+        """Returns an array with the number of points for each structural element."""
         return np.array([element.number_of_points for element in self.structural_elements])
 
     @property
     def number_of_points_per_group(self) -> np.ndarray:
+        """Returns an array with the number of points for each structural group."""
         return np.array([group.number_of_points for group in self.structural_groups])
 
     @property
     def number_of_orientations_per_group(self) -> np.ndarray:
+        """Returns an array with the number of orientations for each structural group."""
         return np.array([group.number_of_orientations for group in self.structural_groups])
 
     @property
     def number_of_elements_per_group(self) -> np.ndarray:
+        """Returns an array with the number of elements for each structural group."""
         return np.array([group.number_of_elements for group in self.structural_groups])
 
     @property
     def surfaces(self) -> list[StructuralElement]:
+        """Returns a list of all surfaces in the structural elements."""
         return self.structural_elements
 
     @property
     def number_of_elements(self) -> int:
+        """Returns the total number of elements in the structural frame."""
         return len(self.structural_elements)
 
     @property
     def groups_structural_relation(self) -> list[StackRelationType]:
+        """Returns a list of the structural relations for each group."""
         groups_ = [group.structural_relation for group in self.structural_groups]
         groups_[-1] = False
         return groups_
 
     @property
     def elements_names(self) -> list[str]:
+        """Returns a list of names of all structural elements."""
         return [element.name for element in self.structural_elements]
 
     @property
     def elements_ids(self) -> np.ndarray:
-        """Return id given by the order of the structural elements"""
+        """Returns an array of IDs for all structural elements."""
         return np.arange(len(self.structural_elements)) + 1
 
     @property
     def surface_points(self) -> SurfacePointsTable:
+        """Returns a SurfacePointsTable for all surface points across the structural elements."""
         all_data: np.ndarray = np.concatenate([element.surface_points.data for element in self.structural_elements])
         return SurfacePointsTable(data=all_data, name_id_map=self.element_name_id_map)
 
     @property
     def element_id_name_map(self) -> dict[int, str]:
+        """Returns a dictionary mapping element IDs to names."""
         return {i: element.name for i, element in enumerate(self.structural_elements)}
 
     @property
     def element_name_id_map(self) -> dict[str, int]:
+        """Returns a dictionary mapping element names to IDs."""
         return {element.name: i for i, element in enumerate(self.structural_elements)}
 
     @property
     def elements_colors(self) -> list[str]:
+        """Returns a list of colors assigned to each structural element."""
         # reversed
         return [element.color for element in self.structural_elements][::-1]
 
     @property
     def elements_colors_volumes(self) -> list[str]:
+        """Returns a list of colors assigned to each structural element for volume representation."""
         return self.elements_colors
 
     @property
     def elements_colors_contacts(self) -> list[str]:
+        """Returns a list of colors assigned to each structural element for contact representation."""
         elements_ = [element.color for element in self.structural_elements]
         return elements_
 
     @property
     def surface_points_colors(self) -> list[str]:
-        """Using the id record of surface_points map the elements colors to each point"""
+        """Returns a list of colors assigned to each surface point across structural elements."""
         surface_points_colors = [element.color for element in self.structural_elements for _ in range(element.number_of_points)]
         return surface_points_colors
 
     @property
     def orientations_colors(self) -> list[str]:
-        """Using the id record of orientations map the elements colors to each point"""
+        """Returns a list of colors assigned to each orientation across structural elements."""
         orientations_colors = [element.color for element in self.structural_elements for _ in range(element.number_of_orientations)]
         return orientations_colors
 
     @property
     def orientations(self) -> OrientationsTable:
+        """Returns an OrientationsTable for all orientations across the structural elements."""
         all_data: np.ndarray = np.concatenate([element.orientations.data for element in self.structural_elements])
         return OrientationsTable(data=all_data)
 
     @property
     def groups_to_mapper(self) -> dict[str, list[str]]:
+        """Returns a dictionary mapping each structural group to its corresponding elements."""
         result_dict = {}
         for group in self.structural_groups:
             element_names = [element.name for element in group.elements]
@@ -238,6 +258,7 @@ class StructuralFrame:
     # region Depends on Pandas
     @property
     def surfaces_df(self) -> 'pd.DataFrame':
+        """Returns a DataFrame representation of all surfaces across structural elements."""
         # TODO: Loop every structural element. Each element should be a row in the dataframe
         # TODO: The columns have to be ['element, 'group', 'color']
 

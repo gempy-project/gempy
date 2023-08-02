@@ -12,11 +12,11 @@ DEFAULT_NUGGET = 0.01
 
 @dataclass
 class OrientationsTable:
-    data: np.ndarray
-    name_id_map: Optional[dict[str, int]] = None  # ? Do I need this here or this should be a field of StructuralFrame?
-
-    dt = np.dtype([('X', 'f8'), ('Y', 'f8'), ('Z', 'f8'), ('G_x', 'f8'), ('G_y', 'f8'), ('G_z', 'f8'), ('id', 'i4'), ('nugget', 'f8')])
-
+    data: np.ndarray  #: A structured NumPy array holding the X, Y, Z coordinates, gradients G_x, G_y, G_z, id, and nugget of each orientation.
+    name_id_map: Optional[dict[str, int]] = None  #: A mapping between orientation names and ids.
+    
+    dt = np.dtype([('X', 'f8'), ('Y', 'f8'), ('Z', 'f8'), ('G_x', 'f8'), ('G_y', 'f8'), ('G_z', 'f8'), ('id', 'i4'), ('nugget', 'f8')])  #: The custom data type for the data array.
+    
     def __str__(self):
         return "\n" + np.array2string(self.data, precision=2, separator=',', suppress_small=True)
 
