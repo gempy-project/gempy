@@ -3,63 +3,63 @@
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 """
-import numpy as np
 
 # %%
-# Import necessary libraries
+# Importing Necessary Libraries
+# """"""""""""""""""""""""""""""
 import gempy as gp
 import gempy_viewer as gpv
 
 # %%
-# Importing and creating a set of input data
-# """"""""""""""""""""""""""""""""""""""""""
-# The data used for the construction of a model in GemPy is stored in
-# Python objects. The main data classes are:
-# 
+# Importing and Defining Input Data
+# """""""""""""""""""""""""""""""""
+# GemPy uses Python objects to store the data that builds the geological model. The main data classes include:
+#
 # ::
 #
-#     -  Surface_points
-#     -  Orientations
-#     -  Grid
-#     -  Surfaces
-#     -  Series
-#     -  Additional data
-#     -  Faults
+#     -  :obj:`gempy.GeoModel`
+#     -  :obj:`gempy.StructuralFrame`
+#     -  :obj:`gempy.Grid`
+#     -  :obj:`gempy.StructuralGroup`
+#     -  :obj:`gempy.StructuralElement`
+#     -  :obj:`gempy.SurfacePointsTable`
+#     -  :obj:`gempy.OrientationsTable`
 #
-# We will see each of these classes in further detail in the future.  
-# 
-# Most of data can also be generated from raw data that comes in the form
-# of CSV-files (CSV = comma-separated values). Such files might be
-# attained by exporting model data from a different program such as
-# GeoModeller or by simply creating it in spreadsheet software such as
-# Microsoft Excel or LibreOffice Calc.
-# 
-# In this tutorial, all input data is created by importing such CSV-files.
-# These example files can be found in the ``input_data`` folder in the
-# root folder of GemPy. The data comprises :math:`x`-, :math:`y`- and
-# :math:`z`-positional values for all surface points and orientation
-# measurements. For the latter, poles, azimuth and polarity are
-# additionally included. Surface points are furthermore assigned a
-# formation. This might be a lithological unit such as "Sandstone" or a
-# structural feature such as "Main Fault". It is important to remember
-# that, in GemPy, interface position points mark the **bottom** of a
-# layer. If such points are needed to resemble a top of a formation (e.g.
-# when modeling an intrusion), this can be achieved by defining a
-# respectively inverted orientation measurement.
-# 
-# As we generate our ``Data`` from CSV-files, we also have to define our
-# model's real extent in :math:`x`, :math:`y` and :math:`z`, as well as
-# declare a desired resolution for each axis. This resolution will in turn
-# determine the number of voxels used during modeling. Here, we rely on a
-# medium resolution of 50x50x50, amounting to 125,000 voxels. The model
-# extent should be chosen in a way that it contains all relevant data in a
-# representative space. As our model voxels are not cubes, but prisms, the
-# resolution can take a different shape than the extent. We don't
-# recommend going much higher than 100 cells in every direction (1,000,000
-# voxels), as higher resolutions will become increasingly expensive to
-# compute.
+# Each of these classes will be covered in more depth in a later tutorial :doc:`ch1_2a_data_manipulation`.
 #
-# Testing making links in the text :obj:`numpy.sin` :obj:`gempy.create_geomodel` foo bar
+# You can also create data from raw CSV files (comma-separated values). This could be useful if you are exporting model data
+# from a different program or creating it in a spreadsheet software like Microsoft Excel or LibreOffice Calc.
+#
+# In this tutorial, we'll use CSV files to generate input data. You can find these example files in the `gempy data`
+# repository on GitHub. The data consists of x, y, and z positional values for all surface points and orientation
+# measurements. Additional data includes poles, azimuth and polarity (or the gradient components). Surface points are
+# assigned a formation, which can be a lithological unit (like "Sandstone") or a structural feature (like "Main Fault"). 
+#
+# It's important to note that, in GemPy, interface position points mark the **bottom** of a layer. If you need points
+# to represent the top of a formation (for example, when modeling an intrusion), you can define an inverted orientation measurement.
+#
+# While generating data from CSV files, we also need to define the model's real extent in x, y, and z. This extent
+# defines the area used for interpolation and many of the plotting functions. We also set a resolution to establish a
+# regular grid right away. This resolution will dictate the number of voxels used during modeling. We're using a medium
+# resolution of 50x50x50 here, which results in 125,000 voxels. The model extent should enclose all relevant data in a
+# representative space. As our model voxels are prisms rather than cubes, the resolution can differ from the extent.
+# However, it is recommended to avoid going beyond 100 cells in each direction (1,000,000 voxels) to prevent excessive
+# computational costs.
+#
+# .. admonition:: New in GemPy 3!
+#
+#     GemPy 3 introduces octrees, which allow us to define resolution by specifying the number of octree levels instead
+#     of passing a resolution for a regular grid. The number of octree levels corresponds to how many times the grid is
+#     halved. Thus, the number of voxels is 2^octree_levels in each direction. For example, 3 octree levels will create
+#     a grid with 8x8x8 voxels, 4 octree levels will create a grid with 16x16x16 voxels, and so on. This provides an
+#     effective way to control model resolution. However, it is recommended not to exceed 6 octree levels to avoid 
+#     escalating computational costs.
+#
+#
+# .. admonition:: New in GemPy 3!
+#    GemPy 3 has introduced the ``ImporterHelper`` class to streamline importing data from various sources. This class
+#    simplifies the process of passing multiple arguments needed for importing data and will likely see further 
+#    extensions in the future. Currently, one of its uses is to handle `pooch` arguments for downloading data from the internet.
 
 # %%
 data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
@@ -67,8 +67,8 @@ data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
 geo_model: gp.GeoModel = gp.create_geomodel(
     project_name='Tutorial_ch1_1_Basics',
     extent=[0, 2000, 0, 2000, 0, 750],
-    # resolution=None,  # * When resolution is not given, octrees are used 
-    resolution=[50, 5, 50],
+    resolution=[50, 50, 50],  # * Here we define the resolution of the voxels
+    number_octree_levels=4,  # * 
     importer_helper=gp.ImporterHelper(
         path_to_orientations=data_path + "/data/input_data/getting_started/simple_fault_model_orientations.csv",
         path_to_surface_points=data_path + "/data/input_data/getting_started/simple_fault_model_points.csv"
@@ -86,7 +86,6 @@ geo_model.structural_frame
 
 # %% 
 geo_model.surface_points
-
 
 # %% 
 geo_model.orientations
@@ -169,8 +168,7 @@ geo_model.structural_frame
 gp.set_is_fault(
     frame=geo_model.structural_frame,
     fault_groups=['Fault_Series']
-)   
-
+)
 
 # %%
 # Returning information from our input data

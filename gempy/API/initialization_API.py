@@ -23,6 +23,7 @@ def create_geomodel(
         project_name: str = 'default_project',
         extent: Union[list, ndarray] = None,
         resolution: Union[list, ndarray] = None,
+        number_octree_levels: int = 1,
         importer_helper: ImporterHelper = None,
 ) -> GeoModel:  # ? Do I need to pass pandas read kwargs?
 
@@ -35,6 +36,7 @@ def create_geomodel(
         range=1.73205,
         c_o=10,
         dual_contouring=True,
+        number_octree_levels=number_octree_levels,
     )
 
     geo_model: GeoModel = GeoModel(

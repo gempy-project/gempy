@@ -28,14 +28,12 @@ import gempy
 import pyvista
 import numpy as np
 
+# region PyVista Configuration
 pyvista.set_error_output_file('errors.txt')
-# Ensure that offscreen rendering is used for docs generation
-pyvista.OFF_SCREEN = True  # Not necessary - simply an insurance policy
-# Preferred plotting style for documentation
-pyvista.set_plot_theme('document')
+pyvista.OFF_SCREEN = True  # Not necessary - simply an insurance policy. Ensure that offscreen rendering is used for docs generation
+pyvista.set_plot_theme('document') # Preferred plotting style for documentation
 pyvista.rcParams['window_size'] = np.array([1024, 768]) * 2
-# Save figures in specified directory
-pyvista.FIGURE_PATH = os.path.join(os.path.abspath('./images/'), 'auto-generated/')
+pyvista.FIGURE_PATH = os.path.join(os.path.abspath('./images/'), 'auto-generated/') # Save figures in specified directory
 pyvista.BUILDING_GALLERY = True
 if not os.path.exists(pyvista.FIGURE_PATH):
     os.makedirs(pyvista.FIGURE_PATH)
@@ -103,10 +101,10 @@ source_suffix = ['.rst']
 # The master toctree document.
 master_doc = 'index'
 
-# General information about the project.
+# * General information about the project.
 project = 'GemPy'
 year = datetime.date.today().year
-copyright = u'2017-{}, CGRE-Aachen Team'.format(year)
+copyright = u'2017-{}, Gempy Developers Team'.format(year)
 author = 'Miguel de la Varga'
 
 # The version info for the project you're documenting, acts as replacement for
