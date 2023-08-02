@@ -13,16 +13,16 @@ import gempy_viewer as gpv
 # %%
 # Importing and Defining Input Data
 # """""""""""""""""""""""""""""""""
-# :obj:`gempy.GeoModel`
+# :obj:`gempy.core.data.GeoModel`
 # GemPy uses Python objects to store the data that builds the geological model. The main data classes include:
 #
-#     -  :obj:`gempy.data.GeoModel`
-#     -  :obj:`gempy.data.StructuralFrame`
-#     -  :obj:`gempy.data.Grid`
-#     -  :obj:`gempy.data.StructuralGroup`
-#     -  :obj:`gempy.data.StructuralElement`
-#     -  :obj:`gempy.data.SurfacePointsTable`
-#     -  :obj:`gempy.data.OrientationsTable`
+#     -  :obj:`gempy.core.data.GeoModel`
+#     -  :obj:`gempy.core.data.StructuralFrame`
+#     -  :obj:`gempy.core.data.StructuralGroup`
+#     -  :obj:`gempy.core.data.StructuralElement`
+#     -  :obj:`gempy.core.data.SurfacePointsTable`
+#     -  :obj:`gempy.core.data.OrientationsTable`
+#     -  :obj:`gempy.core.data.Grid`
 #
 # Each of these classes will be covered in more depth in a later tutorial :doc:`ch1_2a_data_manipulation`.
 #
@@ -84,7 +84,7 @@ geo_model.structural_frame
 # that the order of formations and respective allocation to series is
 # still completely arbitrary. We will fix this in the following.
 # 
-# foo bar foo bar
+# foo bar foo ba
 
 # %% 
 geo_model.surface_points

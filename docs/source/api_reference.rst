@@ -35,12 +35,17 @@ Public Data Classes
 
 Modeling Classes
 ----------------
-.. currentmodule:: gempy.core.data
+.. module:: gempy.core.data
 .. autosummary::
     :toctree: Modeling Classes
     :template: class.rst
 
     GeoModel
+    StructuralFrame
+    StructuralGroup
+    StructuralElement
+    SurfacePointsTable
+    OrientationsTable
     Grid
 
 Helper Classes
@@ -54,7 +59,7 @@ Helper Classes
 
 Enumerators
 -----------
-.. currentmodule:: gempy.data
+.. currentmodule:: gempy.core.data
 .. autosummary::
     :toctree: Modeling Classes
     :template: class.rst
