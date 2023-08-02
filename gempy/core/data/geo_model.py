@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 import numpy as np
 
 import gempy_engine.core.data.grid
-from gempy_engine.core.data.legacy_solutions import LegacySolution
+from gempy_engine.core.data.raw_arrays_solution import RawArraysSolution
 from gempy_engine.core.data import InterpolationOptions
 from gempy_engine.core.data.input_data_descriptor import InputDataDescriptor
 from gempy_engine.core.data.interpolation_input import InterpolationInput
@@ -95,7 +95,7 @@ class GeoModel:
     def solutions(self, value):
         self._solutions = value
         for e, group in enumerate(self.structural_frame.structural_groups):
-            group.solution = LegacySolution(  # ? Maybe I need to add more fields, but I am not sure yet
+            group.solution = RawArraysSolution(  # ? Maybe I need to add more fields, but I am not sure yet
                 scalar_field_matrix=self._solutions.raw_arrays.scalar_field_matrix[e],
                 block_matrix=self._solutions.raw_arrays.block_matrix[e],
             )
