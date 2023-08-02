@@ -5,7 +5,7 @@ from gempy_engine.core.data.stack_relation_type import StackRelationType
 from gempy.core.data.enumerators import ExampleModel
 
 
-def generate_example_model(example_model: ExampleModel, compute_model: bool = True) -> gp.GeoModel:
+def generate_example_model(example_model: ExampleModel, compute_model: bool = True) -> gp.data.GeoModel:
     match example_model:
         case ExampleModel.HORIZONTAL_STRAT:
             return _generate_horizontal_stratigraphic_model(compute_model)
@@ -17,7 +17,7 @@ def generate_example_model(example_model: ExampleModel, compute_model: bool = Tr
             raise NotImplementedError(f"Example model {example_model} not implemented.")
 
 
-def _generate_horizontal_stratigraphic_model(compute_model: bool) -> gp.GeoModel:
+def _generate_horizontal_stratigraphic_model(compute_model: bool) -> gp.data.GeoModel:
     """
     Function to create a geological model of horizontally stacked layers,
     map the geological series to surfaces, and compute the geological model.
@@ -49,7 +49,7 @@ def _generate_horizontal_stratigraphic_model(compute_model: bool) -> gp.GeoModel
     return geo_data
 
 
-def _generate_anticline_model(compute_model: bool) -> gp.GeoModel:
+def _generate_anticline_model(compute_model: bool) -> gp.data.GeoModel:
     """
     Function to create a geological model of an anticline structure,
     map the geological series to surfaces, and compute the geological model.
@@ -59,11 +59,11 @@ def _generate_anticline_model(compute_model: bool) -> gp.GeoModel:
     path_to_data = data_path + "/data/input_data/jan_models/"
 
     # Create a GeoModel instance
-    geo_data: gp.GeoModel = gp.create_geomodel(
+    geo_data: gp.data.GeoModel = gp.create_geomodel(
         project_name='fold',
         extent=[0, 1000, 0, 1000, 0, 1000],
         resolution=[50, 5, 50],
-        importer_helper=gp.ImporterHelper(
+        importer_helper=gp.data.ImporterHelper(
             path_to_orientations=path_to_data + "model2_orientations.csv",
             path_to_surface_points=path_to_data + "model2_surface_points.csv"
         )
@@ -82,7 +82,7 @@ def _generate_anticline_model(compute_model: bool) -> gp.GeoModel:
     return geo_data
 
 
-def _generate_one_fault_model(compute_model: bool) -> gp.GeoModel:
+def _generate_one_fault_model(compute_model: bool) -> gp.data.GeoModel:
     """
     Function to create a simple fault model,
     map the geological series to surfaces, and compute the geological model.
@@ -96,7 +96,7 @@ def _generate_one_fault_model(compute_model: bool) -> gp.GeoModel:
         project_name='fault',
         extent=[0, 1000, 0, 1000, 0, 1000],
         resolution=[20, 5, 20],
-        importer_helper=gp.ImporterHelper(
+        importer_helper=gp.data.ImporterHelper(
             path_to_orientations=path_to_data + "model5_orientations.csv",
             path_to_surface_points=path_to_data + "model5_surface_points.csv"
         )

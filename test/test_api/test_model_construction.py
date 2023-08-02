@@ -4,7 +4,7 @@ import gempy_engine.core.data.solutions
 import gempy_viewer
 from core.data.stack_relation_type import StackRelationType
 from gempy_engine.core.data import InterpolationOptions
-from gempy import GeoModel
+from gempy.core.data import GeoModel
 from gempy.API.io_API import read_orientations, read_surface_points
 from gempy.core.data.orientations import OrientationsTable
 from gempy.core.data.structural_element import StructuralElement
@@ -49,8 +49,8 @@ def test_read_input_points():
     return surface_points, orientations
 
 
-def test_create_grid() -> gp.Grid:
-    grid: gp.Grid = gp.Grid(
+def test_create_grid() -> gp.data.Grid:
+    grid: gp.data.Grid = gp.data.Grid(
         extent=[0, 1000, 0, 1000, 0, 1000],
         resolution=[50, 5, 50]
     )

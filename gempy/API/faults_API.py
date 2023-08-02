@@ -2,7 +2,7 @@
 import numpy as np
 
 from gempy_engine.core.data.stack_relation_type import StackRelationType
-from gempy import GeoModel, StructuralFrame
+from gempy.core.data import GeoModel, StructuralFrame
 from gempy.core.data.structural_group import StructuralGroup, FaultsRelationSpecialCase
 
 

@@ -1,4 +1,4 @@
-﻿from gempy import GeoModel
+﻿from gempy.core.data import GeoModel
 from gempy.core.data.orientations import OrientationsTable
 from gempy.core.data.surface_points import SurfacePointsTable
 from gempy.optional_dependencies import require_gempy_legacy

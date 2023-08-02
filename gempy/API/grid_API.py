@@ -2,9 +2,9 @@
 
 import numpy as np
 
-from gempy import Grid
+from gempy.core.data import Grid
 from gempy.core.data.grid import GridTypes
-from gempy.core.data.grid_modules import Topography
+from gempy.core.data.grid_modules.topography import Topography
 from gempy.modules.grids.create_topography import create_random_topography
 
 
