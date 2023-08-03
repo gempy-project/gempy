@@ -1,7 +1,6 @@
 """
 1.1 -Basics of geological modeling with GemPy
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-# sphinx_gallery_thumbnail_number = 9
 
 """
 import numpy as np
@@ -65,7 +64,7 @@ geo_model: gp.data.GeoModel = gp.create_geomodel(
     project_name='Tutorial_ch1_1_Basics',
     extent=[0, 2000, 0, 2000, 0, 750],
     resolution=[20, 20, 20],  # * Here we define the resolution of the voxels
-    number_octree_levels=5,  # * Here we define the number of octree levels. If octree levels are defined, the resolution is ignored.
+    number_octree_levels=4,  # * Here we define the number of octree levels. If octree levels are defined, the resolution is ignored.
     importer_helper=gp.data.ImporterHelper(
         path_to_orientations=data_path + "/data/input_data/getting_started/simple_fault_model_orientations.csv",
         path_to_surface_points=data_path + "/data/input_data/getting_started/simple_fault_model_points.csv",
@@ -246,40 +245,45 @@ geo_model.solutions
 #
 
 # %%
-gpv.plot_2d(geo_model, show_data=True)
+gpv.plot_2d(geo_model, show_data=True, cell_number="mid", direction='y')
 
 # %%
-# With ``cell_number=25`` and remembering that we defined our resolution
-# to be 50 cells in each direction, we have chosen a section going through
-# the middle of our block. We have moved 25 cells in ``direction='y'``,
+# With ``cell_number=mid``, we have chosen a section going through
+# the middle of our block. We have moved in ``direction='y'``,
 # the plot thus depicts a plane parallel to the :math:`x`- and
-# :math:`y`-axes. Setting ``plot_data=True``, we could plot original data
+# :math:`y`-axes. Setting ``show_data=True``, we could plot original data
 # together with the results. Changing the values for ``cell_number`` and
 # ``direction``, we can move through our 3D block model and explore it by
 # looking at different 2D planes.
 # 
-# We can do the same without lithological scalar-field solution:
+# We can do the same with the underlying scalar-field solution:
 # 
 
-# %%
-gpv.plot_2d(geo_model, show_data=False, show_scalar=True, show_lith=False)
+# .. admonition:: New in GemPy 3! Scalar field visualization and Octrees
+#
+#    When we use octrees we can see that the scalar field looks quite blocky specially further away from the contacts.
+#    This is because octrees are sparse in areas where does not affect the solution. This is a good thing because
+#    it means that we are not wasting computational resources in areas where we do not need them. Check out the lith
+#    block to see how with fewer evaluations we get the same result as with a high resolution grid.
 
 # %%
-gpv.plot_2d(geo_model, series_n=1, show_data=False, show_scalar=True, show_lith=False)
+gpv.plot_2d(
+    model=geo_model,
+    series_n=0,  # This will plot the scalar field used for the fault
+    show_data=False,
+    show_scalar=True,
+    show_lith=False
+)
 
 # %%
-# This illustrates well the fold-related deformation of the stratigraphy,
-# as well as the way the layers are influenced by the fault.
-# 
-# The fault network modeling solutions can be visualized in the same way:
-# 
+gpv.plot_2d(
+    model=geo_model,
+    series_n=1,  # This will plot the scalar field used for the stratigraphy
+    show_data=False,
+    show_scalar=True,
+    show_lith=False
+)
 
-
-# %%
-gpv.plot_2d(geo_model, show_block=True, show_lith=False)
-
-# # %%
-gpv.plot_2d(geo_model, series_n=1, show_block=True, show_lith=False)
 
 # %%
 # Dual Contouring and vtk visualization
@@ -301,19 +305,17 @@ gpv.plot_2d(geo_model, series_n=1, show_block=True, show_lith=False)
 # %% 
 gpv.plot_3d(geo_model, image=False, plotter_type='basic')
 
-# %%
-# Using the rescaled interpolation data, we can also run our 3D VTK
-# visualization in an interactive mode which allows us to alter and update
-# our model in real time. Similarly to the interactive 3D visualization of
-# our input data, the changes are permanently saved (in the
-# ``InterpolationInput.dataframe`` object). Additionally, the resulting changes
-# in the geological models are re-computed in real time.
-# 
 
 
 # %%
 # Adding topography
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# In gempy we can add more grid types for different purposes. We will explore this concept in more detail in the
+# next tutorials (:doc:`ch1_3a_grids`). For now, we will just add a topography grid to our model. This grid allows us to intersect the
+# surfaces as well as compute a high resolution geological mal.
+
+
+# %%
 gp.set_topography_from_random(
     grid=geo_model.grid,
     fractal_dimension=1.2,
@@ -321,7 +323,6 @@ gp.set_topography_from_random(
     topography_resolution=np.array([50, 50]),
 )
 
-# %%
 gp.compute_model(geo_model)
 gpv.plot_2d(geo_model, show_topography=True)
 
@@ -339,8 +340,6 @@ gpv.plot_3d(
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # 
 # This is done by modifying the grid to a custom grid and recomputing.
-# Notice that the results are given as *grid + surfaces\_points\_ref +
-# surface\_points\_rest locations*
 # 
 
 # %% 
@@ -358,3 +357,5 @@ sol.raw_arrays.custom
 #   GemPy3 model serialization is currently being redisigned. Therefore, at the current version, there is not a build in
 #   method to save the model. However, since now the data model should be completely robust, you should be able to save the
 #   :obj:`gempy.core.data.GeoModel` and all its attributes using the standard python library [pickle](https://docs.python.org/3/library/pickle.html)
+#
+# sphinx_gallery_thumbnail_number = 9
