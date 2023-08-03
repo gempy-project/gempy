@@ -284,7 +284,6 @@ gpv.plot_2d(
     show_lith=False
 )
 
-
 # %%
 # Dual Contouring and vtk visualization
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -304,8 +303,6 @@ gpv.plot_2d(
 
 # %% 
 gpv.plot_3d(geo_model, image=False, plotter_type='basic')
-
-
 
 # %%
 # Adding topography
@@ -343,16 +340,21 @@ gpv.plot_3d(
 # 
 
 # %% 
-x_i = np.array([[3, 5, 6]])
-# sol = gp.compute_model(geo_model, at=x_i)
+x_i = np.array([[1000, 1000, 1000]])
+lith_values_at_coords: np.ndarray = gp.compute_model_at(
+    gempy_model=geo_model,
+    at=x_i
+)
+lith_values_at_coords
 
 # %%
-# Therefore if we just want the value at **x\_i**:
+# Therefore if we just want the value at **x\_i**: 
 
 # %%
-sol.raw_arrays.custom
+geo_model.solutions.raw_arrays.custom
 
-# .. admonition:: Work in progress
+# %%
+# .. admonition:: Work in progress 
 #
 #   GemPy3 model serialization is currently being redisigned. Therefore, at the current version, there is not a build in
 #   method to save the model. However, since now the data model should be completely robust, you should be able to save the
