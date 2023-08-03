@@ -1,22 +1,38 @@
 ﻿from typing import Optional
 
+import numpy as np
+
 import gempy_engine
 from gempy_engine.core.backend_tensor import BackendTensor
 from gempy.API.gp2_gp3_compatibility.gp3_to_gp2_input import gempy3_to_gempy2
 from gempy_engine.config import AvailableBackends
 from gempy_engine.core.data import Solutions
+from .grid_API import set_custom_grid
 from ..core.data.gempy_engine_config import GempyEngineConfig
 from ..core.data.geo_model import GeoModel
 from ..optional_dependencies import require_gempy_legacy
 
 
 def compute_model(gempy_model: GeoModel, engine_config: Optional[GempyEngineConfig] = None) -> Solutions:
+    """
+    Compute the geological model given the provided GemPy model.
+
+    Args:
+        gempy_model (GeoModel): The GemPy model to compute.
+        engine_config (Optional[GempyEngineConfig]): Configuration for the computational engine. Defaults to None, in which case a default configuration will be used.
+
+    Raises:
+        ValueError: If the provided backend in the engine_config is not supported.
+
+    Returns:
+        Solutions: The computed geological model.
+    """
     engine_config = engine_config or GempyEngineConfig(
-        backend=AvailableBackends.numpy, 
-        use_gpu=False, 
+        backend=AvailableBackends.numpy,
+        use_gpu=False,
         pykeops_enabled=False
     )
-    
+
     match engine_config.backend:
         case AvailableBackends.numpy | AvailableBackends.tensorflow:
 
@@ -31,15 +47,37 @@ def compute_model(gempy_model: GeoModel, engine_config: Optional[GempyEngineConf
                 options=gempy_model.interpolation_options,
                 data_descriptor=gempy_model.input_data_descriptor
             )
-        
+
         case AvailableBackends.aesara | AvailableBackends.legacy:
             gempy_model.legacy_model = _legacy_compute_model(gempy_model)
         case _:
             raise ValueError(f'Backend {engine_config} not supported')
 
-
     return gempy_model.solutions
 
+
+def compute_model_at(gempy_model: GeoModel, at: np.ndarray,
+                     engine_config: Optional[GempyEngineConfig] = None) -> np.ndarray:
+    """
+    Compute the geological model at specific coordinates.
+    
+    Note: This function sets a custom grid and computes the model so be wary of side effects.
+
+    Args:
+        gempy_model (GeoModel): The GemPy model to compute.
+        at (np.ndarray): The coordinates at which to compute the model.
+        engine_config (Optional[GempyEngineConfig], optional): Configuration for the computational engine. Defaults to None, in which case a default configuration will be used.
+
+    Returns:
+        np.ndarray: The computed geological model at the specified coordinates.
+    """
+    set_custom_grid(
+        grid=gempy_model.grid,
+        xyz_coord=at
+    )
+    
+    sol = compute_model(gempy_model, engine_config)
+    return sol.raw_arrays.custom
 
 
 def _legacy_compute_model(gempy_model: GeoModel) -> 'gempy_legacy.Project':
@@ -48,5 +86,3 @@ def _legacy_compute_model(gempy_model: GeoModel) -> 'gempy_legacy.Project':
     gpl.set_interpolator(legacy_model)
     gpl.compute_model(legacy_model)
     return legacy_model
-
-    

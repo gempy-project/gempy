@@ -4,6 +4,7 @@ import numpy as np
 
 from gempy.core.data import Grid
 from gempy.core.data.grid import GridTypes
+from gempy.core.data.grid_modules import CustomGrid
 from gempy.core.data.grid_modules.topography import Topography
 from gempy.modules.grids.create_topography import create_random_topography
 
@@ -38,6 +39,14 @@ def set_topography_from_random(grid: Grid, fractal_dimension: float = 2.0, d_z: 
 
     set_active_grid(grid, [GridTypes.TOPOGRAPHY])
     return grid.topography
+
+
+def set_custom_grid(grid: Grid, xyz_coord: np.ndarray):
+    custom_grid = CustomGrid(xyx_coords=xyz_coord)
+    grid.custom_grid = custom_grid
+    
+    set_active_grid(grid, [GridTypes.CUSTOM])
+    return grid.custom_grid
 
 
 def set_topography_from_gdal():

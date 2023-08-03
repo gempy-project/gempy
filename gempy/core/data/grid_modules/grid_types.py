@@ -318,15 +318,15 @@ class CustomGrid:
     """Object that contains arbitrary XYZ coordinates.
 
     Args:
-        custom_grid (numpy.ndarray like): XYZ (in columns) of the desired coordinates
+        xyx_coords (numpy.ndarray like): XYZ (in columns) of the desired coordinates
 
     Attributes:
         values (np.ndarray): XYZ coordinates
     """
 
-    def __init__(self, custom_grid: np.ndarray):
+    def __init__(self, xyx_coords: np.ndarray):
         self.values = np.zeros((0, 3))
-        self.set_custom_grid(custom_grid)
+        self.set_custom_grid(xyx_coords)
 
     def set_custom_grid(self, custom_grid: np.ndarray):
         """
