@@ -52,7 +52,7 @@ def test_read_input_points():
 
 def test_create_grid() -> gp.data.Grid:
     grid: gp.data.Grid = gp.data.Grid(
-        extent=[0, 1000, 0, 1000, 0, 1000],
+        extent=[0, 1000, 0, 1000, 0, 500],
         resolution=[50, 5, 50]
     )
 
@@ -142,6 +142,9 @@ def test_interpolate_numpy():
             structure=geo_model.structural_frame.input_data_descriptor.stack_structure,
             value_type=ValueType.ids
         )
+        
+        gempy_viewer.plot_3d(geo_model, show_boundaries=True)
+        
     return geo_model
 
 
