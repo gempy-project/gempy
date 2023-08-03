@@ -1,8 +1,10 @@
 """
 1.1 -Basics of geological modeling with GemPy
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# sphinx_gallery_thumbnail_number = 9
 
 """
+import numpy as np
 
 # %%
 # Importing Necessary Libraries
@@ -45,7 +47,7 @@ import gempy_viewer as gpv
 # However, it is recommended to avoid going beyond 100 cells in each direction (1,000,000 voxels) to prevent excessive
 # computational costs.
 #
-# .. admonition:: New in GemPy 3!
+# .. admonition:: New in GemPy 3! Octrees
 #
 #     GemPy 3 introduces octrees, which allow us to define resolution by specifying the number of octree levels instead
 #     of passing a resolution for a regular grid. The number of octree levels corresponds to how many times the grid is
@@ -73,7 +75,7 @@ geo_model: gp.data.GeoModel = gp.create_geomodel(
 )
 
 # %% 
-# .. admonition:: New in GemPy 3!
+# .. admonition:: New in GemPy 3! 
 #
 #    GemPy 3 has introduced the ``ImporterHelper`` class to streamline importing data from various sources. This class
 #    simplifies the process of passing multiple arguments needed for importing data and will likely see further 
@@ -90,7 +92,6 @@ geo_model.surface_points
 # %% 
 geo_model.orientations
 
-
 # %%
 # Declaring the Sequential Order of Geological Formations
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -100,24 +101,24 @@ geo_model.orientations
 # age-related order is declared for faults in our model. In GemPy, we use the function 
 # `gempy.map_stack_to_surfaces` to assign formations or faults to different sequential series 
 # by declaring them in a Python dictionary.
-
+#
 # The correct ordering of series is crucial for model construction! It's possible to assign 
 # several surfaces to one series. The order of units within a series only affects the color 
 # code, so we recommend maintaining consistency. The order can be defined by simply changing 
 # the order of the lists within `gempy.core.data.StructuralFrame.structural_groups` and 
 # `gempy.core.data.StructuralGroups.elements` attributes.
-
+#
 # Faults are treated as independent groups and must be younger than the groups they affect. 
 # The relative order between different faults defines their tectonic relationship 
 # (the first entry is the youngest).
-
+#
 # For a model with simple sequential stratigraphy, all layer formations can be assigned to 
 # one series without an issue. All unit boundaries and their order would then be determined 
 # by interface points. However, to model more complex lithostratigraphical relations and 
 # interactions, separate series definition becomes important. For example, modeling an 
 # unconformity or an intrusion that disrupts older stratigraphy would require declaring a 
 # "newer" series.
-
+#
 # By default, we create a simple sequence inferred from the data:
 # 
 
@@ -150,7 +151,6 @@ gp.map_stack_to_surfaces(
 
 geo_model.structural_frame  # Display the resulting structural frame
 
-
 # %% 
 gp.set_is_fault(
     frame=geo_model.structural_frame,
@@ -171,7 +171,6 @@ gp.set_is_fault(
 # %% 
 geo_model.grid
 
-
 # %%
 # 
 # Visualizing input data
@@ -186,7 +185,6 @@ geo_model.grid
 
 # %%
 plot = gpv.plot_2d(geo_model, show_lith=False, show_boundaries=False)
-
 
 # %%
 # Using  :obj:`gempy_viewer.plot_3d`, # we can also visualize this data in 3D. Note that
@@ -205,7 +203,7 @@ gpv.plot_3d(geo_model, image=False, plotter_type='basic')
 # we can proceed to the next step: preparing the input data for interpolation.
 #
 #
-# .. admonition:: New in GemPy 3!
+# .. admonition:: New in GemPy 3!  Numpy and TensorFlow backend
 #
 #    Unlike previous versions, GemPy 3 doesn't rely on `theano` or `asera`. 
 #    Instead, it utilizes `numpy` or `tensorflow`. Consequently, we no longer need 
@@ -248,21 +246,7 @@ geo_model.solutions
 #
 
 # %%
-from gempy_engine.modules.octrees_topology.octrees_topology_interface import ValueType
-from gempy_engine.plugins.plotting.helper_functions import plot_block_and_input_2d
-plot_block_and_input_2d(
-    stack_number=1,
-    interpolation_input=geo_model.interpolation_input,
-    outputs=geo_model.solutions.octrees_output,
-    structure=geo_model.structural_frame.input_data_descriptor.stack_structure,
-    value_type=ValueType.ids
-)
-
-# %%
 gpv.plot_2d(geo_model, show_data=True)
-
-# %% 
-
 
 # %%
 # With ``cell_number=25`` and remembering that we defined our resolution
@@ -274,7 +258,7 @@ gpv.plot_2d(geo_model, show_data=True)
 # ``direction``, we can move through our 3D block model and explore it by
 # looking at different 2D planes.
 # 
-# We can do the same with out lithological scalar-field solution:
+# We can do the same without lithological scalar-field solution:
 # 
 
 # %%
@@ -290,97 +274,87 @@ gpv.plot_2d(geo_model, series_n=1, show_data=False, show_scalar=True, show_lith=
 # The fault network modeling solutions can be visualized in the same way:
 # 
 
-# # %% 
-# geo_model.solutions.scalar_field_at_surface_points
-# 
+
+# %%
+gpv.plot_2d(geo_model, show_block=True, show_lith=False)
+
 # # %%
-# gp.plot_2d(geo_model, show_block=True, show_lith=False)
-# plt.show()
+gpv.plot_2d(geo_model, series_n=1, show_block=True, show_lith=False)
+
+# %%
+# Dual Contouring and vtk visualization
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # 
-# # %%
-# gp.plot_2d(geo_model, series_n=1, show_block=True, show_lith=False)
-# plt.show()
+# In addition to 2D sections we can extract surfaces to visualize in 3D
+# renderers. Surfaces can be visualized as 3D triangle complexes in VTK
+# (see function plot\_surfaces\_3D below). To create these triangles, we
+# need to extract respective vertices and simplices from the potential
+# fields of lithologies and faults. This process is automatized in GemPy
+# using dual contouring in the :obj:`gempy_engine`.
 # 
-# # %%
-# # Marching cubes and vtk visualization
-# # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# # 
-# # In addition to 2D sections we can extract surfaces to visualize in 3D
-# # renderers. Surfaces can be visualized as 3D triangle complexes in VTK
-# # (see function plot\_surfaces\_3D below). To create these triangles, we
-# # need to extract respective vertices and simplices from the potential
-# # fields of lithologies and faults. This process is automatized in GemPy
-# # with the function ``get_surface``\ .
-# # 
+# .. admonition:: New in GemPy 3! Dual Contouring
+#
+#    GemPy 3 uses dual contouring to extract surfaces from the scalar fields. The method is completely coded in :obj:`gempy_engine` what also
+#    enables further improvements in the midterm. This method is more efficient to use
+#    together with octrees and suited better the new capabilities of gempy3. 
+
+# %% 
+gpv.plot_3d(geo_model, image=False, plotter_type='basic')
+
+# %%
+# Using the rescaled interpolation data, we can also run our 3D VTK
+# visualization in an interactive mode which allows us to alter and update
+# our model in real time. Similarly to the interactive 3D visualization of
+# our input data, the changes are permanently saved (in the
+# ``InterpolationInput.dataframe`` object). Additionally, the resulting changes
+# in the geological models are re-computed in real time.
 # 
-# # %% 
-# ver, sim = gp.get_surfaces(geo_model)
-gpv = gpv.plot_3d(geo_model, image=False, plotter_type='basic')
+
+
+# %%
+# Adding topography
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+gp.set_topography_from_random(
+    grid=geo_model.grid,
+    fractal_dimension=1.2,
+    d_z=np.array([350, 750]),
+    topography_resolution=np.array([50, 50]),
+)
+
+# %%
+gp.compute_model(geo_model)
+gpv.plot_2d(geo_model, show_topography=True)
+
+gpv.plot_3d(
+    model=geo_model,
+    plotter_type='basic',
+    show_topography=True,
+    show_surfaces=True,
+    show_lith=True,
+    image=False
+)
+
+# %%
+# Compute at a given location
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # 
-# # %%
-# # Using the rescaled interpolation data, we can also run our 3D VTK
-# # visualization in an interactive mode which allows us to alter and update
-# # our model in real time. Similarly to the interactive 3D visualization of
-# # our input data, the changes are permanently saved (in the
-# # ``InterpolationInput.dataframe`` object). Additionally, the resulting changes
-# # in the geological models are re-computed in real time.
-# # 
+# This is done by modifying the grid to a custom grid and recomputing.
+# Notice that the results are given as *grid + surfaces\_points\_ref +
+# surface\_points\_rest locations*
 # 
-# 
-# # %%
-# # Adding topography
-# # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# geo_model.set_topography(d_z=(350, 750))
-# 
-# # %%
-# gp.compute_model(geo_model)
-# gp.plot_2d(geo_model, show_topography=True)
-# plt.show()
-# 
-# 
-# # sphinx_gallery_thumbnail_number = 9
-# gpv = gp.plot_3d(geo_model, plotter_type='basic', show_topography=True, show_surfaces=True,
-#                  show_lith=True,
-#                  image=False)
-# 
-# # %%
-# # Compute at a given location
-# # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# # 
-# # This is done by modifying the grid to a custom grid and recomputing.
-# # Notice that the results are given as *grid + surfaces\_points\_ref +
-# # surface\_points\_rest locations*
-# # 
-# 
-# # %% 
-# x_i = np.array([[3, 5, 6]])
+
+# %% 
+x_i = np.array([[3, 5, 6]])
 # sol = gp.compute_model(geo_model, at=x_i)
-# 
-# # %%
-# # Therefore if we just want the value at **x\_i**:
-# 
-# # %%
-# sol.custom
-# 
-# # %%
-# # This return the id, and the scalar field values for each series
-# 
-# # %%
-# # Save the model
-# # ~~~~~~~~~~~~~~
-# # 
-# 
-# # %%
-# # GemPy uses Python [pickle] for fast storing temporary objects
-# # (https://docs.python.org/3/library/pickle.html). However, module version
-# # consistency is required. For loading a pickle into GemPy, you have to
-# # make sure that you are using the same version of pickle and dependent
-# # modules (e.g.: ``Pandas``, ``NumPy``) as were used when the data was
-# # originally stored.
-# # 
-# # For long term-safer storage we can export the ``pandas.DataFrames`` to
-# # csv by using:
-# # 
-# 
-# # %% 
-# gp.save_model(geo_model)
+
+# %%
+# Therefore if we just want the value at **x\_i**:
+
+# %%
+sol.raw_arrays.custom
+
+# .. admonition:: Work in progress
+#
+#   GemPy3 model serialization is currently being redisigned. Therefore, at the current version, there is not a build in
+#   method to save the model. However, since now the data model should be completely robust, you should be able to save the
+#   :obj:`gempy.core.data.GeoModel` and all its attributes using the standard python library [pickle](https://docs.python.org/3/library/pickle.html)

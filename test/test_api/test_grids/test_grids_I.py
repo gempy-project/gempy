@@ -1,5 +1,4 @@
-﻿import pytest
-import gempy as gp
+﻿import gempy as gp
 import gempy_viewer as gpv
 from gempy.core.data.enumerators import ExampleModel
 from gempy_engine.modules.octrees_topology.octrees_topology_interface import ValueType
@@ -7,7 +6,7 @@ from gempy_engine.plugins.plotting.helper_functions import plot_block_and_input_
 
 
 def  test_octree():
-    geo_model: gp.GeoModel = gp.generate_example_model(
+    geo_model: gp.data.GeoModel = gp.generate_example_model(
         example_model=ExampleModel.ANTICLINE,
         compute_model=False
     ) 
