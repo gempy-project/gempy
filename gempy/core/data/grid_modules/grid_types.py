@@ -1,8 +1,9 @@
 import numpy as np
-import skimage.transform
 from scipy.constants import G
 from scipy import interpolate
 import pandas as pn
+
+from gempy.optional_dependencies import require_skimage
 
 
 class RegularGrid:
@@ -26,22 +27,22 @@ class RegularGrid:
 
     def __init__(self, extent=None, resolution=None, **kwargs):
         # @ formatter:off
-        self.resolution = np.ones((0 , 3)   , dtype       = 'int64')
-        self.extent     = np.zeros(6 , dtype = 'float64')
-        self.extent_r   = np.zeros(6 , dtype = 'float64')
-        self.values     = np.zeros((0, 3))
-        self.values_r   = np.zeros((0, 3))
-        self.mask_topo  = np.zeros((0, 3)   , dtype       = bool)
-        self.x          = None
-        self.y          = None
-        self.z          = None
-        
+        self.resolution = np.ones((0, 3), dtype='int64')
+        self.extent = np.zeros(6, dtype='float64')
+        self.extent_r = np.zeros(6, dtype='float64')
+        self.values = np.zeros((0, 3))
+        self.values_r = np.zeros((0, 3))
+        self.mask_topo = np.zeros((0, 3), dtype=bool)
+        self.x = None
+        self.y = None
+        self.z = None
+
         if extent is not None and resolution is not None:
             self.set_regular_grid(extent, resolution)
             self.dx, self.dy, self.dz = self.get_dx_dy_dz()
-        
+
         # @ formatter:on
-    
+
     @property
     def bounding_box(self) -> np.ndarray:
         extents = self.extent
@@ -106,10 +107,10 @@ class RegularGrid:
         # * Check extent and resolution are not the same
         extent_equal = np.array_equal(extent, self.extent)
         resolution_equal = np.array_equal(resolution, self.resolution)
-        
+
         if extent_equal and resolution_equal:
             return self.values
-        
+
         self.extent = np.asarray(extent, dtype='float64')
         self.resolution = np.asarray(resolution)
         self.values = self.create_regular_grid_3d(extent, resolution)
@@ -117,7 +118,7 @@ class RegularGrid:
         self.dx, self.dy, self.dz = self.get_dx_dy_dz()
         return self.values
 
-    def set_topography_mask(self, topography):
+    def set_topography_mask(self, topography):  # TODO: Rename this to link topography or something like that? The advantage is that the cache is super easy just by checking the pointer
         """This method takes a topography grid of the same extent as the regular
          grid and creates a mask of voxels
 
@@ -127,16 +128,21 @@ class RegularGrid:
         Returns:
 
         """
-        assert np.array_equal(topography.extent,
-                              self.extent), 'The extent of' \
-                                            'the topography must match to the extent of the regular grid.'
+        if topography.extent is None:
+            topography.extent = self.extent
+        else:
+            assert np.array_equal(topography.extent, self.extent),\
+                'The extent of the topography must match to the extent of the regular grid.'
 
         # interpolate topography values to the regular grid
+        skimage = require_skimage()
         regular_grid_topo = skimage.transform.resize(
-            topography.values_2d,
-            (self.resolution[0], self.resolution[1]),
+            image=topography.values_2d,
+            output_shape = (self.resolution[0], self.resolution[1]),
             mode='constant',
-            anti_aliasing=False, preserve_range=True)
+            anti_aliasing=False,
+            preserve_range=True
+        )
 
         # Reshape the Z values of the regular grid to 3d
         values_3d = self.values[:, 2].reshape(self.resolution)

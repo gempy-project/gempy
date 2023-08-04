@@ -29,3 +29,10 @@ def require_gempy_viewer():
         raise ImportError("The gempy_viewer package is required to run this function.")
     return gempy_viewer
 
+
+def require_skimage():
+    try:
+        import skimage
+    except ImportError:
+        raise ImportError("The skimage package is required to run this function.")
+    return skimage
