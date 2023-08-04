@@ -5,7 +5,8 @@ import numpy as np
 
 from gempy.core.data.grid_modules.grid_types import RegularGrid
 from gempy.modules.grids.create_topography import _LoadDEMArtificial, LoadDEMGDAL
-import skimage
+
+from gempy.optional_dependencies import require_skimage
 
 
 class Topography:
@@ -19,8 +20,8 @@ class Topography:
 
     def __init__(self, regular_grid: RegularGrid, values_2d: Optional[np.ndarray] = None):
 
-        self.extent = regular_grid.extent[:]
-        self.regular_grid_resolution = regular_grid.resolution[:]
+        self._mask_topo = None
+        self._regular_grid = regular_grid
 
         # Values (n, 3)
         self.values = np.zeros((0, 3))
@@ -40,10 +41,18 @@ class Topography:
         # Coords
         self._x = None
         self._y = None
-       
+
         if values_2d is not None:
             self.set_values(values_2d)
 
+    @property
+    def extent(self):
+        return self._regular_grid.extent
+    
+    @property
+    def regular_grid_resolution(self):
+        return self._regular_grid.resolution
+    
     @property
     def x(self):
         if self._x is not None:
@@ -82,20 +91,47 @@ class Topography:
         self.values = values_2d.reshape((-1, 3), order='C')
         return self
 
-    def crop_topography(self, extent):
-        """Crop the topography to a given extent.
-
-        This may be useful for example to mask the regular grid.
-
-        Args:
-            extent:
-
-        Returns:
+    @property
+    def topography_mask(self): 
+        """This method takes a topography grid of the same extent as the regular
+         grid and creates a mask of voxels
 
         """
-        raise NotImplementedError
+
+        # * Check if the topography is the same as the cached one and if so, return the cached mask
+        if self._mask_topo is not None:
+            return self._mask_topo
+
+        # interpolate topography values to the regular grid
+        skimage = require_skimage()
+        regular_grid_topo = skimage.transform.resize(
+            image=self.values_2d,
+            output_shape=(self.regular_grid_resolution[0], self.regular_grid_resolution[1]),
+            mode='constant',
+            anti_aliasing=False,
+            preserve_range=True
+        )
+
+        # Adjust the topography to be lower by half a voxel height
+        # Assumes your voxel heights are uniform and can be calculated as the total height divided by resolution
+        voxel_height = self._regular_grid.dz * 2
+        regular_grid_topo = regular_grid_topo - voxel_height
+
+        # Reshape the Z values of the regular grid to 3d
+        values_3d = self._regular_grid.values[:, 2].reshape(self.regular_grid_resolution)
+        if regular_grid_topo.ndim == 3:
+            regular_grid_topo_z = regular_grid_topo[:, :, [2]]
+        elif regular_grid_topo.ndim == 2:
+            regular_grid_topo_z = regular_grid_topo
+        else:
+            raise ValueError()
+        mask = np.greater(values_3d[:, :, :], regular_grid_topo_z)
+
+        self._mask_topo = mask
+        return self._mask_topo
 
     def resize_topo(self):
+        skimage = require_skimage()
         regular_grid_topo = skimage.transform.resize(
             self.values_2d,
             (self.regular_grid_resolution[0], self.regular_grid_resolution[1]),

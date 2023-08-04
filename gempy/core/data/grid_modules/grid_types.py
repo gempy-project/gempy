@@ -3,8 +3,6 @@ from scipy.constants import G
 from scipy import interpolate
 import pandas as pn
 
-from gempy.optional_dependencies import require_skimage
-
 
 class RegularGrid:
     """
@@ -24,6 +22,20 @@ class RegularGrid:
         dz (float): size of the cells on z
 
     """
+    resolution: np.ndarray
+    extent: np.ndarray
+    extent_r: np.ndarray
+    values: np.ndarray
+    values_r: np.ndarray
+    mask_topo: np.ndarray
+    x: np.ndarray
+    y: np.ndarray
+    z: np.ndarray
+    dx: float
+    dy: float
+    dz: float
+    
+    _cached_topography: "Topography" = None
 
     def __init__(self, extent=None, resolution=None, **kwargs):
         # @ formatter:off
@@ -117,45 +129,6 @@ class RegularGrid:
         self.length = self.values.shape[0]
         self.dx, self.dy, self.dz = self.get_dx_dy_dz()
         return self.values
-
-    def set_topography_mask(self, topography):  # TODO: Rename this to link topography or something like that? The advantage is that the cache is super easy just by checking the pointer
-        """This method takes a topography grid of the same extent as the regular
-         grid and creates a mask of voxels
-
-        Args:
-            topography (:class:`gempy.core.grid_modules.topography.Topography`):
-
-        Returns:
-
-        """
-        if topography.extent is None:
-            topography.extent = self.extent
-        else:
-            assert np.array_equal(topography.extent, self.extent),\
-                'The extent of the topography must match to the extent of the regular grid.'
-
-        # interpolate topography values to the regular grid
-        skimage = require_skimage()
-        regular_grid_topo = skimage.transform.resize(
-            image=topography.values_2d,
-            output_shape = (self.resolution[0], self.resolution[1]),
-            mode='constant',
-            anti_aliasing=False,
-            preserve_range=True
-        )
-
-        # Reshape the Z values of the regular grid to 3d
-        values_3d = self.values[:, 2].reshape(self.resolution)
-        if regular_grid_topo.ndim == 3:
-            regular_grid_topo_z = regular_grid_topo[:, :, [2]]
-        elif regular_grid_topo.ndim == 2:
-            regular_grid_topo_z = regular_grid_topo
-        else:
-            raise ValueError()
-        mask = np.greater(values_3d[:, :, :], regular_grid_topo_z)
-
-        self.mask_topo = mask
-        return self.mask_topo
 
 
 class Sections:
