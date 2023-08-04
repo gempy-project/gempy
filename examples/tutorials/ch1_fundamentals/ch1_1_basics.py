@@ -302,7 +302,7 @@ gpv.plot_2d(
 #    together with octrees and suited better the new capabilities of gempy3. 
 
 # %% 
-gpv.plot_3d(geo_model, image=False, plotter_type='basic')
+gpv.plot_3d(geo_model, show_data=False, image=False, plotter_type='basic')
 
 # %%
 # Adding topography
