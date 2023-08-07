@@ -258,13 +258,14 @@ gpv.plot_2d(geo_model, show_data=True, cell_number="mid", direction='y')
 # 
 # We can do the same with the underlying scalar-field solution:
 # 
-
+#
 # .. admonition:: New in GemPy 3! Scalar field visualization and Octrees
 #
 #    When we use octrees we can see that the scalar field looks quite blocky specially further away from the contacts.
 #    This is because octrees are sparse in areas where does not affect the solution. This is a good thing because
 #    it means that we are not wasting computational resources in areas where we do not need them. Check out the lith
 #    block to see how with fewer evaluations we get the same result as with a high resolution grid.
+#
 
 # %%
 gpv.plot_2d(
@@ -286,7 +287,7 @@ gpv.plot_2d(
 
 # %%
 # Dual Contouring and vtk visualization
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # 
 # In addition to 2D sections we can extract surfaces to visualize in 3D
 # renderers. Surfaces can be visualized as 3D triangle complexes in VTK
