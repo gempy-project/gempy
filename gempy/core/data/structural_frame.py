@@ -28,7 +28,39 @@ class StructuralFrame:
     def __init__(self, structural_groups: list[StructuralGroup], color_gen: ColorsGenerator):
         self.structural_groups = structural_groups  # ? This maybe could be optional
         self.color_gen = color_gen
+    
+    @classmethod
+    def from_data_tables(cls, surface_points: SurfacePointsTable, orientations: OrientationsTable):
+        surface_points_groups: list[SurfacePointsTable] = surface_points.get_surface_points_by_id_groups()
+        orientations_groups: list[OrientationsTable] = orientations.get_orientations_by_id_groups()
+        orientations_groups = OrientationsTable.fill_missing_orientations_groups(orientations_groups, surface_points_groups)
+        colors_generator = ColorsGenerator()
+        structural_elements = []
+        for i in range(len(surface_points_groups)):
+            structural_element: StructuralElement = StructuralElement(
+                name=surface_points.id_to_name(i),
+                surface_points=surface_points_groups[i],
+                orientations=orientations_groups[i],
+                color=next(colors_generator)
+            )
 
+            structural_elements.append(structural_element)
+        # * Structural groups definitions
+        default_formation: StructuralGroup = StructuralGroup(
+            name="default_formation",
+            elements=structural_elements,
+            structural_relation=StackRelationType.ERODE
+        )
+        # ? Should I move this to the constructor?
+        structural_frame: StructuralFrame = cls(
+            structural_groups=[default_formation],
+            color_gen=colors_generator
+        )
+        
+        return structural_frame
+        
+        
+        
     def __repr__(self):
         structural_groups_repr = ',\n'.join([repr(g) for g in self.structural_groups])
         fault_relations_str = np.array2string(self.fault_relations, precision=2, separator=', ', suppress_small=True) if self.fault_relations is not None else 'None'

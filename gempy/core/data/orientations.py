@@ -21,32 +21,6 @@ class OrientationsTable:
     
     dt = np.dtype([('X', 'f8'), ('Y', 'f8'), ('Z', 'f8'), ('G_x', 'f8'), ('G_y', 'f8'), ('G_z', 'f8'), ('id', 'i4'), ('nugget', 'f8')])  #: The custom data type for the data array.
     
-    def __str__(self):
-        return "\n" + np.array2string(self.data, precision=2, separator=',', suppress_small=True)
-
-    def __repr__(self):
-        return f"OrientationsTable(data=\n{np.array2string(self.data, precision=2, separator=',', suppress_small=True)},\nname_id_map={self.name_id_map})"
-
-    def _repr_html_(self):
-        rows_to_display = 10  # Define the number of rows to display from beginning and end
-        html = "<table>"
-        html += "<tr><th>X</th><th>Y</th><th>Z</th><th>G_x</th><th>G_y</th><th>G_z</th><th>id</th><th>nugget</th></tr>"
-        if len(self.data) > 2*rows_to_display:
-            for point in self.data[:rows_to_display]:
-                html += "<tr><td>{:.2f}</td><td>{:.2f}</td><td>{:.2f}</td><td>{:.2f}</td><td>{:.2f}</td><td>{:.2f}</td><td>{}</td><td>{:.2f}</td></tr>".format(*point)
-            html += "<tr><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td></tr>"
-            for point in self.data[-rows_to_display:]:
-                html += "<tr><td>{:.2f}</td><td>{:.2f}</td><td>{:.2f}</td><td>{:.2f}</td><td>{:.2f}</td><td>{:.2f}</td><td>{}</td><td>{:.2f}</td></tr>".format(*point)
-        else:
-            for point in self.data:
-                html += "<tr><td>{:.2f}</td><td>{:.2f}</td><td>{:.2f}</td><td>{:.2f}</td><td>{:.2f}</td><td>{:.2f}</td><td>{}</td><td>{:.2f}</td></tr>".format(*point)
-        html += "</table>"
-        return html
-
-    
-    def __len__(self):
-        return len(self.data)
-
     @classmethod
     def from_arrays(cls, x: np.ndarray, y: np.ndarray, z: np.ndarray,
                     G_x: np.ndarray, G_y: np.ndarray, G_z: np.ndarray,
@@ -118,4 +92,29 @@ class OrientationsTable:
     def df(self) -> 'pd.DataFrame':
         pd = require_pandas()
         return pd.DataFrame(self.data)
+
+    def __str__(self):
+        return "\n" + np.array2string(self.data, precision=2, separator=',', suppress_small=True)
+
+    def __repr__(self):
+        return f"OrientationsTable(data=\n{np.array2string(self.data, precision=2, separator=',', suppress_small=True)},\nname_id_map={self.name_id_map})"
+
+    def _repr_html_(self):
+        rows_to_display = 10  # Define the number of rows to display from beginning and end
+        html = "<table>"
+        html += "<tr><th>X</th><th>Y</th><th>Z</th><th>G_x</th><th>G_y</th><th>G_z</th><th>id</th><th>nugget</th></tr>"
+        if len(self.data) > 2 * rows_to_display:
+            for point in self.data[:rows_to_display]:
+                html += "<tr><td>{:.2f}</td><td>{:.2f}</td><td>{:.2f}</td><td>{:.2f}</td><td>{:.2f}</td><td>{:.2f}</td><td>{}</td><td>{:.2f}</td></tr>".format(*point)
+            html += "<tr><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td></tr>"
+            for point in self.data[-rows_to_display:]:
+                html += "<tr><td>{:.2f}</td><td>{:.2f}</td><td>{:.2f}</td><td>{:.2f}</td><td>{:.2f}</td><td>{:.2f}</td><td>{}</td><td>{:.2f}</td></tr>".format(*point)
+        else:
+            for point in self.data:
+                html += "<tr><td>{:.2f}</td><td>{:.2f}</td><td>{:.2f}</td><td>{:.2f}</td><td>{:.2f}</td><td>{:.2f}</td><td>{}</td><td>{:.2f}</td></tr>".format(*point)
+        html += "</table>"
+        return html
+
+    def __len__(self):
+        return len(self.data)
 

@@ -1,6 +1,7 @@
 ﻿import warnings
 from typing import Union
 
+import numpy as np
 from numpy import ndarray
 
 from gempy_engine.core.data.stack_relation_type import StackRelationType
@@ -25,6 +26,7 @@ def create_geomodel(
         extent: Union[list, ndarray] = None,
         resolution: Union[list, ndarray] = None,
         number_octree_levels: int = 1,
+        structural_frame: StructuralFrame = None,
         importer_helper: ImporterHelper = None,
 ) -> GeoModel:  # ? Do I need to pass pandas read kwargs?
     """
@@ -37,6 +39,7 @@ def create_geomodel(
         extent (Union[list, ndarray], optional): The 3D extent of the grid. Defaults to None.
         resolution (Union[list, ndarray], optional): The resolution of the grid. Defaults to None.
         number_octree_levels (int, optional): The number of octree levels for the dual contouring interpolation method. Defaults to 1.
+        structural_frame (StructuralFrame, optional): The structural frame of the GeoModel. Defaults to None.
         importer_helper (ImporterHelper, optional): Helper object to import structural elements. Defaults to None.
 
     Returns:
@@ -44,7 +47,7 @@ def create_geomodel(
     """
     grid: Grid = Grid(
         extent=extent,
-        resolution=resolution
+        resolution=resolution or np.array([20, 20, 20])
     )
 
     interpolation_options: InterpolationOptions = InterpolationOptions(
@@ -54,9 +57,11 @@ def create_geomodel(
         number_octree_levels=number_octree_levels,
     )
 
+    structural_frame: StructuralFrame = structural_frame or _initialize_structural_frame(importer_helper)
+
     geo_model: GeoModel = GeoModel(
         name=project_name,
-        structural_frame=_initialize_structural_frame(importer_helper),  # * Structural elements
+        structural_frame=structural_frame,
         grid=grid,
         interpolation_options=interpolation_options
     )
@@ -87,37 +92,7 @@ def create_data_legacy(
 def _initialize_structural_frame(importer_helper: ImporterHelper) -> StructuralFrame:
     surface_points, orientations = _read_input_points(importer_helper)
 
-    surface_points_groups: list[SurfacePointsTable] = surface_points.get_surface_points_by_id_groups()
-    orientations_groups: list[OrientationsTable] = orientations.get_orientations_by_id_groups()
-
-    orientations_groups = OrientationsTable.fill_missing_orientations_groups(orientations_groups, surface_points_groups)
-
-    colors_generator = ColorsGenerator()
-    structural_elements = []
-    
-    for i in range(len(surface_points_groups)):
-        structural_element: StructuralElement = StructuralElement(
-            name=surface_points.id_to_name(i),
-            surface_points=surface_points_groups[i],
-            orientations=orientations_groups[i],
-            color=next(colors_generator)
-        )
-
-        structural_elements.append(structural_element)
-
-    # * Structural groups definitions
-    default_formation: Stack = Stack(
-        name="default_formation",
-        elements=structural_elements,
-        structural_relation=StackRelationType.ERODE
-    )
-
-    # ? Should I move this to the constructor?
-    structural_frame: StructuralFrame = StructuralFrame(
-        structural_groups=[default_formation],
-        color_gen=colors_generator
-    )
-    return structural_frame
+    return StructuralFrame.from_data_tables(surface_points, orientations)
 
 
 def _read_input_points(importer_helper: ImporterHelper) -> (SurfacePointsTable, OrientationsTable):
