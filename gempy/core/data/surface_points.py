@@ -66,6 +66,10 @@ class SurfacePointsTable:
     def xyz(self) -> np.ndarray:
         return np.array([self.data['X'], self.data['Y'], self.data['Z']]).T
     
+    @property
+    def nugget(self) -> np.ndarray:
+        return self.data['nugget']
+    
     def __len__(self):
         return len(self.data)
     

@@ -44,6 +44,10 @@ class OrientationsTable:
     @property
     def grads(self) -> np.ndarray:
         return np.array([self.data['G_x'], self.data['G_y'], self.data['G_z']]).T
+    
+    @property
+    def nugget(self) -> np.ndarray:
+        return self.data['nugget']
 
     @property
     def ids(self) -> np.ndarray:
