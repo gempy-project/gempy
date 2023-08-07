@@ -8,18 +8,18 @@ from gempy.API.gp2_gp3_compatibility.gp3_to_gp2_input import gempy3_to_gempy2
 from gempy_engine.config import AvailableBackends
 from gempy_engine.core.data import Solutions
 from .grid_API import set_custom_grid
-from ..core.data.gempy_engine_config import GempyEngineConfig
+from ..core.data.gempy_engine_config import GemPyEngineConfig
 from ..core.data.geo_model import GeoModel
 from ..optional_dependencies import require_gempy_legacy
 
 
-def compute_model(gempy_model: GeoModel, engine_config: Optional[GempyEngineConfig] = None) -> Solutions:
+def compute_model(gempy_model: GeoModel, engine_config: Optional[GemPyEngineConfig] = None) -> Solutions:
     """
     Compute the geological model given the provided GemPy model.
 
     Args:
         gempy_model (GeoModel): The GemPy model to compute.
-        engine_config (Optional[GempyEngineConfig]): Configuration for the computational engine. Defaults to None, in which case a default configuration will be used.
+        engine_config (Optional[GemPyEngineConfig]): Configuration for the computational engine. Defaults to None, in which case a default configuration will be used.
 
     Raises:
         ValueError: If the provided backend in the engine_config is not supported.
@@ -27,7 +27,7 @@ def compute_model(gempy_model: GeoModel, engine_config: Optional[GempyEngineConf
     Returns:
         Solutions: The computed geological model.
     """
-    engine_config = engine_config or GempyEngineConfig(
+    engine_config = engine_config or GemPyEngineConfig(
         backend=AvailableBackends.numpy,
         use_gpu=False,
         pykeops_enabled=False
@@ -57,7 +57,7 @@ def compute_model(gempy_model: GeoModel, engine_config: Optional[GempyEngineConf
 
 
 def compute_model_at(gempy_model: GeoModel, at: np.ndarray,
-                     engine_config: Optional[GempyEngineConfig] = None) -> np.ndarray:
+                     engine_config: Optional[GemPyEngineConfig] = None) -> np.ndarray:
     """
     Compute the geological model at specific coordinates.
     
@@ -66,7 +66,7 @@ def compute_model_at(gempy_model: GeoModel, at: np.ndarray,
     Args:
         gempy_model (GeoModel): The GemPy model to compute.
         at (np.ndarray): The coordinates at which to compute the model.
-        engine_config (Optional[GempyEngineConfig], optional): Configuration for the computational engine. Defaults to None, in which case a default configuration will be used.
+        engine_config (Optional[GemPyEngineConfig], optional): Configuration for the computational engine. Defaults to None, in which case a default configuration will be used.
 
     Returns:
         np.ndarray: The computed geological model at the specified coordinates.
