@@ -44,20 +44,46 @@ class Transform:
         return cls(position, rotation, scale)
 
     @classmethod
-    def from_input_points(cls, surface_points: SurfacePointsTable, orientations: OrientationsTable) -> 'Transform':
+    def from_input_points_(cls, surface_points: SurfacePointsTable, orientations: OrientationsTable) -> 'Transform':
 
         # ? Should we have instead a pointer to the structural frame and treat it more as a getter than a setter?
-        
+
         input_points_xyz = np.concatenate([surface_points.xyz, orientations.xyz], axis=0)
         max_coord = np.max(input_points_xyz, axis=0)
         min_coord = np.min(input_points_xyz, axis=0)
         scaling_factor = 2 * np.max(max_coord - min_coord)
         center = (max_coord + min_coord) / 2
+        # [1.650345e+05  3.950050e+05 - 9.470000e+00]
         # center = np.zeros(3)
+        factor_ = 1 / np.array([scaling_factor, scaling_factor, scaling_factor / 100])
+        # [5.56006539e-06 5.56006539e-06 5.56006539e-04]
         return cls(
             position=-center,
             rotation=np.zeros(3),
-            scale=1 / np.array([scaling_factor, scaling_factor, scaling_factor])
+            scale=factor_
+        )
+
+    @classmethod
+    def from_input_points(cls, surface_points: SurfacePointsTable, orientations: OrientationsTable) -> 'Transform':
+        input_points_xyz = np.concatenate([surface_points.xyz, orientations.xyz], axis=0)
+        max_coord = np.max(input_points_xyz, axis=0)
+        min_coord = np.min(input_points_xyz, axis=0)
+
+        # Compute the range for each dimension
+        range_coord = 2 * (max_coord - min_coord)
+
+        # Avoid division by zero; replace zero with a small number
+        range_coord = np.where(range_coord == 0, 1e-10, range_coord)
+
+        # The scaling factor for each dimension is the inverse of its range
+        scaling_factors = 1 / range_coord
+        # 5.560065386368944e-06, 1.0022048506714773e-05, 0.0030402529490453603
+        center = (max_coord + min_coord) / 2
+        # [1.650345e+05  3.950050e+05 - 9.470000e+00]
+        return cls(
+            position=-center,
+            rotation=np.zeros(3),
+            scale=scaling_factors
         )
 
     @property
