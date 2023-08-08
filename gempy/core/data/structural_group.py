@@ -49,17 +49,6 @@ class StructuralGroup(ABC):
         """
         return html
 
-    def _repr_html_2(self):
-        elements_html = ''.join([e._repr_html_() for e in self.elements])
-        html = f"""<pre>
-    <b>StructuralGroup:</b>
-      Name: {self.name}
-      Structural Relation: {self.structural_relation}
-      Elements:
-    {elements_html}
-      Solution: {self.solution}
-    </pre>"""
-        return html
 
     @property
     def id(self):
