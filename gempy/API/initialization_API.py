@@ -4,18 +4,13 @@ from typing import Union
 import numpy as np
 from numpy import ndarray
 
-from gempy_engine.core.data.stack_relation_type import StackRelationType
-from gempy_engine.core.data import InterpolationOptions
-
 from gempy.API.io_API import read_surface_points, read_orientations
+from gempy_engine.core.data import InterpolationOptions
 from ..core.data.geo_model import GeoModel
 from ..core.data.grid import Grid
-from ..core.color_generator import ColorsGenerator
 from ..core.data.importer_helper import ImporterHelper
 from ..core.data.orientations import OrientationsTable
-from ..core.data.structural_element import StructuralElement
 from ..core.data.structural_frame import StructuralFrame
-from ..core.data.structural_group import Stack
 from ..core.data.surface_points import SurfacePointsTable
 from ..optional_dependencies import require_pooch
 
