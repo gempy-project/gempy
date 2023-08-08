@@ -141,4 +141,32 @@ class Transform:
         homogeneous_points = np.concatenate([points, np.ones((points.shape[0], 1))], axis=1)
         transformed_points = (np.linalg.inv(self.get_transform_matrix(transform_op_order)) @ homogeneous_points.T).T
         return transformed_points[:, :3]
-    
+
+
+    def transform_gradient(self, gradients: np.ndarray, transform_op_order: TransformOpsOrder = TransformOpsOrder.SRT,
+                           preserve_magnitude: bool = True) -> np.ndarray:
+        assert gradients.shape[1] == 3
+
+        # Extract the 3x3 upper-left section of the transformation matrix
+        transformation_3x3 = self.get_transform_matrix(transform_op_order)[:3, :3]
+
+        # Compute the inverse transpose of this 3x3 matrix
+        inv_trans_3x3 = np.linalg.inv(transformation_3x3).T
+
+        # Multiply the gradients by this inverse transpose matrix
+        transformed_gradients = (inv_trans_3x3 @ gradients.T).T
+        
+        if preserve_magnitude:
+            # Compute the magnitude of the original gradients
+            gradient_magnitudes = np.linalg.norm(gradients, axis=1)
+
+            # Compute the magnitude of the transformed gradients
+            transformed_gradient_magnitudes = np.linalg.norm(transformed_gradients, axis=1)
+
+            # Compute the ratio between the two magnitudes
+            magnitude_ratio = transformed_gradient_magnitudes / gradient_magnitudes
+
+            # Multiply the transformed gradients by this ratio
+            transformed_gradients /= magnitude_ratio[:, None]
+
+        return transformed_gradients
