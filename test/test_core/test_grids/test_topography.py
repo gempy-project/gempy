@@ -75,7 +75,7 @@ def test_real_grid_ales():
         geo_model._grid.regular_grid.set_topography_mask(geo_model._grid.topography)
 
     gpv = gp.plot.plot_3d(geo_model,
-                          plotter_type='basic', off_screen=True,
+                          plotter_type='basic', show=True,
                           show_topography=True,
                           show_scalar=False,
                           show_lith=True,
@@ -123,7 +123,7 @@ def test_plot_3d_structure_topo2(unconformity_model_topo, artificial_grid):
     plt.show()
 
     gpv = gp.plot.plot_3d(unconformity_model_topo,
-                          plotter_type='basic', off_screen=True,
+                          plotter_type='basic', show=True,
                           show_topography=True,
                           show_scalar=False,
                           show_lith=True,

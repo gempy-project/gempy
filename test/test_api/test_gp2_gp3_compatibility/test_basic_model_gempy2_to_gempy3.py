@@ -62,5 +62,5 @@ def test_set_gempy3_gempy2_bridge():
         gp.plot.plot_2d(geo_model, cell_number=25, direction='y', show_data=True, show_block=False, show_lith=True, series_n=1)
     
     plot_object: GemPyToVista = gp.plot.plot_3d(
-        geo_model, show_surfaces=True, show_lith=True, off_screen=False, kwargs_plot_structured_grid={"show_edges": False}
+        geo_model, show_surfaces=True, show_lith=True, show=False, kwargs_plot_structured_grid={"show_edges": False}
     )

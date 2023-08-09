@@ -68,7 +68,7 @@ gp.plot_3d(geo_model, image=False)
 
 # sphinx_gallery_thumbnail_number = 2
 gpv = gp.plot.plot_3d(geo_model,
-                      plotter_type='basic', off_screen=False,
+                      plotter_type='basic', show=False,
                       show_topography=True,
                       show_scalar=False,
                       show_lith=True,
