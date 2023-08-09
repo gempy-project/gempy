@@ -70,6 +70,10 @@ class SurfacePointsTable:
     def nugget(self) -> np.ndarray:
         return self.data['nugget']
     
+    @nugget.setter
+    def nugget(self, value: np.ndarray):
+        self.data['nugget'] = value
+    
     def __len__(self):
         return len(self.data)
     

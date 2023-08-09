@@ -234,7 +234,7 @@ class StructuralFrame:
 
     @property
     def surface_points(self) -> SurfacePointsTable:
-        """Returns a SurfacePointsTable for all surface points across the structural elements."""
+        """Returns a SurfacePointsTable for all surface points across the structural elements. This is a copy!"""
         all_data: np.ndarray = np.concatenate([element.surface_points.data for element in self.structural_elements])
         return SurfacePointsTable(data=all_data, name_id_map=self.element_name_id_map)
 
