@@ -30,16 +30,14 @@ def compute_model(gempy_model: GeoModel, engine_config: Optional[GemPyEngineConf
     engine_config = engine_config or GemPyEngineConfig(
         backend=AvailableBackends.numpy,
         use_gpu=False,
-        pykeops_enabled=False
     )
 
     match engine_config.backend:
         case AvailableBackends.numpy | AvailableBackends.tensorflow:
 
-            BackendTensor.change_backend(
+            BackendTensor.change_backend_gempy(
                 engine_backend=engine_config.backend,
-                use_gpu=engine_config.use_gpu,
-                pykeops_enabled=engine_config.pykeops_enabled
+                use_gpu=engine_config.use_gpu
             )
 
             gempy_model.solutions = gempy_engine.compute_model(
