@@ -131,14 +131,14 @@ todo_include_todos = True  # If true, `todo` and `todoList` produce output, else
 sphinx_gallery_conf = {
     # path to your examples scripts
     "examples_dirs"          : [
-        # "../../examples/getting_started",
+        "../../examples/getting_started",
         "../../examples/tutorials",
         # "../../examples/examples",
         # "../../examples/integrations",
     ],
     # path where to save gallery generated examples
     "gallery_dirs"           : [
-        # 'getting_started',
+        'getting_started',
         'tutorials',
         # "examples",
         # 'integrations'
