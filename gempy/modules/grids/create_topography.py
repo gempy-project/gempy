@@ -12,14 +12,7 @@ from scipy import fftpack
 import pandas as pn
 import os
 
-try:
-    from osgeo import gdal
-
-    GDAL_IMPORT = True
-except ImportError as e:
-    GDAL_IMPORT = False
-    print(e)
-
+from gempy.optional_dependencies import require_gdal
 import matplotlib.pyplot as plt
 
 
@@ -33,9 +26,8 @@ class LoadDEMGDAL:
             path_dem: path where dem is stored. file format: GDAL raster formats
             if grid: cropped to geomodel extent
         """
-        if GDAL_IMPORT == False:
-            raise ImportError('Gdal package is not installed. No support for raster formats.')
-        self.dem = gdal.Open(path_dem)
+        self.gdal = require_gdal()
+        self.dem = self.gdal.Open(path_dem)
 
         if isinstance(self.dem, type(None)):
             raise AttributeError('Raster file could not be opened {}. Check if the filepath is correct. If yes,'
@@ -100,10 +92,15 @@ class LoadDEMGDAL:
         if np.any(cornerpoints_geo[:2] - cornerpoints_dtm[:2]) != 0:
             path_dest = '_cropped_DEM.tif'
             new_bounds = (self.regular_grid_extent[[0, 2, 1, 3]])
-            gdal.Warp(path_dest, self.dem, options=gdal.WarpOptions(
-                options=['outputBounds'], outputBounds=new_bounds))
+            self.gdal.Warp(
+                path_dest,
+                self.dem,
+                options=self.gdal.WarpOptions(
+                    options=['outputBounds'], outputBounds=new_bounds
+                )
+            )
 
-            self.dem = gdal.Open(path_dest)
+            self.dem = self.gdal.Open(path_dest)
             self.dem_zval = self.dem.ReadAsArray()
             self._get_raster_dimensions()
 
@@ -132,7 +129,14 @@ class LoadDEMGDAL:
         shape = self.dem_zval.shape
         if len(shape) == 3:
             shape = shape[1:]
-        gdal.Translate(path_dest, self.dem, options=gdal.TranslateOptions(options=['format'], format="XYZ"))
+        self.gdal.Translate(
+            path_dest,
+            self.dem,
+            options=self.gdal.TranslateOptions(
+                options=['format'],
+                format="XYZ"
+            )
+        )
 
         xyz = pn.read_csv(path_dest, header=None, sep=' ').values
         self.values_3D = xyz.reshape((*shape, 3), order='C')
@@ -160,13 +164,14 @@ class LoadDEMGDAL:
         """
         props = self.dem.GetGeoTransform()
         print('current pixel xsize:', props[1], 'current pixel ysize:', -props[-1])
-        options = gdal.WarpOptions(options=['tr'], xRes=new_xres, yRes=new_yres)
-        newfile = gdal.Warp(save_path, self.dem, options=options)
+        options = self.gdal.WarpOptions(options=['tr'], xRes=new_xres, yRes=new_yres)
+        newfile = self.gdal.Warp(save_path, self.dem, options=options)
         newprops = newfile.GetGeoTransform()
         print('new pixel xsize:', newprops[1], 'new pixel ysize:', -newprops[-1])
         print('file saved in ' + save_path)
 
-    def _get_cornerpoints(self, extent):
+    @staticmethod
+    def _get_cornerpoints(extent):
         """Get the coordinates of the bounding box.
 
         Args:
