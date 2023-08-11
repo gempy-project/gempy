@@ -1,6 +1,6 @@
 ﻿from dataclasses import dataclass
 
-from config import AvailableBackends
+from gempy.config import AvailableBackends
 
 
 @dataclass
