@@ -6,6 +6,7 @@ import gempy as gp
 import numpy as np
 import pytest
 import os
+import matplotlib.pyplot as plt
 
 mm = gp.ImplicitCoKriging()
 mm.add_surfaces(['surface1', 'foo1', 'foo2', 'foo3'])
@@ -94,3 +95,19 @@ def test_read_data():
                     path_o=data_path + "/data/input_data/tut_chapter1/simple_fault_model_orientations.csv")
 
     assert model._surface_points.df.shape[0] == 57
+
+def test_add_surface_points_to_model():
+    geo_model = gp.create_model('TestModel1')
+    gp.init_data(geo_model, extent=[0, 800, 0, 200, -600, 0], resolution=[100, 100, 100])
+    geo_model.set_default_surfaces()
+
+    geo_model.add_surface_points(X=223, Y=0.01, Z=-94, surface='surface1')
+    geo_model.add_surface_points(X=458, Y=0, Z=-107, surface='surface1')
+    geo_model.add_surface_points(X=612, Y=0, Z=-14, surface='surface1')
+    geo_model.add_orientations(X=350, Y=0, Z=-300, surface='surface1', pole_vector=(0, 0, 1))
+
+    geo_model.add_surface_points(X=225, Y=1, Z=-269, surface='surface2')
+    geo_model.add_surface_points(X=459, Y=1, Z=-279, surface='surface2')
+
+    #gp.plot_2d(geo_model, cell_number=5, legend='force')
+    #plt.show()
