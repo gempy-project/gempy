@@ -5,7 +5,7 @@ import numpy as np
 
 from gempy.optional_dependencies import require_pandas
 
-DEFAULT_NUGGET = 0.01
+DEFAULT_ORI_NUGGET = 0.01
 
 # ? Maybe we should merge this with the SurfacePoints class from gempy_engine
 
@@ -26,16 +26,18 @@ class OrientationsTable:
                     G_x: np.ndarray, G_y: np.ndarray, G_z: np.ndarray,
                     names: np.ndarray, nugget: Optional[np.ndarray] = None) -> 'OrientationsTable':
 
+        data, name_id_map = cls.data_from_arrays(x, y, z, G_x, G_y, G_z, names, nugget)
+        return cls(data, name_id_map)
+
+    @classmethod
+    def data_from_arrays(cls, x, y, z, G_x, G_y, G_z, names, nugget,):
         if nugget is None:
-            nugget = np.zeros_like(x) + DEFAULT_NUGGET
-
+            nugget = np.zeros_like(x) + DEFAULT_ORI_NUGGET
         data = np.zeros(len(x), dtype=OrientationsTable.dt)
-
         name_id_map = {name: i for i, name in enumerate(np.unique(names))}
         ids = np.array([name_id_map[name] for name in names])
-
         data['X'], data['Y'], data['Z'], data['G_x'], data['G_y'], data['G_z'], data['id'], data['nugget'] = x, y, z, G_x, G_y, G_z, ids, nugget
-        return cls(data, name_id_map)
+        return data, name_id_map
 
     @classmethod
     def initialize_empty(cls) -> 'OrientationsTable':

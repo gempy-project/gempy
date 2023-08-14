@@ -33,8 +33,9 @@ import matplotlib.image as mpimg
 # %% 
 geo_model: gp.data.GeoModel = gp.create_geomodel(
     project_name='Model1',
-    extent=[0, 791, 0, 200, -582, 0],
-    number_octree_levels=4,
+    extent=[0, 791, -200, 200, -582, 0],
+    resolution=[50, 50, 50],
+    number_octree_levels=1,
     structural_frame=gp.data.StructuralFrame.initialize_default_structure()
     
 )
@@ -91,7 +92,7 @@ plt.show()
 # 
 
 # %% 
-p3d = gpv.plot_3d(geo_model)
+p3d = gpv.plot_3d(geo_model, image=True)
 
 # %%
 # Building the model
@@ -133,7 +134,7 @@ gp.add_surface_points(
 gpv.plot_2d(geo_model, cell_number=11)
 
 # Plot in 3D
-gpv.plot_3d(geo_model)
+gpv.plot_3d(geo_model, image=True)
 
 # %%
 # Now we can add the other two points of the layer:
@@ -153,7 +154,7 @@ gp.add_surface_points(
 
 # Plotting
 gpv.plot_2d(geo_model, cell_number=11)
-gpv.plot_3d(geo_model)
+gpv.plot_3d(geo_model, image=True)
 
 # %%
 # The minimum amount of data to interpolate anything in gempy is: a) 2
@@ -164,22 +165,34 @@ gpv.plot_3d(geo_model)
 
 # %% 
 # Adding orientation
-geo_model.add_orientations(X=350, Y=0, Z=-300, surface='surface1', pole_vector=(0, 0, 1))
-gp.plot_2d(geo_model, cell_number=5)
-gp.plot_3d(geo_model)
+# geo_model.add_orientations(X=350, Y=0, Z=-300, surface='surface1', pole_vector=(0, 0, 1))
+gp.add_orientations(
+    geo_model=geo_model,
+    x=[350],
+    y=[0],
+    z=[-300],
+    elements_names=['surface1'],
+    pole_vector=[[0, 0, 1]]
+)
+
+gpv.plot_2d(geo_model, cell_number=5)
+gpv.plot_3d(geo_model, image=True)
+
+# %%
+# Recompute transform
+geo_model.update_transform()
 
 # %%
 # Now we have enough data for finally interpolate!
 # 
 
 # %% 
-gp.compute_model(geo_model)
+geo_model.interpolation_options.dual_contouring = False
+gp.compute_model(geo_model, engine_config=gp.data.GemPyEngineConfig())
 
 # %% 
-geo_model.additional_data.kriging_data
+geo_model.interpolation_options.kernel_options
 
-# %% 
-geo_model.additional_data.rescaling_data
 
 # %%
 # That is, we have interpolated the 3D surface. We can visualize:
@@ -187,10 +200,10 @@ geo_model.additional_data.rescaling_data
 
 # %% 
 # In 2D
-gp.plot_2d(geo_model, cell_number=[5])
+gpv.plot_2d(geo_model, cell_number=[5])
 
 # In 3D
-gp.plot_3d(geo_model, show_surfaces=True)
+gpv.plot_3d(geo_model, show_surfaces=True)
 
 # %%
 # Adding more layers:
@@ -201,10 +214,8 @@ gp.plot_3d(geo_model, show_surfaces=True)
 # 
 
 # %% 
-geo_model.surfaces
+geo_model.structural_frame
 
-# %% 
-geo_model.series
 
 # %% 
 geo_model.add_surfaces(['surface3', 'basement'])

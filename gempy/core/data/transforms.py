@@ -84,6 +84,8 @@ class Transform:
 
         # The scaling factor for each dimension is the inverse of its range
         scaling_factors = 1 / range_coord
+        # ! Be careful with toy models
+        scaling_factors = np.array([scaling_factors[0], scaling_factors[0], scaling_factors[0]])
         center = (max_coord + min_coord) / 2
         return cls(
             position=-center,
