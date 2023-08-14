@@ -126,7 +126,7 @@ gp.add_surface_points(
     x=[223],
     y=[0.01],
     z=[-94],
-    elements_names=['surface_points'] # TODO: SurfacePointsTableMapper and StructuralFrame does not match!
+    elements_names=['surface1']
 )
 
 # Plot in 2D
@@ -155,7 +155,6 @@ gp.add_surface_points(
 gpv.plot_2d(geo_model, cell_number=11)
 gpv.plot_3d(geo_model)
 
-foo
 # %%
 # The minimum amount of data to interpolate anything in gempy is: a) 2
 # surface points per surface b) One orientation per series.

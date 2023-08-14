@@ -11,6 +11,7 @@ DEFAULT_SP_NUGGET = 0.00001
 # ? It does not seem a good a idea because gempy_engine.SurfacePoints is too terse
 
 
+# ! ids are not used apparently
 @dataclass
 class SurfacePointsTable:
     """

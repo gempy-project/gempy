@@ -49,7 +49,7 @@ def add_surface_points(geo_model: GeoModel, x: Sequence[float], y: Sequence[floa
             z=data['z'],
             names=[element_name] * len(data['x']),
             nugget=data['nugget'],
-            name_id_map=geo_model.surface_points.name_id_map
+            name_id_map=None
         )
 
         element: StructuralElement = geo_model.structural_frame.get_element_by_name(element_name)

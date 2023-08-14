@@ -73,7 +73,7 @@ class StructuralFrame:
             name="default_formations",
             elements=[
                 StructuralElement(
-                    name="surface_points",
+                    name="surface1",
                     surface_points=SurfacePointsTable.initialize_empty(),
                     orientations=OrientationsTable.initialize_empty(),
                     color=next(color_gen)
