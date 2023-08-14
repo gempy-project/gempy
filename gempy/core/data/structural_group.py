@@ -2,7 +2,7 @@
 from abc import ABC
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Optional, Union
+from typing import Optional, Union, Generator
 
 from gempy_engine.core.data.raw_arrays_solution import RawArraysSolution
 from gempy_engine.core.data.stack_relation_type import StackRelationType
@@ -65,7 +65,10 @@ class StructuralGroup(ABC):
     @property
     def number_of_elements(self) -> int:
         return len(self.elements)
-
+    
+    def get_element_by_name(self, element_name: str) -> StructuralElement | None:
+        matched_elements: Generator = (element for element in self.elements if element.name == element_name)
+        return next(matched_elements, None)
 
 
 # ? I think these two subclasses are not necessary

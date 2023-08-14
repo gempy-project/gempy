@@ -1,5 +1,5 @@
 ﻿from dataclasses import dataclass, field
-from typing import Optional
+from typing import Optional, Generator
 
 import numpy as np
 
@@ -28,7 +28,13 @@ class StructuralFrame:
     def __init__(self, structural_groups: list[StructuralGroup], color_gen: ColorsGenerator):
         self.structural_groups = structural_groups  # ? This maybe could be optional
         self.color_gen = color_gen
-    
+
+
+    def get_element_by_name(self, element_name: str) -> Optional[StructuralElement]:
+        elements: Generator = (group.get_element_by_name(element_name) for group in self.structural_groups)
+        valid_elements: Generator = (element for element in elements if element is not None)
+        return next(valid_elements, None)
+
     @classmethod
     def from_data_tables(cls, surface_points: SurfacePointsTable, orientations: OrientationsTable):
         surface_points_groups: list[SurfacePointsTable] = surface_points.get_surface_points_by_id_groups()

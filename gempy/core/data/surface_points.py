@@ -4,14 +4,14 @@ import numpy as np
 
 from gempy.optional_dependencies import require_pandas
 
-DEFAULT_NUGGET = 0.00001
+DEFAULT_SP_NUGGET = 0.00001
 
 
 # ? Maybe we should merge this with the SurfacePoints class from gempy_engine
 # ? It does not seem a good a idea because gempy_engine.SurfacePoints is too terse
 
 
-@dataclass  
+@dataclass
 class SurfacePointsTable:
     """
     A dataclass to represent a table of surface points in a geological model.
@@ -27,12 +27,12 @@ class SurfacePointsTable:
 
     def __repr__(self):
         return f"SurfacePointsTable(data=\n{np.array2string(self.data, precision=2, separator=',', suppress_small=True)},\nname_id_map={self.name_id_map})"
-    
+
     def _repr_html_(self):
         rows_to_display = 10  # Define the number of rows to display from beginning and end
         html = "<table>"
         html += "<tr><th>X</th><th>Y</th><th>Z</th><th>id</th><th>nugget</th></tr>"
-        if len(self.data) > 2*rows_to_display:
+        if len(self.data) > 2 * rows_to_display:
             for point in self.data[:rows_to_display]:
                 html += "<tr><td>{:.2f}</td><td>{:.2f}</td><td>{:.2f}</td><td>{}</td><td>{:.2f}</td></tr>".format(*point)
             html += "<tr><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td></tr>"
@@ -43,44 +43,50 @@ class SurfacePointsTable:
                 html += "<tr><td>{:.2f}</td><td>{:.2f}</td><td>{:.2f}</td><td>{}</td><td>{:.2f}</td></tr>".format(*point)
         html += "</table>"
         return html
-    
-    
+
     @classmethod
     def from_arrays(cls, x: np.ndarray, y: np.ndarray, z: np.ndarray,
                     names: np.ndarray, nugget: Optional[np.ndarray] = None) -> 'SurfacePointsTable':
+        data, name_id_map = cls.data_from_arrays(x, y, z, names, nugget)
+        return cls(data, name_id_map)
+
+    @classmethod
+    def data_from_arrays(cls, x: np.ndarray, y: np.ndarray, z: np.ndarray,
+                         names: np.ndarray, nugget: Optional[np.ndarray] = None,
+                         name_id_map: dict[str, int] = None) -> tuple[np.ndarray, dict[str, int]]:
         if nugget is None:
-            nugget = np.zeros_like(x) + DEFAULT_NUGGET
+            nugget = np.zeros_like(x) + DEFAULT_SP_NUGGET
 
-        data = np.zeros(len(x), dtype=SurfacePointsTable.dt)
-
-        name_id_map = {name: i for i, name in enumerate(np.unique(names))}
+        name_id_map = name_id_map or {name: i for i, name in enumerate(np.unique(names))}
         ids = np.array([name_id_map[name] for name in names])
 
+        data = np.zeros(len(x), dtype=SurfacePointsTable.dt)
         data['X'], data['Y'], data['Z'], data['id'], data['nugget'] = x, y, z, ids, nugget
-        return cls(data, name_id_map)
+        return data, name_id_map
+    
 
     @classmethod
     def initialize_empty(cls) -> 'SurfacePointsTable':
         return cls(np.zeros(0, dtype=SurfacePointsTable.dt), {})
-    
+
     def id_to_name(self, id: int) -> str:
         return list(self.name_id_map.keys())[id]
-    
+
     @property
     def xyz(self) -> np.ndarray:
         return np.array([self.data['X'], self.data['Y'], self.data['Z']]).T
-    
+
     @property
     def nugget(self) -> np.ndarray:
         return self.data['nugget']
-    
+
     @nugget.setter
     def nugget(self, value: np.ndarray):
         self.data['nugget'] = value
-    
+
     def __len__(self):
         return len(self.data)
-    
+
     def get_surface_points_by_name(self, name: str) -> 'SurfacePointsTable':
         return self.get_surface_points_by_id(self.name_id_map[name])
 
@@ -94,7 +100,7 @@ class SurfacePointsTable:
     @property
     def ids(self) -> np.ndarray:
         return self.data['id']
-        
+
     @property
     def id(self) -> int:
         # Check id is the same in the whole column and return it or throw an error
@@ -104,10 +110,8 @@ class SurfacePointsTable:
         if len(ids) == 0:
             raise ValueError(f"OrientationsTable contains no ids")
         return ids[0]
-    
-    
+
     @property
     def df(self) -> 'pd.DataFrame':
         pd = require_pandas()
         return pd.DataFrame(self.data)
-    
