@@ -203,7 +203,7 @@ geo_model.interpolation_options.kernel_options
 gpv.plot_2d(geo_model, cell_number=[5])
 
 # In 3D
-gpv.plot_3d(geo_model, show_surfaces=True)
+gpv.plot_3d(geo_model, show_surfaces=True, image=True)
 
 # %%
 # Adding more layers:
@@ -218,7 +218,8 @@ geo_model.structural_frame
 
 
 # %% 
-geo_model.add_surfaces(['surface3', 'basement'])
+# geo_model.add_surfaces(['surface3', 'basement'])
+
 
 # %%
 # Layer 2
@@ -229,8 +230,19 @@ geo_model.add_surfaces(['surface3', 'basement'])
 
 # %% 
 # Your code here:
-geo_model.add_surface_points(X=225, Y=0, Z=-269, surface='surface2')
-geo_model.add_surface_points(X=459, Y=0, Z=-279, surface='surface2')
+element2 = gp.data.StructuralElement(
+    name='surface2',
+    color=next(geo_model.structural_frame.color_generator),
+    surface_points=gp.data.SurfacePointsTable.from_arrays(
+        x=np.array([225, 459]),
+        y=np.array([0, 0]),
+        z=np.array([-269, -279]),
+        names='surface2'
+    ),
+    orientations=gp.data.OrientationsTable.initialize_empty()
+)
+
+geo_model.structural_frame.structural_groups[0].append_element(element2)
 
 # --------------------
 
@@ -239,8 +251,8 @@ geo_model.add_surface_points(X=459, Y=0, Z=-279, surface='surface2')
 gp.compute_model(geo_model)
 
 # %% 
-gp.plot_2d(geo_model, cell_number=5, legend='force')
-gp.plot_3d(geo_model)
+gpv.plot_2d(geo_model, cell_number=5, legend='force')
+gpv.plot_3d(geo_model, image=True)
 
 # %%
 # Layer 3
@@ -249,9 +261,24 @@ gp.plot_3d(geo_model)
 
 # %% 
 # Your code here:
-geo_model.add_surface_points(X=225, Y=0, Z=-439, surface='surface3')
-geo_model.add_surface_points(X=464, Y=0, Z=-456, surface='surface3')
-geo_model.add_surface_points(X=619, Y=0, Z=-433, surface='surface3')
+
+# geo_model.add_surface_points(X=225, Y=0, Z=-439, surface='surface3')
+# geo_model.add_surface_points(X=464, Y=0, Z=-456, surface='surface3')
+# geo_model.add_surface_points(X=619, Y=0, Z=-433, surface='surface3')
+
+element3 = gp.data.StructuralElement(
+    name='surface3',
+    color=next(geo_model.structural_frame.color_generator),
+    surface_points=gp.data.SurfacePointsTable.from_arrays(
+        x=np.array([225, 464, 619]),
+        y=np.array([0, 0, 0]),
+        z=np.array([-439, -456, -433]),
+        names='surface3'
+    ),
+    orientations=gp.data.OrientationsTable.initialize_empty()
+)   
+
+geo_model.structural_frame.structural_groups[0].append_element(element3)
 
 # ------------------
 
@@ -259,8 +286,8 @@ geo_model.add_surface_points(X=619, Y=0, Z=-433, surface='surface3')
 # Computing and plotting 3D
 gp.compute_model(geo_model)
 
-gp.plot_2d(geo_model, cell_number=5, legend='force')
-gp.plot_3d(geo_model, kwargs_plot_structured_grid={'opacity': .2})
+gpv.plot_2d(geo_model, cell_number=5, legend='force')
+gpv.plot_3d(geo_model, kwargs_plot_structured_grid={'opacity': .2})
 
 # %%
 # Adding a Fault

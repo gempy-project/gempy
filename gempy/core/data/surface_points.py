@@ -1,5 +1,5 @@
 ﻿from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, Union, Sequence
 import numpy as np
 
 from gempy.optional_dependencies import require_pandas
@@ -47,19 +47,24 @@ class SurfacePointsTable:
 
     @classmethod
     def from_arrays(cls, x: np.ndarray, y: np.ndarray, z: np.ndarray,
-                    names: np.ndarray, nugget: Optional[np.ndarray] = None) -> 'SurfacePointsTable':
+                    names: Union[Sequence | str], nugget: Optional[np.ndarray] = None) -> 'SurfacePointsTable':
         data, name_id_map = cls.data_from_arrays(x, y, z, names, nugget)
         return cls(data, name_id_map)
 
     @classmethod
     def data_from_arrays(cls, x: np.ndarray, y: np.ndarray, z: np.ndarray,
-                         names: np.ndarray, nugget: Optional[np.ndarray] = None,
+                         names: Union[Sequence | str], nugget: Optional[np.ndarray] = None,
                          name_id_map: dict[str, int] = None) -> tuple[np.ndarray, dict[str, int]]:
         if nugget is None:
             nugget = np.zeros_like(x) + DEFAULT_SP_NUGGET
 
         name_id_map = name_id_map or {name: i for i, name in enumerate(np.unique(names))}
-        ids = np.array([name_id_map[name] for name in names])
+        if isinstance(names, str):
+            ids = np.array([name_id_map[names]] * len(x))
+        elif isinstance(names, Sequence):
+            ids = np.array([name_id_map[name] for name in names])
+        else:
+            raise TypeError(f"Names should be a string or a NumPy array, not {type(names)}")
 
         data = np.zeros(len(x), dtype=SurfacePointsTable.dt)
         data['X'], data['Y'], data['Z'], data['id'], data['nugget'] = x, y, z, ids, nugget

@@ -1,5 +1,5 @@
 ﻿from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, Sequence, Union
 
 import numpy as np
 
@@ -24,18 +24,25 @@ class OrientationsTable:
     @classmethod
     def from_arrays(cls, x: np.ndarray, y: np.ndarray, z: np.ndarray,
                     G_x: np.ndarray, G_y: np.ndarray, G_z: np.ndarray,
-                    names: np.ndarray, nugget: Optional[np.ndarray] = None) -> 'OrientationsTable':
+                    names: Union[Sequence | str], nugget: Optional[np.ndarray] = None) -> 'OrientationsTable':
 
         data, name_id_map = cls.data_from_arrays(x, y, z, G_x, G_y, G_z, names, nugget)
         return cls(data, name_id_map)
 
     @classmethod
-    def data_from_arrays(cls, x, y, z, G_x, G_y, G_z, names, nugget,):
+    def data_from_arrays(cls, x, y, z, G_x, G_y, G_z, names, nugget, name_id_map=None) -> tuple[np.ndarray, dict[str, int]]:
         if nugget is None:
             nugget = np.zeros_like(x) + DEFAULT_ORI_NUGGET
+            
+        name_id_map = name_id_map or {name: i for i, name in enumerate(np.unique(names))}
+        if isinstance(names, str):
+            ids = np.array([name_id_map[names]] * len(x))
+        elif isinstance(names, Sequence):
+            ids = np.array([name_id_map[name] for name in names])
+        else:
+            raise TypeError(f"Names should be a string or a NumPy array, not {type(names)}")
+
         data = np.zeros(len(x), dtype=OrientationsTable.dt)
-        name_id_map = {name: i for i, name in enumerate(np.unique(names))}
-        ids = np.array([name_id_map[name] for name in names])
         data['X'], data['Y'], data['Z'], data['G_x'], data['G_y'], data['G_z'], data['id'], data['nugget'] = x, y, z, G_x, G_y, G_z, ids, nugget
         return data, name_id_map
 

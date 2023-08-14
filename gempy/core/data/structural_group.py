@@ -48,7 +48,9 @@ class StructuralGroup(ABC):
     </table>
         """
         return html
-
+    
+    def append_element(self, element: StructuralElement):
+        self.elements.append(element)
 
     @property
     def id(self):

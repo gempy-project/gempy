@@ -20,14 +20,14 @@ class StructuralFrame:
     """
     
     structural_groups: list[StructuralGroup]  #: List of structural groups that constitute the geological model.
-    color_gen: ColorsGenerator  #: Instance of ColorsGenerator used for assigning distinct colors to different structural elements.
+    color_generator: ColorsGenerator  #: Instance of ColorsGenerator used for assigning distinct colors to different structural elements.
     # ? Should I create some sort of structural options class? For example, the masking descriptor and faults relations pointer
     is_dirty: bool = True  #: Boolean flag indicating if the structural frame has been modified.
     
     
     def __init__(self, structural_groups: list[StructuralGroup], color_gen: ColorsGenerator):
         self.structural_groups = structural_groups  # ? This maybe could be optional
-        self.color_gen = color_gen
+        self.color_generator = color_gen
 
 
     def get_element_by_name(self, element_name: str) -> Optional[StructuralElement]:
@@ -148,7 +148,7 @@ class StructuralFrame:
             name="basement",
             surface_points=SurfacePointsTable(data=np.zeros(0, dtype=SurfacePointsTable.dt)),
             orientations=OrientationsTable(data=np.zeros(0, dtype=OrientationsTable.dt)),
-            color=self.color_gen.up_next(),
+            color=self.color_generator.up_next(),
         )
 
         return basement
