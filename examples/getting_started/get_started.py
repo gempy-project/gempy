@@ -412,16 +412,22 @@ gpv.plot_3d(geo_model, kwargs_plot_structured_grid={'opacity': .2})
 
 # %% 
 # Adding random topography
-geo_model.set_topography(source='random', fd=1.9, d_z=np.array([-150, 0]),
-                         resolution=np.array([200, 200]))
+# geo_model.set_topography(source='random', fd=1.9, d_z=np.array([-150, 0]),
+#                          resolution=np.array([200, 200]))
+gp.set_topography_from_random(
+    grid=geo_model.grid,
+    fractal_dimension=1.9,
+    d_z=np.array([-150, 0]),
+    topography_resolution=np.array([200, 200])
+)
 
 # %%
 # The topography can we visualize in both renderers:
 # 
 
 # %% 
-gp.plot_2d(geo_model, cell_number=5, legend='force')
-gp.plot_3d(geo_model, kwargs_plot_structured_grid={'opacity':.2})
+gpv.plot_2d(geo_model, cell_number=5, legend='force')
+gpv.plot_3d(geo_model, kwargs_plot_structured_grid={'opacity':.2})
 
 # %%
 # But also allows us to compute the geological map of an area:
@@ -431,7 +437,7 @@ gp.plot_3d(geo_model, kwargs_plot_structured_grid={'opacity':.2})
 gp.compute_model(geo_model)
 
 # sphinx_gallery_thumbnail_number = 16
-gp.plot_3d(geo_model, show_topography=True)
+gpv.plot_3d(geo_model, show_topography=True)
 
 # %%
 # Gravity inversion
