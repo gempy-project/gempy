@@ -278,7 +278,7 @@ def plot_3d(model, plotter_type='basic',
             kwargs_plot_data=None,
             image=False,
             off_screen=False,
-            font_size: int =pv.global_theme.font.size,
+            font_size: int = pv.global_theme.font.size,
             **kwargs) -> GemPyToVista:
     """foobar
 
