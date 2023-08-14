@@ -338,6 +338,9 @@ def plot_3d(model, plotter_type='basic',
     if ve is not None:
         gpv.p.set_scale(zscale=ve)
 
+    if font_size is not None:
+        gpv.p.show_bounds(font_size=font_size)
+
     if fig_path is not None:
         gpv.p.show(screenshot=fig_path)
 
