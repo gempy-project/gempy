@@ -32,6 +32,7 @@ setup(
     author='Miguel de la Varga, Alexander Zimmerman, Elisa Heim, Alexander Schaaf, Fabian Stamm, Florian Wellmann, Jan Niederau, Andrew Annex, Alexander Juestel',
     author_email='miguel@terranigma-solutions.com',
     description='An Open-source, Python-based 3-D structural geological modeling software.',
-    long_description='GemPy is a Python-based, open-source geomodeling library. It is capable of constructing complex 3D geological models of folded structures, fault networks and unconformities, based on the underlying powerful implicit representation approach.' ,
+    long_description_content_type='text/markdown',
+    long_description=long_description,
     keywords=['geology', '3-D modeling', 'structural geology', 'uncertainty']
 )
