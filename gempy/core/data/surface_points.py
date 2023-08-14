@@ -59,6 +59,10 @@ class SurfacePointsTable:
         data['X'], data['Y'], data['Z'], data['id'], data['nugget'] = x, y, z, ids, nugget
         return cls(data, name_id_map)
 
+    @classmethod
+    def initialize_empty(cls) -> 'SurfacePointsTable':
+        return cls(np.zeros(0, dtype=SurfacePointsTable.dt), {})
+    
     def id_to_name(self, id: int) -> str:
         return list(self.name_id_map.keys())[id]
     

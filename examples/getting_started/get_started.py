@@ -8,6 +8,7 @@ Getting Started
 
 # Importing GemPy
 import gempy as gp
+import gempy_viewer as gpv
 
 # Importing aux libraries
 import numpy as np
@@ -30,21 +31,15 @@ import matplotlib.image as mpimg
 # 
 
 # %% 
-geo_model = gp.create_model('Model1')
-geo_model = gp.init_data(geo_model, extent=[0, 791, 0, 200, -582, 0], resolution=[100, 10, 100])
+geo_model: gp.data.GeoModel = gp.create_geomodel(
+    project_name='Model1',
+    extent=[0, 791, 0, 200, -582, 0],
+    number_octree_levels=4,
+    structural_frame=gp.data.StructuralFrame.initialize_default_structure()
+    
+)
 
-# %%
-# GemPy core code is written in Python. However for efficiency (and other
-# reasons) most of heavy computations happend in optimize compile code,
-# either C or CUDA for GPU. To do so, GemPy rely on the library aesara. To
-# guarantee maximum optimization aesara requires to compile the code for
-# every Python kernel. The compilation is done by calling the following
-# line at any point (before computing the model):
-# 
-
-# %% 
-gp.set_interpolator(geo_model, aesara_optimizer='fast_compile', verbose=[])
-
+print(geo_model)
 # %%
 # Creating figure:
 # ~~~~~~~~~~~~~~~~
@@ -62,7 +57,7 @@ gp.set_interpolator(geo_model, aesara_optimizer='fast_compile', verbose=[])
 
 # %% 
 # %matplotlib qt5
-p2d = gp.plot_2d(geo_model)
+p2d = gpv.plot_2d(geo_model)
 
 # %%
 # Add model section
@@ -87,7 +82,7 @@ p2d = gp.plot_2d(geo_model)
 # Reading image
 img = mpimg.imread('wells.png')
 # Plotting it inplace
-p2d = gp.plot_2d(geo_model, show=False)
+p2d = gpv.plot_2d(geo_model, show=False)
 p2d.axes[0].imshow(img, origin='upper', alpha=.8, extent=(0, 791, -582, 0))
 plt.show()
 
@@ -96,7 +91,7 @@ plt.show()
 # 
 
 # %% 
-p3d = gp.plot_3d(geo_model)
+p3d = gpv.plot_3d(geo_model)
 
 # %%
 # Building the model
@@ -114,16 +109,7 @@ p3d = gp.plot_3d(geo_model)
 # 
 
 # %% 
-geo_model.surfaces
-
-# %%
-# If we do not care about the names and we just want to interpolate a
-# surface we can use:
-# 
-
-# %% 
-# Default surfaces:
-geo_model.set_default_surfaces()
+geo_model.structural_frame.structural_elements
 
 # %%
 # Now we can start adding data. GemPy input data consist on surface points

@@ -51,8 +51,18 @@ def create_geomodel(
         dual_contouring=True,
         number_octree_levels=number_octree_levels,
     )
+    
+    
+    match (structural_frame, importer_helper):
+        case (None, None):
+            # ? For now my gut feeling is that is better to pass the structural frame explicitly
+            raise ValueError("Either structural_frame or importer_helper must be provided. You can use StructuralFrame.initialize_default_structure() to create a default structural frame.")
+            structural_frame = StructuralFrame.initialize_default_structure()
+        case (None, _):
+            structural_frame = _initialize_structural_frame(importer_helper)
+        case _:
+            pass
 
-    structural_frame: StructuralFrame = structural_frame or _initialize_structural_frame(importer_helper)
 
     geo_model: GeoModel = GeoModel(
         name=project_name,

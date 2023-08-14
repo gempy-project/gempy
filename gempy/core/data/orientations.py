@@ -37,6 +37,11 @@ class OrientationsTable:
         data['X'], data['Y'], data['Z'], data['G_x'], data['G_y'], data['G_z'], data['id'], data['nugget'] = x, y, z, G_x, G_y, G_z, ids, nugget
         return cls(data, name_id_map)
 
+    @classmethod
+    def initialize_empty(cls) -> 'OrientationsTable':
+        return cls(np.zeros(0, dtype=OrientationsTable.dt))
+    
+    
     @property
     def xyz(self) -> np.ndarray:
         return np.array([self.data['X'], self.data['Y'], self.data['Z']]).T

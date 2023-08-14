@@ -1,4 +1,5 @@
 ﻿import pprint
+import warnings
 from enum import Enum, auto
 
 import numpy as np
@@ -18,6 +19,8 @@ class Transform:
     position: np.ndarray
     rotation: np.ndarray
     scale: np.ndarray
+
+    _is_default_transform: bool = False
 
     def __repr__(self):
         return pprint.pformat(self.__dict__)
@@ -62,10 +65,14 @@ class Transform:
             rotation=np.zeros(3),
             scale=factor_
         )
-
     @classmethod
     def from_input_points(cls, surface_points: SurfacePointsTable, orientations: OrientationsTable) -> 'Transform':
         input_points_xyz = np.concatenate([surface_points.xyz, orientations.xyz], axis=0)
+        if input_points_xyz.shape[0] == 0:
+            transform = cls(position=np.zeros(3), rotation=np.zeros(3), scale=np.ones(3))
+            transform._is_default_transform = True
+            return transform
+
         max_coord = np.max(input_points_xyz, axis=0)
         min_coord = np.min(input_points_xyz, axis=0)
 
@@ -77,9 +84,7 @@ class Transform:
 
         # The scaling factor for each dimension is the inverse of its range
         scaling_factors = 1 / range_coord
-        # 5.560065386368944e-06, 1.0022048506714773e-05, 0.0030402529490453603
         center = (max_coord + min_coord) / 2
-        # [1.650345e+05  3.950050e+05 - 9.470000e+00]
         return cls(
             position=-center,
             rotation=np.zeros(3),
@@ -89,7 +94,7 @@ class Transform:
     @property
     def isometric_scale(self):
         # TODO: double check how was done in old gempy
-        return 1/np.mean(self.scale)
+        return 1 / np.mean(self.scale)
 
     def get_transform_matrix(self, transform_type: TransformOpsOrder = TransformOpsOrder.SRT) -> np.ndarray:
         T = np.eye(4)
@@ -131,17 +136,23 @@ class Transform:
     def apply(self, points: np.ndarray, transform_op_order: TransformOpsOrder = TransformOpsOrder.SRT):
         # * NOTE: to compare with legacy we would have to add 0.5 to the coords
         assert points.shape[1] == 3
+        if self._is_default_transform:
+            warnings.warn(
+                message="Interpolation is being done with the default transform. "
+                        "If you do not know what you are doing you should probably call GeoModel.update_transform() first.",
+                category=RuntimeWarning
+            )
+
         homogeneous_points = np.concatenate([points, np.ones((points.shape[0], 1))], axis=1)
         transformed_points = (self.get_transform_matrix(transform_op_order) @ homogeneous_points.T).T
         return transformed_points[:, :3]
-    
+
     def apply_inverse(self, points: np.ndarray, transform_op_order: TransformOpsOrder = TransformOpsOrder.SRT):
         # * NOTE: to compare with legacy we would have to add 0.5 to the coords
         assert points.shape[1] == 3
         homogeneous_points = np.concatenate([points, np.ones((points.shape[0], 1))], axis=1)
         transformed_points = (np.linalg.inv(self.get_transform_matrix(transform_op_order)) @ homogeneous_points.T).T
         return transformed_points[:, :3]
-
 
     def transform_gradient(self, gradients: np.ndarray, transform_op_order: TransformOpsOrder = TransformOpsOrder.SRT,
                            preserve_magnitude: bool = True) -> np.ndarray:
@@ -155,7 +166,7 @@ class Transform:
 
         # Multiply the gradients by this inverse transpose matrix
         transformed_gradients = (inv_trans_3x3 @ gradients.T).T
-        
+
         if preserve_magnitude:
             # Compute the magnitude of the original gradients
             gradient_magnitudes = np.linalg.norm(gradients, axis=1)

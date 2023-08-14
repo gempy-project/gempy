@@ -87,6 +87,12 @@ class GeoModel:
         # TODO: Improve this
         return pprint.pformat(self.__dict__)
 
+    def update_transform(self):
+        self.transform = Transform.from_input_points(
+            surface_points=self.surface_points,
+            orientations=self.orientations
+        )
+        
     @property
     def solutions(self):
         return self._solutions

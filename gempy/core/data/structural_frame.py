@@ -59,6 +59,30 @@ class StructuralFrame:
         
         return structural_frame
         
+    @classmethod
+    def initialize_default_structure(cls):
+        color_gen = ColorsGenerator()
+        
+        structural_group = StructuralGroup(
+            name="default_formations",
+            elements=[
+                StructuralElement(
+                    name="surface_points",
+                    surface_points=SurfacePointsTable.initialize_empty(),
+                    orientations=OrientationsTable.initialize_empty(),
+                    color=next(color_gen)
+                )
+            ],
+            structural_relation=StackRelationType.ERODE
+        )
+        
+        structural_frame = cls(
+            structural_groups=[structural_group],     
+            color_gen=color_gen
+        )
+        
+        return structural_frame
+        
         
         
     def __repr__(self):
