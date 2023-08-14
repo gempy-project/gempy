@@ -1,6 +1,7 @@
 ﻿import pprint
 import warnings
 from dataclasses import dataclass, field
+from typing import Sequence, Optional
 
 import numpy as np
 
@@ -92,7 +93,7 @@ class GeoModel:
             surface_points=self.surface_points,
             orientations=self.orientations
         )
-        
+
     @property
     def solutions(self):
         return self._solutions
@@ -126,7 +127,7 @@ class GeoModel:
         if self.structural_frame.is_dirty is False:
             return self._interpolationInput
         n_octree_lvl = self.interpolation_options.number_octree_levels
-        
+
         compute_octrees: bool = n_octree_lvl > 1
 
         # * Set regular grid to the octree resolution. ? Probably a better way to do this would be to make regular_grid resolution a property
@@ -146,7 +147,6 @@ class GeoModel:
                 extent=self.grid.regular_grid.extent,
                 resolution=octree_leaf_resolution
             )
-            
 
         self._interpolationInput = InterpolationInput.from_structural_frame(
             structural_frame=self.structural_frame,
@@ -161,3 +161,7 @@ class GeoModel:
     def input_data_descriptor(self) -> InputDataDescriptor:
         # TODO: This should have the exact same dirty logic as interpolation_input
         return self.structural_frame.input_data_descriptor
+
+    def add_surface_points(self, X: Sequence[float], Y: Sequence[float], Z: Sequence[float],
+                           surface: Sequence[str], nugget: Optional[Sequence[float]] = None) -> None:
+        raise NotImplementedError("This method is deprecated. Use `gp.add_surface_points` instead")

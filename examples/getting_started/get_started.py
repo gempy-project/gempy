@@ -120,13 +120,20 @@ geo_model.structural_frame.structural_elements
 
 # %% 
 # Add a point
-geo_model.add_surface_points(X=223, Y=0.01, Z=-94, surface='surface1')
+# geo_model.add_surface_points(X=223, Y=0.01, Z=-94, surface='surface1')
+gp.add_surface_points(
+    geo_model=geo_model,
+    x=[223],
+    y=[0.01],
+    z=[-94],
+    elements_names=['surface1']
+)
 
 # Plot in 2D
-gp.plot_2d(geo_model, cell_number=11)
+gpv.plot_2d(geo_model, cell_number=11)
 
 # Plot in 3D
-gp.plot_3d(geo_model)
+gpv.plot_3d(geo_model)
 
 # %%
 # Now we can add the other two points of the layer:
@@ -134,13 +141,21 @@ gp.plot_3d(geo_model)
 
 # %% 
 # Add points
-geo_model.add_surface_points(X=458, Y=0, Z=-107, surface='surface1')
-geo_model.add_surface_points(X=612, Y=0, Z=-14, surface='surface1')
+# geo_model.add_surface_points(X=458, Y=0, Z=-107, surface='surface1')
+# geo_model.add_surface_points(X=612, Y=0, Z=-14, surface='surface1')
+gp.add_surface_points(
+    geo_model=geo_model,
+    x=[458, 612],
+    y=[0, 0],
+    z=[-107, -14],
+    elements_names=['surface1', 'surface1']
+)
 
 # Plotting
-gp.plot_2d(geo_model, cell_number=11)
-gp.plot_3d(geo_model)
+gpv.plot_2d(geo_model, cell_number=11)
+gpv.plot_3d(geo_model)
 
+foo
 # %%
 # The minimum amount of data to interpolate anything in gempy is: a) 2
 # surface points per surface b) One orientation per series.
