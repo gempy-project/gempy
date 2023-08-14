@@ -12,7 +12,7 @@ from gempy_engine.core.data.input_data_descriptor import InputDataDescriptor
 from gempy_engine.core.data.interpolation_input import InterpolationInput
 from .orientations import OrientationsTable
 from .structural_frame import StructuralFrame
-from .transforms import Transform
+from .transforms import Transform, GlobalAnisotropy
 from .grid import Grid
 
 """
@@ -88,11 +88,14 @@ class GeoModel:
         # TODO: Improve this
         return pprint.pformat(self.__dict__)
 
-    def update_transform(self):
+    def update_transform(self, auto_anisotropy: GlobalAnisotropy = GlobalAnisotropy.CUBE, anisotropy_limit: Optional[np.ndarray] = None):
         self.transform = Transform.from_input_points(
             surface_points=self.surface_points,
             orientations=self.orientations
         )
+        
+        self.transform.apply_anisotropy(anisotropy_type=auto_anisotropy, anisotropy_limit=anisotropy_limit)
+            
 
     @property
     def solutions(self):

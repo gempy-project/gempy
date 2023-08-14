@@ -180,7 +180,7 @@ gpv.plot_3d(geo_model, image=True)
 
 # %%
 # Recompute transform
-geo_model.update_transform()
+geo_model.update_transform(gp.data.GlobalAnisotropy.NONE)  # * Remove the auto anisotropy for this 2.5D model
 
 # %%
 # Now we have enough data for finally interpolate!

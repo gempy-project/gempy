@@ -1,6 +1,7 @@
 ﻿import pprint
 import warnings
 from enum import Enum, auto
+from typing import Optional
 
 import numpy as np
 from dataclasses import dataclass
@@ -13,6 +14,12 @@ class TransformOpsOrder(Enum):
     TRS = auto()  # * The order of the transformations is: scale, rotation, translation
     SRT = auto()  # * The order of the transformations is: translation, rotation, scale
 
+
+class GlobalAnisotropy(Enum):
+    CUBE = auto() # * Transform data to be as close as possible to a cube
+    NONE = auto() # * Do not transform data
+    MANUAL = auto() # * Use the user defined transform
+    
 
 @dataclass
 class Transform:
@@ -56,16 +63,13 @@ class Transform:
         min_coord = np.min(input_points_xyz, axis=0)
         scaling_factor = 2 * np.max(max_coord - min_coord)
         center = (max_coord + min_coord) / 2
-        # [1.650345e+05  3.950050e+05 - 9.470000e+00]
-        # center = np.zeros(3)
         factor_ = 1 / np.array([scaling_factor, scaling_factor, scaling_factor / 100])
-        # [5.56006539e-06 5.56006539e-06 5.56006539e-04]
         return cls(
             position=-center,
             rotation=np.zeros(3),
             scale=factor_
         )
-    
+
     @classmethod
     def from_input_points(cls, surface_points: SurfacePointsTable, orientations: OrientationsTable) -> 'Transform':
         input_points_xyz = np.concatenate([surface_points.xyz, orientations.xyz], axis=0)
@@ -85,7 +89,7 @@ class Transform:
 
         # The scaling factor for each dimension is the inverse of its range
         scaling_factors = 1 / range_coord
-        scaling_factors = cls._adjust_scale_to_limit_ratio(scaling_factors, limit=1) # ! Increase this number to auto anisotropy
+        
         # ! Be careful with toy models
         center = (max_coord + min_coord) / 2
         return cls(
@@ -94,8 +98,24 @@ class Transform:
             scale=scaling_factors
         )
 
+    def apply_anisotropy(self, anisotropy_type: GlobalAnisotropy, anisotropy_limit: Optional[np.ndarray] = None):
+        if anisotropy_type == GlobalAnisotropy.CUBE:
+            self.scale = np.ones(3)
+        elif anisotropy_type == GlobalAnisotropy.NONE:
+            self.scale = self._adjust_scale_to_limit_ratio(
+                s=self.scale,
+                anisotropic_limit=np.array([1, 1, 1])  # ! Increase this number to auto anisotropy
+            )
+        elif anisotropy_type == GlobalAnisotropy.MANUAL and anisotropy_limit is not None:
+            self.scale = self._adjust_scale_to_limit_ratio(
+                s=self.scale,
+                anisotropic_limit=anisotropy_limit
+            )
+        else:
+            raise NotImplementedError
+        
     @staticmethod
-    def _adjust_scale_to_limit_ratio(s, limit=10):
+    def _adjust_scale_to_limit_ratio(s, anisotropic_limit=np.array([10, 10, 10])):
         # Calculate the ratios
         ratios = [
             s[0] / s[1], s[0] / s[2],
@@ -103,25 +123,21 @@ class Transform:
             s[2] / s[0], s[2] / s[1]
         ]
 
-        # Find the maximum ratio and its index
-        max_ratio = max(ratios)
-        max_index = ratios.index(max_ratio)
+        # Adjust the scales based on the index of the max ratio
+        if ratios[0] > anisotropic_limit[0]:
+            s[0] = s[1] * anisotropic_limit[0]
+        if ratios[1] > anisotropic_limit[0]:
+            s[0] = s[2] * anisotropic_limit[0]
 
-        # If the max ratio exceeds the limit
-        if max_ratio > limit:
-            # Adjust the scales based on the index of the max ratio
-            if ratios[0] > limit:
-                s[0] = s[1] * limit
-            if ratios[1] > limit:
-                s[0] = s[2] * limit
-            if ratios[2] > limit:
-                s[1] = s[0] * limit
-            if ratios[3] > limit:
-                s[1] = s[2] * limit
-            if ratios[4] > limit:
-                s[2] = s[0] * limit
-            if ratios[5] > limit:
-                s[2] = s[1] * limit
+        if ratios[2] > anisotropic_limit[1]:
+            s[1] = s[0] * anisotropic_limit[1]
+        if ratios[3] > anisotropic_limit[1]:
+            s[1] = s[2] * anisotropic_limit[1]
+
+        if ratios[4] > anisotropic_limit[2]:
+            s[2] = s[0] * anisotropic_limit[2]
+        if ratios[5] > anisotropic_limit[2]:
+            s[2] = s[1] * anisotropic_limit[2]
 
         return s
 
@@ -133,7 +149,7 @@ class Transform:
             s[2] / s[0], s[2] / s[1]
         ]
         return max(ratios)
-    
+
     @property
     def isometric_scale(self):
         # TODO: double check how was done in old gempy
