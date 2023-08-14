@@ -50,7 +50,7 @@ from .plot import _plot as _plot
 # Assert at least pyton 3.10
 assert sys.version_info[0] >= 3 and sys.version_info[1] >= 10, "GemPy requires Python 3.10 or higher"
 
-__version__ = '2.3.0'
+__version__ = '2.3.1'
 
 if __name__ == '__main__':
     pass
