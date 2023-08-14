@@ -65,6 +65,7 @@ class Transform:
             rotation=np.zeros(3),
             scale=factor_
         )
+    
     @classmethod
     def from_input_points(cls, surface_points: SurfacePointsTable, orientations: OrientationsTable) -> 'Transform':
         input_points_xyz = np.concatenate([surface_points.xyz, orientations.xyz], axis=0)
@@ -84,8 +85,8 @@ class Transform:
 
         # The scaling factor for each dimension is the inverse of its range
         scaling_factors = 1 / range_coord
+        scaling_factors = cls._adjust_scale_to_limit_ratio(scaling_factors, limit=1) # ! Increase this number to auto anisotropy
         # ! Be careful with toy models
-        scaling_factors = np.array([scaling_factors[0], scaling_factors[0], scaling_factors[0]])
         center = (max_coord + min_coord) / 2
         return cls(
             position=-center,
@@ -93,6 +94,46 @@ class Transform:
             scale=scaling_factors
         )
 
+    @staticmethod
+    def _adjust_scale_to_limit_ratio(s, limit=10):
+        # Calculate the ratios
+        ratios = [
+            s[0] / s[1], s[0] / s[2],
+            s[1] / s[0], s[1] / s[2],
+            s[2] / s[0], s[2] / s[1]
+        ]
+
+        # Find the maximum ratio and its index
+        max_ratio = max(ratios)
+        max_index = ratios.index(max_ratio)
+
+        # If the max ratio exceeds the limit
+        if max_ratio > limit:
+            # Adjust the scales based on the index of the max ratio
+            if ratios[0] > limit:
+                s[0] = s[1] * limit
+            if ratios[1] > limit:
+                s[0] = s[2] * limit
+            if ratios[2] > limit:
+                s[1] = s[0] * limit
+            if ratios[3] > limit:
+                s[1] = s[2] * limit
+            if ratios[4] > limit:
+                s[2] = s[0] * limit
+            if ratios[5] > limit:
+                s[2] = s[1] * limit
+
+        return s
+
+    @staticmethod
+    def _max_scale_ratio(s):
+        ratios = [
+            s[0] / s[1], s[0] / s[2],
+            s[1] / s[0], s[1] / s[2],
+            s[2] / s[0], s[2] / s[1]
+        ]
+        return max(ratios)
+    
     @property
     def isometric_scale(self):
         # TODO: double check how was done in old gempy

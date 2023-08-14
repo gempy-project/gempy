@@ -169,7 +169,7 @@ gpv.plot_3d(geo_model, image=True)
 gp.add_orientations(
     geo_model=geo_model,
     x=[350],
-    y=[0],
+    y=[1],
     z=[-300],
     elements_names=['surface1'],
     pole_vector=[[0, 0, 1]]
