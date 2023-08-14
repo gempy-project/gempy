@@ -43,7 +43,7 @@ def add_surface_points(geo_model: GeoModel, x: Sequence[float], y: Sequence[floa
 
     # * Loop per element_name
     for element_name, data in grouped_data.items():
-        formatted_data: np.ndarray = SurfacePointsTable.data_from_arrays(
+        formatted_data, _ = SurfacePointsTable.data_from_arrays(
             x=data['x'],
             y=data['y'],
             z=data['z'],

@@ -126,7 +126,7 @@ gp.add_surface_points(
     x=[223],
     y=[0.01],
     z=[-94],
-    elements_names=['surface1']
+    elements_names=['surface_points'] # TODO: SurfacePointsTableMapper and StructuralFrame does not match!
 )
 
 # Plot in 2D
