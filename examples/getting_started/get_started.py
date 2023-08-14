@@ -287,7 +287,7 @@ geo_model.structural_frame.structural_groups[0].append_element(element3)
 gp.compute_model(geo_model)
 
 gpv.plot_2d(geo_model, cell_number=5, legend='force')
-gpv.plot_3d(geo_model, kwargs_plot_structured_grid={'opacity': .2})
+gpv.plot_3d(geo_model, kwargs_plot_structured_grid={'opacity': .2}, image=True)
 
 # %%
 # Adding a Fault
@@ -307,31 +307,31 @@ gpv.plot_3d(geo_model, kwargs_plot_structured_grid={'opacity': .2})
 # 
 
 # %% 
-geo_model.add_features('Fault1')
+# geo_model.add_features('Fault1')
 
 # %% 
-geo_model.reorder_features(['Fault1', 'Default series'])
+# geo_model.reorder_features(['Fault1', 'Default series'])
 
 # %%
 # Then define that is a fault:
 # 
 
 # %% 
-geo_model.set_is_fault('Fault1')
+# geo_model.set_is_fault('Fault1')
 
 # %%
 # But we also need to add a new surface:
 # 
 
 # %% 
-geo_model.add_surfaces('fault1')
+# geo_model.add_surfaces('fault1')
 
 # %%
 # And finally assign the new surface to the new series/fault
 # 
 
 # %% 
-gp.map_stack_to_surfaces(geo_model, {'Fault1': 'fault1'})
+# gp.map_stack_to_surfaces(geo_model, {'Fault1': 'fault1'})
 
 # %%
 # Now we can just add input data as before (remember the minimum amount of
@@ -340,12 +340,42 @@ gp.map_stack_to_surfaces(geo_model, {'Fault1': 'fault1'})
 
 # %% 
 # Add input data of the fault
-geo_model.add_surface_points(X=550, Y=0, Z=-30, surface='fault1')
-geo_model.add_surface_points(X=650, Y=0, Z=-200, surface='fault1')
-geo_model.add_orientations(X=600, Y=0, Z=-100, surface='fault1', pole_vector=(.3, 0, .3))
+# geo_model.add_surface_points(X=550, Y=0, Z=-30, surface='fault1')
+# geo_model.add_surface_points(X=650, Y=0, Z=-200, surface='fault1')
+#  geo_model.add_orientations(X=600, Y=0, Z=-100, surface='fault1', pole_vector=(.3, 0, .3))
+
+
+element_fault = gp.data.StructuralElement(
+    name='fault1',
+    color=next(geo_model.structural_frame.color_generator),
+    surface_points=gp.data.SurfacePointsTable.from_arrays(
+        x=np.array([550, 650]),
+        y=np.array([0, 0]),
+        z=np.array([-30, -200]),
+        names='fault1'
+    ),
+    orientations=gp.data.OrientationsTable.from_arrays(
+        x=np.array([600]),
+        y=np.array([0]),
+        z=np.array([-100]),
+        G_x=np.array([.3]),
+        G_y=np.array([0]),
+        G_z=np.array([.3]),
+        names='fault1'
+    )
+)
+
+group_fault = gp.data.StructuralGroup(
+    name='Fault1',
+    elements=[element_fault],
+    structural_relation=gp.data.StackRelationType.FAULT,
+    fault_relations=gp.data.FaultsRelationSpecialCase.OFFSET_ALL
+)
+
+geo_model.structural_frame.insert_group(0, group_fault)  # * We are placing it already in the right place so we do not need to map anything
 
 # Plotting Inpute data
-gp.plot_2d(geo_model, show_solutions=False)
+gpv.plot_2d(geo_model, show_solutions=False)
 
 # %%
 # And now is computing as before:
@@ -356,8 +386,8 @@ gp.plot_2d(geo_model, show_solutions=False)
 gp.compute_model(geo_model)
 
 # Plot
-gp.plot_2d(geo_model, cell_number=5, legend='force')
-gp.plot_3d(geo_model, kwargs_plot_structured_grid={'opacity': .2})
+gpv.plot_2d(geo_model, cell_number=5, legend='force')
+gpv.plot_3d(geo_model, kwargs_plot_structured_grid={'opacity': .2})
 
 # %%
 # As you can see now instead of having folding layers we have a sharp
@@ -407,34 +437,39 @@ gp.plot_3d(geo_model, show_topography=True)
 # Gravity inversion
 # ~~~~~~~~~~~~~~~~~
 # 
+# .. admonition:: Coming soon
+#
+#    This feature is not yet available in the current version of GemPy.
+#
+# 
 # GemPy also allows for inversions (in production only gravity so far). We
 # can see a small demo how this works.
 # 
 # The first thing to do is to assign densities to each of the units:
 # 
-
-# %% 
-geo_model.add_surface_values([0, 2.6, 2.4, 3.2, 3.6], ['density'])
-
-# %%
-# Also we can create a centered grid around a device for precision:
 # 
-
-# %% 
-geo_model.set_centered_grid(centers=[[400, 0, 0]], resolution=[10, 10, 100], radius=800)
-
-# %%
-# We need to modify the compile code:
+# # %% 
+# geo_model.add_surface_values([0, 2.6, 2.4, 3.2, 3.6], ['density'])
 # 
-
-# %% 
-gp.set_interpolator(geo_model, output=['gravity'], aesara_optimizer='fast_run')
-
-# %%
-# But now additionally to the interpolation we also compute the forward
-# gravity of the model (at the point XYZ = 400, 0, 0)
+# # %%
+# # Also we can create a centered grid around a device for precision:
+# # 
 # 
-
-# %% 
-gp.compute_model(geo_model)
-geo_model.solutions.fw_gravity
+# # %% 
+# geo_model.set_centered_grid(centers=[[400, 0, 0]], resolution=[10, 10, 100], radius=800)
+# 
+# # %%
+# # We need to modify the compile code:
+# # 
+# 
+# # %% 
+# gp.set_interpolator(geo_model, output=['gravity'], aesara_optimizer='fast_run')
+# 
+# # %%
+# # But now additionally to the interpolation we also compute the forward
+# # gravity of the model (at the point XYZ = 400, 0, 0)
+# # 
+# 
+# # %% 
+# gp.compute_model(geo_model)
+# geo_model.solutions.fw_gravity

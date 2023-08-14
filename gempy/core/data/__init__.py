@@ -8,6 +8,7 @@ from .grid import Grid
 from .importer_helper import ImporterHelper
 from .gempy_engine_config import GemPyEngineConfig
 from .transforms import GlobalAnisotropy
+from .structural_group import FaultsRelationSpecialCase
 
 from gempy_engine.core.data.stack_relation_type import StackRelationType
 from gempy_engine.core.data.options import InterpolationOptions

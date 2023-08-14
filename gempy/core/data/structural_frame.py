@@ -34,7 +34,13 @@ class StructuralFrame:
         elements: Generator = (group.get_element_by_name(element_name) for group in self.structural_groups)
         valid_elements: Generator = (element for element in elements if element is not None)
         return next(valid_elements, None)
-
+    
+    def append_group(self, group: StructuralGroup):
+        self.structural_groups.append(group)
+        
+    def insert_group(self, index: int, group: StructuralGroup):
+        self.structural_groups.insert(index, group)
+    
     @classmethod
     def from_data_tables(cls, surface_points: SurfacePointsTable, orientations: OrientationsTable):
         surface_points_groups: list[SurfacePointsTable] = surface_points.get_surface_points_by_id_groups()
