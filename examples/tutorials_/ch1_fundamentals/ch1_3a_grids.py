@@ -4,12 +4,10 @@
 """
 
 import numpy as np
-import pandas as pd
-from gempy.core.data import Grid
-from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 unused import
 import matplotlib.pyplot as plt
 
-pd.set_option('display.precision', 2)
+from gempy.core.data import Grid
+
 np.random.seed(55500)
 
 # %%
@@ -62,7 +60,7 @@ grid.regular_grid.values
 # 
 
 # %% 
-grid.active_grids
+grid.active_grids_bool
 
 # %%
 # By default only the *regular grid* (``grid.regular_grid``\ ) is active. However, since the regular
@@ -123,7 +121,7 @@ grid.regular_grid.values
 # 
 
 # %% 
-grid.active_grids
+grid.active_grids_bool
 
 # %%
 # Therefore the grid values will be equal to the regular grid:
@@ -164,7 +162,7 @@ grid.custom_grid.values
 # 
 
 # %% 
-grid.active_grids
+grid.active_grids_bool
 
 # %% 
 grid.values.shape
@@ -197,7 +195,7 @@ grid.values[l0:l1]
 grid.create_topography()
 
 # %% 
-grid.active_grids
+grid.active_grids_bool
 
 # %%
 # Now the grid values will contain both the regular grid and topography:

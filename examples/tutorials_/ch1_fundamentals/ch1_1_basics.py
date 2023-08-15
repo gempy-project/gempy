@@ -145,7 +145,6 @@ gp.map_stack_to_surfaces(
         "Fault_Series": 'Main_Fault',
         "Strat_Series": ('Sandstone_2', 'Siltstone', 'Shale', 'Sandstone_1')
     }
-
 )
 
 geo_model.structural_frame  # Display the resulting structural frame

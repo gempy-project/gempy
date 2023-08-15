@@ -53,7 +53,7 @@ class TestGrid:
                         [7, 8, 9]])
         grid.create_custom_grid(cg)
         # make sure the custom grid is active
-        assert grid.active_grids[1]
+        assert grid.active_grids_bool[1]
         # make sure the custom grid is equal to the provided values
         np.testing.assert_array_almost_equal(cg, grid.custom_grid.values)
         # make sure we have the correct number of values in our grid

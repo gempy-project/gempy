@@ -42,7 +42,7 @@ class Grid(object):
          be 0, the second the length of the regular grid; the third custom and so on. This can be used to slice the
          solutions correspondent to each of the grids
         grid_types(np.ndarray[str]): names of the current grids of GemPy
-        active_grids(np.ndarray[bool]): boolean array which controls which type of grid is going to be computed and
+        active_grids_bool(np.ndarray[bool]): boolean array which controls which type of grid is going to be computed and
          hence on the property `values`.
         regular_grid (:class:`gempy.core.grid_modules.grid_types.RegularGrid`)
         custom_grid (:class:`gempy.core.grid_modules.grid_types.CustomGrid`)
@@ -57,7 +57,7 @@ class Grid(object):
         self.values_r = np.empty((0, 3))
         self.length = np.empty(0)
         self.grid_types = np.array(['regular', 'custom', 'topography', 'sections', 'centered'])
-        self.active_grids = np.zeros(5, dtype=bool)
+        self.active_grids_bool = np.zeros(5, dtype=bool)
         # All grid types must have values
 
         # Init optional grids
@@ -84,24 +84,10 @@ class Grid(object):
         grid_summary_str = "\n".join(grid_summary)
         return f"Grid Object:\n{grid_summary_str}"
 
-    # def __repr__(self):
-    #     grid_summary = [f"{g_type} (active: {getattr(self, g_type + '_grid_active', g_type + 'not_set')}): {len(getattr(self, g_type + '_grid').values)} points"
-    #                     for g_type in self.grid_types]
-    #     grid_summary_repr = ",\n".join(grid_summary)
-    #     return f"Grid(\n{grid_summary_repr}\n)"
-    # 
-    # def _repr_html_(self):
-    #     grid_summary = [f"<tr><td>{g_type}</td><td>{'Active' if getattr(self, g_type + '_grid_active') else 'Inactive'}</td><td>{len(getattr(self, g_type + '_grid').values)} points</td></tr>"
-    #                     for g_type in self.grid_types]
-    #     grid_summary_html = "\n".join(grid_summary)
-    #     return f"""
-    #     <table >
-    #       <tr><th>Grid Type</th><th>Status</th><th>Points</th></tr>
-    #       {grid_summary_html}
-    #     </table>
-    #         """
-
-
+    @property
+    def active_grids(self) -> np.ndarray:
+        return self.grid_types[self.active_grids_bool]
+        
     def create_regular_grid(self, extent=None, resolution=None, set_active=True, *args, **kwargs):
         """
         Set a new regular grid and activate it.
@@ -196,9 +182,9 @@ class Grid(object):
         Deactivates the active grids array
         :return:
         """
-        self.active_grids = np.zeros(5, dtype=bool)
+        self.active_grids_bool = np.zeros(5, dtype=bool)
         self.update_grid_values()
-        return self.active_grids
+        return self.active_grids_bool
 
     def set_active(self, grid_name: Union[str, np.ndarray]):
         """
@@ -210,15 +196,15 @@ class Grid(object):
         warnings.warn('This function is deprecated. Use gempy.set_active_grid instead', DeprecationWarning)
         
         where = self.grid_types == grid_name
-        self.active_grids[where] = True
+        self.active_grids_bool[where] = True
         self.update_grid_values()
-        return self.active_grids
+        return self.active_grids_bool
 
     def set_inactive(self, grid_name: str):
         where = self.grid_types == grid_name
-        self.active_grids *= ~where
+        self.active_grids_bool *= ~where
         self.update_grid_values()
-        return self.active_grids
+        return self.active_grids_bool
 
     def update_grid_values(self):
         """
@@ -234,7 +220,7 @@ class Grid(object):
         try:
             for e, grid_types in enumerate(
                     [self.regular_grid, self.custom_grid, self.topography, self.sections, self.centered_grid]):
-                if self.active_grids[e]:
+                if self.active_grids_bool[e]:
                     self.values = np.vstack((self.values, grid_types.values))
                     lengths.append(grid_types.values.shape[0])
                 else:

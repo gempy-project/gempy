@@ -43,7 +43,7 @@ def test_custom_grid_solution(model_horizontal_two_layers):
                    [5, 5, -5.2],
                    [5, 5, -1]])
     values = geo_model.set_custom_grid(cg)
-    assert geo_model._grid.active_grids[1]
+    assert geo_model._grid.active_grids_bool[1]
     # set the aesara function
 
     # Compute model

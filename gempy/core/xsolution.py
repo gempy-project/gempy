@@ -128,16 +128,16 @@ class XSolution(object):
                                                     surf_properties)
         self.weights_vector = values[3]
 
-        if self.grid.active_grids[0]:
+        if self.grid.active_grids_bool[0]:
             self.set_values_to_regular_grid_(values, l[0], l[1], coords_base.copy())
-        if self.grid.active_grids[1]:
+        if self.grid.active_grids_bool[1]:
             self.set_values_to_custom_grid(values, l[1], l[2], coords_base.copy(),
                                            xyz=xyz)
-        if self.grid.active_grids[2]:
+        if self.grid.active_grids_bool[2]:
             self.set_values_to_topography(values, l[2], l[3], coords_base.copy())
-        if self.grid.active_grids[3]:
+        if self.grid.active_grids_bool[3]:
             self.set_values_to_sections(values, l[3], l[4], coords_base.copy())
-        if self.grid.active_grids[4]:
+        if self.grid.active_grids_bool[4]:
             self.set_values_to_centered()
 
         # TODO: Add xyz from surface points

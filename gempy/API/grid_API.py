@@ -61,8 +61,8 @@ def set_active_grid(grid: Grid, grid_type: list[GridTypes], reset: bool = False)
     if reset is True:
         grid.deactivate_all_grids()
     for grid_type in grid_type:
-        grid.active_grids[grid_type.value] = True
+        grid.active_grids_bool[grid_type.value] = True
 
-    print(f'Active grids: {grid.grid_types[grid.active_grids]}')
+    print(f'Active grids: {grid.grid_types[grid.active_grids_bool]}')
 
     return grid
