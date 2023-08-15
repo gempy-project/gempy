@@ -12,7 +12,7 @@ import gempy_viewer as gpv
 
 
 # sphinx_gallery_thumbnail_number = 2
-def generate_anticline_model() -> gp.GeoModel:
+def generate_anticline_model() -> gp.data.GeoModel:
     """
     Function to create a geological model of an anticline structure,
     map the geological series to surfaces, and compute the geological model.
@@ -22,11 +22,11 @@ def generate_anticline_model() -> gp.GeoModel:
     path_to_data = data_path + "/data/input_data/jan_models/"
 
     # Create a GeoModel instance
-    geo_data: gp.GeoModel = gp.create_geomodel(
+    geo_data: gp.data.GeoModel = gp.create_geomodel(
         project_name='fold',
         extent=[0, 1000, 0, 1000, 0, 1000],
-        resolution=[50, 5, 50],
-        importer_helper=gp.ImporterHelper(
+        number_octree_levels=4,
+        importer_helper=gp.data.ImporterHelper(
             path_to_orientations=path_to_data + "model2_orientations.csv",
             path_to_surface_points=path_to_data + "model2_surface_points.csv"
         )

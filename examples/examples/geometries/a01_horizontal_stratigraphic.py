@@ -12,7 +12,7 @@ import gempy_viewer as gpv
 
 
 # sphinx_gallery_thumbnail_number = 2
-def generate_horizontal_stratigraphic_model() -> gp.GeoModel:
+def generate_horizontal_stratigraphic_model() -> gp.data.GeoModel:
     """
     Function to create a geological model of horizontally stacked layers,
     map the geological series to surfaces, and compute the geological model.
@@ -24,8 +24,8 @@ def generate_horizontal_stratigraphic_model() -> gp.GeoModel:
     geo_data = gp.create_geomodel(
         project_name='horizontal',
         extent=[0, 1000, 0, 1000, 0, 1000],
-        resolution=[50, 5, 50],
-        importer_helper=gp.ImporterHelper(
+        number_octree_levels=4,
+        importer_helper=gp.data.ImporterHelper(
             path_to_orientations=data_path + "/data/input_data/jan_models/model1_orientations.csv",
             path_to_surface_points=data_path + "/data/input_data/jan_models/model1_surface_points.csv"
         )
@@ -51,5 +51,5 @@ geo_data = generate_horizontal_stratigraphic_model()
 gpv.plot_2d(geo_data, direction=['y'], show_results=False)
 
 # Plot the result of the model in the x and y direction with data and without boundaries
-gpv.plot_2d(geo_data, cell_number=[25], direction=['x'], show_data=True, show_boundaries=False)
-gpv.plot_2d(geo_data, cell_number=[25], direction=['y'], show_data=True, show_boundaries=False)
+gpv.plot_2d(geo_data, direction=['x'], show_data=True, show_boundaries=False)
+gpv.plot_2d(geo_data, direction=['y'], show_data=True, show_boundaries=False)

@@ -12,7 +12,7 @@ import gempy_viewer as gpv
 
 
 # sphinx_gallery_thumbnail_number = 2
-def generate_recumbent_fold_model() -> gp.GeoModel:
+def generate_recumbent_fold_model() -> gp.data.GeoModel:
     """
     Function to create a geological model of a recumbent fold,
     map the geological series to surfaces, and compute the geological model.
@@ -26,7 +26,8 @@ def generate_recumbent_fold_model() -> gp.GeoModel:
         project_name='recumbent',
         extent=[0, 1000, 0, 1000, 0, 1000],
         resolution=[50, 50, 50],
-        importer_helper=gp.ImporterHelper(
+        number_octree_levels=4,
+        importer_helper=gp.data.ImporterHelper(
             path_to_orientations=path_to_data + "model3_orientations.csv",
             path_to_surface_points=path_to_data + "model3_surface_points.csv"
         )
@@ -53,4 +54,4 @@ geo_data = generate_recumbent_fold_model()
 gpv.plot_2d(geo_data, direction=['y'], show_results=False)
 
 # Plot the result of the model in the y direction with data
-gpv.plot_2d(geo_data, cell_number=[25], direction=['y'], show_data=True)
+gpv.plot_2d(geo_data, direction=['y'], show_data=True)

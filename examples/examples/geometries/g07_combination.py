@@ -14,7 +14,7 @@ from gempy_engine.core.data.stack_relation_type import StackRelationType
 
 
 # sphinx_gallery_thumbnail_number = 2
-def generate_combination_model() -> gp.GeoModel:
+def generate_combination_model() -> gp.data.GeoModel:
     """
     Function to create a model with a folded domain featuring an unconformity and a fault,
     map the geological series to surfaces, and compute the geological model.
@@ -27,8 +27,9 @@ def generate_combination_model() -> gp.GeoModel:
     geo_data = gp.create_geomodel(
         project_name='combination',
         extent=[0, 2500, 0, 1000, 0, 1000],
+        number_octree_levels=4,
         resolution=[125, 50, 50],
-        importer_helper=gp.ImporterHelper(
+        importer_helper=gp.data.ImporterHelper(
             path_to_orientations=path_to_data + "model7_orientations.csv",
             path_to_surface_points=path_to_data + "model7_surface_points.csv"
         )

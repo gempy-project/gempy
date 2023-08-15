@@ -12,11 +12,10 @@ import gempy_viewer as gpv
 import numpy as np
 from gempy_engine.core.data.stack_relation_type import StackRelationType
 from gempy_engine.modules.octrees_topology.octrees_topology_interface import ValueType
-from plugins.plotting.helper_functions import plot_block_and_input_2d
 
 
 # sphinx_gallery_thumbnail_number = 2
-def generate_fault_model() -> gp.GeoModel:
+def generate_fault_model() -> gp.data.GeoModel:
     """
     Function to create a simple fault model,
     map the geological series to surfaces, and compute the geological model.
@@ -29,8 +28,8 @@ def generate_fault_model() -> gp.GeoModel:
     geo_data = gp.create_geomodel(
         project_name='fault',
         extent=[0, 1000, 0, 1000, 0, 1000],
-        resolution=[20, 5, 20],
-        importer_helper=gp.ImporterHelper(
+        number_octree_levels=4,
+        importer_helper=gp.data.ImporterHelper(
             path_to_orientations=path_to_data + "model5_orientations.csv",
             path_to_surface_points=path_to_data + "model5_surface_points.csv"
         )
@@ -64,22 +63,6 @@ geo_data = generate_fault_model()
 gpv.plot_2d(geo_data, direction=['y'], show_results=False)
 
 # %%
-# Plot the computed model
-plot_block_and_input_2d(
-    stack_number=1,
-    interpolation_input=geo_data.interpolation_input,
-    outputs=geo_data.solutions.octrees_output,
-    structure=geo_data.structural_frame.input_data_descriptor.stack_structure,
-    value_type=ValueType.values_block
-)
-
-plot_block_and_input_2d(
-    stack_number=1,
-    interpolation_input=geo_data.interpolation_input,
-    outputs=geo_data.solutions.octrees_output,
-    structure=geo_data.structural_frame.input_data_descriptor.stack_structure,
-    value_type=ValueType.ids
-)
 
 # Plot the result of the model in the x and y direction with data
 gpv.plot_2d(geo_data, direction='y', show_data=True)

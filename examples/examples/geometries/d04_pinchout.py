@@ -12,7 +12,7 @@ import gempy_viewer as gpv
 
 
 # sphinx_gallery_thumbnail_number = 3
-def generate_pinchout_model() -> gp.GeoModel:
+def generate_pinchout_model() -> gp.data.GeoModel:
     """
     Function to create a geological model with a pinchout,
     map the geological series to surfaces, and compute the geological model.
@@ -26,7 +26,7 @@ def generate_pinchout_model() -> gp.GeoModel:
         project_name='pinchout',
         extent=[0, 1000, 0, 1000, 0, 1000],
         resolution=[50, 50, 50],
-        importer_helper=gp.ImporterHelper(
+        importer_helper=gp.data.ImporterHelper(
             path_to_orientations=path_to_data + "model4_orientations.csv",
             path_to_surface_points=path_to_data + "model4_surface_points.csv"
         )
@@ -53,5 +53,5 @@ geo_data = generate_pinchout_model()
 gpv.plot_2d(geo_data, direction=['y'], show_results=False)
 
 # Plot the result of the model in the x and y direction with data
-gpv.plot_2d(geo_data, cell_number=[25], direction=['x'], show_data=True)
-gpv.plot_2d(geo_data, cell_number=[25], direction=['y'], show_data=True)
+gpv.plot_2d(geo_data, direction=['x'], show_data=True)
+gpv.plot_2d(geo_data, direction=['y'], show_data=True)
