@@ -10,10 +10,7 @@ from gempy.core.data.surface_points import DEFAULT_SP_NUGGET
 
 def add_surface_points(geo_model: GeoModel, x: Sequence[float], y: Sequence[float], z: Sequence[float],
                        elements_names: Sequence[str], nugget: Optional[Sequence[float]] = None) -> StructuralFrame:
-    # Ensure all provided Sequences have the same length
-    lengths = {len(x), len(y), len(z), len(elements_names)}
-    if len(lengths) != 1:
-        raise ValueError("All input Sequences must have the same length.")
+    elements_names = _validate_args(elements_names, x, y, z)
 
     # If nugget is not provided, create a Sequence filled with the default value
     if nugget is None:
@@ -58,8 +55,9 @@ def add_surface_points(geo_model: GeoModel, x: Sequence[float], y: Sequence[floa
             element.surface_points.data,
             formatted_data
         ])
-    
+
     return geo_model.structural_frame
+
 
 
 def delete_surface_points():
@@ -73,16 +71,14 @@ def add_orientations(geo_model: GeoModel, x: Sequence[float], y: Sequence[float]
     if not pole_vector and not orientation:
         raise ValueError("Either pole_vector or orientation must be provided.")
 
-    if orientation: # Convert orientation to pole_vector (or gradient)
+    if orientation:  # Convert orientation to pole_vector (or gradient)
         pole_vector = convert_orientation_to_pole_vector(
             azimuth=orientation[:, 0],
             dip=orientation[:, 1],
             polarity=orientation[:, 2]
         )
 
-    lengths = {len(x), len(y), len(z), len(elements_names), len(pole_vector)}  # Ensure all provided Sequences have the same length
-    if len(lengths) != 1:
-        raise ValueError("All input Sequences must have the same length.")
+    elements_names = _validate_args(elements_names, x, y, z, pole_vector)
 
     if nugget is None:  # If nugget is not provided, create a Sequence filled with the default value
         nugget = [DEFAULT_ORI_NUGGET] * len(x)
@@ -153,4 +149,18 @@ def convert_orientation_to_pole_vector(azimuth: Sequence[float], dip: Sequence[f
     gradients = np.vstack([G_x, G_y, G_z]).T
 
     return gradients
+
+
+def _validate_args(elements_names, *args):
+    if isinstance(elements_names, str):
+        elements_names = np.array([elements_names] * len(args[0]))
+    elif isinstance(elements_names, Sequence) or isinstance(elements_names, np.ndarray):
+        pass
+    else:
+        raise TypeError(f"Names should be a string or a NumPy array, not {type(elements_names)}")
+    # Ensure all provided Sequences have the same length
+    lengths = {len(arg) for arg in args}
+    if len(lengths) != 1:
+        raise ValueError("All input Sequences must have the same length.")
+    return elements_names
 

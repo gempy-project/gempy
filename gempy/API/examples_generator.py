@@ -13,8 +13,110 @@ def generate_example_model(example_model: ExampleModel, compute_model: bool = Tr
             return _generate_anticline_model(compute_model)
         case ExampleModel.ONE_FAULT:
             return _generate_one_fault_model(compute_model)
+        case ExampleModel.TWO_AND_A_HALF_D:
+            return _generate_2_5d_model(compute_model)
         case _:
             raise NotImplementedError(f"Example model {example_model} not implemented.")
+
+
+def _generate_2_5d_model(compute_model: bool) -> gp.data.GeoModel:
+    geo_model: gp.data.GeoModel = gp.create_geomodel(
+        project_name='Model1',
+        extent=[0, 791, -200, 200, -582, 0],
+        resolution=[50, 50, 50],
+        number_octree_levels=1,
+        structural_frame=gp.data.StructuralFrame.initialize_default_structure()
+    )
+    
+    gp.add_surface_points(
+        geo_model=geo_model,
+        x=[223, 458, 612],
+        y=[0.01, 0, 0],
+        z=[-94, -197, -14],
+        elements_names='surface1'
+    )
+
+    gp.add_orientations(
+        geo_model=geo_model,
+        x=[350],
+        y=[1],
+        z=[-300],
+        elements_names=['surface1'],
+        pole_vector=[[0, 0, 1]]
+    )
+
+    geo_model.update_transform(gp.data.GlobalAnisotropy.NONE)  # * Remove the auto anisotropy for this 2.5D model
+    
+    element2 = gp.data.StructuralElement(
+        name='surface2',
+        color=next(geo_model.structural_frame.color_generator),
+        surface_points=gp.data.SurfacePointsTable.from_arrays(
+            x=np.array([225, 459]),
+            y=np.array([0, 0]),
+            z=np.array([-269, -279]),
+            names='surface2'
+        ),
+        orientations=gp.data.OrientationsTable.initialize_empty()
+    )
+
+    geo_model.structural_frame.structural_groups[0].append_element(element2)
+
+    element3 = gp.data.StructuralElement(
+        name='surface3',
+        color=next(geo_model.structural_frame.color_generator),
+        surface_points=gp.data.SurfacePointsTable.from_arrays(
+            x=np.array([225, 464, 619]),
+            y=np.array([0, 0, 0]),
+            z=np.array([-439, -456, -433]),
+            names='surface3'
+        ),
+        orientations=gp.data.OrientationsTable.initialize_empty()
+    )
+
+    geo_model.structural_frame.structural_groups[0].append_element(element3)
+
+    element_fault = gp.data.StructuralElement(
+        name='fault1',
+        color=next(geo_model.structural_frame.color_generator),
+        surface_points=gp.data.SurfacePointsTable.from_arrays(
+            x=np.array([550, 650]),
+            y=np.array([0, 0]),
+            z=np.array([-30, -200]),
+            names='fault1'
+        ),
+        orientations=gp.data.OrientationsTable.from_arrays(
+            x=np.array([600]),
+            y=np.array([0]),
+            z=np.array([-100]),
+            G_x=np.array([.3]),
+            G_y=np.array([0]),
+            G_z=np.array([.3]),
+            names='fault1'
+        )
+    )
+
+    group_fault = gp.data.StructuralGroup(
+        name='Fault1',
+        elements=[element_fault],
+        structural_relation=gp.data.StackRelationType.FAULT,
+        fault_relations=gp.data.FaultsRelationSpecialCase.OFFSET_ALL
+    )
+
+    geo_model.structural_frame.insert_group(0, group_fault)  # * We are placing it already in the right place so we do not need to map anything
+
+
+    gp.set_topography_from_random(
+        grid=geo_model.grid,
+        fractal_dimension=1.9,
+        d_z=np.array([-150, 0]),
+        topography_resolution=np.array([200, 200])
+    )
+    
+    if compute_model:
+        gp.compute_model(geo_model)
+    
+    return geo_model
+
 
 
 def _generate_horizontal_stratigraphic_model(compute_model: bool) -> gp.data.GeoModel:

@@ -2,6 +2,7 @@
 
 
 class ExampleModel(Enum):
-    HORIZONTAL_STRAT = 0
-    ANTICLINE = 1
+    TWO_AND_A_HALF_D = auto()
+    HORIZONTAL_STRAT = auto()
+    ANTICLINE = auto()
     ONE_FAULT = auto()

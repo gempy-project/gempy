@@ -47,3 +47,18 @@ def test_section_grids():
         show_lith=False,
         image=False
     )
+
+
+def test_topogrphy_II():
+    geo_model: gp.data.GeoModel = gp.generate_example_model(
+        example_model=ExampleModel.TWO_AND_A_HALF_D,
+        compute_model=False
+    )
+    
+    gpv.plot_3d(
+        geo_model,
+        show_data=True,
+        show_boundaries=True,
+        show_lith=False,
+        image=False
+    )
