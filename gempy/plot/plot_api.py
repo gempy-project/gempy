@@ -277,7 +277,9 @@ def plot_3d(model, plotter_type='basic',
             kwargs_plot_topography=None,
             kwargs_plot_data=None,
             image=False,
-            off_screen=False, **kwargs) -> GemPyToVista:
+            off_screen=False,
+            font_size: int = pv.global_theme.font.size,
+            **kwargs) -> GemPyToVista:
     """foobar
 
     Args:
@@ -297,6 +299,8 @@ def plot_3d(model, plotter_type='basic',
         ve (float): Vertical Exaggeration
         kwargs_plot_structured_grid:
         kwargs_plot_topography:
+        font_size : int
+            Font size for the labels of the grid
         **kwargs:
 
     Returns:
@@ -337,6 +341,9 @@ def plot_3d(model, plotter_type='basic',
 
     if ve is not None:
         gpv.p.set_scale(zscale=ve)
+
+    if font_size is not None:
+        gpv.p.show_bounds(font_size=font_size)
 
     if fig_path is not None:
         gpv.p.show(screenshot=fig_path)
