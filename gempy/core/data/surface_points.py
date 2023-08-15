@@ -61,7 +61,7 @@ class SurfacePointsTable:
         name_id_map = name_id_map or {name: i for i, name in enumerate(np.unique(names))}
         if isinstance(names, str):
             ids = np.array([name_id_map[names]] * len(x))
-        elif isinstance(names, Sequence):
+        elif isinstance(names, Sequence) or isinstance(names, np.ndarray):
             ids = np.array([name_id_map[name] for name in names])
         else:
             raise TypeError(f"Names should be a string or a NumPy array, not {type(names)}")
