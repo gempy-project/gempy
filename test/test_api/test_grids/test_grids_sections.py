@@ -60,5 +60,16 @@ def test_topogrphy_II():
         show_data=True,
         show_boundaries=True,
         show_lith=False,
+        image=True
+    )
+    
+    geo_model.interpolation_options.dual_contouring = False # TODO: Figure out what is wrong here
+    gp.compute_model(geo_model)
+
+    gpv.plot_3d(
+        geo_model,
+        show_data=True,
+        show_boundaries=True,
+        show_lith=True,
         image=False
     )

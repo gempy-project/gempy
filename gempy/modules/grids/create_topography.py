@@ -214,14 +214,11 @@ class _LoadDEMArtificial:  # * Cannot think of a good reason to be a class
 
         self.resolution = grid.resolution[:2] if resolution is None else resolution
 
-        assert all(np.asarray(self.resolution) >= 2), 'The regular grid needs to be at least of size 2 on all ' \
-                                                      'directions.'
+        assert all(np.asarray(self.resolution) >= 2), 'The regular grid needs to be at least of size 2 on all directions.'
         self.extent = grid.extent if extent is None else extent
 
         if d_z is None:
-            self.d_z = np.array(
-                [self.extent[5] - (self.extent[5] - self.extent[4]) * 1 / 5,
-                 self.extent[5]])
+            self.d_z = np.array([self.extent[5] - (self.extent[5] - self.extent[4]) * 1 / 5, self.extent[5]])
             print(self.d_z)
         else:
             self.d_z = d_z
@@ -232,7 +229,8 @@ class _LoadDEMArtificial:  # * Cannot think of a good reason to be a class
         self.dem_zval = topo[:self.resolution[0], :self.resolution[1]]  # crop fractal grid with resolution
         self.create_topo_array()
 
-    def fractalGrid(self, fd, n=256):
+    @staticmethod
+    def fractalGrid(fd, n=256):
         """
         Modified after https://github.com/samthiele/pycompass/blob/master/examples/3_Synthetic%20Examples.ipynb
 
