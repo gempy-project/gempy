@@ -35,7 +35,7 @@ geo_model: gp.data.GeoModel = gp.create_geomodel(
     project_name='Model1',
     extent=[0, 791, -200, 200, -582, 0],
     resolution=[50, 50, 50],
-    number_octree_levels=1,
+    number_octree_levels=4,
     structural_frame=gp.data.StructuralFrame.initialize_default_structure()
     
 )
@@ -187,7 +187,6 @@ geo_model.update_transform(gp.data.GlobalAnisotropy.NONE)  # * Remove the auto a
 # 
 
 # %% 
-geo_model.interpolation_options.dual_contouring = False
 gp.compute_model(geo_model, engine_config=gp.data.GemPyEngineConfig())
 
 # %% 
