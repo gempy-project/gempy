@@ -63,7 +63,6 @@ def test_topogrphy_II():
         image=True
     )
     
-    geo_model.interpolation_options.dual_contouring = False # TODO: Figure out what is wrong here
     gp.compute_model(geo_model)
 
     gpv.plot_2d(geo_model, show_boundaries=False, section_names=['topography'])
