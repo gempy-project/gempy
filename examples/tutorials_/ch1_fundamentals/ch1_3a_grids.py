@@ -5,7 +5,7 @@
 
 import numpy as np
 import pandas as pd
-from gempy import Grid
+from gempy.core.data import Grid
 from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 unused import
 import matplotlib.pyplot as plt
 
@@ -297,5 +297,5 @@ plt.show()
 # Section Grid
 # ~~~~~~~~~~~~
 # 
-# This grid type has its own tutorial. See ch1-3b
+# This grid type has its own tutorial. See :doc: `ch1_3b_cross_sections`
 #
