@@ -66,10 +66,13 @@ def test_topogrphy_II():
     geo_model.interpolation_options.dual_contouring = False # TODO: Figure out what is wrong here
     gp.compute_model(geo_model)
 
+    gpv.plot_2d(geo_model, show_boundaries=False, section_names=['topography'])
+    
     gpv.plot_3d(
         geo_model,
         show_data=True,
         show_boundaries=True,
         show_lith=True,
-        image=False
+        image=False,
+        kwargs_plot_structured_grid={'opacity': .1}
     )

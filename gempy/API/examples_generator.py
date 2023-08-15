@@ -109,7 +109,7 @@ def _generate_2_5d_model(compute_model: bool) -> gp.data.GeoModel:
         grid=geo_model.grid,
         fractal_dimension=1.9,
         d_z=np.array([-150, 0]),
-        topography_resolution=np.array([200, 200])
+        topography_resolution=np.array([50, 40])
     )
     
     if compute_model:

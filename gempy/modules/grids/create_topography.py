@@ -211,7 +211,6 @@ class _LoadDEMArtificial:  # * Cannot think of a good reason to be a class
             resolution: desired resolution of the topography array. If none, geo_model.grid.resolution
         """
         self.values_2d = np.array([])
-
         self.resolution = grid.resolution[:2] if resolution is None else resolution
 
         assert all(np.asarray(self.resolution) >= 2), 'The regular grid needs to be at least of size 2 on all directions.'

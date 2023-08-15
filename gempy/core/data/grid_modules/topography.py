@@ -27,7 +27,7 @@ class Topography:
         self.values = np.zeros((0, 3))
 
         # Values (n, n, 3)
-        self.values_2d = np.zeros((0, 3))
+        self.values_2d = np.zeros((0, 0, 3))
 
         # Shape original
         self.raster_shape = tuple()
