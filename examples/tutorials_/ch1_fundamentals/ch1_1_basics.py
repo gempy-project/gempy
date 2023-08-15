@@ -361,4 +361,4 @@ geo_model.solutions.raw_arrays.custom
 #   method to save the model. However, since now the data model should be completely robust, you should be able to save the
 #   :obj:`gempy.core.data.GeoModel` and all its attributes using the standard python library [pickle](https://docs.python.org/3/library/pickle.html)
 #
-# sphinx_gallery_thumbnail_number = 9
+# sphinx_gallery_thumbnail_number = -2
