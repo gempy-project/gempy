@@ -24,7 +24,7 @@ import matplotlib.image as mpimg
 # and necessary functionality. We'll also define a regular grid for this example.
 # This grid will be used for interpolating the 3D geological model. GemPy offers
 # different grids for various purposes. For visualization, a regular grid is most
-# appropriate.
+# appropriate. 
 
 # %%
 geo_model: gp.data.GeoModel = gp.create_geomodel(
@@ -38,7 +38,7 @@ print(geo_model)
 
 # %%
 # Creating a figure:
-# ~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~
 # 
 # GemPy utilizes matplotlib for 2D and pyvista-vtk for 3D visualizations. 
 # One design goal of GemPy is real-time model construction. This means as input data
@@ -51,14 +51,14 @@ p2d = gpv.plot_2d(geo_model)
 
 # %%
 # Adding a model section:
-# ^^^^^^^^^^^^^^^^^^^^^^
+# ^^^^^^^^^^^^^^^^^^^^^^^
 #
 # In the 2D renderer, we can add several cross sections of the model. 
 # For simplicity, we'll add just one, perpendicular to y.
 
 # %%
 # Loading a cross-section image:
-# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 #
 # GemPy uses standard matplotlib axes, allowing for flexibility. 
 # Let's load an image showing the details of a couple of boreholes:
@@ -73,7 +73,7 @@ plt.show()
 # Similarly, we can visualize in 3D using pyvista and vtk:
 
 # %%
-p3d = gpv.plot_3d(geo_model, image=True)
+p3d = gpv.plot_3d(geo_model, image=False)
 
 # %%
 # Building the model:
@@ -187,7 +187,7 @@ geo_model.structural_frame
 
 # %%
 # Defining Layer 2:
-# ~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~
 # Adding points and properties for the next layer.
 
 element2 = gp.data.StructuralElement(
@@ -211,7 +211,7 @@ gpv.plot_3d(geo_model, image=True)
 
 # %%
 # Defining Layer 3:
-# ~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~
 # Adding points and properties for another layer.
 
 element3 = gp.data.StructuralElement(
@@ -236,7 +236,7 @@ gpv.plot_3d(geo_model, kwargs_plot_structured_grid={'opacity': .2}, image=True)
 
 # %%
 # Adding a Fault:
-# ~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~
 # To date, our model represents a simple depositional unit. With GemPy, we can
 # incorporate unconformities and faults for more intricate models. 
 # Relationships are depicted as:
