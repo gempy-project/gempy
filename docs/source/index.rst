@@ -40,7 +40,7 @@ Contents:
    :maxdepth: 2
    :caption: Getting started
 
-   getting_started/index
+   getting_started/
    tutorials/index
    examples/index
    integrations/index

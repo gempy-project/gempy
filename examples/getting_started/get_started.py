@@ -1,3 +1,4 @@
+
 """
 Getting Started
 ===============
@@ -6,11 +7,11 @@ Getting Started
 
 # %%
 
-# Importing GemPy
+# Importing GemPy and viewer
 import gempy as gp
 import gempy_viewer as gpv
 
-# Importing aux libraries
+# Auxiliary libraries
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
@@ -18,110 +19,83 @@ import matplotlib.image as mpimg
 # %%
 # Initializing the model:
 # ~~~~~~~~~~~~~~~~~~~~~~~
-# 
-# The first step to create a GemPy model is create a gempy.Model object
-# that will contain all the other data structures and necessary
-# functionality.
-# 
-# In addition for this example we will define a regular grid since the
-# beginning. This is the grid where we will interpolate the 3D geological
-# model. GemPy comes with an array of different grids for different
-# pourposes as we will see below. For visualization usually a regular grid
-# is the one that makes more sense.
-# 
+#
+# Create a gempy.Model object. This object will contain all other data structures
+# and necessary functionality. We'll also define a regular grid for this example.
+# This grid will be used for interpolating the 3D geological model. GemPy offers
+# different grids for various purposes. For visualization, a regular grid is most
+# appropriate.
 
-# %% 
+# %%
 geo_model: gp.data.GeoModel = gp.create_geomodel(
     project_name='Model1',
     extent=[0, 791, -200, 200, -582, 0],
     resolution=[50, 50, 50],
     number_octree_levels=4,
     structural_frame=gp.data.StructuralFrame.initialize_default_structure()
-    
 )
-
 print(geo_model)
+
 # %%
-# Creating figure:
+# Creating a figure:
 # ~~~~~~~~~~~~~~~~
 # 
-# GemPy uses matplotlib and pyvista-vtk libraries for 2d and 3d
-# visualization of the model respectively. One of the design decisions of
-# GemPy is to allow real time construction of the model. What this means
-# is that you can start adding input data and see in real time how the 3D
-# surfaces evolve. Lets initialize the visualization windows.
-# 
-# The first one is the 2d figure. Just place the window where you can see
-# it (maybe move the jupyter notebook to half screen and use the other
-# half for the renderers).
-# 
+# GemPy utilizes matplotlib for 2D and pyvista-vtk for 3D visualizations. 
+# One design goal of GemPy is real-time model construction. This means as input data
+# is added, you can see the 3D surfaces update in real-time. Let's initialize 
+# the visualization windows. First, the 2D figure:
 
-# %% 
+# %%
 # %matplotlib qt5
 p2d = gpv.plot_2d(geo_model)
 
 # %%
-# Add model section
-# ^^^^^^^^^^^^^^^^^
-# 
-# In the 2d renderer we can add several cross section of the model. In
-# this case, for simplicity sake we are just adding one perpendicular to
-# y.
-# 
-
+# Adding a model section:
+# ^^^^^^^^^^^^^^^^^^^^^^
+#
+# In the 2D renderer, we can add several cross sections of the model. 
+# For simplicity, we'll add just one, perpendicular to y.
 
 # %%
-# Loading cross-section image:
-# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-# 
-# Remember that gempy is simply using matplotlib and therofe the ax object
-# created above is a standard matplotlib axes. This allow to manipulate it
-# freely. Lets load an image with the information of couple of boreholes
-# 
+# Loading a cross-section image:
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+#
+# GemPy uses standard matplotlib axes, allowing for flexibility. 
+# Let's load an image showing the details of a couple of boreholes:
 
-# %% 
-# Reading image
+# %%
 img = mpimg.imread('wells.png')
-# Plotting it inplace
 p2d = gpv.plot_2d(geo_model, show=False)
 p2d.axes[0].imshow(img, origin='upper', alpha=.8, extent=(0, 791, -582, 0))
 plt.show()
 
 # %%
-# We can do the same in 3D through pyvista and vtk rendering:
-# 
+# Similarly, we can visualize in 3D using pyvista and vtk:
 
-# %% 
+# %%
 p3d = gpv.plot_3d(geo_model, image=True)
 
 # %%
-# Building the model
-# ------------------
-# 
-# Now that we have everything initialize we can start the construction of
-# the geological model.
-# 
-# Surfaces
-# ~~~~~~~~
-# 
-# GemPy is a surface based interpolator. This means that all the input
-# data we add has to be refered to a surface. The surfaces always mark the
-# bottom of a unit. By default GemPy surfaces are empty:
-# 
+# Building the model:
+# -------------------
+#
+# With everything initialized, we can begin constructing the geological model.
 
-# %% 
+# Surfaces:
+# ~~~~~~~~~
+#
+# GemPy is a surface-based interpolator. All input data must be referred to a 
+# surface, which marks the bottom of a unit. By default, GemPy surfaces are empty:
+
+# %%
 geo_model.structural_frame.structural_elements
 
 # %%
-# Now we can start adding data. GemPy input data consist on surface points
-# and orientations (perpendicular to the layers). The 2D plot gives you
-# the X and Z coordinates when hovering the mouse over. We can add a
-# surface point as follows:
-# 
+# Let's begin by adding data. GemPy input data consists of surface points and 
+# orientations (perpendicular to the layers). The 2D plot provides X and Z 
+# coordinates on mouse hover. We can add a surface point like this:
 
-# %% 
-# Add a point
-# geo_model.add_surface_points(X=223, Y=0.01, Z=-94, surface='surface1')
+# %%
 gp.add_surface_points(
     geo_model=geo_model,
     x=[223],
@@ -130,20 +104,15 @@ gp.add_surface_points(
     elements_names=['surface1']
 )
 
-# Plot in 2D
 gpv.plot_2d(geo_model, cell_number=11)
 
-# Plot in 3D
+# %%
 gpv.plot_3d(geo_model, image=True)
 
 # %%
-# Now we can add the other two points of the layer:
-# 
+# We can now add other points for the layer:
 
-# %% 
-# Add points
-# geo_model.add_surface_points(X=458, Y=0, Z=-107, surface='surface1')
-# geo_model.add_surface_points(X=612, Y=0, Z=-14, surface='surface1')
+# %%
 gp.add_surface_points(
     geo_model=geo_model,
     x=[458, 612],
@@ -152,20 +121,17 @@ gp.add_surface_points(
     elements_names=['surface1', 'surface1']
 )
 
-# Plotting
 gpv.plot_2d(geo_model, cell_number=11)
 gpv.plot_3d(geo_model, image=True)
 
 # %%
-# The minimum amount of data to interpolate anything in gempy is: a) 2
-# surface points per surface b) One orientation per series.
-# 
-# Lets add an orientation anywhere in space:
-# 
+# To interpolate in gempy, the minimum data needed is:
+# a) 2 surface points per surface 
+# b) One orientation per series
+#
+# Let's add an orientation:
 
-# %% 
-# Adding orientation
-# geo_model.add_orientations(X=350, Y=0, Z=-300, surface='surface1', pole_vector=(0, 0, 1))
+# %%
 gp.add_orientations(
     geo_model=geo_model,
     x=[350],
@@ -178,57 +144,52 @@ gp.add_orientations(
 gpv.plot_2d(geo_model, cell_number=5)
 gpv.plot_3d(geo_model, image=True)
 
-# %%
-# Recompute transform
-geo_model.update_transform(gp.data.GlobalAnisotropy.NONE)  # * Remove the auto anisotropy for this 2.5D model
+
 
 # %%
-# Now we have enough data for finally interpolate!
-# 
+# Update and Recompute Model Transform:
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Removing auto anisotropy for this 2.5D model.
+geo_model.update_transform(gp.data.GlobalAnisotropy.NONE)
 
-# %% 
+# %%
+# Interpolation:
+# ~~~~~~~~~~~~~~
+# With the provided data, we can now interpolate the 3D surface.
+
 gp.compute_model(geo_model, engine_config=gp.data.GemPyEngineConfig())
 
-# %% 
+# %%
+# Display interpolation kernel options:
 geo_model.interpolation_options.kernel_options
 
-
 # %%
-# That is, we have interpolated the 3D surface. We can visualize:
-# 
+# Visualization:
+# ~~~~~~~~~~~~~~
+# Interpolated 3D surface can be visualized both in 2D and 3D.
 
-# %% 
-# In 2D
+# 2D visualization:
 gpv.plot_2d(geo_model, cell_number=[5])
 
-# In 3D
+# 3D visualization:
 gpv.plot_3d(geo_model, show_surfaces=True, image=True)
 
 # %%
-# Adding more layers:
-# ~~~~~~~~~~~~~~~~~~~
-# 
-# So far we only need 2 units defined. The cross-section image that we
-# load have 4 however. Lets add two layers more:
-# 
+# Expanding the Model with More Layers:
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Our cross-section image displays 4 layers, yet we only defined 2. Let's add two more.
 
-# %% 
+# Display current structural frame:
 geo_model.structural_frame
 
-
-# %% 
+# Add new surfaces to the model:
 # geo_model.add_surfaces(['surface3', 'basement'])
 
-
 # %%
-# Layer 2
-# ~~~~~~~
-# 
-# Add the layer next layers:
-# 
+# Defining Layer 2:
+# ~~~~~~~~~~~~~~~~
+# Adding points and properties for the next layer.
 
-# %% 
-# Your code here:
 element2 = gp.data.StructuralElement(
     name='surface2',
     color=next(geo_model.structural_frame.color_generator),
@@ -243,27 +204,15 @@ element2 = gp.data.StructuralElement(
 
 geo_model.structural_frame.structural_groups[0].append_element(element2)
 
-# --------------------
-
-# %% 
-# Compute model
+# Compute and visualize the updated model:
 gp.compute_model(geo_model)
-
-# %% 
 gpv.plot_2d(geo_model, cell_number=5, legend='force')
 gpv.plot_3d(geo_model, image=True)
 
 # %%
-# Layer 3
-# ~~~~~~~
-# 
-
-# %% 
-# Your code here:
-
-# geo_model.add_surface_points(X=225, Y=0, Z=-439, surface='surface3')
-# geo_model.add_surface_points(X=464, Y=0, Z=-456, surface='surface3')
-# geo_model.add_surface_points(X=619, Y=0, Z=-433, surface='surface3')
+# Defining Layer 3:
+# ~~~~~~~~~~~~~~~~
+# Adding points and properties for another layer.
 
 element3 = gp.data.StructuralElement(
     name='surface3',
@@ -275,75 +224,27 @@ element3 = gp.data.StructuralElement(
         names='surface3'
     ),
     orientations=gp.data.OrientationsTable.initialize_empty()
-)   
+)
 
 geo_model.structural_frame.structural_groups[0].append_element(element3)
 
-# ------------------
-
-# %% 
-# Computing and plotting 3D
+# Compute and visualize with adjusted parameters:
 gp.compute_model(geo_model)
-
 gpv.plot_2d(geo_model, cell_number=5, legend='force')
 gpv.plot_3d(geo_model, kwargs_plot_structured_grid={'opacity': .2}, image=True)
 
+
 # %%
-# Adding a Fault
+# Adding a Fault:
 # ~~~~~~~~~~~~~~
-# 
-# So far the model is simply a depositional unit. GemPy allows for
-# unconformities and faults to build complex models. This input is given
-# by categorical data. In general:
-# 
-# input data (surface points/ orientations) <belong to< surface <belong
-# to< series
-# 
-# And series can be a fault—i.e. offset the rest of surface— or not. We
-# are going to show how to add a fault as an example.
-# 
-# First we need to add a series:
-# 
-
-# %% 
-# geo_model.add_features('Fault1')
-
-# %% 
-# geo_model.reorder_features(['Fault1', 'Default series'])
+# To date, our model represents a simple depositional unit. With GemPy, we can
+# incorporate unconformities and faults for more intricate models. 
+# Relationships are depicted as:
+# input data (surface points/ orientations) <belong to< surface <belong to< series.
+# Here, we'll add a fault as a demonstration. 
 
 # %%
-# Then define that is a fault:
-# 
-
-# %% 
-# geo_model.set_is_fault('Fault1')
-
-# %%
-# But we also need to add a new surface:
-# 
-
-# %% 
-# geo_model.add_surfaces('fault1')
-
-# %%
-# And finally assign the new surface to the new series/fault
-# 
-
-# %% 
-# gp.map_stack_to_surfaces(geo_model, {'Fault1': 'fault1'})
-
-# %%
-# Now we can just add input data as before (remember the minimum amount of
-# input data to compute a model):
-# 
-
-# %% 
-# Add input data of the fault
-# geo_model.add_surface_points(X=550, Y=0, Z=-30, surface='fault1')
-# geo_model.add_surface_points(X=650, Y=0, Z=-200, surface='fault1')
-#  geo_model.add_orientations(X=600, Y=0, Z=-100, surface='fault1', pole_vector=(.3, 0, .3))
-
-
+# Add the fault's input data:
 element_fault = gp.data.StructuralElement(
     name='fault1',
     color=next(geo_model.structural_frame.color_generator),
@@ -371,48 +272,28 @@ group_fault = gp.data.StructuralGroup(
     fault_relations=gp.data.FaultsRelationSpecialCase.OFFSET_ALL
 )
 
-geo_model.structural_frame.insert_group(0, group_fault)  # * We are placing it already in the right place so we do not need to map anything
+# Insert the fault group into the structural frame:
+geo_model.structural_frame.insert_group(0, group_fault)
 
-# Plotting Inpute data
+# Preview the model's input data:
 gpv.plot_2d(geo_model, show_solutions=False)
 
 # %%
-# And now is computing as before:
-# 
-
-# %% 
-# Compute
+# Compute and visualize the updated model:
 gp.compute_model(geo_model)
-
-# Plot
 gpv.plot_2d(geo_model, cell_number=5, legend='force')
 gpv.plot_3d(geo_model, kwargs_plot_structured_grid={'opacity': .2})
 
 # %%
-# As you can see now instead of having folding layers we have a sharp
-# jump. Building on this you can pretty much any model you can imagine.
-# 
+# Advanced Features:
+# ~~~~~~~~~~~~~~~~~~
+# Over time, numerous capabilities have been integrated with GemPy. 
+# Here, we'll showcase a few of them.
 
+# Topography:
+# GemPy offers built-in tools to manage topographic data through gdal.
+# For demonstration, we'll create a random topography:
 
-# %%
-# Additional features:
-# ====================
-# 
-# Over the years we have built a bunch of assets integrate with gempy.
-# Here we will show some of them:
-# 
-# Topography
-# ~~~~~~~~~~
-# 
-# GemPy has a built-in capabilities to read and manipulate topographic
-# data (through gdal). To show an example we can just create a random
-# topography:
-# 
-
-# %% 
-# Adding random topography
-# geo_model.set_topography(source='random', fd=1.9, d_z=np.array([-150, 0]),
-#                          resolution=np.array([200, 200]))
 gp.set_topography_from_random(
     grid=geo_model.grid,
     fractal_dimension=1.9,
@@ -420,61 +301,30 @@ gp.set_topography_from_random(
     topography_resolution=np.array([200, 200])
 )
 
-# %%
-# The topography can we visualize in both renderers:
-# 
-
-# %% 
+# Visualize the topography:
 gpv.plot_2d(geo_model, cell_number=5, legend='force')
-gpv.plot_3d(geo_model, kwargs_plot_structured_grid={'opacity':.2})
+gpv.plot_3d(geo_model, kwargs_plot_structured_grid={'opacity': .2})
 
-# %%
-# But also allows us to compute the geological map of an area:
-# 
-
-# %% 
+# Calculate and visualize the area's geological map:
 gp.compute_model(geo_model)
-
-# sphinx_gallery_thumbnail_number = 16
 gpv.plot_3d(geo_model, show_topography=True)
 
 # %%
-# Gravity inversion
-# ~~~~~~~~~~~~~~~~~
-# 
+# Gravity Inversion:
 # .. admonition:: Coming soon
 #
 #    This feature is not yet available in the current version of GemPy.
 #
-# 
-# GemPy also allows for inversions (in production only gravity so far). We
-# can see a small demo how this works.
-# 
-# The first thing to do is to assign densities to each of the units:
-# 
-# 
-# # %% 
+
+# Assign density values to model units:
 # geo_model.add_surface_values([0, 2.6, 2.4, 3.2, 3.6], ['density'])
-# 
-# # %%
-# # Also we can create a centered grid around a device for precision:
-# # 
-# 
-# # %% 
+
+# Generate a centered grid around a device for improved accuracy:
 # geo_model.set_centered_grid(centers=[[400, 0, 0]], resolution=[10, 10, 100], radius=800)
-# 
-# # %%
-# # We need to modify the compile code:
-# # 
-# 
-# # %% 
+
+# Adjust the compile code for gravity computation:
 # gp.set_interpolator(geo_model, output=['gravity'], aesara_optimizer='fast_run')
-# 
-# # %%
-# # But now additionally to the interpolation we also compute the forward
-# # gravity of the model (at the point XYZ = 400, 0, 0)
-# # 
-# 
-# # %% 
+
+# Besides the interpolation, compute the model's forward gravity:
 # gp.compute_model(geo_model)
 # geo_model.solutions.fw_gravity
