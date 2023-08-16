@@ -7,6 +7,7 @@
 # %%
 # Importing gempy
 import gempy as gp
+import gempy_viewer as gpv
 
 # Aux imports
 import numpy as np
@@ -25,88 +26,84 @@ pd.set_option('display.precision', 2)
 # 
 
 # %%
-cwd = os.getcwd()
-if 'examples' not in cwd:
-    data_path = os.getcwd() + '/examples/'
-else:
-    data_path = cwd + '/../../'
+data_path = os.path.abspath('../../')
 
-geo_model = gp.load_model(r'Tutorial_ch1-9a_Fault_relations',
-                          path=data_path + 'data/gempy_models/Tutorial_ch1-9a_Fault_relations',
-                          recompile=True)
+geo_model: gp.data.GeoModel = gp.create_geomodel(
+    project_name='Faults_relations',
+    extent=[0, 1000, 0, 1000, -1000, -400],
+    resolution=[50, 50, 50],
+    number_octree_levels=5,
+    importer_helper=gp.data.ImporterHelper(
+        path_to_orientations=data_path + "/data/input_data/tut-ch1-5/tut_ch1-5_orientations.csv",
+        path_to_surface_points=data_path + "/data/input_data/tut-ch1-5/tut_ch1-5_points.csv",
+    )
+)
 
-
-# %% 
-geo_model.faults.faults_relations_df
-
-# %% 
-geo_model.faults
-
-# %% 
-geo_model.surfaces
+print(geo_model)
+# %%
+# One fault model
+# ---------------
 
 # %% 
-gp.compute_model(geo_model, compute_mesh=False)
+# Setting the structural frame
+
+fault1: gp.data.StructuralElement = geo_model.structural_frame.get_element_by_name("fault1")
+fault2: gp.data.StructuralElement = geo_model.structural_frame.get_element_by_name("fault2")
+
+
+# Remove the faults from the default group
+default_group: gp.data.StructuralGroup = geo_model.structural_frame.get_group_by_name("default_formation")
+default_group.elements.remove(fault1)
+default_group.elements.remove(fault2)
+
+# Add a new group for the fault
+gp.add_structural_group(
+    model=geo_model,
+    group_index=0,
+    structural_group_name="fault_series_1",
+    elements=[fault1],
+    structural_relation=gp.data.StackRelationType.FAULT,
+    fault_relations=gp.data.FaultsRelationSpecialCase.OFFSET_ALL
+)
+
+
+print(geo_model.structural_frame)
 
 # %% 
-geo_model.solutions.lith_block
+
+geo_model.transform.apply_anisotropy(gp.data.GlobalAnisotropy.NONE)
+gp.compute_model(geo_model)
 
 # %% 
-geo_model.solutions.block_matrix[0]
+
+print(geo_model.solutions.raw_arrays.block_matrix[0])  # This contains the block values for the fault1
+print(geo_model.solutions.raw_arrays.block_matrix[1])  # This contains the block values for the formations
 
 # %%
-gp.plot_2d(geo_model, cell_number=[25], show_data=True)
+gpv.plot_2d(geo_model, show_data=True)
+gpv.plot_3d(geo_model, show_data=True, kwargs_plot_structured_grid={'opacity': .2})
+
+# TODO: Add example of offsetting just one fault
 
 # Graben example
 # --------------
 
+# %%
+gp.add_structural_group(
+    model=geo_model,
+    group_index=1,
+    structural_group_name="fault_series_2",
+    elements=[fault2],
+    structural_relation=gp.data.StackRelationType.FAULT,
+    fault_relations=gp.data.FaultsRelationSpecialCase.OFFSET_ALL
+)
+
+gp.compute_model(geo_model)
 
 # %%
-geo_model_graben = gp.load_model(r'Tutorial_ch1-9b_Fault_relations',
-                                 path=data_path + 'data/gempy_models/Tutorial_ch1-9b_Fault_relations', recompile=True)
+gpv.plot_2d(geo_model, show_data=True)
+gpv.plot_3d(geo_model, show_data=True, kwargs_plot_structured_grid={'opacity': .2})
 
-geo_model.meta.project_name = "Faults_relations"
-
-# %%
-geo_model_graben.surfaces
-
-# %%
-geo_model_graben.additional_data
-
-# %%
-# Displaying the input data:
-#
-
-# %%
-gp.plot_2d(geo_model_graben, direction='y')
-
-# %%
-gp.plot_2d(geo_model_graben, direction='x')
-
-
-# %%
-geo_model_graben.stack
-
-# %%
-geo_model_graben.faults
-
-# %%
-geo_model_graben.faults.faults_relations_df
-
-# %%
-gp.compute_model(geo_model_graben)
-
-# %%
-gp.plot_2d(geo_model_graben, cell_number=[25], show_data=True)
-
-# %%
-# sphinx_gallery_thumbnail_number = 5
-gp.plot_3d(geo_model_graben, image=True)
-
-# %%
-gp.plot_2d(geo_model_graben, cell_number=[25], show_scalar=True, series_n=0)
-
-gp.plot_2d(geo_model_graben, cell_number=[25], show_scalar=True, series_n=1)
 
 # %%
 # Offset parameter (Experimental)
@@ -116,7 +113,6 @@ gp.plot_2d(geo_model_graben, cell_number=[25], show_scalar=True, series_n=1)
 # %%
 geo_model_graben._interpolator.aesara_graph.offset.set_value(1)
 gp.compute_model(geo_model_graben, compute_mesh=False)
-
 
 # %%
 gp.plot_2d(geo_model_graben, block=geo_model_graben.solutions.block_matrix[1, 0, :125000],
