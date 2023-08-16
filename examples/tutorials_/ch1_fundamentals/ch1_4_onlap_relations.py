@@ -55,6 +55,8 @@ gp.set_topography_from_random(grid=geo_model.grid, d_z=np.array([-600, -100]))
 
 # %% 
 print(geo_model.structural_frame)
+
+# %%
 geo_model.transform.apply_anisotropy(gp.data.GlobalAnisotropy.NONE)
 gp.add_structural_group(
     model=geo_model,
@@ -75,7 +77,6 @@ gp.add_structural_group(
     structural_relation=gp.data.StackRelationType.ONLAP
 )
 
-
 gp.add_structural_group(
     model=geo_model,
     group_index=2,
@@ -92,8 +93,6 @@ gp.add_structural_group(
     structural_relation=gp.data.StackRelationType.BASEMENT
 )
 
-print(geo_model.structural_frame)
-
 gp.remove_structural_group_by_name(model=geo_model, group_name="default_formation")
 
 print(geo_model.structural_frame)
@@ -106,13 +105,11 @@ gpv.plot_3d(
     model=geo_model,
     show_surfaces=True,
     show_data=True,
-    image=False,
+    image=True,
     show_topography=True,
     kwargs_plot_structured_grid={'opacity': .2}
 )
 
-
-foo
 
 # %%
 gpv.plot_2d(

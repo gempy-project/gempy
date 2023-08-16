@@ -113,7 +113,7 @@ class GeoModel:
         for e, element in enumerate(self.structural_frame.structural_elements[:-1]):  # * Ignore basement
 
             dc_mesh = self._solutions.dc_meshes[e] if self._solutions.dc_meshes is not None else None
-            # TODO: This meshes are in the order of the scalar field
+            # TODO: These meshes are in the order of the scalar field
             element.vertices = (self.transform.apply_inverse(dc_mesh.vertices) if dc_mesh is not None else None)
             element.edges = (dc_mesh.edges if dc_mesh is not None else None)
 
