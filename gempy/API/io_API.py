@@ -10,12 +10,15 @@ def read_surface_points(path: str,
                         coord_y_name="Y",
                         coord_z_name="Z",
                         surface_name="formation",
-                        **pandas_kwargs) -> SurfacePointsTable:
-    pd = require_pandas()
-    csv = pd.read_csv(path, **pandas_kwargs)
-
+                        pandas_kwargs: dict = None) -> SurfacePointsTable:
+    
+    pandas_kwargs = pandas_kwargs or {}
     if 'sep' not in pandas_kwargs:
         pandas_kwargs['sep'] = ','
+
+    pd = require_pandas()
+    csv = pd.read_csv(path, **pandas_kwargs)
+    csv = _standardize(csv)
 
     surface_points: SurfacePointsTable = SurfacePointsTable.from_arrays(
         x=csv[coord_x_name].values,
@@ -36,14 +39,17 @@ def read_orientations(
         gy_name="G_y",
         gz_name="G_z",
         surface_name="formation",
-        **pandas_kwargs) -> OrientationsTable:
+        pandas_kwargs: dict = None
+        ) -> OrientationsTable:
+    
+    pandas_kwargs = pandas_kwargs or {}
+    if 'sep' not in pandas_kwargs:
+        pandas_kwargs['sep'] = ','
+        
     pd = require_pandas()
     csv = pd.read_csv(path, **pandas_kwargs)
     csv_standardized = _standardize(csv)
     csv_with_gradient = _add_gradient_columns(csv_standardized)
-
-    if 'sep' not in pandas_kwargs:
-        pandas_kwargs['sep'] = ','
 
     orientations: OrientationsTable = OrientationsTable.from_arrays(
         x=csv_with_gradient[coord_x_name].values,

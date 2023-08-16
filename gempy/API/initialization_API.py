@@ -110,10 +110,23 @@ def _read_input_points(importer_helper: ImporterHelper) -> (SurfacePointsTable, 
 
     surface_points: SurfacePointsTable = read_surface_points(
         path=surface_points_file,
+        coord_x_name=importer_helper.coord_x_name,
+        coord_y_name=importer_helper.coord_y_name,
+        coord_z_name=importer_helper.coord_z_name,
+        surface_name=importer_helper.surface_name,
+        pandas_kwargs=importer_helper.pandas_reader_kwargs
     )
 
     orientations: OrientationsTable = read_orientations(
-        path=orientations_file
+        path=orientations_file,
+        coord_x_name=importer_helper.coord_x_name,
+        coord_y_name=importer_helper.coord_y_name,
+        coord_z_name=importer_helper.coord_z_name,
+        surface_name=importer_helper.surface_name,
+        gx_name=importer_helper.gx_name,
+        gy_name=importer_helper.gy_name,
+        gz_name=importer_helper.gz_name,
+        pandas_kwargs=importer_helper.pandas_reader_kwargs
     )
 
     return surface_points, orientations
