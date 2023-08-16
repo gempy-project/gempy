@@ -17,22 +17,7 @@ np.random.seed(1515)
 
 # %%
 # We import a model from an existing folder, representing a subduction
-# zone with onlap relationships. The aesara function is automatically
-# recombined to allow changes.
-# 
-
-# %%
-# cwd = os.getcwd()
-# if not 'examples' in cwd:
-#     data_path = os.getcwd() + '/examples/'
-# else:
-#     data_path = cwd + '/../../'
-# 
-# geo_model = gp.load_model(r'Tutorial_ch1-8_Onlap_relations',
-#                           path=data_path + 'data/gempy_models/Tutorial_ch1-8_Onlap_relations',
-#                           recompile=True)
-# 
-# geo_model.meta.project_name = "Onlap_relations"
+# zone with onlap relationships.
 
 data_path = os.path.abspath('../../')
 
@@ -47,14 +32,16 @@ geo_model: gp.data.GeoModel = gp.create_geomodel(
     )
 )
 
+gp.set_topography_from_random(grid=geo_model.grid, d_z=np.array([-600, -100]))
+
 # %% 
 gpv.plot_2d(geo_model)
 
 # %%
-gp.set_topography_from_random(grid=geo_model.grid, d_z=np.array([-600, -100]))
 
 # %% 
-print(geo_model.structural_frame)
+# Raw structural frame
+geo_model.structural_frame
 
 # %%
 geo_model.transform.apply_anisotropy(gp.data.GlobalAnisotropy.NONE)
@@ -95,8 +82,10 @@ gp.add_structural_group(
 
 gp.remove_structural_group_by_name(model=geo_model, group_name="default_formation")
 
-print(geo_model.structural_frame)
+# Final structural frame
+geo_model.structural_frame
 
+# %%
 s = gp.compute_model(geo_model)
 
 # %% 
@@ -110,34 +99,64 @@ gpv.plot_3d(
     kwargs_plot_structured_grid={'opacity': .2}
 )
 
+# %%
+gpv.plot_2d(
+    model=geo_model,
+    cell_number=2,
+    override_regular_grid=geo_model.solutions.raw_arrays.mask_matrix[0],
+    show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None}
+)
+
+gpv.plot_2d(
+    model=geo_model,
+    cell_number=2,
+    override_regular_grid=geo_model.solutions.raw_arrays.mask_matrix[1],
+    show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None}
+)
+
+gpv.plot_2d(
+    model=geo_model,
+    cell_number=2,
+    override_regular_grid=geo_model.solutions.raw_arrays.mask_matrix[2],
+    show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None}
+)
+
+gpv.plot_2d(
+    model=geo_model,
+    cell_number=2,
+    override_regular_grid=geo_model.solutions.raw_arrays.mask_matrix[3],
+    show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None}
+)
 
 # %%
 gpv.plot_2d(
     model=geo_model,
     cell_number=2,
-    regular_grid=geo_model.solutions.mask_matrix_pad[0],
+    override_regular_grid=geo_model.solutions.raw_arrays.mask_matrix_squeezed[0],
     show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None}
 )
 
 gpv.plot_2d(
     model=geo_model,
     cell_number=2,
-    regular_grid=geo_model.solutions.mask_matrix_pad[1],
+    override_regular_grid=geo_model.solutions.raw_arrays.mask_matrix_squeezed[1],   
     show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None}
 )
 
 gpv.plot_2d(
     model=geo_model,
     cell_number=2,
-    regular_grid=geo_model.solutions.mask_matrix_pad[2],
+    override_regular_grid=geo_model.solutions.raw_arrays.mask_matrix_squeezed[2],
     show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None}
 )
 
 gpv.plot_2d(
     model=geo_model,
     cell_number=2,
-    regular_grid=geo_model.solutions.mask_matrix_pad[3],
+    override_regular_grid=geo_model.solutions.raw_arrays.mask_matrix_squeezed[3],
     show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None}
 )
+
+
 
 # sphinx_gallery_thumbnail_number = 7
