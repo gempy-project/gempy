@@ -1,4 +1,4 @@
-﻿from core.data.stack_relation_type import StackRelationType
+﻿from gempy_engine.core.data.stack_relation_type import StackRelationType
 from gempy.core.data import StructuralGroup, GeoModel, FaultsRelationSpecialCase, StructuralElement, StructuralFrame
 
 
