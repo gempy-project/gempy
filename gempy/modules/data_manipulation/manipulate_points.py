@@ -1,15 +1,15 @@
-﻿"""These functions are meant to be used for bulk changes in the model. Otherwise, just change the data directly"""
-from typing import Sequence, Optional, Union
+﻿from typing import Sequence, Optional
 
 import numpy as np
 
-from gempy.core.data import GeoModel, SurfacePointsTable, StructuralElement, StructuralFrame
-from gempy.core.data.orientations import DEFAULT_ORI_NUGGET, OrientationsTable
+from gempy.core.data import GeoModel, StructuralFrame, SurfacePointsTable, StructuralElement, OrientationsTable
+from gempy.core.data.orientations import DEFAULT_ORI_NUGGET
 from gempy.core.data.surface_points import DEFAULT_SP_NUGGET
 
 
+
 def add_surface_points(geo_model: GeoModel, x: Sequence[float], y: Sequence[float], z: Sequence[float],
-                       elements_names: Sequence[str], nugget: Optional[Sequence[float]] = None) -> StructuralFrame:
+                        elements_names: Sequence[str], nugget: Optional[Sequence[float]] = None) -> StructuralFrame:
     elements_names = _validate_args(elements_names, x, y, z)
 
     # If nugget is not provided, create a Sequence filled with the default value
@@ -59,15 +59,14 @@ def add_surface_points(geo_model: GeoModel, x: Sequence[float], y: Sequence[floa
     return geo_model.structural_frame
 
 
-
 def delete_surface_points():
     raise NotImplementedError
 
 
 def add_orientations(geo_model: GeoModel, x: Sequence[float], y: Sequence[float], z: Sequence[float],
-                     elements_names: Sequence[str], pole_vector: Optional[Sequence[np.ndarray]] = None,
-                     orientation: Optional[Sequence[np.ndarray]] = None,
-                     nugget: Optional[Sequence[float]] = None) -> StructuralFrame:
+                      elements_names: Sequence[str], pole_vector: Optional[Sequence[np.ndarray]] = None,
+                      orientation: Optional[Sequence[np.ndarray]] = None,
+                      nugget: Optional[Sequence[float]] = None) -> StructuralFrame:
     if not pole_vector and not orientation:
         raise ValueError("Either pole_vector or orientation must be provided.")
 
@@ -163,4 +162,3 @@ def _validate_args(elements_names, *args):
     if len(lengths) != 1:
         raise ValueError("All input Sequences must have the same length.")
     return elements_names
-
