@@ -89,6 +89,7 @@ def set_is_finite_fault(self, series_fault=None, toggle: bool = True):
     return s
 
 
+# TODO: Move to a faults module
 def _find_and_set_fields(frame: StructuralFrame, fault_groups: list[StructuralGroup],
                          faults_relation_type: FaultsRelationSpecialCase, stack_relation_type: StackRelationType,
                          change_color: bool) -> StructuralFrame:

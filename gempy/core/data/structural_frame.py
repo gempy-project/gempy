@@ -30,10 +30,20 @@ class StructuralFrame:
         self.color_generator = color_gen
 
 
-    def get_element_by_name(self, element_name: str) -> Optional[StructuralElement]:
+    def get_element_by_name(self, element_name: str) -> StructuralElement:
         elements: Generator = (group.get_element_by_name(element_name) for group in self.structural_groups)
         valid_elements: Generator = (element for element in elements if element is not None)
-        return next(valid_elements, None)
+        element = next(valid_elements, None)
+        if element is None:
+            raise ValueError(f"Element with name {element_name} not found in the structural frame.")
+        return element 
+    
+    def get_group_by_name(self, group_name: str) -> StructuralGroup:
+        groups: Generator = (group for group in self.structural_groups if group.name == group_name)
+        group = next(groups, None)
+        if group is None:
+            raise ValueError(f"Group with name {group_name} not found in the structural frame.")
+        return group
     
     def append_group(self, group: StructuralGroup):
         self.structural_groups.append(group)

@@ -5,6 +5,11 @@ from gempy.core.data import StructuralGroup, GeoModel, FaultsRelationSpecialCase
 def add_structural_group(
         model: GeoModel, group_index: int, structural_group_name: str, elements: list[StructuralElement],
         structural_relation: StackRelationType, fault_relations: FaultsRelationSpecialCase = FaultsRelationSpecialCase.OFFSET_ALL) -> StructuralFrame:
+    
+    # Check elements are a Sequence
+    if not isinstance(elements, list):
+        raise TypeError("elements must be a list of StructuralElement objects.")
+    
     new_group = StructuralGroup(
         name=structural_group_name,
         elements=elements,
@@ -15,3 +20,17 @@ def add_structural_group(
     # Insert the fault group into the structural frame:
     model.structural_frame.insert_group(group_index, new_group)
     return model.structural_frame
+
+
+def remove_structural_group_by_index(model: GeoModel, group_index: int) -> StructuralFrame:
+    model.structural_frame.structural_groups.pop(group_index)
+    return model.structural_frame
+
+
+def remove_structural_group_by_name(model: GeoModel, group_name: str) -> StructuralFrame:
+    group = model.structural_frame.get_group_by_name(group_name)
+    group_index = model.structural_frame.structural_groups.index(group)
+    model.structural_frame.structural_groups.pop(group_index)
+    return model.structural_frame
+    
+   

@@ -56,6 +56,48 @@ gp.set_topography_from_random(grid=geo_model.grid, d_z=np.array([-600, -100]))
 # %% 
 print(geo_model.structural_frame)
 geo_model.transform.apply_anisotropy(gp.data.GlobalAnisotropy.NONE)
+gp.add_structural_group(
+    model=geo_model,
+    group_index=0,
+    structural_group_name="seafloor_series",
+    elements=[geo_model.structural_frame.get_element_by_name("seafloor")],
+    structural_relation=gp.data.StackRelationType.ERODE,
+)
+
+gp.add_structural_group(
+    model=geo_model,
+    group_index=1,
+    structural_group_name="right_series",
+    elements=[
+        geo_model.structural_frame.get_element_by_name("rock1"),
+        geo_model.structural_frame.get_element_by_name("rock2"),
+    ],
+    structural_relation=gp.data.StackRelationType.ONLAP
+)
+
+
+gp.add_structural_group(
+    model=geo_model,
+    group_index=2,
+    structural_group_name="onlap_series",
+    elements=[geo_model.structural_frame.get_element_by_name("onlap_surface")],
+    structural_relation=gp.data.StackRelationType.ERODE
+)
+
+gp.add_structural_group(
+    model=geo_model,
+    group_index=3,
+    structural_group_name="left_series",
+    elements=[geo_model.structural_frame.get_element_by_name("rock3")],
+    structural_relation=gp.data.StackRelationType.BASEMENT
+)
+
+print(geo_model.structural_frame)
+
+gp.remove_structural_group_by_name(model=geo_model, group_name="default_formation")
+
+print(geo_model.structural_frame)
+
 s = gp.compute_model(geo_model)
 
 # %% 
@@ -68,6 +110,7 @@ gpv.plot_3d(
     show_topography=True,
     kwargs_plot_structured_grid={'opacity': .2}
 )
+
 
 foo
 

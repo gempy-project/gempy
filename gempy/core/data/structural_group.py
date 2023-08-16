@@ -30,6 +30,14 @@ class StructuralGroup(ABC):
     
     solution: Optional[RawArraysSolution] = field(init=False, default=None, repr=False)  #: Solution related to this group from geological computations.
     
+    
+    def __post_init__(self):
+        if not isinstance(self.elements, list):
+            raise TypeError("elements must be a list of StructuralElement objects.")
+        for e in self.elements:
+            if not isinstance(e, StructuralElement):
+                raise TypeError("elements must be a list of StructuralElement objects.")
+        
     def __repr__(self):
         elements_repr = ',\n'.join([repr(e) for e in self.elements])
         return f"StructuralGroup(\n" \
