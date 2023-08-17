@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Optional, Union, Generator
 
+from core.data.kernel_classes.faults import FaultsData
 from gempy_engine.core.data.raw_arrays_solution import RawArraysSolution
 from gempy_engine.core.data.stack_relation_type import StackRelationType
 from gempy.core.data.structural_element import StructuralElement
@@ -27,6 +28,7 @@ class StructuralGroup(ABC):
 
     #: Relations with other groups in terms of faults.
     fault_relations: Optional[Union[list["StructuralGroup"], FaultsRelationSpecialCase]] = field(default=None, repr=False)
+    faults_input_data: Optional[FaultsData] = field(default=None, repr=False)
     
     solution: Optional[RawArraysSolution] = field(init=False, default=None, repr=False)  #: Solution related to this group from geological computations.
     

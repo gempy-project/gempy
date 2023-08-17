@@ -3,6 +3,7 @@ from typing import Optional, Generator
 
 import numpy as np
 
+from core.data.kernel_classes.faults import FaultsData
 from gempy_engine.core.data.input_data_descriptor import InputDataDescriptor
 from gempy_engine.core.data.stack_relation_type import StackRelationType
 from .orientations import OrientationsTable
@@ -228,9 +229,24 @@ class StructuralFrame:
         return InputDataDescriptor.from_structural_frame(
             structural_frame=self,
             making_descriptor=self.groups_structural_relation,
-            faults_relations=self.fault_relations
+            faults_relations=self.fault_relations,
+            faults_input_data=self.faults_input_data
+            
         )
 
+    @property
+    def faults_input_data(self):
+        """Returns a descriptor for the input data, detailing the relations and faults between groups."""
+        faults_input_data: list[FaultsData] = [group.faults_input_data for group in self.structural_groups]
+        return faults_input_data
+        
+    @property
+    def groups_structural_relation(self) -> list[StackRelationType]:
+        """Returns a list of the structural relations for each group."""
+        groups_ = [group.structural_relation for group in self.structural_groups]
+        groups_[-1] = StackRelationType.BASEMENT
+        return groups_
+    
     @property
     def number_of_points_per_element(self) -> np.ndarray:
         """Returns an array with the number of points for each structural element."""
@@ -265,7 +281,7 @@ class StructuralFrame:
     def groups_structural_relation(self) -> list[StackRelationType]:
         """Returns a list of the structural relations for each group."""
         groups_ = [group.structural_relation for group in self.structural_groups]
-        groups_[-1] = False
+        groups_[-1] = StackRelationType.BASEMENT
         return groups_
 
     @property
