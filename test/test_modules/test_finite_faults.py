@@ -105,21 +105,19 @@ def test_finite_fault_scalar_field_on_fault():
         scale=np.ones(3)
     )
 
-    transformed_points = transform.apply_inverse_with_pivot(
-        points=regular_grid.values,  # ! This depends on the octree
-        pivot=center
-    )
-    scalar_block = scalar_funtion(transformed_points)
-    
+    scalar_block = _apply(regular_grid, scalar_funtion, transform)
+
     faults_data = gp.data.FaultsData(
         fault_values_everywhere=np.zeros(0),
         fault_values_on_sp=np.zeros(0),
         thickness=None,
-        offset=1,
         fault_values_ref=np.zeros(0),
         fault_values_rest=np.zeros(0),
-        finite_faults_implicit_function=scalar_funtion,
-        finite_faults_implicit_function_transform=transform
+        finite_fault_data=gp.data.FiniteFaultData(
+            implicit_function=scalar_funtion,
+            implicit_function_transform=transform,
+            pivot=center
+        )
     )
     
     geo_model.structural_frame.structural_groups[0].faults_input_data = faults_data
@@ -134,6 +132,16 @@ def test_finite_fault_scalar_field_on_fault():
             show=False
         )
         _plot_scalar_field(regular_grid, scalar_block, plot3d.p)
+
+
+def _apply(regular_grid, scalar_funtion, transform):
+    transformed_points = transform.apply_inverse_with_pivot(
+        points=regular_grid.values,  # ! This depends on the octree
+        pivot=center
+    )
+    scalar_block = scalar_funtion(transformed_points)
+    return scalar_block
+
 
 def _plot_scalar_field(regular_grid, scalar_block, plotter=None):
     pv = require_pyvista()
