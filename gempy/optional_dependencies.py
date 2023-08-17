@@ -44,3 +44,5 @@ def require_gdal():
     except ImportError:
         raise ImportError("The gdal package is required to run this function.")
     return gdal
+
+

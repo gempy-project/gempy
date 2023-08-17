@@ -40,6 +40,7 @@ from .core import data
 # =================== API ===================
 
 from .API import *
+from .API import implicit_functions
 #from .gempy_api import *
 # from .api_modules.getters import *
 # from .api_modules.setters import *
