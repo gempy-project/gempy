@@ -213,6 +213,51 @@ class Transform:
         transformed_points = (np.linalg.inv(self.get_transform_matrix(transform_op_order)) @ homogeneous_points.T).T
         return transformed_points[:, :3]
 
+    def apply_with_pivot(self, points: np.ndarray, pivot: np.ndarray,
+                         transform_op_order: TransformOpsOrder = TransformOpsOrder.SRT):
+        assert points.shape[1] == 3
+        if self._is_default_transform:
+            warnings.warn(
+                message="Interpolation is being done with the default transform. "
+                        "If you do not know what you are doing you should probably call GeoModel.update_transform() first.",
+                category=RuntimeWarning
+            )
+
+        # Translation matrices to and from the pivot
+        T_to_origin = self._translation_matrix(-pivot[0], -pivot[1], -pivot[2])
+        T_back = self._translation_matrix(*pivot)
+
+        # Construct the transformation matrix with the pivot
+        M = T_back @ self.get_transform_matrix(transform_op_order) @ T_to_origin
+
+        homogeneous_points = np.concatenate([points, np.ones((points.shape[0], 1))], axis=1)
+        transformed_points = (M @ homogeneous_points.T).T
+        return transformed_points[:, :3]
+
+    def apply_inverse_with_pivot(self, points: np.ndarray, pivot: np.ndarray,
+                                 transform_op_order: TransformOpsOrder = TransformOpsOrder.SRT):
+        assert points.shape[1] == 3
+
+        # Translation matrices to and from the pivot
+        T_to_origin = self._translation_matrix(-pivot[0], -pivot[1], -pivot[2])
+        T_back = self._translation_matrix(*pivot)
+
+        # Construct the inverse transformation matrix with the pivot
+        M_inv = np.linalg.inv(T_back @ self.get_transform_matrix(transform_op_order) @ T_to_origin)
+
+        homogeneous_points = np.concatenate([points, np.ones((points.shape[0], 1))], axis=1)
+        transformed_points = (M_inv @ homogeneous_points.T).T
+        return transformed_points[:, :3]
+
+    @staticmethod
+    def _translation_matrix(tx, ty, tz):
+        return np.array([
+            [1, 0, 0, tx],
+            [0, 1, 0, ty],
+            [0, 0, 1, tz],
+            [0, 0, 0, 1]
+        ])
+
     def transform_gradient(self, gradients: np.ndarray, transform_op_order: TransformOpsOrder = TransformOpsOrder.SRT,
                            preserve_magnitude: bool = True) -> np.ndarray:
         assert gradients.shape[1] == 3

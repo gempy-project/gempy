@@ -1,4 +1,4 @@
-﻿import numpy as np
+import numpy as np
 
 import gempy as gp
 from gempy.core.data.enumerators import ExampleModel
@@ -8,7 +8,7 @@ from gempy_viewer.optional_dependencies import require_pyvista
 def test_finite_fault_scalar_field():
 
     geo_model: gp.data.GeoModel = gp.generate_example_model(
-        example_model=ExampleModel.ANTICLINE,
+        example_model=ExampleModel.ONE_FAULT,
         compute_model=False
     )
     
@@ -24,8 +24,19 @@ def test_finite_fault_scalar_field():
         radius=radius,
         max_slope=k  # * This controls the speed of the transition
     )
+
+    transform = gp.data.transforms.Transform(
+        position=np.array([0, 0, 0]),
+        rotation=np.array([0, 0, 30]),
+        scale=np.ones(3)
+    )
+
+    transformed_points = transform.apply_inverse_with_pivot(
+        points=regular_grid.values,
+        pivot=center
+    )
+    scalar_block = scalar_funtion(transformed_points)
     
-    scalar_block = scalar_funtion(regular_grid.values)
     
     # TODO: Try to do this afterwards
     # scalar_fault = scalar_funtion(regular_grid.values)

@@ -197,7 +197,7 @@ def _generate_one_fault_model(compute_model: bool) -> gp.data.GeoModel:
     geo_data = gp.create_geomodel(
         project_name='fault',
         extent=[0, 1000, 0, 1000, 0, 1000],
-        resolution=[20, 5, 20],
+        resolution=[20, 20, 20],
         importer_helper=gp.data.ImporterHelper(
             path_to_orientations=path_to_data + "model5_orientations.csv",
             path_to_surface_points=path_to_data + "model5_surface_points.csv"
