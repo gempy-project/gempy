@@ -37,7 +37,8 @@ class Orientations(GeometricData):
                                'surface', 'series', 'id', 'order_series', 'surface_number']
         self._columns_o_1 = ['X', 'Y', 'Z', 'X_c', 'Y_c', 'Z_c', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity',
                              'surface', 'series', 'id', 'order_series', 'isFault']
-        self._columns_o_num = ['X', 'Y', 'Z', 'X_c', 'Y_c', 'Z_c', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity']
+        self._columns_o_num = ['X', 'Y', 'Z', 'X_c', 'Y_c', 'Z_c', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity', 
+                               'surface']
         self._columns_rend = ['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'smooth', 'surface']
 
         if (np.array(sys.version_info[:2]) <= np.array([3, 6])).all():

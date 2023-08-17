@@ -1809,7 +1809,7 @@ class Project(ImplicitCoKriging):
             if numeric:
                 raw_data = raw_data[
                     ['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth',
-                     'polarity']]
+                     'polarity', 'surface']]
         elif itype == 'surface_points' or itype == 'surface points':
             raw_data = self._surface_points.df[show_par_i]  # .astype(dtype)
             # Be sure that the columns are in order when used for operations
