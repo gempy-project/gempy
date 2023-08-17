@@ -2,10 +2,8 @@ import numpy as np
 
 import gempy as gp
 import gempy_viewer as gpv
-from core.data.kernel_classes.faults import FaultsData
 from gempy.core.data.enumerators import ExampleModel
 from gempy_viewer.optional_dependencies import require_pyvista
-
 
 center = np.array([500, 500, 500])
 radius = np.array([100, 200, 200])
@@ -28,7 +26,7 @@ def test_finite_fault_scalar_field():
         max_slope=k  # * This controls the speed of the transition
     )
 
-    transform = gp.data.transforms.Transform(
+    transform = gp.data.Transform(
         position=np.array([0, 0, 0]),
         rotation=np.array([0, 0, 30]),
         scale=np.ones(3)
@@ -63,7 +61,7 @@ def test_finite_fault_scalar_field_on_fault_ZERO():
         max_slope=k  # * This controls the speed of the transition
     )
 
-    transform = gp.data.transforms.Transform(
+    transform = gp.data.Transform(
         position=np.array([0, 0, 0]),
         rotation=np.array([0, 0, 30]),
         scale=np.ones(3)
@@ -101,7 +99,7 @@ def test_finite_fault_scalar_field_on_fault():
         max_slope=k  # * This controls the speed of the transition
     )
 
-    transform = gp.data.transforms.Transform(
+    transform = gp.data.Transform(
         position=np.array([0, 0, 0]),
         rotation=np.array([0, 0, 30]),
         scale=np.ones(3)
@@ -113,7 +111,7 @@ def test_finite_fault_scalar_field_on_fault():
     )
     scalar_block = scalar_funtion(transformed_points)
     
-    faults_data = FaultsData(
+    faults_data = gp.data.FaultsData(
         fault_values_everywhere=np.zeros(0),
         fault_values_on_sp=np.zeros(0),
         thickness=None,

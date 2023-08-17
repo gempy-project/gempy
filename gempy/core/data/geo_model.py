@@ -12,7 +12,7 @@ from gempy_engine.core.data.input_data_descriptor import InputDataDescriptor
 from gempy_engine.core.data.interpolation_input import InterpolationInput
 from .orientations import OrientationsTable
 from .structural_frame import StructuralFrame
-from .transforms import Transform, GlobalAnisotropy
+from gempy_engine.core.data.transforms import Transform, GlobalAnisotropy
 from .grid import Grid
 
 """
