@@ -15,15 +15,15 @@ def test_finite_fault_scalar_field():
     regular_grid = geo_model.grid.regular_grid
     
     # TODO: Extract grid from the model
-    center = np.array([0, 0, 0])
-    radius = np.array([1000, 1000, 1000])
+    center = np.array([500, 500, 500])
+    radius = np.array([100, 200, 200])
+    k = np.array([1, 1, 1]) * 2
     
     scalar_funtion: callable = gp.implicit_functions.ellipsoid_3d_factory(  # * This paints the 3d regular grid
         center=center,
         radius=radius,
-        max_slope=1000  # * This controls the speed of the transition
+        max_slope=k  # * This controls the speed of the transition
     )
-    
     
     scalar_block = scalar_funtion(regular_grid.values)
     
@@ -39,7 +39,16 @@ def test_finite_fault_scalar_field():
         regular_grid_mesh = pv.StructuredGrid(*grid_3d)
         
         regular_grid_mesh["lith"] = scalar_block
-        p.add_mesh(regular_grid_mesh, show_edges=False, opacity=.5)
+        
+        if True:
+            area_of_effect = regular_grid_mesh.threshold([.000000001, 1.1])
+            p.add_mesh(area_of_effect, show_edges=True, opacity=.4 )
+
+            area_of_effect_2 = regular_grid_mesh.threshold([.2, 1.1])
+            p.add_mesh(area_of_effect_2, show_edges=True, opacity=.8 )
+
+        p.add_mesh(regular_grid_mesh, show_edges=False, opacity=.2)
+        p.show_bounds(bounds=regular_grid.extent)
 
         # * Add the fault
         if False:

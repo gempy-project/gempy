@@ -130,6 +130,19 @@ class RegularGrid:
         self.dx, self.dy, self.dz = self.get_dx_dy_dz()
         return self.values
 
+    @property
+    def values_vtk_format(self):
+        extent = self.extent
+        resolution = self.resolution + 1
+
+        x = np.linspace(extent[0], extent[1], resolution[0], dtype="float64")
+        y = np.linspace(extent[2], extent[3], resolution[1], dtype="float64")
+        z = np.linspace(extent[4], extent[5], resolution[2], dtype="float64")
+        xv, yv, zv = np.meshgrid(x, y, z, indexing="ij")
+        g = np.vstack((xv.ravel(), yv.ravel(), zv.ravel())).T
+
+        return g
+
 
 class Sections:
     """

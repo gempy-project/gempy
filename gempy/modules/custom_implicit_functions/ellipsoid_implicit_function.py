@@ -8,16 +8,41 @@ def ellipsoid_3d_factory(center: np.ndarray, radius: np.ndarray, max_slope: floa
     """
 
     implicit_ellipsoid = functools.partial(
-        _implicit_3d_ellipsoid_to_slope,
+        ellipsoid_scalar_field,
         center=center,
-        radius=radius,
-        max_slope=max_slope,
+        radii=radius,
+        k_factors=max_slope,
     )
 
     return implicit_ellipsoid
 
 
-def _implicit_3d_ellipsoid_to_slope(xyz: np.ndarray, center: np.ndarray, radius: np.ndarray,
+def ellipsoid_scalar_field(xyz, center, radii, k_factors):
+    """Calculate scalar field value for given coordinates.
+
+    Parameters:
+    - xyz: numpy array of shape (N, 3), where N is the number of points
+    - center: numpy array of shape (3,) representing the center of the ellipsoid
+    - radii: numpy array of shape (3,) representing the semiaxes a, b, and c of the ellipsoid
+    - k_factors: numpy array of shape (3,) representing the slope factors for x, y, and z directions.
+
+    Returns:
+    - A numpy array of shape (N,) containing the scalar field values.
+    """
+    displacements = xyz - center
+    values = ((displacements[:, 0] / (radii[0] * k_factors[0])) ** 2 +
+              (displacements[:, 1] / (radii[1] * k_factors[1])) ** 2 +
+              (displacements[:, 2] / (radii[2] * k_factors[2])) ** 2 - 1)
+
+    return - sigmoid(values * np.prod(k_factors)) + 1 # multiplying by the product of k_factors to keep the transition sharper
+
+
+def sigmoid(x):
+    """Standard sigmoid function."""
+    return 1 / (1 + np.exp(-x))
+
+
+def _implicit_3d_ellipsoid_to_slope_(xyz: np.ndarray, center: np.ndarray, radius: np.ndarray,
                                     max_slope: float = 1000):
     """
     Implicit 3D ellipsoid.
