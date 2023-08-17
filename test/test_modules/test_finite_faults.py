@@ -2,6 +2,7 @@ import numpy as np
 
 import gempy as gp
 import gempy_viewer as gpv
+from core.data.kernel_classes.faults import FaultsData
 from gempy.core.data.enumerators import ExampleModel
 from gempy_viewer.optional_dependencies import require_pyvista
 
@@ -47,7 +48,7 @@ def test_finite_fault_scalar_field():
         _plot_scalar_field(regular_grid, scalar_block)
         
         
-def test_finite_fault_scalar_field_on_fault():
+def test_finite_fault_scalar_field_on_fault_ZERO():
     geo_model: gp.data.GeoModel = gp.generate_example_model(
         example_model=ExampleModel.ONE_FAULT,
         compute_model=True
@@ -83,8 +84,58 @@ def test_finite_fault_scalar_field_on_fault():
             show=False
         )
         _plot_scalar_field(regular_grid, scalar_block, plot3d.p)
-        
 
+
+def test_finite_fault_scalar_field_on_fault():
+    geo_model: gp.data.GeoModel = gp.generate_example_model(
+        example_model=ExampleModel.ONE_FAULT,
+        compute_model=False
+    )
+
+    regular_grid = geo_model.grid.regular_grid
+
+    # TODO: Extract grid from the model
+    scalar_funtion: callable = gp.implicit_functions.ellipsoid_3d_factory(  # * This paints the 3d regular grid
+        center=center,
+        radius=radius,
+        max_slope=k  # * This controls the speed of the transition
+    )
+
+    transform = gp.data.transforms.Transform(
+        position=np.array([0, 0, 0]),
+        rotation=np.array([0, 0, 30]),
+        scale=np.ones(3)
+    )
+
+    transformed_points = transform.apply_inverse_with_pivot(
+        points=regular_grid.values,  # ! This depends on the octree
+        pivot=center
+    )
+    scalar_block = scalar_funtion(transformed_points)
+    
+    faults_data = FaultsData(
+        fault_values_everywhere=np.zeros(0),
+        fault_values_on_sp=np.zeros(0),
+        thickness=None,
+        offset=1,
+        fault_values_ref=np.zeros(0),
+        fault_values_rest=np.zeros(0),
+        finite_faults_implicit_function=scalar_funtion,
+        finite_faults_implicit_function_transform=transform
+    )
+    
+    geo_model.structural_frame.structural_groups[0].faults_input_data = faults_data
+    gp.compute_model(geo_model)
+    
+    # TODO: Try to do this afterwards
+    # scalar_fault = scalar_funtion(regular_grid.values)
+
+    if plot_pyvista := True:
+        plot3d = gpv.plot_3d(
+            geo_model,
+            show=False
+        )
+        _plot_scalar_field(regular_grid, scalar_block, plot3d.p)
 
 def _plot_scalar_field(regular_grid, scalar_block, plotter=None):
     pv = require_pyvista()
