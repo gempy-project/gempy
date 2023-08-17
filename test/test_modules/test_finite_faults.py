@@ -6,10 +6,71 @@ from gempy.core.data.enumerators import ExampleModel
 from gempy_viewer.optional_dependencies import require_pyvista
 
 center = np.array([500, 500, 500])
-radius = np.array([100, 200, 200])
-k = np.array([1, 1, 1]) * 2
+radius = np.array([500, 100, 200]) / 2
+k = np.array([1, 1, 1]) * 1
 
 
+
+def test_finite_fault_scalar_field_on_fault():
+    geo_model: gp.data.GeoModel = gp.generate_example_model(
+        example_model=ExampleModel.ONE_FAULT,
+        compute_model=False
+    )
+
+    regular_grid = geo_model.grid.regular_grid
+
+    # TODO: Extract grid from the model
+    scaled_center = geo_model.transform.apply(center.reshape(1, -1))[0]
+    scaled_radius = geo_model.transform.scale_points(radius.reshape(1, -1))[0]
+    scalar_funtion: callable = gp.implicit_functions.ellipsoid_3d_factory(  # * This paints the 3d regular grid
+        center=scaled_center,
+        radius=scaled_radius,
+        max_slope=k  # * This controls the speed of the transition
+    )
+
+    transform = gp.data.Transform(
+        position=np.array([0, 0, 0]),
+        rotation=np.array([0, 60, 0]),
+        scale=np.ones(3)
+    )
+
+    faults_data = gp.data.FaultsData(
+        fault_values_everywhere=np.zeros(0),
+        fault_values_on_sp=np.zeros(0),
+        thickness=None,
+        fault_values_ref=np.zeros(0),
+        fault_values_rest=np.zeros(0),
+        finite_fault_data=gp.data.FiniteFaultData(
+            implicit_function=scalar_funtion,
+            implicit_function_transform=transform,
+            pivot=scaled_center,
+        )
+    )
+
+    geo_model.structural_frame.structural_groups[0].faults_input_data = faults_data
+    gp.compute_model(geo_model)
+
+    # TODO: Try to do this afterwards
+    # scalar_fault = scalar_funtion(regular_grid.values)
+
+    if plot_pyvista := True:
+        plot3d = gpv.plot_3d(
+            geo_model,
+            show_lith=False,
+            show=False
+        )
+        scalar_block_for_viz = _apply(
+            regular_grid=regular_grid,
+            scalar_funtion=gp.implicit_functions.ellipsoid_3d_factory(  # * This paints the 3d regular grid
+                center=center,
+                radius=radius,
+                max_slope=k  # * This controls the speed of the transition
+            ),
+            transform=transform
+        )
+        _plot_scalar_field(regular_grid, scalar_block_for_viz, plot3d.p, background_field=False)
+        
+        
 def test_finite_fault_scalar_field():
     geo_model: gp.data.GeoModel = gp.generate_example_model(
         example_model=ExampleModel.ONE_FAULT,
@@ -69,6 +130,7 @@ def test_finite_fault_scalar_field_on_fault_ZERO():
         points=regular_grid.values,
         pivot=center
     )
+    
     scalar_block = scalar_funtion(transformed_points)
 
     # TODO: Try to do this afterwards
@@ -82,61 +144,6 @@ def test_finite_fault_scalar_field_on_fault_ZERO():
         _plot_scalar_field(regular_grid, scalar_block, plot3d.p)
 
 
-def test_finite_fault_scalar_field_on_fault():
-    geo_model: gp.data.GeoModel = gp.generate_example_model(
-        example_model=ExampleModel.ONE_FAULT,
-        compute_model=False
-    )
-
-    regular_grid = geo_model.grid.regular_grid
-
-    # TODO: Extract grid from the model
-    scalar_funtion: callable = gp.implicit_functions.ellipsoid_3d_factory(  # * This paints the 3d regular grid
-        center=geo_model.transform.apply(center.reshape(1, -1))[0],
-        radius=geo_model.transform.apply(radius.reshape(1, -1))[0],
-        max_slope=k  # * This controls the speed of the transition
-    )
-
-    transform = gp.data.Transform(
-        position=np.array([0, 0, 0]),
-        rotation=np.array([0, 0, 30]),
-        scale=np.ones(3)
-    )
-
-    faults_data = gp.data.FaultsData(
-        fault_values_everywhere=np.zeros(0),
-        fault_values_on_sp=np.zeros(0),
-        thickness=None,
-        fault_values_ref=np.zeros(0),
-        fault_values_rest=np.zeros(0),
-        finite_fault_data=gp.data.FiniteFaultData(
-            implicit_function=scalar_funtion,
-            implicit_function_transform=transform,
-            pivot=geo_model.transform.apply(center.reshape(1, -1))[0],
-        )
-    )
-
-    geo_model.structural_frame.structural_groups[0].faults_input_data = faults_data
-    gp.compute_model(geo_model)
-
-    # TODO: Try to do this afterwards
-    # scalar_fault = scalar_funtion(regular_grid.values)
-
-    if plot_pyvista := True:
-        plot3d = gpv.plot_3d(
-            geo_model,
-            show=False
-        )
-        scalar_block_for_viz = _apply(
-            regular_grid=regular_grid,
-            scalar_funtion=gp.implicit_functions.ellipsoid_3d_factory(  # * This paints the 3d regular grid
-                center=center,
-                radius=radius,
-                max_slope=k  # * This controls the speed of the transition
-            ),
-            transform=transform
-        )
-        _plot_scalar_field(regular_grid, scalar_block_for_viz, plot3d.p)
 
 
 def _apply(regular_grid, scalar_funtion, transform):
@@ -148,7 +155,7 @@ def _apply(regular_grid, scalar_funtion, transform):
     return scalar_block
 
 
-def _plot_scalar_field(regular_grid, scalar_block, plotter=None):
+def _plot_scalar_field(regular_grid, scalar_block, plotter=None, background_field=True):
     pv = require_pyvista()
     p = plotter or pv.Plotter()
     regular_grid_values = regular_grid.values_vtk_format
@@ -161,7 +168,8 @@ def _plot_scalar_field(regular_grid, scalar_block, plotter=None):
 
         area_of_effect_2 = regular_grid_mesh.threshold([.2, 1.1])
         p.add_mesh(area_of_effect_2, show_edges=True, opacity=.8)
-    p.add_mesh(regular_grid_mesh, show_edges=False, opacity=.2)
+    if background_field:
+        p.add_mesh(regular_grid_mesh, show_edges=False, opacity=.2)
     p.show_bounds(bounds=regular_grid.extent)
     # * Add the fault
     if False:
