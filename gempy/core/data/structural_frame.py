@@ -3,7 +3,7 @@ from typing import Optional, Generator
 
 import numpy as np
 
-from core.data.kernel_classes.faults import FaultsData
+from gempy_engine.core.data.kernel_classes.faults import FaultsData
 from gempy_engine.core.data.input_data_descriptor import InputDataDescriptor
 from gempy_engine.core.data.stack_relation_type import StackRelationType
 from .orientations import OrientationsTable

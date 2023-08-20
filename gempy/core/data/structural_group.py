@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Optional, Union, Generator
 
-from core.data.kernel_classes.faults import FaultsData
+from gempy_engine.core.data.kernel_classes.faults import FaultsData
 from gempy_engine.core.data.raw_arrays_solution import RawArraysSolution
 from gempy_engine.core.data.stack_relation_type import StackRelationType
 from gempy.core.data.structural_element import StructuralElement

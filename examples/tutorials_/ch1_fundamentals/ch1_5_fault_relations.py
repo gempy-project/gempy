@@ -11,15 +11,9 @@ import gempy_viewer as gpv
 
 # Aux imports
 import numpy as np
-import pandas as pd
 import os
 
-# Importing the function to find the interface
-from gempy_plugins.utils.input_manipulation import find_interfaces_from_block_bottoms
-import matplotlib.pyplot as plt
-
 np.random.seed(1515)
-pd.set_option('display.precision', 2)
 
 # %%
 # We import a model from an existing folder.
