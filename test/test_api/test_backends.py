@@ -5,9 +5,10 @@ import gempy_viewer as gpv
 from gempy.core.data.gempy_engine_config import GemPyEngineConfig
 from gempy_engine.config import AvailableBackends
 from gempy.core.data.enumerators import ExampleModel
-from test.conftest import TEST_SPEED
+from test.conftest import TEST_SPEED, TestSpeed
 
 
+@pytest.mark.skipif(TEST_SPEED.value < TestSpeed.SECONDS.value, reason="Global test speed below this test value.")
 class TestBackends:
     @pytest.fixture(scope='class')
     def geo_model(self):
@@ -36,7 +37,6 @@ class TestBackends:
             engine_config=GemPyEngineConfig(
                 backend=AvailableBackends.numpy,
                 use_gpu=False,
-                pykeops_enabled=True
             ))
         
         gpv.plot_3d(
@@ -48,8 +48,10 @@ class TestBackends:
         )
 
     @pytest.mark.skip(reason="Not finished yet. Fault data is not passed to legacy properly.")
-    @pytest.mark.skipif(TEST_SPEED.value <= 2, reason="Global test speed below this test value.")
+    @pytest.mark.skipif(TEST_SPEED.value <= 1, reason="Global test speed below this test value.")
     def test_backends_legacy(self, geo_model):
+        # TODO: (Sep 2023, Miguel) Pass fault data to legacy properly
+        
         gp.compute_model(geo_model, engine_config=GemPyEngineConfig(backend=AvailableBackends.legacy))
         from gempy.optional_dependencies import require_gempy_legacy
         gpl = require_gempy_legacy()
