@@ -1,6 +1,6 @@
 ﻿from gempy.core.data import GeoModel
 from gempy_engine.core.data.transforms import Transform
-from test.test_api.test_gempy3_api import _create_data
+from test.test_api.test_initialization_and_compute_api import _create_data
 import numpy as np
 import matplotlib.pyplot as plt
 

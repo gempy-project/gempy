@@ -1,7 +1,7 @@
 ﻿from gempy import GeoModel
 from gempy.optional_dependencies import require_gempy_legacy
 from gempy.API.gp2_gp3_compatibility.gp3_to_gp2_input import gempy3_to_gempy2
-from test.test_api.test_gempy3_api import _create_data
+from test.test_api.test_initialization_and_compute_api import _create_data
 import gempy as gp
 import gempy_viewer
 
