@@ -6,3 +6,4 @@ class ExampleModel(Enum):
     HORIZONTAL_STRAT = auto()
     ANTICLINE = auto()
     ONE_FAULT = auto()
+    COMBINATION = auto()
