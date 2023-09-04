@@ -1,16 +1,21 @@
 import numpy as np
+import pytest
 
 import gempy as gp
 import gempy_viewer as gpv
 from gempy.core.data.enumerators import ExampleModel
 from gempy_viewer.optional_dependencies import require_pyvista
+from test.conftest import TEST_SPEED, TestSpeed
 
 center = np.array([500, 500, 500])
 radius = np.array([500, 100, 200]) / 2
 k = np.array([1, 1, 1]) * 1
 
+PLOT = False
+# TODO: Add the approval test check
 
 
+@pytest.mark.skipif(TEST_SPEED.value < TestSpeed.SECONDS.value, reason="Global test speed below this test value.")
 def test_finite_fault_scalar_field_on_fault():
     geo_model: gp.data.GeoModel = gp.generate_example_model(
         example_model=ExampleModel.ONE_FAULT,
@@ -105,6 +110,7 @@ def test_finite_fault_scalar_field():
         _plot_scalar_field(regular_grid, scalar_block)
 
 
+@pytest.mark.skipif(TEST_SPEED.value < TestSpeed.SECONDS.value, reason="Global test speed below this test value.")
 def test_finite_fault_scalar_field_on_fault_ZERO():
     geo_model: gp.data.GeoModel = gp.generate_example_model(
         example_model=ExampleModel.ONE_FAULT,
@@ -144,8 +150,6 @@ def test_finite_fault_scalar_field_on_fault_ZERO():
         _plot_scalar_field(regular_grid, scalar_block, plot3d.p)
 
 
-
-
 def _apply(regular_grid, scalar_funtion, transform):
     transformed_points = transform.apply_inverse_with_pivot(
         points=regular_grid.values,  # ! This depends on the octree
@@ -156,6 +160,9 @@ def _apply(regular_grid, scalar_funtion, transform):
 
 
 def _plot_scalar_field(regular_grid, scalar_block, plotter=None, background_field=True):
+    if not PLOT:
+        return
+    
     pv = require_pyvista()
     p = plotter or pv.Plotter()
     regular_grid_values = regular_grid.values_vtk_format
