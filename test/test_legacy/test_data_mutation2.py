@@ -5,7 +5,7 @@ import sys, os
 
 import gempy.core.surfaces
 
-sys.path.append("../../..")
+sys.path.append("../..")
 
 # Importing GemPy
 import gempy as gp

@@ -4,7 +4,7 @@ import aesara
 import numpy as np
 import sys, os
 
-sys.path.append("../../..")
+sys.path.append("../..")
 import gempy
 import matplotlib.pyplot as plt
 import pdb

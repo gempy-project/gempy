@@ -9,3 +9,6 @@ ipywidgets
 welly
 requests
 pooch
+
+# Testing
+pytest-approvaltests

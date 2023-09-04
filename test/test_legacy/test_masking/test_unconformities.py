@@ -1,6 +1,6 @@
 # These two lines are necessary only if GemPy is not installed
 import sys, os
-sys.path.append("../../..")
+sys.path.append("../..")
 input_path = os.path.dirname(__file__)+'/../../input_data'
 
 # Importing GemPy
