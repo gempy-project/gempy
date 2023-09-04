@@ -2,7 +2,6 @@
 import gempy as gp
 import gempy_engine.core.data.solutions
 import gempy_viewer
-from core.data.stack_relation_type import StackRelationType
 from gempy.core.color_generator import ColorsGenerator
 from gempy_engine.core.data import InterpolationOptions
 from gempy.core.data import GeoModel
@@ -81,7 +80,7 @@ def test_create_structural_frame() -> StructuralFrame:
     default_formation: Stack = Stack(
         name="default_formation",
         elements=structural_elements,
-        structural_relation=StackRelationType.ERODE
+        structural_relation=gp.data.StackRelationType.ERODE
     )
 
     # ? Should I move this to the constructor?
