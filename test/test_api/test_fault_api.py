@@ -46,29 +46,29 @@ def test_fault_api_setter():
 
 
 def _create_structural_frame():
-    frame = gp.StructuralFrame(
+    frame = gp.data.StructuralFrame(
         structural_groups=[
-            gp.StructuralGroup(
+            gp.data.StructuralGroup(
                 name='1',
                 elements=[],
-                structural_relation=gp.StackRelationType.ERODE
+                structural_relation=gp.data.StackRelationType.ERODE
             ),
-            gp.StructuralGroup(
+            gp.data.StructuralGroup(
                 name='2',
                 elements=[],
-                structural_relation=gp.StackRelationType.ERODE
+                structural_relation=gp.data.StackRelationType.ERODE
             ),
-            gp.StructuralGroup(
+            gp.data.StructuralGroup(
                 name='3',
                 elements=[],
-                structural_relation=gp.StackRelationType.ERODE
+                structural_relation=gp.data.StackRelationType.ERODE
             ),
-            gp.StructuralGroup(
+            gp.data.StructuralGroup(
                 name='4',
                 elements=[],
-                structural_relation=gp.StackRelationType.ERODE
+                structural_relation=gp.data.StackRelationType.ERODE
             ),
         ],
-        color_gen=None  # * Irrlevant for this test
+        color_gen=gp.ColorsGenerator()  # * Irrlevant for this test
     )
     return frame
