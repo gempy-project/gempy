@@ -23,7 +23,6 @@ from gempy.optional_dependencies import require_gempy_viewer
 
 """
 
-
 def test_read_input_points():
     data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
     surface_points_file = pooch.retrieve(
@@ -121,7 +120,7 @@ def test_structural_frame_surface_points():
     pass
 
 
-def test_interpolate_numpy():
+def test_interpolate_numpy() -> GeoModel:
     geo_model: GeoModel = test_create_geomodel()
 
     solutions: gempy_engine.core.data.solutions.Solutions = gempy_engine.compute_model(
@@ -143,7 +142,7 @@ def test_interpolate_numpy():
             value_type=ValueType.ids
         )
         
-        gempy_viewer.plot_3d(geo_model, show_boundaries=True)
+        gempy_viewer.plot_3d(geo_model, show_boundaries=True, image=True)
         
     return geo_model
 
@@ -161,19 +160,17 @@ def test_plot_input():
     gp_viewer.plot_2d(
         geo_model,
         direction=['y'],
-        plot_options=gp_viewer.Plotting2DOptions(),
         show_results=False
     )
 
 
 def test_plot_results():
-    solved_geo_model: gempy_engine.core.data.solutions.Solutions = test_interpolate_numpy()
+    solved_geo_model: GeoModel = test_interpolate_numpy()
     gp_viewer: gempy_viewer = require_gempy_viewer()
 
     gp_viewer.plot_2d(
         solved_geo_model,
         direction=['y'],
-        plot_options=gp_viewer.Plotting2DOptions(),
         show_boundaries=False,  # TODO: Fix boundaries
         show_results=True
     )
