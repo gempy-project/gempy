@@ -3,11 +3,14 @@ from gempy.core.data.enumerators import ExampleModel
 from gempy.optional_dependencies import require_gempy_viewer
 
 from test.verify_helper import gempy_verify_array
-
+import pytest
+from test.conftest import TEST_SPEED, TestSpeed
 # ! When importing the model is computed
 
 # TODO []: Use the generator and do some approval testing
 PLOT = True
+
+pytestmark = pytest.mark.skipif(TEST_SPEED.value < TestSpeed.MINUTES.value, reason="Global test speed below this test value.")
 
 
 def _verify_scalar_field(model, name):
