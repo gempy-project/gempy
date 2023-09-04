@@ -1,8 +1,14 @@
-﻿import gempy as gp
+﻿import pytest
+
+import gempy as gp
 import gempy_viewer as gpv
 from gempy.core.data.enumerators import ExampleModel
 from gempy_engine.modules.octrees_topology.octrees_topology_interface import ValueType
 from gempy_engine.plugins.plotting.helper_functions import plot_block_and_input_2d
+from test.conftest import TEST_SPEED, TestSpeed
+
+
+pytestmark = pytest.mark.skipif(TEST_SPEED.value < TestSpeed.MINUTES.value, reason="Global test speed below this test value.")
 
 
 def  test_octree():
@@ -22,7 +28,7 @@ def  test_octree():
         value_type=ValueType.ids
     )
     
-    gpv.plot_3d(geo_model, show_data=True, show_boundaries=True, show_lith=False)
+    gpv.plot_3d(geo_model, show_data=True, show_boundaries=True, show_lith=False, image=True)
     
     geo_model.interpolation_options.number_octree_levels = 2
     gp.compute_model(geo_model)
@@ -35,4 +41,4 @@ def  test_octree():
         value_type=ValueType.ids
     )
 
-    gpv.plot_3d(geo_model, show_data=True, show_boundaries=True, show_lith=False)
+    gpv.plot_3d(geo_model, show_data=True, show_boundaries=True, show_lith=False, image=True)

@@ -1,8 +1,12 @@
 ﻿import numpy as np
+import pytest
 
 import gempy as gp
 import gempy_viewer as gpv
 from gempy.core.data.enumerators import ExampleModel
+
+from test.conftest import TEST_SPEED, TestSpeed
+
 
 
 def test_section_grids():
@@ -45,10 +49,12 @@ def test_section_grids():
         show_data=True,
         show_boundaries=True,
         show_lith=False,
-        image=False
+        image=True
     )
 
 
+
+@pytest.mark.skipif(TEST_SPEED.value < TestSpeed.MINUTES.value, reason="Global test speed below this test value.")
 def test_topogrphy_II():
     geo_model: gp.data.GeoModel = gp.generate_example_model(
         example_model=ExampleModel.TWO_AND_A_HALF_D,
@@ -72,6 +78,6 @@ def test_topogrphy_II():
         show_data=True,
         show_boundaries=True,
         show_lith=True,
-        image=False,
+        image=True,
         kwargs_plot_structured_grid={'opacity': .1}
     )

@@ -1,8 +1,11 @@
 ﻿import numpy as np
+import pytest
 
+from test.conftest import TEST_SPEED, TestSpeed
 import gempy as gp
-import gempy_viewer as gpv
 from gempy.core.data.enumerators import ExampleModel
+
+pytestmark = pytest.mark.skipif(TEST_SPEED.value < TestSpeed.SECONDS.value, reason="Global test speed below this test value.")
 
 xyz_coord = np.array(
     [[0, 0, 0],

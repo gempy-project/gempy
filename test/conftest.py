@@ -18,7 +18,7 @@ class TestSpeed(enum.Enum):
     HOURS = 3
 
 
-TEST_SPEED = TestSpeed.SECONDS  # * Use seconds for compile errors, minutes before pushing and hours before release
+TEST_SPEED = TestSpeed.MINUTES  # * Use seconds for compile errors, minutes before pushing and hours before release
 
 # 
 # @pytest.fixture(scope='session')
