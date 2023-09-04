@@ -13,7 +13,7 @@ from .core.color_generator import ColorsGenerator
 # =================== API ===================
 
 from .API import *
-from .API import implicit_functions
+from .API import custom_implicit_functions_API
 
 # * Assert at least pyton 3.10
 assert sys.version_info[0] >= 3 and sys.version_info[1] >= 10, "GemPy requires Python 3.10 or higher"
