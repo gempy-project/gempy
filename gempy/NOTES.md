@@ -22,6 +22,8 @@
         - Theano 
         - GemPy Engine
 
+> I think Pluggins and addons have to be split depending on how couple are they to the interpolator?
+
 
 ## Refactoring notes:
 
