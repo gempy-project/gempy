@@ -1,6 +1,7 @@
 ﻿import gempy as gp
 # ! When importing the model is computed
 
+# TODO []: Use the generator and do some approval testing
 
 def test_generate_horizontal_stratigraphic_model():
     from examples.examples.geometries.a01_horizontal_stratigraphic import geo_data as model
