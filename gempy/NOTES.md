@@ -21,3 +21,15 @@
       - Interpolation
         - Theano 
         - GemPy Engine
+
+
+## Refactoring notes:
+
+Doing:
+  - [-] Refactoring interpolation (Aug-Sep 2023)
+
+- TODO:
+  - [ ] Saving and loading models (Sep-Oct 2023)
+  - [ ] Refactoring Geophysics (Oct-Nov 2023)
+  - [ ] Refactoring topology
+  - [ ] Orientations from surface points - Move to gempy_plugins
