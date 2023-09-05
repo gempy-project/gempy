@@ -11,7 +11,6 @@ import numpy as np
 import gempy as gp
 import gempy_viewer as gpv
 from gempy_engine.core.data.stack_relation_type import StackRelationType
-from gempy_engine.core.data.transforms import GlobalAnisotropy
 
 # sphinx_gallery_thumbnail_number = 2
 
@@ -48,8 +47,7 @@ data.structural_frame.fault_relations = np.array(
 )
 # Compute the geological model
 print(data.structural_frame)
-data.interpolation_options.dual_contouring=False
-gpv.plot_3d(data)
+data.interpolation_options.number_octree_levels_surface = 5
 gp.compute_model(data)
 geo_data = data
 
@@ -60,16 +58,15 @@ gpv.plot_2d(geo_data, direction=['y'], show_results=False)
 # %%
 # Plot the result of the model in the y and x directions with data and boundaries
 if True:
-    gpv.plot_2d(geo_data,  direction='y', show_data=True, show_boundaries=True)
-    gpv.plot_2d(geo_data,  direction='x', show_data=True)
+    gpv.plot_2d(geo_data, direction='y', show_data=True, show_boundaries=True)
+    gpv.plot_2d(geo_data, direction='x', show_data=True)
 
-    gpv.plot_2d(geo_data,  direction='y', show_data=True,
+    gpv.plot_2d(geo_data, direction='y', show_data=True,
                 show_boundaries=True, show_scalar=True, show_lith=False, series_n=0)
-    gpv.plot_2d(geo_data,  direction='y', show_data=True,
+    gpv.plot_2d(geo_data, direction='y', show_data=True,
                 show_boundaries=True, show_scalar=True, show_lith=False, series_n=1)
-    gpv.plot_2d(geo_data,  direction='y', show_data=True,
+    gpv.plot_2d(geo_data, direction='y', show_data=True,
                 show_boundaries=True, show_scalar=True, show_lith=False, series_n=2)
-
 
 gpv.plot_2d(
     model=data,
@@ -87,21 +84,20 @@ if True:
 
     gpv.plot_2d(
         model=geo_model,
-        
         override_regular_grid=geo_model.solutions.raw_arrays.mask_matrix[1],
         show_data=True, kwargs_lithology={'cmap': 'gray', 'norm': None}
     )
 
     gpv.plot_2d(
         model=geo_model,
-        
+
         override_regular_grid=geo_model.solutions.raw_arrays.mask_matrix_squeezed[0],
         show_data=True, kwargs_lithology={'cmap': 'gray', 'norm': None}
     )
 
     gpv.plot_2d(
         model=geo_model,
-        
+
         override_regular_grid=geo_model.solutions.raw_arrays.mask_matrix_squeezed[1],
         show_data=True, kwargs_lithology={'cmap': 'gray', 'norm': None}
     )
@@ -111,7 +107,7 @@ if True:
 
     gpv.plot_2d(geo_data, cell_number=5, direction='y', show_data=True,
                 show_boundaries=True, show_scalar=True, show_lith=False, series_n=2)
-    
+
     # %%
     # The 3D plot is commented out due to a bug.
     gpv.plot_3d(geo_data)
