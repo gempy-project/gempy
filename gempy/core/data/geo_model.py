@@ -51,11 +51,12 @@ class GeoModel:
     meta: GeoModelMeta  #: Meta-information about the geological model, like its name, creation and modification dates, and owner.
     structural_frame: StructuralFrame  #: The structural information of the geological model.
     grid: Grid  #: The general grid used in the geological model.
-    transform: Transform  #: The transformation used in the geological model for input points.
 
     # region GemPy engine data types
     interpolation_options: InterpolationOptions  #: The interpolation options provided by the user.
 
+    transform: Transform = None  #: The transformation used in the geological model for input points.
+    
     interpolation_grid: gempy_engine.core.data.grid.Grid = None  #: Optional grid used for interpolation. Can be seen as a cache field.
     _interpolationInput: InterpolationInput = None  #: Input data for interpolation. Fed by the structural frame and can be seen as a cache field.
     _input_data_descriptor: InputDataDescriptor = None  #: Descriptor of the input data. Fed by the structural frame and can be seen as a cache field.
@@ -119,11 +120,17 @@ class GeoModel:
 
     @property
     def surface_points(self):
-        return self.structural_frame.surface_points
+        surface_points_table = self.structural_frame.surface_points
+        if self.transform is not None:
+            surface_points_table.model_transform = self.transform
+        return surface_points_table
 
     @property
     def orientations(self) -> OrientationsTable:
-        return self.structural_frame.orientations
+        orientations_table = self.structural_frame.orientations
+        if self.transform is not None:
+            orientations_table.model_transform = self.transform
+        return orientations_table
 
     @property
     def interpolation_input(self):

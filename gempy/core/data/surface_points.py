@@ -2,6 +2,7 @@
 from typing import Optional, Union, Sequence
 import numpy as np
 
+from core.data.transforms import Transform
 from gempy.optional_dependencies import require_pandas
 
 DEFAULT_SP_NUGGET = 0.00001
@@ -22,6 +23,7 @@ class SurfacePointsTable:
     name_id_map: Optional[dict[str, int]] = None  #: A mapping between surface point names and ids.
 
     dt = np.dtype([('X', 'f8'), ('Y', 'f8'), ('Z', 'f8'), ('id', 'i4'), ('nugget', 'f8')])  #: The custom data type for the data array.
+    _model_transform: Optional[Transform] = None
 
     def __str__(self):
         return "\n" + np.array2string(self.data, precision=2, separator=',', suppress_small=True)
@@ -89,6 +91,16 @@ class SurfacePointsTable:
     @nugget.setter
     def nugget(self, value: np.ndarray):
         self.data['nugget'] = value
+        
+    @property
+    def model_transform(self) -> Transform:
+        if self._model_transform is None:
+            raise ValueError("Model transform is not set. If you want to use this property use GeoModel.surface_points to get the SurfaceTable with transform attached.")
+        return self._model_transform
+    
+    @model_transform.setter
+    def model_transform(self, value: Transform):
+        self._model_transform = value
 
     def __len__(self):
         return len(self.data)

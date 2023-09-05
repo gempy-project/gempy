@@ -3,6 +3,7 @@ from typing import Optional, Sequence, Union
 
 import numpy as np
 
+from core.data.transforms import Transform
 from gempy.optional_dependencies import require_pandas
 
 DEFAULT_ORI_NUGGET = 0.01
@@ -20,6 +21,8 @@ class OrientationsTable:
     name_id_map: Optional[dict[str, int]] = None  #: A mapping between orientation names and ids.
     
     dt = np.dtype([('X', 'f8'), ('Y', 'f8'), ('Z', 'f8'), ('G_x', 'f8'), ('G_y', 'f8'), ('G_z', 'f8'), ('id', 'i4'), ('nugget', 'f8')])  #: The custom data type for the data array.
+    
+    _model_transform: Optional[Transform] = None
     
     @classmethod
     def from_arrays(cls, x: np.ndarray, y: np.ndarray, z: np.ndarray,
@@ -105,7 +108,17 @@ class OrientationsTable:
         if len(ids) == 0:
             raise ValueError(f"OrientationsTable contains no ids")
         return ids[0]
-    
+
+    @property
+    def model_transform(self) -> Transform:
+        if self._model_transform is None:
+            raise ValueError("Model transform is not set. If you want to use this property use GeoModel.surface_points to get the SurfaceTable with transform attached.")
+        return self._model_transform
+
+    @model_transform.setter
+    def model_transform(self, value: Transform):
+        self._model_transform = value
+
     @property
     def df(self) -> 'pd.DataFrame':
         pd = require_pandas()
