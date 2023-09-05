@@ -104,28 +104,28 @@ gpv.plot_2d(
     model=geo_model,
     cell_number=2,
     override_regular_grid=geo_model.solutions.raw_arrays.mask_matrix[0],
-    show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None}
+    show_data=True, kwargs_lithology={'cmap': 'gray', 'norm': None}
 )
 
 gpv.plot_2d(
     model=geo_model,
     cell_number=2,
     override_regular_grid=geo_model.solutions.raw_arrays.mask_matrix[1],
-    show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None}
+    show_data=True, kwargs_lithology={'cmap': 'gray', 'norm': None}
 )
 
 gpv.plot_2d(
     model=geo_model,
     cell_number=2,
     override_regular_grid=geo_model.solutions.raw_arrays.mask_matrix[2],
-    show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None}
+    show_data=True, kwargs_lithology={'cmap': 'gray', 'norm': None}
 )
 
 gpv.plot_2d(
     model=geo_model,
     cell_number=2,
     override_regular_grid=geo_model.solutions.raw_arrays.mask_matrix[3],
-    show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None}
+    show_data=True, kwargs_lithology={'cmap': 'gray', 'norm': None}
 )
 
 # %%
@@ -133,28 +133,28 @@ gpv.plot_2d(
     model=geo_model,
     cell_number=2,
     override_regular_grid=geo_model.solutions.raw_arrays.mask_matrix_squeezed[0],
-    show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None}
+    show_data=True, kwargs_lithology={'cmap': 'gray', 'norm': None}
 )
 
 gpv.plot_2d(
     model=geo_model,
     cell_number=2,
     override_regular_grid=geo_model.solutions.raw_arrays.mask_matrix_squeezed[1],   
-    show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None}
+    show_data=True, kwargs_lithology={'cmap': 'gray', 'norm': None}
 )
 
 gpv.plot_2d(
     model=geo_model,
     cell_number=2,
     override_regular_grid=geo_model.solutions.raw_arrays.mask_matrix_squeezed[2],
-    show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None}
+    show_data=True, kwargs_lithology={'cmap': 'gray', 'norm': None}
 )
 
 gpv.plot_2d(
     model=geo_model,
     cell_number=2,
     override_regular_grid=geo_model.solutions.raw_arrays.mask_matrix_squeezed[3],
-    show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None}
+    show_data=True, kwargs_lithology={'cmap': 'gray', 'norm': None}
 )
 
 
