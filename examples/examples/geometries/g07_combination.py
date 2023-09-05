@@ -48,7 +48,7 @@ data.structural_frame.fault_relations = np.array(
 )
 # Compute the geological model
 data.update_transform(auto_anisotropy=GlobalAnisotropy.NONE)
-gp.remove_structural_group_by_index(data, 1)
+# gp.remove_structural_group_by_index(data, 1)
 # gp.remove_structural_group_by_index(data, -1)
 
 print(data.structural_frame)
@@ -71,6 +71,12 @@ gpv.plot_2d(geo_data,  direction='y', show_data=True,
             show_boundaries=True, show_scalar=True, show_lith=False, series_n=1)
 gpv.plot_2d(geo_data,  direction='y', show_data=True,
             show_boundaries=True, show_scalar=True, show_lith=False, series_n=2)
+
+gpv.plot_2d(
+    model=data,
+    override_regular_grid=data.solutions.raw_arrays.fault_block,
+    show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None}
+)
 
 geo_model = data
 gpv.plot_2d(
