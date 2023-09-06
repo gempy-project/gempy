@@ -46,19 +46,18 @@ data.structural_frame.fault_relations = np.array(
      [0, 0, 0]]
 )
 # Compute the geological model
-print(data.structural_frame)
 data.interpolation_options.number_octree_levels_surface = 5
 gp.compute_model(data)
-geo_data = data
+data.structural_frame
 
 # %%
 # Plot the initial geological model in the y direction
-gpv.plot_2d(geo_data, direction=['y'], show_results=False)
+gpv.plot_2d(data, direction=['y'], show_results=False)
 
 # %%
 # Plot the result of the model in the y and x directions with data and boundaries
-gpv.plot_2d(geo_data, direction='y', show_data=True, show_boundaries=True)
-gpv.plot_2d(geo_data, direction='x', show_data=True)
+gpv.plot_2d(data, direction='y', show_data=True, show_boundaries=True)
+gpv.plot_2d(data, direction='x', show_data=True)
 
 # Plot the blocks accounting for fault blocks
 gpv.plot_2d(
@@ -69,4 +68,4 @@ gpv.plot_2d(
 
 # %%
 # The 3D plot is commented out due to a bug.
-gpv.plot_3d(geo_data)
+gpv.plot_3d(data)
