@@ -45,3 +45,6 @@ gpv.plot_2d(geo_data, direction=['y'], show_results=False)
 
 # Plot the result of the model in the y direction with data
 gpv.plot_2d(geo_data, direction=['y'], show_data=True)
+
+# %%
+gpv.plot_3d(geo_data, show_surfaces=True)
