@@ -57,57 +57,16 @@ gpv.plot_2d(geo_data, direction=['y'], show_results=False)
 
 # %%
 # Plot the result of the model in the y and x directions with data and boundaries
-if True:
-    gpv.plot_2d(geo_data, direction='y', show_data=True, show_boundaries=True)
-    gpv.plot_2d(geo_data, direction='x', show_data=True)
+gpv.plot_2d(geo_data, direction='y', show_data=True, show_boundaries=True)
+gpv.plot_2d(geo_data, direction='x', show_data=True)
 
-    gpv.plot_2d(geo_data, direction='y', show_data=True,
-                show_boundaries=True, show_scalar=True, show_lith=False, series_n=0)
-    gpv.plot_2d(geo_data, direction='y', show_data=True,
-                show_boundaries=True, show_scalar=True, show_lith=False, series_n=1)
-    gpv.plot_2d(geo_data, direction='y', show_data=True,
-                show_boundaries=True, show_scalar=True, show_lith=False, series_n=2)
-
+# Plot the blocks accounting for fault blocks
 gpv.plot_2d(
     model=data,
     override_regular_grid=data.solutions.raw_arrays.litho_faults_block,
     show_data=True, kwargs_lithology={'cmap': 'Set1', 'norm': None}
 )
 
-if True:
-    geo_model = data
-    gpv.plot_2d(
-        model=geo_model,
-        override_regular_grid=geo_model.solutions.raw_arrays.mask_matrix[0],
-        show_data=True, kwargs_lithology={'cmap': 'gray', 'norm': None}
-    )
-
-    gpv.plot_2d(
-        model=geo_model,
-        override_regular_grid=geo_model.solutions.raw_arrays.mask_matrix[1],
-        show_data=True, kwargs_lithology={'cmap': 'gray', 'norm': None}
-    )
-
-    gpv.plot_2d(
-        model=geo_model,
-
-        override_regular_grid=geo_model.solutions.raw_arrays.mask_matrix_squeezed[0],
-        show_data=True, kwargs_lithology={'cmap': 'gray', 'norm': None}
-    )
-
-    gpv.plot_2d(
-        model=geo_model,
-
-        override_regular_grid=geo_model.solutions.raw_arrays.mask_matrix_squeezed[1],
-        show_data=True, kwargs_lithology={'cmap': 'gray', 'norm': None}
-    )
-
-    gpv.plot_2d(geo_data, cell_number=5, direction='y', show_data=True,
-                show_boundaries=True, show_scalar=True, show_lith=False, series_n=1)
-
-    gpv.plot_2d(geo_data, cell_number=5, direction='y', show_data=True,
-                show_boundaries=True, show_scalar=True, show_lith=False, series_n=2)
-
-    # %%
-    # The 3D plot is commented out due to a bug.
-    gpv.plot_3d(geo_data)
+# %%
+# The 3D plot is commented out due to a bug.
+gpv.plot_3d(geo_data)

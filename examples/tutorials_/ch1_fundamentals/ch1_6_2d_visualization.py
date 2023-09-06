@@ -14,6 +14,8 @@ import numpy as np
 import gempy as gp
 import gempy_viewer as gpv
 
+# sphinx_gallery_thumbnail_number = -1
+
 np.random.seed(1515)
 
 # %%
@@ -79,8 +81,6 @@ gp.compute_model(geo_data)
 # new plotting api
 gpv.plot_2d(geo_data, section_names=['section1'])
 
-
-
 # %%
 # Plot API
 # --------
@@ -110,5 +110,4 @@ gpv.plot_2d(geo_data, section_names=['section1'])
 gpv.plot_2d(geo_data, section_names=['section1', 'section2'])
 
 # %% 
-gpv.plot_2d(
-    geo_data, figsize=(15, 15), section_names=['section1', 'section2', 'topography'], cell_number='mid')
+gpv.plot_2d(geo_data, figsize=(15, 15), section_names=['section1', 'section2', 'topography'], cell_number='mid')

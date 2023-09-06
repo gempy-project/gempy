@@ -1,4 +1,4 @@
-﻿from typing import Union
+﻿from typing import Union, Sequence
 
 import numpy as np
 
@@ -20,7 +20,7 @@ def set_section_grid(grid: Grid, section_dict: dict):
     return grid.sections
 
 
-def set_topography_from_random(grid: Grid, fractal_dimension: float = 2.0, d_z: Union[float, None] = None,
+def set_topography_from_random(grid: Grid, fractal_dimension: float = 2.0, d_z: Union[Sequence, None] = None,
                                topography_resolution: Union[list, None] = None):
     if topography_resolution is None:
         topography_resolution = grid.regular_grid.resolution

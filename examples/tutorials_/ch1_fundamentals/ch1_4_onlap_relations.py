@@ -3,6 +3,7 @@
 ===============================
 
 """
+# sphinx_gallery_thumbnail_number = 2
 
 # %%
 # Importing gempy
@@ -25,7 +26,7 @@ geo_model: gp.data.GeoModel = gp.create_geomodel(
     project_name='Onlap_relations',
     extent=[-200, 1000, -500, 500, -1000, 0],
     resolution=[50, 50, 50],
-    number_octree_levels=4,
+    number_octree_levels=6,
     importer_helper=gp.data.ImporterHelper(
         path_to_orientations=data_path + "/data/input_data/tut-ch1-4/tut_ch1-4_orientations.csv",
         path_to_surface_points=data_path + "/data/input_data/tut-ch1-4/tut_ch1-4_points.csv",
@@ -139,7 +140,7 @@ gpv.plot_2d(
 gpv.plot_2d(
     model=geo_model,
     cell_number=2,
-    override_regular_grid=geo_model.solutions.raw_arrays.mask_matrix_squeezed[1],   
+    override_regular_grid=geo_model.solutions.raw_arrays.mask_matrix_squeezed[1],
     show_data=True, kwargs_lithology={'cmap': 'gray', 'norm': None}
 )
 
@@ -156,7 +157,3 @@ gpv.plot_2d(
     override_regular_grid=geo_model.solutions.raw_arrays.mask_matrix_squeezed[3],
     show_data=True, kwargs_lithology={'cmap': 'gray', 'norm': None}
 )
-
-
-
-# sphinx_gallery_thumbnail_number = 7
