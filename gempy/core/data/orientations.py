@@ -3,7 +3,7 @@ from typing import Optional, Sequence, Union
 
 import numpy as np
 
-from core.data.transforms import Transform
+from gempy_engine.core.data.transforms import Transform
 from gempy.optional_dependencies import require_pandas
 
 DEFAULT_ORI_NUGGET = 0.01

@@ -2,7 +2,7 @@
 from typing import Optional, Union, Sequence
 import numpy as np
 
-from core.data.transforms import Transform
+from gempy_engine.core.data.transforms import Transform
 from gempy.optional_dependencies import require_pandas
 
 DEFAULT_SP_NUGGET = 0.00001
