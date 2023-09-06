@@ -12,7 +12,7 @@ def test_dual_contouring():
         project_name='Onlap_relations',
         extent=[-200, 1000, -500, 500, -1000, 0],
         resolution=[50, 50, 50],
-        number_octree_levels=4,
+        number_octree_levels=6,
         importer_helper=gp.data.ImporterHelper(
             path_to_orientations=data_path + "/data/input_data/tut-ch1-4/tut_ch1-4_orientations.csv",
             path_to_surface_points=data_path + "/data/input_data/tut-ch1-4/tut_ch1-4_points.csv",
@@ -63,7 +63,8 @@ def test_dual_contouring():
    
     # %%
     from gempy_engine.core.data.options import DualContouringMaskingOptions
-    geo_model.interpolation_options.dual_contouring_masking_options = DualContouringMaskingOptions.DISJOINT
+    geo_model.interpolation_options.dual_contouring_masking_options = DualContouringMaskingOptions.INTERSECT
+    geo_model.interpolation_options.number_octree_levels_surface = 6
     s = gp.compute_model(geo_model)
 
     # %% 
@@ -74,4 +75,34 @@ def test_dual_contouring():
         image=False,
         show_topography=True,
         kwargs_plot_structured_grid={'opacity': .2}
+    )
+
+    # %%
+    # ! White are True, black are False
+    
+    p = gpv.plot_2d(
+        model=geo_model,
+        cell_number=2,
+        override_regular_grid=geo_model.solutions.raw_arrays.mask_matrix_squeezed[0],
+        show_data=True, kwargs_lithology={'cmap': 'gray', 'norm': None}
+    )
+    gpv.plot_2d(
+        model=geo_model,
+        cell_number=2,
+        override_regular_grid=geo_model.solutions.raw_arrays.mask_matrix_squeezed[1],
+        show_data=True, kwargs_lithology={'cmap': 'gray', 'norm': None}
+    )
+
+    gpv.plot_2d(
+        model=geo_model,
+        cell_number=2,
+        override_regular_grid=geo_model.solutions.raw_arrays.mask_matrix_squeezed[2],
+        show_data=True, kwargs_lithology={'cmap': 'gray', 'norm': None}
+    )
+
+    gpv.plot_2d(
+        model=geo_model,
+        cell_number=2,
+        override_regular_grid=geo_model.solutions.raw_arrays.mask_matrix_squeezed[3],
+        show_data=True, kwargs_lithology={'cmap': 'gray', 'norm': None}
     )
