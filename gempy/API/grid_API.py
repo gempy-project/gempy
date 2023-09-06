@@ -21,7 +21,7 @@ def set_section_grid(grid: Grid, section_dict: dict):
 
 
 def set_topography_from_random(grid: Grid, fractal_dimension: float = 2.0, d_z: Union[Sequence, None] = None,
-                               topography_resolution: Union[list, None] = None):
+                               topography_resolution: Union[Sequence, None] = None):
     if topography_resolution is None:
         topography_resolution = grid.regular_grid.resolution
 
