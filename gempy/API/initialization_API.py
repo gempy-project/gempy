@@ -52,7 +52,6 @@ def create_geomodel(
         number_octree_levels=number_octree_levels,
     )
     
-    
     match (structural_frame, importer_helper):
         case (None, None):
             # ? For now my gut feeling is that is better to pass the structural frame explicitly
@@ -62,7 +61,6 @@ def create_geomodel(
             structural_frame = _initialize_structural_frame(importer_helper)
         case _:
             pass
-
 
     geo_model: GeoModel = GeoModel(
         name=project_name,

@@ -2,8 +2,8 @@
 from typing import Optional, Sequence, Union
 
 import numpy as np
-import uuid
 
+from gempy.core.data._data_points_helpers import generate_ids_from_names
 from gempy_engine.core.data.transforms import Transform
 from gempy.optional_dependencies import require_pandas
 
@@ -38,14 +38,7 @@ class OrientationsTable:
         if nugget is None:
             nugget = np.zeros_like(x) + DEFAULT_ORI_NUGGET
             
-        name_id_map = name_id_map or {name: hash(name) for name in np.unique(names)}
-        if isinstance(names, str):
-            ids = np.array([name_id_map[names]] * len(x))
-        elif isinstance(names, Sequence) or isinstance(names, np.ndarray):
-            ids = np.array([name_id_map[name] for name in names])
-        else:
-            raise TypeError(f"Names should be a string or a NumPy array, not {type(names)}")
-
+        ids, name_id_map = generate_ids_from_names(name_id_map, names, x)
         data = np.zeros(len(x), dtype=OrientationsTable.dt)
         data['X'], data['Y'], data['Z'], data['G_x'], data['G_y'], data['G_z'], data['id'], data['nugget'] = x, y, z, G_x, G_y, G_z, ids, nugget
         return data, name_id_map

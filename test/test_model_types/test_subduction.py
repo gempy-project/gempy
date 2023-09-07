@@ -4,7 +4,7 @@ import gempy as gp
 import gempy_viewer as gpv
 
 
-def test_dual_contouring():
+def test_subduction():
     data_path = os.path.abspath('../../examples')
 
     geo_model: gp.data.GeoModel = gp.create_geomodel(
