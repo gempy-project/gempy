@@ -2,6 +2,7 @@
 from typing import Optional, Sequence, Union
 
 import numpy as np
+import uuid
 
 from gempy_engine.core.data.transforms import Transform
 from gempy.optional_dependencies import require_pandas
@@ -37,7 +38,7 @@ class OrientationsTable:
         if nugget is None:
             nugget = np.zeros_like(x) + DEFAULT_ORI_NUGGET
             
-        name_id_map = name_id_map or {name: i for i, name in enumerate(np.unique(names))}
+        name_id_map = name_id_map or {name: hash(name) for name in np.unique(names)}
         if isinstance(names, str):
             ids = np.array([name_id_map[names]] * len(x))
         elif isinstance(names, Sequence) or isinstance(names, np.ndarray):

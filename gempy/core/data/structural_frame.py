@@ -246,7 +246,7 @@ class StructuralFrame:
         groups_ = [group.structural_relation for group in self.structural_groups]
         groups_[-1] = StackRelationType.BASEMENT
         return groups_
-    
+
     @property
     def number_of_points_per_element(self) -> np.ndarray:
         """Returns an array with the number of points for each structural element."""
@@ -277,12 +277,6 @@ class StructuralFrame:
         """Returns the total number of elements in the structural frame."""
         return len(self.structural_elements)
 
-    @property
-    def groups_structural_relation(self) -> list[StackRelationType]:
-        """Returns a list of the structural relations for each group."""
-        groups_ = [group.structural_relation for group in self.structural_groups]
-        groups_[-1] = StackRelationType.BASEMENT
-        return groups_
 
     @property
     def elements_names(self) -> list[str]:
@@ -324,8 +318,8 @@ class StructuralFrame:
     @property
     def elements_colors_contacts(self) -> list[str]:
         """Returns a list of colors assigned to each structural element for contact representation."""
-        elements_ = [element.color for element in self.structural_elements]
-        return elements_
+        points_ = [element.color for element in self.structural_elements if len(element.surface_points) > 0]
+        return points_
 
     @property
     def surface_points_colors(self) -> list[str]:

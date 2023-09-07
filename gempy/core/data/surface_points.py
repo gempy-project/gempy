@@ -60,7 +60,7 @@ class SurfacePointsTable:
         if nugget is None:
             nugget = np.zeros_like(x) + DEFAULT_SP_NUGGET
 
-        name_id_map = name_id_map or {name: i for i, name in enumerate(np.unique(names))}
+        name_id_map = name_id_map or {name: hash(name) for name in np.unique(names)}
         if isinstance(names, str):
             ids = np.array([name_id_map[names]] * len(x))
         elif isinstance(names, Sequence) or isinstance(names, np.ndarray):
