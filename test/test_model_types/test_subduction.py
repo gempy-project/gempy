@@ -70,7 +70,7 @@ def test_subduction():
         show_data=True,
         image=False,
         show_topography=True,
-        kwargs_plot_structured_grid={'opacity': 0.3}
+        kwargs_plot_structured_grid={'opacity': 0.1}
     )
 
     # %%
