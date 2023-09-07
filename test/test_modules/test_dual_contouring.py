@@ -1,8 +1,7 @@
-﻿import gempy as gp
-import gempy_viewer as gpv
+﻿import os
 
-import numpy as np
-import os
+import gempy as gp
+import gempy_viewer as gpv
 
 
 def test_dual_contouring():
@@ -12,14 +11,12 @@ def test_dual_contouring():
         project_name='Onlap_relations',
         extent=[-200, 1000, -500, 500, -1000, 0],
         resolution=[50, 50, 50],
-        number_octree_levels=6,
+        number_octree_levels=5,
         importer_helper=gp.data.ImporterHelper(
             path_to_orientations=data_path + "/data/input_data/tut-ch1-4/tut_ch1-4_orientations.csv",
             path_to_surface_points=data_path + "/data/input_data/tut-ch1-4/tut_ch1-4_points.csv",
         )
     )
-
-    # gp.set_topography_from_random(grid=geo_model.grid, d_z=np.array([-600, -100]))
 
     gp.add_structural_group(
         model=geo_model,
@@ -57,16 +54,15 @@ def test_dual_contouring():
     )
 
     gp.remove_structural_group_by_name(model=geo_model, group_name="default_formation")
-    # gp.remove_structural_group_by_name(model=geo_model, group_name="onlap_series")
-    # gp.remove_structural_group_by_name(model=geo_model, group_name="left_series")
-    
+   
    
     # %%
     from gempy_engine.core.data.options import DualContouringMaskingOptions
     geo_model.interpolation_options.dual_contouring_masking_options = DualContouringMaskingOptions.INTERSECT
-    geo_model.interpolation_options.number_octree_levels_surface = 6
     s = gp.compute_model(geo_model)
 
+    gpv.plot_2d(geo_model)
+    
     # %% 
     gpv.plot_3d(
         model=geo_model,
@@ -74,35 +70,35 @@ def test_dual_contouring():
         show_data=True,
         image=False,
         show_topography=True,
-        kwargs_plot_structured_grid={'opacity': .2}
+        kwargs_plot_structured_grid={'opacity': 0.3}
     )
 
     # %%
     # ! White are True, black are False
-    
-    p = gpv.plot_2d(
-        model=geo_model,
-        cell_number=2,
-        override_regular_grid=geo_model.solutions.raw_arrays.mask_matrix_squeezed[0],
-        show_data=True, kwargs_lithology={'cmap': 'gray', 'norm': None}
-    )
-    gpv.plot_2d(
-        model=geo_model,
-        cell_number=2,
-        override_regular_grid=geo_model.solutions.raw_arrays.mask_matrix_squeezed[1],
-        show_data=True, kwargs_lithology={'cmap': 'gray', 'norm': None}
-    )
+    if False:
+        p = gpv.plot_2d(
+            model=geo_model,
+            cell_number=2,
+            override_regular_grid=geo_model.solutions.raw_arrays.mask_matrix_squeezed[0],
+            show_data=True, kwargs_lithology={'cmap': 'gray', 'norm': None}
+        )
+        gpv.plot_2d(
+            model=geo_model,
+            cell_number=2,
+            override_regular_grid=geo_model.solutions.raw_arrays.mask_matrix_squeezed[1],
+            show_data=True, kwargs_lithology={'cmap': 'gray', 'norm': None}
+        )
 
-    gpv.plot_2d(
-        model=geo_model,
-        cell_number=2,
-        override_regular_grid=geo_model.solutions.raw_arrays.mask_matrix_squeezed[2],
-        show_data=True, kwargs_lithology={'cmap': 'gray', 'norm': None}
-    )
+        gpv.plot_2d(
+            model=geo_model,
+            cell_number=2,
+            override_regular_grid=geo_model.solutions.raw_arrays.mask_matrix_squeezed[2],
+            show_data=True, kwargs_lithology={'cmap': 'gray', 'norm': None}
+        )
 
-    gpv.plot_2d(
-        model=geo_model,
-        cell_number=2,
-        override_regular_grid=geo_model.solutions.raw_arrays.mask_matrix_squeezed[3],
-        show_data=True, kwargs_lithology={'cmap': 'gray', 'norm': None}
-    )
+        gpv.plot_2d(
+            model=geo_model,
+            cell_number=2,
+            override_regular_grid=geo_model.solutions.raw_arrays.mask_matrix_squeezed[3],
+            show_data=True, kwargs_lithology={'cmap': 'gray', 'norm': None}
+        )
