@@ -72,7 +72,7 @@ plt.show()
 # Similarly, we can visualize in 3D using pyvista and vtk:
 
 # %%
-p3d = gpv.plot_3d(geo_model, image=False)
+p3d = gpv.plot_3d(geo_model, image=True)
 
 # %%
 # Building the model:
@@ -104,7 +104,7 @@ gp.add_surface_points(
 )
 
 gpv.plot_2d(geo_model, cell_number=11)
-gpv.plot_3d(geo_model, image=False)
+gpv.plot_3d(geo_model, image=True)
 
 # %%
 # We can now add other points for the layer:
@@ -119,7 +119,7 @@ gp.add_surface_points(
 )
 
 gpv.plot_2d(geo_model, cell_number=11)
-gpv.plot_3d(geo_model, image=False)
+gpv.plot_3d(geo_model, image=True)
 
 # %%
 # To interpolate in gempy, the minimum data needed is:
@@ -203,7 +203,7 @@ geo_model.structural_frame.structural_groups[0].append_element(element2)
 # Compute and visualize the updated model:
 gp.compute_model(geo_model)
 gpv.plot_2d(geo_model, cell_number=5, legend='force')
-gpv.plot_3d(geo_model, image=False)
+gpv.plot_3d(geo_model, image=True)
 
 # %%
 # Defining Layer 3:

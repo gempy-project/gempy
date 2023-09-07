@@ -306,30 +306,38 @@ class StructuralFrame:
 
     @property
     def elements_colors(self) -> list[str]:
-        """Returns a list of colors assigned to each structural element."""
+        """Returns a list of colors assigned to each structural element. Used in matplotlib"""
         # reversed
         return [element.color for element in self.structural_elements][::-1]
 
     @property
     def elements_colors_volumes(self) -> list[str]:
-        """Returns a list of colors assigned to each structural element for volume representation."""
+        """Returns a list of colors assigned to each structural element for volume representation. Used in pyvista"""
         return self.elements_colors
 
     @property
     def elements_colors_contacts(self) -> list[str]:
-        """Returns a list of colors assigned to each structural element for contact representation."""
+        """Returns a list of colors assigned to each structural element for contact representation. Used in many places"""
         points_ = [element.color for element in self.structural_elements if len(element.surface_points) > 0]
         return points_
+    
+    @property
+    def elements_colors_orientations(self) -> list[str]:
+        """Returns a list of colors assigned to each structural element for orientation representation. Used to paint
+        orientations in pyvista
+        """
+        orientations_ = [element.color for element in self.structural_elements if len(element.orientations) > 0]
+        return orientations_
 
     @property
-    def surface_points_colors(self) -> list[str]:
-        """Returns a list of colors assigned to each surface point across structural elements."""
+    def surface_points_colors_per_item(self) -> list[str]:
+        """Returns a list of colors assigned to each surface point across structural elements. Used in matplotlib"""
         surface_points_colors = [element.color for element in self.structural_elements for _ in range(element.number_of_points)]
         return surface_points_colors
 
     @property
-    def orientations_colors(self) -> list[str]:
-        """Returns a list of colors assigned to each orientation across structural elements."""
+    def orientations_colors_per_item(self) -> list[str]:
+        """Returns a list of colors assigned to each orientation across structural elements. Used in matplotlib"""
         orientations_colors = [element.color for element in self.structural_elements for _ in range(element.number_of_orientations)]
         return orientations_colors
 
