@@ -6,6 +6,7 @@ Claudius
 
 # %%
 import sys, os
+
 os.environ["aesara_FLAGS"] = "mode=FAST_RUN,device=cpu"
 
 # Importing gempy
@@ -24,18 +25,34 @@ import pandas as pn
 # 
 
 # %% 
+
+data_path = os.path.abspath('../../data/input_data/Claudius')
+
+reduce_data_by = 5
+
 dfs = []
 for letter in 'ABCD':
-    dfs.append(pn.read_csv('https://raw.githubusercontent.com/Loop3D/ImplicitBenchmark/master/Claudius/' +
-                           letter + 'Points.csv', sep=';',
-                           names=['X', 'Y', 'Z', 'surface', 'cutoff'], header=0)[::5])
+    dfs.append(
+        pn.read_csv(
+            filepath_or_buffer=f"{data_path}/{letter}Points.csv",
+            sep=';',
+            names=['X', 'Y', 'Z', 'surface', 'cutoff'],
+            header=0
+        )[::reduce_data_by]
+    )
+    
 # Add fault:
-dfs.append(pn.read_csv('https://raw.githubusercontent.com/Loop3D/ImplicitBenchmark/master/Claudius/Fault.csv',
-                       names=['X', 'Y', 'Z', 'surface'], header=0, sep=';'))
+dfs.append(
+    pn.read_csv(
+        filepath_or_buffer=f"{data_path}/Fault.csv",
+        names=['X', 'Y', 'Z', 'formation'],
+        header=0,
+        sep=','
+    )
+)
 
 surface_points = pn.concat(dfs, sort=True)
-surface_points['surface'] =surface_points['surface'].astype('str')
-# surface_points['surface'] = surface_points['surface'].astype('str')
+surface_points['surface'] = surface_points['surface'].astype('str')
 surface_points.reset_index(inplace=True, drop=False)
 surface_points.tail()
 
@@ -146,7 +163,7 @@ stratigraphy = 'fixed'
 
 # %% 
 if stratigraphy == 'original':
-    gp.map_stack_to_surfaces(geo_model, {'Fault': 'Claudius_fault',
+    gp.map_stack_to_surfaces(geo_model, {'Fault'         : 'Claudius_fault',
                                          'Default series': ('0', '60', '250', '330'),
                                          })
     # Ordering the events from younger to older:
@@ -155,8 +172,8 @@ if stratigraphy == 'original':
 
 elif stratigraphy == 'fixed':
     gp.map_stack_to_surfaces(geo_model, {'Default series': ('0', '60', '250'),
-                                         'Fault': 'Claudius_fault',
-                                         'Uncomformity': '330',
+                                         'Fault'         : 'Claudius_fault',
+                                         'Uncomformity'  : '330',
                                          })
     # Ordering the events from younger to older:
     geo_model.reorder_series(['Default series', 'Fault', 'Uncomformity', 'Basement'])
@@ -200,7 +217,6 @@ sect = [35]
 
 gp.plot_2d(geo_model, cell_number=sect, series_n=1, show_scalar=True, direction='x')
 
-
 # %% 
 gp.plot_2d(geo_model, cell_number=sect, show_data=True, direction='x')
 
@@ -216,8 +232,6 @@ gp.plot_2d(geo_model, cell_number=[28], show_data=True, direction='y')
 
 # sphinx_gallery_thumbnail_number = 8
 gp.plot_3d(geo_model)
-
-
 
 # %%
 # Export data:
