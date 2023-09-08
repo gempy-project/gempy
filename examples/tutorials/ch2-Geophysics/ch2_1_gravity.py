@@ -7,7 +7,7 @@
 # %%
 # Importing gempy
 import gempy as gp
-from gempy_plugins.assets.geophysics import GravityPreprocessing
+from gempy.modules.geophysics.geophysics import GravityPreprocessing
 
 # Aux imports
 import numpy as np
