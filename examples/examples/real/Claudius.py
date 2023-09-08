@@ -133,7 +133,7 @@ geo_model: gp.data.GeoModel = gp.create_geomodel(
     project_name='Claudius',
     extent=[548800, 552500, 7816600, 7822000, -11010, -8400],
     resolution=[38, 55, 30],
-    number_octree_levels=5,
+    number_octree_levels=1,
     structural_frame=structural_frame
 )
 
@@ -155,11 +155,28 @@ gp.set_is_fault(
 )
 
 print(geo_model)
+
+# %%
+# We are going to increase the smoothness (nugget) of the data to increase
+# the conditional number of the matrix:
+# 
+
 # %% 
+gp.modify_surface_points(geo_model, nugget=0.01)
 
-gp.modify_surface_points(geo_model, nugget=0.1)
+# %%
+# Also the original poles are pointing downwards. We can change the
+# direction by calling the following:
+# 
 
+#%%
 gp.modify_orientations(geo_model, polarity=-1)
+
+# %%
+# We need an orientation per series/fault. The faults does not have
+# orientation so the easiest is to create an orientation from the surface
+# points availablle:
+# 
 
 element = geo_model.structural_frame.get_element_by_name("Claudius_fault")
 new_orientations: gp.data.OrientationsTable = gp.create_orientations_from_surface_points_coords(
@@ -174,7 +191,12 @@ gp.add_orientations(
     elements_names="Claudius_fault"
 )
 
-gpv.plot_3d(geo_model)
+# %% 
+gpv.plot_2d(geo_model, direction='y')
+
+# %%
+# We will need to separate with surface belong to each series:
+# 
 
 gp.map_stack_to_surfaces(
     gempy_model=geo_model,
@@ -184,233 +206,40 @@ gp.map_stack_to_surfaces(
         'Uncomformity'  : '330',
     }
 )
+# %%
+# So far we did not specify which series/faults are actula faults:
+# 
 
-print(geo_model.structural_frame)
+# %%
 gp.set_is_fault(
     frame=geo_model.structural_frame,
     fault_groups=[geo_model.structural_frame.get_group_by_name('Fault')]
 )
 
-gp.compute_model(geo_model)
-
-gpv.plot_3d(geo_model)
-
-print(geo_model)
-
-# TODO: Fault does not have orientation
-
-# %% 
-fault_idx = geo_model.surface_points.df.index[geo_model.surface_points.df['surface'] == 'Claudius_fault']
-gp.set_orientation_from_surface_points(geo_model, fault_idx).df.tail()
-
-# %% 
-# geo_model = gp.create_model('Claudius')
-# # Importing the data from csv files and settign extent and resolution
-# geo_model = gp.init_data(geo_model,
-#                          extent=[548800, 552500, 7816600, 7822000, -11010, -8400], resolution=[38, 55, 30],
-#                          surface_points_df=surface_points[::5], orientations_df=orientations, surface_name='surface',
-#                          add_basement=True)
+geo_model.structural_frame
 
 # %%
-# We are going to increase the smoothness (nugget) of the data to increase
-# the conditional number of the matrix:
-# 
-
-# %% 
-geo_model.modify_surface_points(geo_model.surface_points.df.index, smooth=0.1).df.tail()
-
-# %%
-# Also the original poles are pointing downwards. We can change the
-# direction by calling the following:
-# 
-
-# %% 
-geo_model.modify_orientations(geo_model.orientations.df.index, polarity=-1).df.tail()
-
-# %%
-# We need an orientation per series/fault. The faults does not have
-# orientation so the easiest is to create an orientation from the surface
-# points availablle:
-# 
-
-# %% 
-fault_idx = geo_model.surface_points.df.index[geo_model.surface_points.df['surface'] == 'Claudius_fault']
-gp.set_orientation_from_surface_points(geo_model, fault_idx).df.tail()
-
-# %%
-# Now we can see how the data looks so far:
-# 
-
-# %%
-geo_model.surfaces
-
-# %% 
-gp.plot_2d(geo_model, direction='y')
-
-# %%
-# By default all surfaces belong to one unique series.
-# 
-
-# %% 
-geo_model.surfaces
-
-# %%
-# We will need to separate with surface belong to each series:
-# 
-
-# %% 
-stratigraphy = 'fixed'
-
-# %% 
-if stratigraphy == 'original':
-    gp.map_stack_to_surfaces(geo_model, {'Fault'         : 'Claudius_fault',
-                                         'Default series': ('0', '60', '250', '330'),
-                                         })
-    # Ordering the events from younger to older:
-    geo_model.reorder_series(['Fault', 'Default series', 'Basement'])
-
-
-elif stratigraphy == 'fixed':
-    gp.map_stack_to_surfaces(geo_model, {'Default series': ('0', '60', '250'),
-                                         'Fault'         : 'Claudius_fault',
-                                         'Uncomformity'  : '330',
-                                         })
-    # Ordering the events from younger to older:
-    geo_model.reorder_series(['Default series', 'Fault', 'Uncomformity', 'Basement'])
-
-# %%
-# So far we did not specify which series/faults are actula faults:
-# 
-
-# %% 
-geo_model.set_is_fault('Fault')
-
-# %%
-# Ordering the events from younger to older:
-# 
-
-# %% 
-# geo_model.reorder_series(['Default series', 'Fault', 'Uncomformity', 'Basement'])
-
-
-# %%
-# Check which series/faults are affected by other faults (rows offset
-# columns):
-# 
-
-# %% 
-geo_model.faults.faults_relations_df
-
-# %%
-# Now we are good to go:
-# 
-
-# %% 
-gp.set_interpolator(geo_model, aesara_optimizer='fast_run',
-                    compile_aesara=True)
-
-# %% 
-gp.compute_model(geo_model)
+geo_model.interpolation_options.kernel_options.range = 1
+gp.compute_model(geo_model, gp.data.GemPyEngineConfig(use_gpu=True))
 
 # %% 
 sect = [35]
 
-gp.plot_2d(geo_model, cell_number=sect, series_n=1, show_scalar=True, direction='x')
+gpv.plot_2d(geo_model, cell_number=sect, series_n=1, show_scalar=True, direction='x')
 
 # %% 
-gp.plot_2d(geo_model, cell_number=sect, show_data=True, direction='x')
+gpv.plot_2d(geo_model, cell_number=sect, show_data=True, direction='x')
 
 # %% 
-gp.plot_2d(geo_model, cell_number=[28], series_n=0, direction='y', show_scalar=True)
-gp.plot_2d(geo_model, cell_number=[28], series_n=1, direction='y', show_scalar=True)
-gp.plot_2d(geo_model, cell_number=[28], series_n=2, direction='y', show_scalar=True)
+gpv.plot_2d(geo_model, cell_number=[28], series_n=0, direction='y', show_scalar=True)
+gpv.plot_2d(geo_model, cell_number=[28], series_n=1, direction='y', show_scalar=True)
+gpv.plot_2d(geo_model, cell_number=[28], series_n=2, direction='y', show_scalar=True)
 
 # %% 
-gp.plot_2d(geo_model, cell_number=[28], show_data=True, direction='y')
+gpv.plot_2d(geo_model, cell_number=[28], show_data=True, direction='y')
 
 # %%
 
 # sphinx_gallery_thumbnail_number = 8
-gp.plot_3d(geo_model)
+gpv.plot_3d(geo_model, show_lith= True, show_data=True, show_boundaries=True)
 
-# %%
-# Export data:
-# ~~~~~~~~~~~~
-# 
-# The solution is stored in a numpy array of the following shape. Axis 0
-# are the scalar fields of each correspondent series/faults in the
-# following order (except basement):
-# 
-
-# %% 
-geo_model.series
-
-# %%
-# For the surfaces, there are two numpy arrays, one with vertices and the
-# other with triangles. Axis 0 is each surface in the order:
-# 
-
-# %% 
-geo_model.surfaces
-
-
-# %%
-# np.save('Claudius_scalar', geo_model.solutions.scalar_field_matrix)
-# np.save('Claudius_ver', geo_model.solutions.vertices)
-# np.save('Claudius_edges', geo_model.solutions.edges)
-# gp.plot.export_to_vtk(geo_model, 'Claudius')
-
-
-# %%
-# Timing:
-# -------
-# 
-# Fault
-# ~~~~~
-# 
-# Dense 20k input, 62k voxels
-# 
-# 
-# -  CPU Memory 8 Gb 44.9 s ± 150 ms per loop (mean ± std. dev. of 7 runs,
-#    1 loop each)
-# -  GPU Memory 6.8 gb:
-# 
-#    -  2.13 s ± 3.39 ms per loop (mean ± std. dev. of 7 runs, 1 loop
-#       each) + steps **str** = [64.56394268] + steps **str** =
-#       [9927.69441126] + steps **str** = [196.15202667]
-# 
-#    -  1.13 s ± 2.08 ms per loop (mean ± std. dev. of 7 runs, 1 loop
-#       each)
-# 
-#       ::
-# 
-#          + steps __str__ = [645.63943742]
-#          + steps __str__ = [99276.94573919]
-#          + steps __str__ = [1961.52029888]
-# 
-
-
-# %%
-# Export to gocad
-# ---------------
-# 
-
-# %% 
-def write_property_to_gocad_voxet(propertyfilename, propertyvalues):
-    """
-    This function writes a numpy array into the right format for a gocad
-    voxet property file. This assumet there is a property already added to the .vo file,
-    and is just updating the file.
-    propertyfile - string giving the path to the file to write
-    propertyvalues - numpy array nz,ny,nx ordering and in float format
-    """
-    propertyvalues = propertyvalues.astype('>f4')  # big endian
-    #     array = propertyvalues.newbyteorder()
-    propertyvalues.tofile(propertyfilename)
-
-
-# %%
-write_property_to_gocad_voxet('claudius_sf_gempy',
-                              geo_model.solutions.scalar_field_matrix[1].reshape([38, 55, 30]).ravel('F'))
-
-gp.save_model(geo_model)
