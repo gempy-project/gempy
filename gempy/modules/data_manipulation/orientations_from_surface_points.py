@@ -1,23 +1,32 @@
-﻿import numpy as np
+﻿from typing import Optional
+
+import numpy as np
 from numpy.linalg import svd
 
 from gempy.core.data import SurfacePointsTable, OrientationsTable
 
 
-def create_orientations_from_surface_points(surface_points: SurfacePointsTable) -> OrientationsTable:
-    # TODO: We may want to slice here but otherwise we slice in the previous frame
-    xyz_coords = surface_points.xyz
-    
-    center, normal = _plane_fit(xyz_coords)
-    
+def create_orientations_from_surface_points_coords(xyz_coords: np.ndarray,
+                                                   subset: Optional[np.ndarray] = None,
+                                                   element_name: Optional[str] = "Generated") -> OrientationsTable:
+    # Initialize the arrays
+    center = np.empty((len(subset) if subset is not None else 1, 3))
+    normal = np.empty((len(subset) if subset is not None else 1, 3))
+
+    if subset is None:
+        center[0], normal[0] = _plane_fit(xyz_coords)
+    else:
+        for idx, i in enumerate(subset):
+            center[idx], normal[idx] = _plane_fit(xyz_coords[i])
+
     orientations = OrientationsTable.from_arrays(
-        x = center[[0]],
-        y = center[[1]],
-        z = center[[2]],
-        G_x = normal[[0]],
-        G_y = normal[[1]],
-        G_z = normal[[2]],
-        names = [surface_points.id_to_name(0)] 
+        x=center[:, 0],
+        y=center[:, 1],
+        z=center[:, 2],
+        G_x=normal[:, 0],
+        G_y=normal[:, 1],
+        G_z=normal[:, 2],
+        names=[element_name]
     )
     return orientations
 

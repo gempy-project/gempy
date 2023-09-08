@@ -43,7 +43,7 @@ from ..modules.data_manipulation.manipulate_points import (
 
 # Data manipulation: orientations from surface points
 from ..modules.data_manipulation.orientations_from_surface_points import (
-    create_orientations_from_surface_points
+    create_orientations_from_surface_points_coords
 )
 
 # Data manipulation: structural frame
@@ -58,6 +58,6 @@ __all__ = [
     'set_section_grid', 'set_active_grid', 'set_topography_from_random', 'set_custom_grid',
     'generate_example_model', 'set_fault_relation', 'set_is_fault', 'set_is_finite_fault',
     'add_surface_points', 'add_orientations', 'delete_surface_points', 'delete_orientations',
-    'create_orientations_from_surface_points', 'modify_surface_points', 'modify_orientations',
+    'create_orientations_from_surface_points_coords', 'modify_surface_points', 'modify_orientations',
     'add_structural_group', 'remove_structural_group_by_index', 'remove_structural_group_by_name'
 ]
