@@ -128,42 +128,91 @@ def add_orientations(geo_model: GeoModel, x: Sequence[float], y: Sequence[float]
     return geo_model.structural_frame
 
 
-def modify_all_orientations(geo_model: GeoModel, **orientation_field: Union[float, np.ndarray]) -> StructuralFrame:
+def modify_orientations(geo_model: GeoModel, slice: Optional[Union[int, slice]] = None,
+                        **orientation_field: Union[float, np.ndarray]) -> StructuralFrame:
     """
-    Modifies all orientations in the structural frame. The keys of the orientation_field dictionary must match the
-    names of the structural elements.
+    Modifies specified fields of all orientations in the structural frame. The keys of the orientation_field 
+    dictionary should match the field names in the orientations (e.g., "X", "Y", "Z", "G_x", "G_y", "G_z", "nugget").
     
     Args:
-        geo_model: GeoModel to modify
-
+        geo_model (GeoModel): The GeoModel instance to modify.
+        slice (Optional[Union[int, slice]]): The slice of orientations to modify. If None, all orientations will be modified.
+        
     Keyword Args:
-            * X: Sequence[float] - X coordinates of the orientations
-            * Y: Sequence[float] - Y coordinates of the orientations
-            * Z: Sequence[float] - Z coordinates of the orientations
-            * G_x: Sequence[float] - X component of the gradient vector
-            * G_y: Sequence[float] - Y component of the gradient vector
-            * G_z: Sequence[float] - Z component of the gradient vector
-            * nugget: Sequence[float] - nugget value of the orientations
+        X (Union[float, np.ndarray]): X coordinates of the orientations.
+        Y (Union[float, np.ndarray]): Y coordinates of the orientations.
+        Z (Union[float, np.ndarray]): Z coordinates of the orientations.
+        azimuth (Union[float, np.ndarray]): Azimuth angles of the orientations.
+        dip (Union[float, np.ndarray]): Dip angles of the orientations.
+        polarity (Union[float, np.ndarray]): Polarity values of the orientations.
+        G_x (Union[float, np.ndarray]): X component of the gradient vector.
+        G_y (Union[float, np.ndarray]): Y component of the gradient vector.
+        G_z (Union[float, np.ndarray]): Z component of the gradient vector.
+        nugget (Union[float, np.ndarray]): Nugget value of the orientations.
             
     Returns:
-        The modified structural frame
+        StructuralFrame: The modified structural frame.
     """
+
     orientations = geo_model.structural_frame.orientations
+
+    # If no slice is provided, target all rows; else, target specified slice
+    target_rows = slice if slice is not None else np.s_[:]
+
+    # Extract provided orientation fields without modifying the dictionary
+    azimuth = orientation_field.get('azimuth')
+    dip = orientation_field.get('dip')
+    polarity = orientation_field.get('polarity')
+
+    # Update all the other fields
     for key, value in orientation_field.items():
-        orientations.data[key] = value
+        if isinstance(value, np.ndarray) and len(value) != len(orientations.data[target_rows]):
+            raise ValueError(f"Length mismatch: Expected size {len(orientations.data[target_rows])} for field {key}, but got {len(value)}.")
+        orientations.data[key][target_rows] = value
+
+    # Check if azimuth, dip, or polarity are provided
+    any_polar_fields = azimuth is not None or dip is not None or polarity is not None
+    all_polar_fields = azimuth is not None and dip is not None and polarity is not None
+
+    match (any_polar_fields, all_polar_fields):
+        case (True, True):
+            # All polar fields provided, convert to gradients
+            gx, gy, gz = convert_orientation_to_pole_vector(np.asarray(azimuth), np.asarray(dip), np.asarray(polarity))
+            orientations.data['G_x'][target_rows] = gx
+            orientations.data['G_y'][target_rows] = gy
+            orientations.data['G_z'][target_rows] = gz
+
+        case (True, False):
+            # Some polar fields missing, compute missing fields from gradients
+            prev_azimuth, prev_dip, prev_polarity = compute_adp_from_gradients(
+                orientations.data['G_x'],
+                orientations.data['G_y'],
+                orientations.data['G_z']
+            )
+            azimuth = np.asarray(azimuth) if azimuth is not None else prev_azimuth
+            dip = np.asarray(dip) if dip is not None else prev_dip
+            polarity = np.asarray(polarity) if polarity is not None else prev_polarity
+            gx, gy, gz = convert_orientation_to_pole_vector(azimuth, dip, polarity)
+            orientations.data['G_x'][target_rows] = gx
+            orientations.data['G_y'][target_rows] = gy
+            orientations.data['G_z'][target_rows] = gz
+
+        case (_, _):
+            pass
 
     geo_model.orientations = orientations
-
     return geo_model.structural_frame
 
 
-def modify_all_surface_points(geo_model: GeoModel, **surface_points_field: Union[float, np.ndarray]) -> StructuralFrame:
+def modify_all_surface_points(geo_model: GeoModel, slice: Optional[Union[int, slice]] = None,
+                              **surface_points_field: Union[float, np.ndarray]) -> StructuralFrame:
     """
     Modifies specified fields of all surface points in the structural frame. The keys of the surface_points_field 
     dictionary should match the field names in the surface points (e.g., "X", "Y", "Z", "nugget").
     
     Args:
         geo_model (GeoModel): The GeoModel instance to modify.
+        slice (Optional[Union[int, slice]]): The slice of surface points to modify. If None, all surface points will be modified.
         
     Keyword Args:
         X (Union[float, np.ndarray]): X coordinates of the surface points.
@@ -175,8 +224,15 @@ def modify_all_surface_points(geo_model: GeoModel, **surface_points_field: Union
         StructuralFrame: The modified structural frame.
     """
     surface_points = geo_model.structural_frame.surface_points
+
+    # If no slice is provided, target all rows; else, target specified slice
+    target_rows = slice if slice is not None else np.s_[:]
+
     for key, value in surface_points_field.items():
-        surface_points.data[key] = value
+        if isinstance(value, np.ndarray) and len(value) != len(surface_points.data[target_rows]):
+            raise ValueError(f"Length mismatch: Expected size {len(surface_points.data[target_rows])} for field {key}, but got {len(value)}.")
+
+        surface_points.data[key][target_rows] = value
 
     geo_model.surface_points = surface_points
     return geo_model.structural_frame
@@ -201,6 +257,25 @@ def convert_orientation_to_pole_vector(azimuth: Sequence[float], dip: Sequence[f
     gradients = np.vstack([G_x, G_y, G_z]).T
 
     return gradients
+
+
+def compute_adp_from_gradients(G_x: np.ndarray, G_y: np.ndarray, G_z: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    # Calculate polarity (here assumed to be 1 for all, but you can adapt if needed)
+    polarity = np.ones_like(G_x)
+
+    # Calculate dip
+    dip = np.rad2deg(np.nan_to_num(np.arccos(G_z / polarity)))
+
+    # Calculate azimuth
+    azimuth = np.rad2deg(np.nan_to_num(np.arctan2(G_x / polarity, G_y / polarity)))
+
+    # Shift values from [-pi, 0] to [pi,2*pi]
+    azimuth[azimuth < 0] += 360
+
+    # Adjust azimuth where dip is nearly zero, because if dip is zero, azimuth is undefined
+    azimuth[dip < 0.001] = 0
+
+    return azimuth, dip, polarity
 
 
 def _validate_args(elements_names, *args):

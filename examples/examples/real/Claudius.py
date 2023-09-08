@@ -161,6 +161,7 @@ print(geo_model)
 
 gp.modify_all_surface_points(geo_model, nugget=0.1)
 
+gp.modify_orientations(geo_model, polarity=-1)
 
 gp.compute_model(geo_model)
 
