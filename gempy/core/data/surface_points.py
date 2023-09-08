@@ -50,19 +50,24 @@ class SurfacePointsTable:
 
     @classmethod
     def from_arrays(cls, x: np.ndarray, y: np.ndarray, z: np.ndarray,
-                    names: Union[Sequence | str], nugget: Optional[np.ndarray] = None) -> 'SurfacePointsTable':
-        data, name_id_map = cls.data_from_arrays(x, y, z, names, nugget)
+                    names: Union[Sequence | str], nugget: Optional[np.ndarray] = None,
+                    name_id_map: Optional[dict[str, int]] = None
+                    ) -> 'SurfacePointsTable':
+        data, name_id_map = cls._data_from_arrays(x, y, z, names, nugget, name_id_map)
         return cls(data, name_id_map)
 
     @classmethod
-    def data_from_arrays(cls, x: np.ndarray, y: np.ndarray, z: np.ndarray,
+    def _data_from_arrays(cls, x: np.ndarray, y: np.ndarray, z: np.ndarray,
                          names: Union[Sequence | str], nugget: Optional[np.ndarray] = None,
                          name_id_map: dict[str, int] = None) -> tuple[np.ndarray, dict[str, int]]:
         if nugget is None:
             nugget = np.zeros_like(x) + DEFAULT_SP_NUGGET
 
-        ids, name_id_map = generate_ids_from_names(name_id_map, names, x)
-
+        if name_id_map is None:
+            ids, name_id_map = generate_ids_from_names(name_id_map, names, x)
+        else:
+            ids = np.array([name_id_map[name] for name in names])
+            
         data = np.zeros(len(x), dtype=SurfacePointsTable.dt)
         data['X'], data['Y'], data['Z'], data['id'], data['nugget'] = x, y, z, ids, nugget
         return data, name_id_map

@@ -108,7 +108,7 @@ def add_orientations(geo_model: GeoModel, x: Sequence[float], y: Sequence[float]
 
     # * Loop per element_name
     for element_name, data in grouped_data.items():
-        formatted_data, _ = OrientationsTable.data_from_arrays(
+        formatted_data, _ = OrientationsTable._data_from_arrays(
             x=data['x'],
             y=data['y'],
             z=data['z'],
@@ -160,9 +160,9 @@ def modify_orientations(geo_model: GeoModel, slice: Optional[Union[int, slice]] 
     target_rows = slice if slice is not None else np.s_[:]
 
     # Extract provided orientation fields without modifying the dictionary
-    azimuth = orientation_field.get('azimuth')
-    dip = orientation_field.get('dip')
-    polarity = orientation_field.get('polarity')
+    azimuth = orientation_field.pop('azimuth', None)
+    dip = orientation_field.pop('dip', None)
+    polarity = orientation_field.pop('polarity', None)
 
     # Update all the other fields
     for key, value in orientation_field.items():
@@ -192,10 +192,11 @@ def modify_orientations(geo_model: GeoModel, slice: Optional[Union[int, slice]] 
             azimuth = np.asarray(azimuth) if azimuth is not None else prev_azimuth
             dip = np.asarray(dip) if dip is not None else prev_dip
             polarity = np.asarray(polarity) if polarity is not None else prev_polarity
-            gx, gy, gz = convert_orientation_to_pole_vector(azimuth, dip, polarity)
-            orientations.data['G_x'][target_rows] = gx
-            orientations.data['G_y'][target_rows] = gy
-            orientations.data['G_z'][target_rows] = gz
+
+            gradients = convert_orientation_to_pole_vector(azimuth, dip, polarity)
+            orientations.data['G_x'][target_rows] = gradients[:, 0]
+            orientations.data['G_y'][target_rows] = gradients[:, 1]
+            orientations.data['G_z'][target_rows] = gradients[:, 2]
 
         case (_, _):
             pass

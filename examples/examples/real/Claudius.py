@@ -7,7 +7,6 @@ Claudius
 # %%
 import sys, os
 
-
 # Importing gempy
 import gempy as gp
 import gempy_viewer as gpv
@@ -15,7 +14,6 @@ import gempy_viewer as gpv
 # Aux imports
 import numpy as np
 import pandas as pn
-
 
 # %%
 # Loading data from repository:
@@ -46,7 +44,7 @@ for letter in 'ABCD':
 dfs.append(
     pn.read_csv(
         filepath_or_buffer=f"{data_path}/Fault.csv",
-        names=['X', 'Y', 'Z', 'formation'],
+        names=['X', 'Y', 'Z', 'surface'],
         header=0,
         sep=','
     )
@@ -122,7 +120,8 @@ orientations_table: gp.data.OrientationsTable = gp.data.OrientationsTable.from_a
     G_x=orientations['G_x'].values,
     G_y=orientations['G_y'].values,
     G_z=orientations['G_z'].values,
-    names=orientations['surface'].values
+    names=orientations['surface'].values,
+    name_id_map=surface_points_table.name_id_map  # ! Make sure that ids and names are shared
 )
 
 structural_frame: gp.data.StructuralFrame = gp.data.StructuralFrame.from_data_tables(
@@ -150,7 +149,6 @@ geo_model.structural_frame.get_group_by_name("default_formation").elements.pop(-
 # Insert the fault group into the structural frame:
 geo_model.structural_frame.insert_group(0, group_fault)
 
-
 gp.set_is_fault(
     frame=geo_model.structural_frame,
     fault_groups=[geo_model.structural_frame.get_group_by_name('Fault1')]
@@ -163,6 +161,36 @@ gp.modify_surface_points(geo_model, nugget=0.1)
 
 gp.modify_orientations(geo_model, polarity=-1)
 
+element = geo_model.structural_frame.get_element_by_name("Claudius_fault")
+new_orientations: gp.data.OrientationsTable = gp.create_orientations_from_surface_points_coords(
+    xyz_coords=element.surface_points.xyz
+)
+gp.add_orientations(
+    geo_model=geo_model,
+    x=new_orientations.data['X'],
+    y=new_orientations.data['Y'],
+    z=new_orientations.data['Z'],
+    pole_vector=new_orientations.grads,
+    elements_names="Claudius_fault"
+)
+
+gpv.plot_3d(geo_model)
+
+gp.map_stack_to_surfaces(
+    gempy_model=geo_model,
+    mapping_object={
+        'Default series': ('0', '60', '250'),
+        'Fault'         : 'Claudius_fault',
+        'Uncomformity'  : '330',
+    }
+)
+
+print(geo_model.structural_frame)
+gp.set_is_fault(
+    frame=geo_model.structural_frame,
+    fault_groups=[geo_model.structural_frame.get_group_by_name('Fault')]
+)
+
 gp.compute_model(geo_model)
 
 gpv.plot_3d(geo_model)
@@ -170,6 +198,10 @@ gpv.plot_3d(geo_model)
 print(geo_model)
 
 # TODO: Fault does not have orientation
+
+# %% 
+fault_idx = geo_model.surface_points.df.index[geo_model.surface_points.df['surface'] == 'Claudius_fault']
+gp.set_orientation_from_surface_points(geo_model, fault_idx).df.tail()
 
 # %% 
 # geo_model = gp.create_model('Claudius')

@@ -53,15 +53,19 @@ class StructuralFrame:
     @classmethod
     def from_data_tables(cls, surface_points: SurfacePointsTable, orientations: OrientationsTable):
         surface_points_groups: list[SurfacePointsTable] = surface_points.get_surface_points_by_id_groups()
-        orientations_groups: list[OrientationsTable] = orientations.get_orientations_by_id_groups()
-        orientations_groups = OrientationsTable.fill_missing_orientations_groups(orientations_groups, surface_points_groups)
         colors_generator = ColorsGenerator()
+        
         structural_elements = []
         for i in range(len(surface_points_groups)):
+            id_ = surface_points_groups[i].id
+            orientation_i = orientations.get_orientations_by_id(id_)
+            if len(orientation_i) == 0:
+                orientation_i = OrientationsTable.empty_orientation(id_)
+            
             structural_element: StructuralElement = StructuralElement(
                 name=surface_points.id_to_name(i),
                 surface_points=surface_points_groups[i],
-                orientations=orientations_groups[i],
+                orientations=orientation_i,
                 color=next(colors_generator)
             )
 

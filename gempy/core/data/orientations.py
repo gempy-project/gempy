@@ -28,17 +28,21 @@ class OrientationsTable:
     @classmethod
     def from_arrays(cls, x: np.ndarray, y: np.ndarray, z: np.ndarray,
                     G_x: np.ndarray, G_y: np.ndarray, G_z: np.ndarray,
-                    names: Union[Sequence | str], nugget: Optional[np.ndarray] = None) -> 'OrientationsTable':
+                    names: Union[Sequence | str], nugget: Optional[np.ndarray] = None,
+                    name_id_map: Optional[dict[str, int]] = None) -> 'OrientationsTable':
 
-        data, name_id_map = cls.data_from_arrays(x, y, z, G_x, G_y, G_z, names, nugget)
+        data, name_id_map = cls._data_from_arrays(x, y, z, G_x, G_y, G_z, names, nugget, name_id_map)
         return cls(data, name_id_map)
 
     @classmethod
-    def data_from_arrays(cls, x, y, z, G_x, G_y, G_z, names, nugget, name_id_map=None) -> tuple[np.ndarray, dict[str, int]]:
+    def _data_from_arrays(cls, x, y, z, G_x, G_y, G_z, names, nugget, name_id_map=None) -> tuple[np.ndarray, dict[str, int]]:
         if nugget is None:
             nugget = np.zeros_like(x) + DEFAULT_ORI_NUGGET
             
-        ids, name_id_map = generate_ids_from_names(name_id_map, names, x)
+        if name_id_map is None:
+            ids, name_id_map = generate_ids_from_names(name_id_map, names, x)
+        else:
+            ids = np.array([name_id_map[name] for name in names])
         data = np.zeros(len(x), dtype=OrientationsTable.dt)
         data['X'], data['Y'], data['Z'], data['G_x'], data['G_y'], data['G_z'], data['id'], data['nugget'] = x, y, z, G_x, G_y, G_z, ids, nugget
         return data, name_id_map
@@ -92,6 +96,12 @@ class OrientationsTable:
         # endregion
 
         return orientations_groups
+    
+    @classmethod
+    def empty_orientation(cls, id: int) -> 'OrientationsTable':
+        zeros = np.zeros(0, dtype=cls.dt)
+        zeros['id'] = id
+        return cls(data=zeros, name_id_map={})
     
     @property
     def id(self) -> int:
