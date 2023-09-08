@@ -7,14 +7,15 @@ Claudius
 # %%
 import sys, os
 
-os.environ["aesara_FLAGS"] = "mode=FAST_RUN,device=cpu"
 
 # Importing gempy
 import gempy as gp
+import gempy_viewer as gpv
 
 # Aux imports
 import numpy as np
 import pandas as pn
+
 
 # %%
 # Loading data from repository:
@@ -40,7 +41,7 @@ for letter in 'ABCD':
             header=0
         )[::reduce_data_by]
     )
-    
+
 # Add fault:
 dfs.append(
     pn.read_csv(
@@ -74,8 +75,12 @@ surface_points.groupby('surface').count()
 dfs = []
 
 for surf in ['0', '330']:
-    o = pn.read_csv('https://raw.githubusercontent.com/Loop3D/ImplicitBenchmark/master/Claudius/Dips.csv', sep=';',
-                    names=['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', '-'], header=1)
+    o = pn.read_csv(
+        filepath_or_buffer=f"{data_path}/Dips.csv",
+        sep=';',
+        names=['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', '-'],
+        header=1
+    )
 
     # Orientation needs to belong to a surface. This is mainly to categorize to which series belong and to
     # use the same color
@@ -103,13 +108,75 @@ orientations.dtypes
 # Number of voxels:
 np.array([38, 55, 30]).prod()
 
+surface_points_table: gp.data.SurfacePointsTable = gp.data.SurfacePointsTable.from_arrays(
+    x=surface_points['X'].values,
+    y=surface_points['Y'].values,
+    z=surface_points['Z'].values,
+    names=surface_points['surface'].values
+)
+
+orientations_table: gp.data.OrientationsTable = gp.data.OrientationsTable.from_arrays(
+    x=orientations['X'].values,
+    y=orientations['Y'].values,
+    z=orientations['Z'].values,
+    G_x=orientations['G_x'].values,
+    G_y=orientations['G_y'].values,
+    G_z=orientations['G_z'].values,
+    names=orientations['surface'].values
+)
+
+structural_frame: gp.data.StructuralFrame = gp.data.StructuralFrame.from_data_tables(
+    surface_points=surface_points_table,
+    orientations=orientations_table
+)
+
+geo_model: gp.data.GeoModel = gp.create_geomodel(
+    project_name='Claudius',
+    extent=[548800, 552500, 7816600, 7822000, -11010, -8400],
+    resolution=[38, 55, 30],
+    number_octree_levels=5,
+    structural_frame=structural_frame
+)
+
+group_fault = gp.data.StructuralGroup(
+    name='Fault1',
+    elements=[geo_model.structural_frame.structural_elements.pop(-2)],
+    structural_relation=gp.data.StackRelationType.FAULT,
+    fault_relations=gp.data.FaultsRelationSpecialCase.OFFSET_ALL
+)
+
+geo_model.structural_frame.get_group_by_name("default_formation").elements.pop(-1)
+
+# Insert the fault group into the structural frame:
+geo_model.structural_frame.insert_group(0, group_fault)
+
+
+gp.set_is_fault(
+    frame=geo_model.structural_frame,
+    fault_groups=[geo_model.structural_frame.get_group_by_name('Fault1')]
+)
+
+print(geo_model)
 # %% 
-geo_model = gp.create_model('Claudius')
-# Importing the data from csv files and settign extent and resolution
-geo_model = gp.init_data(geo_model,
-                         extent=[548800, 552500, 7816600, 7822000, -11010, -8400], resolution=[38, 55, 30],
-                         surface_points_df=surface_points[::5], orientations_df=orientations, surface_name='surface',
-                         add_basement=True)
+
+gp.modify_all_surface_points(geo_model, nugget=0.1)
+
+
+gp.compute_model(geo_model)
+
+gpv.plot_3d(geo_model)
+
+print(geo_model)
+
+# TODO: Fault does not have orientation
+
+# %% 
+# geo_model = gp.create_model('Claudius')
+# # Importing the data from csv files and settign extent and resolution
+# geo_model = gp.init_data(geo_model,
+#                          extent=[548800, 552500, 7816600, 7822000, -11010, -8400], resolution=[38, 55, 30],
+#                          surface_points_df=surface_points[::5], orientations_df=orientations, surface_name='surface',
+#                          add_basement=True)
 
 # %%
 # We are going to increase the smoothness (nugget) of the data to increase

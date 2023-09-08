@@ -1,4 +1,4 @@
-﻿from typing import Sequence, Optional
+﻿from typing import Sequence, Optional, Union
 
 import numpy as np
 
@@ -7,9 +7,8 @@ from gempy.core.data.orientations import DEFAULT_ORI_NUGGET
 from gempy.core.data.surface_points import DEFAULT_SP_NUGGET
 
 
-
 def add_surface_points(geo_model: GeoModel, x: Sequence[float], y: Sequence[float], z: Sequence[float],
-                        elements_names: Sequence[str], nugget: Optional[Sequence[float]] = None) -> StructuralFrame:
+                       elements_names: Sequence[str], nugget: Optional[Sequence[float]] = None) -> StructuralFrame:
     elements_names = _validate_args(elements_names, x, y, z)
 
     # If nugget is not provided, create a Sequence filled with the default value
@@ -64,9 +63,9 @@ def delete_surface_points():
 
 
 def add_orientations(geo_model: GeoModel, x: Sequence[float], y: Sequence[float], z: Sequence[float],
-                      elements_names: Sequence[str], pole_vector: Optional[Sequence[np.ndarray]] = None,
-                      orientation: Optional[Sequence[np.ndarray]] = None,
-                      nugget: Optional[Sequence[float]] = None) -> StructuralFrame:
+                     elements_names: Sequence[str], pole_vector: Optional[Sequence[np.ndarray]] = None,
+                     orientation: Optional[Sequence[np.ndarray]] = None,
+                     nugget: Optional[Sequence[float]] = None) -> StructuralFrame:
     if not pole_vector and not orientation:
         raise ValueError("Either pole_vector or orientation must be provided.")
 
@@ -126,6 +125,60 @@ def add_orientations(geo_model: GeoModel, x: Sequence[float], y: Sequence[float]
             formatted_data
         ])
 
+    return geo_model.structural_frame
+
+
+def modify_all_orientations(geo_model: GeoModel, **orientation_field: Union[float, np.ndarray]) -> StructuralFrame:
+    """
+    Modifies all orientations in the structural frame. The keys of the orientation_field dictionary must match the
+    names of the structural elements.
+    
+    Args:
+        geo_model: GeoModel to modify
+
+    Keyword Args:
+            * X: Sequence[float] - X coordinates of the orientations
+            * Y: Sequence[float] - Y coordinates of the orientations
+            * Z: Sequence[float] - Z coordinates of the orientations
+            * G_x: Sequence[float] - X component of the gradient vector
+            * G_y: Sequence[float] - Y component of the gradient vector
+            * G_z: Sequence[float] - Z component of the gradient vector
+            * nugget: Sequence[float] - nugget value of the orientations
+            
+    Returns:
+        The modified structural frame
+    """
+    orientations = geo_model.structural_frame.orientations
+    for key, value in orientation_field.items():
+        orientations.data[key] = value
+
+    geo_model.orientations = orientations
+
+    return geo_model.structural_frame
+
+
+def modify_all_surface_points(geo_model: GeoModel, **surface_points_field: Union[float, np.ndarray]) -> StructuralFrame:
+    """
+    Modifies specified fields of all surface points in the structural frame. The keys of the surface_points_field 
+    dictionary should match the field names in the surface points (e.g., "X", "Y", "Z", "nugget").
+    
+    Args:
+        geo_model (GeoModel): The GeoModel instance to modify.
+        
+    Keyword Args:
+        X (Union[float, np.ndarray]): X coordinates of the surface points.
+        Y (Union[float, np.ndarray]): Y coordinates of the surface points.
+        Z (Union[float, np.ndarray]): Z coordinates of the surface points.
+        nugget (Union[float, np.ndarray]): Nugget value of the surface points.
+            
+    Returns:
+        StructuralFrame: The modified structural frame.
+    """
+    surface_points = geo_model.structural_frame.surface_points
+    for key, value in surface_points_field.items():
+        surface_points.data[key] = value
+
+    geo_model.surface_points = surface_points
     return geo_model.structural_frame
 
 

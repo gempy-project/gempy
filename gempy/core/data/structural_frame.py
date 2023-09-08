@@ -19,17 +19,15 @@ class StructuralFrame:
     A data class that represents the structural framework of a geological model. 
     
     """
-    
+
     structural_groups: list[StructuralGroup]  #: List of structural groups that constitute the geological model.
     color_generator: ColorsGenerator  #: Instance of ColorsGenerator used for assigning distinct colors to different structural elements.
     # ? Should I create some sort of structural options class? For example, the masking descriptor and faults relations pointer
     is_dirty: bool = True  #: Boolean flag indicating if the structural frame has been modified.
-    
-    
+
     def __init__(self, structural_groups: list[StructuralGroup], color_gen: ColorsGenerator):
         self.structural_groups = structural_groups  # ? This maybe could be optional
         self.color_generator = color_gen
-
 
     def get_element_by_name(self, element_name: str) -> StructuralElement:
         elements: Generator = (group.get_element_by_name(element_name) for group in self.structural_groups)
@@ -37,21 +35,21 @@ class StructuralFrame:
         element = next(valid_elements, None)
         if element is None:
             raise ValueError(f"Element with name {element_name} not found in the structural frame.")
-        return element 
-    
+        return element
+
     def get_group_by_name(self, group_name: str) -> StructuralGroup:
         groups: Generator = (group for group in self.structural_groups if group.name == group_name)
         group = next(groups, None)
         if group is None:
             raise ValueError(f"Group with name {group_name} not found in the structural frame.")
         return group
-    
+
     def append_group(self, group: StructuralGroup):
         self.structural_groups.append(group)
-        
+
     def insert_group(self, index: int, group: StructuralGroup):
         self.structural_groups.insert(index, group)
-    
+
     @classmethod
     def from_data_tables(cls, surface_points: SurfacePointsTable, orientations: OrientationsTable):
         surface_points_groups: list[SurfacePointsTable] = surface_points.get_surface_points_by_id_groups()
@@ -79,13 +77,13 @@ class StructuralFrame:
             structural_groups=[default_formation],
             color_gen=colors_generator
         )
-        
+
         return structural_frame
-        
+
     @classmethod
     def initialize_default_structure(cls):
         color_gen = ColorsGenerator()
-        
+
         structural_group = StructuralGroup(
             name="default_formations",
             elements=[
@@ -98,16 +96,14 @@ class StructuralFrame:
             ],
             structural_relation=StackRelationType.ERODE
         )
-        
+
         structural_frame = cls(
-            structural_groups=[structural_group],     
+            structural_groups=[structural_group],
             color_gen=color_gen
         )
-        
+
         return structural_frame
-        
-        
-        
+
     def __repr__(self):
         structural_groups_repr = ',\n'.join([repr(g) for g in self.structural_groups])
         fault_relations_str = np.array2string(self.fault_relations, precision=2, separator=', ', suppress_small=True) if self.fault_relations is not None else 'None'
@@ -115,7 +111,6 @@ class StructuralFrame:
                 f"\tstructural_groups=[\n{structural_groups_repr}\n],\n"
                 f"\tfault_relations=\n{fault_relations_str},\n"
                 )
-
 
     def _repr_html_(self):
         structural_groups_html = '<br>'.join([g._repr_html_() for g in self.structural_groups])
@@ -148,7 +143,6 @@ class StructuralFrame:
         </table>
         """
         return html
-
 
     @property
     def structural_elements(self) -> list[StructuralElement]:
@@ -231,7 +225,7 @@ class StructuralFrame:
             making_descriptor=self.groups_structural_relation,
             faults_relations=self.fault_relations,
             faults_input_data=self.faults_input_data
-            
+
         )
 
     @property
@@ -239,7 +233,7 @@ class StructuralFrame:
         """Returns a descriptor for the input data, detailing the relations and faults between groups."""
         faults_input_data: list[FaultsData] = [group.faults_input_data for group in self.structural_groups]
         return faults_input_data
-        
+
     @property
     def groups_structural_relation(self) -> list[StackRelationType]:
         """Returns a list of the structural relations for each group."""
@@ -277,7 +271,6 @@ class StructuralFrame:
         """Returns the total number of elements in the structural frame."""
         return len(self.structural_elements)
 
-
     @property
     def elements_names(self) -> list[str]:
         """Returns a list of names of all structural elements."""
@@ -293,6 +286,30 @@ class StructuralFrame:
         """Returns a SurfacePointsTable for all surface points across the structural elements. This is a copy!"""
         all_data: np.ndarray = np.concatenate([element.surface_points.data for element in self.structural_elements])
         return SurfacePointsTable(data=all_data, name_id_map=self.element_name_id_map)
+
+    @surface_points.setter
+    def surface_points(self, modified_surface_points: SurfacePointsTable) -> None:
+        """Distributes the modified surface points back to the structural elements."""
+        start = 0
+        for element in self.structural_elements:
+            length = len(element.surface_points.data)
+            element.surface_points.data = modified_surface_points.data[start:start + length]
+            start += length
+
+    @property
+    def orientations(self) -> OrientationsTable:
+        """Returns an OrientationsTable for all orientations across the structural elements."""
+        all_data: np.ndarray = np.concatenate([element.orientations.data for element in self.structural_elements])
+        return OrientationsTable(data=all_data)
+
+    @orientations.setter
+    def orientations(self, modified_orientations: OrientationsTable) -> None:
+        """Distributes the modified orientations back to the structural elements."""
+        start = 0
+        for element in self.structural_elements:
+            length = len(element.orientations.data)
+            element.orientations.data = modified_orientations.data[start:start + length]
+            start += length
 
     @property
     def element_id_name_map(self) -> dict[int, str]:
@@ -320,7 +337,7 @@ class StructuralFrame:
         """Returns a list of colors assigned to each structural element for contact representation. Used in many places"""
         points_ = [element.color for element in self.structural_elements if len(element.surface_points) > 0]
         return points_
-    
+
     @property
     def elements_colors_orientations(self) -> list[str]:
         """Returns a list of colors assigned to each structural element for orientation representation. Used to paint
@@ -340,12 +357,6 @@ class StructuralFrame:
         """Returns a list of colors assigned to each orientation across structural elements. Used in matplotlib"""
         orientations_colors = [element.color for element in self.structural_elements for _ in range(element.number_of_orientations)]
         return orientations_colors
-
-    @property
-    def orientations(self) -> OrientationsTable:
-        """Returns an OrientationsTable for all orientations across the structural elements."""
-        all_data: np.ndarray = np.concatenate([element.orientations.data for element in self.structural_elements])
-        return OrientationsTable(data=all_data)
 
     @property
     def groups_to_mapper(self) -> dict[str, list[str]]:

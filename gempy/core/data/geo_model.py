@@ -120,17 +120,27 @@ class GeoModel:
 
     @property
     def surface_points(self):
+        """This is a copy! Returns a SurfacePointsTable for all surface points across the structural elements"""
         surface_points_table = self.structural_frame.surface_points
         if self.transform is not None:
             surface_points_table.model_transform = self.transform
         return surface_points_table
+    
+    @surface_points.setter
+    def surface_points(self, value):
+        self.structural_frame.surface_points = value
 
     @property
     def orientations(self) -> OrientationsTable:
+        """This is a copy! Returns a OrientationsTable for all orientations across the structural elements"""
         orientations_table = self.structural_frame.orientations
         if self.transform is not None:
             orientations_table.model_transform = self.transform
         return orientations_table
+    
+    @orientations.setter
+    def orientations(self, value):
+        self.structural_frame.orientations = value
 
     @property
     def interpolation_input(self):
