@@ -66,7 +66,7 @@ def add_orientations(geo_model: GeoModel, x: Sequence[float], y: Sequence[float]
                      elements_names: Sequence[str], pole_vector: Optional[Sequence[np.ndarray]] = None,
                      orientation: Optional[Sequence[np.ndarray]] = None,
                      nugget: Optional[Sequence[float]] = None) -> StructuralFrame:
-    if not pole_vector and not orientation:
+    if pole_vector is None and orientation is None:
         raise ValueError("Either pole_vector or orientation must be provided.")
 
     if orientation:  # Convert orientation to pole_vector (or gradient)
@@ -204,8 +204,8 @@ def modify_orientations(geo_model: GeoModel, slice: Optional[Union[int, slice]] 
     return geo_model.structural_frame
 
 
-def modify_all_surface_points(geo_model: GeoModel, slice: Optional[Union[int, slice]] = None,
-                              **surface_points_field: Union[float, np.ndarray]) -> StructuralFrame:
+def modify_surface_points(geo_model: GeoModel, slice: Optional[Union[int, slice]] = None,
+                          **surface_points_field: Union[float, np.ndarray]) -> StructuralFrame:
     """
     Modifies specified fields of all surface points in the structural frame. The keys of the surface_points_field 
     dictionary should match the field names in the surface points (e.g., "X", "Y", "Z", "nugget").
