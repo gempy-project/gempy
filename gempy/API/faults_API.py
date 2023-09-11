@@ -25,7 +25,7 @@ def set_is_fault(frame: Union[GeoModel, StructuralFrame], fault_groups: Union[li
     frame = _find_and_set_fields(
         frame=frame,
         fault_groups=fault_groups,
-        faults_relation_type=FaultsRelationSpecialCase.OFFSET_ALL,
+        faults_relation_type=FaultsRelationSpecialCase.OFFSET_FORMATIONS,
         stack_relation_type=StackRelationType.FAULT,
         change_color=change_color
     )

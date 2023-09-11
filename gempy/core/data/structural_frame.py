@@ -54,14 +54,14 @@ class StructuralFrame:
     def from_data_tables(cls, surface_points: SurfacePointsTable, orientations: OrientationsTable):
         surface_points_groups: list[SurfacePointsTable] = surface_points.get_surface_points_by_id_groups()
         colors_generator = ColorsGenerator()
-        
+
         structural_elements = []
         for i in range(len(surface_points_groups)):
             id_ = surface_points_groups[i].id
             orientation_i = orientations.get_orientations_by_id(id_)
             if len(orientation_i) == 0:
                 orientation_i = OrientationsTable.empty_orientation(id_)
-            
+
             structural_element: StructuralElement = StructuralElement(
                 name=surface_points.id_to_name(i),
                 surface_points=surface_points_groups[i],
@@ -168,24 +168,25 @@ class StructuralFrame:
 
         return basement
 
+    # ? Should I move this property to StructuralGroup?
     @property
     def fault_relations(self) -> np.ndarray:
         """Returns a  array describing the fault relations between the structural groups."""
         # Initialize an empty boolean array with dimensions len(structural_groups) x len(structural_groups)
+
         fault_relations = np.zeros((len(self.structural_groups), len(self.structural_groups)), dtype=bool)
 
         # We assume that the list is ordered from older to younger
         # Iterate over the list of structural_groups
         for i, group in enumerate(self.structural_groups):
             match (group.structural_relation, group.fault_relations):
-                case (StackRelationType.FAULT, FaultsRelationSpecialCase.OFFSET_ALL):
-                    # It affects all younger groups
+                case (StackRelationType.FAULT, FaultsRelationSpecialCase.OFFSET_ALL):  # It affects all younger groups
                     fault_relations[i, i + 1:] = True
-                case (StackRelationType.FAULT, FaultsRelationSpecialCase.OFFSET_NONE):
-                    # It affects no groups
+                case (StackRelationType.FAULT, FaultsRelationSpecialCase.OFFSET_NONE):  # It affects no groups
                     pass
-                case (StackRelationType.FAULT, list(fault_groups)) if fault_groups:
-                    # It affects only the specified groups
+                case (StackRelationType.FAULT, FaultsRelationSpecialCase.OFFSET_FORMATIONS):  # It affects all younger groups that are formations
+                    fault_relations[i, i + 1:] = [group.structural_relation != StackRelationType.FAULT for group in self.structural_groups[i + 1:]]
+                case (StackRelationType.FAULT, list(fault_groups)) if fault_groups:  # It affects only the specified groups
                     for fault_group in fault_groups:
                         j = self.structural_groups.index(fault_group)
                         if j <= i:  # Only consider groups that are 

@@ -11,6 +11,7 @@ from gempy.core.data.structural_element import StructuralElement
 
 
 class FaultsRelationSpecialCase(Enum):
+    OFFSET_FORMATIONS = auto()
     OFFSET_NONE = auto()
     OFFSET_ALL = auto()
     

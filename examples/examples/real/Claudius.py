@@ -169,7 +169,7 @@ gp.modify_surface_points(geo_model, nugget=0.01)
 # direction by calling the following:
 # 
 
-#%%
+# %%
 gp.modify_orientations(geo_model, polarity=-1)
 
 # %%
@@ -241,5 +241,4 @@ gpv.plot_2d(geo_model, cell_number=[28], show_data=True, direction='y')
 # %%
 
 # sphinx_gallery_thumbnail_number = 8
-gpv.plot_3d(geo_model, show_lith= True, show_data=True, show_boundaries=True)
-
+gpv.plot_3d(geo_model, show_lith=True, show_data=True, show_boundaries=True)
