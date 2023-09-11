@@ -3,7 +3,7 @@
 import numpy as np
 
 
-def _combined_id(i: int, name: str, hash_length: int = 8) -> int:
+def structural_element_hasher(i: int, name: str, hash_length: int = 8) -> int:
     # Get the last 'hash_length' digits from the hash
     name_hash = abs(hash(name)) % (10 ** hash_length)
 
@@ -11,7 +11,7 @@ def _combined_id(i: int, name: str, hash_length: int = 8) -> int:
 
 
 def generate_ids_from_names(name_id_map, names, x):
-    name_id_map = name_id_map or {name: _combined_id(i, name) for i, name in enumerate(np.unique(names))}
+    name_id_map = name_id_map or {name: structural_element_hasher(i, name) for i, name in enumerate(np.unique(names))}
     if isinstance(names, str):
         ids = np.array([name_id_map[names]] * len(x))
     elif isinstance(names, Sequence) or isinstance(names, np.ndarray):

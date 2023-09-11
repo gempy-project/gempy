@@ -108,7 +108,8 @@ geo_model.interpolation_options.kernel_options.range = .8
 gp.modify_surface_points(
     geo_model=geo_model,
     elements_names=["CARBO", "LIAS", "TRIAS"],
-    nugget=0.01)
+    nugget=0.01
+)
 
 
 # %% 
@@ -128,4 +129,4 @@ gpv.plot_2d(geo_model, cell_number=[4], direction=['y'], show_topography=False, 
 
 # %%
 # sphinx_gallery_thumbnail_number = 5
-gpv.plot_3d(geo_model, show_lith=False)
+gpv.plot_3d(geo_model, show_lith=True)

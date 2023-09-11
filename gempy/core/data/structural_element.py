@@ -32,9 +32,11 @@ class StructuralElement:
     vertices: Optional[np.ndarray] = None  #: The vertices of the element in 3D space.
     edges: Optional[np.ndarray] = None  #: The edges of the element in 3D space.
     scalar_field: Optional[float] = None  #: The scalar field value for the element.
+
+    _id: int = -1
     
     def __init__(self, name: str, surface_points: SurfacePointsTable, orientations: OrientationsTable,
-                 is_active: Optional[bool] = True, color: Optional[str] = None):
+                 id: Optional[int] = -1, is_active: Optional[bool] = True, color: Optional[str] = None):
         self.name = name
         
         self.surface_points = surface_points
@@ -42,7 +44,15 @@ class StructuralElement:
         
         self.is_active = is_active
         self.color = color
+        
+        self._id = id 
 
+    @property
+    def id(self):
+        if self._id == -1:
+            from gempy.core.data._data_points_helpers import structural_element_hasher
+            return structural_element_hasher(0, self.name)
+        return self._id
 
     def __repr__(self):
         r, g, b = int(self._color[1:3], 16), int(self._color[3:5], 16), int(self._color[5:7], 16)
@@ -96,10 +106,6 @@ class StructuralElement:
 
     @property
     def index(self):
-        raise NotImplementedError
-
-    @property
-    def id(self):
         raise NotImplementedError
 
     @property

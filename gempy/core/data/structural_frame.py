@@ -64,6 +64,7 @@ class StructuralFrame:
 
             structural_element: StructuralElement = StructuralElement(
                 name=surface_points.id_to_name(i),
+                id=id_,
                 surface_points=surface_points_groups[i],
                 orientations=orientation_i,
                 color=next(colors_generator)
@@ -319,12 +320,12 @@ class StructuralFrame:
     @property
     def element_id_name_map(self) -> dict[int, str]:
         """Returns a dictionary mapping element IDs to names."""
-        return {i: element.name for i, element in enumerate(self.structural_elements)}
+        return {element.id: element.name for i, element in enumerate(self.structural_elements)}
 
     @property
     def element_name_id_map(self) -> dict[str, int]:
         """Returns a dictionary mapping element names to IDs."""
-        return {element.name: i for i, element in enumerate(self.structural_elements)}
+        return {element.name: element.id for i, element in enumerate(self.structural_elements)}
 
     @property
     def elements_colors(self) -> list[str]:
