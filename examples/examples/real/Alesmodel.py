@@ -6,8 +6,6 @@ Alesmodel: Plotting sections and maps.
 
 import gempy as gp
 import gempy_viewer as gpv
-import numpy as np
-import matplotlib.pyplot as plt
 import os
 
 # %%
@@ -32,6 +30,8 @@ geo_model: gp.data.GeoModel = gp.create_geomodel(
         path_to_surface_points=path_interf,
     )
 )
+
+
 
 # %% 
 gp.set_section_grid(
@@ -94,6 +94,23 @@ gp.set_is_fault(
 # TODO:
 # geo_model.set_topography(source='gdal', filepath=path_dem)
 
+# %%
+carbo = geo_model.structural_frame.get_group_by_name("Carbon_Series")
+
+# gp.modify_surface_points(
+#     
+# )
+
+
+# %%
+geo_model.interpolation_options.number_octree_levels_surface = 5
+geo_model.interpolation_options.kernel_options.range = .8
+gp.modify_surface_points(
+    geo_model=geo_model,
+    elements_names=["CARBO", "LIAS", "TRIAS"],
+    nugget=0.01)
+
+
 # %% 
 print(geo_model.structural_frame)
 geo_model.structural_frame
@@ -111,4 +128,4 @@ gpv.plot_2d(geo_model, cell_number=[4], direction=['y'], show_topography=False, 
 
 # %%
 # sphinx_gallery_thumbnail_number = 5
-gpv.plot_3d(geo_model)
+gpv.plot_3d(geo_model, show_lith=False)

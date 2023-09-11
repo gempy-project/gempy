@@ -205,7 +205,9 @@ def modify_orientations(geo_model: GeoModel, slice: Optional[Union[int, slice]] 
     return geo_model.structural_frame
 
 
-def modify_surface_points(geo_model: GeoModel, slice: Optional[Union[int, slice]] = None,
+def modify_surface_points(geo_model: GeoModel,
+                          slice: Optional[Union[int, slice]] = None,
+                          elements_names: Optional[Sequence[str]] = None,
                           **surface_points_field: Union[float, np.ndarray]) -> StructuralFrame:
     """
     Modifies specified fields of all surface points in the structural frame. The keys of the surface_points_field 
@@ -225,6 +227,11 @@ def modify_surface_points(geo_model: GeoModel, slice: Optional[Union[int, slice]
         StructuralFrame: The modified structural frame.
     """
     surface_points = geo_model.structural_frame.surface_points
+    
+    if elements_names is not None:
+        ids = [surface_points.name_id_map[element] for element in elements_names] 
+        slice = np.s_[np.isin(surface_points.data['id'], ids)]
+    
 
     # If no slice is provided, target all rows; else, target specified slice
     target_rows = slice if slice is not None else np.s_[:]
