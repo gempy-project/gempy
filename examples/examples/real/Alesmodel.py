@@ -2,6 +2,15 @@
 Alesmodel: Plotting sections and maps.
 ======================================
 
+# %%
+# .. admonition:: Explanation
+#
+#       This model is quite unstable in general and requires float64 to find a solution. The lack of data on
+#       one of the corners for the TRIAS and LIAS series makes that the model bends in an unrealistic
+#       way and erodes CARBO that disappears on that section. The easy way to solve this is to add more data in that area but
+#       I leave as it is since I did no constructed the model.
+#
+
 """
 
 import gempy as gp
@@ -32,7 +41,6 @@ geo_model: gp.data.GeoModel = gp.create_geomodel(
 )
 
 
-
 # %% 
 gp.set_section_grid(
     grid=geo_model.grid,
@@ -57,10 +65,10 @@ gp.map_stack_to_surfaces(
 )
 
 # %% 
-# TODO: Update Colors
-# colordict = {'LIAS'      : '#015482', 'TRIAS': '#9f0052', 'CARBO': '#ffbe00', 'basement': '#728f02',
-#              'fault_left': '#2a2a2a', 'fault_right': '#545454', 'fault_lr': '#a5a391'}
-# geo_model.surfaces.colors.change_colors(colordict)
+# Change colors
+geo_model.structural_frame.get_element_by_name("LIAS").color = "#015482"
+geo_model.structural_frame.get_element_by_name("TRIAS").color = "#9f0052"
+geo_model.structural_frame.get_element_by_name("CARBO").color = "#ffbe00"
 
 # %% 
 a = gpv.plot_2d(geo_model, direction='y')
@@ -97,13 +105,9 @@ gp.set_is_fault(
 # %%
 carbo = geo_model.structural_frame.get_group_by_name("Carbon_Series")
 
-# gp.modify_surface_points(
-#     
-# )
-
 
 # %%
-geo_model.interpolation_options.number_octree_levels_surface = 5
+geo_model.interpolation_options.number_octree_levels_surface = 4
 geo_model.interpolation_options.kernel_options.range = .8
 gp.modify_surface_points(
     geo_model=geo_model,
@@ -124,9 +128,7 @@ _ = gp.compute_model(geo_model, engine_config=gp.data.GemPyEngineConfig(use_gpu=
 # BUG: Plot topography has to be Ture
 gpv.plot_2d(geo_model, cell_number=[4], direction=['y'], show_topography=False, show_data=True)
 
-# %% 
-# gpv.plot_2d(geo_model, section_names=['topography'], show_data=False, show_boundaries=False)
 
 # %%
 # sphinx_gallery_thumbnail_number = 5
-gpv.plot_3d(geo_model, show_lith=True)
+gpv.plot_3d(geo_model, show_lith=True, kwargs_plot_structured_grid={'opacity': 0.5})
