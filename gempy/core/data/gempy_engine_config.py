@@ -1,7 +1,7 @@
 ﻿from dataclasses import dataclass
 from typing import Optional
 
-from gempy.config import AvailableBackends
+from gempy_engine.config import AvailableBackends
 
 
 @dataclass

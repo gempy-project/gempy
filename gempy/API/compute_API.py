@@ -37,7 +37,8 @@ def compute_model(gempy_model: GeoModel, engine_config: Optional[GemPyEngineConf
 
             BackendTensor.change_backend_gempy(
                 engine_backend=engine_config.backend,
-                use_gpu=engine_config.use_gpu
+                use_gpu=engine_config.use_gpu,
+                dtype=engine_config.dtype
             )
 
             gempy_model.solutions = gempy_engine.compute_model(

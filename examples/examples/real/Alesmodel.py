@@ -40,7 +40,6 @@ geo_model: gp.data.GeoModel = gp.create_geomodel(
     )
 )
 
-
 # %% 
 gp.set_section_grid(
     grid=geo_model.grid,
@@ -92,7 +91,6 @@ gp.set_is_fault(
     change_color=True
 )
 
-
 # %%
 # Topography
 # ~~~~~~~~~~
@@ -105,7 +103,6 @@ gp.set_is_fault(
 # %%
 carbo = geo_model.structural_frame.get_group_by_name("Carbon_Series")
 
-
 # %%
 geo_model.interpolation_options.number_octree_levels_surface = 4
 geo_model.interpolation_options.kernel_options.range = .8
@@ -115,19 +112,21 @@ gp.modify_surface_points(
     nugget=0.01
 )
 
-
 # %% 
 print(geo_model.structural_frame)
 geo_model.structural_frame
 
-
 # %% 
-_ = gp.compute_model(geo_model, engine_config=gp.data.GemPyEngineConfig(use_gpu=True))
+_ = gp.compute_model(
+    geo_model,
+    engine_config=gp.data.GemPyEngineConfig(
+        use_gpu=True,
+        dtype="float64"
+    ))
 
 # %% 
 # BUG: Plot topography has to be Ture
 gpv.plot_2d(geo_model, cell_number=[4], direction=['y'], show_topography=False, show_data=True)
-
 
 # %%
 # sphinx_gallery_thumbnail_number = 5
