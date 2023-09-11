@@ -98,7 +98,6 @@ gp.set_is_fault(
 
 # %% 
 geo_model.set_topography(source='gdal', filepath=path_dem)
-gp.set_to
 
 # %%
 carbo = geo_model.structural_frame.get_group_by_name("Carbon_Series")

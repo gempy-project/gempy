@@ -4,7 +4,7 @@ from typing import Optional
 import numpy as np
 
 from gempy.core.data.grid_modules.grid_types import RegularGrid
-from gempy.modules.grids.create_topography import _LoadDEMArtificial, LoadDEMGDAL
+from gempy.modules.grids.create_topography import _LoadDEMArtificial
 
 from gempy.optional_dependencies import require_skimage
 
@@ -153,12 +153,6 @@ class Topography:
 
         self._x, self._y = dem.x, dem.y
         self.set_values(dem.get_values())
-
-    def load_from_gdal(self, filepath):
-        dem = LoadDEMGDAL(filepath, extent=self.extent)
-        self._x, self._y = None, None
-        self.set_values(dem.get_values())
-        # self.source = 'gdal'
 
     def save(self, path):
         np.save(path, self.values_2d)
