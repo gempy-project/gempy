@@ -114,6 +114,7 @@ class Grid(object):
         self.custom_grid = grid_types.CustomGrid(custom_grid)
         self.set_active('custom')
 
+    # ! (miguel, Sep 2023) This has to change a lot
     def create_topography(self, source='random', **kwargs):
         """Create a topography grid and activate it.
 

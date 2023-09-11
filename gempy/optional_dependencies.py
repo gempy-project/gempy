@@ -36,13 +36,3 @@ def require_skimage():
     except ImportError:
         raise ImportError("The skimage package is required to run this function.")
     return skimage
-
-
-def require_gdal():
-    try:
-        from osgeo import gdal
-    except ImportError:
-        raise ImportError("The gdal package is required to run this function.")
-    return gdal
-
-

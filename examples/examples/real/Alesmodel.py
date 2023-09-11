@@ -97,8 +97,8 @@ gp.set_is_fault(
 # 
 
 # %% 
-# TODO:
-# geo_model.set_topography(source='gdal', filepath=path_dem)
+geo_model.set_topography(source='gdal', filepath=path_dem)
+gp.set_to
 
 # %%
 carbo = geo_model.structural_frame.get_group_by_name("Carbon_Series")
@@ -117,6 +117,7 @@ print(geo_model.structural_frame)
 geo_model.structural_frame
 
 # %% 
+foo
 _ = gp.compute_model(
     geo_model,
     engine_config=gp.data.GemPyEngineConfig(
