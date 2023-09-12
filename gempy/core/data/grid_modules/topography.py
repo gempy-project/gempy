@@ -45,14 +45,39 @@ class Topography:
         if values_2d is not None:
             self.set_values(values_2d)
 
+    @classmethod
+    def from_subsurface_structured_data(cls, structured_data: 'subsurface.StructuredData', regular_grid: RegularGrid):
+        """Creates a topography object from a subsurface structured data object
+
+        Args:
+            structured_data (subsurface.StructuredData): Structured data object
+
+        Returns:
+            :class:`gempy.core.grid_modules.topography.Topography`
+
+        """
+
+        # Generate meshgrid for x and y coordinates
+        ds = structured_data.data
+        x_vals, y_vals = np.meshgrid(ds['x'], ds['y'], indexing='ij')
+
+        # Reshape arrays for stacking
+        x_vals = x_vals[:, :, np.newaxis]  # shape (73, 34, 1)
+        y_vals = y_vals[:, :, np.newaxis]  # shape (73, 34, 1)
+        topography_vals = ds['topography'].values[:, :, np.newaxis]  # shape (73, 34, 1)
+        # Stack along the last dimension
+        result = np.concatenate([x_vals, y_vals, topography_vals], axis=2)  # shape (73, 34, 3)
+
+        return cls(regular_grid=regular_grid, values_2d=result)
+
     @property
     def extent(self):
         return self._regular_grid.extent
-    
+
     @property
     def regular_grid_resolution(self):
         return self._regular_grid.resolution
-    
+
     @property
     def x(self):
         if self._x is not None:
@@ -92,7 +117,7 @@ class Topography:
         return self
 
     @property
-    def topography_mask(self): 
+    def topography_mask(self):
         """This method takes a topography grid of the same extent as the regular
          grid and creates a mask of voxels
 

@@ -16,6 +16,8 @@ Alesmodel: Plotting sections and maps.
 import gempy as gp
 import gempy_viewer as gpv
 import os
+import numpy as np
+
 
 # %%
 cwd = os.getcwd()
@@ -97,7 +99,12 @@ gp.set_is_fault(
 # 
 
 # %% 
-geo_model.set_topography(source='gdal', filepath=path_dem)
+gp.set_topography_from_file(
+    grid=geo_model.grid,
+    filepath=path_dem,
+    crop_to_extent=[729550.0, 751500.0, 1913500.0, 1923650.0]
+)
+gpv.plot_3d(geo_model, show_topography=True, ve=1)
 
 # %%
 carbo = geo_model.structural_frame.get_group_by_name("Carbon_Series")
@@ -116,7 +123,6 @@ print(geo_model.structural_frame)
 geo_model.structural_frame
 
 # %% 
-foo
 _ = gp.compute_model(
     geo_model,
     engine_config=gp.data.GemPyEngineConfig(

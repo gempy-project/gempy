@@ -36,3 +36,11 @@ def require_skimage():
     except ImportError:
         raise ImportError("The skimage package is required to run this function.")
     return skimage
+
+
+def require_subsurface():
+    try:
+        import subsurface
+    except ImportError:
+        raise ImportError("The subsurface package is required to run this function.")
+    return subsurface

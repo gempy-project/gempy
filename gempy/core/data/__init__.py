@@ -4,7 +4,7 @@ from .structural_group import StructuralGroup
 from .structural_element import StructuralElement
 from .orientations import OrientationsTable
 from .surface_points import SurfacePointsTable
-from .grid import Grid
+from .grid import Grid, Topography, GridTypes
 from .importer_helper import ImporterHelper
 from .gempy_engine_config import GemPyEngineConfig
 from .structural_group import FaultsRelationSpecialCase
@@ -20,7 +20,8 @@ from gempy_engine.core.data.kernel_classes.faults import FaultsData, FiniteFault
 __all__ = [
     # From gempy
     'GeoModel', 'StructuralFrame', 'StructuralGroup', 'StructuralElement', 'OrientationsTable', 'SurfacePointsTable',
-    'Grid', 'ImporterHelper', 'GemPyEngineConfig', 'FaultsRelationSpecialCase',
+    'Grid', 'Topography', 'GridTypes',
+    'ImporterHelper', 'GemPyEngineConfig', 'FaultsRelationSpecialCase',
     # From gempy engine
     'StackRelationType', 'InterpolationOptions', 'Solutions', 'RawArraysSolution', 'GlobalAnisotropy', 'Transform',
     'FaultsData', 'FiniteFaultData'
