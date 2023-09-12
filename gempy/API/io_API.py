@@ -1,4 +1,6 @@
-﻿import numpy as np
+﻿from typing import Optional
+
+import numpy as np
 
 from gempy.core.data.orientations import OrientationsTable
 from gempy.core.data.surface_points import SurfacePointsTable
@@ -10,6 +12,7 @@ def read_surface_points(path: str,
                         coord_y_name="Y",
                         coord_z_name="Z",
                         surface_name="formation",
+                        name_id_map: Optional[dict[str, int]] = None,
                         pandas_kwargs: dict = None) -> SurfacePointsTable:
     
     pandas_kwargs = pandas_kwargs or {}
@@ -24,7 +27,8 @@ def read_surface_points(path: str,
         x=csv[coord_x_name].values,
         y=csv[coord_y_name].values,
         z=csv[coord_z_name].values,
-        names=csv[surface_name].values  # TODO: This we will have to map it with StructuralFrame
+        names=csv[surface_name].values,  # TODO: This we will have to map it with StructuralFrame
+        name_id_map=name_id_map
     )
 
     return surface_points
@@ -39,6 +43,7 @@ def read_orientations(
         gy_name="G_y",
         gz_name="G_z",
         surface_name="formation",
+        name_id_map: Optional[dict[str, int]] = None,
         pandas_kwargs: dict = None
         ) -> OrientationsTable:
     
@@ -58,7 +63,8 @@ def read_orientations(
         G_x=csv_with_gradient[gx_name].values,
         G_y=csv_with_gradient[gy_name].values,
         G_z=csv_with_gradient[gz_name].values,
-        names=csv_with_gradient[surface_name].values  # TODO: This we will have to map it with StructuralFrame
+        names=csv_with_gradient[surface_name].values,  # TODO: This we will have to map it with StructuralFrame
+        name_id_map=name_id_map
     )
 
     return orientations

@@ -124,7 +124,8 @@ def _read_input_points(importer_helper: ImporterHelper) -> (SurfacePointsTable, 
         gx_name=importer_helper.gx_name,
         gy_name=importer_helper.gy_name,
         gz_name=importer_helper.gz_name,
-        pandas_kwargs=importer_helper.pandas_reader_kwargs
+        pandas_kwargs=importer_helper.pandas_reader_kwargs,
+        name_id_map=surface_points.name_id_map
     )
 
     return surface_points, orientations
