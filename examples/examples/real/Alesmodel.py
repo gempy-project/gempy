@@ -104,7 +104,9 @@ gp.set_topography_from_file(
     filepath=path_dem,
     crop_to_extent=[729550.0, 751500.0, 1913500.0, 1923650.0]
 )
-gpv.plot_3d(geo_model, show_topography=True, ve=1)
+
+
+gpv.plot_3d(geo_model, show_topography=True, ve=1, image=True)
 
 # %%
 carbo = geo_model.structural_frame.get_group_by_name("Carbon_Series")
@@ -130,10 +132,13 @@ _ = gp.compute_model(
         dtype="float64"
     ))
 
+
+gpv.plot_2d(geo_model, show_topography=False, section_names=['topography'], show_lith=True)
+
 # %% 
-# BUG: Plot topography has to be Ture
-gpv.plot_2d(geo_model, cell_number=[4], direction=['y'], show_topography=False, show_data=True)
+gpv.plot_2d(geo_model, cell_number=[4], direction=['y'], show_topography=True, show_data=True)
+gpv.plot_2d(geo_model, cell_number=[-4], direction=['y'], show_topography=True, show_data=True)
 
 # %%
 # sphinx_gallery_thumbnail_number = 5
-gpv.plot_3d(geo_model, show_lith=True, kwargs_plot_structured_grid={'opacity': 0.5})
+gpv.plot_3d(geo_model, show_lith=True, show_topography=False, kwargs_plot_structured_grid={'opacity': 0.5})
