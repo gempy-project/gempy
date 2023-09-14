@@ -166,7 +166,7 @@ def _generate_anticline_model(compute_model: bool) -> gp.data.GeoModel:
     geo_data: gp.data.GeoModel = gp.create_geomodel(
         project_name='fold',
         extent=[0, 1000, 0, 1000, 0, 1000],
-        resolution=[50, 5, 50],
+        number_octree_levels=5,
         importer_helper=gp.data.ImporterHelper(
             path_to_orientations=path_to_data + "model2_orientations.csv",
             path_to_surface_points=path_to_data + "model2_surface_points.csv"
