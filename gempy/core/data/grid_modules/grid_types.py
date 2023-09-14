@@ -1,7 +1,8 @@
+from typing import Optional
+
 import numpy as np
-from scipy.constants import G
-from scipy import interpolate
-import pandas as pn
+
+from optional_dependencies import require_pandas, require_scipy
 
 
 class RegularGrid:
@@ -28,9 +29,9 @@ class RegularGrid:
     values: np.ndarray
     values_r: np.ndarray
     mask_topo: np.ndarray
-    x: np.ndarray
-    y: np.ndarray
-    z: np.ndarray
+    x: Optional[np.ndarray]
+    y: Optional[np.ndarray]
+    z: Optional[np.ndarray]
     dx: float
     dy: float
     dz: float
@@ -154,6 +155,7 @@ class Sections:
     """
 
     def __init__(self, regular_grid=None, z_ext=None, section_dict=None):
+        pd = require_pandas()
         if regular_grid is not None:
             self.z_ext = regular_grid.extent[4:]
         else:
@@ -165,7 +167,7 @@ class Sections:
         self.resolution = []
         self.length = [0]
         self.dist = []
-        self.df = pn.DataFrame()
+        self.df = pd.DataFrame()
         self.df['dist'] = self.dist
         self.values = np.empty((0, 3))
         self.extent = None
@@ -183,6 +185,7 @@ class Sections:
         pass
 
     def set_sections(self, section_dict, regular_grid=None, z_ext=None):
+        pd = require_pandas()
         self.section_dict = section_dict
         if regular_grid is not None:
             self.z_ext = regular_grid.extent[4:]
@@ -191,8 +194,7 @@ class Sections:
 
         self.get_section_params()
         self.calculate_all_distances()
-        self.df = pn.DataFrame.from_dict(self.section_dict, orient='index',
-                                         columns=['start', 'stop', 'resolution'])
+        self.df = pd.DataFrame.from_dict(self.section_dict, orient='index', columns=['start', 'stop', 'resolution'])
         self.df['dist'] = self.dist
 
         self.compute_section_coordinates()
@@ -286,9 +288,9 @@ class Sections:
         xj = topography.values_2d[:, 0, 0]
         yj = topography.values_2d[0, :, 1]
         zj = topography.values_2d[:, :, 2]
-
+        scipy = require_scipy()
         if method == 'interp2d':
-            f = interpolate.interp2d(xj, yj, zj.T, kind='cubic')
+            f = scipy.interpolate.interp2d(xj, yj, zj.T, kind='cubic')
             zi = f(xy[:, 0], xy[:, 1])
             if xy[:, 0][0] <= xy[:, 0][-1] and xy[:, 1][0] <= xy[:, 1][-1]:
                 return np.diag(zi)
@@ -301,7 +303,7 @@ class Sections:
             assert xy[:, 1][0] <= xy[:, 1][
                 -1], 'The xy values of the first point must be smaller than second.' \
                      'Please use interp2d as method argument. Will be fixed.'
-            f = interpolate.RectBivariateSpline(xj, yj, zj)
+            f = scipy.interpolate.RectBivariateSpline(xj, yj, zj)
             zi = f(xy[:, 0], xy[:, 1])
             return np.flipud(zi).diagonal()
 
@@ -450,6 +452,7 @@ class CenteredGrid:
         self.length = self.values.shape[0]
 
     def set_tz_kernel(self, **kwargs):
+        G = 6.67408e-11  # m3 kg-1 s-2
         if self.kernel_centers.size == 0:
             self.set_centered_kernel(**kwargs)
 
@@ -460,12 +463,9 @@ class CenteredGrid:
         s_gr_z = grid_values[:, 2]
 
         # getting the coordinates of the corners of the voxel...
-        x_cor = np.stack((s_gr_x - self.kernel_dxyz_left[:, 0],
-                          s_gr_x + self.kernel_dxyz_right[:, 0]), axis=1)
-        y_cor = np.stack((s_gr_y - self.kernel_dxyz_left[:, 1],
-                          s_gr_y + self.kernel_dxyz_right[:, 1]), axis=1)
-        z_cor = np.stack((s_gr_z - self.kernel_dxyz_left[:, 2],
-                          s_gr_z + self.kernel_dxyz_right[:, 2]), axis=1)
+        x_cor = np.stack((s_gr_x - self.kernel_dxyz_left[:, 0], s_gr_x + self.kernel_dxyz_right[:, 0]), axis=1)
+        y_cor = np.stack((s_gr_y - self.kernel_dxyz_left[:, 1], s_gr_y + self.kernel_dxyz_right[:, 1]), axis=1)
+        z_cor = np.stack((s_gr_z - self.kernel_dxyz_left[:, 2], s_gr_z + self.kernel_dxyz_right[:, 2]), axis=1)
 
         # ...and prepare them for a vectorial op
         x_matrix = np.repeat(x_cor, 4, axis=1)
