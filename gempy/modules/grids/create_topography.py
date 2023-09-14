@@ -8,7 +8,8 @@ Created on 16.04.2019
 from typing import Optional
 
 import numpy as np
-from scipy import fftpack
+
+from optional_dependencies import require_scipy
 
 
 def create_random_topography(extent: np.array, resolution: np.array, dz: Optional[np.array] = None,
@@ -108,7 +109,8 @@ class _LoadDEMArtificial:  # * Cannot think of a good reason to be a class
                 a[i, n - j] = complex(rad * np.cos(phase), rad * np.sin(phase))
                 a[n - i, j] = complex(rad * np.cos(phase), -rad * np.sin(phase))
 
-        itemp = fftpack.ifft2(a)
+        scipy = require_scipy()
+        itemp = scipy.fftpack.ifft2(a)
         itemp = itemp - itemp.min()
 
         return itemp.real / itemp.real.max()
