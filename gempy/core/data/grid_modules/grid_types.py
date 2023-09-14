@@ -2,7 +2,7 @@ from typing import Optional
 
 import numpy as np
 
-from optional_dependencies import require_pandas, require_scipy
+from gempy.optional_dependencies import require_pandas, require_scipy
 
 
 class RegularGrid:
