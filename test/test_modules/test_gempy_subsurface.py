@@ -40,3 +40,12 @@ def test_gempy_to_subsurface_II():
     trisurf = ss.TriSurf(meshes)
     pyvista_mesh = ss.visualization.to_pyvista_mesh(trisurf)
     ss.visualization.pv_plot([pyvista_mesh], image_2d=False)
+
+
+def test_gempy_to_subsurface_III():
+    model = gp.generate_example_model(ExampleModel.ANTICLINE, compute_model=True)
+    meshes: ss.UnstructuredData = model.solutions.meshes_to_unstruct()
+
+    trisurf = ss.TriSurf(meshes)
+    pyvista_mesh = ss.visualization.to_pyvista_mesh(trisurf)
+    ss.visualization.pv_plot([pyvista_mesh], image_2d=False)
