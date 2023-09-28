@@ -200,9 +200,6 @@ gp.set_is_fault(
 # 
 
 # %%
-# new_range = geo_model.get_additional_data().loc[('Kriging', 'range'), 'values'] * 0.2
-# geo_model.modify_kriging_parameters('range', new_range)
-
 geo_model.interpolation_options.kernel_options.range *= 0.2
 # %% 
 gp.compute_model(geo_model, gp.data.GemPyEngineConfig(use_gpu=True, dtype='float64'))
