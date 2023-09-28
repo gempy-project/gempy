@@ -16,6 +16,8 @@ import gempy_viewer as gpv
 import numpy as np
 import pandas as pd
 
+from gempy_engine.config import AvailableBackends
+
 # %%
 # Loading surface points from repository:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -124,8 +126,8 @@ structural_frame: gp.data.StructuralFrame = gp.data.StructuralFrame.from_data_ta
 geo_model: gp.data.GeoModel = gp.create_geomodel(
     project_name='Moureze',
     extent=[-5, 305, -5, 405, -200, -50],
-    resolution=resolution,
-    number_octree_levels=4,
+    resolution=resolution_low,
+    number_octree_levels=1,
     structural_frame=structural_frame
 )
 
@@ -146,7 +148,10 @@ gpv.plot_2d(geo_model, direction='y')
 # %% 
 geo_model.interpolation_options.kernel_options.range *= 0.2
 # %%
-gp.compute_model(geo_model, gp.data.GemPyEngineConfig(use_gpu=True, dtype='float64'))
+gp.compute_model(
+    gempy_model=geo_model,
+    engine_config=gp.data.GemPyEngineConfig(use_gpu=True, dtype='float64', backend=AvailableBackends.numpy)
+)
 
 
 # %%
