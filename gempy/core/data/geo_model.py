@@ -6,7 +6,6 @@ from typing import Sequence, Optional
 import numpy as np
 
 import gempy_engine.core.data.grid
-from core.data.dual_contouring_mesh import DualContouringMesh
 from gempy_engine.core.data.raw_arrays_solution import RawArraysSolution
 from gempy_engine.core.data import InterpolationOptions
 from gempy_engine.core.data.input_data_descriptor import InputDataDescriptor
