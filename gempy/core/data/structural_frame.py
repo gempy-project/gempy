@@ -36,13 +36,21 @@ class StructuralFrame:
         if element is None:
             raise ValueError(f"Element with name {element_name} not found in the structural frame.")
         return element
-
+    
     def get_group_by_name(self, group_name: str) -> StructuralGroup:
         groups: Generator = (group for group in self.structural_groups if group.name == group_name)
         group = next(groups, None)
         if group is None:
             raise ValueError(f"Group with name {group_name} not found in the structural frame.")
         return group
+    
+    def get_group_by_element(self, element: StructuralElement) -> StructuralGroup:
+        groups: Generator = (group for group in self.structural_groups if element in group.elements)
+        group = next(groups, None)
+        if group is None:
+            raise ValueError(f"Element {element.name} not found in any group in the structural frame.")
+        return group
+        
 
     def append_group(self, group: StructuralGroup):
         self.structural_groups.append(group)

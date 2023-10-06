@@ -33,4 +33,9 @@ def remove_structural_group_by_name(model: GeoModel, group_name: str) -> Structu
     model.structural_frame.structural_groups.pop(group_index)
     return model.structural_frame
     
-   
+
+def remove_element_by_name(model: GeoModel, element_name: str) -> StructuralFrame:
+    element = model.structural_frame.get_element_by_name(element_name)
+    element_group: StructuralGroup = model.structural_frame.get_group_by_element(element)
+    element_group.remove_element(element)
+    return model.structural_frame   

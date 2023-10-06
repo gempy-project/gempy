@@ -52,7 +52,8 @@ from ..modules.data_manipulation.orientations_from_surface_points import (
 from ..modules.data_manipulation.manipulate_structural_frame import (
     add_structural_group,
     remove_structural_group_by_index,
-    remove_structural_group_by_name
+    remove_structural_group_by_name,
+    remove_element_by_name
 )
 
 __all__ = [
@@ -62,5 +63,5 @@ __all__ = [
     'generate_example_model', 'set_fault_relation', 'set_is_fault', 'set_is_finite_fault',
     'add_surface_points', 'add_orientations', 'delete_surface_points', 'delete_orientations',
     'create_orientations_from_surface_points_coords', 'modify_surface_points', 'modify_orientations',
-    'add_structural_group', 'remove_structural_group_by_index', 'remove_structural_group_by_name'
+    'add_structural_group', 'remove_structural_group_by_index', 'remove_structural_group_by_name', 'remove_element_by_name'
 ]

@@ -62,6 +62,9 @@ class StructuralGroup(ABC):
     
     def append_element(self, element: StructuralElement):
         self.elements.append(element)
+    
+    def remove_element(self, element: StructuralElement):
+        self.elements.remove(element)
 
     @property
     def id(self):
