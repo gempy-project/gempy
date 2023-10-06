@@ -362,8 +362,7 @@ class CenteredGrid:
             if resolution is None:
                 resolution = [10, 10, 20]
 
-            self.set_centered_grid(centers=centers, radius=radius,
-                                   resolution=resolution)
+            self.set_centered_grid(centers=centers, radius=radius, resolution=resolution)
 
     @staticmethod
     def create_irregular_grid_kernel(resolution, radius):
@@ -418,8 +417,7 @@ class CenteredGrid:
         Returns:
 
         """
-        self.kernel_centers, self.kernel_dxyz_left, self.kernel_dxyz_right = self.create_irregular_grid_kernel(
-            resolution, radius)
+        self.kernel_centers, self.kernel_dxyz_left, self.kernel_dxyz_right = self.create_irregular_grid_kernel( resolution, radius)
 
         return self.kernel_centers
 
@@ -443,8 +441,7 @@ class CenteredGrid:
         if kernel_centers is None:
             kernel_centers = self.set_centered_kernel(**kwargs)
 
-        assert centers.shape[
-                   1] == 3, 'Centers must be a numpy array that contains the coordinates XYZ'
+        assert centers.shape[ 1] == 3, 'Centers must be a numpy array that contains the coordinates XYZ'
 
         for i in centers:
             self.values = np.vstack((self.values, i + kernel_centers))
