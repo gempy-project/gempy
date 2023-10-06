@@ -80,11 +80,5 @@ def test_gravity():
 
     gp.compute_model(geo_model)
 
-    # Add geophysics
-    # geo_model._surfaces.add_surfaces_values([2.6, 2.4, 3.2], ['density'])
-    # device_loc = np.array([[6, 0, 4]])
-    # 
-    # geo_model.set_centered_grid(device_loc, resolution=[10, 10, 100], radius=16000)
-
-    print(geo_model.solutions.fw_gravity)
-    # np.testing.assert_almost_equal(geo_model.solutions.fw_gravity, np.array([-1624.1714]), decimal=4)
+    print(geo_model.solutions.gravity)
+    np.testing.assert_almost_equal(geo_model.solutions.gravity, np.array([-1624.1714]), decimal=4)
