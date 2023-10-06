@@ -69,7 +69,7 @@ def test_gravity():
         grid=geo_model.grid,
         centers=np.array([[6, 0, 4]]),
         resolution=np.array([10, 10, 100]),
-        radius=np.array([16000, 16000, 16000])
+        radius=np.array([16000, 16000, 16000]) # ? This radius makes 0 sense but it is the original one in gempy v2
     )
 
     gravity_gradient = gp.calculate_gravity_gradient(geo_model.grid.centered_grid)
