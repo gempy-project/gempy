@@ -33,7 +33,7 @@ def compute_model(gempy_model: GeoModel, engine_config: Optional[GemPyEngineConf
     )
 
     match engine_config.backend:
-        case AvailableBackends.numpy | AvailableBackends.tensorflow:
+        case AvailableBackends.numpy | AvailableBackends.PYTORCH:
 
             BackendTensor.change_backend_gempy(
                 engine_backend=engine_config.backend,

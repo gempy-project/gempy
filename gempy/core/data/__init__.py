@@ -15,6 +15,7 @@ from gempy_engine.core.data.solutions import Solutions
 from gempy_engine.core.data.raw_arrays_solution import RawArraysSolution
 from gempy_engine.core.data.transforms import GlobalAnisotropy, Transform
 from gempy_engine.core.data.kernel_classes.faults import FaultsData, FiniteFaultData
+from gempy_engine.config import AvailableBackends
 
 
 __all__ = [
@@ -24,5 +25,5 @@ __all__ = [
     'ImporterHelper', 'GemPyEngineConfig', 'FaultsRelationSpecialCase',
     # From gempy engine
     'StackRelationType', 'InterpolationOptions', 'Solutions', 'RawArraysSolution', 'GlobalAnisotropy', 'Transform',
-    'FaultsData', 'FiniteFaultData'
+    'FaultsData', 'FiniteFaultData', 'AvailableBackends'
 ]

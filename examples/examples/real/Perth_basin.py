@@ -78,22 +78,11 @@ gp.set_is_fault(
     ],
 )
 
-# %%
-# Fault Network
-# -------------
-# 
 
 # %% 
+# gp.set_fault_relation(geo_model, fr)
 
-# %% 
-fr = geo_model.structural_frame.fault_relations
-
-# %% 
-fr[:, :-2] = False
-fr
-
-# %% 
-gp.set_fault_relation(geo_model, fr)
+print(geo_model.structural_frame.fault_relations)
 
 # %% 
 # %matplotlib inline
@@ -106,7 +95,13 @@ gp.set_topography_from_random(geo_model.grid)
 gpv.plot_3d(geo_model)
 
 # %% 
-gp.compute_model(geo_model)
+gp.compute_model(
+    gempy_model=geo_model,
+    engine_config= gp.data.GemPyEngineConfig(
+        backend=gp.data.AvailableBackends.PYTORCH,
+        dtype="float64",
+    )
+)
 
 # %% 
 gpv.plot_2d(geo_model, cell_number=[25])

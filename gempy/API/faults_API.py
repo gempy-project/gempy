@@ -7,6 +7,7 @@ from gempy.core.data.structural_group import StructuralGroup, FaultsRelationSpec
 
 
 def set_is_fault(frame: Union[GeoModel, StructuralFrame], fault_groups: Union[list[str], list[StructuralGroup]],
+                 faults_relation_type: FaultsRelationSpecialCase = FaultsRelationSpecialCase.OFFSET_FORMATIONS,
                  change_color: bool = True) -> StructuralFrame:
     """
     Sets given groups as fault in the structural frame of the GeoModel. It can optionally change the color of these groups.
@@ -14,6 +15,7 @@ def set_is_fault(frame: Union[GeoModel, StructuralFrame], fault_groups: Union[li
     Args:
         frame (Union[GeoModel, StructuralFrame]): GeoModel or its StructuralFrame to be modified.
         fault_groups (Union[list[str], list[StructuralGroup]]): Groups to be set as faults.
+        faults_relation_type (FaultsRelationSpecialCase, optional): Faults relation type to be set. Defaults to FaultsRelationSpecialCase.OFFSET_FORMATIONS.
         change_color (bool, optional): If True, changes the color of the fault groups. Defaults to True.
 
     Returns:
@@ -25,7 +27,7 @@ def set_is_fault(frame: Union[GeoModel, StructuralFrame], fault_groups: Union[li
     frame = _find_and_set_fields(
         frame=frame,
         fault_groups=fault_groups,
-        faults_relation_type=FaultsRelationSpecialCase.OFFSET_FORMATIONS,
+        faults_relation_type=faults_relation_type,
         stack_relation_type=StackRelationType.FAULT,
         change_color=change_color
     )
@@ -71,7 +73,7 @@ def set_fault_relation(frame: Union[GeoModel, StructuralFrame], rel_matrix: np.n
     Returns:
         StructuralFrame: The updated StructuralFrame object.
     """
-    
+
     if isinstance(frame, GeoModel):
         frame = frame.structural_frame
 
