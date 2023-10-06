@@ -28,8 +28,8 @@ geo_model: gp.data.GeoModel = gp.create_geomodel(
     resolution=[100, 100, 100],
     number_octree_levels=6,
     importer_helper=gp.data.ImporterHelper(
-        path_to_orientations=data_path + "/data/input_data/Perth_basin/Paper_GU2F_sc_faults_topo_Foliations.csv",
-        path_to_surface_points=data_path + "/data/input_data/Perth_basin/Paper_GU2F_sc_faults_topo_Points.csv",
+        path_to_orientations=data_path + "/data/input_data/perth_basin/Paper_GU2F_sc_faults_topo_Foliations.csv",
+        path_to_surface_points=data_path + "/data/input_data/perth_basin/Paper_GU2F_sc_faults_topo_Points.csv",
     )
 )
 
