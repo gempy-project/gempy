@@ -44,7 +44,8 @@ def compute_model(gempy_model: GeoModel, engine_config: Optional[GemPyEngineConf
             gempy_model.solutions = gempy_engine.compute_model(
                 interpolation_input=gempy_model.interpolation_input,
                 options=gempy_model.interpolation_options,
-                data_descriptor=gempy_model.input_data_descriptor
+                data_descriptor=gempy_model.input_data_descriptor,
+                geophysics_input=gempy_model.geophysics_input,
             )
 
         case AvailableBackends.aesara | AvailableBackends.legacy:

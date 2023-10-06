@@ -6,6 +6,7 @@ from typing import Sequence, Optional
 import numpy as np
 
 import gempy_engine.core.data.grid
+from core.data.geophysics_input import GeophysicsInput
 from gempy_engine.core.data.raw_arrays_solution import RawArraysSolution
 from gempy_engine.core.data import InterpolationOptions
 from gempy_engine.core.data.input_data_descriptor import InputDataDescriptor
@@ -54,7 +55,8 @@ class GeoModel:
 
     # region GemPy engine data types
     interpolation_options: InterpolationOptions  #: The interpolation options provided by the user.
-
+    geophysics_input: GeophysicsInput = None  #: The geophysics input of the geological model.
+    
     transform: Transform = None  #: The transformation used in the geological model for input points.
     
     interpolation_grid: gempy_engine.core.data.grid.Grid = None  #: Optional grid used for interpolation. Can be seen as a cache field.

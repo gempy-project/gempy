@@ -65,6 +65,18 @@ def set_custom_grid(grid: Grid, xyz_coord: np.ndarray):
     return grid.custom_grid
 
 
+def set_centered_grid(grid: Grid, centers: np.ndarray, resolution: Sequence[float], radius: Union[float, Sequence[float]]):
+    from gempy_engine.core.data.centered_grid import CenteredGrid
+    centered_grid = CenteredGrid(
+        centers=centers,
+        resolution=resolution,
+        radius=radius
+    )
+    grid.centered_grid = centered_grid
+    set_active_grid(grid, [GridTypes.CENTERED])
+    return grid.centered_grid
+
+
 def set_topography_from_gdal():
     raise NotImplementedError("This is not implemented yet")
 

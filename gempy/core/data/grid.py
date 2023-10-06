@@ -103,7 +103,8 @@ class Grid(object):
             self.set_active('regular')
         return self.regular_grid
 
-    def create_custom_grid(self, custom_grid: np.ndarray):
+    # ? DEP?
+    def create_custom_grid_(self, custom_grid: np.ndarray):
         """
         Set a new regular grid and activate it.
 
@@ -115,7 +116,8 @@ class Grid(object):
         self.set_active('custom')
 
     # ! (miguel, Sep 2023) This has to change a lot
-    def create_topography(self, source='random', **kwargs):
+    # ? DEP? 
+    def create_topography_(self, source='random', **kwargs):
         """Create a topography grid and activate it.
 
         Args:
@@ -172,6 +174,7 @@ class Grid(object):
         self.set_active('sections')
         return self.sections
 
+    # ? DEP?
     def create_centered_grid(self, centers, radius, resolution=None):
         """Initialize gravity grid. Deactivate the rest of the grids"""
         self.centered_grid = grid_types.CenteredGrid(centers, radius, resolution)

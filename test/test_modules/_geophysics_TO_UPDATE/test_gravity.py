@@ -60,11 +60,25 @@ def test_gravity():
         structural_frame=frame,
     )
 
-
     gp.compute_model(geo_model)
-    
+
     import gempy_viewer as gpv
     gpv.plot_2d(geo_model, cell_number=5)
+
+    gp.set_centered_grid(
+        grid=geo_model.grid,
+        centers=np.array([[6, 0, 4]]),
+        resolution=np.array([10, 10, 100]),
+        radius=np.array([16000, 16000, 16000])
+    )
+
+    gravity_gradient = gp.calculate_gravity_gradient(geo_model.grid.centered_grid)
+    geo_model.geophysics_input = gp.data.GeophysicsInput(
+        tz=gravity_gradient,
+        densities=np.array([2.6, 2.4, 3.2]),
+    )
+
+    gp.compute_model(geo_model)
 
     # Add geophysics
     # geo_model._surfaces.add_surfaces_values([2.6, 2.4, 3.2], ['density'])
@@ -72,6 +86,5 @@ def test_gravity():
     # 
     # geo_model.set_centered_grid(device_loc, resolution=[10, 10, 100], radius=16000)
 
-
-    # print(geo_model.solutions.fw_gravity)
+    print(geo_model.solutions.fw_gravity)
     # np.testing.assert_almost_equal(geo_model.solutions.fw_gravity, np.array([-1624.1714]), decimal=4)

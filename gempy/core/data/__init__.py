@@ -17,6 +17,7 @@ from gempy_engine.core.data.raw_arrays_solution import RawArraysSolution
 from gempy_engine.core.data.transforms import GlobalAnisotropy, Transform
 from gempy_engine.core.data.kernel_classes.faults import FaultsData, FiniteFaultData
 from gempy_engine.config import AvailableBackends
+from gempy_engine.core.data.geophysics_input import GeophysicsInput
 
 
 __all__ = [
@@ -26,5 +27,5 @@ __all__ = [
     'ImporterHelper', 'GemPyEngineConfig', 'FaultsRelationSpecialCase', 'ColorsGenerator',
     # From gempy engine
     'StackRelationType', 'InterpolationOptions', 'Solutions', 'RawArraysSolution', 'GlobalAnisotropy', 'Transform',
-    'FaultsData', 'FiniteFaultData', 'AvailableBackends'
+    'FaultsData', 'FiniteFaultData', 'AvailableBackends', 'GeophysicsInput'
 ]
