@@ -28,7 +28,7 @@ geo_model: gp.data.GeoModel = gp.create_geomodel(
     project_name='Greenstone',
     extent=[696000, 747000, 6863000, 6930000, -20000, 200],  # * Here we define the extent of the model
     resolution=[20, 20, 20],  # * Here we define the resolution of the voxels
-    number_octree_levels=3,  # * Here we define the number of octree levels. If octree levels are defined, the resolution is ignored.
+    number_octree_levels=4,  # * Here we define the number of octree levels. If octree levels are defined, the resolution is ignored.
     importer_helper=gp.data.ImporterHelper(
         path_to_orientations=data_path + "/SandStone_Foliations.csv",
         path_to_surface_points=data_path + "/SandStone_Points.csv",
@@ -63,7 +63,7 @@ gpv.plot_2d(geo_model)
 # 
 
 # %% 
-grav_res = 10
+grav_res = 20
 X = np.linspace(7.050000e+05, 747000, grav_res)
 Y = np.linspace(6863000, 6925000, grav_res)
 Z = 300
@@ -115,25 +115,6 @@ geo_model.geophysics_input = gp.data.GeophysicsInput(
     densities=np.array([2.61, 2.92, 3.1, 2.92, 2.61]),
 )
 
-# # %% 
-# g = GravityPreprocessing(geo_model.grid.centered_grid)
-# 
-# # %% 
-# tz = g.set_tz_kernel()
-# 
-# # %% 
-# tz
-
-# %%
-# Compiling the gravity graph
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# 
-# If geo_model has already a centered grid, the calculation of tz happens
-# automatically.  This aesara graph will return gravity
-# as well as the lithologies. In addition we need either to pass the density
-# block (see below). Or the position of density on the surface(in the
-# future the name) to compute the density block at running time.
-# 
 
 # %%
 # Once we have created a gravity interpolator we can call it from compute
@@ -141,18 +122,22 @@ geo_model.geophysics_input = gp.data.GeophysicsInput(
 # 
 
 # %% 
-
-from gempy_engine.core.data.kernel_classes.solvers import Solvers
-geo_model.interpolation_options.kernel_options.kernel_solver = Solvers.DEFAULT
 sol = gp.compute_model(
     gempy_model=geo_model,
     engine_config=gp.data.GemPyEngineConfig(
         backend=gp.data.AvailableBackends.PYTORCH,
-        dtype='float64'
+        dtype='float32'
     )
 )
 
 grav = sol.gravity
+
+
+# %% 
+gpv.plot_2d(geo_model, cell_number=[-1], direction=['z'], show_data=False)
+
+# %% 
+gpv.plot_2d(geo_model, cell_number=['mid'], direction='x')
 
 # %% 
 gpv.plot_2d(geo_model, direction=['z'], height=7, show_results=False, show_data=True, show=False)
