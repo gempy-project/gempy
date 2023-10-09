@@ -80,7 +80,7 @@ cond_data = np.array([[100, .5, 500, 2], [900, .5, 500, 1],
 
 # %% 
 # creating a domain object from the gempy solution, a defined domain conditioning data
-domain = kriging.domain(model=sol, domain=[2], data=cond_data)
+domain = kriging.Domain(model_solutions=sol, domain=[2], data=cond_data)
 
 # %%
 # 2) Creating a variogram model
@@ -88,8 +88,8 @@ domain = kriging.domain(model=sol, domain=[2], data=cond_data)
 # 
 
 # %% 
-variogram_model = kriging.variogram_model(theoretical_model='exponential',
-                                          range_=200, sill=np.var(cond_data[:, 3]))
+variogram_model = kriging.VariogramModel(theoretical_model='exponential',
+                                         range_=200, sill=np.var(cond_data[:, 3]))
 
 # %% 
 variogram_model.plot(type_='both', show_parameters=True)
