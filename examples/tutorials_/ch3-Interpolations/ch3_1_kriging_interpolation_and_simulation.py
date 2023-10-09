@@ -149,14 +149,31 @@ if True:
     est_vals = kriging_solution.results_df['estimated value'].values
     a[np.where(kriging_solution.domain.mask == True)] = est_vals
 
-plot_2d = gpv.plot_2d(
+from gempy_viewer.modules.plot_2d.visualization_2d import Plot2D
+from gempy_viewer.modules.plot_2d.drawer_regular_grid_2d import plot_regular_grid_area
+
+plot_2d: Plot2D = gpv.plot_2d(
     model=geo_data,
     cell_number=0,
     show_data=False,
     show=True,
-    override_regular_grid=a,
-    kwargs_lithology={'cmap': 'viridis'}
+    kwargs_lithology={
+        'alpha': 0.5
+    }
 )
+
+im = plot_regular_grid_area(
+    ax=plot_2d.axes[0],
+    slicer_data=plot_2d.section_data_list[0].slicer_data,
+    block=a,  # * Only used for orthogonal sections
+    resolution=geo_data.grid.regular_grid.resolution,
+    cmap='viridis',
+    norm=None,
+)
+
+plot_2d.fig.colorbar(im, label='Property value')
+
+plot_2d.fig.show()
 
 # %% 
 kriging_solution.plot_results(geo_data=geo_data, prop='val', contour=False,
