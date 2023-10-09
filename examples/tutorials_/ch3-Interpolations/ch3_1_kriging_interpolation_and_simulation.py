@@ -93,6 +93,7 @@ cond_data = np.array([[100, .5, 500, 2], [900, .5, 500, 1],
 # creating a domain object from the gempy solution, a defined domain conditioning data
 domain = kriging.Domain(
     model_solutions=sol,
+    transform=geo_data.transform,
     domain=[2],
     data=cond_data
 )
@@ -103,8 +104,11 @@ domain = kriging.Domain(
 # 
 
 # %% 
-variogram_model = kriging.VariogramModel(theoretical_model='exponential',
-                                         range_=200, sill=np.var(cond_data[:, 3]))
+variogram_model = kriging.VariogramModel(
+    theoretical_model='exponential',
+    range_=200,
+    sill=np.var(cond_data[:, 3])
+)
 
 # %% 
 variogram_model.plot(type_='both', show_parameters=True)
@@ -122,7 +126,7 @@ plt.show()
 # 
 
 # %% 
-solution = kriging.create_kriged_field(domain, variogram_model)
+kriging_solution = kriging.create_kriged_field(domain, variogram_model)
 
 # %%
 # The result of our calculation is saved in the following dataframe,
@@ -131,7 +135,7 @@ solution = kriging.create_kriged_field(domain, variogram_model)
 # 
 
 # %% 
-solution.results_df.head()
+kriging_solution.results_df.head()
 
 # %%
 # It is also possible to plot the results in cross section similar to the
@@ -139,15 +143,31 @@ solution.results_df.head()
 # 
 
 # %% 
-solution.plot_results(geo_data=geo_data, prop='val', contour=False,
-                      direction='y', cell_number=0, alpha=0.7,
-                      show_data=False, legend=True)
+
+if True:
+    a = np.full_like(kriging_solution.domain.mask, np.nan, dtype=np.double)  # array like lith_block but with nan if outside domain
+    est_vals = kriging_solution.results_df['estimated value'].values
+    a[np.where(kriging_solution.domain.mask == True)] = est_vals
+
+plot_2d = gpv.plot_2d(
+    model=geo_data,
+    cell_number=0,
+    show_data=False,
+    show=True,
+    override_regular_grid=a,
+    kwargs_lithology={'cmap': 'viridis'}
+)
+
+# %% 
+kriging_solution.plot_results(geo_data=geo_data, prop='val', contour=False,
+                              direction='y', cell_number=0, alpha=0.7,
+                              show_data=False, legend=True)
 plt.show()
 
 # %% 
-solution.plot_results(geo_data=geo_data, prop='both', contour=False,
-                      direction='y', cell_number=0, alpha=0,
-                      interpolation='bilinear', show_data=False)
+kriging_solution.plot_results(geo_data=geo_data, prop='both', contour=False,
+                              direction='y', cell_number=0, alpha=0,
+                              interpolation='bilinear', show_data=False)
 plt.show()
 # %%
 # 4) Simulated field
