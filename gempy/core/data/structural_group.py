@@ -71,6 +71,10 @@ class StructuralGroup(ABC):
         raise NotImplementedError
     
     @property
+    def is_fault(self)-> bool:
+        return self.structural_relation == StackRelationType.FAULT
+    
+    @property
     def number_of_points(self) -> int:
         return sum([element.number_of_points for element in self.elements])
     

@@ -4,9 +4,11 @@ Chapter 4: Analyzing Geomodel Topology
 
 """
 import gempy as gp
+import gempy_viewer as gpv
 from topology_analysis import topology as tp
 
 import matplotlib.pyplot as plt
+import os
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -23,27 +25,35 @@ warnings.filterwarnings("ignore")
 # 
 
 # %% 
-geo_model = gp.create_model("Model_Tutorial6")
+data_path = os.path.abspath('../../')
 
-data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
-gp.init_data(
-    geo_model, [0, 3000, 0, 20, 0, 2000], [50, 10, 67], 
-    path_i=data_path+"data/input_data/tut_chapter6/ch6_data_interf.csv", 
-    path_o=data_path+"data/input_data/tut_chapter6/ch6_data_fol.csv"
+geo_model: gp.data.GeoModel = gp.create_geomodel(
+    project_name='Model_Tutorial6',
+    extent= [0, 3000, 0, 20, 0, 2000],
+    resolution=[50, 10, 67],
+    number_octree_levels=1,  # * For this model is better not to use octrees because we want to see what is happening in the scalar fields
+    importer_helper=gp.data.ImporterHelper(
+        path_to_orientations=data_path + "/data/input_data/tut_chapter6/ch6_data_fol.csv",
+        path_to_surface_points=data_path + "/data/input_data/tut_chapter6/ch6_data_interf.csv",
+    )
 )
+
 gp.map_stack_to_surfaces(
-    geo_model,
+    gempy_model=geo_model,
+    mapping_object=
     {
         "fault": "Fault",
         "Rest": ('Layer 2', 'Layer 3', 'Layer 4', 'Layer 5')
     }
 )
-geo_model.set_is_fault(["fault"]);
-gp.set_interpolator(geo_model)
-sol = gp.compute_model(geo_model, compute_mesh=True)
+
+gp.set_is_fault(geo_model, ['fault'])
+
+geo_model.interpolation_options.dual_contouring = False
+sol = gp.compute_model(geo_model)
 
 # %% 
-gp.plot_2d(geo_model, cell_number=[5])
+gpv.plot_2d(geo_model, cell_number=[5])
 
 
 # %%

@@ -227,6 +227,11 @@ class StructuralFrame:
             else:  # * A specific set of groups are affected
                 group.fault_relations = [g for j, g in enumerate(self.structural_groups) if affected_groups[j]]
                 group.structural_relation = StackRelationType.FAULT
+    
+    @property
+    def group_is_fault(self) -> list[bool]:
+        """Returns a list of booleans indicating if each structural element is a fault."""
+        return [group.is_fault for group in self.structural_groups]
 
     @property
     def input_data_descriptor(self):
