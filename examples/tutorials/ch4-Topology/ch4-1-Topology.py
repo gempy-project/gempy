@@ -6,7 +6,7 @@ Chapter 4: Analyzing Geomodel Topology
 import gempy as gp
 import gempy_viewer as gpv
 from gempy_viewer.modules.plot_2d.visualization_2d import Plot2D
-from topology_analysis import topology as tp
+from gempy_plugins.topology_analysis import topology as tp
 
 import os
 

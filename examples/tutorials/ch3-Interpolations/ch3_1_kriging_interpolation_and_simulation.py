@@ -22,7 +22,7 @@ import matplotlib.pyplot as plt
 import os
 
 # new for this
-from kriging import kriging
+from gempy_plugins.kriging import kriging
 
 np.random.seed(5555)
 
