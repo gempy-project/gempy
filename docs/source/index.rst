@@ -42,7 +42,6 @@ Contents:
 
    tutorials_/index
    examples/index
-   integrations/index
 
 .. toctree::
    :maxdepth: 2

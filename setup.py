@@ -1,8 +1,13 @@
 from setuptools import setup, find_packages
 
-version = '2023.1.0b6'
 
-
+with open("your_package/__init__.py", "r") as f:
+    for line in f:
+        if line.startswith("__version__"):
+            version = line.split("=")[1].strip().strip("'")
+            break
+            
+            
 def read_requirements(file_name):
     with open(file_name, "r", encoding="utf-8") as f:
         return [line.strip() for line in f.readlines()]
