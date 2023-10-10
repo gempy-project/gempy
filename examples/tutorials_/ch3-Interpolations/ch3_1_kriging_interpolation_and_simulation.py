@@ -36,8 +36,8 @@ data_path = os.path.abspath('../../')
 geo_data: gp.data.GeoModel = gp.create_geomodel(
     project_name='kriging',
     extent=[0, 1000, 0, 50, 0, 1000],
-    resolution=[10, 10, 10],
-    number_octree_levels=4,
+    resolution=[50, 10, 50],
+    number_octree_levels=1,
     importer_helper=gp.data.ImporterHelper(
         path_to_orientations=data_path + "/data/input_data/jan_models/model1_orientations.csv",
         path_to_surface_points=data_path + "/data/input_data/jan_models/model1_surface_points.csv",
@@ -137,55 +137,48 @@ kriging_solution = kriging.create_kriged_field(domain, variogram_model)
 # %% 
 kriging_solution.results_df.head()
 
+
 # %%
 # It is also possible to plot the results in cross section similar to the
 # way gempy models are plotted.
 # 
 
+
 # %% 
-
-if True:
-    a = np.full_like(kriging_solution.domain.mask, np.nan, dtype=np.double)  # array like lith_block but with nan if outside domain
-    est_vals = kriging_solution.results_df['estimated value'].values
-    a[np.where(kriging_solution.domain.mask == True)] = est_vals
-
 from gempy_viewer.modules.plot_2d.visualization_2d import Plot2D
-from gempy_viewer.modules.plot_2d.drawer_regular_grid_2d import plot_regular_grid_area
 
 plot_2d: Plot2D = gpv.plot_2d(
     model=geo_data,
     cell_number=0,
     show_data=False,
-    show=True,
-    kwargs_lithology={
-        'alpha': 0.5
-    }
+    show=False,
+    kwargs_lithology={ 'alpha': 0.5 }
+)
+kriging.plot_kriging_results(
+    geo_data=geo_data,
+    kriging_solution=kriging_solution,
+    plot_2d=plot_2d,
+    title='Kriging interpolation: Estimated values',
+    result_column=['estimated value']
 )
 
-im = plot_regular_grid_area(
-    ax=plot_2d.axes[0],
-    slicer_data=plot_2d.section_data_list[0].slicer_data,
-    block=a,  # * Only used for orthogonal sections
-    resolution=geo_data.grid.regular_grid.resolution,
-    cmap='viridis',
-    norm=None,
+# %%
+plot_2d_both = gpv.plot_2d(
+    model=geo_data,
+    cell_number=[0, 0],
+    show_data=False,
+    show=False,
+    kwargs_lithology={ 'alpha': 0.5 }
 )
 
-plot_2d.fig.colorbar(im, label='Property value')
+kriging.plot_kriging_results(
+    geo_data=geo_data,
+    kriging_solution=kriging_solution,
+    plot_2d=plot_2d_both,
+    title='Kriging interpolation: Estimated values',
+    result_column=['estimated value', 'estimation variance']
+)
 
-plot_2d.fig.show()
-
-# %% 
-kriging_solution.plot_results(geo_data=geo_data, prop='val', contour=False,
-                              direction='y', cell_number=0, alpha=0.7,
-                              show_data=False, legend=True)
-plt.show()
-
-# %% 
-kriging_solution.plot_results(geo_data=geo_data, prop='both', contour=False,
-                              direction='y', cell_number=0, alpha=0,
-                              interpolation='bilinear', show_data=False)
-plt.show()
 # %%
 # 4) Simulated field
 # ------------------
@@ -205,12 +198,35 @@ solution_sim.results_df.head()
 solution_sim.results_df['estimated value']
 
 # %%
-# sphinx_gallery_thumbnail_number = 3
-solution_sim.plot_results(geo_data=geo_data, prop='val', contour=False, direction='y', cell_number=0, alpha=0.7,
-                          show_data=True, legend=True)
-plt.show()
+plot_2d: Plot2D = gpv.plot_2d(
+    model=geo_data,
+    cell_number=0,
+    show_data=False,
+    show=False,
+    kwargs_lithology={ 'alpha': 0.5 }
+)
+kriging.plot_kriging_results(
+    geo_data=geo_data,
+    kriging_solution=solution_sim,
+    plot_2d=plot_2d,
+    title='Kriging interpolation: Estimated values',
+    result_column=['estimated value']
+)
 
-# %% 
-solution_sim.plot_results(geo_data=geo_data, prop='both', contour=False, direction='y', cell_number=0, alpha=0,
-                          interpolation='bilinear', show_data=False)
-plt.show()
+# %%
+plot_2d_both = gpv.plot_2d(
+    model=geo_data,
+    cell_number=[0, 0],
+    show_data=False,
+    show=False,
+    kwargs_lithology={ 'alpha': 0.5 }
+)
+
+kriging.plot_kriging_results(
+    geo_data=geo_data,
+    kriging_solution=solution_sim,
+    plot_2d=plot_2d_both,
+    title='Kriging interpolation: Estimated values',
+    result_column=['estimated value', 'estimation variance']
+)
+# sphinx_gallery_thumbnail_number = 3
