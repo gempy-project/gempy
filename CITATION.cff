@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you use GemPy, please cite it as below."
+authors:
+  - family-names: "de la Varga"
+    given-names: "Miguel"
+    orcid: https://orcid.org/0000-0001-6941-2685
+  - family-names: "Schaaf"
+    given-names: "Alexander"
+  - family-names: "Wellmann"
+    given-names: "Florian"
+    orcid: https://orcid.org/0000-0003-2552-1876
+title: "GemPy 1.0: open-source stochastic geological modeling and inversion"
+version: 1.0
+doi: https://doi.org/10.5194/gmd-12-1-2019
+date-released: 2019-01-02
+url: "https://github.com/cgre-aachen/gempy"
