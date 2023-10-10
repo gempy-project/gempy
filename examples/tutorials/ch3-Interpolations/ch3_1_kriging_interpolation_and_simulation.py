@@ -14,10 +14,12 @@
 # %%
 # Importing GemPy
 import gempy as gp
+import gempy_viewer as gpv
 
 # Importing auxiliary libraries
 import numpy as np
 import matplotlib.pyplot as plt
+import os
 
 # new for this
 from kriging import kriging
@@ -29,37 +31,46 @@ np.random.seed(5555)
 # 
 
 # %% 
-data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
-geo_data = gp.create_data_legacy('kriging', extent=[0, 1000, 0, 50, 0, 1000], resolution=[50, 1, 50],
-                                 path_o=data_path + "/data/input_data/jan_models/model1_orientations.csv",
-                                 path_i=data_path + "/data/input_data/jan_models/model1_surface_points.csv")
+data_path = os.path.abspath('../../')
+
+geo_data: gp.data.GeoModel = gp.create_geomodel(
+    project_name='kriging',
+    extent=[0, 1000, 0, 50, 0, 1000],
+    resolution=[50, 10, 50],
+    number_octree_levels=4,
+    importer_helper=gp.data.ImporterHelper(
+        path_to_orientations=data_path + "/data/input_data/jan_models/model1_orientations.csv",
+        path_to_surface_points=data_path + "/data/input_data/jan_models/model1_surface_points.csv",
+    )
+)
 
 # %%
 # Setting and ordering the units and series:
 # 
 
 # %% 
-gp.map_stack_to_surfaces(geo_data, {"Strat_Series": ('rock2', 'rock1'),
-                                     "Basement_Series": ('basement')})
+gp.map_stack_to_surfaces(
+    gempy_model=geo_data,
+    mapping_object={
+        "Strat_Series": ('rock2', 'rock1'),
+        "Basement_Series": ('basement')
+    }
+)
 
 # %%
 # Calculating the model:
 # 
 
 # %% 
-interp_data = gp.set_interpolator(geo_data, compile_aesara=True,
-                                  aesara_optimizer='fast_compile')
-
-# %% 
 # no mesh computed as basically 2D model
-sol = gp.compute_model(geo_data, compute_mesh=False)
+sol = gp.compute_model(geo_data)
 
 # %%
 # So here is the very simple, basically 2D model that we created:
 # 
 
 # %% 
-gp.plot_2d(geo_data, cell_number=0, show_data=False)
+gpv.plot_2d(geo_data, cell_number=0, show_data=False)
 
 # %%
 # 1) Creating domain
@@ -80,7 +91,12 @@ cond_data = np.array([[100, .5, 500, 2], [900, .5, 500, 1],
 
 # %% 
 # creating a domain object from the gempy solution, a defined domain conditioning data
-domain = kriging.Domain(model_solutions=sol, domain=[2], data=cond_data)
+domain = kriging.Domain(
+    model_solutions=sol,
+    transform=geo_data.transform,
+    domain=[2],
+    data=cond_data
+)
 
 # %%
 # 2) Creating a variogram model
@@ -88,8 +104,11 @@ domain = kriging.Domain(model_solutions=sol, domain=[2], data=cond_data)
 # 
 
 # %% 
-variogram_model = kriging.VariogramModel(theoretical_model='exponential',
-                                         range_=200, sill=np.var(cond_data[:, 3]))
+variogram_model = kriging.VariogramModel(
+    theoretical_model='exponential',
+    range_=200,
+    sill=np.var(cond_data[:, 3])
+)
 
 # %% 
 variogram_model.plot(type_='both', show_parameters=True)
@@ -107,7 +126,7 @@ plt.show()
 # 
 
 # %% 
-solution = kriging.create_kriged_field(domain, variogram_model)
+kriging_solution = kriging.create_kriged_field(domain, variogram_model)
 
 # %%
 # The result of our calculation is saved in the following dataframe,
@@ -116,24 +135,50 @@ solution = kriging.create_kriged_field(domain, variogram_model)
 # 
 
 # %% 
-solution.results_df.head()
+kriging_solution.results_df.head()
+
 
 # %%
 # It is also possible to plot the results in cross section similar to the
 # way gempy models are plotted.
 # 
 
-# %% 
-solution.plot_results(geo_data=geo_data, prop='val', contour=False,
-                      direction='y', cell_number=0, alpha=0.7,
-                      show_data=False, legend=True)
-plt.show()
 
 # %% 
-solution.plot_results(geo_data=geo_data, prop='both', contour=False,
-                      direction='y', cell_number=0, alpha=0,
-                      interpolation='bilinear', show_data=False)
-plt.show()
+from gempy_viewer.modules.plot_2d.visualization_2d import Plot2D
+
+plot_2d: Plot2D = gpv.plot_2d(
+    model=geo_data,
+    cell_number=0,
+    show_data=False,
+    show=False,
+    kwargs_lithology={ 'alpha': 0.5 }
+)
+kriging.plot_kriging_results(
+    geo_data=geo_data,
+    kriging_solution=kriging_solution,
+    plot_2d=plot_2d,
+    title='Kriging interpolation: Estimated values',
+    result_column=['estimated value']
+)
+
+# %%
+plot_2d_both = gpv.plot_2d(
+    model=geo_data,
+    cell_number=[0, 0],
+    show_data=False,
+    show=False,
+    kwargs_lithology={ 'alpha': 0.5 }
+)
+
+kriging.plot_kriging_results(
+    geo_data=geo_data,
+    kriging_solution=kriging_solution,
+    plot_2d=plot_2d_both,
+    title='Kriging interpolation: Estimated values',
+    result_column=['estimated value', 'estimation variance']
+)
+
 # %%
 # 4) Simulated field
 # ------------------
@@ -153,12 +198,35 @@ solution_sim.results_df.head()
 solution_sim.results_df['estimated value']
 
 # %%
-# sphinx_gallery_thumbnail_number = 3
-solution_sim.plot_results(geo_data=geo_data, prop='val', contour=False, direction='y', cell_number=0, alpha=0.7,
-                          show_data=True, legend=True)
-plt.show()
+plot_2d: Plot2D = gpv.plot_2d(
+    model=geo_data,
+    cell_number=0,
+    show_data=False,
+    show=False,
+    kwargs_lithology={ 'alpha': 0.5 }
+)
+kriging.plot_kriging_results(
+    geo_data=geo_data,
+    kriging_solution=solution_sim,
+    plot_2d=plot_2d,
+    title='Kriging interpolation: Estimated values',
+    result_column=['estimated value']
+)
 
-# %% 
-solution_sim.plot_results(geo_data=geo_data, prop='both', contour=False, direction='y', cell_number=0, alpha=0,
-                          interpolation='bilinear', show_data=False)
-plt.show()
+# %%
+plot_2d_both = gpv.plot_2d(
+    model=geo_data,
+    cell_number=[0, 0],
+    show_data=False,
+    show=False,
+    kwargs_lithology={ 'alpha': 0.5 }
+)
+
+kriging.plot_kriging_results(
+    geo_data=geo_data,
+    kriging_solution=solution_sim,
+    plot_2d=plot_2d_both,
+    title='Kriging interpolation: Estimated values',
+    result_column=['estimated value', 'estimation variance']
+)
+# sphinx_gallery_thumbnail_number = 3

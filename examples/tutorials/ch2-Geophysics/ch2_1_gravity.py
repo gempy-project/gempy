@@ -7,7 +7,7 @@
 # %%
 # Importing gempy
 import gempy as gp
-from gempy.modules.geophysics.geophysics import GravityPreprocessing
+import gempy_viewer as gpv
 
 # Aux imports
 import numpy as np
@@ -15,26 +15,40 @@ import pandas as pd
 import os
 import matplotlib.pyplot as plt
 
+
 np.random.seed(1515)
 pd.set_option('display.precision', 2)
 
 # %%
-cwd = os.getcwd()
-if 'examples' not in cwd:
-    data_path = os.getcwd() + '/examples/'
-else:
-    data_path = cwd + '/../../'
+data_path = os.path.abspath('../../data/input_data/tut_SandStone')
 
-geo_model = gp.load_model('Greenstone', path=data_path + 'data/gempy_models/Greenstone')
+# Importing the data from csv
+
+geo_model: gp.data.GeoModel = gp.create_geomodel(
+    project_name='Greenstone',
+    extent=[696000, 747000, 6863000, 6930000, -20000, 200],  # * Here we define the extent of the model
+    resolution=[20, 20, 20],  # * Here we define the resolution of the voxels
+    number_octree_levels=4,  # * Here we define the number of octree levels. If octree levels are defined, the resolution is ignored.
+    importer_helper=gp.data.ImporterHelper(
+        path_to_orientations=data_path + "/SandStone_Foliations.csv",
+        path_to_surface_points=data_path + "/SandStone_Points.csv",
+        hash_surface_points=None,
+        hash_orientations=None
+    )
+)
 
 # %% 
-geo_model.stack
+gp.map_stack_to_surfaces(
+    gempy_model=geo_model,
+    mapping_object={
+        "EarlyGranite_Series": 'EarlyGranite',
+        "BIF_Series": ('SimpleMafic2', 'SimpleBIF'),
+        "SimpleMafic_Series": 'SimpleMafic1', 'Basement': 'basement'
+    }
+)
 
 # %% 
-geo_model.surfaces
-
-# %% 
-gp.plot_2d(geo_model)
+gpv.plot_2d(geo_model)
 
 # %%
 
@@ -63,7 +77,7 @@ xy_ravel
 
 # %%
 
-gp.plot_2d(geo_model, direction='z', show=False)
+gpv.plot_2d(geo_model, direction='z', show=False)
 plt.scatter(xy_ravel[:, 0], xy_ravel[:, 1], s=1)
 plt.show()
 
@@ -73,46 +87,34 @@ plt.show()
 # 
 
 # %% 
-geo_model.set_centered_grid(xy_ravel, resolution=[10, 10, 15], radius=5000)
+# geo_model.set_centered_grid(xy_ravel, resolution=[10, 10, 15], radius=5000)
+
+gp.set_centered_grid(
+    grid=geo_model.grid,
+    centers=xy_ravel,
+    resolution=np.array([10, 10, 15]),
+    radius=np.array([5000, 5000, 5000])
+)
 
 # %% 
-geo_model.grid.centered_grid.kernel_centers
+geo_model.grid.centered_grid.kernel_grid_centers
 
 # %%
 # Now we need to compute the component tz (see
 # https://github.com/cgre-achen/gempy/blob/master/notebooks/tutorials/ch2-2-Cell_selection.ipynb)
 # 
 
-# %% 
-g = GravityPreprocessing(geo_model.grid.centered_grid)
+# %%
 
-# %% 
-tz = g.set_tz_kernel()
-
-# %% 
-tz
+gravity_gradient = gp.calculate_gravity_gradient(geo_model.grid.centered_grid)
+gravity_gradient
 
 # %%
-# Compiling the gravity graph
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# 
-# If geo_model has already a centered grid, the calculation of tz happens
-# automatically.  This aesara graph will return gravity
-# as well as the lithologies. In addition we need either to pass the density
-# block (see below). Or the position of density on the surface(in the
-# future the name) to compute the density block at running time.
-# 
+geo_model.geophysics_input = gp.data.GeophysicsInput(
+    tz=gravity_gradient,
+    densities=np.array([2.61, 2.92, 3.1, 2.92, 2.61]),
+)
 
-# %% 
-geo_model.surfaces
-
-# %%
-# In this case the densities of each layer are at the loc 1 (0 is the id)
-# 
-
-# New way
-gp.set_interpolator(geo_model, output=['gravity'], pos_density=1, gradient=False,
-                    aesara_optimizer='fast_run')
 
 # %%
 # Once we have created a gravity interpolator we can call it from compute
@@ -120,20 +122,34 @@ gp.set_interpolator(geo_model, output=['gravity'], pos_density=1, gradient=False
 # 
 
 # %% 
-sol = gp.compute_model(geo_model)
-grav = sol.fw_gravity
+sol = gp.compute_model(
+    gempy_model=geo_model,
+    engine_config=gp.data.GemPyEngineConfig(
+        backend=gp.data.AvailableBackends.PYTORCH,
+        dtype='float32'
+    )
+)
+
+grav = sol.gravity
+
 
 # %% 
-gp.plot_2d(geo_model, direction=['z'], height=7, show_results=False, show_data=True,
-           show=False)
+gpv.plot_2d(geo_model, cell_number=[-1], direction=['z'], show_data=False)
+
+# %% 
+gpv.plot_2d(geo_model, cell_number=['mid'], direction='x')
+
+# %% 
+gpv.plot_2d(geo_model, direction=['z'], height=7, show_results=False, show_data=True, show=False)
 plt.scatter(xy_ravel[:, 0], xy_ravel[:, 1], s=1)
-plt.imshow(sol.fw_gravity.reshape(grav_res, grav_res),
+plt.imshow(sol.gravity.reshape(grav_res, grav_res),
            extent=(xy_ravel[:, 0].min() + (xy_ravel[0, 0] - xy_ravel[1, 0]) / 2,
                    xy_ravel[:, 0].max() - (xy_ravel[0, 0] - xy_ravel[1, 0]) / 2,
                    xy_ravel[:, 1].min() + (xy_ravel[0, 1] - xy_ravel[30, 1]) / 2,
                    xy_ravel[:, 1].max() - (xy_ravel[0, 1] - xy_ravel[30, 1]) / 2),
            cmap='viridis_r', origin='lower')
 plt.show()
+
 # %%
 # Plotting lithologies
 # ^^^^^^^^^^^^^^^^^^^^
@@ -150,8 +166,8 @@ plt.show()
 
 # %%
 # sphinx_gallery_thumbnail_number = 4
-gp.plot_2d(geo_model, cell_number=[-1], direction=['z'], show=False,
-           kwargs_regular_grid={'alpha': .5})
+gpv.plot_2d(geo_model, cell_number=[-1], direction=['z'], show=False,
+            kwargs_regular_grid={'alpha': .5})
 
 plt.scatter(xy_ravel[:, 0], xy_ravel[:, 1], s=1)
 plt.imshow(grav.reshape(grav_res, grav_res),

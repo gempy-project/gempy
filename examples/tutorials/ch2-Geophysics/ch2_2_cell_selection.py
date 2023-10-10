@@ -32,7 +32,7 @@ the forward gravity by simply operate:
 # %%
 
 # Importing gempy
-from gempy.modules.geophysics.geophysics import GravityPreprocessing
+import gempy as gp
 
 # Aux imports
 import numpy as np
@@ -43,19 +43,19 @@ np.random.seed(1515)
 pd.set_option('display.precision', 2)
 
 # %% 
-g = GravityPreprocessing()
-
-# %% 
-kernel_centers, kernel_dxyz_left, kernel_dxyz_right = g.create_irregular_grid_kernel(resolution=[10, 10, 20],
-                                                                                     radius=100)
-
+from gempy_engine.core.data.centered_grid import CenteredGrid
+centered_grid = CenteredGrid(
+    centers=np.array([0,0,0]),
+    resolution=[10, 10, 20],
+    radius=100
+)
 # %%
 # ``create_irregular_grid_kernel`` will create a constant kernel around
 # the point 0,0,0. This kernel will be what we use for each device.
 # 
 
 # %% 
-kernel_centers
+centered_grid.kernel_grid_centers
 
 # %%
 # :math:`t_z` is only dependent on distance and therefore we can use the
@@ -63,8 +63,8 @@ kernel_centers
 # 
 
 # %% 
-tz = g.set_tz_kernel(resolution=[10, 10, 20], radius=100)
-tz
+gravity_gradient = gp.calculate_gravity_gradient(centered_grid)
+gravity_gradient
 
 # %%
 # To compute tz we also need the edges of each voxel. The distance to the
@@ -73,7 +73,8 @@ tz
 # 
 
 # %% 
-a, b, c = kernel_centers, kernel_dxyz_left, kernel_dxyz_right
+a, b, c = centered_grid.kernel_grid_centers, centered_grid.left_voxel_edges, centered_grid.right_voxel_edges
+tz = gravity_gradient
 
 # %% 
 fig = plt.figure(figsize=(13, 7))

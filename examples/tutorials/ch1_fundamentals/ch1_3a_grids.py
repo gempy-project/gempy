@@ -4,12 +4,10 @@
 """
 
 import numpy as np
-import pandas as pd
-from gempy import Grid
-from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 unused import
 import matplotlib.pyplot as plt
 
-pd.set_option('display.precision', 2)
+from gempy.core.data import Grid
+
 np.random.seed(55500)
 
 # %%
@@ -297,5 +295,5 @@ plt.show()
 # Section Grid
 # ~~~~~~~~~~~~
 # 
-# This grid type has its own tutorial. See ch1-3b
+# This grid type has its own tutorial. See :doc: `ch1_3b_cross_sections`
 #
