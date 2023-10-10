@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 
-with open("your_package/__init__.py", "r") as f:
+with open("gempy/__init__.py", "r") as f:
     for line in f:
         if line.startswith("__version__"):
             version = line.split("=")[1].strip().strip("'")
