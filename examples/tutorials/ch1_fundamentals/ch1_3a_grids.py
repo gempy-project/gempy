@@ -6,6 +6,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+import gempy as gp
 from gempy.core.data import Grid
 
 np.random.seed(55500)
@@ -145,9 +146,7 @@ grid.length
 # 
 
 # %% 
-grid.create_custom_grid(np.array([[1, 2, 3],
-                                  [4, 5, 6],
-                                  [7, 8, 9]]))
+gp.set_custom_grid( grid, np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]]) )
 
 # %%
 # Again ``set_any_grid`` will create a grid and activate it. So now the
@@ -192,7 +191,7 @@ grid.values[l0:l1]
 # 
 
 # %%
-grid.create_topography()
+gp.set_topography_from_random(grid)
 
 # %% 
 grid.active_grids_bool
@@ -266,8 +265,12 @@ grid.values
 # 
 
 # %% 
-grid.create_centered_grid(centers=np.array([[300, 0, 0], [0, 0, 0]]),
-                          resolution=[10, 10, 20], radius=100)
+gp.set_centered_grid(
+    grid,
+    centers=np.array([[300, 0, 0], [0, 0, 0]]),
+    resolution=[10, 10, 20],
+    radius=np.array([100, 100, 100])
+)
 
 # %%
 # Resolution and radius create a geometric spaced kernel (blue dots) which
