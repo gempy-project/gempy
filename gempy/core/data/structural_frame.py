@@ -165,6 +165,11 @@ class StructuralFrame:
             elements.extend(group.elements)
         elements.append(self._basement_element)
         return elements
+    
+    @property
+    def n_elements(self) -> int:
+        """Returns the total number of elements in the structural frame."""
+        return len(self.structural_elements)
 
     @property
     def _basement_element(self) -> StructuralElement:
@@ -232,6 +237,11 @@ class StructuralFrame:
     def group_is_fault(self) -> list[bool]:
         """Returns a list of booleans indicating if each structural element is a fault."""
         return [group.is_fault for group in self.structural_groups]
+    
+    @property
+    def group_is_lithology(self) -> list[bool]:
+        """Returns a list of booleans indicating if each structural element is a lithology."""
+        return [group.is_lithology for group in self.structural_groups]
 
     @property
     def input_data_descriptor(self):

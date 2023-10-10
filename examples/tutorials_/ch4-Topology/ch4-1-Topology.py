@@ -8,7 +8,6 @@ import gempy_viewer as gpv
 from gempy_viewer.modules.plot_2d.visualization_2d import Plot2D
 from topology_analysis import topology as tp
 
-import matplotlib.pyplot as plt
 import os
 
 import warnings
@@ -148,24 +147,6 @@ tp.plot_adjacency_matrix(geo_model, M)
 
 
 # %%
-# 3-D Visualization of the Topology Graph
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# 
-
-
-# %%
-# You can also plot the topology in 3-D using GemPy's 3-D visualization
-# toolkit powered by ``pyvista``:
-# 
-
-# %% 
-from gempy_viewer import Vista
-gpv = Vista(geo_model)
-gpv.plot_topology(edges, centroids)
-gpv.show()
-
-
-# %%
 # Look-up tables
 # ~~~~~~~~~~~~~~
 # 
@@ -209,9 +190,14 @@ tp.get_lot_lith_to_node_id(lith_lot)
 # %%
 # sphinx_gallery_thumbnail_number = 4
 dedges, dcentroids = tp.get_detailed_labels(geo_model, edges, centroids)
-gp.plot_2d(geo_model, cell_number=[5], show=False)
-gp.plot.plot_topology(geo_model, dedges, dcentroids, scale=True)
-plt.show()
+# %% 
+plot_2d: Plot2D = gpv.plot_2d(geo_model, cell_number=[5], show=False)
+gpv.plot_topology(
+    regular_grid=geo_model.grid.regular_grid,
+    edges=dedges,
+    centroids=dcentroids,
+    ax=plot_2d.axes[0]
+)
 
 # %% 
 dedges

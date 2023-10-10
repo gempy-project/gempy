@@ -75,6 +75,10 @@ class StructuralGroup(ABC):
         return self.structural_relation == StackRelationType.FAULT
     
     @property
+    def is_lithology(self)-> bool:
+        return self.structural_relation == StackRelationType.ERODE or self.structural_relation == StackRelationType.ONLAP
+    
+    @property
     def number_of_points(self) -> int:
         return sum([element.number_of_points for element in self.elements])
     
