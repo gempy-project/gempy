@@ -5,6 +5,7 @@ Chapter 4: Analyzing Geomodel Topology
 """
 import gempy as gp
 import gempy_viewer as gpv
+from gempy_viewer.modules.plot_2d.visualization_2d import Plot2D
 from topology_analysis import topology as tp
 
 import matplotlib.pyplot as plt
@@ -113,14 +114,22 @@ centroids
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # 
 
-# %% 
-gp.plot.plot_topology(geo_model, edges, centroids)
-plt.show()
 
 # %% 
-gp.plot_2d(geo_model, cell_number=[5], show=False)
-gp.plot.plot_topology(geo_model, edges, centroids, scale=True)
-plt.show()
+gpv.plot_topology(
+    regular_grid=geo_model.grid.regular_grid,
+    edges=edges,
+    centroids=centroids
+)
+
+# %% 
+plot_2d: Plot2D = gpv.plot_2d(geo_model, cell_number=[5], show=False)
+gpv.plot_topology(
+    regular_grid=geo_model.grid.regular_grid,
+    edges=edges,
+    centroids=centroids,
+    ax=plot_2d.axes[0]
+)
 
 # %%
 # Adjacency Matrix
