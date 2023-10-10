@@ -25,7 +25,7 @@ uncertainty analysis regarding subsurface structures.
 
 3D models created with GemPy may look like this:
 
-.. image:: ./images/perth_example.png
+.. image:: ./_images/perth_example.png
 
 Contents:
 
@@ -40,7 +40,7 @@ Contents:
    :maxdepth: 2
    :caption: Getting started
 
-   tutorials_/index
+   tutorials/index
    examples/index
 
 .. toctree::
@@ -104,7 +104,7 @@ geological input data types:
 combining multiple stratigraphic sequences and
 complex fault networks to be considered in the modeling process.
 
-.. image:: ./images/modeling_principle.png
+.. image:: ./_images/modeling_principle.png
 
 
 
@@ -141,7 +141,7 @@ links have to be considered as highly experimental and they are not yet
 part of the stable release. If you are interested in these features,
 feel free to contact us.
 
-.. image:: images/vtkFault.png
+.. image:: _images/vtkFault.png
    :target: https://cgre-aachen.github.io/gempy/_images/sphx_glr_ch1_1_basics_009.png
    :width: 70%
 

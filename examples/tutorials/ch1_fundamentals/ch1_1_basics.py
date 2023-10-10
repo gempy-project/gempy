@@ -25,8 +25,6 @@ import gempy_viewer as gpv
 #     -  :obj:`gempy.core.data.OrientationsTable`
 #     -  :obj:`gempy.core.data.Grid`
 #
-# Each of these classes will be covered in more depth in a later tutorial :doc:`ch1_2a_data_manipulation`.
-#
 # You can also create data from raw CSV files (comma-separated values). This could be useful if you are exporting model data
 # from a different program or creating it in a spreadsheet software like Microsoft Excel or LibreOffice Calc.
 #
