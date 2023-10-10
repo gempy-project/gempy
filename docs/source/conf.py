@@ -111,6 +111,7 @@ with open(os.path.join(os.path.dirname(__file__), '../../AUTHORS.rst'), 'r') as 
     
 version = gempy.__version__  # The short X.Y version.
 release = gempy.__version__  # The full version, including alpha/beta/rc tags.
+today_fmt = '%d %B %Y'
 language = 'en'
 
 # endregion
@@ -119,7 +120,7 @@ language = 'en'
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This patterns also effect to html_static_path and html_extra_path
-exclude_patterns = ['_build', '**.ipynb_checkpoints', 'Thumbs.db', '.DS_Store', 'errors.txt', ]
+exclude_patterns = ['_build', '**.ipynb_checkpoints', 'Thumbs.db', '.DS_Store', 'errors.txt', '../test' ]
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
@@ -127,17 +128,20 @@ highlight_language = 'python3'
 
 todo_include_todos = True  # If true, `todo` and `todoList` produce output, else they produce nothing.
 
+linkcheck_retries = 3
+linkcheck_timeout = 500
+
 # * -- Sphinx Gallery Options
 sphinx_gallery_conf = {
     # path to your examples scripts
     "examples_dirs"          : [
-        "../../examples/tutorials_",
+        "../../examples/tutorials",
         "../../examples/examples/geometries",
         # "../../examples/integrations",
     ],
     # path where to save gallery generated examples
     "gallery_dirs"           : [
-        'tutorials_',
+        'tutorials',
         "examples",
         # 'integrations'
     ],
