@@ -146,7 +146,7 @@ grid.length
 # 
 
 # %% 
-gp.set_custom_grid( grid, np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]]) )
+gp.set_custom_grid(grid, np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]]))
 
 # %%
 # Again ``set_any_grid`` will create a grid and activate it. So now the
@@ -283,12 +283,26 @@ gp.set_centered_grid(
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 
-ax.scatter(grid.values[:, 0], grid.values[:, 1], grid.values[:, 2], '.', alpha=.2)
-ax.scatter(np.array([[300, 0, 0], [0, 0, 0]])[:, 0],
-           np.array([[300, 0, 0], [0, 0, 0]])[:, 1],
-           np.array([[300, 0, 0], [0, 0, 0]])[:, 2], c='r', alpha=1, s=30)
+ax.scatter(
+    grid.centered_grid.values[:, 0],
+    grid.centered_grid.values[:, 1],
+    grid.centered_grid.values[:, 2],
+    '.',
+    alpha=.2
+)
+
+ax.scatter(
+    np.array([[300, 0, 0], [0, 0, 0]])[:, 0],
+    np.array([[300, 0, 0], [0, 0, 0]])[:, 1],
+    np.array([[300, 0, 0], [0, 0, 0]])[:, 2],
+    c='r',
+    alpha=1,
+    s=30
+)
 
 ax.set_xlim(-100, 400)
+ax.set_ylim(-100, 100)
+ax.set_zlim(-120, 0)
 ax.set_xlabel('X Label')
 ax.set_ylabel('Y Label')
 ax.set_zlabel('Z Label')
