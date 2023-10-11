@@ -12,7 +12,7 @@ GemPy v3 promises a cleaner, sleeker, and more intuitive API. With a clear end-g
 
 **3. Parting Ways with Theano/Aesara**
 
-One significant shift is our departure from Theano/Aesara. Although these technologies served us well in the past, it's time to evolve. Ensuring the long-term viability of GemPy, v3 incorporates a flexible tensor library. Currently, it supports numpy and has optional dependencies on PyTorch. Furthermore, TensorFlow's integration is in the pipeline. Impressively, the PyTorch implementation took just a day!
+One significant shift is our departure from Theano/Aesara. Although these technologies served us well in the past, it's time to evolve. Ensuring the long-term viability of GemPy, v3 incorporates a flexible tensor library. Currently, it supports `numpy` and has optional dependencies on `PyTorch`. Furthermore, TensorFlow's integration is in the pipeline. Impressively, with the new abstractions the PyTorch implementation took just a day!
 
 **4. Comprehensive Refactoring for Greater Robustness**
 
