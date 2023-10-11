@@ -20,10 +20,10 @@ setup(
     name='gempy',
     version=version,
     packages=find_packages(exclude=('test', 'docs', 'examples')),
-    install_requires=read_requirements("requirements.txt"),
+    install_requires=read_requirements(" requirements/requirements.txt"),
     extras_require={
-        "dev": read_requirements("dev-requirements.txt"),
-        "opt": read_requirements("optional-requirements.txt"),
+        "dev": read_requirements(" requirements/dev-requirements.txt"),
+        "opt": read_requirements(" requirements/optional-requirements.txt"),
     },
     url='https://github.com/cgre-aachen/gempy',
     license='EUPL-1.2',
