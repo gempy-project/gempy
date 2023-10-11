@@ -4,11 +4,15 @@
 
 [![PyPI](https://img.shields.io/badge/python-3-blue.svg)](https://www.python.org/downloads/)
 [![PyPI](https://img.shields.io/badge/pypi-1.0-blue.svg)](https://pypi.org/project/gempy/)
-[![license: LGPL v3](https://img.shields.io/badge/license-LGPL%20v3-blue.svg)](https://github.com/cgre-aachen/gempy/blob/master/LICENSE)
+[![license: EUPL v1.2](https://img.shields.io/badge/license-EUPL%20v1.2-blue.svg)](https://github.com/cgre-aachen/gempy/blob/master/LICENSE)
 [![Documentation Status](https://assets.readthedocs.org/static/projects/badges/passing-flat.svg)](http://docs.gempy.org)
-[![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/cgre-aachen/gempy/master)
 [![DOI](https://zenodo.org/badge/96211155.svg)](https://zenodo.org/badge/latestdoi/96211155)
-[![DOCKER](https://img.shields.io/docker/cloud/automated/leguark/gempy.svg)](https://cloud.docker.com/repository/docker/leguark/gempy)
+
+## What is New!
+
+GemPy 3 is getting readding for release. We are currently working on the documentation and the final touches. Learn more about the new features in the [What's new in GemPy 3](WhatsNewGemPy3.md). You can try GemPy 3 by installing the pre-release version from PyPi:
+
+`$ pip install gempy --pre`
 
 ## Overview
 
@@ -23,25 +27,12 @@ We provide the latest release version of GemPy via PyPi package services. We hig
 
 `$ pip install gempy`
 
-as it will take care of automatically installing all the required dependencies - except in windows that requires one extra step.
-
-Windows does not have a gcc compilers pre-installed. The easiest way to get a aesara compatible compiler is by using 
-the aesara conda installation. Therefore the process would be the following:
-
-`$ conda install aesara`
-
-`$ pip install gempy`
-
-For more information, refer to the [installation documentation](https://docs.gempy.org/installation.html).
 
 ## Requirements
 
 The following versions are required/strongly recommended for the main dependencies of GemPy (as of June 2023):
-- python=3.10
-- pandas=2.0.1
-- matplotlib>=3.7
-- pyvista>=0.39
-
+- numpy
+ 
 ## Resources
 
 After installation, you can either check the [notebook tutorials](https://docs.gempy.org/getting_started/get_started.html#sphx-glr-getting-started-get-started-py) 
