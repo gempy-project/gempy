@@ -7,12 +7,11 @@ GemPy Models - Some More Complex Examples
 # %%
 # Importing gempy
 import gempy as gp
+import gempy_viewer as gpv
 
 # Aux imports
 import numpy as np
-import pandas as pn
-import matplotlib
-import aesara
+import os
 
 # %%
 # Choose a model and load the corresponding data set in the line below
@@ -36,11 +35,12 @@ import aesara
 # 
 
 # %%
-data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
+
+data_path = os.path.abspath('../..')
 
 
 # %%
-def create_example(name_model, interpolator=None, save_pickle=False, plot_section=True):
+def create_example(name_model, plot_section=True):
     """
     Create an inter_data from one of the examples data_set
     
@@ -52,86 +52,87 @@ def create_example(name_model, interpolator=None, save_pickle=False, plot_sectio
         plot_section (bool)
     
     """
-    name_list = np.array(['Model 1', 'Model 2', 'Model 3', 'Model 4', 'Model 5', 'Model 6', 'Model 7',
-                          'Model 8', 'Model 9'])
+    name_list = np.array(['Model 1', 'Model 2', 'Model 3', 'Model 4', 'Model 5', 'Model 6', 'Model 7', 'Model 8', 'Model 9'])
     assert name_model in name_list, 'Name model must be in the following list: ' + str(name_list)
     # Extract number of the model
     n_model = name_model[-1]
 
-    # Load right gempy geodata
-    geo_data = gp.create_data_legacy(name_model, extent=[0, 2000, 0, 2000, 0, 1600], resolution=[50, 50, 50],
-                                     path_o=data_path + "/data/input_data/lisa_models/foliations" + n_model + ".csv",
-                                     path_i=data_path + "/data/input_data/lisa_models/interfaces" + n_model + ".csv")
+    # # Load right gempy geodata
+    geo_data: gp.data.GeoModel = gp.create_geomodel(
+        project_name=name_model,
+        extent=[0, 2000, 0, 2000, 0, 1600],
+        resolution=[50, 50, 50],
+        refinement=6,  # * For this model is better not to use octrees because we want to see what is happening in the scalar fields
+        importer_helper=gp.data.ImporterHelper(
+            path_to_orientations=data_path + "/data/input_data/lisa_models/foliations" + n_model + ".csv",
+            path_to_surface_points=data_path + "/data/input_data/lisa_models/interfaces" + n_model + ".csv",
+        )
+    )
 
     # Set the right sequential pile
     subset_list_1 = np.array(['Model 1'])
     subset_list_2 = np.array(['Model 5', 'Model 8'])
     subset_list_3 = np.array(['Model 2', 'Model 3', 'Model 9', 'Model 6'])
     subset_list_4 = np.array(['Model 7'])
+    
     ### Model 1 - Discordant layering ###
     if name_model in subset_list_1:
-        gp.map_series_to_surfaces(geo_data, {"Strat_Series_1": ('Sandstone', 'Siltstone', 'Shale'),
-                                             "Strat_Series_2": ('Sandstone2', 'Siltstone2', 'Shale2')},
-                                  )
+        gp.map_stack_to_surfaces(
+            gempy_model=geo_data,
+            mapping_object={
+                "Strat_Series_1": ('Sandstone', 'Siltstone', 'Shale'),
+                "Strat_Series_2": ('Sandstone2', 'Siltstone2', 'Shale2')
+            },
+        )
     ### Model 5 - One normal Fault ###
     ### Model 8 - ###
     elif name_model in subset_list_2:
-        gp.map_series_to_surfaces(geo_data, {"Fault_Series": 'Main_Fault',
-                                             "Strat_Series": (
-                                             'Sandstone', 'Siltstone', 'Shale', 'Sandstone_2', 'Schist', 'Gneiss')},
-                                  )
-        geo_data.set_is_fault(['Fault_Series'])
+        gp.map_stack_to_surfaces(
+            gempy_model=geo_data,
+            mapping_object={
+            "Fault_Series": 'Main_Fault',
+            "Strat_Series": ('Sandstone', 'Siltstone', 'Shale', 'Sandstone_2', 'Schist', 'Gneiss')
+            },
+        )
+        
+        gp.set_is_fault(geo_data, ['Fault_Series'])
+        
     elif name_model in subset_list_3:
         ### Model 2 - Aufwölbung (durch Salzstock?) ###
         ### Model 3+9 - Parallele NNE Schichtung ohne Verwerfung ###
         ### Model 6 - Mulde ###
-        gp.map_series_to_surfaces(geo_data, {
-            "Strat_Series": ('Sandstone', 'Siltstone', 'Shale', 'Sandstone_2', 'Schist', 'Gneiss')},
-                                  )
-
+        gp.map_stack_to_surfaces(
+            gempy_model=geo_data,
+            mapping_object={
+            "Strat_Series": ('Sandstone', 'Siltstone', 'Shale', 'Sandstone_2', 'Schist', 'Gneiss')
+            },
+        )
     elif name_model in subset_list_4:
         ### Model 7 - Graben ###
-        gp.map_series_to_surfaces(geo_data, {"Fault_1": 'Fault_1', "Fault_2": 'Fault_2',
-                                             "Strat_Series": (
-                                             'Sandstone', 'Siltstone', 'Shale', 'Sandstone_2', 'Schist', 'Gneiss')},
-                                  )
-        geo_data.set_is_fault(['Fault_1', 'Fault_2'])
-
+        gp.map_stack_to_surfaces(
+            gempy_model=geo_data,
+            mapping_object={
+            "Fault_1": 'Fault_1', "Fault_2": 'Fault_2',
+            "Strat_Series": ('Sandstone', 'Siltstone', 'Shale', 'Sandstone_2', 'Schist', 'Gneiss')
+            },
+        )
+        
+        gp.set_is_fault(geo_data, ['Fault_1', 'Fault_2'])
     else:
         print('You would never reach this point. Look for the bug')
 
     # Interpolation and Computation
-    if interpolator is None:
-        interp_data = gp.set_interpolator(geo_data, aesara_optimizer='fast_run')
-    else:
-        interp_data = interpolator
-        geo_data.set_aesara_function(interpolator)
-    sol = gp.compute_model(geo_data)
+    sol = gp.compute_model(
+        gempy_model=geo_data,
+        engine_config=gp.data.GemPyEngineConfig(backend=gp.data.AvailableBackends.PYTORCH)
+    )
 
     if plot_section is True:
         # 2D Plot
-        gp.plot_2d(geo_data, cell_number=25,
-                             direction='y', show_data=True)
-        gp.plot_3d(geo_data, image=True)
+        gpv.plot_2d(geo_data, cell_number=['mid'], direction='y', show_data=True)
+        gpv.plot_3d(geo_data, image=False)
 
-    if save_pickle is not False:
-        if type(save_pickle) is str:
-            gp.save_model_to_pickle(geo_data, save_pickle)
-        else:
-            gp.save_model_to_pickle(geo_data, 'lisa-' + str(n_model))
-
-    gp.save_model(geo_data)
-
-    return interp_data
-
-
-# %% 
-def generate_all_models(list_of_models):
-    for e, n in enumerate(list_of_models):
-        if e == 0:
-            interp = create_example(n, None, save_pickle=False, plot_section=True)
-        else:
-            create_example(n, interp, save_pickle=False, plot_section=True)
+    return geo_data.structural_frame
 
 
 # %%
@@ -181,7 +182,6 @@ create_example('Model 8')
 # =================
 
 create_example('Model 9')
-
 
 # %%
 
