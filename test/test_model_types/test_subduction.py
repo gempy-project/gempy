@@ -57,8 +57,8 @@ def test_subduction():
    
    
     # %%
-    from gempy_engine.core.data.options import DualContouringMaskingOptions
-    geo_model.interpolation_options.dual_contouring_masking_options = DualContouringMaskingOptions.INTERSECT
+    from gempy_engine.core.data.options import MeshExtractionMaskingOptions
+    geo_model.interpolation_options.mesh_extraction_masking_options = MeshExtractionMaskingOptions.INTERSECT
     s = gp.compute_model(geo_model)
 
     gpv.plot_2d(geo_model)
