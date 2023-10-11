@@ -8,11 +8,13 @@
 [![Documentation Status](https://assets.readthedocs.org/static/projects/badges/passing-flat.svg)](http://docs.gempy.org)
 [![DOI](https://zenodo.org/badge/96211155.svg)](https://zenodo.org/badge/latestdoi/96211155)
 
-## What is New!
+## What's New: GemPy v3 Pre-release!
 
-GemPy 3 is getting readding for release. We are currently working on the documentation and the final touches. Learn more about the new features in the [What's new in GemPy 3](WhatsNewGemPy3.md). You can try GemPy 3 by installing the pre-release version from PyPi:
+GemPy v3 is gearing up for its official launch. Our team is diligently working on refining the documentation and adding the final touches. Delve into the exciting new features in the [What's New in GemPy v3](WhatsNewGemPy3.md). Experience GemPy v3 firsthand by installing the pre-release version from PyPi:
 
 `$ pip install gempy --pre`
+
+In the meantime, you can explore the updated documentation [here](https://gempy-project.github.io/temp_gp3_docs/).
 
 ## Overview
 

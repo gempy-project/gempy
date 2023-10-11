@@ -4,7 +4,7 @@ Welcome to the era of GemPy v3! We are thrilled to announce the release of the l
 
 **1. Transition from GemPy v2 to v3: The Legacy Lives On**
 
-The journey from GemPy v2 to v3 has been transformative. To ensure that our users don't lose out on any previous functionalities, we've shifted v2 to a package named `gempy_legacy`. While the core team will not develop any new features for this version, we'll continue maintaining it based on community requests.
+The journey from GemPy v2 to v3 has been transformative. To ensure that our users don't lose out on any previous functionalities, we've shifted v2 to a package named [gempy_legacy](https://github.com/gempy-project/gempy_legacy). While the core team will not develop any new features for this version, we'll continue maintaining it based on community requests.
 
 **2. A More Streamlined API**
 
@@ -21,9 +21,9 @@ We've overhauled the foundation of GemPy to ensure:
 - **Enhanced State Management:** By employing properties, we ensure a consistently valid state, irrespective of data modifications.
 - **Optimized Dependency Management:** The handling of dependencies is now more efficient and streamlined. Plus, most of them are optional.
 - **Modular Design:** We've divided GemPy into multiple libraries to enhance its adaptability and ease-of-use:
-    - `gempy_engine`
-    - `gempy_viewer`
-    - `gempy_plugins`
+    - `gempy_engine` [gempy_engine](https://github.com/gempy-project/gempy_engine)
+    - `gempy_viewer` [gempy_viewer](https://github.com/gempy-project/gempy_viewer)
+    - `gempy_plugins`[gempy_plugins](https://github.com/gempy-project/gempy_plugins)
     - `gempy_probability` (Stay tuned for this!)
     - `gempy` (Leaner and meaner, focused mainly on documentation and the API)
 
