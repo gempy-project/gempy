@@ -56,7 +56,7 @@ def test_gravity():
         project_name="2-layers",
         extent=[0, 12, -2, 2, 0, 4],
         resolution=[500, 1, 500],
-        number_octree_levels=4,
+        refinement=4,
         structural_frame=frame,
     )
 

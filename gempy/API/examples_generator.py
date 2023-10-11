@@ -26,7 +26,7 @@ def _generate_2_5d_model(compute_model: bool) -> gp.data.GeoModel:
         project_name='Model1',
         extent=[0, 791, -200, 200, -582, 0],
         resolution=[50, 50, 50],
-        number_octree_levels=1,
+        refinement=1,
         structural_frame=gp.data.StructuralFrame.initialize_default_structure()
     )
     
@@ -166,7 +166,7 @@ def _generate_anticline_model(compute_model: bool) -> gp.data.GeoModel:
     geo_data: gp.data.GeoModel = gp.create_geomodel(
         project_name='fold',
         extent=[0, 1000, 0, 1000, 0, 1000],
-        number_octree_levels=5,
+        refinement=5,
         importer_helper=gp.data.ImporterHelper(
             path_to_orientations=path_to_data + "model2_orientations.csv",
             path_to_surface_points=path_to_data + "model2_surface_points.csv"
@@ -243,7 +243,7 @@ def _generate_combination_model(compute_model:bool) -> gp.data.GeoModel:
     geo_data = gp.create_geomodel(
         project_name='combination',
         extent=[0, 2500, 0, 1000, 0, 1000],
-        number_octree_levels=4,
+        refinement=4,
         resolution=[125, 50, 50],
         importer_helper=gp.data.ImporterHelper(
             path_to_orientations=path_to_data + "model7_orientations.csv",

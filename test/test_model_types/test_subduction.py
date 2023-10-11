@@ -11,7 +11,7 @@ def test_subduction():
         project_name='Onlap_relations',
         extent=[-200, 1000, -500, 500, -1000, 0],
         resolution=[50, 50, 50],
-        number_octree_levels=5,
+        refinement=5,
         importer_helper=gp.data.ImporterHelper(
             path_to_orientations=data_path + "/data/input_data/tut-ch1-4/tut_ch1-4_orientations.csv",
             path_to_surface_points=data_path + "/data/input_data/tut-ch1-4/tut_ch1-4_points.csv",

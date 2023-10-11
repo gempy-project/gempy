@@ -31,7 +31,7 @@ geo_model: gp.data.GeoModel = gp.create_geomodel(
     project_name='Model1',
     extent=[0, 791, -200, 200, -582, 0],
     resolution=[50, 50, 50],
-    number_octree_levels=4,
+    refinement=4,
     structural_frame=gp.data.StructuralFrame.initialize_default_structure()
 )
 geo_model

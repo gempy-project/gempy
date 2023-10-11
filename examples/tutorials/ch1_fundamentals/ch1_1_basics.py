@@ -44,15 +44,6 @@ import gempy_viewer as gpv
 # However, it is recommended to avoid going beyond 100 cells in each direction (1,000,000 voxels) to prevent excessive
 # computational costs.
 #
-# .. admonition:: New in GemPy 3! Octrees
-#
-#     GemPy 3 introduces octrees, which allow us to define resolution by specifying the number of octree levels instead
-#     of passing a resolution for a regular grid. The number of octree levels corresponds to how many times the grid is
-#     halved. Thus, the number of voxels is 2^octree_levels in each direction. For example, 3 octree levels will create
-#     a grid with 8x8x8 voxels, 4 octree levels will create a grid with 16x16x16 voxels, and so on. This provides an
-#     effective way to control model resolution. However, it is recommended not to exceed 6 octree levels to avoid 
-#     escalating computational costs.
-#
 #
 
 # %%
@@ -62,7 +53,7 @@ geo_model: gp.data.GeoModel = gp.create_geomodel(
     project_name='Tutorial_ch1_1_Basics',
     extent=[0, 2000, 0, 2000, 0, 750],
     resolution=[20, 20, 20],  # * Here we define the resolution of the voxels
-    number_octree_levels=4,  # * Here we define the number of octree levels. If octree levels are defined, the resolution is ignored.
+    refinement=4,  # * Here we define the number of octree levels. If octree levels are defined, the resolution is ignored.
     importer_helper=gp.data.ImporterHelper(
         path_to_orientations=data_path + "/data/input_data/getting_started/simple_fault_model_orientations.csv",
         path_to_surface_points=data_path + "/data/input_data/getting_started/simple_fault_model_points.csv",
@@ -255,14 +246,7 @@ gpv.plot_2d(geo_model, show_data=True, cell_number="mid", direction='y')
 # 
 # We can do the same with the underlying scalar-field solution:
 # 
-#
-# .. admonition:: New in GemPy 3! Scalar field visualization and Octrees
-#
-#    When we use octrees we can see that the scalar field looks quite blocky specially further away from the contacts.
-#    This is because octrees are sparse in areas where does not affect the solution. This is a good thing because
-#    it means that we are not wasting computational resources in areas where we do not need them. Check out the lith
-#    block to see how with fewer evaluations we get the same result as with a high resolution grid.
-#
+
 
 # %%
 gpv.plot_2d(

@@ -133,7 +133,7 @@ geo_model: gp.data.GeoModel = gp.create_geomodel(
     project_name='Claudius',
     extent=[548800, 552500, 7816600, 7822000, -11010, -8400],
     resolution=[38, 55, 30],
-    number_octree_levels=1,
+    refinement=1,
     structural_frame=structural_frame
 )
 

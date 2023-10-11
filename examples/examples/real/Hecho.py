@@ -119,7 +119,7 @@ geo_model: gp.data.GeoModel = gp.create_geomodel(
     project_name='Moureze',
     extent=[0, 16, -0.5, 0.5, 0, 4.5],
     resolution=[321, 21, 91],
-    number_octree_levels=4,
+    refinement=4,
     structural_frame=structural_frame
 )
 

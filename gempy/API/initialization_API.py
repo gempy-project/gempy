@@ -20,7 +20,7 @@ def create_geomodel(
         project_name: str = 'default_project',
         extent: Union[list, ndarray] = None,
         resolution: Union[list, ndarray] = None,
-        number_octree_levels: int = 1,
+        refinement: int = 1,
         structural_frame: StructuralFrame = None,
         importer_helper: ImporterHelper = None,
 ) -> GeoModel:  # ? Do I need to pass pandas read kwargs?
@@ -33,7 +33,7 @@ def create_geomodel(
         project_name (str, optional): The name of the project. Defaults to 'default_project'.
         extent (Union[list, ndarray], optional): The 3D extent of the grid. Defaults to None.
         resolution (Union[list, ndarray], optional): The resolution of the grid. Defaults to None.
-        number_octree_levels (int, optional): The number of octree levels for the dual contouring interpolation method. Defaults to 1.
+        refinement (int, optional): Defaults to 1.
         structural_frame (StructuralFrame, optional): The structural frame of the GeoModel. Defaults to None.
         importer_helper (ImporterHelper, optional): Helper object to import structural elements. Defaults to None.
 
@@ -49,7 +49,7 @@ def create_geomodel(
         range=5,
         c_o=10,
         dual_contouring=True,
-        number_octree_levels=number_octree_levels,
+        number_octree_levels=refinement,
     )
     
     match (structural_frame, importer_helper):
