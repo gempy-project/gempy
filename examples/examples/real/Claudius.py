@@ -27,7 +27,7 @@ import pandas as pn
 
 data_path = os.path.abspath('../../data/input_data/Claudius')
 
-reduce_data_by = 5
+reduce_data_by = 20
 
 dfs = []
 for letter in 'ABCD':
@@ -133,7 +133,7 @@ geo_model: gp.data.GeoModel = gp.create_geomodel(
     project_name='Claudius',
     extent=[548800, 552500, 7816600, 7822000, -11010, -8400],
     resolution=[38, 55, 30],
-    refinement=1,
+    refinement=5,
     structural_frame=structural_frame
 )
 
@@ -220,10 +220,11 @@ geo_model.structural_frame
 
 # %%
 geo_model.interpolation_options.kernel_options.range = 1
-gp.compute_model(geo_model, gp.data.GemPyEngineConfig(use_gpu=True))
+gp.compute_model(geo_model, gp.data.GemPyEngineConfig(
+    backend=gp.data.AvailableBackends.PYTORCH, use_gpu=False, dtype='float32'))
 
 # %% 
-sect = [35]
+sect = ['mid']
 
 gpv.plot_2d(geo_model, cell_number=sect, series_n=1, show_scalar=True, direction='x')
 

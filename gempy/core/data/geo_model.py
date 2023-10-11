@@ -162,7 +162,7 @@ class GeoModel:
 
             if resolution_not_set and not resolution_is_octree_resolution:
                 warnings.warn(
-                    message="You are using octrees and passing a regular grid. The resolution of the regular grid will be overwritten",
+                    message="You are using refinement and passing a regular grid. The resolution of the regular grid will be overwritten",
                     category=UserWarning
                 )
 
