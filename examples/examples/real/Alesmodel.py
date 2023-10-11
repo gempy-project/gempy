@@ -140,5 +140,5 @@ gpv.plot_2d(geo_model, cell_number=[4], direction=['y'], show_topography=True, s
 gpv.plot_2d(geo_model, cell_number=[-4], direction=['y'], show_topography=True, show_data=True)
 
 # %%
-# sphinx_gallery_thumbnail_number = 5
-gpv.plot_3d(geo_model, show_lith=True, show_topography=False, kwargs_plot_structured_grid={'opacity': 0.5})
+# sphinx_gallery_thumbnail_number = -1
+gpv.plot_3d(geo_model, show_lith=True, show_topography=False, kwargs_plot_structured_grid={'opacity': 0.2})

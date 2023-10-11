@@ -202,8 +202,8 @@ gp.map_stack_to_surfaces(
     gempy_model=geo_model,
     mapping_object={
         'Default series': ('0', '60', '250'),
-        'Fault'         : 'Claudius_fault',
-        'Uncomformity'  : '330',
+        'Fault': 'Claudius_fault',
+        'Uncomformity': '330',
     }
 )
 # %%
@@ -220,8 +220,14 @@ geo_model.structural_frame
 
 # %%
 geo_model.interpolation_options.kernel_options.range = 1
-gp.compute_model(geo_model, gp.data.GemPyEngineConfig(
-    backend=gp.data.AvailableBackends.PYTORCH, use_gpu=False, dtype='float32'))
+gp.compute_model(
+    geo_model,
+    gp.data.GemPyEngineConfig(
+        backend=gp.data.AvailableBackends.numpy,
+        use_gpu=False,
+        dtype='float64'
+    )
+)
 
 # %% 
 sect = ['mid']

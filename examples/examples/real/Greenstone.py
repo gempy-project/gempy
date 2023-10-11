@@ -44,11 +44,6 @@ gp.map_stack_to_surfaces(
 )
 
 # %% 
-# TODO: GeoPhysics
-# geo_model.add_surface_values([2.61, 2.92, 3.1, 2.92, 2.61])
-
-
-# %% 
 gp.compute_model(geo_model)
 
 # %% 
@@ -57,20 +52,6 @@ gpv.plot_2d(geo_model, cell_number=[-1], direction=['z'], show_data=False)
 # %% 
 gpv.plot_2d(geo_model, cell_number=[25], direction='x')
 
-# %% 
-# TODO: Related to GeoPhysics
-# p2d = gpv.plot_2d(
-#     model=geo_model,
-#     cell_number=[25],
-#     override_regular_grid=geo_model.solutions.values_matrix,
-#     direction=['y'],
-#     show_data=True,
-#     kwargs_regular_grid={ 'cmap': 'viridis', 'norm': None})
-
 # %%
-# sphinx_gallery_thumbnail_number = 5
+# sphinx_gallery_thumbnail_number = -1
 gpv.plot_3d(geo_model)
-
-# %% 
-# np.save('greenstone_ver', geo_model.solutions.vertices)
-# np.save('greenstone_edges', geo_model.solutions.edges)
