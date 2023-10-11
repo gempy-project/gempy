@@ -102,7 +102,7 @@ gp.set_is_fault(
 gp.set_topography_from_file(
     grid=geo_model.grid,
     filepath=path_dem,
-    crop_to_extent=[729550.0, 751500.0, 1913500.0, 1923650.0]
+    crop_to_extent=[729550.0, 751500.0, 1_913_500.0, 1923650.0]
 )
 
 
@@ -141,4 +141,4 @@ gpv.plot_2d(geo_model, cell_number=[-4], direction=['y'], show_topography=True, 
 
 # %%
 # sphinx_gallery_thumbnail_number = -1
-gpv.plot_3d(geo_model, show_lith=True, show_topography=False, kwargs_plot_structured_grid={'opacity': 0.2})
+gpv.plot_3d(geo_model, show_lith=True, show_topography=True, kwargs_plot_structured_grid={'opacity': 0.8})

@@ -83,7 +83,7 @@ class Topography:
         if self._x is not None:
             return self._x
         else:
-            val = self.values[:, 0]
+            val = self.values[:, 0].copy()
             val.sort()
             return np.unique(val)
 
@@ -92,7 +92,7 @@ class Topography:
         if self._y is not None:
             return self._y
         else:
-            val = self.values[:, 1]
+            val = self.values[:, 1].copy()
             val.sort()
             return np.unique(val)
 
