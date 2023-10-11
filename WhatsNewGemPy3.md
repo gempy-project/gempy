@@ -21,9 +21,9 @@ We've overhauled the foundation of GemPy to ensure:
 - **Enhanced State Management:** By employing properties, we ensure a consistently valid state, irrespective of data modifications.
 - **Optimized Dependency Management:** The handling of dependencies is now more efficient and streamlined. Plus, most of them are optional.
 - **Modular Design:** We've divided GemPy into multiple libraries to enhance its adaptability and ease-of-use:
-    - `gempy_engine` [gempy_engine](https://github.com/gempy-project/gempy_engine)
-    - `gempy_viewer` [gempy_viewer](https://github.com/gempy-project/gempy_viewer)
-    - `gempy_plugins`[gempy_plugins](https://github.com/gempy-project/gempy_plugins)
+    - `gempy_engine` [here](https://github.com/gempy-project/gempy_engine)
+    - `gempy_viewer` [here](https://github.com/gempy-project/gempy_viewer)
+    - `gempy_plugins`[here](https://github.com/gempy-project/gempy_plugins)
     - `gempy_probability` (Stay tuned for this!)
     - `gempy` (Leaner and meaner, focused mainly on documentation and the API)
 
