@@ -79,7 +79,7 @@ gp.set_section_grid(
 gp.set_topography_from_random(
     grid=geo_model.grid,
     fractal_dimension=1.2,
-    d_z=np.array([600, 2000]),
+    d_z=np.array([300, 750]),
     topography_resolution=np.array([50, 50])
 )
 

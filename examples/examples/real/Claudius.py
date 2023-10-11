@@ -27,7 +27,7 @@ import pandas as pn
 
 data_path = os.path.abspath('../../data/input_data/Claudius')
 
-reduce_data_by = 20
+reduce_data_by = 30
 
 dfs = []
 for letter in 'ABCD':
