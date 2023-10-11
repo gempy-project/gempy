@@ -49,7 +49,7 @@ gp.map_stack_to_surfaces(
 
 gp.set_is_fault(geo_model, ['fault'])
 
-geo_model.interpolation_options.dual_contouring = False
+geo_model.interpolation_options.mesh_extraction = False
 sol = gp.compute_model(geo_model)
 
 # %% 

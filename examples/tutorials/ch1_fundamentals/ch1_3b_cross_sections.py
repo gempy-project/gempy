@@ -96,7 +96,7 @@ gpv.plot_section_traces(geo_model)
 # %% 
 
 # %% 
-geo_model.interpolation_options.dual_contouring = False
+geo_model.interpolation_options.mesh_extraction = False
 sol = gp.compute_model(geo_model)
 
 # %% 

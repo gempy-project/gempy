@@ -48,7 +48,7 @@ def create_geomodel(
     interpolation_options: InterpolationOptions = InterpolationOptions(
         range=5,
         c_o=10,
-        dual_contouring=True,
+        mesh_extraction=True,
         number_octree_levels=refinement,
     )
     
