@@ -136,7 +136,7 @@ sphinx_gallery_conf = {
     # path to your examples scripts
     "examples_dirs"          : [
         "../../examples/tutorials",
-        "../../examples/examples/geometries",
+        "../../examples/examples",
         # "../../examples/integrations",
     ],
     # path where to save gallery generated examples
