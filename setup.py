@@ -28,7 +28,7 @@ setup(
     url='https://github.com/cgre-aachen/gempy',
     license='EUPL-1.2',
     author='Miguel de la Varga, Alexander Zimmerman, Elisa Heim, Alexander Schaaf, Fabian Stamm, Florian Wellmann, Jan Niederau, Andrew Annex',
-    author_email='miguel@terranigma-solutions.com',
+    author_email='gempy@terranigma-solutions.com',
     description='An Open-source, Python-based 3-D structural geological modeling software.',
     long_description=long_description,
     long_description_content_type='text/markdown',
