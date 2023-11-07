@@ -2,7 +2,7 @@
 
 > Open-source, implicit 3D structural geological modeling in Python.
 
-[![PyPI](https://img.shields.io/badge/python-3-blue.svg)](https://www.python.org/downloads/)
+[![PyPI](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/release/python-31013/)
 [![PyPI](https://img.shields.io/badge/pypi-1.0-blue.svg)](https://pypi.org/project/gempy/)
 [![license: EUPL v1.2](https://img.shields.io/badge/license-EUPL%20v1.2-blue.svg)](https://github.com/cgre-aachen/gempy/blob/master/LICENSE)
 [![Documentation Status](https://assets.readthedocs.org/static/projects/badges/passing-flat.svg)](http://docs.gempy.org)
@@ -33,6 +33,7 @@ We provide the latest release version of GemPy via PyPi package services. We hig
 ## Requirements
 
 The following versions are required/strongly recommended for the main dependencies of GemPy (as of June 2023):
+- python <= 3.10 (required by aesara)
 - numpy
  
 ## Resources
