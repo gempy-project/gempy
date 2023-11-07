@@ -41,8 +41,13 @@ def compute_model(gempy_model: GeoModel, engine_config: Optional[GemPyEngineConf
                 dtype=engine_config.dtype
             )
 
+            # TODO: To decide what to do with this.
+            interpolation_input = gempy_model.interpolation_input
+            interpolation_input.surface_points.sp_coords.register_hook(lambda x: print("I am here!", x))
+            gempy_model.foo = interpolation_input
+            
             gempy_model.solutions = gempy_engine.compute_model(
-                interpolation_input=gempy_model.interpolation_input,
+                interpolation_input=interpolation_input,
                 options=gempy_model.interpolation_options,
                 data_descriptor=gempy_model.input_data_descriptor,
                 geophysics_input=gempy_model.geophysics_input,
