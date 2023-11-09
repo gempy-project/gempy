@@ -157,10 +157,10 @@ class GeoModel:
         if compute_octrees:
             octree_leaf_resolution = np.array([2 ** n_octree_lvl] * 3)
 
-            resolution_not_set = self.grid.regular_grid.resolution is not None
+            resolution_set = self.grid.regular_grid.resolution is not None
             resolution_is_octree_resolution = np.allclose(self.grid.regular_grid.resolution, octree_leaf_resolution)
 
-            if resolution_not_set and not resolution_is_octree_resolution:
+            if resolution_set and not resolution_is_octree_resolution:
                 warnings.warn(
                     message="You are using refinement and passing a regular grid. The resolution of the regular grid will be overwritten",
                     category=UserWarning
