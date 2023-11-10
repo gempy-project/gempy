@@ -40,9 +40,13 @@ def create_geomodel(
     Returns:
         GeoModel: The initialized GeoModel object.
     """
+    # init resolutions well
+    if resolution is None:
+        resolution = np.array([20, 20, 20])
+    
     grid: Grid = Grid(
         extent=extent,
-        resolution=resolution or np.array([20, 20, 20])
+        resolution=resolution
     )
 
     interpolation_options: InterpolationOptions = InterpolationOptions(
