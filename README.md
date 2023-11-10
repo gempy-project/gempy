@@ -60,12 +60,32 @@ Follow these [guidelines](https://github.com/cgre-aachen/gempy/blob/WIP_readme-u
 ## Publications using GemPy
 
 
+
+* Brisson, S., Wellmann, F., Chudalla, N., von Harten, J., & von Hagke, C. (2023). [Estimating uncertainties in 3-D models of complex fold-and-thrust belts: A case study of the Eastern Alps triangle zone](https://www.sciencedirect.com/science/article/pii/S2590197423000046). Applied Computing and Geosciences, 18, 100115.
+
+* Liang, Z., de la Varga, M., & Wellmann, F. (2023). [Kernel method for gravity forward simulation in implicit probabilistic geologic modeling](https://pubs.geoscienceworld.org/geophysics/article/88/3/G43/621596/Kernel-method-for-gravity-forward-simulation-in?casa_token=VjCR7rYOkKoAAAAA:W81L1AXgW_j9GiYPciBvLIdL8Zo66IzYVYiU6Ri8xLgIjbzTmpcDE74rzmAwnokX_71_XKg). Geophysics, 88(3), G43-G55.
+
+* Kong, S., Oh, J., Yoon, D., Ryu, D. W., & Kwon, H. S. (2023). [Integrating Deep Learning and Deterministic Inversion for Enhancing Fault Detection in Electrical Resistivity Surveys](https://www.mdpi.com/2076-3417/13/10/6250). Applied Sciences, 13(10), 6250.
+
+* Thomas, A. T., Micallef, A., Duan, S., & Zou, Z. (2023). [Characteristics and controls of an offshore freshened groundwater system in the Shengsi region, East China Sea](https://www.frontiersin.org/articles/10.3389/feart.2023.1198215/full). Frontiers in Earth Science, 11, 1198215.
+
+* Haehnel, P., Freund, H., Greskowiak, J. & Massmann, G. (2023) [Development of a three-dimensional hydrogeological model for the island of Norderney (Germany) using GemPy](https://doi.org/10.1002/gdj3.208). Geoscience Data Journal, 00, 1–17. 
+
+* Jüstel, A., de la Varga, M., Chudalla, N., Wagner, J. D., Back, S., & Wellmann, F. (2023). [From Maps to Models-Tutorials for structural geological modeling using GemPy and GemGIS](https://jose.theoj.org/papers/10.21105/jose.00185). Journal of Open Source Education, 6(66), 185.
+
+* Sehsah, H., Eldosouky, A. M., & Pham, L. T. (2022). [Incremental Emplacement of the Sierra Nevada Batholith Constrained by U-Pb Ages and Potential Field Data](https://www.journals.uchicago.edu/doi/full/10.1086/722724?casa_token=pkl8XXrtyokAAAAA:YeIh1t-qwt6AT8yz_vTj4OQapaR1_nZUjS3Az_77VZXlpyfGu0cN5DSzrz6NNjoj4Qv5iud4rdc). The Journal of Geology, 130(5), 381-391.
+
 * Schaaf, A., de la Varga, M., Wellmann, F., & Bond, C. E. (2021). [Constraining stochastic 3-D structural geological models with topology information using approximate Bayesian computation in GemPy 2.1](https://gmd.copernicus.org/articles/14/3899/2021/gmd-14-3899-2021.html). Geosci. Model Dev., 14(6), 3899-3913. doi:10.5194/gmd-14-3899-2021
 * Güdük, N., de la Varga, M. Kaukolinna, J. and Wellmann, F. (2021). [Model-Based Probabilistic Inversion Using Magnetic Data: A Case Study on the Kevitsa Deposit](https://www.mdpi.com/2076-3263/11/4/150), _Geosciences_, 11(4):150. https://doi.org/10.3390/geosciences11040150.
+
+* Wu, J., & Sun, B. (2021). [Discontinuous mechanical analysis of manifold element strain of rock slope based on open source Gempy](https://www.e3s-conferences.org/articles/e3sconf/abs/2021/24/e3sconf_caes2021_03084/e3sconf_caes2021_03084.html). In E3S Web of Conferences (Vol. 248, p. 03084). EDP Sciences.
+
 * Stamm, F. A., de la Varga, M., and Wellmann, F. (2019). [Actors, actions, and uncertainties: optimizing decision-making based on 3-D structural geological models](https://se.copernicus.org/articles/10/2015/2019/se-10-2015-2019.html), Solid Earth, 10, 2015–2043.
 * Wellmann, F., Schaaf, A., de la Varga, M., & von Hagke, C. (2019). [From Google Earth to 3D Geology Problem 2: Seeing Below the Surface of the Digital Earth](
 https://www.sciencedirect.com/science/article/pii/B9780128140482000156).
 In Developments in Structural Geology and Tectonics (Vol. 5, pp. 189-204). Elsevier.
+
+Please let us know if your publication is missing!
 
 A continuously growing list of gempy-applications (e.g. listing real-world models) can be found [here](https://hackmd.io/@Japhiolite/B1juPvCxc).
 
