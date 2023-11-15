@@ -78,7 +78,7 @@ For all comments, follow [PEP 8](https://www.python.org/dev/peps/pep-0008/).
 ### Licensing
 
 All contributed code will be licensed under 
-[a LGPL-3 license](https://github.com/cgre-aachen/gempy/blob/master/LICENSE).
+[a EUPL-1.2 license](https://github.com/cgre-aachen/gempy/blob/master/LICENSE).
 If you did not write the code yourself, 
 it is your responsibility to ensure that the existing license is compatible 
 and included in the contributed files. 
