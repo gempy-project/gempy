@@ -30,7 +30,7 @@ def test_gempy_to_subsurface():
 
     trisurf = ss.TriSurf(meshes)
     pyvista_mesh = ss.visualization.to_pyvista_mesh(trisurf)
-    ss.visualization.pv_plot([pyvista_mesh], image_2d=False)
+    ss.visualization.pv_plot([pyvista_mesh], image_2d=True)
 
 
 def test_gempy_to_subsurface_II():
@@ -39,7 +39,7 @@ def test_gempy_to_subsurface_II():
 
     trisurf = ss.TriSurf(meshes)
     pyvista_mesh = ss.visualization.to_pyvista_mesh(trisurf)
-    ss.visualization.pv_plot([pyvista_mesh], image_2d=False)
+    ss.visualization.pv_plot([pyvista_mesh], image_2d=True)
 
 
 def test_gempy_to_subsurface_III():
@@ -48,4 +48,4 @@ def test_gempy_to_subsurface_III():
 
     trisurf = ss.TriSurf(meshes)
     pyvista_mesh = ss.visualization.to_pyvista_mesh(trisurf)
-    ss.visualization.pv_plot([pyvista_mesh], image_2d=False)
+    ss.visualization.pv_plot([pyvista_mesh], image_2d=True)

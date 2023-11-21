@@ -31,7 +31,7 @@ def test_generate_horizontal_stratigraphic_model():
 
     if PLOT: 
         gpv = require_gempy_viewer()
-        gpv.plot_3d(model, image=False)
+        gpv.plot_3d(model, image=True)
 
 
 
