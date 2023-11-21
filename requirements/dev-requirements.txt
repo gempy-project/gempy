@@ -1,0 +1,6 @@
+-r optional-requirements.txt
+
+pytest
+
+# Testing
+pytest-approvaltests

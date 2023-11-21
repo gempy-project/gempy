@@ -1,7 +1,0 @@
--r optional-requirements.txt
-
-# This are additional libraries necessary to run sphinx and all the test
-pytest
-
-# Testing
-pytest-approvaltests

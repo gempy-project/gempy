@@ -1,0 +1,2 @@
+gempy_viewer # This install matplotlib
+pandas

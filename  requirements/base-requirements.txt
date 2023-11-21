@@ -1,2 +1,0 @@
-gempy_viewer
-pandas

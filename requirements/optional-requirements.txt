@@ -2,3 +2,4 @@
 
 pooch # for data download
 subsurface
+scipy
