@@ -29,7 +29,7 @@ def _generate_2_5d_model(compute_model: bool) -> gp.data.GeoModel:
         refinement=1,
         structural_frame=gp.data.StructuralFrame.initialize_default_structure()
     )
-    
+
     gp.add_surface_points(
         geo_model=geo_model,
         x=[223, 458, 612],
@@ -48,7 +48,7 @@ def _generate_2_5d_model(compute_model: bool) -> gp.data.GeoModel:
     )
 
     geo_model.update_transform(gp.data.GlobalAnisotropy.NONE)  # * Remove the auto anisotropy for this 2.5D model
-    
+
     element2 = gp.data.StructuralElement(
         name='surface2',
         color=next(geo_model.structural_frame.color_generator),
@@ -106,19 +106,17 @@ def _generate_2_5d_model(compute_model: bool) -> gp.data.GeoModel:
 
     geo_model.structural_frame.insert_group(0, group_fault)  # * We are placing it already in the right place so we do not need to map anything
 
-
     gp.set_topography_from_random(
         grid=geo_model.grid,
         fractal_dimension=1.9,
         d_z=np.array([-150, 0]),
         topography_resolution=np.array([50, 40])
     )
-    
+
     if compute_model:
         gp.compute_model(geo_model)
-    
-    return geo_model
 
+    return geo_model
 
 
 def _generate_horizontal_stratigraphic_model(compute_model: bool) -> gp.data.GeoModel:
@@ -222,7 +220,7 @@ def _generate_one_fault_model(compute_model: bool) -> gp.data.GeoModel:
         frame=geo_data,
         fault_groups=['Fault_Series']
     )
-    
+
     if compute_model:
         # Compute the geological model
         gp.compute_model(geo_data)
@@ -230,7 +228,7 @@ def _generate_one_fault_model(compute_model: bool) -> gp.data.GeoModel:
     return geo_data
 
 
-def _generate_combination_model(compute_model:bool) -> gp.data.GeoModel:
+def _generate_combination_model(compute_model: bool) -> gp.data.GeoModel:
     """
     Function to create a model with a folded domain featuring an unconformity and a fault,
     map the geological series to surfaces, and compute the geological model.
@@ -250,12 +248,13 @@ def _generate_combination_model(compute_model:bool) -> gp.data.GeoModel:
             path_to_surface_points=path_to_data + "model7_surface_points.csv"
         )
     )
+    geo_data.interpolation_options.number_octree_levels_surface = 4 
 
     # Map geological series to surfaces
     gp.map_stack_to_surfaces(
         gempy_model=geo_data,
         mapping_object={
-            "Fault_Series" : ('fault'),
+            "Fault_Series": ('fault'),
             "Strat_Series1": ('rock3'),
             "Strat_Series2": ('rock2', 'rock1'),
         }
@@ -271,6 +270,11 @@ def _generate_combination_model(compute_model:bool) -> gp.data.GeoModel:
 
     # Compute the geological model
     if compute_model:
-        gp.compute_model(geo_data)
+        gp.compute_model(
+            gempy_model=geo_data,
+            engine_config=gp.data.GemPyEngineConfig(
+                backend=gp.data.AvailableBackends.numpy
+            )
+        )
 
     return geo_data

@@ -24,56 +24,56 @@ def test_generate_horizontal_stratigraphic_model():
     model = gp.generate_example_model(ExampleModel.HORIZONTAL_STRAT, compute_model=True)
     print(model.structural_frame)
 
+    if PLOT:
+        gpv = require_gempy_viewer()
+        gpv.plot_3d(model, image=True)
+        
     _verify_scalar_field(
         model=model,
         name="Horizontal Stratigraphic Scalar Field"
     )
 
-    if PLOT: 
-        gpv = require_gempy_viewer()
-        gpv.plot_3d(model, image=True)
-
-
 
 def test_generate_fold_model():
     model = gp.generate_example_model(ExampleModel.ANTICLINE, compute_model=True)
     print(model.structural_frame)
-    
+
+    if PLOT:
+        gpv = require_gempy_viewer()
+        gpv.plot_3d(model, image=True)
+
     _verify_scalar_field(
         model=model,
         name="Anticline Scalar Field"
     )
     
-    if PLOT:
-        gpv = require_gempy_viewer()
-        gpv.plot_3d(model, image=True)
-
 
 
 def test_generate_fault_model():
     model = gp.generate_example_model(ExampleModel.ONE_FAULT, compute_model=True)
     print(model.structural_frame)
-    
+
+    if PLOT:
+        gpv = require_gempy_viewer()
+        gpv.plot_3d(model, image=True)
+
     _verify_scalar_field(
         model=model,
         name="Fault Scalar Field"
     )
     
-    if PLOT:
-        gpv = require_gempy_viewer()
-        gpv.plot_3d(model, image=True)
-
 
 
 def test_generate_combination_model():
     model = gp.generate_example_model(ExampleModel.COMBINATION, compute_model=True)
     print(model.structural_frame)
-    
+
+    if PLOT:
+        gpv = require_gempy_viewer()
+        gpv.plot_3d(model, image=True)
+        
     _verify_scalar_field(
         model=model,
         name="Combination Scalar Field"
     )
     
-    if PLOT:
-        gpv = require_gempy_viewer()
-        gpv.plot_3d(model, image=True)

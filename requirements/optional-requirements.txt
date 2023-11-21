@@ -3,3 +3,4 @@
 pooch # for data download
 subsurface
 scipy
+scikit-image
