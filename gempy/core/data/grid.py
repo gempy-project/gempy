@@ -74,7 +74,7 @@ class Grid(object):
         self.regular_grid_active = False
 
         # Init optional sections
-        self.sections = grid_types.Sections(regular_grid=self.regular_grid)
+        self.sections = None
 
         self.update_grid_values()
 

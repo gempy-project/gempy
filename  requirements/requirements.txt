@@ -1,1 +1,1 @@
-gempy_engine
+gempy_engine # This install also numpy

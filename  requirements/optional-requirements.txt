@@ -1,7 +1,10 @@
+# For plotting
+# ------------
 gempy_viewer
 
-# Interactive pandas
-numpy
+# data import
+# -----------
 
-# Subsurface
+pooch # for data download
+pandas
 subsurface
