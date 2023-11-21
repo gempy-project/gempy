@@ -1,2 +1,4 @@
-﻿sphinx
+﻿-r dev-requirements.txt
+
+sphinx
 shpinx-gallery

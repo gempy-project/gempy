@@ -1,8 +1,7 @@
+-r optional-requirements.txt
+
 # This are additional libraries necessary to run sphinx and all the test
 pytest
-sphinx==3.5.4
-sphinx_gallery
-pooch
 
 # Testing
 pytest-approvaltests

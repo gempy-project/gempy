@@ -1,10 +1,4 @@
-# For plotting
-# ------------
-gempy_viewer
-
-# data import
-# -----------
+-r base-requirements.txt
 
 pooch # for data download
-pandas
 subsurface

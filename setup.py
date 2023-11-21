@@ -24,6 +24,7 @@ setup(
     extras_require={
         "dev": read_requirements(" requirements/dev-requirements.txt"),
         "opt": read_requirements(" requirements/optional-requirements.txt"),
+        "base": read_requirements(" requirements/base-requirements.txt"),
     },
     url='https://github.com/cgre-aachen/gempy',
     license='EUPL-1.2',
