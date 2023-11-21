@@ -6,7 +6,11 @@ from gempy.core.data.structural_group import FaultsRelationSpecialCase
 
 def test_fault_api():
     frame = _create_structural_frame()
-    gp.set_is_fault(frame=frame, fault_groups=['1', '3'])
+    gp.set_is_fault(
+        frame=frame,
+        fault_groups=['1', '3'],
+        faults_relation_type=FaultsRelationSpecialCase.OFFSET_FORMATIONS,
+    )
 
     print(frame)
 
@@ -15,7 +19,7 @@ def test_fault_api():
         frame.fault_relations,
         np.array(
             [
-                [False, True, True, True],
+                [False, True, False, True],
                 [False, False, False, False],
                 [False, False, False, True],
                 [False, False, False, False]
