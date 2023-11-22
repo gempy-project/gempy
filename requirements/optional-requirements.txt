@@ -3,6 +3,6 @@
 gempy_plugins
 
 pooch # for data download
-subsurface
+subsurface --pre
 scipy
 scikit-image
