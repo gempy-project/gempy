@@ -26,7 +26,7 @@ geo_model: gp.data.GeoModel = gp.create_geomodel(
     project_name='Perth_Basin',
     extent=[337000, 400000, 6640000, 6710000, -18000, 1000],
     resolution=[100, 100, 100],
-    refinement=6,
+    refinement=4,
     importer_helper=gp.data.ImporterHelper(
         path_to_orientations=data_path + "/data/input_data/perth_basin/Paper_GU2F_sc_faults_topo_Foliations.csv",
         path_to_surface_points=data_path + "/data/input_data/perth_basin/Paper_GU2F_sc_faults_topo_Points.csv",
@@ -104,10 +104,10 @@ gp.compute_model(
 )
 
 # %% 
-gpv.plot_2d(geo_model, cell_number=[25])
+gpv.plot_2d(geo_model, cell_number="mid")
 
 # %% 
-gpv.plot_2d(geo_model, cell_number=[25], series_n=-1, show_scalar=True)
+gpv.plot_2d(geo_model, cell_number="mid", series_n=-1, show_scalar=True)
 
 # %% 
 gpv.plot_2d(geo_model, cell_number=[12], direction=["y"], show_data=True, show_topography=True)
@@ -115,35 +115,3 @@ gpv.plot_2d(geo_model, cell_number=[12], direction=["y"], show_data=True, show_t
 # %%
 # sphinx_gallery_thumbnail_number = 6
 gpv.plot_3d(geo_model, show_topography=True)
-
-# %%
-# Times
-# -----
-# 
-# Fast run
-# ^^^^^^^^
-# 
-# -  1M voxels:
-# 
-#    -  CPU: intel® Core™ i7-7700HQ CPU @ 2.80GHz × 8 15 s ± 1.02 s per
-#       loop (mean ± std. dev. of 7 runs, 1 loop each)
-#    -  GPU (4gb) not enough memmory
-#    -  Ceres 1M voxels 2080 851 ms
-# 
-# -  250k voxels
-# 
-#    -  GPU 1050Ti: 3.11 s ± 11.8 ms per loop (mean ± std. dev. of 7 runs,
-#       1 loop each)
-#    -  CPU: intel® Core™ i7-7700HQ CPU @ 2.80GHz × 8 2.27 s ± 47.3 ms
-#    -  
-# 
-# Fast Compile
-# ^^^^^^^^^^^^
-# 
-# -  250k voxels
-# 
-#    -  GPU 1050Ti: 3.7 s ± 11.8 ms per loop (mean ± std. dev. of 7 runs,
-#       1 loop each)
-#    -  CPU: intel® Core™ i7-7700HQ CPU @ 2.80GHz × 8 14.2 s ± 51.1 ms per
-#       loop (mean ± std. dev. of 7 runs, 1 loop each)
-# 
