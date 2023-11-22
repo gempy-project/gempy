@@ -54,8 +54,8 @@ Sections_NS = pd.read_csv(
 
 # %% 
 mask_surfpoints = Moureze_points['G_x'] < -9999
-surface_points = Moureze_points[mask_surfpoints]
-orientations = Moureze_points[~mask_surfpoints]
+surface_points = Moureze_points[mask_surfpoints][::10]
+orientations = Moureze_points[~mask_surfpoints][::10]
 
 # %%
 # Giving an arbitrary value name to the surface
@@ -127,7 +127,7 @@ geo_model: gp.data.GeoModel = gp.create_geomodel(
     project_name='Moureze',
     extent=[-5, 305, -5, 405, -200, -50],
     resolution=resolution_low,
-    refinement=1,
+    refinement=5,
     structural_frame=structural_frame
 )
 
@@ -150,7 +150,11 @@ geo_model.interpolation_options.kernel_options.range *= 0.2
 # %%
 gp.compute_model(
     gempy_model=geo_model,
-    engine_config=gp.data.GemPyEngineConfig(use_gpu=True, dtype='float64', backend=AvailableBackends.numpy)
+    engine_config=gp.data.GemPyEngineConfig(
+        use_gpu=False, 
+        dtype='float32',
+        backend=AvailableBackends.PYTORCH
+    )
 )
 
 

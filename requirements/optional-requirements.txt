@@ -1,5 +1,7 @@
 -r requirements/base-requirements.txt
 
+gempy_plugins
+
 pooch # for data download
 subsurface
 scipy
