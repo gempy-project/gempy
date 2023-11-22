@@ -1,4 +1,4 @@
--r optional-requirements.txt
+-r requirements/optional-requirements.txt
 
 pytest
 

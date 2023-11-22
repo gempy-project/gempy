@@ -1,4 +1,4 @@
--r base-requirements.txt
+-r requirements/base-requirements.txt
 
 pooch # for data download
 subsurface

@@ -6,11 +6,26 @@ with open("gempy/__init__.py", "r") as f:
         if line.startswith("__version__"):
             version = line.split("=")[1].strip().strip("'")
             break
-            
-            
+
+
+
 def read_requirements(file_name):
+    requirements = []
     with open(file_name, "r", encoding="utf-8") as f:
-        return [line.strip() for line in f.readlines()]
+        for line in f:
+            # Strip whitespace and ignore comments
+            line = line.strip()
+            if line.startswith("#") or not line:
+                continue
+
+            # Handle -r directive
+            if line.startswith("-r "):
+                referenced_file = line.split()[1]  # Extract the file name
+                requirements.extend(read_requirements(referenced_file))  # Recursively read referenced file
+            else:
+                requirements.append(line)
+
+    return requirements
 
 
 with open("README.md", "r") as fh:
