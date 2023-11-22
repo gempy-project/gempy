@@ -38,7 +38,11 @@ For additional features, ``GemPy`` offers enhanced installation options:
 
       $ pip install gempy[dev]
 
-Note: Some functionalities in ``GemPy`` require `PyTorch` for efficient calculations and `pyvista`. These libraries need to be installed separately as per user requirement due to their complex nature.
+
+Note: Some functionalities in ``GemPy`` require `PyTorch` and `pyvista`. These libraries need to be installed separately:
+
+- PyTorch: Follow the instructions on the `PyTorch installation page <https://pytorch.org/get-started/locally/>`_.
+- PyVista: Installation guide available on the `PyVista installation page <https://docs.pyvista.org/getting-started/installation.html>`_.
 
 Manual Installation
 ^^^^^^^^^^^^^^^^^^^
