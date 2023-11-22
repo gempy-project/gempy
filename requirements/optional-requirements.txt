@@ -3,6 +3,5 @@
 gempy_plugins
 
 pooch # for data download
-git+https://github.com/terranigma-solutions/subsurface.git#egg=subsurface # Bleeding edge subsurface
 scipy
 scikit-image

@@ -1,6 +1,7 @@
 -r requirements/optional-requirements.txt
 
 pytest
+git+https://github.com/terranigma-solutions/subsurface.git#egg=subsurface # This does not work with the extra requires in setup.py
 
 # Testing
 pytest-approvaltests
