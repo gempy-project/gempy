@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source ~/.virtualenvs/gempy-geotop-pilot/bin/activate
+source ~/.virtualenvs/gempy_dependencies/bin/activate
 
 cd ../docs || exit
 #make clean
