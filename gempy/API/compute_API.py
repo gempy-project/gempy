@@ -79,9 +79,76 @@ def compute_model_at(gempy_model: GeoModel, at: np.ndarray,
         grid=gempy_model.grid,
         xyz_coord=at
     )
-    
+
     sol = compute_model(gempy_model, engine_config)
     return sol.raw_arrays.custom
+
+
+def optimize_and_compute(geo_model: GeoModel, engine_config: GemPyEngineConfig, max_epochs: int = 10):
+    if engine_config.backend != AvailableBackends.PYTORCH:
+        raise ValueError(f'Only PyTorch backend is supported for optimization. Received {engine_config.backend}')
+
+    BackendTensor.change_backend_gempy(
+        engine_backend=engine_config.backend,
+        use_gpu=engine_config.use_gpu,
+        dtype=engine_config.dtype
+    )
+
+    import torch
+    from gempy_engine.core.data.continue_epoch import ContinueEpoch
+
+    interpolation_input = geo_model.interpolation_input
+
+    geo_model.taped_interpolation_input = interpolation_input
+
+    nugget_effect_scalar = geo_model.taped_interpolation_input.surface_points.nugget_effect_scalar
+
+    optimizer = torch.optim.Adam(
+        params=[nugget_effect_scalar],
+        lr=0.01
+    )
+
+    # Optimization loop
+    geo_model.interpolation_options.kernel_options.optimizing_condition_number = True
+
+    def _check_convergence_criterion(conditional_number: float, conditional_number_target: float = 1e4):
+        return conditional_number < conditional_number_target
+
+    for epoch in range(max_epochs):
+        optimizer.zero_grad()
+        try:
+            geo_model.taped_interpolation_input.grid = geo_model.interpolation_input.grid
+
+            gempy_engine.compute_model(
+                interpolation_input=geo_model.taped_interpolation_input,
+                options=geo_model.interpolation_options,
+                data_descriptor=geo_model.input_data_descriptor,
+                geophysics_input=geo_model.geophysics_input,
+            )
+        except ContinueEpoch:
+            # Update the vector
+            optimizer.step()
+            nugget_effect_scalar.data = nugget_effect_scalar.data.clamp_(min=1e-7)  # Replace negative values with 0
+
+        # Monitor progress
+        if epoch % 1 == 0:
+            # print(f"Epoch {epoch}: Condition Number = {condition_number.item()}")
+            print(f"Epoch {epoch}")
+
+        if _check_convergence_criterion(geo_model.interpolation_options.kernel_options.condition_number):
+            break
+
+        continue
+
+    geo_model.interpolation_options.kernel_options.optimizing_condition_number = False
+
+    geo_model.solutions = gempy_engine.compute_model(
+        interpolation_input=geo_model.taped_interpolation_input,
+        options=geo_model.interpolation_options,
+        data_descriptor=geo_model.input_data_descriptor,
+        geophysics_input=geo_model.geophysics_input,
+    )
+    return geo_model.solutions
 
 
 def _legacy_compute_model(gempy_model: GeoModel) -> 'gempy_legacy.Project':
