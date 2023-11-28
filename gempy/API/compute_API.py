@@ -84,7 +84,9 @@ def compute_model_at(gempy_model: GeoModel, at: np.ndarray,
     return sol.raw_arrays.custom
 
 
-def optimize_and_compute(geo_model: GeoModel, engine_config: GemPyEngineConfig, max_epochs: int = 10):
+
+def optimize_and_compute(geo_model: GeoModel, engine_config: GemPyEngineConfig, max_epochs: int = 10, 
+                         convergence_criteria: float = 1e5):
     if engine_config.backend != AvailableBackends.PYTORCH:
         raise ValueError(f'Only PyTorch backend is supported for optimization. Received {engine_config.backend}')
 
@@ -110,10 +112,16 @@ def optimize_and_compute(geo_model: GeoModel, engine_config: GemPyEngineConfig, 
 
     # Optimization loop
     geo_model.interpolation_options.kernel_options.optimizing_condition_number = True
-
-    def _check_convergence_criterion(conditional_number: float, conditional_number_target: float = 1e4):
-        return conditional_number < conditional_number_target
-
+    
+    def _check_convergence_criterion(conditional_number: float, condition_number_old: float, conditional_number_target: float = 1e5):
+        reached_conditional_target = conditional_number < conditional_number_target
+        if reached_conditional_target == False and epoch > 10:
+            condition_number_change = torch.abs(conditional_number - condition_number_old) / condition_number_old
+            if condition_number_change < 0.01:
+                reached_conditional_target = True
+        return reached_conditional_target
+    
+    previous_condition_number = 0
     for epoch in range(max_epochs):
         optimizer.zero_grad()
         try:
@@ -126,21 +134,39 @@ def optimize_and_compute(geo_model: GeoModel, engine_config: GemPyEngineConfig, 
                 geophysics_input=geo_model.geophysics_input,
             )
         except ContinueEpoch:
-            # Scale the gradients
-            # foo = 1000
-            # nugget_effect_scalar.grad *= nugget_effect_scalar * foo
+            # Get absolute values of gradients
+            grad_magnitudes = torch.abs(nugget_effect_scalar.grad)
+
+            # Get indices of the 10 largest gradients
+            grad_magnitudes.size
+
+            # * This ignores 90 percent of the gradients
+            # To int
+            n_values = int(grad_magnitudes.size()[0] * 0.9)
+            _, indices = torch.topk(grad_magnitudes, n_values, largest=False)
+
+            # Zero out gradients that are not in the top 10
+            mask = torch.ones_like(nugget_effect_scalar.grad)
+            mask[indices] = 0
+            nugget_effect_scalar.grad *= mask
             
             # Update the vector
             optimizer.step()
             nugget_effect_scalar.data = nugget_effect_scalar.data.clamp_(min=1e-7)  # Replace negative values with 0
+            
+            # optimizer.zero_grad()
         # Monitor progress
         if epoch % 1 == 0:
             # print(f"Epoch {epoch}: Condition Number = {condition_number.item()}")
             print(f"Epoch {epoch}")
 
-        if _check_convergence_criterion(geo_model.interpolation_options.kernel_options.condition_number):
+        if _check_convergence_criterion(
+                conditional_number=geo_model.interpolation_options.kernel_options.condition_number,
+                condition_number_old=previous_condition_number,
+                conditional_number_target=convergence_criteria,
+        ):
             break
-
+        previous_condition_number = geo_model.interpolation_options.kernel_options.condition_number
         continue
 
     geo_model.interpolation_options.kernel_options.optimizing_condition_number = False
