@@ -105,7 +105,7 @@ def optimize_and_compute(geo_model: GeoModel, engine_config: GemPyEngineConfig, 
 
     optimizer = torch.optim.Adam(
         params=[nugget_effect_scalar],
-        lr=0.01
+        lr=0.01,
     )
 
     # Optimization loop
@@ -126,10 +126,13 @@ def optimize_and_compute(geo_model: GeoModel, engine_config: GemPyEngineConfig, 
                 geophysics_input=geo_model.geophysics_input,
             )
         except ContinueEpoch:
+            # Scale the gradients
+            # foo = 1000
+            # nugget_effect_scalar.grad *= nugget_effect_scalar * foo
+            
             # Update the vector
             optimizer.step()
             nugget_effect_scalar.data = nugget_effect_scalar.data.clamp_(min=1e-7)  # Replace negative values with 0
-
         # Monitor progress
         if epoch % 1 == 0:
             # print(f"Epoch {epoch}: Condition Number = {condition_number.item()}")
