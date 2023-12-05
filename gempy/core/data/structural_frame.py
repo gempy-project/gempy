@@ -171,13 +171,17 @@ class StructuralFrame:
         """Returns the total number of elements in the structural frame."""
         return len(self.structural_elements)
 
+    basement_color: str = None
     @property
     def _basement_element(self) -> StructuralElement:
+        if self.basement_color is None:
+            self.basement_color = self.color_generator.up_next()
+        
         basement = StructuralElement(
             name="basement",
             surface_points=SurfacePointsTable(data=np.zeros(0, dtype=SurfacePointsTable.dt)),
             orientations=OrientationsTable(data=np.zeros(0, dtype=OrientationsTable.dt)),
-            color=self.color_generator.up_next(),
+            color=self.basement_color
         )
 
         return basement
