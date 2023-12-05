@@ -21,7 +21,8 @@ from .grid_API import (
     set_centered_grid,
     set_topography_from_random,
     set_topography_from_file,
-    set_topography_from_subsurface_structured_grid
+    set_topography_from_subsurface_structured_grid,
+    set_topography_from_arrays
 )
 
 # Examples generator
@@ -62,7 +63,7 @@ from gempy_engine.modules.geophysics.gravity_gradient import calculate_gravity_g
 
 __all__ = [
     'create_data_legacy', 'create_geomodel', 'compute_model', 'compute_model_at', 'map_stack_to_surfaces',
-    'set_section_grid', 'set_active_grid', 'set_topography_from_random', 'set_topography_from_file', 'set_topography_from_subsurface_structured_grid',
+    'set_section_grid', 'set_active_grid', 'set_topography_from_random', 'set_topography_from_file', 'set_topography_from_subsurface_structured_grid', 'set_topography_from_arrays',
     'set_custom_grid', 'set_centered_grid',
     'generate_example_model', 'set_fault_relation', 'set_is_fault', 'set_is_finite_fault',
     'add_surface_points', 'add_orientations', 'delete_surface_points', 'delete_orientations',

@@ -59,15 +59,58 @@ class Topography:
 
         # Generate meshgrid for x and y coordinates
         ds = structured_data.data
-        x_vals, y_vals = np.meshgrid(ds['x'], ds['y'], indexing='ij')
+        x_coordinates = ds['x']
+        y_coordinates = ds['y']
+        height_values = ds['topography']
 
+        return cls.from_arrays(regular_grid, x_coordinates, y_coordinates, height_values)
+
+    @classmethod
+    def from_unstructured_mesh(cls, regular_grid, xyz_vertices):
+        """Creates a topography object from an unstructured mesh of XYZ vertices.
+
+        Args:
+            regular_grid (RegularGrid): The regular grid object.
+            xyz_vertices (numpy.ndarray): Array of XYZ vertices of the unstructured mesh.
+
+        Returns:
+            :class:`gempy.core.grid_modules.topography.Topography`
+        """
+        # Perform Delaunay triangulation on the vertices
+
+        # Generate the regular grid points
+        from scipy.interpolate import griddata
+        
+        x_regular, y_regular = np.meshgrid(
+            np.linspace(regular_grid.extent[0], regular_grid.extent[1], regular_grid.resolution[0]),
+            np.linspace(regular_grid.extent[2], regular_grid.extent[3], regular_grid.resolution[1]),
+            indexing='ij'
+        )
+
+        # Interpolate the z-values onto the regular grid
+        z_regular = griddata(
+            points=xyz_vertices[:, :2],
+            values=xyz_vertices[:, 2],
+            xi=(x_regular, y_regular),
+            method='linear',
+            fill_value=np.nan  # You can choose a different fill value or method
+        )
+
+        # Reshape the grid for compatibility with existing structure
+        values_2d = np.stack((x_regular, y_regular, z_regular), axis=-1)
+
+        return cls(regular_grid=regular_grid, values_2d=values_2d)
+    
+    
+    @classmethod
+    def from_arrays(cls, regular_grid, x_coordinates, y_coordinates, height_values,):
+        x_vals, y_vals = np.meshgrid(x_coordinates, y_coordinates, indexing='ij')
         # Reshape arrays for stacking
         x_vals = x_vals[:, :, np.newaxis]  # shape (73, 34, 1)
         y_vals = y_vals[:, :, np.newaxis]  # shape (73, 34, 1)
-        topography_vals = ds['topography'].values[:, :, np.newaxis]  # shape (73, 34, 1)
+        topography_vals = height_values[:, :, np.newaxis]  # shape (73, 34, 1)
         # Stack along the last dimension
         result = np.concatenate([x_vals, y_vals, topography_vals], axis=2)  # shape (73, 34, 3)
-
         return cls(regular_grid=regular_grid, values_2d=result)
 
     @property

@@ -42,8 +42,14 @@ def set_topography_from_random(grid: Grid, fractal_dimension: float = 2.0, d_z: 
     return grid.topography
 
 
-def set_topography_from_subsurface_structured_grid(grid: Grid, struct: 'import subsurface'):
+def set_topography_from_subsurface_structured_grid(grid: Grid, struct: "subsurface.StructuredData"):
     grid.topography = Topography.from_subsurface_structured_data(struct, grid.regular_grid)
+    set_active_grid(grid, [GridTypes.TOPOGRAPHY])
+    return grid.topography
+
+
+def set_topography_from_arrays(grid: Grid,  xyz_vertices: np.ndarray):
+    grid.topography = Topography.from_unstructured_mesh(grid.regular_grid, xyz_vertices)
     set_active_grid(grid, [GridTypes.TOPOGRAPHY])
     return grid.topography
 
