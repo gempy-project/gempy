@@ -108,18 +108,27 @@ class GeoModel:
     @solutions.setter
     def solutions(self, value):
         self._solutions = value
+        
+        # * Set solutions per group
         for e, group in enumerate(self.structural_frame.structural_groups):
             group.kriging_solution = RawArraysSolution(  # ? Maybe I need to add more fields, but I am not sure yet
                 scalar_field_matrix=self._solutions.raw_arrays.scalar_field_matrix[e],
                 block_matrix=self._solutions.raw_arrays.block_matrix[e],
             )
 
+        # * Set solutions per element
         for e, element in enumerate(self.structural_frame.structural_elements[:-1]):  # * Ignore basement
-
             dc_mesh = self._solutions.dc_meshes[e] if self._solutions.dc_meshes is not None else None
             # TODO: These meshes are in the order of the scalar field
             element.vertices = (self.transform.apply_inverse(dc_mesh.vertices) if dc_mesh is not None else None)
             element.edges = (dc_mesh.edges if dc_mesh is not None else None)
+        
+        # * Reordering the elements according to the scalar field
+        for e, order_per_structural_group in enumerate(self._solutions._ordered_elements):
+            elements = self.structural_frame.structural_groups[e].elements
+            reordered_elements = [elements[i] for i in order_per_structural_group]
+            self.structural_frame.structural_groups[e].elements = reordered_elements
+    
 
     @property
     def surface_points(self):
