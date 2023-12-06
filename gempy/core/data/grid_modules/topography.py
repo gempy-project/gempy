@@ -92,7 +92,7 @@ class Topography:
             points=xyz_vertices[:, :2],
             values=xyz_vertices[:, 2],
             xi=(x_regular, y_regular),
-            method='linear',
+            method='nearest',
             fill_value=np.nan  # You can choose a different fill value or method
         )
 
