@@ -119,11 +119,12 @@ class GeoModel:
         self._solutions = value
         
         # * Set solutions per group
-        for e, group in enumerate(self.structural_frame.structural_groups):
-            group.kriging_solution = RawArraysSolution(  # ? Maybe I need to add more fields, but I am not sure yet
-                scalar_field_matrix=self._solutions.raw_arrays.scalar_field_matrix[e],
-                block_matrix=self._solutions.raw_arrays.block_matrix[e],
-            )
+        if self._solutions.raw_arrays is not None:
+            for e, group in enumerate(self.structural_frame.structural_groups):
+                group.kriging_solution = RawArraysSolution(  # ? Maybe I need to add more fields, but I am not sure yet
+                    scalar_field_matrix=self._solutions.raw_arrays.scalar_field_matrix[e],
+                    block_matrix=self._solutions.raw_arrays.block_matrix[e],
+                )
 
         # * Set solutions per element
         for e, element in enumerate(self.structural_frame.structural_elements[:-1]):  # * Ignore basement

@@ -51,12 +51,12 @@ class Grid(object):
         gravity_grid (:class:`gempy.core.grid_modules.grid_types.Gravity`)
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, extent=None, resolution=None, **kwargs):
 
         self.values = np.empty((0, 3))
         self.values_r = np.empty((0, 3))
         self.length = np.empty(0)
-        self.grid_types = np.array(['regular', 'custom', 'topography', 'sections', 'centered'])
+        self.grid_types = np.array(['regular', 'custom', 'topography', 'sections', 'centered']) # TODO: Make a enumerator!
         self.active_grids_bool = np.zeros(5, dtype=bool)
         # All grid types must have values
 
@@ -70,8 +70,9 @@ class Grid(object):
         self.centered_grid_active = False
 
         # Init basic grid empty
-        self.regular_grid = self.create_regular_grid(set_active=False, **kwargs)
-        self.regular_grid_active = False
+        if extent is not None and resolution is not None:
+            self.regular_grid = grid_types.RegularGrid(extent, resolution)
+            self.active_grids_bool[0] = True
 
         # Init optional sections
         self.sections = None
@@ -99,8 +100,6 @@ class Grid(object):
         RegularGrid Docs
         """
         self.regular_grid = grid_types.RegularGrid(extent, resolution, **kwargs)
-        if set_active is True:
-            self.set_active('regular')
         return self.regular_grid
 
     # ? DEP?
