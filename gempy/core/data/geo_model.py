@@ -55,7 +55,7 @@ class GeoModel:
     grid: Grid  #: The general grid used in the geological model.
 
     # region GemPy engine data types
-    interpolation_options: InterpolationOptions  #: The interpolation options provided by the user.
+    _interpolation_options: InterpolationOptions  #: The interpolation options provided by the user.
     geophysics_input: GeophysicsInput = None  #: The geophysics input of the geological model.
     
     transform: Transform = None  #: The transformation used in the geological model for input points.
@@ -69,8 +69,7 @@ class GeoModel:
 
     legacy_model: "gpl.Project" = None  #: Legacy model (if available). Allows for backward compatibility.
 
-    def __init__(self, name: str, structural_frame: StructuralFrame, grid: Grid,
-                 interpolation_options: InterpolationOptions):
+    def __init__(self, name: str, structural_frame: StructuralFrame, grid: Grid, interpolation_options: InterpolationOptions):
         # TODO: Fill the arguments properly
         self.meta = GeoModelMeta(
             name=name,
@@ -82,7 +81,7 @@ class GeoModel:
         self.structural_frame = structural_frame  # ? This could be Optional
 
         self.grid = grid
-        self.interpolation_options = interpolation_options
+        self._interpolation_options = interpolation_options
         self.transform = Transform.from_input_points(
             surface_points=self.surface_points,
             orientations=self.orientations
@@ -105,6 +104,16 @@ class GeoModel:
     def solutions(self) -> Solutions:
         return self._solutions
 
+    @property
+    def interpolation_options(self) -> InterpolationOptions:
+        self._interpolation_options._model_name = self.meta.name
+        return self._interpolation_options
+    
+    @interpolation_options.setter
+    def interpolation_options(self, value):
+        self._interpolation_options = value
+    
+    
     @solutions.setter
     def solutions(self, value):
         self._solutions = value
