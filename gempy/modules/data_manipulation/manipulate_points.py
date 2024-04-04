@@ -226,6 +226,9 @@ def modify_surface_points(geo_model: GeoModel,
     Returns:
         StructuralFrame: The modified structural frame.
     """
+    if elements_names is not None and slice is not None:
+        raise ValueError("Cannot provide both elements_names and slice.")
+    
     surface_points = geo_model.structural_frame.surface_points
     
     if elements_names is not None:
