@@ -34,7 +34,8 @@ def test_gempy_to_subsurface():
 
 
 def test_gempy_to_subsurface_II():
-    model = gp.generate_example_model(ExampleModel.ANTICLINE, compute_model=True)
+    model: gp.data.GeoModel  = gp.generate_example_model(ExampleModel.ANTICLINE, compute_model=True)
+    from gempy_engine.core.data.raw_arrays_solution import RawArraysSolution
     meshes: ss.UnstructuredData = model.solutions.raw_arrays.meshes_to_subsurface()
 
     trisurf = ss.TriSurf(meshes)
