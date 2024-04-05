@@ -132,6 +132,7 @@ def _generate_horizontal_stratigraphic_model(compute_model: bool) -> gp.data.Geo
         project_name='horizontal',
         extent=[0, 1000, 0, 1000, 0, 1000],
         resolution=[50, 5, 50],
+        refinement=3,
         importer_helper=gp.data.ImporterHelper(
             path_to_orientations=data_path + "/data/input_data/jan_models/model1_orientations.csv",
             path_to_surface_points=data_path + "/data/input_data/jan_models/model1_surface_points.csv"

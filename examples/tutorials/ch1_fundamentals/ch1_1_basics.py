@@ -52,8 +52,7 @@ data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
 geo_model: gp.data.GeoModel = gp.create_geomodel(
     project_name='Tutorial_ch1_1_Basics',
     extent=[0, 2000, 0, 2000, 0, 750],
-    resolution=[20, 20, 20],  # * Here we define the resolution of the voxels
-    refinement=1,  # * Here we define the number of octree levels. If octree levels are defined, the resolution is ignored.
+    refinement=4,  # * Here we define the number of octree levels. If octree levels are defined, the resolution is ignored.
     importer_helper=gp.data.ImporterHelper(
         path_to_orientations=data_path + "/data/input_data/getting_started/simple_fault_model_orientations.csv",
         path_to_surface_points=data_path + "/data/input_data/getting_started/simple_fault_model_points.csv",
@@ -131,8 +130,8 @@ gp.map_stack_to_surfaces(
     gempy_model=geo_model,
     mapping_object=  # TODO: This mapping I do not like it too much. We should be able to do it passing the data objects directly
     {
-        "Fault_Series": 'Main_Fault',
-        "Strat_Series": ('Sandstone_2', 'Siltstone', 'Shale', 'Sandstone_1')
+            "Fault_Series": 'Main_Fault',
+            "Strat_Series": ('Sandstone_2', 'Siltstone', 'Shale', 'Sandstone_1')
     }
 )
 
