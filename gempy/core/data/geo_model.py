@@ -5,7 +5,7 @@ from typing import Sequence, Optional
 
 import numpy as np
 
-import gempy_engine.core.data.enginegrid
+import gempy_engine.core.data.engine_grid
 from gempy_engine.core.data import Solutions
 from gempy_engine.core.data.geophysics_input import GeophysicsInput
 from gempy_engine.core.data.raw_arrays_solution import RawArraysSolution
@@ -60,7 +60,7 @@ class GeoModel:
 
     transform: Transform = None  #: The transformation used in the geological model for input points.
 
-    interpolation_grid: gempy_engine.core.data.grid.Grid = None  #: Optional grid used for interpolation. Can be seen as a cache field.
+    interpolation_grid: gempy_engine.core.data.engine_grid.EngineGrid = None  #: Optional grid used for interpolation. Can be seen as a cache field.
     _interpolationInput: InterpolationInput = None  #: Input data for interpolation. Fed by the structural frame and can be seen as a cache field.
     _input_data_descriptor: InputDataDescriptor = None  #: Descriptor of the input data. Fed by the structural frame and can be seen as a cache field.
 
