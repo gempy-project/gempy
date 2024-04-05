@@ -156,3 +156,4 @@ examples/integrations/*.out
 
 # Approval tests
 *.received.txt
+*.Identifier
