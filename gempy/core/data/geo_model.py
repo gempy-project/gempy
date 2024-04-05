@@ -177,6 +177,7 @@ class GeoModel:
             return self._interpolationInput
         n_octree_lvl = self.interpolation_options.number_octree_levels
 
+        # TODO: Adap
         compute_octrees: bool = n_octree_lvl > 1
 
         # * Set regular grid to the octree resolution. ? Probably a better way to do this would be to make regular_grid resolution a property
