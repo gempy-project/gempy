@@ -131,7 +131,7 @@ def test_interpolate_numpy() -> GeoModel:
     geo_model.solutions = solutions
     # TODO: Use gempy API
     if PLOT := True:
-        from gempy_engine.modules.octrees_topology.octrees_topology_interface import ValueType
+        from gempy_engine.core.data.output.blocks_value_type import ValueType
         from gempy_engine.plugins.plotting.helper_functions import plot_block_and_input_2d
         plot_block_and_input_2d(
             stack_number=0,
