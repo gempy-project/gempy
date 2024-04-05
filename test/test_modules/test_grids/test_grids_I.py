@@ -22,7 +22,7 @@ def  test_octree():
 
     plot_block_and_input_2d(
         stack_number=0,
-        interpolation_input=geo_model.interpolation_input,
+        interpolation_input=geo_model.interpolation_input_copy,
         outputs=geo_model.solutions.octrees_output,
         structure=geo_model.structural_frame.input_data_descriptor.stack_structure,
         value_type=ValueType.ids
@@ -35,7 +35,7 @@ def  test_octree():
 
     plot_block_and_input_2d(
         stack_number=0,
-        interpolation_input=geo_model.interpolation_input,
+        interpolation_input=geo_model.interpolation_input_copy,
         outputs=geo_model.solutions.octrees_output,
         structure=geo_model.structural_frame.input_data_descriptor.stack_structure,
         value_type=ValueType.ids

@@ -57,9 +57,9 @@ class GeoModel:
     # region GemPy engine data types
     _interpolation_options: InterpolationOptions  #: The interpolation options provided by the user.
     geophysics_input: GeophysicsInput = None  #: The geophysics input of the geological model.
-    
+
     transform: Transform = None  #: The transformation used in the geological model for input points.
-    
+
     interpolation_grid: gempy_engine.core.data.grid.Grid = None  #: Optional grid used for interpolation. Can be seen as a cache field.
     _interpolationInput: InterpolationInput = None  #: Input data for interpolation. Fed by the structural frame and can be seen as a cache field.
     _input_data_descriptor: InputDataDescriptor = None  #: Descriptor of the input data. Fed by the structural frame and can be seen as a cache field.
@@ -96,9 +96,8 @@ class GeoModel:
             surface_points=self.surface_points,
             orientations=self.orientations
         )
-        
+
         self.transform.apply_anisotropy(anisotropy_type=auto_anisotropy, anisotropy_limit=anisotropy_limit)
-            
 
     @property
     def solutions(self) -> Solutions:
@@ -108,16 +107,15 @@ class GeoModel:
     def interpolation_options(self) -> InterpolationOptions:
         self._interpolation_options._model_name = self.meta.name
         return self._interpolation_options
-    
+
     @interpolation_options.setter
     def interpolation_options(self, value):
         self._interpolation_options = value
-    
-    
+
     @solutions.setter
     def solutions(self, value):
         self._solutions = value
-        
+
         # * Set solutions per group
         if self._solutions.raw_arrays is not None:
             for e, group in enumerate(self.structural_frame.structural_groups):
@@ -132,40 +130,49 @@ class GeoModel:
             # TODO: These meshes are in the order of the scalar field
             element.vertices = (self.transform.apply_inverse(dc_mesh.vertices) if dc_mesh is not None else None)
             element.edges = (dc_mesh.edges if dc_mesh is not None else None)
-        
+
         # * Reordering the elements according to the scalar field
         for e, order_per_structural_group in enumerate(self._solutions._ordered_elements):
             elements = self.structural_frame.structural_groups[e].elements
             reordered_elements = [elements[i] for i in order_per_structural_group]
             self.structural_frame.structural_groups[e].elements = reordered_elements
-    
 
     @property
-    def surface_points(self):
+    def surface_points_copy(self):
         """This is a copy! Returns a SurfacePointsTable for all surface points across the structural elements"""
         surface_points_table = self.structural_frame.surface_points
         if self.transform is not None:
             surface_points_table.model_transform = self.transform
         return surface_points_table
-    
+
+    @property
+    def surface_points(self):
+        raise AttributeError("This property can only be set, not read. You can access the copy with `surface_points_copy` or"
+                             "the original on the individual structural elements.")
+
     @surface_points.setter
     def surface_points(self, value):
         self.structural_frame.surface_points = value
 
     @property
-    def orientations(self) -> OrientationsTable:
+    def orientations_copy(self) -> OrientationsTable:
         """This is a copy! Returns a OrientationsTable for all orientations across the structural elements"""
         orientations_table = self.structural_frame.orientations
         if self.transform is not None:
             orientations_table.model_transform = self.transform
         return orientations_table
-    
+
+    @property
+    def orientations(self) -> OrientationsTable:
+        raise AttributeError("This property can only be set, not read. You can access the copy with `orientations_copy` or"
+                             "the original on the individual structural elements.")
+
     @orientations.setter
     def orientations(self, value):
         self.structural_frame.orientations = value
 
     @property
-    def interpolation_input(self):
+    def interpolation_input_copy(self):
         if self.structural_frame.is_dirty is False:
             return self._interpolationInput
         n_octree_lvl = self.interpolation_options.number_octree_levels
@@ -207,5 +214,3 @@ class GeoModel:
     def add_surface_points(self, X: Sequence[float], Y: Sequence[float], Z: Sequence[float],
                            surface: Sequence[str], nugget: Optional[Sequence[float]] = None) -> None:
         raise NotImplementedError("This method is deprecated. Use `gp.add_surface_points` instead")
-
-

@@ -42,7 +42,7 @@ def compute_model(gempy_model: GeoModel, engine_config: Optional[GemPyEngineConf
             )
 
             # TODO: To decide what to do with this.
-            interpolation_input = gempy_model.interpolation_input
+            interpolation_input = gempy_model.interpolation_input_copy
             gempy_model.taped_interpolation_input = interpolation_input
 
             gempy_model.solutions = gempy_engine.compute_model(
@@ -99,7 +99,7 @@ def optimize_and_compute(geo_model: GeoModel, engine_config: GemPyEngineConfig, 
     import torch
     from gempy_engine.core.data.continue_epoch import ContinueEpoch
 
-    interpolation_input = geo_model.interpolation_input
+    interpolation_input = geo_model.interpolation_input_copy
 
     geo_model.taped_interpolation_input = interpolation_input
 
@@ -125,7 +125,7 @@ def optimize_and_compute(geo_model: GeoModel, engine_config: GemPyEngineConfig, 
     for epoch in range(max_epochs):
         optimizer.zero_grad()
         try:
-            geo_model.taped_interpolation_input.grid = geo_model.interpolation_input.grid
+            geo_model.taped_interpolation_input.grid = geo_model.interpolation_input_copy.grid
 
             gempy_engine.compute_model(
                 interpolation_input=geo_model.taped_interpolation_input,

@@ -53,7 +53,7 @@ geo_model: gp.data.GeoModel = gp.create_geomodel(
     project_name='Tutorial_ch1_1_Basics',
     extent=[0, 2000, 0, 2000, 0, 750],
     resolution=[20, 20, 20],  # * Here we define the resolution of the voxels
-    refinement=4,  # * Here we define the number of octree levels. If octree levels are defined, the resolution is ignored.
+    refinement=1,  # * Here we define the number of octree levels. If octree levels are defined, the resolution is ignored.
     importer_helper=gp.data.ImporterHelper(
         path_to_orientations=data_path + "/data/input_data/getting_started/simple_fault_model_orientations.csv",
         path_to_surface_points=data_path + "/data/input_data/getting_started/simple_fault_model_points.csv",
@@ -215,6 +215,7 @@ geo_model.interpolation_options
 
 # %%
 # Compute the geological model and get the solutions
+geo_model.interpolation_options.mesh_extraction = True
 sol = gp.compute_model(geo_model)
 sol
 

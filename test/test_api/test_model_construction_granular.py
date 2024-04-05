@@ -123,7 +123,7 @@ def test_interpolate_numpy() -> GeoModel:
     geo_model: GeoModel = test_create_geomodel()
 
     solutions: gempy_engine.core.data.solutions.Solutions = gempy_engine.compute_model(
-        interpolation_input=geo_model.interpolation_input,
+        interpolation_input=geo_model.interpolation_input_copy,
         options=geo_model.interpolation_options,
         data_descriptor=geo_model.input_data_descriptor
     )
@@ -135,7 +135,7 @@ def test_interpolate_numpy() -> GeoModel:
         from gempy_engine.plugins.plotting.helper_functions import plot_block_and_input_2d
         plot_block_and_input_2d(
             stack_number=0,
-            interpolation_input=geo_model.interpolation_input,
+            interpolation_input=geo_model.interpolation_input_copy,
             outputs=geo_model.solutions.octrees_output,
             structure=geo_model.structural_frame.input_data_descriptor.stack_structure,
             value_type=ValueType.ids

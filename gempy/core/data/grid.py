@@ -56,7 +56,7 @@ class Grid(object):
         self.values = np.empty((0, 3))
         self.values_r = np.empty((0, 3))
         self.length = np.empty(0)
-        self.grid_types = np.array(['regular', 'custom', 'topography', 'sections', 'centered']) # TODO: Make a enumerator!
+        self.grid_types = np.array(['regular', 'custom', 'topography', 'sections', 'centered', 'octree']) # TODO: Make a enumerator!
         self.active_grids_bool = np.zeros(5, dtype=bool)
         # All grid types must have values
 
