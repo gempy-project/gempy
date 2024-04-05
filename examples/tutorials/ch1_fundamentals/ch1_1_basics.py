@@ -215,7 +215,6 @@ geo_model.interpolation_options
 
 # %%
 # Compute the geological model and get the solutions
-geo_model.interpolation_options.mesh_extraction = True
 sol = gp.compute_model(geo_model)
 sol
 
