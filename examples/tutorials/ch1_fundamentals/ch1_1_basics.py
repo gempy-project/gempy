@@ -75,10 +75,10 @@ geo_model: gp.data.GeoModel = gp.create_geomodel(
 # the sequence of formations and their assignment to series are still arbitrary. We will rectify this in the subsequent steps.
 
 # %% 
-geo_model.surface_points
+geo_model.surface_points_copy
 
 # %% 
-geo_model.orientations
+geo_model.orientations_copy
 
 # %%
 # Declaring the Sequential Order of Geological Formations

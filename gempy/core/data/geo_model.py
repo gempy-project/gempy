@@ -93,8 +93,8 @@ class GeoModel:
 
     def update_transform(self, auto_anisotropy: GlobalAnisotropy = GlobalAnisotropy.NONE, anisotropy_limit: Optional[np.ndarray] = None):
         self.transform = Transform.from_input_points(
-            surface_points=self.surface_points,
-            orientations=self.orientations
+            surface_points=self.surface_points_copy,
+            orientations=self.orientations_copy
         )
 
         self.transform.apply_anisotropy(anisotropy_type=auto_anisotropy, anisotropy_limit=anisotropy_limit)

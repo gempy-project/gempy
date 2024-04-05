@@ -29,7 +29,7 @@ def test_modify_surface_point_by_name_and_index():
 
 def test_modify_surface_point_by_global_index():
     model = generate_example_model(ExampleModel.ONE_FAULT, compute_model=False)
-    print(model.surface_points.df)
+    print(model.surface_points_copy.df)
     gp_viewer.plot_2d(
         model,
         direction=['y'],
@@ -42,7 +42,7 @@ def test_modify_surface_point_by_global_index():
         Z=800
     )
 
-    print(model.surface_points.df)
+    print(model.surface_points_copy.df)
     gp_viewer.plot_2d(
         model,
         direction=['y'],
