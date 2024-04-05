@@ -95,10 +95,10 @@ print(ids)
 
 # %% 
 # model resolution
-nx, ny, nz = geo_model.grid.regular_grid.resolution
+nx, ny, nz = geo_model.grid.octree_grid.resolution
 
 # model extent
-xmin, xmax, ymin, ymax, zmin, zmax = geo_model.grid.regular_grid.extent
+xmin, xmax, ymin, ymax, zmin, zmax = geo_model.grid.octree_grid.extent
 
 # %%
 # These two parameters are important to, a) restructure ``lith_block``,

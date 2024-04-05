@@ -5,7 +5,7 @@ from typing import Sequence, Optional
 
 import numpy as np
 
-import gempy_engine.core.data.grid
+import gempy_engine.core.data.enginegrid
 from gempy_engine.core.data import Solutions
 from gempy_engine.core.data.geophysics_input import GeophysicsInput
 from gempy_engine.core.data.raw_arrays_solution import RawArraysSolution
