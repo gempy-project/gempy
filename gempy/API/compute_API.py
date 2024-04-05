@@ -43,7 +43,7 @@ def compute_model(gempy_model: GeoModel, engine_config: Optional[GemPyEngineConf
 
             # TODO: To decide what to do with this.
             interpolation_input = gempy_model.interpolation_input_copy
-            gempy_model.taped_interpolation_input = interpolation_input
+            gempy_model.taped_interpolation_input = interpolation_input # * This is used for gradient tape
 
             gempy_model.solutions = gempy_engine.compute_model(
                 interpolation_input=interpolation_input,
