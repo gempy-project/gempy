@@ -26,7 +26,7 @@ def test_generate_horizontal_stratigraphic_model():
 
     if PLOT:
         gpv = require_gempy_viewer()
-        gpv.plot_3d(model, image=True)
+        gpv.plot_3d(model, show_data=True, image=True)
         
     _verify_scalar_field(
         model=model,

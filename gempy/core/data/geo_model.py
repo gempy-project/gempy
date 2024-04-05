@@ -175,34 +175,34 @@ class GeoModel:
     def interpolation_input_copy(self):
         if self.structural_frame.is_dirty is False:
             return self._interpolationInput
-        n_octree_lvl = self.interpolation_options.number_octree_levels
+        
+        # n_octree_lvl = self.interpolation_options.number_octree_levels
 
         # TODO: Adap
-        compute_octrees: bool = n_octree_lvl > 1
-
-        # * Set regular grid to the octree resolution. ? Probably a better way to do this would be to make regular_grid resolution a property
-        if compute_octrees:
-            octree_leaf_resolution = np.array([2 ** n_octree_lvl] * 3)
-
-            resolution_set = self.grid.regular_grid.resolution is not None
-            resolution_is_octree_resolution = np.allclose(self.grid.regular_grid.resolution, octree_leaf_resolution)
-
-            if resolution_set and not resolution_is_octree_resolution:
-                warnings.warn(
-                    message="You are using refinement and passing a regular grid. The resolution of the regular grid will be overwritten",
-                    category=UserWarning
-                )
-
-            self.grid.regular_grid.set_regular_grid(
-                extent=self.grid.regular_grid.extent,
-                resolution=octree_leaf_resolution
-            )
+        # compute_octrees: bool = n_octree_lvl > 1
+        # 
+        # # * Set regular grid to the octree resolution. ? Probably a better way to do this would be to make regular_grid resolution a property
+        # if compute_octrees:
+        #     octree_leaf_resolution = np.array([2 ** n_octree_lvl] * 3)
+        # 
+        #     resolution_set = self.grid.regular_grid.resolution is not None
+        #     resolution_is_octree_resolution = np.allclose(self.grid.regular_grid.resolution, octree_leaf_resolution)
+        # 
+        #     if resolution_set and not resolution_is_octree_resolution:
+        #         warnings.warn(
+        #             message="You are using refinement and passing a regular grid. The resolution of the regular grid will be overwritten",
+        #             category=UserWarning
+        #         )
+        # 
+        #     self.grid.regular_grid.set_regular_grid(
+        #         extent=self.grid.regular_grid.extent,
+        #         resolution=octree_leaf_resolution
+        #     )
 
         self._interpolationInput = InterpolationInput.from_structural_frame(
             structural_frame=self.structural_frame,
             grid=self.grid,
-            transform=self.transform,
-            octrees=compute_octrees
+            transform=self.transform
         )
 
         return self._interpolationInput
