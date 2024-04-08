@@ -63,7 +63,7 @@ gpv.plot_2d(geo_model)
 # 
 
 # %% 
-grav_res = 20
+grav_res = 10
 X = np.linspace(7.050000e+05, 747000, grav_res)
 Y = np.linspace(6863000, 6925000, grav_res)
 Z = 300
