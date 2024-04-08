@@ -51,7 +51,7 @@ class RegularGrid:
         self.y = None
         self.z = None
 
-        if extent is not None and resolution is not None:
+        if extent is not None and resolution.shape[0] > 0:
             self.set_regular_grid(extent, resolution)
             self.dx, self.dy, self.dz = self.get_dx_dy_dz()
 

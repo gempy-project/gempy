@@ -108,7 +108,7 @@ class GeoModel:
         n_octree_lvl = self._interpolation_options.number_octree_levels
 
         octrees_set: bool = n_octree_lvl > 1
-        resolution_set = self.grid.regular_grid.resolution is not None
+        resolution_set = self.grid.active_grids_bool[0]  # 0 corresponds
 
         # Create a tuple representing the conditions
         match (octrees_set, resolution_set):

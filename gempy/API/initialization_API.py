@@ -42,12 +42,16 @@ def create_geomodel(
     """
     # init resolutions well
     if resolution is None:
-        resolution = np.array([20, 20, 20])
-    
-    grid: Grid = Grid(
-        extent=extent,
-        resolution=resolution
-    )
+        grid: Grid = Grid(
+            extent=extent,
+            resolution=np.array([2 ** refinement] * 3),
+        )
+        grid.set_inactive("regular")
+    else:
+        grid = Grid(
+            extent=extent,
+            resolution=resolution
+        )
 
     interpolation_options: InterpolationOptions = InterpolationOptions(
         range=5,
@@ -55,7 +59,7 @@ def create_geomodel(
         mesh_extraction=True,
         number_octree_levels=refinement,
     )
-    
+
     match (structural_frame, importer_helper):
         case (None, None):
             # ? For now my gut feeling is that is better to pass the structural frame explicitly

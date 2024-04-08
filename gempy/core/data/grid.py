@@ -51,7 +51,7 @@ class Grid(object):
         gravity_grid (:class:`gempy.core.grid_modules.grid_types.Gravity`)
     """
 
-    def __init__(self, extent=None, resolution=None, **kwargs):
+    def __init__(self, extent=None, resolution=None):
 
         self.values = np.empty((0, 3))
         self.values_r = np.empty((0, 3))
