@@ -28,7 +28,7 @@ geo_model: gp.data.GeoModel = gp.create_geomodel(
     project_name='Greenstone',
     extent=[696000, 747000, 6863000, 6930000, -20000, 200],  # * Here we define the extent of the model
     resolution=[20, 20, 20],  # * Here we define the resolution of the voxels
-    refinement=4,  # * Here we define the number of octree levels. If octree levels are defined, the resolution is ignored.
+    refinement=2,  # * Here we define the number of octree levels. If octree levels are defined, the resolution is ignored.
     importer_helper=gp.data.ImporterHelper(
         path_to_orientations=data_path + "/SandStone_Foliations.csv",
         path_to_surface_points=data_path + "/SandStone_Points.csv",
@@ -122,6 +122,7 @@ geo_model.geophysics_input = gp.data.GeophysicsInput(
 # 
 
 # %% 
+geo_model.interpolation_options.mesh_extraction = False
 sol = gp.compute_model(
     gempy_model=geo_model,
     engine_config=gp.data.GemPyEngineConfig(
