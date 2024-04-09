@@ -18,6 +18,17 @@ Github release
 
 PyPi release
 ------------
+New 
+```
+    #  First create the dist
+    python -m build
+
+    # Second upload the distributions
+    twine upload dist/*
+```
+
+Old
+```
     #  First create the dist
     python3 setup.py sdist bdist_wheel
 
