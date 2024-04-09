@@ -27,8 +27,7 @@ data_path = os.path.abspath('../../data/input_data/tut_SandStone')
 geo_model: gp.data.GeoModel = gp.create_geomodel(
     project_name='Greenstone',
     extent=[696000, 747000, 6863000, 6930000, -20000, 200],  # * Here we define the extent of the model
-    # resolution=[20, 20, 20],  # * Here we define the resolution of the voxels
-    refinement=2,  # * Here we define the number of octree levels. If octree levels are defined, the resolution is ignored.
+    refinement=5,  # * Here we define the number of octree levels. If octree levels are defined, the resolution is ignored.
     importer_helper=gp.data.ImporterHelper(
         path_to_orientations=data_path + "/SandStone_Foliations.csv",
         path_to_surface_points=data_path + "/SandStone_Points.csv",
@@ -63,7 +62,7 @@ gpv.plot_2d(geo_model)
 # 
 
 # %% 
-grav_res = 10
+grav_res = 20
 X = np.linspace(7.050000e+05, 747000, grav_res)
 Y = np.linspace(6863000, 6925000, grav_res)
 Z = 300
@@ -126,7 +125,7 @@ geo_model.interpolation_options.mesh_extraction = False
 sol = gp.compute_model(
     gempy_model=geo_model,
     engine_config=gp.data.GemPyEngineConfig(
-        backend=gp.data.AvailableBackends.PYTORCH,
+        backend=gp.data.AvailableBackends.numpy,
         dtype='float32'
     )
 )
