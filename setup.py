@@ -1,13 +1,6 @@
+from os import path
+
 from setuptools import setup, find_packages
-
-
-with open("gempy/__init__.py", "r") as f:
-    for line in f:
-        if line.startswith("__version__"):
-            version = line.split("=")[1].strip().strip("'")
-            break
-
-
 
 def read_requirements(file_name):
     requirements = []
@@ -56,4 +49,10 @@ setup(
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.10",
     ],
+    use_scm_version={
+            "root"            : ".",
+            "relative_to"     : __file__,
+            "write_to"        : path.join("gempy", "_version.py"),
+            "fallback_version": "3.0.0"
+    },
 )
