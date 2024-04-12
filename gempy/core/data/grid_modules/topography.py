@@ -108,7 +108,7 @@ class Topography:
         # Reshape arrays for stacking
         x_vals = x_vals[:, :, np.newaxis]  # shape (73, 34, 1)
         y_vals = y_vals[:, :, np.newaxis]  # shape (73, 34, 1)
-        topography_vals = height_values[:, :, np.newaxis]  # shape (73, 34, 1)
+        topography_vals = height_values.values[:, :, np.newaxis]  # shape (73, 34, 1)
         # Stack along the last dimension
         result = np.concatenate([x_vals, y_vals, topography_vals], axis=2)  # shape (73, 34, 3)
         return cls(regular_grid=regular_grid, values_2d=result)

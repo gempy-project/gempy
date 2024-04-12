@@ -34,7 +34,7 @@ path_dem = data_path + "/data/input_data/AlesModel/_cropped_DEM_coarse.tif"
 geo_model: gp.data.GeoModel = gp.create_geomodel(
     project_name='Claudius',
     extent=[729550.0, 751500.0, 1913500.0, 1923650.0, -1800.0, 800.0],
-    resolution=[100, 100, 100],
+    resolution=None,
     refinement=6,
     importer_helper=gp.data.ImporterHelper(
         path_to_orientations=path_orient,
@@ -117,7 +117,7 @@ geo_model.interpolation_options.kernel_options.range = .8
 gp.modify_surface_points(
     geo_model=geo_model,
     elements_names=["CARBO", "LIAS", "TRIAS"],
-    nugget=0.01
+    nugget=0.005
 )
 
 # %% 
@@ -125,9 +125,11 @@ print(geo_model.structural_frame)
 geo_model.structural_frame
 
 # %% 
+geo_model.interpolation_options.mesh_extraction = False
 _ = gp.compute_model(
     geo_model,
     engine_config=gp.data.GemPyEngineConfig(
+        backend=gp.data.AvailableBackends.PYTORCH,
         use_gpu=True,
         dtype="float64"
     ))
