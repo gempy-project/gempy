@@ -8,7 +8,7 @@ GemPy v3 is gearing up for its official launch. Our team is diligently working o
 In the meantime, you can explore the updated documentation [here](https://gempy-project.github.io/temp_gp3_docs/).
 
 
-**Introducing GemPy Version 3: A Leap Forward in Geomodeling Software**
+**Introducing GemPy Version 3: A Leap Froward in Geomodeling Software**
 
 Welcome to the era of GemPy v3! We are thrilled to announce the release of the latest version, a product of meticulous planning, redesign, and rigorous testing. While the core essence remains intact, v3 brings significant enhancements and novelties that promise to revolutionize your geomodeling experience.
 
@@ -37,9 +37,13 @@ We've overhauled the foundation of GemPy to ensure:
     - `gempy_probability` (Stay tuned for this!)
     - `gempy` (Leaner and meaner, focused mainly on documentation and the API)
 
-**5. Exciting New Features on the Horizon**
+**5. Octree Implementation for Faster Computation**
 
-While the above changes are foundational, we are also gearing up to unveil some groundbreaking features. We're keeping them under wraps for now, but rest assured, they'll significantly elevate your GemPy experience!
+**6. Dual Contouring for High-Quality Meshing**
+
+**7. External Implicit Interpolation Function**
+
+**And Much More!**
 
 ---
 

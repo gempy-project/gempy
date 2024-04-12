@@ -19,7 +19,6 @@ data_path = os.path.abspath('../../data/input_data/tut_SandStone')
 geo_model: gp.data.GeoModel = gp.create_geomodel(
     project_name='Greenstone',
     extent=[696000, 747000, 6863000, 6930000, -20000, 200],  # * Here we define the extent of the model
-    resolution=[20, 20, 20],  # * Here we define the resolution of the voxels
     refinement=6,
     # * Here we define the number of octree levels. If octree levels are defined, the resolution is ignored.
     importer_helper=gp.data.ImporterHelper(
@@ -50,7 +49,7 @@ gp.compute_model(geo_model)
 gpv.plot_2d(geo_model, cell_number=[-1], direction=['z'], show_data=False)
 
 # %% 
-gpv.plot_2d(geo_model, cell_number=[25], direction='x')
+gpv.plot_2d(geo_model, cell_number=['mid'], direction='x')
 
 # %%
 # sphinx_gallery_thumbnail_number = -1
