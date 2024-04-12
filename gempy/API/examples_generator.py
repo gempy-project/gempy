@@ -242,14 +242,14 @@ def _generate_combination_model(compute_model: bool) -> gp.data.GeoModel:
     geo_data = gp.create_geomodel(
         project_name='combination',
         extent=[0, 2500, 0, 1000, 0, 1000],
-        refinement=4,
-        resolution=[125, 50, 50],
+        refinement=5,
+        # resolution=[125, 50, 50],
         importer_helper=gp.data.ImporterHelper(
             path_to_orientations=path_to_data + "model7_orientations.csv",
             path_to_surface_points=path_to_data + "model7_surface_points.csv"
         )
     )
-    geo_data.interpolation_options.number_octree_levels_surface = 4 
+    geo_data.interpolation_options.number_octree_levels_surface = 4
 
     # Map geological series to surfaces
     gp.map_stack_to_surfaces(
