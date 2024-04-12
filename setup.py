@@ -26,7 +26,6 @@ with open("README.md", "r") as fh:
 
 setup(
     name='gempy',
-    version=version,
     packages=find_packages(exclude=('test', 'docs', 'examples')),
     install_requires=read_requirements("requirements/requirements.txt"),
     extras_require={
