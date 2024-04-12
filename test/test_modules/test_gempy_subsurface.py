@@ -1,9 +1,16 @@
-﻿import gempy as gp
+﻿import pytest
+
+import gempy as gp
 import gempy_viewer as gpv
+from conftest import Requirements, REQUIREMENT_LEVEL
 from gempy.core.data.enumerators import ExampleModel
+
 import numpy as np
-import subsurface as ss
-import pandas as pd
+
+pytestmark = pytest.mark.skipif(REQUIREMENT_LEVEL.value < Requirements.DEV.value, reason="This test needs higher requirements.")
+
+ss = pytest.importorskip("subsurface", reason="Subsurface is not installed")
+pd = pytest.importorskip("pandas", reason="Pandas is not installed")
 
 
 def test_gempy_to_subsurface():

@@ -16,6 +16,14 @@ class TestSpeed(enum.Enum):
     SECONDS = 1
     MINUTES = 2
     HOURS = 3
+    
+    
+class Requirements(enum.Enum):
+    CORE = enum.auto()
+    BASE = enum.auto()
+    OPTIONAL = enum.auto()
+    DEV = enum.auto()
 
 
 TEST_SPEED = TestSpeed.MINUTES  # * Use seconds for compile errors, minutes before pushing and hours before release
+REQUIREMENT_LEVEL = Requirements.CORE  # * Use CORE for mandatory tests, OPTIONAL for optional tests and DEV for development tests
