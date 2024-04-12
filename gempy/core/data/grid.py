@@ -61,6 +61,7 @@ class Grid(object):
         # All grid types must have values
 
         # Init optional grids
+        self.regular_grid = None
         self.custom_grid = None
         self.custom_grid_grid_active = False
         self.topography: Optional[Topography] = None
@@ -220,9 +221,9 @@ class Grid(object):
         self.length = np.empty(0)
         self.values = np.empty((0, 3))
         lengths = [0]
+        all_grids = [self.regular_grid, self.custom_grid, self.topography, self.sections, self.centered_grid]
         try:
-            for e, grid_types in enumerate(
-                    [self.regular_grid, self.custom_grid, self.topography, self.sections, self.centered_grid]):
+            for e, grid_types in enumerate( all_grids):
                 if self.active_grids_bool[e]:
                     self.values = np.vstack((self.values, grid_types.values))
                     lengths.append(grid_types.values.shape[0])

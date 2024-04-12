@@ -53,7 +53,7 @@ grid.grid_types
 # 
 
 # %% 
-grid.regular_grid.values
+grid.values
 
 # %%
 # We can see what grids are activated (i.e. they are going to be
