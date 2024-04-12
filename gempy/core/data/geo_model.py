@@ -99,9 +99,6 @@ class GeoModel:
 
         self.transform.apply_anisotropy(anisotropy_type=auto_anisotropy, anisotropy_limit=anisotropy_limit)
 
-    @property
-    def solutions(self) -> Solutions:
-        return self._solutions
 
     @property
     def interpolation_options(self) -> InterpolationOptions:
@@ -132,6 +129,10 @@ class GeoModel:
     def interpolation_options(self, value):
         self._interpolation_options = value
 
+    @property
+    def solutions(self) -> Solutions:
+        return self._solutions
+    
     @solutions.setter
     def solutions(self, value):
         self._solutions = value
