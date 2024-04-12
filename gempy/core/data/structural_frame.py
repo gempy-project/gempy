@@ -203,7 +203,10 @@ class StructuralFrame:
                 case (StackRelationType.FAULT, FaultsRelationSpecialCase.OFFSET_NONE):  # It affects no groups
                     pass
                 case (StackRelationType.FAULT, FaultsRelationSpecialCase.OFFSET_FORMATIONS):  # It affects all younger groups that are formations
-                    fault_relations[i, i + 1:] = [group.structural_relation != StackRelationType.FAULT for group in self.structural_groups[i + 1:]]
+                    do_offset = []
+                    for group_internal in self.structural_groups[i + 1:]:
+                        do_offset.append(group_internal.structural_relation != StackRelationType.FAULT)
+                    fault_relations[i, i + 1:] = do_offset
                 case (StackRelationType.FAULT, list(fault_groups)) if fault_groups:  # It affects only the specified groups
                     for fault_group in fault_groups:
                         j = self.structural_groups.index(fault_group)
@@ -230,12 +233,10 @@ class StructuralFrame:
 
             if all_younger_groups_affected:
                 group.fault_relations = FaultsRelationSpecialCase.OFFSET_ALL
-                group.structural_relation = StackRelationType.FAULT
             elif not any_younger_groups_affected:
                 group.fault_relations = FaultsRelationSpecialCase.OFFSET_NONE
             else:  # * A specific set of groups are affected
                 group.fault_relations = [g for j, g in enumerate(self.structural_groups) if affected_groups[j]]
-                group.structural_relation = StackRelationType.FAULT
     
     @property
     def group_is_fault(self) -> list[bool]:

@@ -58,10 +58,8 @@ def test_generate_fault_model():
 
     if PLOT:
         gpv = require_gempy_viewer()
-        gpv.plot_3d(model, image=False)
+        gpv.plot_3d(model, image=True)
 
-    raise NotImplementedError("Combination model not implemented.")
-    
     _verify_scalar_field(
         model=model,
         name="Fault Scalar Field"
@@ -75,7 +73,7 @@ def test_generate_combination_model():
 
     if PLOT:
         gpv = require_gempy_viewer()
-        gpv.plot_3d(model, image=False)
+        gpv.plot_3d(model, image=True)
         
     
     _verify_scalar_field(

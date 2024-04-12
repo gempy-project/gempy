@@ -198,7 +198,8 @@ def _generate_one_fault_model(compute_model: bool) -> gp.data.GeoModel:
     geo_data = gp.create_geomodel(
         project_name='fault',
         extent=[0, 1000, 0, 1000, 0, 1000],
-        resolution=[20, 20, 20],
+        refinement=6,
+        # resolution=[20, 20, 20],
         importer_helper=gp.data.ImporterHelper(
             path_to_orientations=path_to_data + "model5_orientations.csv",
             path_to_surface_points=path_to_data + "model5_surface_points.csv"
@@ -216,11 +217,13 @@ def _generate_one_fault_model(compute_model: bool) -> gp.data.GeoModel:
 
     # Define fault groups
     geo_data.structural_frame.structural_groups[0].structural_relation = StackRelationType.FAULT
-    geo_data.structural_frame.fault_relations = np.array([[0, 1], [0, 0]])
+    geo_data.structural_frame.fault_relations = np.array([[0, 1],
+                                                          [0, 0]])
     gp.set_is_fault(
         frame=geo_data,
         fault_groups=['Fault_Series']
     )
+    
 
     if compute_model:
         # Compute the geological model
