@@ -6,7 +6,7 @@ from gempy.core.data._data_points_helpers import generate_ids_from_names
 from gempy_engine.core.data.transforms import Transform
 from gempy.optional_dependencies import require_pandas
 
-DEFAULT_SP_NUGGET = 0.00001
+DEFAULT_SP_NUGGET = 0.00002
 
 
 # ? Maybe we should merge this with the SurfacePoints class from gempy_engine
