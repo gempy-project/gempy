@@ -1,4 +1,6 @@
-﻿from dataclasses import dataclass, field
+﻿import warnings
+
+from dataclasses import dataclass, field
 from typing import Optional, Generator
 
 import numpy as np
@@ -172,10 +174,21 @@ class StructuralFrame:
         return len(self.structural_elements)
 
     basement_color: str = None
+    
     @property
     def _basement_element(self) -> StructuralElement:
-        if self.basement_color is None:
+        # Check if the basement color is already defined
+        elements = []
+        for group in self.structural_groups:
+            elements.extend(group.elements)
+        basement_color_in_elements = self.basement_color in [element.color for element in elements]
+        
+        if self.basement_color is None or basement_color_in_elements:
             self.basement_color = self.color_generator.up_next()
+            
+        if basement_color_in_elements:
+            warnings.warn(f"The basement color was already used in the structural elements."
+                          f"Changing the basement color to {self.basement_color}.")
         
         basement = StructuralElement(
             name="basement",
