@@ -55,4 +55,4 @@ gpv.plot_2d(geo_data, direction=['y'], show_results=False)
 gpv.plot_2d(geo_data, direction='y', show_data=True)
 gpv.plot_2d(geo_data, direction='x', show_data=True)
 
-gpv.plot_3d(geo_data, show_data=True, show_boundaries=True, show_lith=False)
+gpv.plot_3d(geo_data, show_data=True, show_boundaries=True, show_lith=True)

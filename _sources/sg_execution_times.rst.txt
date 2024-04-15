@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**16:04.395** total execution time for 24 files **from all galleries**:
+**00:05.610** total execution time for 24 files **from all galleries**:
 
 .. container::
 
@@ -32,20 +32,8 @@ Computation times
    * - Example
      - Time
      - Mem (MB)
-   * - :ref:`sphx_glr_tutorials_ch3-Interpolations_ch3_1_kriging_interpolation_and_simulation.py` (``../../examples/tutorials/ch3-Interpolations/ch3_1_kriging_interpolation_and_simulation.py``)
-     - 15:23.937
-     - 0.0
-   * - :ref:`sphx_glr_examples_real_Alesmodel.py` (``../../examples/examples/real/Alesmodel.py``)
-     - 00:31.237
-     - 0.0
-   * - :ref:`sphx_glr_examples_real_Greenstone.py` (``../../examples/examples/real/Greenstone.py``)
-     - 00:08.289
-     - 0.0
-   * - :ref:`sphx_glr_tutorials_ch4-Topology_ch4-1-Topology.py` (``../../examples/tutorials/ch4-Topology/ch4-1-Topology.py``)
-     - 00:00.739
-     - 0.0
-   * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_3a_grids.py` (``../../examples/tutorials/ch1_fundamentals/ch1_3a_grids.py``)
-     - 00:00.193
+   * - :ref:`sphx_glr_tutorials_a_getting_started_get_started.py` (``../../examples/tutorials/a_getting_started/get_started.py``)
+     - 00:05.610
      - 0.0
    * - :ref:`sphx_glr_examples_geometries_a01_horizontal_stratigraphic.py` (``../../examples/examples/geometries/a01_horizontal_stratigraphic.py``)
      - 00:00.000
@@ -71,7 +59,13 @@ Computation times
    * - :ref:`sphx_glr_examples_geometries_h08_more_examples.py` (``../../examples/examples/geometries/h08_more_examples.py``)
      - 00:00.000
      - 0.0
+   * - :ref:`sphx_glr_examples_real_Alesmodel.py` (``../../examples/examples/real/Alesmodel.py``)
+     - 00:00.000
+     - 0.0
    * - :ref:`sphx_glr_examples_real_Claudius.py` (``../../examples/examples/real/Claudius.py``)
+     - 00:00.000
+     - 0.0
+   * - :ref:`sphx_glr_examples_real_Greenstone.py` (``../../examples/examples/real/Greenstone.py``)
      - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_examples_real_Hecho.py` (``../../examples/examples/real/Hecho.py``)
@@ -83,10 +77,10 @@ Computation times
    * - :ref:`sphx_glr_examples_real_Perth_basin.py` (``../../examples/examples/real/Perth_basin.py``)
      - 00:00.000
      - 0.0
-   * - :ref:`sphx_glr_tutorials_a_getting_started_get_started.py` (``../../examples/tutorials/a_getting_started/get_started.py``)
+   * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_1_basics.py` (``../../examples/tutorials/ch1_fundamentals/ch1_1_basics.py``)
      - 00:00.000
      - 0.0
-   * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_1_basics.py` (``../../examples/tutorials/ch1_fundamentals/ch1_1_basics.py``)
+   * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_3a_grids.py` (``../../examples/tutorials/ch1_fundamentals/ch1_3a_grids.py``)
      - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_3b_cross_sections.py` (``../../examples/tutorials/ch1_fundamentals/ch1_3b_cross_sections.py``)
@@ -102,5 +96,11 @@ Computation times
      - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_6_2d_visualization.py` (``../../examples/tutorials/ch1_fundamentals/ch1_6_2d_visualization.py``)
+     - 00:00.000
+     - 0.0
+   * - :ref:`sphx_glr_tutorials_ch3-Interpolations_ch3_1_kriging_interpolation_and_simulation.py` (``../../examples/tutorials/ch3-Interpolations/ch3_1_kriging_interpolation_and_simulation.py``)
+     - 00:00.000
+     - 0.0
+   * - :ref:`sphx_glr_tutorials_ch4-Topology_ch4-1-Topology.py` (``../../examples/tutorials/ch4-Topology/ch4-1-Topology.py``)
      - 00:00.000
      - 0.0

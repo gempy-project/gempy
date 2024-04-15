@@ -60,8 +60,8 @@ appropriate.
     geo_model: gp.data.GeoModel = gp.create_geomodel(
         project_name='Model1',
         extent=[0, 791, -200, 200, -582, 0],
-        resolution=[50, 50, 50],
-        refinement=4,
+        resolution=None,
+        refinement=4, # We will use octrees
         structural_frame=gp.data.StructuralFrame.initialize_default_structure()
     )
     geo_model
@@ -75,8 +75,8 @@ appropriate.
  .. code-block:: none
 
 
-    {'_interpolation_options': InterpolationOptions(kernel_options={'range': 5, 'c_o': 10, 'uni_degree': 1, 'i_res': 4, 'gi_res': 2, 'number_dimensions': 3, 'kernel_function': <AvailableKernelFunctions.cubic: KernelFunction(base_function=<function cubic_function at 0x7f857a0a1b40>, derivative_div_r=<function cubic_function_p_div_r at 0x7f857a0a1bd0>, second_derivative=<function cubic_function_a at 0x7f857a0a1c60>, consume_sq_distance=False)>, 'kernel_solver': <Solvers.DEFAULT: 1>, 'compute_condition_number': False, 'optimizing_condition_number': False, 'condition_number': None}, _number_octree_levels=4, current_octree_level=0, block_solutions_type=BlockSolutionType.OCTREE, compute_scalar_gradient=False, mesh_extraction=True, mesh_extraction_masking_options=MeshExtractionMaskingOptions.INTERSECT, mesh_extraction_fancy=True, debug=True, debug_water_tight=False, sigmoid_slope=50000, evaluation_chunk_size=50000, _number_octree_levels_surface=4, _model_name=None),
-     'grid': <gempy.core.data.grid.Grid object at 0x7f8564afde70>,
+    {'_interpolation_options': InterpolationOptions(kernel_options={'range': 5, 'c_o': 10, 'uni_degree': 1, 'i_res': 4, 'gi_res': 2, 'number_dimensions': 3, 'kernel_function': <AvailableKernelFunctions.cubic: KernelFunction(base_function=<function cubic_function at 0x7f2dfa8a1b40>, derivative_div_r=<function cubic_function_p_div_r at 0x7f2dfa8a1bd0>, second_derivative=<function cubic_function_a at 0x7f2dfa8a1c60>, consume_sq_distance=False)>, 'kernel_solver': <Solvers.DEFAULT: 1>, 'compute_condition_number': False, 'optimizing_condition_number': False, 'condition_number': None}, _number_octree_levels=4, current_octree_level=0, block_solutions_type=BlockSolutionType.OCTREE, compute_scalar_gradient=False, mesh_extraction=True, mesh_extraction_masking_options=MeshExtractionMaskingOptions.INTERSECT, mesh_extraction_fancy=True, debug=True, debug_water_tight=False, sigmoid_slope=50000, evaluation_chunk_size=50000, _number_octree_levels_surface=4, _model_name=None),
+     'grid': <gempy.core.data.grid.Grid object at 0x7f2de43f4580>,
      'meta': GeoModelMeta(name='Model1',
                           creation_date=None,
                           last_modification_date=None,
@@ -277,7 +277,7 @@ coordinates on mouse hover (in qt5 backend). We can add a surface point like thi
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f85649978b0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f2de23ee4d0>
 
 
 
@@ -319,7 +319,7 @@ We can now add other points for the layer:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f85615e6ce0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f2de11cd6f0>
 
 
 
@@ -343,7 +343,7 @@ Let's add an orientation:
         y=[1],
         z=[-300],
         elements_names=['surface1'],
-        pole_vector=[[0, 0, 1]]
+        pole_vector=[[0, 0, 1.01]]
     )
 
     gpv.plot_2d(geo_model, cell_number=5)
@@ -370,7 +370,7 @@ Let's add an orientation:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f85616809d0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f2de123f250>
 
 
 
@@ -415,8 +415,6 @@ With the provided data, we can now interpolate the 3D surface.
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.numpy
-    /home/leguark/gempy/gempy/core/data/geo_model.py:118: UserWarning: Both octree levels and resolution are set. The default grid for the `raw_array_solution`and plots will be the dense regular grid. To use octrees instead, set resolution to None in the regular grid.
-      warnings.warn("Both octree levels and resolution are set. The default grid for the `raw_array_solution`"
 
 
 .. raw:: html
@@ -440,13 +438,6 @@ Display interpolation kernel options:
 
 
 
-
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-    /home/leguark/gempy/gempy/core/data/geo_model.py:118: UserWarning: Both octree levels and resolution are set. The default grid for the `raw_array_solution`and plots will be the dense regular grid. To use octrees instead, set resolution to None in the regular grid.
-      warnings.warn("Both octree levels and resolution are set. The default grid for the `raw_array_solution`"
 
 
 .. raw:: html
@@ -498,7 +489,7 @@ Interpolated 3D surface can be visualized both in 2D and 3D.
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f8561683b80>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f2de123f7c0>
 
 
 
@@ -579,10 +570,10 @@ Adding points and properties for the next layer.
 
     geo_model.structural_frame.structural_groups[0].append_element(element2)
 
-    # Compute and visualize the updated model:
+    # Compute and visualize the updated model: 
     gp.compute_model(geo_model)
     gpv.plot_2d(geo_model, cell_number=5, legend='force')
-    gpv.plot_3d(geo_model, image=True)
+    gpv.plot_3d(geo_model, show_data=False, show_surfaces=False, image=True)
 
 
 
@@ -603,10 +594,10 @@ Adding points and properties for the next layer.
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.numpy
-    /home/leguark/gempy/gempy/core/data/geo_model.py:118: UserWarning: Both octree levels and resolution are set. The default grid for the `raw_array_solution`and plots will be the dense regular grid. To use octrees instead, set resolution to None in the regular grid.
-      warnings.warn("Both octree levels and resolution are set. The default grid for the `raw_array_solution`"
+    /home/leguark/gempy/gempy/core/data/structural_frame.py:190: UserWarning: The basement color was already used in the structural elements.Changing the basement color to #ffbe00.
+      warnings.warn(f"The basement color was already used in the structural elements."
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f8561367790>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f2de11c2c80>
 
 
 
@@ -660,10 +651,10 @@ Adding points and properties for another layer.
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.numpy
-    /home/leguark/gempy/gempy/core/data/geo_model.py:118: UserWarning: Both octree levels and resolution are set. The default grid for the `raw_array_solution`and plots will be the dense regular grid. To use octrees instead, set resolution to None in the regular grid.
-      warnings.warn("Both octree levels and resolution are set. The default grid for the `raw_array_solution`"
+    /home/leguark/gempy/gempy/core/data/structural_frame.py:190: UserWarning: The basement color was already used in the structural elements.Changing the basement color to #728f02.
+      warnings.warn(f"The basement color was already used in the structural elements."
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f8561270730>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f2de11c2770>
 
 
 
@@ -731,8 +722,10 @@ Add the fault's input data:
 
  .. code-block:: none
 
+    /home/leguark/gempy/gempy/core/data/structural_frame.py:190: UserWarning: The basement color was already used in the structural elements.Changing the basement color to #443988.
+      warnings.warn(f"The basement color was already used in the structural elements."
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f85612cf610>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f2de1289ea0>
 
 
 
@@ -767,10 +760,8 @@ Compute and visualize the updated model:
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.numpy
-    /home/leguark/gempy/gempy/core/data/geo_model.py:118: UserWarning: Both octree levels and resolution are set. The default grid for the `raw_array_solution`and plots will be the dense regular grid. To use octrees instead, set resolution to None in the regular grid.
-      warnings.warn("Both octree levels and resolution are set. The default grid for the `raw_array_solution`"
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f85613e3040>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f2de0eb9a20>
 
 
 
@@ -835,12 +826,10 @@ Here, we'll showcase a few of them.
 
  .. code-block:: none
 
-    Active grids: ['regular' 'topography']
+    Active grids: ['topography']
     Setting Backend To: AvailableBackends.numpy
-    /home/leguark/gempy/gempy/core/data/geo_model.py:118: UserWarning: Both octree levels and resolution are set. The default grid for the `raw_array_solution`and plots will be the dense regular grid. To use octrees instead, set resolution to None in the regular grid.
-      warnings.warn("Both octree levels and resolution are set. The default grid for the `raw_array_solution`"
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f8561190940>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f2de118f5e0>
 
 
 
@@ -873,7 +862,7 @@ sphinx_gallery_thumbnail_number = -2
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 15.120 seconds)
+   **Total running time of the script:** (0 minutes 5.610 seconds)
 
 
 .. _sphx_glr_download_tutorials_a_getting_started_get_started.py:

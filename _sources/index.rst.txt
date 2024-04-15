@@ -34,7 +34,6 @@ Contents:
 
    self
    installation
-   projects
 
 .. toctree::
    :maxdepth: 2

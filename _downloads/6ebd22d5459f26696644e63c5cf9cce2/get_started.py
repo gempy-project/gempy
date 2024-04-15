@@ -30,8 +30,8 @@ import matplotlib.image as mpimg
 geo_model: gp.data.GeoModel = gp.create_geomodel(
     project_name='Model1',
     extent=[0, 791, -200, 200, -582, 0],
-    resolution=[50, 50, 50],
-    refinement=4,
+    resolution=None,
+    refinement=4, # We will use octrees
     structural_frame=gp.data.StructuralFrame.initialize_default_structure()
 )
 geo_model
@@ -137,7 +137,7 @@ gp.add_orientations(
     y=[1],
     z=[-300],
     elements_names=['surface1'],
-    pole_vector=[[0, 0, 1]]
+    pole_vector=[[0, 0, 1.01]]
 )
 
 gpv.plot_2d(geo_model, cell_number=5)
@@ -200,10 +200,10 @@ element2 = gp.data.StructuralElement(
 
 geo_model.structural_frame.structural_groups[0].append_element(element2)
 
-# Compute and visualize the updated model:
+# Compute and visualize the updated model: 
 gp.compute_model(geo_model)
 gpv.plot_2d(geo_model, cell_number=5, legend='force')
-gpv.plot_3d(geo_model, image=True)
+gpv.plot_3d(geo_model, show_data=False, show_surfaces=False, image=True)
 
 # %%
 # Defining Layer 3:

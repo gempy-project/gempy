@@ -34,7 +34,9 @@
           <div class="body" role="main">
             
   <h1>Source code for gempy.core.data.structural_frame</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span></span><span class="kn">import</span> <span class="nn">warnings</span>
+
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Generator</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -213,10 +215,21 @@
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">structural_elements</span><span class="p">)</span>
 
     <span class="n">basement_color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+    
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">_basement_element</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StructuralElement</span><span class="p">:</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">basement_color</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Check if the basement color is already defined</span>
+        <span class="n">elements</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">structural_groups</span><span class="p">:</span>
+            <span class="n">elements</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">elements</span><span class="p">)</span>
+        <span class="n">basement_color_in_elements</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">basement_color</span> <span class="ow">in</span> <span class="p">[</span><span class="n">element</span><span class="o">.</span><span class="n">color</span> <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">elements</span><span class="p">]</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">basement_color</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">basement_color_in_elements</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">basement_color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">color_generator</span><span class="o">.</span><span class="n">up_next</span><span class="p">()</span>
+            
+        <span class="k">if</span> <span class="n">basement_color_in_elements</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The basement color was already used in the structural elements.&quot;</span>
+                          <span class="sa">f</span><span class="s2">&quot;Changing the basement color to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">basement_color</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
         
         <span class="n">basement</span> <span class="o">=</span> <span class="n">StructuralElement</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s2">&quot;basement&quot;</span><span class="p">,</span>
@@ -496,7 +509,6 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../index.html">About</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../projects.html">Additional projects</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
