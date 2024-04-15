@@ -54,4 +54,4 @@ Old
 - `git add .` This will add all the files in the current directory to the staging area.
 - `git commit -m "Update docs"` This will commit the changes to the `gh-pages` branch.
 - `git push origin gh-pages` This will push the changes to the `gh-pages` branch of the repo.
-- `cd ../gempy_docs` This will change the current directory back to the `VisualBayesic` folder.
+- `cd ../gempy` This will change the current directory back to the `gempy` folder.
