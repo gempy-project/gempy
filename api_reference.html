@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Code &#8212; GemPy 2023.2.0b1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=270d38c7" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css?v=61a4c737" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <script src="_static/documentation_options.js?v=acace1bb"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="gempy.compute_model" href="GemPy%20API/gempy.compute_model.html" />
+    <link rel="prev" title="Perth basin." href="examples/real/Perth_basin.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="code">
+<h1>Code<a class="headerlink" href="#code" title="Link to this heading">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<section id="gempy-api">
+<h2>GemPy API<a class="headerlink" href="#gempy-api" title="Link to this heading">¶</a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="GemPy%20API/gempy.compute_model.html#gempy.compute_model" title="gempy.compute_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_model</span></code></a>(gempy_model[, engine_config])</p></td>
+<td><p>Compute the geological model given the provided GemPy model.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="GemPy%20API/gempy.create_geomodel.html#gempy.create_geomodel" title="gempy.create_geomodel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_geomodel</span></code></a>(*[, project_name, extent, ...])</p></td>
+<td><p>Creates a GeoModel instance.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="GemPy%20API/gempy.map_stack_to_surfaces.html#gempy.map_stack_to_surfaces" title="gempy.map_stack_to_surfaces"><code class="xref py py-obj docutils literal notranslate"><span class="pre">map_stack_to_surfaces</span></code></a>(gempy_model, ...[, ...])</p></td>
+<td><p>Map stack (series) to surfaces by reorganizing elements between groups in a GeoModel's structural frame.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="plot">
+<h2>Plot<a class="headerlink" href="#plot" title="Link to this heading">¶</a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="Plot/gempy_viewer.plot_2d.html#gempy_viewer.plot_2d" title="gempy_viewer.plot_2d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_2d</span></code></a>(model[, n_axis, section_names, ...])</p></td>
+<td><p>Plot 2-D sections of geomodel.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="Plot/gempy_viewer.plot_3d.html#gempy_viewer.plot_3d" title="gempy_viewer.plot_3d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_3d</span></code></a>(model[, plotter_type, ...])</p></td>
+<td><p>Plot 3-D geomodel.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="data-classes">
+<h1>Data Classes<a class="headerlink" href="#data-classes" title="Link to this heading">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<section id="module-gempy.core.data">
+<span id="modeling-classes"></span><h2>Modeling Classes<a class="headerlink" href="#module-gempy.core.data" title="Link to this heading">¶</a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="Modeling%20Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GeoModel</span></code></a>(name, structural_frame, grid, ...)</p></td>
+<td><p>Class representing a geological model.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="Modeling%20Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StructuralFrame</span></code></a>(structural_groups, color_gen)</p></td>
+<td><p>A data class that represents the structural framework of a geological model.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="Modeling%20Classes/gempy.core.data.StructuralGroup.html#gempy.core.data.StructuralGroup" title="gempy.core.data.StructuralGroup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StructuralGroup</span></code></a>(name, elements, ...[, ...])</p></td>
+<td><p>An abstract base class that represents a structural group within a geological model.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="Modeling%20Classes/gempy.core.data.StructuralElement.html#gempy.core.data.StructuralElement" title="gempy.core.data.StructuralElement"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StructuralElement</span></code></a>(name, surface_points, ...)</p></td>
+<td><p>Class that represents a structural element in a geological model.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="Modeling%20Classes/gempy.core.data.SurfacePointsTable.html#gempy.core.data.SurfacePointsTable" title="gempy.core.data.SurfacePointsTable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SurfacePointsTable</span></code></a>(data[, name_id_map, ...])</p></td>
+<td><p>A dataclass to represent a table of surface points in a geological model.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="Modeling%20Classes/gempy.core.data.OrientationsTable.html#gempy.core.data.OrientationsTable" title="gempy.core.data.OrientationsTable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OrientationsTable</span></code></a>(data[, name_id_map, ...])</p></td>
+<td><p>A dataclass to represent a table of orientations in a geological model.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="Modeling%20Classes/gempy.core.data.InterpolationOptions.html#gempy.core.data.InterpolationOptions" title="gempy.core.data.InterpolationOptions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InterpolationOptions</span></code></a>(range, c_o, uni_degree, ...)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="Modeling%20Classes/gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Grid</span></code></a>([extent, resolution])</p></td>
+<td><p>Class to generate grids.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="Modeling%20Classes/gempy.core.data.Solutions.html#gempy.core.data.Solutions" title="gempy.core.data.Solutions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Solutions</span></code></a>(octrees_output[, dc_meshes, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="Modeling%20Classes/gempy.core.data.RawArraysSolution.html#gempy.core.data.RawArraysSolution" title="gempy.core.data.RawArraysSolution"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RawArraysSolution</span></code></a>(lith_block, fault_block, ...)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="helper-classes">
+<h2>Helper Classes<a class="headerlink" href="#helper-classes" title="Link to this heading">¶</a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="Helper%20Classes/gempy.core.data.ImporterHelper.html#gempy.core.data.ImporterHelper" title="gempy.core.data.ImporterHelper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ImporterHelper</span></code></a>(path_to_surface_points, ...)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="enumerators">
+<h2>Enumerators<a class="headerlink" href="#enumerators" title="Link to this heading">¶</a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="Modeling%20Classes/gempy.core.data.StackRelationType.html#gempy.core.data.StackRelationType" title="gempy.core.data.StackRelationType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackRelationType</span></code></a>(value)</p></td>
+<td><p>An enumeration.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="index.html">
+    <img class="logo" src="_static/logos/gempy.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=gempy-project&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="index.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="projects.html">Additional projects</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/index.html">GemPy Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/index.html">Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Code</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#gempy-api">GemPy API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#plot">Plot</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#data-classes">Data Classes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-gempy.core.data">Modeling Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#helper-classes">Helper Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#enumerators">Enumerators</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="examples/real/Perth_basin.html" title="previous chapter">Perth basin.</a></li>
+      <li>Next: <a href="GemPy%20API/gempy.compute_model.html" title="next chapter">gempy.compute_model</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017-2024, Gempy Developers.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+      |
+      <a href="_sources/api_reference.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

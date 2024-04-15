@@ -1,23 +1,21 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="./">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Installation &#8212; GemPy 2.2.8 documentation</title>
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="_static/gallery.css" />
-    <link rel="stylesheet" type="text/css" href="_static/gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="_static/gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="_static/gallery-rendered-html.css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/doctools.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Installation &#8212; GemPy 2023.2.0b1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=270d38c7" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css?v=61a4c737" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <script src="_static/documentation_options.js?v=acace1bb"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Additional projects" href="projects.html" />
@@ -38,293 +36,69 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="installing-gempy">
-<h2>Installing <code class="docutils literal notranslate"><span class="pre">GemPy</span></code><a class="headerlink" href="#installing-gempy" title="Permalink to this headline">¶</a></h2>
-<p>We provide the latest release version of <code class="docutils literal notranslate"><span class="pre">GemPy</span></code> via <strong>PyPi</strong> package services. We highly
-recommend using <a class="reference external" href="https://pypi.org/project/gempy/">PyPi</a>,</p>
-<p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">gempy</span></code></p>
-<p>as it will take care of automatically installing all the required dependencies - except in
-windows that required one extra step.</p>
-<div class="section" id="windows-installation">
-<h3>Windows Installation<a class="headerlink" href="#windows-installation" title="Permalink to this headline">¶</a></h3>
-<p>Windows does not have a <strong>gcc compilers</strong> pre-installed. The easiest way to get a <code class="docutils literal notranslate"><span class="pre">theano</span></code>
-compatible compiler is by using the <code class="docutils literal notranslate"><span class="pre">theano</span></code> conda installation. Therefore the process
-would be the following:</p>
-<p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">conda</span> <span class="pre">install</span> <span class="pre">theano</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">gempy</span></code></p>
-<p><strong>Notes:</strong></p>
-<ul class="simple">
-<li><p>The conda version of <code class="docutils literal notranslate"><span class="pre">theano</span></code> comes with a non critical bug that will rise a warning (<code class="docutils literal notranslate"><span class="pre">scan_perform.c</span></code>)
-when computing a model with gempy. Once the compiler is installed, installing the pip version of <code class="docutils literal notranslate"><span class="pre">theano</span></code>
-will solve the problem:</p></li>
-</ul>
-<p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">theano</span> <span class="pre">--force-reinstall</span></code></p>
-<ul class="simple">
-<li><p>The conda version of <code class="docutils literal notranslate"><span class="pre">theano</span></code> is not compatible with Catalina MacOS. Use pip!</p></li>
-<li><p>For a more detailed description on the installation in case
-something does not work or for CUDA acceleration check <a class="reference internal" href="#windows-installation-guide-march-2020">Windows installation guide (March 2020)</a> and
-<a class="reference internal" href="#macos-installation-guide-may-2020">MacOS installation guide (May 2020)</a></p></li>
-</ul>
-</div>
-<div class="section" id="developers-installation">
-<h3>Developers Installation<a class="headerlink" href="#developers-installation" title="Permalink to this headline">¶</a></h3>
-<p>If you are planning to contribute in <code class="docutils literal notranslate"><span class="pre">gempy</span></code> the easiest way is to clone the
-repository from <a class="reference external" href="https://github.com/cgre-aachen/gempy">GitHub</a> and use</p>
-<p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-e</span> <span class="pre">.</span></code></p>
-<p>on the repository root. Notice that on the repo you can also find a <code class="docutils literal notranslate"><span class="pre">optional-requirements.txt</span></code>
-for more experimental functionality. Finally to compile <code class="docutils literal notranslate"><span class="pre">sphinx</span></code> you will need:</p>
-<p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">sphinx,</span> <span class="pre">sphinx-gallery</span></code></p>
-</div>
-</div>
-<div class="section" id="manual-installation">
-<h2>Manual installation<a class="headerlink" href="#manual-installation" title="Permalink to this headline">¶</a></h2>
-<p>If you want to use the newest, cutting-edge version of <code class="docutils literal notranslate"><span class="pre">GemPy</span></code> you can clone the current repository by downloading it manually or by using Git by calling</p>
-<p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">git</span> <span class="pre">clone</span> <span class="pre">https://github.com/cgre-aachen/gempy.git</span></code></p>
-<p>and then manually install it using the provided Python install file by calling</p>
-<p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">python</span> <span class="pre">gempy/setup.py</span> <span class="pre">install</span></code></p>
-<p>in the cloned or downloaded repository folder.</p>
-<p>Alternatively to running <code class="docutils literal notranslate"><span class="pre">setup.py</span></code>, you can use pip to handle the installation from the repository and the updating of the path variables.
-For this, navigate to the root of the cloned repository and run</p>
-<p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-e</span> <span class="pre">.</span></code></p>
-<p>Make sure you have installed all necessary dependencies listed below before using <code class="docutils literal notranslate"><span class="pre">GemPy</span></code>.</p>
-</div>
-<div class="section" id="dependencies">
-<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">GemPy</span></code> requires Python 3.x and makes use of numerous open-source libraries:</p>
-<ul class="simple">
-<li><p>pandas</p></li>
-<li><p>Theano&gt;=1.0.4</p></li>
-<li><p>matplotlib</p></li>
-<li><p>numpy</p></li>
-<li><p>pytest</p></li>
-<li><p>seaborn&gt;=0.9</p></li>
-<li><p>networkx</p></li>
-<li><p>scikit-image&gt;=0.17</p></li>
-<li><p>pyvista</p></li>
-</ul>
-<p>Optional requirements:</p>
-<ul class="simple">
-<li><p>gdal</p></li>
-<li><p>qgrid==1.3.0</p></li>
-<li><p>pymc3</p></li>
-<li><p>pyevtk</p></li>
-<li><p>pyqrcode</p></li>
-<li><p>mplstereonet</p></li>
-</ul>
-<p>Overall we recommend the use of a <strong>dedicated Python distribution</strong>, such as
-<a class="reference external" href="https://www.continuum.io/what-is-anaconda">Anaconda</a>, for hassle-free package installation.
-We are currently working on providing <code class="docutils literal notranslate"><span class="pre">GemPy</span></code> also via Anaconda Cloud, for easier installation of
-its dependencies.</p>
-<div class="section" id="conflictive-packages">
-<h3>Conflictive packages.<a class="headerlink" href="#conflictive-packages" title="Permalink to this headline">¶</a></h3>
-<p>Installing Theano (especially under Windows) and vtk can sometimes be difficult.
-Here, we provide advice that should use in most cases (but certainly not all):</p>
-<ul>
-<li><dl>
-<dt><code class="docutils literal notranslate"><span class="pre">Theano</span></code>:</dt><dd><p>install the following packages before installing theano:</p>
-<p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">conda</span> <span class="pre">install</span> <span class="pre">mingw</span> <span class="pre">libpython</span> <span class="pre">m2w64-toolchain</span></code></p>
-<p>Then install Theano via</p>
-<p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">conda</span> <span class="pre">install</span> <span class="pre">theano</span></code></p>
-<p>If the installation fails at some point try to re-install anaconda for a single user (no administrator priveleges)
-and with the Path Environment set.
-To use Theano with <code class="docutils literal notranslate"><span class="pre">numpy</span> <span class="pre">version</span> <span class="pre">1.16.0</span></code> or following, it has to be updated to <code class="docutils literal notranslate"><span class="pre">Theano</span> <span class="pre">1.0.4</span></code> using</p>
-<p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">theano</span> <span class="pre">--upgrade</span></code></p>
-<p>Note that this is not yet available in the conda package manager.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">vtk</span></code> :</dt><dd><p>There have been compatibility problems between with the <code class="docutils literal notranslate"><span class="pre">vtk</span></code> package
-and python 3.8. The simplest solution to install it is to
-use <code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">conda</span> <span class="pre">install</span> <span class="pre">python==3.6</span></code> to downgrade the python version and then
-using <code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">vtk</span></code> .</p>
-</dd>
-</dl>
-</li>
-</ul>
-</div>
-</div>
-<div class="section" id="docker">
-<h2>Docker<a class="headerlink" href="#docker" title="Permalink to this headline">¶</a></h2>
-<p>Finally we also provide precompiled Docker images hosted on Docker Hub with all necessary dependencies to get
-GemPy up and running (<strong>except vtk</strong>).</p>
-<p>Docker is an operating-system-level-visualization software,
-meaning that we can package a tiny operating system with pre-installed
-software into a Docker image. This Docker image can then be shared
-with and run by others, enabling them to use intricate dependencies
-with just a few commands. For this to work the user needs to have a
-working <a class="reference external" href="https://www.docker.com/">Docker</a> installation.</p>
-<div class="section" id="pull-docker-image-from-dockerhub">
-<h3>Pull Docker image from DockerHub<a class="headerlink" href="#pull-docker-image-from-dockerhub" title="Permalink to this headline">¶</a></h3>
-<p>The easiest way to get <cite>gempy</cite> running is by running the pre-compiled Docker image (containing everything you
-need) directly from the cloud service Docker Hub to get a locally running Docker container. Make sure to set your
-Docker daemon to Linux containers in Docker’s context menu.</p>
-<p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">docker</span> <span class="pre">run</span> <span class="pre">-it</span> <span class="pre">-p</span> <span class="pre">8899:8899</span> <span class="pre">leguark/gempy</span></code></p>
-<p>This will automatically pull the Docker image from Docker Hub and run it, opening a command line shell inside of the
-running Docker container. There you have access to the file system inside of the container. Note that this pre-compiled
-Docker image already contains the GemPy repository.</p>
-<p>Once you are in the docker console if you want to open the tutorials you will need to run:</p>
-<p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">jupyter</span> <span class="pre">notebook</span> <span class="pre">--ip</span> <span class="pre">0.0.0.0</span> <span class="pre">--port</span> <span class="pre">8899</span> <span class="pre">--no-browser</span> <span class="pre">--allow-root</span></code></p>
-<p>Notice that we are running the notebook on the port  8899 to try to avoid conflicts with jupyter servers running in
-your system. If everything worked fine, the address to the jupyter notebook will be display on the console. It
-has to look something like this (Just be aware of the  brackets):</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span>To access the notebook, open this file in a browser:
-        file:///root/.local/share/jupyter/runtime/nbserver-286-open.html
-Or copy and paste one of these URLs:
-    http://(ce2cdcc55bb0 or 127.0.0.1):8899/?token=97d52c1dc321c42083d8c1b4d
+  <section id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h1>
+<section id="installing-gempy">
+<h2>Installing <code class="docutils literal notranslate"><span class="pre">GemPy</span></code><a class="headerlink" href="#installing-gempy" title="Link to this heading">¶</a></h2>
+<p>The latest release version of <code class="docutils literal notranslate"><span class="pre">GemPy</span></code> is available via <strong>PyPi</strong>. To install the core version, simply use pip:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>gempy
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="windows-installation-guide-march-2020">
-<h2>Windows installation guide (March 2020)<a class="headerlink" href="#windows-installation-guide-march-2020" title="Permalink to this headline">¶</a></h2>
-<ol class="arabic">
-<li><p>This step is <strong>only important if you want GPU acceleration</strong>. Install CUDA if you do not have it already.</p>
+<p>This will install <code class="docutils literal notranslate"><span class="pre">GemPy</span></code> with the minimal required dependencies.</p>
+</section>
+<section id="enhanced-installation-options">
+<h2>Enhanced Installation Options<a class="headerlink" href="#enhanced-installation-options" title="Link to this heading">¶</a></h2>
+<p>For additional features, <code class="docutils literal notranslate"><span class="pre">GemPy</span></code> offers enhanced installation options:</p>
 <ul>
-<li><p>For CUDA &gt; 10 (For RTX cards you need those drivers):</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>Go to your cuda installation (probably <code class="docutils literal notranslate"><span class="pre">C:\Program</span> <span class="pre">Files\NVIDIA</span> <span class="pre">GPU</span> <span class="pre">Computing</span> <span class="pre">Toolkit\CUDA\v10.2\bin</span></code> )</p></li>
-<li><p>Duplicate <code class="docutils literal notranslate"><span class="pre">cublas64_XX</span></code> and <code class="docutils literal notranslate"><span class="pre">nvrtc64_XX</span></code> and rename them to <code class="docutils literal notranslate"><span class="pre">cublas64_70</span></code> and <code class="docutils literal notranslate"><span class="pre">nvrtc64_70</span></code>.</p></li>
-</ul>
-</div></blockquote>
+<li><p>Base Features: For the majority of functionalities, install with base dependencies:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>gempy<span class="o">[</span>base<span class="o">]</span>
+</pre></div>
+</div>
+</li>
+<li><p>Optional Features: To access optional features such as data download support, install with optional dependencies:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>gempy<span class="o">[</span>opt<span class="o">]</span>
+</pre></div>
+</div>
+</li>
+<li><p>Development Version: For development purposes, including testing tools:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>gempy<span class="o">[</span>dev<span class="o">]</span>
+</pre></div>
+</div>
 </li>
 </ul>
-</li>
-<li><p>Install Conda (recommended: latest miniconda)</p>
-<blockquote>
-<div><ol class="arabic">
-<li><p>Use conda prompt as the python terminal</p>
-<blockquote>
-<div><p>Install Anaconda with the options  “for current user”.</p>
-</div></blockquote>
-</li>
-</ol>
-<p>Add conda enviroment:</p>
-<p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">conda</span> <span class="pre">create</span> <span class="pre">--name</span> <span class="pre">gempy</span> <span class="pre">python==3.7</span></code></p>
-<blockquote>
-<div><p>or</p>
-</div></blockquote>
-<ol class="arabic">
-<li><dl>
-<dt>Set up conda in the powershell</dt><dd><p>Install Anaconda with the options  “for current user” and “add conda to Path environment”.</p>
-<p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">conda</span> <span class="pre">init</span> <span class="pre">powershell</span></code></p>
-<p><strong>As admin:</strong> <code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">Set-ExecutionPolicy</span> <span class="pre">RemoteSigned</span></code></p>
-<p>After this stage we should have a new empty environment attached to a user</p>
-</dd>
-</dl>
-</li>
-</ol>
-</div></blockquote>
-</li>
-<li><p>Install Theano and associated packages from the Anaconda prompt as administrator:</p>
-<blockquote>
-<div><p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">conda</span> <span class="pre">update</span> <span class="pre">--all</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">conda</span> <span class="pre">install</span> <span class="pre">libpython</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">conda</span> <span class="pre">install</span> <span class="pre">m2w64-toolchain</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">conda</span> <span class="pre">install</span> <span class="pre">git</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">conda</span> <span class="pre">install</span> <span class="pre">-c</span> <span class="pre">conda-forge</span> <span class="pre">pygpu</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">theano==1.0.4</span></code></p>
-</div></blockquote>
-</li>
-<li><p>Install <code class="docutils literal notranslate"><span class="pre">GemPy</span></code></p>
-<blockquote>
-<div><p>install the latest release version of <code class="docutils literal notranslate"><span class="pre">GemPy</span></code> via <code class="docutils literal notranslate"><span class="pre">PyPi</span></code>:</p>
-<p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">gempy</span></code></p>
-<p>Alternatively, if you need the latest developments in GemPy, follow the instruction from the chapter <strong>Manual Installation</strong> instead.</p>
-</div></blockquote>
-</li>
-<li><p>Set up Jupyter to work properly with conda environments:</p>
-<blockquote>
-<div><p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">conda</span> <span class="pre">install</span> <span class="pre">Jupyter</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">conda</span> <span class="pre">install</span> <span class="pre">nb_conda_kernels</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">jupyter-conda</span></code></p>
-</div></blockquote>
-</li>
-<li><p>Optional requirements:</p>
-<blockquote>
-<div><p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">pyevtk</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">conda</span> <span class="pre">install</span> <span class="pre">gdal</span></code></p>
-</div></blockquote>
-</li>
-</ol>
-<p><strong>Note</strong>:</p>
+<p>Note: Some functionalities in <code class="docutils literal notranslate"><span class="pre">GemPy</span></code> require <cite>PyTorch</cite> and <cite>pyvista</cite>. These libraries need to be installed separately:</p>
 <ul class="simple">
-<li><p>some other packages required by Theano are already included in Anaconda: numpy, scipy, mkl-service, nose, and sphinx.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">pydot-ng</span></code> (suggested on Theano web site) yields a lot of errors, therefore we dropped this.  It is needed to</p></li>
+<li><p>PyTorch: Follow the instructions on the <a class="reference external" href="https://pytorch.org/get-started/locally/">PyTorch installation page</a>.</p></li>
+<li><p>PyVista: Installation guide available on the <a class="reference external" href="https://docs.pyvista.org/getting-started/installation.html">PyVista installation page</a>.</p></li>
 </ul>
-<p>handle large picture for gif/images and probably it is not needed by GemPy.
-* Trying to install all the packages in one go does not work, as well as doing the same in  Anaconda Navigator, or
-installing an older Anaconda release with Python 3.5 (Anaconda3 4.2.0) as indicated in some tutorial on Theano.</p>
-</div>
-<div class="section" id="macos-installation-guide-may-2020">
-<h2>MacOS installation guide (May 2020)<a class="headerlink" href="#macos-installation-guide-may-2020" title="Permalink to this headline">¶</a></h2>
-<p><strong>Note</strong>: The following guide is for a standard installation (no GPU support).
-It should work on MacOS 10.14 as well as 10.15 (Catalina).</p>
+</section>
+<section id="manual-installation">
+<h2>Manual Installation<a class="headerlink" href="#manual-installation" title="Link to this heading">¶</a></h2>
+<p>For the latest, cutting-edge version of <code class="docutils literal notranslate"><span class="pre">GemPy</span></code>, you can clone the repository and install it manually:</p>
 <ol class="arabic">
-<li><p>Install Anaconda (<strong>Python Version 3.7</strong>)</p>
-<blockquote>
-<div><p>For a minimal installation, you can install the
-<a class="reference external" href="https://docs.conda.io/en/latest/miniconda.html|">Miniconda distribution</a>.
-The full Anaconda distribution contains some additional features, IDE’s
-etc. and is available on the <a class="reference external" href="https://www.anaconda.com/products/individual|">Anaconda page</a>.</p>
-</div></blockquote>
+<li><p>Clone the repository:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/cgre-aachen/gempy.git
+</pre></div>
+</div>
 </li>
-<li><p>Create a <code class="docutils literal notranslate"><span class="pre">GemPy</span></code> conda environment</p>
-<blockquote>
-<div><p>We strongly suggest to create a separate conda environment, to avoid
-conflicts with other Python installations and packages on your system.
-This is easily done in a bash terminal:</p>
-<p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">conda</span> <span class="pre">create</span> <span class="pre">--name</span> <span class="pre">gempy</span> <span class="pre">python==3.7</span></code></p>
-<p>Set up Jupyter to work properly with conda environments:</p>
-<p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">python</span> <span class="pre">-m</span> <span class="pre">ipykernel</span> <span class="pre">install</span> <span class="pre">--user</span> <span class="pre">--name</span> <span class="pre">gempy</span></code></p>
-<p>Activate the new environment (do this every time you create a new terminal session):</p>
-<p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">conda</span> <span class="pre">activate</span> <span class="pre">gempy</span></code></p>
-<p>You should now see <cite>(gempy)</cite> at the beginning of the command line. If
-the previous command fails (some known issues), then try:</p>
-<p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">source</span> <span class="pre">activate</span> <span class="pre">gempy</span></code></p>
-</div></blockquote>
-</li>
-<li><p>Install the Xcode command-line tools</p>
-<blockquote>
-<div><p>In order for <code class="docutils literal notranslate"><span class="pre">Theano</span></code> to access the system compilers on MacOS, the Xcode command-line tools are required.
-To automatically install the correct version for your OS, run:</p>
-<p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">xcode-select</span> <span class="pre">--install</span></code></p>
-<p>Follow the installation instructions. After the installation is complete, open <code class="docutils literal notranslate"><span class="pre">Software</span>&#160; <span class="pre">Update</span></code> from your <code class="docutils literal notranslate"><span class="pre">System</span> <span class="pre">Preferences</span></code> and install any available  updates for the command-line tools.</p>
-</div></blockquote>
-</li>
-<li><p>Install required Python packages</p>
-<blockquote>
-<div><p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">conda</span> <span class="pre">update</span> <span class="pre">--all</span></code></p>
-<p>Install theano via PyPi</p>
-<p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">theano==1.0.4</span></code></p>
-<p>Test the <cite>theano</cite> installation: run <code class="docutils literal notranslate"><span class="pre">python</span></code>, then try <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">theano</span></code>.
-If you get an error (e.g. <code class="docutils literal notranslate"><span class="pre">stdio.h</span></code> not found), then:</p>
-<p>Test if the Xcode command-line tools are correctly installed and up-to-date.(info for
-example <a class="reference external" href="https://osxdaily.com/2014/02/12/install-command-line-tools-mac-os-x">here</a>).
-If this still fails, try installing <code class="docutils literal notranslate"><span class="pre">theano</span></code> through conda-forge instead:</p>
-<p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">conda</span> <span class="pre">install</span> <span class="pre">-c</span> <span class="pre">conda-forge</span> <span class="pre">theano</span></code></p>
-</div></blockquote>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Install</span> <span class="pre">GemPy</span></code></p>
-<blockquote>
-<div><p>install the latest release version of <code class="docutils literal notranslate"><span class="pre">GemPy</span></code> via <code class="docutils literal notranslate"><span class="pre">PyPi</span></code>:</p>
-<p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">gempy</span></code></p>
-<p>Alternatively, if you need the latest developments in GemPy, follow the instruction from the chapter <strong>Manual Installation</strong> instead.</p>
-</div></blockquote>
-</li>
-<li><p>Install optional requirements:</p>
-<blockquote>
-<div><p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">pyvista</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">pyevtk</span></code></p>
-<p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">conda</span> <span class="pre">install</span> <span class="pre">gdal</span></code></p>
-</div></blockquote>
+<li><p>Navigate to the root of the cloned repository and install using pip:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+</pre></div>
+</div>
 </li>
 </ol>
-</div>
-</div>
+</section>
+<section id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">GemPy</span></code> relies on numerous open-source libraries. Core dependencies are automatically installed with the package. Enhanced functionalities require additional dependencies, structured as follows:</p>
+<ul class="simple">
+<li><p>Core Dependencies: Installed with the basic package.</p></li>
+<li><p>Base Dependencies: Additional libraries for extended functionalities (<cite>base-requirements.txt</cite>).</p></li>
+<li><p>Optional Dependencies: Libraries for optional features (<cite>optional-requirements.txt</cite>).</p></li>
+<li><p>Development Dependencies: Tools needed for development (<cite>dev-requirements.txt</cite>).</p></li>
+</ul>
+</section>
+</section>
 
 
           </div>
@@ -335,7 +109,7 @@ If this still fails, try installing <code class="docutils literal notranslate"><
         <div class="sphinxsidebarwrapper">
 <p class="logo">
   <a href="index.html">
-    <img class="logo" src="_static/./logos/gempy.png" alt="Logo"/>
+    <img class="logo" src="_static/logos/gempy.png" alt="Logo"/>
     
   </a>
 </p>
@@ -346,7 +120,7 @@ If this still fails, try installing <code class="docutils literal notranslate"><
 
 
 <p>
-<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
+<iframe src="https://ghbtns.com/github-btn.html?user=gempy-project&repo=gempy&type=star&count=true&size=large&v=2"
   allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
 </p>
 
@@ -354,42 +128,27 @@ If this still fails, try installing <code class="docutils literal notranslate"><
 
 
 
-    
-
-<p>
-<a class="badge" href="https://travis-ci.org/cgre-aachen/gempy">
-    <img
-        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
-        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
-    />
-</a>
-</p>
-
-
 <h3>Navigation</h3>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">About</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#installing-gempy">Installing <code class="docutils literal notranslate"><span class="pre">GemPy</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#manual-installation">Manual installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#enhanced-installation-options">Enhanced Installation Options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#manual-installation">Manual Installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#dependencies">Dependencies</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#docker">Docker</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#windows-installation-guide-march-2020">Windows installation guide (March 2020)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#macos-installation-guide-may-2020">MacOS installation guide (May 2020)</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="projects.html">Additional projects</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Getting started</span></p>
+<p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="getting_started/index.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorials/index.html">GemPy Tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples/index.html">Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="integrations/index.html">Integrations</a></li>
 </ul>
-<p class="caption"><span class="caption-text">API Reference</span></p>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="code.html">Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_reference.html">Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_reference.html#data-classes">Data Classes</a></li>
 </ul>
 
 <div class="relations">
@@ -405,12 +164,12 @@ If this still fails, try installing <code class="docutils literal notranslate"><
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -424,11 +183,11 @@ If this still fails, try installing <code class="docutils literal notranslate"><
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2017-2021, CGRE-Aachen Team.
+      &copy;2017-2024, Gempy Developers.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
       
       |
       <a href="_sources/installation.rst.txt"

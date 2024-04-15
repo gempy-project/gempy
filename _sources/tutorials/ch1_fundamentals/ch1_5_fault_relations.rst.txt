@@ -10,7 +10,7 @@
     .. note::
         :class: sphx-glr-download-link-note
 
-        Click :ref:`here <sphx_glr_download_tutorials_ch1_fundamentals_ch1_5_fault_relations.py>`
+        :ref:`Go to the end <sphx_glr_download_tutorials_ch1_fundamentals_ch1_5_fault_relations.py>`
         to download the full example code
 
 .. rst-class:: sphx-glr-example-title
@@ -25,23 +25,18 @@
 
 Importing gempy
 
-.. GENERATED FROM PYTHON SOURCE LINES 9-23
+.. GENERATED FROM PYTHON SOURCE LINES 9-18
 
-.. code-block:: python3
+.. code-block:: Python
 
     import gempy as gp
+    import gempy_viewer as gpv
 
     # Aux imports
     import numpy as np
-    import pandas as pd
     import os
 
-    # Importing the function to find the interface
-    from gempy.utils.input_manipulation import find_interfaces_from_block_bottoms
-    import matplotlib.pyplot as plt
-
     np.random.seed(1515)
-    pd.set_option('precision', 2)
 
 
 
@@ -50,25 +45,126 @@ Importing gempy
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 24-26
+.. GENERATED FROM PYTHON SOURCE LINES 19-21
 
 We import a model from an existing folder.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 28-39
+.. GENERATED FROM PYTHON SOURCE LINES 23-37
 
-.. code-block:: python3
+.. code-block:: Python
 
-    cwd = os.getcwd()
-    if 'examples' not in cwd:
-        data_path = os.getcwd() + '/examples/'
-    else:
-        data_path = cwd + '/../../'
+    data_path = os.path.abspath('../../')
 
-    geo_model = gp.load_model(r'Tutorial_ch1-9a_Fault_relations',
-                              path=data_path + 'data/gempy_models/Tutorial_ch1-9a_Fault_relations',
-                              recompile=True)
+    geo_model: gp.data.GeoModel = gp.create_geomodel(
+        project_name='Faults_relations',
+        extent=[0, 1000, 0, 1000, -1000, -400],
+        resolution=[20, 20, 20],
+        refinement=6,  # * For this model is better not to use octrees because we want to see what is happening in the scalar fields
+        importer_helper=gp.data.ImporterHelper(
+            path_to_orientations=data_path + "/data/input_data/tut-ch1-5/tut_ch1-5_orientations.csv",
+            path_to_surface_points=data_path + "/data/input_data/tut-ch1-5/tut_ch1-5_points.csv",
+        )
+    )
 
+    print(geo_model)
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+    {'_interpolation_options': InterpolationOptions(kernel_options={'range': 5, 'c_o': 10, 'uni_degree': 1, 'i_res': 4, 'gi_res': 2, 'number_dimensions': 3, 'kernel_function': <AvailableKernelFunctions.cubic: KernelFunction(base_function=<function cubic_function at 0x7f857a0a1b40>, derivative_div_r=<function cubic_function_p_div_r at 0x7f857a0a1bd0>, second_derivative=<function cubic_function_a at 0x7f857a0a1c60>, consume_sq_distance=False)>, 'kernel_solver': <Solvers.DEFAULT: 1>, 'compute_condition_number': False, 'optimizing_condition_number': False, 'condition_number': None}, _number_octree_levels=6, current_octree_level=0, block_solutions_type=BlockSolutionType.OCTREE, compute_scalar_gradient=False, mesh_extraction=True, mesh_extraction_masking_options=MeshExtractionMaskingOptions.INTERSECT, mesh_extraction_fancy=True, debug=True, debug_water_tight=False, sigmoid_slope=50000, evaluation_chunk_size=50000, _number_octree_levels_surface=4, _model_name=None),
+     'grid': <gempy.core.data.grid.Grid object at 0x7f851715ef50>,
+     'meta': GeoModelMeta(name='Faults_relations',
+                          creation_date=None,
+                          last_modification_date=None,
+                          owner=None),
+     'structural_frame': StructuralFrame(
+            structural_groups=[
+    StructuralGroup(
+            name=default_formation,
+            structural_relation=StackRelationType.ERODE,
+            elements=[
+    Element(
+            name=fault1,
+            color=#015482,
+            is_active=True
+    ),
+    Element(
+            name=fault2,
+            color=#9f0052,
+            is_active=True
+    ),
+    Element(
+            name=rock1,
+            color=#ffbe00,
+            is_active=True
+    ),
+    Element(
+            name=rock2,
+            color=#728f02,
+            is_active=True
+    ),
+    Element(
+            name=rock3,
+            color=#443988,
+            is_active=True
+    ),
+    Element(
+            name=rock4,
+            color=#ff3f20,
+            is_active=True
+    )
+    ]
+    )
+    ],
+            fault_relations=
+    [[False]],
+    ,
+     'transform': {'_is_default_transform': False,
+     'position': array([-500., -500.,  650.]),
+     'rotation': array([0., 0., 0.]),
+     'scale': array([0.000625, 0.000625, 0.000625])}}
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 38-40
+
+One fault model
+---------------
+
+.. GENERATED FROM PYTHON SOURCE LINES 42-43
+
+Setting the structural frame
+
+.. GENERATED FROM PYTHON SOURCE LINES 43-64
+
+.. code-block:: Python
+
+
+    fault1: gp.data.StructuralElement = geo_model.structural_frame.get_element_by_name("fault1")
+    fault2: gp.data.StructuralElement = geo_model.structural_frame.get_element_by_name("fault2")
+
+    # Remove the faults from the default group
+    default_group: gp.data.StructuralGroup = geo_model.structural_frame.get_group_by_name("default_formation")
+    default_group.elements.remove(fault1)
+    default_group.elements.remove(fault2)
+
+    # Add a new group for the fault
+    gp.add_structural_group(
+        model=geo_model,
+        group_index=0,
+        structural_group_name="fault_series_1",
+        elements=[fault1],
+        structural_relation=gp.data.StackRelationType.FAULT,
+        fault_relations=gp.data.FaultsRelationSpecialCase.OFFSET_ALL
+    )
+
+    print(geo_model.structural_frame)
 
 
 
@@ -76,330 +172,74 @@ We import a model from an existing folder.
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
-    Active grids: ['regular']
-    Setting kriging parameters to their default values.
-    Compiling theano function...
-    Level of Optimization:  fast_compile
-    Device:  cpu
-    Precision:  float64
-    Number of faults:  1
-    Compilation Done!
-    Kriging values: 
-                            values
-    range                 1732.05
-    $C_o$                71428.57
-    drift equations  [3, 3, 3, 3]
-    nugget grad              0.01
-    nugget scalar             0.0
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 40-42
-
-.. code-block:: python3
-
-    geo_model.faults.faults_relations_df
-
-
-
-
-
-
-.. raw:: html
-
-    <div class="output_subarea output_html rendered_html output_result">
-    <div>
-    <style scoped>
-        .dataframe tbody tr th:only-of-type {
-            vertical-align: middle;
-        }
-
-        .dataframe tbody tr th {
-            vertical-align: top;
-        }
-
-        .dataframe thead th {
-            text-align: right;
-        }
-    </style>
-    <table border="1" class="dataframe">
-      <thead>
-        <tr style="text-align: right;">
-          <th></th>
-          <th>fault_series1</th>
-          <th>series2</th>
-          <th>series1</th>
-          <th>basement_series</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th>fault_series1</th>
-          <td>False</td>
-          <td>False</td>
-          <td>True</td>
-          <td>True</td>
-        </tr>
-        <tr>
-          <th>series2</th>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>series1</th>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>basement_series</th>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-      </tbody>
-    </table>
-    </div>
-    </div>
-    <br />
-    <br />
-
-.. GENERATED FROM PYTHON SOURCE LINES 43-45
-
-.. code-block:: python3
-
-    geo_model.faults
-
-
-
-
-
-
-.. raw:: html
-
-    <div class="output_subarea output_html rendered_html output_result">
-    <table border="1" class="dataframe">
-      <thead>
-        <tr style="text-align: right;">
-          <th></th>
-          <th>order_series</th>
-          <th>BottomRelation</th>
-          <th>isFault</th>
-          <th>isFinite</th>
-          <th>isActive</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th>fault_series1</th>
-          <td>1</td>
-          <td>Fault</td>
-          <td>True</td>
-          <td>False</td>
-          <td>True</td>
-        </tr>
-        <tr>
-          <th>series2</th>
-          <td>2</td>
-          <td>Erosion</td>
-          <td>False</td>
-          <td>False</td>
-          <td>True</td>
-        </tr>
-        <tr>
-          <th>series1</th>
-          <td>3</td>
-          <td>Erosion</td>
-          <td>False</td>
-          <td>False</td>
-          <td>True</td>
-        </tr>
-        <tr>
-          <th>basement_series</th>
-          <td>4</td>
-          <td>Erosion</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-      </tbody>
-    </table>
-    </div>
-    <br />
-    <br />
-
-.. GENERATED FROM PYTHON SOURCE LINES 46-48
-
-.. code-block:: python3
-
-    geo_model.surfaces
-
-
-
-
-
-
-.. raw:: html
-
-    <div class="output_subarea output_html rendered_html output_result">
-    <style  type="text/css" >
-    #T_fb7ea_row0_col3{
-                background-color:  #015482;
-            }#T_fb7ea_row1_col3{
-                background-color:  #9f0052;
-            }#T_fb7ea_row2_col3{
-                background-color:  #ffbe00;
-            }#T_fb7ea_row3_col3{
-                background-color:  #728f02;
-            }#T_fb7ea_row4_col3{
-                background-color:  #443988;
-            }#T_fb7ea_row5_col3{
-                background-color:  #ff3f20;
-            }#T_fb7ea_row6_col3{
-                background-color:  #325916;
-            }</style><table id="T_fb7ea_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
-                    <tr>
-                            <th id="T_fb7ea_level0_row0" class="row_heading level0 row0" >5</th>
-                            <td id="T_fb7ea_row0_col0" class="data row0 col0" >fault1</td>
-                            <td id="T_fb7ea_row0_col1" class="data row0 col1" >fault_series1</td>
-                            <td id="T_fb7ea_row0_col2" class="data row0 col2" >1</td>
-                            <td id="T_fb7ea_row0_col3" class="data row0 col3" >#015482</td>
-                            <td id="T_fb7ea_row0_col4" class="data row0 col4" >1</td>
-                </tr>
-                <tr>
-                            <th id="T_fb7ea_level0_row1" class="row_heading level0 row1" >7</th>
-                            <td id="T_fb7ea_row1_col0" class="data row1 col0" >rock5</td>
-                            <td id="T_fb7ea_row1_col1" class="data row1 col1" >series2</td>
-                            <td id="T_fb7ea_row1_col2" class="data row1 col2" >1</td>
-                            <td id="T_fb7ea_row1_col3" class="data row1 col3" >#9f0052</td>
-                            <td id="T_fb7ea_row1_col4" class="data row1 col4" >2</td>
-                </tr>
-                <tr>
-                            <th id="T_fb7ea_level0_row2" class="row_heading level0 row2" >6</th>
-                            <td id="T_fb7ea_row2_col0" class="data row2 col0" >rock4</td>
-                            <td id="T_fb7ea_row2_col1" class="data row2 col1" >series2</td>
-                            <td id="T_fb7ea_row2_col2" class="data row2 col2" >2</td>
-                            <td id="T_fb7ea_row2_col3" class="data row2 col3" >#ffbe00</td>
-                            <td id="T_fb7ea_row2_col4" class="data row2 col4" >3</td>
-                </tr>
-                <tr>
-                            <th id="T_fb7ea_level0_row3" class="row_heading level0 row3" >0</th>
-                            <td id="T_fb7ea_row3_col0" class="data row3 col0" >rock3</td>
-                            <td id="T_fb7ea_row3_col1" class="data row3 col1" >series1</td>
-                            <td id="T_fb7ea_row3_col2" class="data row3 col2" >1</td>
-                            <td id="T_fb7ea_row3_col3" class="data row3 col3" >#728f02</td>
-                            <td id="T_fb7ea_row3_col4" class="data row3 col4" >4</td>
-                </tr>
-                <tr>
-                            <th id="T_fb7ea_level0_row4" class="row_heading level0 row4" >3</th>
-                            <td id="T_fb7ea_row4_col0" class="data row4 col0" >rock2</td>
-                            <td id="T_fb7ea_row4_col1" class="data row4 col1" >series1</td>
-                            <td id="T_fb7ea_row4_col2" class="data row4 col2" >2</td>
-                            <td id="T_fb7ea_row4_col3" class="data row4 col3" >#443988</td>
-                            <td id="T_fb7ea_row4_col4" class="data row4 col4" >5</td>
-                </tr>
-                <tr>
-                            <th id="T_fb7ea_level0_row5" class="row_heading level0 row5" >1</th>
-                            <td id="T_fb7ea_row5_col0" class="data row5 col0" >rock1</td>
-                            <td id="T_fb7ea_row5_col1" class="data row5 col1" >series1</td>
-                            <td id="T_fb7ea_row5_col2" class="data row5 col2" >3</td>
-                            <td id="T_fb7ea_row5_col3" class="data row5 col3" >#ff3f20</td>
-                            <td id="T_fb7ea_row5_col4" class="data row5 col4" >6</td>
-                </tr>
-                <tr>
-                            <th id="T_fb7ea_level0_row6" class="row_heading level0 row6" >4</th>
-                            <td id="T_fb7ea_row6_col0" class="data row6 col0" >basement</td>
-                            <td id="T_fb7ea_row6_col1" class="data row6 col1" >basement_series</td>
-                            <td id="T_fb7ea_row6_col2" class="data row6 col2" >1</td>
-                            <td id="T_fb7ea_row6_col3" class="data row6 col3" >#325916</td>
-                            <td id="T_fb7ea_row6_col4" class="data row6 col4" >7</td>
-                </tr>
-        </tbody></table>
-    </div>
-    <br />
-    <br />
-
-.. GENERATED FROM PYTHON SOURCE LINES 49-51
-
-.. code-block:: python3
-
-    gp.compute_model(geo_model, compute_mesh=False)
-
-
-
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-
-
-    Lithology ids 
-      [7. 7. 7. ... 2. 2. 2.] 
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 52-54
-
-.. code-block:: python3
-
-    geo_model.solutions.lith_block
-
-
-
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-
-    array([7., 7., 7., ..., 2., 2., 2.])
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 55-57
-
-.. code-block:: python3
-
-    geo_model.solutions.block_matrix[0]
-
-
-
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-
-    array([[2., 2., 2., ..., 1., 1., 1.]])
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 58-64
-
-.. code-block:: python3
-
-    gp.plot_2d(geo_model, cell_number=[25], show_data=True)
-
+    StructuralFrame(
+            structural_groups=[
+    StructuralGroup(
+            name=fault_series_1,
+            structural_relation=StackRelationType.FAULT,
+            elements=[
+    Element(
+            name=fault1,
+            color=#015482,
+            is_active=True
+    )
+    ]
+    ),
+    StructuralGroup(
+            name=default_formation,
+            structural_relation=StackRelationType.ERODE,
+            elements=[
+    Element(
+            name=rock1,
+            color=#ffbe00,
+            is_active=True
+    ),
+    Element(
+            name=rock2,
+            color=#728f02,
+            is_active=True
+    ),
+    Element(
+            name=rock3,
+            color=#443988,
+            is_active=True
+    ),
+    Element(
+            name=rock4,
+            color=#ff3f20,
+            is_active=True
+    )
+    ]
+    )
+    ],
+            fault_relations=
+    [[False,  True],
+     [False, False]],
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 65-82
+
+.. code-block:: Python
+
+
+    geo_model.transform.apply_anisotropy(gp.data.GlobalAnisotropy.NONE)
+    if False:
+        gp.compute_model(geo_model)
+        # %%
+        print(geo_model.solutions.raw_arrays.block_matrix[0])  # This contains the block values for the fault1
+        print(geo_model.solutions.raw_arrays.block_matrix[1])  # This contains the block values for the formations
+        # %%
+        gpv.plot_2d(geo_model, show_data=True)
+        gpv.plot_3d(geo_model, show_data=True, kwargs_plot_structured_grid={'opacity': .2})
+
+    # TODO: Add example of offsetting just one fault
+
+    # %5
     # Graben example
     # --------------
 
@@ -407,30 +247,28 @@ We import a model from an existing folder.
 
 
 
-.. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_001.png
-    :alt: Cell Number: 25 Direction: y
-    :class: sphx-glr-single-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-
-    <gempy.plot.visualization_2d.Plot2D object at 0x7fcc46605610>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 65-70
+.. GENERATED FROM PYTHON SOURCE LINES 83-99
 
-.. code-block:: python3
+.. code-block:: Python
 
-    geo_model_graben = gp.load_model(r'Tutorial_ch1-9b_Fault_relations',
-                                     path=data_path + 'data/gempy_models/Tutorial_ch1-9b_Fault_relations', recompile=True)
+    gp.add_structural_group(
+        model=geo_model,
+        group_index=1,
+        structural_group_name="fault_series_2",
+        elements=[fault2],
+        structural_relation=gp.data.StackRelationType.FAULT,
+        fault_relations=gp.data.FaultsRelationSpecialCase.OFFSET_ALL
+    )
+    print(geo_model.structural_frame)
 
-    geo_model.meta.project_name = "Faults_relations"
+    from gempy_engine.core.data.kernel_classes.solvers import Solvers
+
+    geo_model.interpolation_options.kernel_options.kernel_solver = Solvers.SCIPY_CG
+    geo_model.interpolation_options.kernel_options.compute_condition_number = True
+    gp.compute_model(geo_model)
 
 
 
@@ -438,584 +276,122 @@ We import a model from an existing folder.
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
-    Active grids: ['regular']
-    Setting kriging parameters to their default values.
-    Compiling theano function...
-    Level of Optimization:  fast_compile
-    Device:  cpu
-    Precision:  float64
-    Number of faults:  2
-    Compilation Done!
-    Kriging values: 
-                            values
-    range                 1732.05
-    $C_o$                71428.57
-    drift equations  [3, 3, 3, 3]
-    nugget grad              0.01
-    nugget scalar             0.0
+    StructuralFrame(
+            structural_groups=[
+    StructuralGroup(
+            name=fault_series_1,
+            structural_relation=StackRelationType.FAULT,
+            elements=[
+    Element(
+            name=fault1,
+            color=#015482,
+            is_active=True
+    )
+    ]
+    ),
+    StructuralGroup(
+            name=fault_series_2,
+            structural_relation=StackRelationType.FAULT,
+            elements=[
+    Element(
+            name=fault2,
+            color=#9f0052,
+            is_active=True
+    )
+    ]
+    ),
+    StructuralGroup(
+            name=default_formation,
+            structural_relation=StackRelationType.ERODE,
+            elements=[
+    Element(
+            name=rock1,
+            color=#ffbe00,
+            is_active=True
+    ),
+    Element(
+            name=rock2,
+            color=#728f02,
+            is_active=True
+    ),
+    Element(
+            name=rock3,
+            color=#443988,
+            is_active=True
+    ),
+    Element(
+            name=rock4,
+            color=#ff3f20,
+            is_active=True
+    )
+    ]
+    )
+    ],
+            fault_relations=
+    [[False,  True,  True],
+     [False, False,  True],
+     [False, False, False]],
 
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 71-73
-
-.. code-block:: python3
-
-    geo_model_graben.surfaces
-
-
-
-
+    /home/leguark/gempy/gempy/core/data/geo_model.py:118: UserWarning: Both octree levels and resolution are set. The default grid for the `raw_array_solution`and plots will be the dense regular grid. To use octrees instead, set resolution to None in the regular grid.
+      warnings.warn("Both octree levels and resolution are set. The default grid for the `raw_array_solution`"
+    Setting Backend To: AvailableBackends.numpy
+    /home/leguark/gempy/gempy/core/data/geo_model.py:118: UserWarning: Both octree levels and resolution are set. The default grid for the `raw_array_solution`and plots will be the dense regular grid. To use octrees instead, set resolution to None in the regular grid.
+      warnings.warn("Both octree levels and resolution are set. The default grid for the `raw_array_solution`"
+    A size: (14, 14)
+    CG iterations: 13
+    A size: (15, 15)
+    CG iterations: 10
+    A size: (85, 85)
+    CG iterations: 69
 
 
 .. raw:: html
 
     <div class="output_subarea output_html rendered_html output_result">
-    <style  type="text/css" >
-    #T_4fab4_row0_col3{
-                background-color:  #015482;
-            }#T_4fab4_row1_col3{
-                background-color:  #9f0052;
-            }#T_4fab4_row2_col3{
-                background-color:  #ffbe00;
-            }#T_4fab4_row3_col3{
-                background-color:  #728f02;
-            }#T_4fab4_row4_col3{
-                background-color:  #443988;
-            }#T_4fab4_row5_col3{
-                background-color:  #ff3f20;
-            }#T_4fab4_row6_col3{
-                background-color:  #325916;
-            }</style><table id="T_4fab4_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
-                    <tr>
-                            <th id="T_4fab4_level0_row0" class="row_heading level0 row0" >7</th>
-                            <td id="T_4fab4_row0_col0" class="data row0 col0" >fault2</td>
-                            <td id="T_4fab4_row0_col1" class="data row0 col1" >fault_series2</td>
-                            <td id="T_4fab4_row0_col2" class="data row0 col2" >1</td>
-                            <td id="T_4fab4_row0_col3" class="data row0 col3" >#015482</td>
-                            <td id="T_4fab4_row0_col4" class="data row0 col4" >1</td>
-                </tr>
-                <tr>
-                            <th id="T_4fab4_level0_row1" class="row_heading level0 row1" >5</th>
-                            <td id="T_4fab4_row1_col0" class="data row1 col0" >fault1</td>
-                            <td id="T_4fab4_row1_col1" class="data row1 col1" >fault_series1</td>
-                            <td id="T_4fab4_row1_col2" class="data row1 col2" >1</td>
-                            <td id="T_4fab4_row1_col3" class="data row1 col3" >#9f0052</td>
-                            <td id="T_4fab4_row1_col4" class="data row1 col4" >2</td>
-                </tr>
-                <tr>
-                            <th id="T_4fab4_level0_row2" class="row_heading level0 row2" >6</th>
-                            <td id="T_4fab4_row2_col0" class="data row2 col0" >rock4</td>
-                            <td id="T_4fab4_row2_col1" class="data row2 col1" >series1</td>
-                            <td id="T_4fab4_row2_col2" class="data row2 col2" >1</td>
-                            <td id="T_4fab4_row2_col3" class="data row2 col3" >#ffbe00</td>
-                            <td id="T_4fab4_row2_col4" class="data row2 col4" >3</td>
-                </tr>
-                <tr>
-                            <th id="T_4fab4_level0_row3" class="row_heading level0 row3" >0</th>
-                            <td id="T_4fab4_row3_col0" class="data row3 col0" >rock3</td>
-                            <td id="T_4fab4_row3_col1" class="data row3 col1" >series1</td>
-                            <td id="T_4fab4_row3_col2" class="data row3 col2" >2</td>
-                            <td id="T_4fab4_row3_col3" class="data row3 col3" >#728f02</td>
-                            <td id="T_4fab4_row3_col4" class="data row3 col4" >4</td>
-                </tr>
-                <tr>
-                            <th id="T_4fab4_level0_row4" class="row_heading level0 row4" >3</th>
-                            <td id="T_4fab4_row4_col0" class="data row4 col0" >rock2</td>
-                            <td id="T_4fab4_row4_col1" class="data row4 col1" >series1</td>
-                            <td id="T_4fab4_row4_col2" class="data row4 col2" >3</td>
-                            <td id="T_4fab4_row4_col3" class="data row4 col3" >#443988</td>
-                            <td id="T_4fab4_row4_col4" class="data row4 col4" >5</td>
-                </tr>
-                <tr>
-                            <th id="T_4fab4_level0_row5" class="row_heading level0 row5" >1</th>
-                            <td id="T_4fab4_row5_col0" class="data row5 col0" >rock1</td>
-                            <td id="T_4fab4_row5_col1" class="data row5 col1" >series1</td>
-                            <td id="T_4fab4_row5_col2" class="data row5 col2" >4</td>
-                            <td id="T_4fab4_row5_col3" class="data row5 col3" >#ff3f20</td>
-                            <td id="T_4fab4_row5_col4" class="data row5 col4" >6</td>
-                </tr>
-                <tr>
-                            <th id="T_4fab4_level0_row6" class="row_heading level0 row6" >4</th>
-                            <td id="T_4fab4_row6_col0" class="data row6 col0" >basement</td>
-                            <td id="T_4fab4_row6_col1" class="data row6 col1" >basement_series</td>
-                            <td id="T_4fab4_row6_col2" class="data row6 col2" >1</td>
-                            <td id="T_4fab4_row6_col3" class="data row6 col3" >#325916</td>
-                            <td id="T_4fab4_row6_col4" class="data row6 col4" >7</td>
-                </tr>
-        </tbody></table>
+    <b>Solutions:</b> 6 Octree Levels, 6 DualContouringMeshes
     </div>
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 74-76
+.. GENERATED FROM PYTHON SOURCE LINES 100-103
 
-.. code-block:: python3
+.. code-block:: Python
 
-    geo_model_graben.additional_data
-
-
-
-
-
-
-.. raw:: html
-
-    <div class="output_subarea output_html rendered_html output_result">
-    <table border="1" class="dataframe">
-      <thead>
-        <tr style="text-align: right;">
-          <th></th>
-          <th></th>
-          <th>values</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th rowspan="9" valign="top">Structure</th>
-          <th>isLith</th>
-          <td>True</td>
-        </tr>
-        <tr>
-          <th>isFault</th>
-          <td>True</td>
-        </tr>
-        <tr>
-          <th>number faults</th>
-          <td>2</td>
-        </tr>
-        <tr>
-          <th>number surfaces</th>
-          <td>6</td>
-        </tr>
-        <tr>
-          <th>number series</th>
-          <td>4</td>
-        </tr>
-        <tr>
-          <th>number surfaces per series</th>
-          <td>[1, 1, 4, 0]</td>
-        </tr>
-        <tr>
-          <th>len surfaces surface_points</th>
-          <td>[9, 9, 15, 15, 12, 12]</td>
-        </tr>
-        <tr>
-          <th>len series surface_points</th>
-          <td>[9, 9, 54, 0]</td>
-        </tr>
-        <tr>
-          <th>len series orientations</th>
-          <td>[1, 1, 10, 0]</td>
-        </tr>
-        <tr>
-          <th rowspan="5" valign="top">Options</th>
-          <th>dtype</th>
-          <td>float64</td>
-        </tr>
-        <tr>
-          <th>output</th>
-          <td>geology</td>
-        </tr>
-        <tr>
-          <th>theano_optimizer</th>
-          <td>fast_compile</td>
-        </tr>
-        <tr>
-          <th>device</th>
-          <td>cpu</td>
-        </tr>
-        <tr>
-          <th>verbosity</th>
-          <td>[0]</td>
-        </tr>
-        <tr>
-          <th rowspan="5" valign="top">Kriging</th>
-          <th>range</th>
-          <td>1732.05</td>
-        </tr>
-        <tr>
-          <th>$C_o$</th>
-          <td>71428.57</td>
-        </tr>
-        <tr>
-          <th>drift equations</th>
-          <td>[3, 3, 3, 3]</td>
-        </tr>
-        <tr>
-          <th>nugget grad</th>
-          <td>0.01</td>
-        </tr>
-        <tr>
-          <th>nugget scalar</th>
-          <td>0.0</td>
-        </tr>
-        <tr>
-          <th rowspan="2" valign="top">Rescaling</th>
-          <th>rescaling factor</th>
-          <td>1600.0</td>
-        </tr>
-        <tr>
-          <th>centers</th>
-          <td>[500.0, 500.0, -650.0]</td>
-        </tr>
-      </tbody>
-    </table>
-    </div>
-    <br />
-    <br />
-
-.. GENERATED FROM PYTHON SOURCE LINES 77-79
-
-Displaying the input data:
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 81-83
-
-.. code-block:: python3
-
-    gp.plot_2d(geo_model_graben, direction='y')
+    gpv.plot_2d(geo_model, show_data=True)
+    gpv.plot_3d(geo_model, show_data=True, image=True, kwargs_plot_structured_grid={'opacity': .2})
 
 
 
 
-.. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_002.png
-    :alt: Cell Number: mid Direction: y
-    :class: sphx-glr-single-img
+.. image-sg:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_001.png
+   :alt: ch1 5 fault relations
+   :srcset: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_001.png
+   :class: sphx-glr-single-img
+
+.. image-sg:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_002.png
+   :alt: Cell Number: mid Direction: y
+   :srcset: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_002.png
+   :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7fcb8a4c3790>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f8517279d80>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 84-87
+.. GENERATED FROM PYTHON SOURCE LINES 104-108
 
-.. code-block:: python3
+.. code-block:: Python
 
-    gp.plot_2d(geo_model_graben, direction='x')
-
-
-
-
-
-.. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_003.png
-    :alt: Cell Number: mid Direction: x
-    :class: sphx-glr-single-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-
-    <gempy.plot.visualization_2d.Plot2D object at 0x7fcc46088280>
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 88-90
-
-.. code-block:: python3
-
-    geo_model_graben.stack
-
-
-
-
-
-
-.. raw:: html
-
-    <div class="output_subarea output_html rendered_html output_result">
-    <table border="1" class="dataframe">
-      <thead>
-        <tr style="text-align: right;">
-          <th></th>
-          <th>order_series</th>
-          <th>BottomRelation</th>
-          <th>isFault</th>
-          <th>isFinite</th>
-          <th>isActive</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th>fault_series2</th>
-          <td>1</td>
-          <td>Fault</td>
-          <td>True</td>
-          <td>False</td>
-          <td>True</td>
-        </tr>
-        <tr>
-          <th>fault_series1</th>
-          <td>2</td>
-          <td>Fault</td>
-          <td>True</td>
-          <td>False</td>
-          <td>True</td>
-        </tr>
-        <tr>
-          <th>series1</th>
-          <td>3</td>
-          <td>Erosion</td>
-          <td>False</td>
-          <td>False</td>
-          <td>True</td>
-        </tr>
-        <tr>
-          <th>basement_series</th>
-          <td>4</td>
-          <td>Erosion</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-      </tbody>
-    </table>
-    </div>
-    <br />
-    <br />
-
-.. GENERATED FROM PYTHON SOURCE LINES 91-93
-
-.. code-block:: python3
-
-    geo_model_graben.faults
-
-
-
-
-
-
-.. raw:: html
-
-    <div class="output_subarea output_html rendered_html output_result">
-    <table border="1" class="dataframe">
-      <thead>
-        <tr style="text-align: right;">
-          <th></th>
-          <th>order_series</th>
-          <th>BottomRelation</th>
-          <th>isFault</th>
-          <th>isFinite</th>
-          <th>isActive</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th>fault_series2</th>
-          <td>1</td>
-          <td>Fault</td>
-          <td>True</td>
-          <td>False</td>
-          <td>True</td>
-        </tr>
-        <tr>
-          <th>fault_series1</th>
-          <td>2</td>
-          <td>Fault</td>
-          <td>True</td>
-          <td>False</td>
-          <td>True</td>
-        </tr>
-        <tr>
-          <th>series1</th>
-          <td>3</td>
-          <td>Erosion</td>
-          <td>False</td>
-          <td>False</td>
-          <td>True</td>
-        </tr>
-        <tr>
-          <th>basement_series</th>
-          <td>4</td>
-          <td>Erosion</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-      </tbody>
-    </table>
-    </div>
-    <br />
-    <br />
-
-.. GENERATED FROM PYTHON SOURCE LINES 94-96
-
-.. code-block:: python3
-
-    geo_model_graben.faults.faults_relations_df
-
-
-
-
-
-
-.. raw:: html
-
-    <div class="output_subarea output_html rendered_html output_result">
-    <div>
-    <style scoped>
-        .dataframe tbody tr th:only-of-type {
-            vertical-align: middle;
-        }
-
-        .dataframe tbody tr th {
-            vertical-align: top;
-        }
-
-        .dataframe thead th {
-            text-align: right;
-        }
-    </style>
-    <table border="1" class="dataframe">
-      <thead>
-        <tr style="text-align: right;">
-          <th></th>
-          <th>fault_series2</th>
-          <th>fault_series1</th>
-          <th>series1</th>
-          <th>basement_series</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th>fault_series2</th>
-          <td>False</td>
-          <td>True</td>
-          <td>True</td>
-          <td>True</td>
-        </tr>
-        <tr>
-          <th>fault_series1</th>
-          <td>False</td>
-          <td>False</td>
-          <td>True</td>
-          <td>True</td>
-        </tr>
-        <tr>
-          <th>series1</th>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>basement_series</th>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-      </tbody>
-    </table>
-    </div>
-    </div>
-    <br />
-    <br />
-
-.. GENERATED FROM PYTHON SOURCE LINES 97-99
-
-.. code-block:: python3
-
-    gp.compute_model(geo_model_graben)
-
-
-
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-
-
-    Lithology ids 
-      [7. 7. 7. ... 3. 3. 3.] 
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 100-102
-
-.. code-block:: python3
-
-    gp.plot_2d(geo_model_graben, cell_number=[25], show_data=True)
-
-
-
-
-.. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_004.png
-    :alt: Cell Number: 25 Direction: y
-    :class: sphx-glr-single-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-
-    <gempy.plot.visualization_2d.Plot2D object at 0x7fcb8bfbf1f0>
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 103-104
-
-sphinx_gallery_thumbnail_number = 5
-
-.. GENERATED FROM PYTHON SOURCE LINES 104-106
-
-.. code-block:: python3
-
-    gp.plot_3d(geo_model_graben, image=True)
-
-
-
-
-.. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_005.png
-    :alt: ch1 5 fault relations
-    :class: sphx-glr-single-img
-
-.. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_006.png
-    :alt: ch1 5 fault relations
-    :class: sphx-glr-single-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-
-    <gempy.plot.vista.GemPyToVista object at 0x7fcbe004be50>
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 107-111
-
-.. code-block:: python3
-
-    gp.plot_2d(geo_model_graben, cell_number=[25], show_scalar=True, series_n=0)
-
-    gp.plot_2d(geo_model_graben, cell_number=[25], show_scalar=True, series_n=1)
+    gpv.plot_2d(geo_model, show_scalar=True, show_lith=False, series_n=0)
+    gpv.plot_2d(geo_model, show_scalar=True, show_lith=False, series_n=1)
+    gpv.plot_2d(geo_model, show_scalar=True, show_lith=False, series_n=2)
 
 
 
@@ -1025,116 +401,79 @@ sphinx_gallery_thumbnail_number = 5
 
     *
 
-      .. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_007.png
-          :alt: Cell Number: 25 Direction: y
-          :class: sphx-glr-multi-img
+      .. image-sg:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_003.png
+         :alt: Cell Number: mid Direction: y
+         :srcset: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_003.png
+         :class: sphx-glr-multi-img
 
     *
 
-      .. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_008.png
-          :alt: Cell Number: 25 Direction: y
-          :class: sphx-glr-multi-img
+      .. image-sg:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_004.png
+         :alt: Cell Number: mid Direction: y
+         :srcset: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_004.png
+         :class: sphx-glr-multi-img
+
+    *
+
+      .. image-sg:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_005.png
+         :alt: Cell Number: mid Direction: y
+         :srcset: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_005.png
+         :class: sphx-glr-multi-img
 
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7fcc418c5220>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f85173512d0>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 112-115
+.. GENERATED FROM PYTHON SOURCE LINES 109-111
 
-Offset parameter (Experimental)
--------------------------------
+Finite Faults
+-------------
 
+.. GENERATED FROM PYTHON SOURCE LINES 115-117
 
-.. GENERATED FROM PYTHON SOURCE LINES 117-121
+Faults relations
+----------------
 
-.. code-block:: python3
+.. GENERATED FROM PYTHON SOURCE LINES 119-120
 
-    geo_model_graben._interpolator.theano_graph.offset.set_value(1)
-    gp.compute_model(geo_model_graben, compute_mesh=False)
+Let's split the formations in two groups
 
+.. GENERATED FROM PYTHON SOURCE LINES 120-147
 
-
-
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
+.. code-block:: Python
 
 
+    gp.add_structural_group(
+        model=geo_model,
+        group_index=2,
+        structural_group_name="series_1",
+        elements=[
+            geo_model.structural_frame.get_element_by_name("rock4"),
+            geo_model.structural_frame.get_element_by_name("rock3")
+        ],
+        structural_relation=gp.data.StackRelationType.ERODE
+    )
 
-    Lithology ids 
-      [7. 7. 7. ... 3. 3. 3.] 
+    default_group.elements.remove(geo_model.structural_frame.get_element_by_name("rock4"))
+    default_group.elements.remove(geo_model.structural_frame.get_element_by_name("rock3"))
 
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 122-125
-
-.. code-block:: python3
-
-    gp.plot_2d(geo_model_graben, block=geo_model_graben.solutions.block_matrix[1, 0, :125000],
-               show_data=True)
-
-
-
-
-.. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_009.png
-    :alt: Cell Number: mid Direction: y
-    :class: sphx-glr-single-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-
-    <gempy.plot.visualization_2d.Plot2D object at 0x7fcc6b9bc9d0>
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 126-128
-
-.. code-block:: python3
-
-    gp.plot_2d(geo_model_graben, series_n=2, show_scalar=True)
-
-
-
-
-.. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_010.png
-    :alt: Cell Number: mid Direction: y
-    :class: sphx-glr-single-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-
-    <gempy.plot.visualization_2d.Plot2D object at 0x7fcc46ee3ca0>
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 129-131
-
-.. code-block:: python3
-
-    geo_model_graben.solutions.scalar_field_matrix[1]
+    gp.set_fault_relation(
+        frame=geo_model.structural_frame,
+        rel_matrix=np.array([
+            [0, 1, 1, 1],
+            [0, 0, 0, 1],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0]
+        ]
+        )
+    )
+    print(geo_model.structural_frame)
 
 
 
@@ -1142,156 +481,154 @@ Offset parameter (Experimental)
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
+    StructuralFrame(
+            structural_groups=[
+    StructuralGroup(
+            name=fault_series_1,
+            structural_relation=StackRelationType.FAULT,
+            elements=[
+    Element(
+            name=fault1,
+            color=#015482,
+            is_active=True
+    )
+    ]
+    ),
+    StructuralGroup(
+            name=fault_series_2,
+            structural_relation=StackRelationType.FAULT,
+            elements=[
+    Element(
+            name=fault2,
+            color=#9f0052,
+            is_active=True
+    )
+    ]
+    ),
+    StructuralGroup(
+            name=series_1,
+            structural_relation=StackRelationType.ERODE,
+            elements=[
+    Element(
+            name=rock4,
+            color=#ff3f20,
+            is_active=True
+    ),
+    Element(
+            name=rock3,
+            color=#443988,
+            is_active=True
+    )
+    ]
+    ),
+    StructuralGroup(
+            name=default_formation,
+            structural_relation=StackRelationType.ERODE,
+            elements=[
+    Element(
+            name=rock2,
+            color=#728f02,
+            is_active=True
+    ),
+    Element(
+            name=rock1,
+            color=#ffbe00,
+            is_active=True
+    )
+    ]
+    )
+    ],
+            fault_relations=
+    [[False,  True,  True,  True],
+     [False, False, False, False],
+     [False, False, False, False],
+     [False, False, False, False]],
 
-    array([0.17363373, 0.1848186 , 0.19600352, ..., 1.36450254, 1.37569005,
-           1.38687763])
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 132-139
-
-Finding the faults intersection:
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Sometimes we need to find the voxels that contain the each fault. To do
-so we can use gempy's functionality to find interfaces as follows. Lets
-use the first fault as an example:
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 141-145
-
-.. code-block:: python3
-
-    gp.plot_2d(geo_model_graben,
-               regular_grid=geo_model_graben.solutions.block_matrix[0, 0, :125000],
-               show_data=True)
 
 
 
 
-.. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_011.png
-    :alt: Cell Number: mid Direction: y
-    :class: sphx-glr-single-img
+.. GENERATED FROM PYTHON SOURCE LINES 148-150
+
+.. code-block:: Python
+
+    gp.compute_model(geo_model)
+
+
+
 
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
-
-    <gempy.plot.visualization_2d.Plot2D object at 0x7fcb8a4d44c0>
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 146-147
-
-Remember the fault block is stored on:
-
-.. GENERATED FROM PYTHON SOURCE LINES 147-149
-
-.. code-block:: python3
-
-    geo_model_graben.solutions.block_matrix[0, 0, :125000]
+    Setting Backend To: AvailableBackends.numpy
+    /home/leguark/gempy/gempy/core/data/geo_model.py:118: UserWarning: Both octree levels and resolution are set. The default grid for the `raw_array_solution`and plots will be the dense regular grid. To use octrees instead, set resolution to None in the regular grid.
+      warnings.warn("Both octree levels and resolution are set. The default grid for the `raw_array_solution`"
+    A size: (50, 50)
+    CG iterations: 100
+    A size: (38, 38)
+    CG iterations: 35
 
 
+.. raw:: html
 
+    <div class="output_subarea output_html rendered_html output_result">
+    <b>Solutions:</b> 6 Octree Levels, 6 DualContouringMeshes
+    </div>
+    <br />
+    <br />
+
+.. GENERATED FROM PYTHON SOURCE LINES 151-153
+
+.. code-block:: Python
+
+    gpv.plot_2d(geo_model, show_data=True)
+    gpv.plot_3d(geo_model, show_data=True, image=False, kwargs_plot_structured_grid={'opacity': .2})
+
+
+
+.. image-sg:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_006.png
+   :alt: ch1 5 fault relations
+   :srcset: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_006.png
+   :class: sphx-glr-single-img
+
+.. image-sg:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_007.png
+   :alt: Cell Number: mid Direction: y
+   :srcset: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_007.png
+   :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
 
-    array([1., 1., 1., ..., 2., 2., 2.])
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 150-152
-
-Now we can find where is the intersection of the values 1 by calling the following function.
-This will return Trues on those voxels on the intersection
-
-.. GENERATED FROM PYTHON SOURCE LINES 152-155
-
-.. code-block:: python3
-
-    intersection = find_interfaces_from_block_bottoms(
-        geo_model_graben.solutions.block_matrix[0, 0, :125000].reshape(50, 50, 50), 1, shift=1)
-
-
-
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 156-157
-
-We can manually plotting together to see exactly what we have done
-
-.. GENERATED FROM PYTHON SOURCE LINES 157-164
-
-.. code-block:: python3
-
-    ax = gp.plot_2d(geo_model_graben,
-                    block=geo_model_graben.solutions.block_matrix[0, 0, :125000],
-                    show_data=True, show=False)
-
-    plt.imshow(intersection[:, 25, :].T, origin='lower', extent=(0, 1000, -1000, 0), alpha=.5)
-    plt.show()
-
-    gp.save_model(geo_model)
-
-
-.. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_012.png
-    :alt: Cell Number: mid Direction: y
-    :class: sphx-glr-single-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-
-    True
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f85615225f0>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  19.931 seconds)
+   **Total running time of the script:** (0 minutes 22.731 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_5_fault_relations.py:
 
+.. only:: html
 
-.. only :: html
+  .. container:: sphx-glr-footer sphx-glr-footer-example
 
- .. container:: sphx-glr-footer
-    :class: sphx-glr-footer-example
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
+      :download:`Download Jupyter notebook: ch1_5_fault_relations.ipynb <ch1_5_fault_relations.ipynb>`
 
+    .. container:: sphx-glr-download sphx-glr-download-python
 
-  .. container:: sphx-glr-download sphx-glr-download-python
-
-     :download:`Download Python source code: ch1_5_fault_relations.py <ch1_5_fault_relations.py>`
-
-
-
-  .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-     :download:`Download Jupyter notebook: ch1_5_fault_relations.ipynb <ch1_5_fault_relations.ipynb>`
+      :download:`Download Python source code: ch1_5_fault_relations.py <ch1_5_fault_relations.py>`
 
 
 .. only:: html

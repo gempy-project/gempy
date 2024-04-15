@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>gempy.core.data.SurfacePointsTable &#8212; GemPy 2023.2.0b1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=270d38c7" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <script src="../_static/documentation_options.js?v=acace1bb"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="gempy.core.data.OrientationsTable" href="gempy.core.data.OrientationsTable.html" />
+    <link rel="prev" title="gempy.core.data.StructuralElement" href="gempy.core.data.StructuralElement.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="gempy-core-data-surfacepointstable">
+<h1>gempy.core.data.SurfacePointsTable<a class="headerlink" href="#gempy-core-data-surfacepointstable" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="gempy.core.data.SurfacePointsTable">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gempy.core.data.</span></span><span class="sig-name descname"><span class="pre">SurfacePointsTable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_id_map</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_model_transform</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Transform</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data/surface_points.html#SurfacePointsTable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gempy.core.data.SurfacePointsTable" title="Link to this definition">¶</a></dt>
+<dd><p>A dataclass to represent a table of surface points in a geological model.</p>
+<section id="examples-using-gempy-core-data-surfacepointstable">
+<h2>Examples using <code class="docutils literal notranslate"><span class="pre">gempy.core.data.SurfacePointsTable</span></code><a class="headerlink" href="#examples-using-gempy-core-data-surfacepointstable" title="Link to this heading">¶</a></h2>
+<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="1.1 -Basics of geological modeling with GemPy"><img alt="" src="../_images/sphx_glr_ch1_1_basics_thumb.png" />
+<p><a class="reference internal" href="../tutorials/ch1_fundamentals/ch1_1_basics.html#sphx-glr-tutorials-ch1-fundamentals-ch1-1-basics-py"><span class="std std-ref">1.1 -Basics of geological modeling with GemPy</span></a></p>
+  <div class="sphx-glr-thumbnail-title">1.1 -Basics of geological modeling with GemPy</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Claudius"><img alt="" src="../_images/sphx_glr_Claudius_thumb.png" />
+<p><a class="reference internal" href="../examples/real/Claudius.html#sphx-glr-examples-real-claudius-py"><span class="std std-ref">Claudius</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Claudius</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Hecho"><img alt="" src="../_images/sphx_glr_Hecho_thumb.png" />
+<p><a class="reference internal" href="../examples/real/Hecho.html#sphx-glr-examples-real-hecho-py"><span class="std std-ref">Hecho</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Hecho</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Moureze"><img alt="" src="../_images/sphx_glr_Moureze_thumb.png" />
+<p><a class="reference internal" href="../examples/real/Moureze.html#sphx-glr-examples-real-moureze-py"><span class="std std-ref">Moureze</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Moureze</div>
+</div></div><div class="sphx-glr-clear"></div><p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.SurfacePointsTable.__init__" title="gempy.core.data.SurfacePointsTable.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(data[, name_id_map, _model_transform])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_arrays</span></code>(x, y, z, names[, nugget, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_surface_points_by_id</span></code>(id)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_surface_points_by_id_groups</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_surface_points_by_name</span></code>(name)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">id_to_name</span></code>(id)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">initialize_empty</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">df</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data.SurfacePointsTable.dt" title="gempy.core.data.SurfacePointsTable.dt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dt</span></code></a></p></td>
+<td><p>The custom data type for the data array.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">id</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ids</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_transform</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data.SurfacePointsTable.name_id_map" title="gempy.core.data.SurfacePointsTable.name_id_map"><code class="xref py py-obj docutils literal notranslate"><span class="pre">name_id_map</span></code></a></p></td>
+<td><p>A mapping between surface point names and ids.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">nugget</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">xyz</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.SurfacePointsTable.data" title="gempy.core.data.SurfacePointsTable.data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">data</span></code></a></p></td>
+<td><p>A structured NumPy array holding the X, Y, Z coordinates, id, and nugget of each surface point.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gempy.core.data.SurfacePointsTable.data">
+<span class="sig-name descname"><span class="pre">data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></em><a class="headerlink" href="#gempy.core.data.SurfacePointsTable.data" title="Link to this definition">¶</a></dt>
+<dd><p>A structured NumPy array holding the X, Y, Z coordinates, id, and nugget of each surface point.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gempy.core.data.SurfacePointsTable.name_id_map">
+<span class="sig-name descname"><span class="pre">name_id_map</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#gempy.core.data.SurfacePointsTable.name_id_map" title="Link to this definition">¶</a></dt>
+<dd><p>A mapping between surface point names and ids.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gempy.core.data.SurfacePointsTable.dt">
+<span class="sig-name descname"><span class="pre">dt</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">dtype([('X',</span> <span class="pre">'&lt;f8'),</span> <span class="pre">('Y',</span> <span class="pre">'&lt;f8'),</span> <span class="pre">('Z',</span> <span class="pre">'&lt;f8'),</span> <span class="pre">('id',</span> <span class="pre">'&lt;i4'),</span> <span class="pre">('nugget',</span> <span class="pre">'&lt;f8')])</span></em><a class="headerlink" href="#gempy.core.data.SurfacePointsTable.dt" title="Link to this definition">¶</a></dt>
+<dd><p>The custom data type for the data array.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gempy.core.data.SurfacePointsTable.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_id_map</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_model_transform</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Transform</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#gempy.core.data.SurfacePointsTable.__init__" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</section>
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/logos/gempy.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=gempy-project&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../projects.html">Additional projects</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">GemPy Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../api_reference.html">Code</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api_reference.html#data-classes">Data Classes</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../api_reference.html#module-gempy.core.data">Modeling Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference.html#helper-classes">Helper Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference.html#enumerators">Enumerators</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../api_reference.html">Code</a><ul>
+      <li>Previous: <a href="gempy.core.data.StructuralElement.html" title="previous chapter">gempy.core.data.StructuralElement</a></li>
+      <li>Next: <a href="gempy.core.data.OrientationsTable.html" title="next chapter">gempy.core.data.OrientationsTable</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017-2024, Gempy Developers.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+      |
+      <a href="../_sources/Modeling Classes/gempy.core.data.SurfacePointsTable.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

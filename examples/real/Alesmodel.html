@@ -1,27 +1,25 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="../../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Alesmodel: Plotting sections and maps. &#8212; GemPy 2.2.8 documentation</title>
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/gallery-rendered-html.css" />
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Alesmodel: Plotting sections and maps. &#8212; GemPy 2023.2.0b1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=270d38c7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=61a4c737" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <script src="../../_static/documentation_options.js?v=acace1bb"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Claudius" href="Claudius.html" />
-    <link rel="prev" title="Model 7 - Combination" href="../geometries/7_combination.html" />
+    <link rel="prev" title="Real case studies" href="index.html" />
    
   <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
   
@@ -40,48 +38,57 @@
             
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
-<p>Click <a class="reference internal" href="#sphx-glr-download-examples-real-alesmodel-py"><span class="std std-ref">here</span></a>
+<p><a class="reference internal" href="#sphx-glr-download-examples-real-alesmodel-py"><span class="std std-ref">Go to the end</span></a>
 to download the full example code</p>
 </div>
-<div class="sphx-glr-example-title section" id="alesmodel-plotting-sections-and-maps">
-<span id="sphx-glr-examples-real-alesmodel-py"></span><h1>Alesmodel: Plotting sections and maps.<a class="headerlink" href="#alesmodel-plotting-sections-and-maps" title="Permalink to this headline">¶</a></h1>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gempy</span> <span class="k">as</span> <span class="nn">gp</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<section class="sphx-glr-example-title" id="alesmodel-plotting-sections-and-maps">
+<span id="sphx-glr-examples-real-alesmodel-py"></span><h1>Alesmodel: Plotting sections and maps.<a class="headerlink" href="#alesmodel-plotting-sections-and-maps" title="Link to this heading">¶</a></h1>
+<p># %%
+# .. admonition:: Explanation
+#
+#       This model is quite unstable in general and requires float64 to find a solution. The lack of data on
+#       one of the corners for the TRIAS and LIAS series makes that the model bends in an unrealistic
+#       way and erodes CARBO that disappears on that section. The easy way to solve this is to add more data in that area but
+#       I leave as it is since I did no constructed the model.
+#</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gempy</span> <span class="k">as</span> <span class="nn">gp</span>
+<span class="kn">import</span> <span class="nn">gempy_viewer</span> <span class="k">as</span> <span class="nn">gpv</span>
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 </pre></div>
 </div>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cwd</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.html#os.getcwd" title="os.getcwd" class="sphx-glr-backref-module-os sphx-glr-backref-type-py-function"><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span></a><span class="p">()</span>
-<span class="k">if</span> <span class="s1">&#39;examples&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cwd</span></a><span class="p">:</span>
-    <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.html#os.getcwd" title="os.getcwd" class="sphx-glr-backref-module-os sphx-glr-backref-type-py-function"><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span></a><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;/examples&#39;</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">cwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+<span class="k">if</span> <span class="s1">&#39;examples&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cwd</span><span class="p">:</span>
+    <span class="n">data_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;/examples&#39;</span>
 <span class="k">else</span><span class="p">:</span>
-    <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cwd</span></a> <span class="o">+</span> <span class="s1">&#39;/../..&#39;</span>
+    <span class="n">data_path</span> <span class="o">=</span> <span class="n">cwd</span> <span class="o">+</span> <span class="s1">&#39;/../..&#39;</span>
 
-<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">path_interf</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a> <span class="o">+</span> <span class="s2">&quot;/data/input_data/AlesModel/2018_interf.csv&quot;</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">path_orient</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a> <span class="o">+</span> <span class="s2">&quot;/data/input_data/AlesModel/2018_orient_clust_n_init5_0.csv&quot;</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">path_dem</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a> <span class="o">+</span> <span class="s2">&quot;/data/input_data/AlesModel/_cropped_DEM_coarse.tif&quot;</span>
+<span class="n">path_interf</span> <span class="o">=</span> <span class="n">data_path</span> <span class="o">+</span> <span class="s2">&quot;/data/input_data/AlesModel/2018_interf.csv&quot;</span>
+<span class="n">path_orient</span> <span class="o">=</span> <span class="n">data_path</span> <span class="o">+</span> <span class="s2">&quot;/data/input_data/AlesModel/2018_orient_clust_n_init5_0.csv&quot;</span>
+<span class="n">path_dem</span> <span class="o">=</span> <span class="n">data_path</span> <span class="o">+</span> <span class="s2">&quot;/data/input_data/AlesModel/_cropped_DEM_coarse.tif&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">resolution</span></a> <span class="o">=</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">]</span>
-<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">extent</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><span class="mf">729550.0</span><span class="p">,</span> <span class="mf">751500.0</span><span class="p">,</span> <span class="mf">1913500.0</span><span class="p">,</span> <span class="mf">1923650.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1800.0</span><span class="p">,</span> <span class="mf">800.0</span><span class="p">])</span>
-<a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a> <span class="o">=</span> <a href="../../GemPy API/gempy.create_model.html#gempy.create_model" title="gempy.create_model" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">create_model</span></a><span class="p">(</span><span class="s1">&#39;Alesmodel&#39;</span><span class="p">)</span>
-<a href="../../GemPy API/gempy.init_data.html#gempy.init_data" title="gempy.init_data" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">init_data</span></a><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">extent</span></a><span class="o">=</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">extent</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">resolution</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">resolution</span></a><span class="p">,</span>
-             <span class="n">path_i</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">path_interf</span></a><span class="p">,</span>
-             <span class="n">path_o</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">path_orient</span></a><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">:</span> <a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class"><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GeoModel</span></a> <span class="o">=</span> <a href="../../GemPy API/gempy.create_geomodel.html#gempy.create_geomodel" title="gempy.create_geomodel" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">create_geomodel</span></a><span class="p">(</span>
+    <span class="n">project_name</span><span class="o">=</span><span class="s1">&#39;Claudius&#39;</span><span class="p">,</span>
+    <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="mf">729550.0</span><span class="p">,</span> <span class="mf">751500.0</span><span class="p">,</span> <span class="mf">1913500.0</span><span class="p">,</span> <span class="mf">1923650.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1800.0</span><span class="p">,</span> <span class="mf">800.0</span><span class="p">],</span>
+    <span class="n">resolution</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">refinement</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+    <span class="n">importer_helper</span><span class="o">=</span><a href="../../Helper Classes/gempy.core.data.ImporterHelper.html#gempy.core.data.ImporterHelper" title="gempy.core.data.ImporterHelper" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class"><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">ImporterHelper</span></a><span class="p">(</span>
+        <span class="n">path_to_orientations</span><span class="o">=</span><span class="n">path_orient</span><span class="p">,</span>
+        <span class="n">path_to_surface_points</span><span class="o">=</span><span class="n">path_interf</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Active grids: [&#39;regular&#39;]
-
-Alesmodel  2021-04-18 11:31
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">set_section_grid</span><span class="p">(</span>
+    <span class="n">grid</span><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span><span class="o">.</span><span class="n">grid</span></a><span class="p">,</span>
+    <span class="n">section_dict</span><span class="o">=</span><span class="p">{</span>
+        <span class="s1">&#39;section1&#39;</span><span class="p">:</span> <span class="p">([</span><span class="mi">732000</span><span class="p">,</span> <span class="mi">1916000</span><span class="p">],</span> <span class="p">[</span><span class="mi">745000</span><span class="p">,</span> <span class="mi">1916000</span><span class="p">],</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">150</span><span class="p">])</span>
+    <span class="p">}</span>
+<span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sdict</span></a> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;section1&#39;</span><span class="p">:</span> <span class="p">([</span><span class="mi">732000</span><span class="p">,</span> <span class="mi">1916000</span><span class="p">],</span> <span class="p">[</span><span class="mi">745000</span><span class="p">,</span> <span class="mi">1916000</span><span class="p">],</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">150</span><span class="p">])}</span>
-<a href="../../Model/gempy.core.model.ImplicitCoKriging.html#gempy.core.model.ImplicitCoKriging.set_section_grid" title="gempy.core.model.ImplicitCoKriging.set_section_grid" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-method"><span class="n">geo_model</span><span class="o">.</span><span class="n">set_section_grid</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sdict</span></a><span class="p">)</span>
-</pre></div>
-</div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Active grids: [&#39;regular&#39; &#39;sections&#39;]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Active grids: [&#39;sections&#39;]
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
@@ -108,377 +115,532 @@ Alesmodel  2021-04-18 11:31
 </div>
 <br />
 <br /><p>sorting of lithologies</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../GemPy API/gempy.map_stack_to_surfaces.html#gempy.map_stack_to_surfaces" title="gempy.map_stack_to_surfaces" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">map_stack_to_surfaces</span></a><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;fault_left&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;fault_left&#39;</span><span class="p">),</span>
-                                     <span class="s1">&#39;fault_right&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;fault_right&#39;</span><span class="p">),</span>
-                                     <span class="s1">&#39;fault_lr&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;fault_lr&#39;</span><span class="p">),</span>
-                                     <span class="s1">&#39;Trias_Series&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;TRIAS&#39;</span><span class="p">,</span> <span class="s1">&#39;LIAS&#39;</span><span class="p">),</span>
-                                     <span class="s1">&#39;Carbon_Series&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;CARBO&#39;</span><span class="p">),</span>
-                                     <span class="s1">&#39;Basement_Series&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;basement&#39;</span><span class="p">)},</span> <span class="n">remove_unused_series</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../GemPy API/gempy.map_stack_to_surfaces.html#gempy.map_stack_to_surfaces" title="gempy.map_stack_to_surfaces" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">map_stack_to_surfaces</span></a><span class="p">(</span>
+    <span class="n">gempy_model</span><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span>
+    <span class="n">mapping_object</span><span class="o">=</span><span class="p">{</span>
+        <span class="s1">&#39;fault_left&#39;</span>     <span class="p">:</span> <span class="s1">&#39;fault_left&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;fault_right&#39;</span>    <span class="p">:</span> <span class="s1">&#39;fault_right&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;fault_lr&#39;</span>       <span class="p">:</span> <span class="s1">&#39;fault_lr&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Trias_Series&#39;</span>   <span class="p">:</span> <span class="p">(</span><span class="s1">&#39;TRIAS&#39;</span><span class="p">,</span> <span class="s1">&#39;LIAS&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;Carbon_Series&#39;</span>  <span class="p">:</span> <span class="s1">&#39;CARBO&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Basement_Series&#39;</span><span class="p">:</span> <span class="s1">&#39;basement&#39;</span>
+    <span class="p">},</span>
+    <span class="n">remove_unused_series</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Could not find element &#39;basement&#39; in any group.
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
-<style  type="text/css" >
-#T_a76f7_row0_col3{
-            background-color:  #015482;
-        }#T_a76f7_row1_col3{
-            background-color:  #ffbe00;
-        }#T_a76f7_row2_col3{
-            background-color:  #9f0052;
-        }#T_a76f7_row3_col3{
-            background-color:  #728f02;
-        }#T_a76f7_row4_col3{
-            background-color:  #443988;
-        }#T_a76f7_row5_col3{
-            background-color:  #ff3f20;
-        }#T_a76f7_row6_col3{
-            background-color:  #5DA629;
-        }</style><table id="T_a76f7_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
-                <tr>
-                        <th id="T_a76f7_level0_row0" class="row_heading level0 row0" >0</th>
-                        <td id="T_a76f7_row0_col0" class="data row0 col0" >fault_left</td>
-                        <td id="T_a76f7_row0_col1" class="data row0 col1" >fault_left</td>
-                        <td id="T_a76f7_row0_col2" class="data row0 col2" >1</td>
-                        <td id="T_a76f7_row0_col3" class="data row0 col3" >#015482</td>
-                        <td id="T_a76f7_row0_col4" class="data row0 col4" >1</td>
-            </tr>
-            <tr>
-                        <th id="T_a76f7_level0_row1" class="row_heading level0 row1" >2</th>
-                        <td id="T_a76f7_row1_col0" class="data row1 col0" >fault_right</td>
-                        <td id="T_a76f7_row1_col1" class="data row1 col1" >fault_right</td>
-                        <td id="T_a76f7_row1_col2" class="data row1 col2" >1</td>
-                        <td id="T_a76f7_row1_col3" class="data row1 col3" >#ffbe00</td>
-                        <td id="T_a76f7_row1_col4" class="data row1 col4" >2</td>
-            </tr>
-            <tr>
-                        <th id="T_a76f7_level0_row2" class="row_heading level0 row2" >1</th>
-                        <td id="T_a76f7_row2_col0" class="data row2 col0" >fault_lr</td>
-                        <td id="T_a76f7_row2_col1" class="data row2 col1" >fault_lr</td>
-                        <td id="T_a76f7_row2_col2" class="data row2 col2" >1</td>
-                        <td id="T_a76f7_row2_col3" class="data row2 col3" >#9f0052</td>
-                        <td id="T_a76f7_row2_col4" class="data row2 col4" >3</td>
-            </tr>
-            <tr>
-                        <th id="T_a76f7_level0_row3" class="row_heading level0 row3" >3</th>
-                        <td id="T_a76f7_row3_col0" class="data row3 col0" >TRIAS</td>
-                        <td id="T_a76f7_row3_col1" class="data row3 col1" >Trias_Series</td>
-                        <td id="T_a76f7_row3_col2" class="data row3 col2" >1</td>
-                        <td id="T_a76f7_row3_col3" class="data row3 col3" >#728f02</td>
-                        <td id="T_a76f7_row3_col4" class="data row3 col4" >4</td>
-            </tr>
-            <tr>
-                        <th id="T_a76f7_level0_row4" class="row_heading level0 row4" >4</th>
-                        <td id="T_a76f7_row4_col0" class="data row4 col0" >LIAS</td>
-                        <td id="T_a76f7_row4_col1" class="data row4 col1" >Trias_Series</td>
-                        <td id="T_a76f7_row4_col2" class="data row4 col2" >2</td>
-                        <td id="T_a76f7_row4_col3" class="data row4 col3" >#443988</td>
-                        <td id="T_a76f7_row4_col4" class="data row4 col4" >5</td>
-            </tr>
-            <tr>
-                        <th id="T_a76f7_level0_row5" class="row_heading level0 row5" >5</th>
-                        <td id="T_a76f7_row5_col0" class="data row5 col0" >CARBO</td>
-                        <td id="T_a76f7_row5_col1" class="data row5 col1" >Carbon_Series</td>
-                        <td id="T_a76f7_row5_col2" class="data row5 col2" >1</td>
-                        <td id="T_a76f7_row5_col3" class="data row5 col3" >#ff3f20</td>
-                        <td id="T_a76f7_row5_col4" class="data row5 col4" >6</td>
-            </tr>
-            <tr>
-                        <th id="T_a76f7_level0_row6" class="row_heading level0 row6" >6</th>
-                        <td id="T_a76f7_row6_col0" class="data row6 col0" >basement</td>
-                        <td id="T_a76f7_row6_col1" class="data row6 col1" >Basement_Series</td>
-                        <td id="T_a76f7_row6_col2" class="data row6 col2" >1</td>
-                        <td id="T_a76f7_row6_col3" class="data row6 col3" >#5DA629</td>
-                        <td id="T_a76f7_row6_col4" class="data row6 col4" >7</td>
-            </tr>
-    </tbody></table>
-</div>
-<br />
-<br /><div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">colordict</span></a> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;LIAS&#39;</span><span class="p">:</span> <span class="s1">&#39;#015482&#39;</span><span class="p">,</span> <span class="s1">&#39;TRIAS&#39;</span><span class="p">:</span> <span class="s1">&#39;#9f0052&#39;</span><span class="p">,</span> <span class="s1">&#39;CARBO&#39;</span><span class="p">:</span> <span class="s1">&#39;#ffbe00&#39;</span><span class="p">,</span> <span class="s1">&#39;basement&#39;</span><span class="p">:</span> <span class="s1">&#39;#728f02&#39;</span><span class="p">,</span>
-             <span class="s1">&#39;fault_left&#39;</span><span class="p">:</span> <span class="s1">&#39;#2a2a2a&#39;</span><span class="p">,</span> <span class="s1">&#39;fault_right&#39;</span><span class="p">:</span> <span class="s1">&#39;#545454&#39;</span><span class="p">,</span> <span class="s1">&#39;fault_lr&#39;</span><span class="p">:</span> <span class="s1">&#39;#a5a391&#39;</span><span class="p">}</span>
-<a href="../../Model/gempy.core.model.ImplicitCoKriging.html#gempy.core.model.ImplicitCoKriging.surfaces" title="gempy.core.model.ImplicitCoKriging.surfaces" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-method"><span class="n">geo_model</span><span class="o">.</span><span class="n">surfaces</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">change_colors</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">colordict</span></a><span class="p">)</span>
-</pre></div>
-</div>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">a</span> <span class="o">=</span> <a href="../../Plot/gempy.plot_2d.html#gempy.plot_2d" title="gempy.plot_2d" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">plot_2d</span></a><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<img alt="Cell Number: mid Direction: y" class="sphx-glr-single-img" src="../../_images/sphx_glr_Alesmodel_001.png" />
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Model/gempy.core.model.ImplicitCoKriging.html#gempy.core.model.ImplicitCoKriging.rescaling" title="gempy.core.model.ImplicitCoKriging.rescaling" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-method"><span class="n">geo_model</span><span class="o">.</span><span class="n">rescaling</span></a>
-</pre></div>
-</div>
-<div class="output_subarea output_html rendered_html output_result">
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>values</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>rescaling factor</th>
-      <td>26804.17</td>
-    </tr>
-    <tr>
-      <th>centers</th>
-      <td>[739263.6925, 1917834.9612500002, 402.6439239999999]</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-<br />
-<br /><div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">plot_section_traces</span><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">)</span>
-</pre></div>
-</div>
-<img alt="Cell Number: -1 Direction: z" class="sphx-glr-single-img" src="../../_images/sphx_glr_Alesmodel_002.png" />
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy.plot.visualization_2d.Plot2D object at 0x7fcb8c099610&gt;
-</pre></div>
-</div>
-<div class="section" id="faults">
-<h2>Faults<a class="headerlink" href="#faults" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Model/gempy.core.model.ImplicitCoKriging.html#gempy.core.model.ImplicitCoKriging.set_is_fault" title="gempy.core.model.ImplicitCoKriging.set_is_fault" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-method"><span class="n">geo_model</span><span class="o">.</span><span class="n">set_is_fault</span></a><span class="p">([</span><span class="s1">&#39;fault_right&#39;</span><span class="p">,</span> <span class="s1">&#39;fault_left&#39;</span><span class="p">,</span> <span class="s1">&#39;fault_lr&#39;</span><span class="p">],</span> <span class="n">change_color</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-</div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Fault colors changed. If you do not like this behavior, set change_color to False.
-</pre></div>
-</div>
-<div class="output_subarea output_html rendered_html output_result">
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>order_series</th>
-      <th>BottomRelation</th>
-      <th>isActive</th>
-      <th>isFault</th>
-      <th>isFinite</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>fault_left</th>
-      <td>1</td>
-      <td>Fault</td>
-      <td>True</td>
-      <td>True</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>fault_right</th>
-      <td>2</td>
-      <td>Fault</td>
-      <td>True</td>
-      <td>True</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>fault_lr</th>
-      <td>3</td>
-      <td>Fault</td>
-      <td>True</td>
-      <td>True</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>Trias_Series</th>
-      <td>4</td>
-      <td>Erosion</td>
-      <td>True</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>Carbon_Series</th>
-      <td>5</td>
-      <td>Erosion</td>
-      <td>True</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>Basement_Series</th>
-      <td>6</td>
-      <td>Erosion</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-<br />
-<br /><div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">set_interpolator</span><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span>
-                    <span class="n">output</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;geology&#39;</span><span class="p">],</span> <span class="n">compile_theano</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                    <span class="n">theano_optimizer</span><span class="o">=</span><span class="s1">&#39;fast_run&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float64&#39;</span><span class="p">,</span>
-                    <span class="n">verbose</span><span class="o">=</span><span class="p">[])</span>
-</pre></div>
-</div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting kriging parameters to their default values.
-Compiling theano function...
-Level of Optimization:  fast_run
-Device:  cpu
-Precision:  float64
-Number of faults:  3
-Compilation Done!
-Kriging values:
-                              values
-range                      24322.52
-$C_o$                   14085357.14
-drift equations  [3, 3, 3, 3, 3, 3]
 
-&lt;gempy.core.interpolator.InterpolatorModel object at 0x7fccb8a38160&gt;
-</pre></div>
-</div>
-<div class="section" id="topography">
-<h3>Topography<a class="headerlink" href="#topography" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Model/gempy.core.model.ImplicitCoKriging.html#gempy.core.model.ImplicitCoKriging.set_topography" title="gempy.core.model.ImplicitCoKriging.set_topography" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-method"><span class="n">geo_model</span><span class="o">.</span><span class="n">set_topography</span></a><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="s1">&#39;gdal&#39;</span><span class="p">,</span> <span class="n">filepath</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">path_dem</span></a><span class="p">)</span>
-</pre></div>
-</div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Cropped raster to geo_model.grid.extent.
-depending on the size of the raster, this can take a while...
-storing converted file...
-Active grids: [&#39;regular&#39; &#39;topography&#39; &#39;sections&#39;]
+        <table>
+          <tr><td>Structural Groups:</td><td>
+    <table style="border-left:1.2px solid black;>
+      <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+      <tr><td>Name:</td><td>fault_left</td></tr>
+      <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+      <tr><td>Elements:</td><td>
+    <table width="50%" style="border-left:15px solid #728f02;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>fault_left</td></tr>
+    </table>
+        </td></tr>
+    </table>
+        <br>
+    <table style="border-left:1.2px solid black;>
+      <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+      <tr><td>Name:</td><td>fault_right</td></tr>
+      <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+      <tr><td>Elements:</td><td>
+    <table width="50%" style="border-left:15px solid #ff3f20;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>fault_right</td></tr>
+    </table>
+        </td></tr>
+    </table>
+        <br>
+    <table style="border-left:1.2px solid black;>
+      <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+      <tr><td>Name:</td><td>fault_lr</td></tr>
+      <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+      <tr><td>Elements:</td><td>
+    <table width="50%" style="border-left:15px solid #443988;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>fault_lr</td></tr>
+    </table>
+        </td></tr>
+    </table>
+        <br>
+    <table style="border-left:1.2px solid black;>
+      <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+      <tr><td>Name:</td><td>Trias_Series</td></tr>
+      <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+      <tr><td>Elements:</td><td>
+    <table width="50%" style="border-left:15px solid #ffbe00;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>TRIAS</td></tr>
+    </table>
+        <br>
+    <table width="50%" style="border-left:15px solid #9f0052;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>LIAS</td></tr>
+    </table>
+        </td></tr>
+    </table>
+        <br>
+    <table style="border-left:1.2px solid black;>
+      <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+      <tr><td>Name:</td><td>Carbon_Series</td></tr>
+      <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+      <tr><td>Elements:</td><td>
+    <table width="50%" style="border-left:15px solid #015482;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>CARBO</td></tr>
+    </table>
+        </td></tr>
+    </table>
+        </td></tr>
+          <tr><td>Fault Relations:</td><td><table style="border-collapse: collapse; table-layout: fixed;"><th></th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">fault_left</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">fault_righ...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">fault_lr</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Trias_Seri...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Carbon_Ser...</th><tr><th>fault_left</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>fault_right</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>fault_lr</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>Trias_Series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>Carbon_Series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr></table></td></tr>
+          <tr><td></td><td>
+        <table>
+          <tr>
+            <td><div style="display: inline-block; background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></div> True</td>
+            <td><div style="display: inline-block; background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></div> False</td>
+          </tr>
+        </table>
+        </td></tr>
+        </table>
 
-Grid Object. Values:
-array([[ 7.29659750e+05,  1.91355075e+06, -1.78700000e+03],
-       [ 7.29659750e+05,  1.91355075e+06, -1.76100000e+03],
-       [ 7.29659750e+05,  1.91355075e+06, -1.73500000e+03],
-       ...,
-       [ 7.45000000e+05,  1.91600000e+06,  7.65100671e+02],
-       [ 7.45000000e+05,  1.91600000e+06,  7.82550336e+02],
-       [ 7.45000000e+05,  1.91600000e+06,  8.00000000e+02]])
+</div>
+<br />
+<br /><p>Change colors</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span></a><span class="o">.</span><span class="n">get_element_by_name</span><span class="p">(</span><span class="s2">&quot;LIAS&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="s2">&quot;#015482&quot;</span>
+<a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span></a><span class="o">.</span><span class="n">get_element_by_name</span><span class="p">(</span><span class="s2">&quot;TRIAS&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="s2">&quot;#9f0052&quot;</span>
+<a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span></a><span class="o">.</span><span class="n">get_element_by_name</span><span class="p">(</span><span class="s2">&quot;CARBO&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="s2">&quot;#ffbe00&quot;</span>
 </pre></div>
 </div>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Model/gempy.core.model.ImplicitCoKriging.html#gempy.core.model.ImplicitCoKriging.surfaces" title="gempy.core.model.ImplicitCoKriging.surfaces" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-method"><span class="n">geo_model</span><span class="o">.</span><span class="n">surfaces</span></a>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_Alesmodel_001.png" srcset="../../_images/sphx_glr_Alesmodel_001.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_section_traces</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_Alesmodel_002.png" srcset="../../_images/sphx_glr_Alesmodel_002.png" alt="Cell Number: -1 Direction: z" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;function plot_section_traces at 0x7f49524f1bd0&gt;
+</pre></div>
+</div>
+<section id="faults">
+<h2>Faults<a class="headerlink" href="#faults" title="Link to this heading">¶</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">set_is_fault</span><span class="p">(</span>
+    <span class="n">frame</span><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span></a><span class="p">,</span>
+    <span class="n">fault_groups</span><span class="o">=</span><span class="p">[</span>
+        <a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span></a><span class="o">.</span><span class="n">get_group_by_name</span><span class="p">(</span><span class="s1">&#39;fault_left&#39;</span><span class="p">),</span>
+        <a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span></a><span class="o">.</span><span class="n">get_group_by_name</span><span class="p">(</span><span class="s1">&#39;fault_right&#39;</span><span class="p">),</span>
+        <a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span></a><span class="o">.</span><span class="n">get_group_by_name</span><span class="p">(</span><span class="s1">&#39;fault_lr&#39;</span><span class="p">)</span>
+    <span class="p">],</span>
+    <span class="n">change_color</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
-<style  type="text/css" >
-#T_7a99f_row0_col3,#T_7a99f_row1_col3,#T_7a99f_row2_col3{
-            background-color:  #527682;
-        }#T_7a99f_row3_col3{
-            background-color:  #9f0052;
-        }#T_7a99f_row4_col3{
-            background-color:  #015482;
-        }#T_7a99f_row5_col3{
-            background-color:  #ffbe00;
-        }#T_7a99f_row6_col3{
-            background-color:  #728f02;
-        }</style><table id="T_7a99f_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
-                <tr>
-                        <th id="T_7a99f_level0_row0" class="row_heading level0 row0" >0</th>
-                        <td id="T_7a99f_row0_col0" class="data row0 col0" >fault_left</td>
-                        <td id="T_7a99f_row0_col1" class="data row0 col1" >fault_left</td>
-                        <td id="T_7a99f_row0_col2" class="data row0 col2" >1</td>
-                        <td id="T_7a99f_row0_col3" class="data row0 col3" >#527682</td>
-                        <td id="T_7a99f_row0_col4" class="data row0 col4" >1</td>
-            </tr>
-            <tr>
-                        <th id="T_7a99f_level0_row1" class="row_heading level0 row1" >2</th>
-                        <td id="T_7a99f_row1_col0" class="data row1 col0" >fault_right</td>
-                        <td id="T_7a99f_row1_col1" class="data row1 col1" >fault_right</td>
-                        <td id="T_7a99f_row1_col2" class="data row1 col2" >1</td>
-                        <td id="T_7a99f_row1_col3" class="data row1 col3" >#527682</td>
-                        <td id="T_7a99f_row1_col4" class="data row1 col4" >2</td>
-            </tr>
-            <tr>
-                        <th id="T_7a99f_level0_row2" class="row_heading level0 row2" >1</th>
-                        <td id="T_7a99f_row2_col0" class="data row2 col0" >fault_lr</td>
-                        <td id="T_7a99f_row2_col1" class="data row2 col1" >fault_lr</td>
-                        <td id="T_7a99f_row2_col2" class="data row2 col2" >1</td>
-                        <td id="T_7a99f_row2_col3" class="data row2 col3" >#527682</td>
-                        <td id="T_7a99f_row2_col4" class="data row2 col4" >3</td>
-            </tr>
-            <tr>
-                        <th id="T_7a99f_level0_row3" class="row_heading level0 row3" >3</th>
-                        <td id="T_7a99f_row3_col0" class="data row3 col0" >TRIAS</td>
-                        <td id="T_7a99f_row3_col1" class="data row3 col1" >Trias_Series</td>
-                        <td id="T_7a99f_row3_col2" class="data row3 col2" >1</td>
-                        <td id="T_7a99f_row3_col3" class="data row3 col3" >#9f0052</td>
-                        <td id="T_7a99f_row3_col4" class="data row3 col4" >4</td>
-            </tr>
-            <tr>
-                        <th id="T_7a99f_level0_row4" class="row_heading level0 row4" >4</th>
-                        <td id="T_7a99f_row4_col0" class="data row4 col0" >LIAS</td>
-                        <td id="T_7a99f_row4_col1" class="data row4 col1" >Trias_Series</td>
-                        <td id="T_7a99f_row4_col2" class="data row4 col2" >2</td>
-                        <td id="T_7a99f_row4_col3" class="data row4 col3" >#015482</td>
-                        <td id="T_7a99f_row4_col4" class="data row4 col4" >5</td>
-            </tr>
-            <tr>
-                        <th id="T_7a99f_level0_row5" class="row_heading level0 row5" >5</th>
-                        <td id="T_7a99f_row5_col0" class="data row5 col0" >CARBO</td>
-                        <td id="T_7a99f_row5_col1" class="data row5 col1" >Carbon_Series</td>
-                        <td id="T_7a99f_row5_col2" class="data row5 col2" >1</td>
-                        <td id="T_7a99f_row5_col3" class="data row5 col3" >#ffbe00</td>
-                        <td id="T_7a99f_row5_col4" class="data row5 col4" >6</td>
-            </tr>
-            <tr>
-                        <th id="T_7a99f_level0_row6" class="row_heading level0 row6" >6</th>
-                        <td id="T_7a99f_row6_col0" class="data row6 col0" >basement</td>
-                        <td id="T_7a99f_row6_col1" class="data row6 col1" >Basement_Series</td>
-                        <td id="T_7a99f_row6_col2" class="data row6 col2" >1</td>
-                        <td id="T_7a99f_row6_col3" class="data row6 col3" >#728f02</td>
-                        <td id="T_7a99f_row6_col4" class="data row6 col4" >7</td>
-            </tr>
-    </tbody></table>
+
+        <table>
+          <tr><td>Structural Groups:</td><td>
+    <table style="border-left:1.2px solid black;>
+      <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+      <tr><td>Name:</td><td>fault_left</td></tr>
+      <tr><td>Structural Relation:</td><td>StackRelationType.FAULT</td></tr>
+      <tr><td>Elements:</td><td>
+    <table width="50%" style="border-left:15px solid #527682;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>fault_left</td></tr>
+    </table>
+        </td></tr>
+    </table>
+        <br>
+    <table style="border-left:1.2px solid black;>
+      <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+      <tr><td>Name:</td><td>fault_right</td></tr>
+      <tr><td>Structural Relation:</td><td>StackRelationType.FAULT</td></tr>
+      <tr><td>Elements:</td><td>
+    <table width="50%" style="border-left:15px solid #527682;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>fault_right</td></tr>
+    </table>
+        </td></tr>
+    </table>
+        <br>
+    <table style="border-left:1.2px solid black;>
+      <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+      <tr><td>Name:</td><td>fault_lr</td></tr>
+      <tr><td>Structural Relation:</td><td>StackRelationType.FAULT</td></tr>
+      <tr><td>Elements:</td><td>
+    <table width="50%" style="border-left:15px solid #527682;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>fault_lr</td></tr>
+    </table>
+        </td></tr>
+    </table>
+        <br>
+    <table style="border-left:1.2px solid black;>
+      <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+      <tr><td>Name:</td><td>Trias_Series</td></tr>
+      <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+      <tr><td>Elements:</td><td>
+    <table width="50%" style="border-left:15px solid #9f0052;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>TRIAS</td></tr>
+    </table>
+        <br>
+    <table width="50%" style="border-left:15px solid #015482;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>LIAS</td></tr>
+    </table>
+        </td></tr>
+    </table>
+        <br>
+    <table style="border-left:1.2px solid black;>
+      <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+      <tr><td>Name:</td><td>Carbon_Series</td></tr>
+      <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+      <tr><td>Elements:</td><td>
+    <table width="50%" style="border-left:15px solid #ffbe00;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>CARBO</td></tr>
+    </table>
+        </td></tr>
+    </table>
+        </td></tr>
+          <tr><td>Fault Relations:</td><td><table style="border-collapse: collapse; table-layout: fixed;"><th></th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">fault_left</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">fault_righ...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">fault_lr</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Trias_Seri...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Carbon_Ser...</th><tr><th>fault_left</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>fault_right</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>fault_lr</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>Trias_Series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>Carbon_Series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr></table></td></tr>
+          <tr><td></td><td>
+        <table>
+          <tr>
+            <td><div style="display: inline-block; background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></div> True</td>
+            <td><div style="display: inline-block; background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></div> False</td>
+          </tr>
+        </table>
+        </td></tr>
+        </table>
+
 </div>
 <br />
-<br /><div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Solution/gempy.core.solution.Solution.html#gempy.core.solution.Solution" title="gempy.core.solution.Solution" class="sphx-glr-backref-module-gempy-core-solution sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">_</span></a> <span class="o">=</span> <a href="../../GemPy API/gempy.compute_model.html#gempy.compute_model" title="gempy.compute_model" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span></a><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">compute_mesh</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">compute_mesh_options</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;rescale&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">})</span>
+<br /><section id="topography">
+<h3>Topography<a class="headerlink" href="#topography" title="Link to this heading">¶</a></h3>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">set_topography_from_file</span><span class="p">(</span>
+    <span class="n">grid</span><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span><span class="o">.</span><span class="n">grid</span></a><span class="p">,</span>
+    <span class="n">filepath</span><span class="o">=</span><span class="n">path_dem</span><span class="p">,</span>
+    <span class="n">crop_to_extent</span><span class="o">=</span><span class="p">[</span><span class="mf">729550.0</span><span class="p">,</span> <span class="mf">751500.0</span><span class="p">,</span> <span class="mf">1_913_500.0</span><span class="p">,</span> <span class="mf">1923650.0</span><span class="p">]</span>
+<span class="p">)</span>
+
+
+<span class="n">gpv</span><span class="o">.</span><span class="n">plot_3d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">show_topography</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ve</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Plot/gempy.plot_2d.html#gempy.plot_2d" title="gempy.plot_2d" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">plot_2d</span></a><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">direction</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">],</span> <span class="n">show_topography</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-           <span class="n">show_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<img src="../../_images/sphx_glr_Alesmodel_003.png" srcset="../../_images/sphx_glr_Alesmodel_003.png" alt="Alesmodel" class = "sphx-glr-single-img"/><img src="../../_images/sphx_glr_Alesmodel_004.png" srcset="../../_images/sphx_glr_Alesmodel_004.png" alt="Alesmodel" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Active grids: [&#39;topography&#39; &#39;sections&#39;]
+
+&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f4904317df0&gt;
 </pre></div>
 </div>
-<img alt="Cell Number: 4 Direction: y" class="sphx-glr-single-img" src="../../_images/sphx_glr_Alesmodel_003.png" />
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy.plot.visualization_2d.Plot2D object at 0x7fcc6bb90a60&gt;
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../Modeling Classes/gempy.core.data.StructuralGroup.html#gempy.core.data.StructuralGroup" title="gempy.core.data.StructuralGroup" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">carbo</span></a> <span class="o">=</span> <a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span></a><span class="o">.</span><span class="n">get_group_by_name</span><span class="p">(</span><span class="s2">&quot;Carbon_Series&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Plot/gempy.plot_2d.html#gempy.plot_2d" title="gempy.plot_2d" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">plot_2d</span></a><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">section_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;topography&#39;</span><span class="p">],</span> <span class="n">show_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-           <span class="n">show_boundaries</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="o">.</span><span class="n">interpolation_options</span><span class="o">.</span><span class="n">number_octree_levels_surface</span> <span class="o">=</span> <span class="mi">4</span>
+<a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="o">.</span><span class="n">interpolation_options</span><span class="o">.</span><span class="n">kernel_options</span><span class="o">.</span><span class="n">range</span> <span class="o">=</span> <span class="mf">.8</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">modify_surface_points</span><span class="p">(</span>
+    <a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span>
+    <span class="n">elements_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;CARBO&quot;</span><span class="p">,</span> <span class="s2">&quot;LIAS&quot;</span><span class="p">,</span> <span class="s2">&quot;TRIAS&quot;</span><span class="p">],</span>
+    <span class="n">nugget</span><span class="o">=</span><span class="mf">0.005</span>
+<span class="p">)</span>
 </pre></div>
 </div>
-<img alt="Geological map" class="sphx-glr-single-img" src="../../_images/sphx_glr_Alesmodel_004.png" />
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy.plot.visualization_2d.Plot2D object at 0x7fcc2a5945e0&gt;
+<div class="output_subarea output_html rendered_html output_result">
+
+        <table>
+          <tr><td>Structural Groups:</td><td>
+    <table style="border-left:1.2px solid black;>
+      <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+      <tr><td>Name:</td><td>fault_left</td></tr>
+      <tr><td>Structural Relation:</td><td>StackRelationType.FAULT</td></tr>
+      <tr><td>Elements:</td><td>
+    <table width="50%" style="border-left:15px solid #527682;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>fault_left</td></tr>
+    </table>
+        </td></tr>
+    </table>
+        <br>
+    <table style="border-left:1.2px solid black;>
+      <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+      <tr><td>Name:</td><td>fault_right</td></tr>
+      <tr><td>Structural Relation:</td><td>StackRelationType.FAULT</td></tr>
+      <tr><td>Elements:</td><td>
+    <table width="50%" style="border-left:15px solid #527682;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>fault_right</td></tr>
+    </table>
+        </td></tr>
+    </table>
+        <br>
+    <table style="border-left:1.2px solid black;>
+      <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+      <tr><td>Name:</td><td>fault_lr</td></tr>
+      <tr><td>Structural Relation:</td><td>StackRelationType.FAULT</td></tr>
+      <tr><td>Elements:</td><td>
+    <table width="50%" style="border-left:15px solid #527682;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>fault_lr</td></tr>
+    </table>
+        </td></tr>
+    </table>
+        <br>
+    <table style="border-left:1.2px solid black;>
+      <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+      <tr><td>Name:</td><td>Trias_Series</td></tr>
+      <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+      <tr><td>Elements:</td><td>
+    <table width="50%" style="border-left:15px solid #9f0052;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>TRIAS</td></tr>
+    </table>
+        <br>
+    <table width="50%" style="border-left:15px solid #015482;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>LIAS</td></tr>
+    </table>
+        </td></tr>
+    </table>
+        <br>
+    <table style="border-left:1.2px solid black;>
+      <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+      <tr><td>Name:</td><td>Carbon_Series</td></tr>
+      <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+      <tr><td>Elements:</td><td>
+    <table width="50%" style="border-left:15px solid #ffbe00;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>CARBO</td></tr>
+    </table>
+        </td></tr>
+    </table>
+        </td></tr>
+          <tr><td>Fault Relations:</td><td><table style="border-collapse: collapse; table-layout: fixed;"><th></th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">fault_left</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">fault_righ...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">fault_lr</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Trias_Seri...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Carbon_Ser...</th><tr><th>fault_left</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>fault_right</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>fault_lr</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>Trias_Series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>Carbon_Series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr></table></td></tr>
+          <tr><td></td><td>
+        <table>
+          <tr>
+            <td><div style="display: inline-block; background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></div> True</td>
+            <td><div style="display: inline-block; background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></div> False</td>
+          </tr>
+        </table>
+        </td></tr>
+        </table>
+
+</div>
+<br />
+<br /><div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span></a><span class="p">)</span>
+<a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span></a>
 </pre></div>
 </div>
-<p>sphinx_gallery_thumbnail_number = 5</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Plot/gempy.plot_3d.html#gempy.plot_3d" title="gempy.plot_3d" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">plot_3d</span></a><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">)</span>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>StructuralFrame(
+        structural_groups=[
+StructuralGroup(
+        name=fault_left,
+        structural_relation=StackRelationType.FAULT,
+        elements=[
+Element(
+        name=fault_left,
+        color=#527682,
+        is_active=True
+)
+]
+),
+StructuralGroup(
+        name=fault_right,
+        structural_relation=StackRelationType.FAULT,
+        elements=[
+Element(
+        name=fault_right,
+        color=#527682,
+        is_active=True
+)
+]
+),
+StructuralGroup(
+        name=fault_lr,
+        structural_relation=StackRelationType.FAULT,
+        elements=[
+Element(
+        name=fault_lr,
+        color=#527682,
+        is_active=True
+)
+]
+),
+StructuralGroup(
+        name=Trias_Series,
+        structural_relation=StackRelationType.ERODE,
+        elements=[
+Element(
+        name=TRIAS,
+        color=#9f0052,
+        is_active=True
+),
+Element(
+        name=LIAS,
+        color=#015482,
+        is_active=True
+)
+]
+),
+StructuralGroup(
+        name=Carbon_Series,
+        structural_relation=StackRelationType.ERODE,
+        elements=[
+Element(
+        name=CARBO,
+        color=#ffbe00,
+        is_active=True
+)
+]
+)
+],
+        fault_relations=
+[[False, False, False,  True,  True],
+ [False, False, False,  True,  True],
+ [False, False, False,  True,  True],
+ [False, False, False, False, False],
+ [False, False, False, False, False]],
 </pre></div>
 </div>
-<img alt="Alesmodel" class="sphx-glr-single-img" src="../../_images/sphx_glr_Alesmodel_005.png" />
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy.plot.vista.GemPyToVista object at 0x7fcb8ad989d0&gt;
+<div class="output_subarea output_html rendered_html output_result">
+
+        <table>
+          <tr><td>Structural Groups:</td><td>
+    <table style="border-left:1.2px solid black;>
+      <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+      <tr><td>Name:</td><td>fault_left</td></tr>
+      <tr><td>Structural Relation:</td><td>StackRelationType.FAULT</td></tr>
+      <tr><td>Elements:</td><td>
+    <table width="50%" style="border-left:15px solid #527682;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>fault_left</td></tr>
+    </table>
+        </td></tr>
+    </table>
+        <br>
+    <table style="border-left:1.2px solid black;>
+      <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+      <tr><td>Name:</td><td>fault_right</td></tr>
+      <tr><td>Structural Relation:</td><td>StackRelationType.FAULT</td></tr>
+      <tr><td>Elements:</td><td>
+    <table width="50%" style="border-left:15px solid #527682;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>fault_right</td></tr>
+    </table>
+        </td></tr>
+    </table>
+        <br>
+    <table style="border-left:1.2px solid black;>
+      <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+      <tr><td>Name:</td><td>fault_lr</td></tr>
+      <tr><td>Structural Relation:</td><td>StackRelationType.FAULT</td></tr>
+      <tr><td>Elements:</td><td>
+    <table width="50%" style="border-left:15px solid #527682;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>fault_lr</td></tr>
+    </table>
+        </td></tr>
+    </table>
+        <br>
+    <table style="border-left:1.2px solid black;>
+      <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+      <tr><td>Name:</td><td>Trias_Series</td></tr>
+      <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+      <tr><td>Elements:</td><td>
+    <table width="50%" style="border-left:15px solid #9f0052;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>TRIAS</td></tr>
+    </table>
+        <br>
+    <table width="50%" style="border-left:15px solid #015482;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>LIAS</td></tr>
+    </table>
+        </td></tr>
+    </table>
+        <br>
+    <table style="border-left:1.2px solid black;>
+      <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+      <tr><td>Name:</td><td>Carbon_Series</td></tr>
+      <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+      <tr><td>Elements:</td><td>
+    <table width="50%" style="border-left:15px solid #ffbe00;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>CARBO</td></tr>
+    </table>
+        </td></tr>
+    </table>
+        </td></tr>
+          <tr><td>Fault Relations:</td><td><table style="border-collapse: collapse; table-layout: fixed;"><th></th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">fault_left</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">fault_righ...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">fault_lr</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Trias_Seri...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Carbon_Ser...</th><tr><th>fault_left</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>fault_right</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>fault_lr</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>Trias_Series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>Carbon_Series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr></table></td></tr>
+          <tr><td></td><td>
+        <table>
+          <tr>
+            <td><div style="display: inline-block; background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></div> True</td>
+            <td><div style="display: inline-block; background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></div> False</td>
+          </tr>
+        </table>
+        </td></tr>
+        </table>
+
+</div>
+<br />
+<br /><div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="o">.</span><span class="n">interpolation_options</span><span class="o">.</span><span class="n">mesh_extraction</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">_</span> <span class="o">=</span> <a href="../../GemPy API/gempy.compute_model.html#gempy.compute_model" title="gempy.compute_model" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span></a><span class="p">(</span>
+    <a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span>
+    <span class="n">engine_config</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GemPyEngineConfig</span><span class="p">(</span>
+        <span class="n">backend</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">AvailableBackends</span><span class="o">.</span><span class="n">PYTORCH</span><span class="p">,</span>
+        <span class="n">use_gpu</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float64&quot;</span>
+    <span class="p">))</span>
+
+
+<span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">show_topography</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">section_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;topography&#39;</span><span class="p">],</span> <span class="n">show_lith</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>np.save(‘Ales_vert3’, geo_model.solutions.vertices)
-np.save(‘Ales_edges3’, geo_model.solutions.edges)</p>
-<p>gp.plot.plot_ar(geo_model)</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">save_model</span><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">)</span>
+<img src="../../_images/sphx_glr_Alesmodel_005.png" srcset="../../_images/sphx_glr_Alesmodel_005.png" alt="Geological map" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting Backend To: AvailableBackends.PYTORCH
+
+&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f4909f04a60&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>True
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">direction</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">],</span> <span class="n">show_topography</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">4</span><span class="p">],</span> <span class="n">direction</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">],</span> <span class="n">show_topography</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 2 minutes  3.841 seconds)</p>
-<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-examples-real-alesmodel-py">
-<div class="sphx-glr-download sphx-glr-download-python docutils container">
-<p><a class="reference download internal" download="" href="../../_downloads/e639ad579b32976edc849ae99f3bdd64/Alesmodel.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">Alesmodel.py</span></code></a></p>
+<ul class="sphx-glr-horizontal">
+<li><img src="../../_images/sphx_glr_Alesmodel_006.png" srcset="../../_images/sphx_glr_Alesmodel_006.png" alt="Cell Number: 4 Direction: y" class = "sphx-glr-multi-img"/></li>
+<li><img src="../../_images/sphx_glr_Alesmodel_007.png" srcset="../../_images/sphx_glr_Alesmodel_007.png" alt="Cell Number: -4 Direction: y" class = "sphx-glr-multi-img"/></li>
+</ul>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f490265be20&gt;
+</pre></div>
 </div>
+<p>sphinx_gallery_thumbnail_number = -1</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_3d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">show_lith</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show_topography</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kwargs_plot_structured_grid</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;opacity&#39;</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">})</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_Alesmodel_008.png" srcset="../../_images/sphx_glr_Alesmodel_008.png" alt="Alesmodel" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f49024e0b20&gt;
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 31.237 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-examples-real-alesmodel-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/3c3dba831e64790e5048f3455451e5b3/Alesmodel.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">Alesmodel.ipynb</span></code></a></p>
 </div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/e639ad579b32976edc849ae99f3bdd64/Alesmodel.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">Alesmodel.py</span></code></a></p>
+</div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
           </div>
@@ -489,7 +651,7 @@ np.save(‘Ales_edges3’, geo_model.solutions.edges)</p>
         <div class="sphinxsidebarwrapper">
 <p class="logo">
   <a href="../../index.html">
-    <img class="logo" src="../../_static/./logos/gempy.png" alt="Logo"/>
+    <img class="logo" src="../../_static/logos/gempy.png" alt="Logo"/>
     
   </a>
 </p>
@@ -500,24 +662,12 @@ np.save(‘Ales_edges3’, geo_model.solutions.edges)</p>
 
 
 <p>
-<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
+<iframe src="https://ghbtns.com/github-btn.html?user=gempy-project&repo=gempy&type=star&count=true&size=large&v=2"
   allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
 </p>
 
 
 
-
-
-    
-
-<p>
-<a class="badge" href="https://travis-ci.org/cgre-aachen/gempy">
-    <img
-        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
-        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
-    />
-</a>
-</p>
 
 
 <h3>Navigation</h3>
@@ -526,20 +676,19 @@ np.save(‘Ales_edges3’, geo_model.solutions.edges)</p>
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../projects.html">Additional projects</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Getting started</span></p>
+<p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">GemPy Tutorials</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">Examples</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../index.html#simple-geometries">Simple geometries</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../index.html#real-case-studies">Real case studies</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../integrations/index.html">Integrations</a></li>
 </ul>
-<p class="caption"><span class="caption-text">API Reference</span></p>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../code.html">Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_reference.html">Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_reference.html#data-classes">Data Classes</a></li>
 </ul>
 
 <div class="relations">
@@ -547,8 +696,10 @@ np.save(‘Ales_edges3’, geo_model.solutions.edges)</p>
 <ul>
   <li><a href="../../index.html">Documentation overview</a><ul>
   <li><a href="../index.html">Examples</a><ul>
-      <li>Previous: <a href="../geometries/7_combination.html" title="previous chapter">Model 7 - Combination</a></li>
+  <li><a href="index.html">Real case studies</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Real case studies</a></li>
       <li>Next: <a href="Claudius.html" title="next chapter">Claudius</a></li>
+  </ul></li>
   </ul></li>
   </ul></li>
 </ul>
@@ -557,12 +708,12 @@ np.save(‘Ales_edges3’, geo_model.solutions.edges)</p>
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -576,11 +727,11 @@ np.save(‘Ales_edges3’, geo_model.solutions.edges)</p>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2017-2021, CGRE-Aachen Team.
+      &copy;2017-2024, Gempy Developers.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
       
       |
       <a href="../../_sources/examples/real/Alesmodel.rst.txt"

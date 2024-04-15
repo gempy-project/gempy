@@ -10,7 +10,7 @@
     .. note::
         :class: sphx-glr-download-link-note
 
-        Click :ref:`here <sphx_glr_download_tutorials_ch1_fundamentals_ch1_6_2d_visualization.py>`
+        :ref:`Go to the end <sphx_glr_download_tutorials_ch1_fundamentals_ch1_6_2d_visualization.py>`
         to download the full example code
 
 .. rst-class:: sphx-glr-example-title
@@ -21,21 +21,23 @@
 1.6: 2D Visualization.
 ======================
 
-.. GENERATED FROM PYTHON SOURCE LINES 7-19
+.. GENERATED FROM PYTHON SOURCE LINES 7-21
 
-.. code-block:: python3
+.. code-block:: Python
 
 
-    # Importing GemPy
-    import gempy as gp
+    import os
 
     # Importing auxiliary libraries
     import numpy as np
-    import pandas as pd
-    import matplotlib.pyplot as plt
+
+    # Importing GemPy
+    import gempy as gp
+    import gempy_viewer as gpv
+
+    # sphinx_gallery_thumbnail_number = -1
 
     np.random.seed(1515)
-    pd.set_option('precision', 2)
 
 
 
@@ -44,98 +46,76 @@
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 20-23
+.. GENERATED FROM PYTHON SOURCE LINES 22-25
 
 Model interpolation
 ~~~~~~~~~~~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 25-26
+.. GENERATED FROM PYTHON SOURCE LINES 27-28
 
 Data Preparation
 
-.. GENERATED FROM PYTHON SOURCE LINES 26-32
+.. GENERATED FROM PYTHON SOURCE LINES 28-43
 
-.. code-block:: python3
+.. code-block:: Python
 
-    data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
+    data_path = os.path.abspath('../../')
 
-    geo_data = gp.create_data('viz_2d', [0, 1000, 0, 1000, 0, 1000], resolution=[10, 10, 10],
-                              path_o=data_path + "/data/input_data/jan_models/model5_orientations.csv",
-                              path_i=data_path + "/data/input_data/jan_models/model5_surface_points.csv")
+    geo_data: gp.data.GeoModel = gp.create_geomodel(
+        project_name='viz_2d',
+        extent=[0, 1000, 0, 1000, 0, 1000],
+        resolution=[10, 10, 10],
+        refinement=4,
+        importer_helper=gp.data.ImporterHelper(
+            path_to_orientations=data_path + "/data/input_data/jan_models/model5_orientations.csv",
+            path_to_surface_points=data_path + "/data/input_data/jan_models/model5_surface_points.csv",
+        )
+    )
 
-
-
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    Active grids: ['regular']
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 33-35
-
-.. code-block:: python3
-
-    gp.plot_2d(geo_data)
-
-
-
-
-.. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_6_2d_visualization_001.png
-    :alt: Cell Number: mid Direction: y
-    :class: sphx-glr-single-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-
-    <gempy.plot.visualization_2d.Plot2D object at 0x7fcb8bab22e0>
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 36-38
-
-.. code-block:: python3
-
-    geo_data.set_topography(d_z=(500, 1000))
+    gp.set_topography_from_random(grid=geo_data.grid, d_z=np.array([500, 1000]))
 
 
 
 
 
 .. rst-class:: sphx-glr-script-out
-
- Out:
 
  .. code-block:: none
 
     Active grids: ['regular' 'topography']
 
-    Grid Object. Values: 
-    array([[  50.        ,   50.        ,   50.        ],
-           [  50.        ,   50.        ,  150.        ],
-           [  50.        ,   50.        ,  250.        ],
-           ...,
-           [1000.        ,  777.77777778,  601.70645773],
-           [1000.        ,  888.88888889,  547.79987061],
-           [1000.        , 1000.        ,  531.67197073]])
+    <gempy.core.data.grid_modules.topography.Topography object at 0x7f8564aad2d0>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 39-43
+.. GENERATED FROM PYTHON SOURCE LINES 44-46
 
-.. code-block:: python3
+.. code-block:: Python
+
+    gpv.plot_2d(geo_data)
+
+
+
+
+.. image-sg:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_6_2d_visualization_001.png
+   :alt: Cell Number: mid Direction: y
+   :srcset: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_6_2d_visualization_001.png
+   :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f8561432dd0>
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 47-51
+
+.. code-block:: Python
 
     section_dict = {'section1': ([0, 0], [1000, 1000], [100, 80]),
                     'section2': ([800, 0], [800, 1000], [150, 100]),
@@ -148,36 +128,35 @@ Data Preparation
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 44-47
+.. GENERATED FROM PYTHON SOURCE LINES 52-55
 
-.. code-block:: python3
+.. code-block:: Python
 
-    geo_data.set_section_grid(section_dict)
-    gp.plot.plot_section_traces(geo_data)
-
-
+    gp.set_section_grid(geo_data.grid, section_dict)
+    gpv.plot_section_traces(geo_data)
 
 
-.. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_6_2d_visualization_002.png
-    :alt: Cell Number: -1 Direction: z
-    :class: sphx-glr-single-img
+
+
+.. image-sg:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_6_2d_visualization_002.png
+   :alt: Cell Number: -1 Direction: z
+   :srcset: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_6_2d_visualization_002.png
+   :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
-
- Out:
 
  .. code-block:: none
 
     Active grids: ['regular' 'topography' 'sections']
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7fcb8912c580>
+    <function plot_section_traces at 0x7f856d8f56c0>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 48-50
+.. GENERATED FROM PYTHON SOURCE LINES 56-58
 
-.. code-block:: python3
+.. code-block:: Python
 
     geo_data.grid.sections
 
@@ -205,21 +184,21 @@ Data Preparation
           <td>[0, 0]</td>
           <td>[1000, 1000]</td>
           <td>[100, 80]</td>
-          <td>1414.21</td>
+          <td>1414.213562</td>
         </tr>
         <tr>
           <th>section2</th>
           <td>[800, 0]</td>
           <td>[800, 1000]</td>
           <td>[150, 100]</td>
-          <td>1000.00</td>
+          <td>1000.000000</td>
         </tr>
         <tr>
           <th>section3</th>
           <td>[50, 200]</td>
           <td>[100, 500]</td>
           <td>[200, 150]</td>
-          <td>304.14</td>
+          <td>304.138127</td>
         </tr>
       </tbody>
     </table>
@@ -227,119 +206,89 @@ Data Preparation
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 51-53
+.. GENERATED FROM PYTHON SOURCE LINES 61-74
 
-.. code-block:: python3
+.. code-block:: Python
 
-    gp.set_interpolator(geo_data, theano_optimizer='fast_compile')
+    gp.map_stack_to_surfaces(
+        gempy_model=geo_data,
+        mapping_object={
+            "Fault_Series": 'fault',
+            "Strat_Series": ('rock2', 'rock1')
+        }
+    )
 
-
-
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    Setting kriging parameters to their default values.
-    Compiling theano function...
-    Level of Optimization:  fast_compile
-    Device:  cpu
-    Precision:  float64
-    Number of faults:  0
-    Compilation Done!
-    Kriging values: 
-                        values
-    range             1732.05
-    $C_o$            71428.57
-    drift equations    [3, 3]
-
-    <gempy.core.interpolator.InterpolatorModel object at 0x7fcc3704b1f0>
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 54-59
-
-.. code-block:: python3
-
-    gp.map_stack_to_surfaces(geo_data, {"Fault_Series": 'fault',
-                                        "Strat_Series": ('rock2', 'rock1')})
-
-    geo_data.set_is_fault(['Fault_Series'])
+    gp.set_is_fault(
+        frame=geo_data.structural_frame,
+        fault_groups=['Fault_Series']
+    )
 
 
 
 
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    Fault colors changed. If you do not like this behavior, set change_color to False.
 
 
 .. raw:: html
 
     <div class="output_subarea output_html rendered_html output_result">
-    <table border="1" class="dataframe">
-      <thead>
-        <tr style="text-align: right;">
-          <th></th>
-          <th>order_series</th>
-          <th>BottomRelation</th>
-          <th>isActive</th>
-          <th>isFault</th>
-          <th>isFinite</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th>Fault_Series</th>
-          <td>1</td>
-          <td>Fault</td>
-          <td>True</td>
-          <td>True</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>Strat_Series</th>
-          <td>2</td>
-          <td>Erosion</td>
-          <td>True</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>Basement</th>
-          <td>3</td>
-          <td>Erosion</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-      </tbody>
-    </table>
+
+            <table>
+              <tr><td>Structural Groups:</td><td>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>Fault_Series</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.FAULT</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #527682;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>fault</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>Strat_Series</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #ffbe00;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>rock2</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #9f0052;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>rock1</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            </td></tr>
+              <tr><td>Fault Relations:</td><td><table style="border-collapse: collapse; table-layout: fixed;"><th></th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Fault_Seri...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Strat_Seri...</th><tr><th>Fault_Series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>Strat_Series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr></table></td></tr>
+              <tr><td></td><td>
+            <table>
+              <tr>
+                <td><div style="display: inline-block; background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></div> True</td>
+                <td><div style="display: inline-block; background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></div> False</td>
+              </tr>
+            </table>
+            </td></tr>
+            </table>
+        
     </div>
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 60-62
+.. GENERATED FROM PYTHON SOURCE LINES 75-77
 
-.. code-block:: python3
+.. code-block:: Python
 
-    geo_data.get_active_grids()
+    geo_data.grid.active_grids
 
 
 
 
 
 .. rst-class:: sphx-glr-script-out
-
- Out:
 
  .. code-block:: none
 
@@ -348,9 +297,9 @@ Data Preparation
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 63-65
+.. GENERATED FROM PYTHON SOURCE LINES 78-80
 
-.. code-block:: python3
+.. code-block:: Python
 
     gp.compute_model(geo_data)
 
@@ -360,594 +309,209 @@ Data Preparation
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
-    /WorkSSD/PythonProjects/gempy/gempy/core/solution.py:173: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify 'dtype=object' when creating the ndarray.
-      self.geological_map = np.array(
-    /WorkSSD/PythonProjects/gempy/gempy/core/solution.py:178: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify 'dtype=object' when creating the ndarray.
-      self.sections = np.array(
+    Setting Backend To: AvailableBackends.numpy
+    /home/leguark/gempy/gempy/core/data/geo_model.py:118: UserWarning: Both octree levels and resolution are set. The default grid for the `raw_array_solution`and plots will be the dense regular grid. To use octrees instead, set resolution to None in the regular grid.
+      warnings.warn("Both octree levels and resolution are set. The default grid for the `raw_array_solution`"
 
 
-    Lithology ids 
-      [4. 4. 4. 4. 4. 4. 3. 3. 2. 2. 4. 4. 4. 4. 4. 4. 3. 3. 2. 2. 4. 4. 4. 4.
-     4. 4. 3. 3. 2. 2. 4. 4. 4. 4. 4. 4. 3. 3. 2. 2. 4. 4. 4. 4. 4. 4. 3. 3.
-     2. 2. 4. 4. 4. 4. 4. 4. 3. 3. 2. 2. 4. 4. 4. 4. 4. 4. 3. 3. 2. 2. 4. 4.
-     4. 4. 4. 4. 3. 3. 2. 2. 4. 4. 4. 4. 4. 4. 3. 3. 2. 2. 4. 4. 4. 4. 4. 4.
-     3. 3. 2. 2. 4. 4. 4. 4. 4. 4. 3. 3. 2. 2. 4. 4. 4. 4. 4. 4. 3. 3. 2. 2.
-     4. 4. 4. 4. 4. 4. 3. 3. 2. 2. 4. 4. 4. 4. 4. 4. 3. 3. 2. 2. 4. 4. 4. 4.
-     4. 4. 3. 3. 2. 2. 4. 4. 4. 4. 4. 4. 3. 3. 2. 2. 4. 4. 4. 4. 4. 4. 3. 3.
-     2. 2. 4. 4. 4. 4. 4. 4. 3. 3. 2. 2. 4. 4. 4. 4. 4. 4. 3. 3. 2. 2. 4. 4.
-     4. 4. 4. 4. 3. 3. 2. 2. 4. 4. 4. 4. 4. 4. 3. 3. 2. 2. 4. 4. 4. 4. 4. 4.
-     3. 3. 2. 2. 4. 4. 4. 4. 4. 4. 3. 3. 2. 2. 4. 4. 4. 4. 4. 4. 3. 3. 2. 2.
-     4. 4. 4. 4. 4. 4. 3. 3. 2. 2. 4. 4. 4. 4. 4. 4. 3. 3. 2. 2. 4. 4. 4. 4.
-     4. 4. 3. 3. 2. 2. 4. 4. 4. 4. 4. 4. 3. 3. 2. 2. 4. 4. 4. 4. 4. 4. 3. 3.
-     2. 2. 4. 4. 4. 4. 4. 4. 3. 3. 2. 2. 4. 4. 4. 4. 4. 4. 3. 3. 2. 2. 4. 4.
-     4. 4. 4. 4. 3. 3. 2. 2. 4. 4. 4. 4. 4. 4. 3. 3. 2. 2. 4. 4. 4. 4. 4. 4.
-     3. 3. 2. 2. 4. 4. 4. 4. 4. 4. 3. 3. 2. 2. 4. 4. 4. 4. 4. 4. 3. 3. 2. 2.
-     4. 4. 4. 4. 4. 4. 3. 3. 2. 2. 4. 4. 4. 4. 4. 4. 3. 3. 2. 2. 4. 4. 4. 4.
-     4. 4. 3. 3. 2. 2. 4. 4. 4. 4. 4. 4. 3. 3. 2. 2. 4. 4. 4. 4. 4. 4. 2. 2.
-     2. 2. 4. 4. 4. 4. 4. 4. 2. 2. 2. 2. 4. 4. 4. 4. 4. 4. 2. 2. 2. 2. 4. 4.
-     4. 4. 4. 4. 2. 2. 2. 2. 4. 4. 4. 4. 4. 4. 2. 2. 2. 2. 4. 4. 4. 4. 4. 4.
-     2. 2. 2. 2. 4. 4. 4. 4. 4. 4. 2. 2. 2. 2. 4. 4. 4. 4. 4. 4. 2. 2. 2. 2.
-     4. 4. 4. 4. 4. 4. 2. 2. 2. 2. 4. 4. 4. 4. 4. 4. 2. 2. 2. 2. 4. 4. 4. 4.
-     2. 2. 2. 2. 2. 2. 4. 4. 4. 4. 2. 2. 2. 2. 2. 2. 4. 4. 4. 4. 2. 2. 2. 2.
-     2. 2. 4. 4. 4. 4. 2. 2. 2. 2. 2. 2. 4. 4. 4. 4. 2. 2. 2. 2. 2. 2. 4. 4.
-     4. 4. 2. 2. 2. 2. 2. 2. 4. 4. 4. 4. 2. 2. 2. 2. 2. 2. 4. 4. 4. 4. 2. 2.
-     2. 2. 2. 2. 4. 4. 4. 4. 2. 2. 2. 2. 2. 2. 4. 4. 4. 4. 2. 2. 2. 2. 2. 2.
-     4. 4. 3. 3. 2. 2. 2. 2. 2. 2. 4. 4. 3. 3. 2. 2. 2. 2. 2. 2. 4. 4. 3. 3.
-     2. 2. 2. 2. 2. 2. 4. 4. 3. 3. 2. 2. 2. 2. 2. 2. 4. 4. 3. 3. 2. 2. 2. 2.
-     2. 2. 4. 4. 3. 3. 2. 2. 2. 2. 2. 2. 4. 4. 3. 3. 2. 2. 2. 2. 2. 2. 4. 4.
-     3. 3. 2. 2. 2. 2. 2. 2. 4. 4. 3. 3. 2. 2. 2. 2. 2. 2. 4. 4. 3. 3. 2. 2.
-     2. 2. 2. 2. 4. 4. 3. 3. 2. 2. 2. 2. 2. 2. 4. 4. 3. 3. 2. 2. 2. 2. 2. 2.
-     4. 4. 3. 3. 2. 2. 2. 2. 2. 2. 4. 4. 3. 3. 2. 2. 2. 2. 2. 2. 4. 4. 3. 3.
-     2. 2. 2. 2. 2. 2. 4. 4. 3. 3. 2. 2. 2. 2. 2. 2. 4. 4. 3. 3. 2. 2. 2. 2.
-     2. 2. 4. 4. 3. 3. 2. 2. 2. 2. 2. 2. 4. 4. 3. 3. 2. 2. 2. 2. 2. 2. 4. 4.
-     3. 3. 2. 2. 2. 2. 2. 2. 4. 4. 3. 3. 2. 2. 2. 2. 2. 2. 4. 4. 3. 3. 2. 2.
-     2. 2. 2. 2. 4. 4. 3. 3. 2. 2. 2. 2. 2. 2. 4. 4. 3. 3. 2. 2. 2. 2. 2. 2.
-     4. 4. 3. 3. 2. 2. 2. 2. 2. 2. 4. 4. 3. 3. 2. 2. 2. 2. 2. 2. 4. 4. 3. 3.
-     2. 2. 2. 2. 2. 2. 4. 4. 3. 3. 2. 2. 2. 2. 2. 2. 4. 4. 3. 3. 2. 2. 2. 2.
-     2. 2. 4. 4. 3. 3. 2. 2. 2. 2. 2. 2. 4. 4. 3. 3. 2. 2. 2. 2. 2. 2. 4. 4.
-     3. 3. 2. 2. 2. 2. 2. 2. 4. 4. 3. 3. 2. 2. 2. 2. 2. 2. 4. 4. 3. 3. 2. 2.
-     2. 2. 2. 2. 4. 4. 3. 3. 2. 2. 2. 2. 2. 2. 4. 4. 3. 3. 2. 2. 2. 2. 2. 2.
-     4. 4. 3. 3. 2. 2. 2. 2. 2. 2. 4. 4. 3. 3. 2. 2. 2. 2. 2. 2. 4. 4. 3. 3.
-     2. 2. 2. 2. 2. 2. 4. 4. 3. 3. 2. 2. 2. 2. 2. 2.] 
+.. raw:: html
 
+    <div class="output_subarea output_html rendered_html output_result">
+    <b>Solutions:</b> 4 Octree Levels, 3 DualContouringMeshes
+    </div>
+    <br />
+    <br />
 
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 66-67
+.. GENERATED FROM PYTHON SOURCE LINES 81-82
 
 new plotting api
 
-.. GENERATED FROM PYTHON SOURCE LINES 67-69
+.. GENERATED FROM PYTHON SOURCE LINES 82-84
 
-.. code-block:: python3
+.. code-block:: Python
 
-    gp.plot_2d(geo_data, section_names=['section1'])
-
-
-
-
-.. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_6_2d_visualization_003.png
-    :alt: section1
-    :class: sphx-glr-single-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-
-    <gempy.plot.visualization_2d.Plot2D object at 0x7fcc748f31f0>
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 70-71
-
-or
-
-.. GENERATED FROM PYTHON SOURCE LINES 73-75
-
-.. code-block:: python3
-
-    gp.plot.plot_2d(geo_data, section_names=['section1'])
+    gpv.plot_2d(geo_data, section_names=['section1'])
 
 
 
 
-.. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_6_2d_visualization_004.png
-    :alt: section1
-    :class: sphx-glr-single-img
+.. image-sg:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_6_2d_visualization_003.png
+   :alt: section1
+   :srcset: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_6_2d_visualization_003.png
+   :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
+    /home/leguark/gempy_viewer/gempy_viewer/API/_plot_2d_sections_api.py:104: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
+      warnings.warn(
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7fcc3a05f580>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f8561b42380>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 76-79
-
-Plot 2d: Object oriented:
-------------------------
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 82-85
-
-One plot
-^^^^^^^^
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 87-91
-
-.. code-block:: python3
-
-    p = gp.plot_2d(geo_data, section_names=[], direction=None, show=False)
-    p.fig.show()
-
-
-
-
-
-.. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_6_2d_visualization_005.png
-    :alt: ch1 6 2d visualization
-    :class: sphx-glr-single-img
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 92-100
-
-.. code-block:: python3
-
-    p = gp.plot_2d(geo_data, section_names=[], direction=None, show=False)
-    # -----new code------
-
-    sec_name = 'section1'
-    s1 = p.add_section(sec_name)
-    p.plot_data(s1, sec_name, projection_distance=200)
-    p.fig.show()
-
-
-
-
-.. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_6_2d_visualization_006.png
-    :alt: section1
-    :class: sphx-glr-single-img
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 101-110
-
-.. code-block:: python3
-
-    p = gp.plot_2d(geo_data, section_names=[], direction=None, show=False)
-    sec_name = 'section1'
-    s1 = p.add_section(sec_name)
-    # -----new code------
-
-    p.plot_data(s1, sec_name, projection_distance=200)
-    p.plot_contacts(s1, sec_name)
-    p.fig.show()
-
-
-
-
-.. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_6_2d_visualization_007.png
-    :alt: section1
-    :class: sphx-glr-single-img
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 111-122
-
-.. code-block:: python3
-
-    p = gp.plot_2d(geo_data, section_names=[], direction=None, show=False)
-    sec_name = 'section1'
-    s1 = p.add_section(sec_name)
-    p.plot_data(s1, sec_name, projection_distance=200)
-    p.plot_contacts(s1, sec_name)
-    # -----new code------
-
-    p.plot_lith(s1, sec_name)
-    p.plot_topography(s1, sec_name)
-    p.fig.show()
-
-
-
-
-.. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_6_2d_visualization_008.png
-    :alt: section1
-    :class: sphx-glr-single-img
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 123-126
-
-Several plots
-^^^^^^^^^^^^^
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 128-136
-
-.. code-block:: python3
-
-
-    sec_name = 'section1'
-    sec_name_2 = 'section3'
-
-    p2 = gp.plot_2d(geo_data, n_axis=3, figsize=(15, 15),  # General fig options
-                    section_names=[sec_name, 'topography'], cell_number=[3],  # Defining the sections
-                    show_data=False, show_lith=False, show_scalar=False, show_boundaries=False)
-
-
-
-
-.. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_6_2d_visualization_009.png
-    :alt: section1, Geological map, Cell Number: 3 Direction: y
-    :class: sphx-glr-single-img
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 137-150
-
-.. code-block:: python3
-
-
-    # Create the section. This loacte the axes and give the right
-    # aspect ratio and labels
-
-    p2 = gp.plot_2d(geo_data, n_axis=3, figsize=(15, 15),  # General fig options
-                    section_names=[sec_name, 'topography'], cell_number=[3],  # Defining the sections
-                    show_data=False, show_lith=False, show_scalar=False, show_boundaries=False,
-                    show=False)
-    # -----new code------
-
-    s1 = p2.add_section(sec_name_2, ax_pos=224)
-    p2.fig.show()
-
-
-
-
-.. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_6_2d_visualization_010.png
-    :alt: section1, Geological map, Cell Number: 3 Direction: y, section3
-    :class: sphx-glr-single-img
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 151-152
-
-Axes 0
-
-.. GENERATED FROM PYTHON SOURCE LINES 152-166
-
-.. code-block:: python3
-
-
-    p2 = gp.plot_2d(geo_data, n_axis=3, figsize=(15, 15),  # General fig options
-                    section_names=[sec_name, 'topography'], cell_number=[3],  # Defining the sections
-                    show_data=False, show_lith=False, show_scalar=False, show_boundaries=False,
-                    show=False)
-    s1 = p2.add_section(sec_name_2, ax_pos=224)
-    # -----new code------
-
-    p2.plot_contacts(s1, sec_name_2)
-    p2.plot_lith(s1, sec_name_2)
-    p2.plot_data(s1, sec_name_2, projection_distance=200)
-    p2.plot_topography(s1, sec_name_2)
-    p2.fig.show()
-
-
-
-
-.. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_6_2d_visualization_011.png
-    :alt: section1, Geological map, Cell Number: 3 Direction: y, section3
-    :class: sphx-glr-single-img
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 167-168
-
-Axes 1
-
-.. GENERATED FROM PYTHON SOURCE LINES 168-186
-
-.. code-block:: python3
-
-
-    # sphinx_gallery_thumbnail_number = 12
-    p2 = gp.plot_2d(geo_data, n_axis=3, figsize=(15, 15),  # General fig options
-                    section_names=[sec_name, 'topography'], cell_number=[3],  # Defining the sections
-                    show_data=False, show_lith=False, show_scalar=False, show_boundaries=False,
-                    show=False)
-    s1 = p2.add_section(sec_name_2, ax_pos=224)
-    p2.plot_contacts(s1, sec_name_2)
-    p2.plot_lith(s1, sec_name_2)
-    p2.plot_data(s1, sec_name_2, projection_distance=200)
-    p2.plot_topography(s1, sec_name_2)
-    # -----new code------
-
-    p2.plot_contacts(p2.axes[0], cell_number=3)
-    p2.plot_scalar_field(p2.axes[0], cell_number=3, series_n=1)
-    p2.fig.show()
-
-
-
-
-
-.. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_6_2d_visualization_012.png
-    :alt: section1, Geological map, Cell Number: 3 Direction: y, section3
-    :class: sphx-glr-single-img
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 187-188
-
-Axes2
-
-.. GENERATED FROM PYTHON SOURCE LINES 188-206
-
-.. code-block:: python3
-
-
-    p2 = gp.plot_2d(geo_data, n_axis=3, figsize=(15, 15),  # General fig options
-                    section_names=[sec_name, 'topography'], cell_number=[3],  # Defining the sections
-                    show_data=False, show_lith=False, show_scalar=False, show_boundaries=False,
-                    show=False)
-    s1 = p2.add_section(sec_name_2, ax_pos=224)
-    p2.plot_contacts(s1, sec_name_2)
-    p2.plot_lith(s1, sec_name_2)
-    p2.plot_data(s1, sec_name_2, projection_distance=200)
-    p2.plot_topography(s1, sec_name_2)
-    p2.plot_contacts(p2.axes[0], cell_number=3)
-    p2.plot_scalar_field(p2.axes[0], cell_number=3, series_n=1)
-    # -----new code------
-
-    p2.plot_lith(p2.axes[1], 'topography')
-    p2.plot_contacts(p2.axes[1], 'topography')
-    p2.fig.show()
-
-
-
-
-.. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_6_2d_visualization_013.png
-    :alt: section1, Geological map, Cell Number: 3 Direction: y, section3
-    :class: sphx-glr-single-img
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 207-210
-
-Plotting traces:
-''''''''''''''''
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 212-215
-
-.. code-block:: python3
-
-    p2.plot_section_traces(p2.axes[1])
-    p2.fig.show()
-
-
-
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 216-218
-
-.. code-block:: python3
-
-    gp.plot.plot_section_traces(geo_data)
-
-
-
-
-.. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_6_2d_visualization_014.png
-    :alt: Cell Number: -1 Direction: z
-    :class: sphx-glr-single-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-
-    <gempy.plot.visualization_2d.Plot2D object at 0x7fcb84d3afd0>
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 219-222
+.. GENERATED FROM PYTHON SOURCE LINES 85-88
 
 Plot API
 --------
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 225-228
+.. GENERATED FROM PYTHON SOURCE LINES 91-94
 
 If nothing is passed, a Plot2D object is created and therefore you are
 in the same situation as above:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 230-232
+.. GENERATED FROM PYTHON SOURCE LINES 96-98
 
-.. code-block:: python3
+.. code-block:: Python
 
-    p3 = gp.plot_2d(geo_data)
-
-
-
-
-.. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_6_2d_visualization_015.png
-    :alt: Cell Number: mid Direction: y
-    :class: sphx-glr-single-img
+    p3 = gpv.plot_2d(geo_data)
 
 
 
 
+.. image-sg:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_6_2d_visualization_004.png
+   :alt: Cell Number: mid Direction: y
+   :srcset: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_6_2d_visualization_004.png
+   :class: sphx-glr-single-img
 
-.. GENERATED FROM PYTHON SOURCE LINES 233-236
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 99-102
 
 Alternatively you can pass section\_names, cell\_numbers + direction or
 any combination of the above:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 238-240
+.. GENERATED FROM PYTHON SOURCE LINES 104-106
 
-.. code-block:: python3
+.. code-block:: Python
 
-    gp.plot_2d(geo_data, section_names=['topography'])
-
-
-
-
-.. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_6_2d_visualization_016.png
-    :alt: Geological map
-    :class: sphx-glr-single-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-
-    <gempy.plot.visualization_2d.Plot2D object at 0x7fcc46ba6910>
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 241-243
-
-.. code-block:: python3
-
-    gp.plot_2d(geo_data, section_names=['section1'])
+    gpv.plot_2d(geo_data, section_names=['topography'])
 
 
 
 
-.. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_6_2d_visualization_017.png
-    :alt: section1
-    :class: sphx-glr-single-img
+.. image-sg:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_6_2d_visualization_005.png
+   :alt: Geological map
+   :srcset: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_6_2d_visualization_005.png
+   :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
+    /home/leguark/gempy_viewer/gempy_viewer/API/_plot_2d_sections_api.py:104: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
+      warnings.warn(
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7fcbe00cda90>
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 244-246
-
-.. code-block:: python3
-
-    gp.plot_2d(geo_data, section_names=['section1', 'section2'])
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f8561430190>
 
 
 
+.. GENERATED FROM PYTHON SOURCE LINES 107-109
 
-.. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_6_2d_visualization_018.png
-    :alt: section1, section2
-    :class: sphx-glr-single-img
+.. code-block:: Python
+
+    gpv.plot_2d(geo_data, section_names=['section1'])
+
+
+
+
+.. image-sg:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_6_2d_visualization_006.png
+   :alt: section1
+   :srcset: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_6_2d_visualization_006.png
+   :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
+    /home/leguark/gempy_viewer/gempy_viewer/API/_plot_2d_sections_api.py:104: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
+      warnings.warn(
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7fcc46b47400>
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 247-249
-
-.. code-block:: python3
-
-    gp.plot_2d(geo_data, figsize=(15, 15), section_names=['section1', 'section2', 'topography'],
-               cell_number='mid')
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f8561ac09a0>
 
 
 
-.. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_6_2d_visualization_019.png
-    :alt: section1, section2, Geological map, Cell Number: mid Direction: y
-    :class: sphx-glr-single-img
+.. GENERATED FROM PYTHON SOURCE LINES 110-112
+
+.. code-block:: Python
+
+    gpv.plot_2d(geo_data, section_names=['section1', 'section2'])
+
+
+
+
+.. image-sg:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_6_2d_visualization_007.png
+   :alt: section1, section2
+   :srcset: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_6_2d_visualization_007.png
+   :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
+ .. code-block:: none
+
+    /home/leguark/gempy_viewer/gempy_viewer/API/_plot_2d_sections_api.py:104: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
+      warnings.warn(
+
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f85612cfbe0>
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 113-114
+
+.. code-block:: Python
+
+    gpv.plot_2d(geo_data, figsize=(15, 15), section_names=['section1', 'section2', 'topography'], cell_number='mid')
+
+
+
+.. image-sg:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_6_2d_visualization_008.png
+   :alt: section1, section2, Geological map, Cell Number: mid Direction: y
+   :srcset: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_6_2d_visualization_008.png
+   :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
 
  .. code-block:: none
 
+    /home/leguark/gempy_viewer/gempy_viewer/API/_plot_2d_sections_api.py:104: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
+      warnings.warn(
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7fcc74762df0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f8561a4bee0>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  9.016 seconds)
+   **Total running time of the script:** (0 minutes 2.410 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_6_2d_visualization.py:
 
+.. only:: html
 
-.. only :: html
+  .. container:: sphx-glr-footer sphx-glr-footer-example
 
- .. container:: sphx-glr-footer
-    :class: sphx-glr-footer-example
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
+      :download:`Download Jupyter notebook: ch1_6_2d_visualization.ipynb <ch1_6_2d_visualization.ipynb>`
 
+    .. container:: sphx-glr-download sphx-glr-download-python
 
-  .. container:: sphx-glr-download sphx-glr-download-python
-
-     :download:`Download Python source code: ch1_6_2d_visualization.py <ch1_6_2d_visualization.py>`
-
-
-
-  .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-     :download:`Download Jupyter notebook: ch1_6_2d_visualization.ipynb <ch1_6_2d_visualization.ipynb>`
+      :download:`Download Python source code: ch1_6_2d_visualization.py <ch1_6_2d_visualization.py>`
 
 
 .. only:: html

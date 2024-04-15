@@ -1,23 +1,21 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="../../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>1.3b: 2-D sections &#8212; GemPy 2.2.8 documentation</title>
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/gallery-rendered-html.css" />
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>1.3b: 2-D sections &#8212; GemPy 2023.2.0b1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=270d38c7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=61a4c737" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <script src="../../_static/documentation_options.js?v=acace1bb"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="1.3c: Adding topography to geological models" href="ch1_3c_topography.html" />
@@ -40,84 +38,127 @@
             
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
-<p>Click <a class="reference internal" href="#sphx-glr-download-tutorials-ch1-fundamentals-ch1-3b-cross-sections-py"><span class="std std-ref">here</span></a>
+<p><a class="reference internal" href="#sphx-glr-download-tutorials-ch1-fundamentals-ch1-3b-cross-sections-py"><span class="std std-ref">Go to the end</span></a>
 to download the full example code</p>
 </div>
-<div class="sphx-glr-example-title section" id="b-2-d-sections">
-<span id="sphx-glr-tutorials-ch1-fundamentals-ch1-3b-cross-sections-py"></span><h1>1.3b: 2-D sections<a class="headerlink" href="#b-2-d-sections" title="Permalink to this headline">¶</a></h1>
+<section class="sphx-glr-example-title" id="b-2-d-sections">
+<span id="sphx-glr-tutorials-ch1-fundamentals-ch1-3b-cross-sections-py"></span><h1>1.3b: 2-D sections<a class="headerlink" href="#b-2-d-sections" title="Link to this heading">¶</a></h1>
 <p>Importing</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gempy</span> <span class="k">as</span> <span class="nn">gp</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gempy</span> <span class="k">as</span> <span class="nn">gp</span>
+<span class="kn">import</span> <span class="nn">gempy_viewer</span> <span class="k">as</span> <span class="nn">gpv</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
 <a href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.seed.html#numpy.random.seed" title="numpy.random.seed" class="sphx-glr-backref-module-numpy-random sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span></a><span class="p">(</span><span class="mi">1234</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="section" id="setup-the-model">
-<h2>Setup the model<a class="headerlink" href="#setup-the-model" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a> <span class="o">=</span> <a href="../../GemPy API/gempy.create_model.html#gempy.create_model" title="gempy.create_model" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">create_model</span></a><span class="p">(</span><span class="s1">&#39;Tutorial_ch1-1_Basics&#39;</span><span class="p">)</span>
+<section id="setup-the-model">
+<h2>Setup the model<a class="headerlink" href="#setup-the-model" title="Link to this heading">¶</a></h2>
+<p>Importing the data from CSV-files and setting extent and resolution</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">data_path</span> <span class="o">=</span> <span class="s1">&#39;https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/&#39;</span>
 
-<span class="c1"># Importing the data from CSV-files and setting extent and resolution</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a> <span class="o">=</span> <span class="s1">&#39;https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/&#39;</span>
+<a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">:</span> <a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class"><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GeoModel</span></a> <span class="o">=</span> <a href="../../GemPy API/gempy.create_geomodel.html#gempy.create_geomodel" title="gempy.create_geomodel" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">create_geomodel</span></a><span class="p">(</span>
+    <span class="n">project_name</span><span class="o">=</span><span class="s1">&#39;Tutorial_ch1_1_Basics&#39;</span><span class="p">,</span>
+    <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">750</span><span class="p">],</span>
+    <span class="n">resolution</span><span class="o">=</span><span class="p">[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">],</span>  <span class="c1"># * Here we define the resolution of the voxels</span>
+    <span class="n">refinement</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>  <span class="c1"># * Here we define the number of octree levels. If octree levels are defined, the resolution is ignored.</span>
+    <span class="n">importer_helper</span><span class="o">=</span><a href="../../Helper Classes/gempy.core.data.ImporterHelper.html#gempy.core.data.ImporterHelper" title="gempy.core.data.ImporterHelper" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class"><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">ImporterHelper</span></a><span class="p">(</span>
+        <span class="n">path_to_orientations</span><span class="o">=</span><span class="n">data_path</span> <span class="o">+</span> <span class="s2">&quot;/data/input_data/getting_started/simple_fault_model_orientations.csv&quot;</span><span class="p">,</span>
+        <span class="n">path_to_surface_points</span><span class="o">=</span><span class="n">data_path</span> <span class="o">+</span> <span class="s2">&quot;/data/input_data/getting_started/simple_fault_model_points.csv&quot;</span><span class="p">,</span>
+        <span class="n">hash_surface_points</span><span class="o">=</span><span class="s2">&quot;4cdd54cd510cf345a583610585f2206a2936a05faaae05595b61febfc0191563&quot;</span><span class="p">,</span>
+        <span class="n">hash_orientations</span><span class="o">=</span><span class="s2">&quot;7ba1de060fc8df668d411d0207a326bc94a6cdca9f5fe2ed511fd4db6b3f3526&quot;</span>
+    <span class="p">)</span>
+<span class="p">)</span>
 
-<a href="../../GemPy API/gempy.init_data.html#gempy.init_data" title="gempy.init_data" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">init_data</span></a><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">2000.</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">2000.</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">2000.</span><span class="p">],</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
-             <span class="n">path_o</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a> <span class="o">+</span> <span class="s2">&quot;/data/input_data/tut_chapter1/simple_fault_model_orientations.csv&quot;</span><span class="p">,</span>
-             <span class="n">path_i</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a> <span class="o">+</span> <span class="s2">&quot;/data/input_data/tut_chapter1/simple_fault_model_points.csv&quot;</span><span class="p">,</span> <span class="n">default_values</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<a href="../../GemPy API/gempy.map_stack_to_surfaces.html#gempy.map_stack_to_surfaces" title="gempy.map_stack_to_surfaces" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">map_stack_to_surfaces</span></a><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span>
-                         <span class="p">{</span><span class="s2">&quot;Fault_Series&quot;</span><span class="p">:</span> <span class="s1">&#39;Main_Fault&#39;</span><span class="p">,</span>
-                          <span class="s2">&quot;Strat_Series&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;Sandstone_2&#39;</span><span class="p">,</span> <span class="s1">&#39;Siltstone&#39;</span><span class="p">,</span>
-                                           <span class="s1">&#39;Shale&#39;</span><span class="p">,</span> <span class="s1">&#39;Sandstone_1&#39;</span><span class="p">,</span> <span class="s1">&#39;basement&#39;</span><span class="p">)},</span> <span class="n">remove_unused_series</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<a href="../../Model/gempy.core.model.ImplicitCoKriging.html#gempy.core.model.ImplicitCoKriging.set_is_fault" title="gempy.core.model.ImplicitCoKriging.set_is_fault" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-method"><span class="n">geo_model</span><span class="o">.</span><span class="n">set_is_fault</span></a><span class="p">([</span><span class="s1">&#39;Fault_Series&#39;</span><span class="p">])</span>
+<a href="../../GemPy API/gempy.map_stack_to_surfaces.html#gempy.map_stack_to_surfaces" title="gempy.map_stack_to_surfaces" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">map_stack_to_surfaces</span></a><span class="p">(</span>
+    <span class="n">gempy_model</span><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span>
+    <span class="n">mapping_object</span><span class="o">=</span>  <span class="c1"># TODO: This mapping I do not like it too much. We should be able to do it passing the data objects directly</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;Fault_Series&quot;</span><span class="p">:</span> <span class="s1">&#39;Main_Fault&#39;</span><span class="p">,</span>
+        <span class="s2">&quot;Strat_Series&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;Sandstone_2&#39;</span><span class="p">,</span> <span class="s1">&#39;Siltstone&#39;</span><span class="p">,</span> <span class="s1">&#39;Shale&#39;</span><span class="p">,</span> <span class="s1">&#39;Sandstone_1&#39;</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+
+<span class="n">gp</span><span class="o">.</span><span class="n">set_is_fault</span><span class="p">(</span>
+    <span class="n">frame</span><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span></a><span class="p">,</span>
+    <span class="n">fault_groups</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Fault_Series&#39;</span><span class="p">]</span>
+<span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Active grids: [&#39;regular&#39;]
-Fault colors changed. If you do not like this behavior, set change_color to False.
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Surface points hash:  4cdd54cd510cf345a583610585f2206a2936a05faaae05595b61febfc0191563
+Orientations hash:  7ba1de060fc8df668d411d0207a326bc94a6cdca9f5fe2ed511fd4db6b3f3526
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>order_series</th>
-      <th>BottomRelation</th>
-      <th>isActive</th>
-      <th>isFault</th>
-      <th>isFinite</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>Fault_Series</th>
-      <td>1</td>
-      <td>Fault</td>
-      <td>True</td>
-      <td>True</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>Strat_Series</th>
-      <td>2</td>
-      <td>Erosion</td>
-      <td>True</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-  </tbody>
-</table>
+
+        <table>
+          <tr><td>Structural Groups:</td><td>
+    <table style="border-left:1.2px solid black;>
+      <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+      <tr><td>Name:</td><td>Fault_Series</td></tr>
+      <tr><td>Structural Relation:</td><td>StackRelationType.FAULT</td></tr>
+      <tr><td>Elements:</td><td>
+    <table width="50%" style="border-left:15px solid #527682;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>Main_Fault</td></tr>
+    </table>
+        </td></tr>
+    </table>
+        <br>
+    <table style="border-left:1.2px solid black;>
+      <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+      <tr><td>Name:</td><td>Strat_Series</td></tr>
+      <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+      <tr><td>Elements:</td><td>
+    <table width="50%" style="border-left:15px solid #ffbe00;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>Sandstone_2</td></tr>
+    </table>
+        <br>
+    <table width="50%" style="border-left:15px solid #443988;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>Siltstone</td></tr>
+    </table>
+        <br>
+    <table width="50%" style="border-left:15px solid #728f02;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>Shale</td></tr>
+    </table>
+        <br>
+    <table width="50%" style="border-left:15px solid #9f0052;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>Sandstone_1</td></tr>
+    </table>
+        </td></tr>
+    </table>
+        </td></tr>
+          <tr><td>Fault Relations:</td><td><table style="border-collapse: collapse; table-layout: fixed;"><th></th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Fault_Seri...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Strat_Seri...</th><tr><th>Fault_Series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>Strat_Series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr></table></td></tr>
+          <tr><td></td><td>
+        <table>
+          <tr>
+            <td><div style="display: inline-block; background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></div> True</td>
+            <td><div style="display: inline-block; background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></div> False</td>
+          </tr>
+        </table>
+        </td></tr>
+        </table>
+
 </div>
 <br />
-<br /><div class="section" id="add-sections">
-<h3>Add sections<a class="headerlink" href="#add-sections" title="Permalink to this headline">¶</a></h3>
+<br /><section id="add-sections">
+<h3>Add sections<a class="headerlink" href="#add-sections" title="Link to this heading">¶</a></h3>
 <p>pass section dictionary with startpoint, endpoint and resolution for
 every section:</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">section_dict</span></a> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;section1&#39;</span><span class="p">:</span> <span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">2000</span><span class="p">],</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">80</span><span class="p">]),</span>
-                <span class="s1">&#39;section2&#39;</span><span class="p">:</span> <span class="p">([</span><span class="mi">800</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">800</span><span class="p">,</span> <span class="mi">2000</span><span class="p">],</span> <span class="p">[</span><span class="mi">150</span><span class="p">,</span> <span class="mi">100</span><span class="p">]),</span>
-                <span class="s1">&#39;section3&#39;</span><span class="p">:</span> <span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">200</span><span class="p">],</span> <span class="p">[</span><span class="mi">1500</span><span class="p">,</span> <span class="mi">500</span><span class="p">],</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">150</span><span class="p">])}</span>  <span class="c1"># p1,p2,resolution</span>
-<a href="../../Model/gempy.core.model.ImplicitCoKriging.html#gempy.core.model.ImplicitCoKriging.set_section_grid" title="gempy.core.model.ImplicitCoKriging.set_section_grid" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-method"><span class="n">geo_model</span><span class="o">.</span><span class="n">set_section_grid</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">section_dict</span></a><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">set_section_grid</span><span class="p">(</span>
+    <span class="n">grid</span><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span><span class="o">.</span><span class="n">grid</span></a><span class="p">,</span>
+    <span class="n">section_dict</span><span class="o">=</span><span class="p">{</span>
+        <span class="s1">&#39;section1&#39;</span><span class="p">:</span> <span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">2000</span><span class="p">],</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">80</span><span class="p">]),</span>
+        <span class="s1">&#39;section2&#39;</span><span class="p">:</span> <span class="p">([</span><span class="mi">800</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">800</span><span class="p">,</span> <span class="mi">2000</span><span class="p">],</span> <span class="p">[</span><span class="mi">150</span><span class="p">,</span> <span class="mi">100</span><span class="p">]),</span>
+        <span class="s1">&#39;section3&#39;</span><span class="p">:</span> <span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">200</span><span class="p">],</span> <span class="p">[</span><span class="mi">1500</span><span class="p">,</span> <span class="mi">500</span><span class="p">],</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">150</span><span class="p">])</span>
+    <span class="p">}</span>  <span class="c1"># p1,p2,resolution</span>
+<span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Active grids: [&#39;regular&#39; &#39;sections&#39;]
 </pre></div>
 </div>
@@ -138,1739 +179,113 @@ every section:</p>
       <td>[0, 0]</td>
       <td>[2000, 2000]</td>
       <td>[100, 80]</td>
-      <td>2828.43</td>
+      <td>2828.427125</td>
     </tr>
     <tr>
       <th>section2</th>
       <td>[800, 0]</td>
       <td>[800, 2000]</td>
       <td>[150, 100]</td>
-      <td>2000.00</td>
+      <td>2000.000000</td>
     </tr>
     <tr>
       <th>section3</th>
       <td>[0, 200]</td>
       <td>[1500, 500]</td>
       <td>[200, 150]</td>
-      <td>1529.71</td>
+      <td>1529.705854</td>
     </tr>
   </tbody>
 </table>
 </div>
 <br />
-<br /></div>
-<div class="section" id="add-topography">
-<h3>Add topography<a class="headerlink" href="#add-topography" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Model/gempy.core.model.ImplicitCoKriging.html#gempy.core.model.ImplicitCoKriging.set_topography" title="gempy.core.model.ImplicitCoKriging.set_topography" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-method"><span class="n">geo_model</span><span class="o">.</span><span class="n">set_topography</span></a><span class="p">(</span><span class="n">fd</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span> <span class="n">d_z</span><span class="o">=</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><span class="mi">600</span><span class="p">,</span> <span class="mi">2000</span><span class="p">]),</span> <span class="n">resolution</span><span class="o">=</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">]))</span>
+<br /></section>
+<section id="add-topography">
+<h3>Add topography<a class="headerlink" href="#add-topography" title="Link to this heading">¶</a></h3>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">set_topography_from_random</span><span class="p">(</span>
+    <span class="n">grid</span><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span><span class="o">.</span><span class="n">grid</span></a><span class="p">,</span>
+    <span class="n">fractal_dimension</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span>
+    <span class="n">d_z</span><span class="o">=</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><span class="mi">300</span><span class="p">,</span> <span class="mi">750</span><span class="p">]),</span>
+    <span class="n">topography_resolution</span><span class="o">=</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">])</span>
+<span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Active grids: [&#39;regular&#39; &#39;topography&#39; &#39;sections&#39;]
 
-Grid Object. Values:
-array([[ 200.        ,  200.        ,  200.        ],
-       [ 200.        ,  200.        ,  600.        ],
-       [ 200.        ,  200.        , 1000.        ],
-       ...,
-       [1500.        ,  500.        , 1973.15436242],
-       [1500.        ,  500.        , 1986.57718121],
-       [1500.        ,  500.        , 2000.        ]])
+&lt;gempy.core.data.grid_modules.topography.Topography object at 0x7f85611dc640&gt;
 </pre></div>
 </div>
 <p>Active grids:</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="o">.</span><span class="n">get_active_grids</span><span class="p">()</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">active_grids_bool</span></a>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>array([&#39;regular&#39;, &#39;topography&#39;, &#39;sections&#39;], dtype=&#39;&lt;U10&#39;)
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>array([ True, False,  True,  True, False, False])
 </pre></div>
 </div>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">plot_section_traces</span><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">)</span>
-<a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_section_traces</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<img alt="Cell Number: -1 Direction: z" class="sphx-glr-single-img" src="../../_images/sphx_glr_ch1_3b_cross_sections_001.png" />
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">set_interpolator</span><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">)</span>
+<img src="../../_images/sphx_glr_ch1_3b_cross_sections_001.png" srcset="../../_images/sphx_glr_ch1_3b_cross_sections_001.png" alt="Cell Number: -1 Direction: z" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;function plot_section_traces at 0x7f856d8f56c0&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting kriging parameters to their default values.
-Compiling theano function...
-Level of Optimization:  fast_compile
-Device:  cpu
-Precision:  float64
-Number of faults:  1
-Compilation Done!
-Kriging values:
-                     values
-range               3464.1
-$C_o$            285714.29
-drift equations     [3, 3]
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="o">.</span><span class="n">interpolation_options</span><span class="o">.</span><span class="n">mesh_extraction</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">sol</span> <span class="o">=</span> <a href="../../GemPy API/gempy.compute_model.html#gempy.compute_model" title="gempy.compute_model" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span></a><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/leguark/gempy/gempy/core/data/geo_model.py:118: UserWarning: Both octree levels and resolution are set. The default grid for the `raw_array_solution`and plots will be the dense regular grid. To use octrees instead, set resolution to None in the regular grid.
+  warnings.warn(&quot;Both octree levels and resolution are set. The default grid for the `raw_array_solution`&quot;
+Setting Backend To: AvailableBackends.numpy
+/home/leguark/gempy/gempy/core/data/geo_model.py:118: UserWarning: Both octree levels and resolution are set. The default grid for the `raw_array_solution`and plots will be the dense regular grid. To use octrees instead, set resolution to None in the regular grid.
+  warnings.warn(&quot;Both octree levels and resolution are set. The default grid for the `raw_array_solution`&quot;
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">section_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;topography&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_ch1_3b_cross_sections_002.png" srcset="../../_images/sphx_glr_ch1_3b_cross_sections_002.png" alt="Geological map" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/leguark/gempy_viewer/gempy_viewer/API/_plot_2d_sections_api.py:104: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
+  warnings.warn(
 
-&lt;gempy.core.interpolator.InterpolatorModel object at 0x7fcc46b9b7c0&gt;
+&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f856165a290&gt;
 </pre></div>
 </div>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Solution/gempy.core.solution.Solution.html#gempy.core.solution.Solution" title="gempy.core.solution.Solution" class="sphx-glr-backref-module-gempy-core-solution sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sol</span></a> <span class="o">=</span> <a href="../../GemPy API/gempy.compute_model.html#gempy.compute_model" title="gempy.compute_model" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span></a><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">compute_mesh</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">section_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;section1&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/WorkSSD/PythonProjects/gempy/gempy/core/solution.py:173: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify &#39;dtype=object&#39; when creating the ndarray.
-  self.geological_map = np.array(
-/WorkSSD/PythonProjects/gempy/gempy/core/solution.py:178: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify &#39;dtype=object&#39; when creating the ndarray.
-  self.sections = np.array(
+<img src="../../_images/sphx_glr_ch1_3b_cross_sections_003.png" srcset="../../_images/sphx_glr_ch1_3b_cross_sections_003.png" alt="section1" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/leguark/gempy_viewer/gempy_viewer/API/_plot_2d_sections_api.py:104: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
+  warnings.warn(
+
+&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f85614308e0&gt;
 </pre></div>
 </div>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Plot/gempy.plot_2d.html#gempy.plot_2d" title="gempy.plot_2d" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">plot_2d</span></a><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">section_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;topography&#39;</span><span class="p">])</span>
-</pre></div>
-</div>
-<img alt="Geological map" class="sphx-glr-single-img" src="../../_images/sphx_glr_ch1_3b_cross_sections_002.png" />
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy.plot.visualization_2d.Plot2D object at 0x7fcc46f04580&gt;
-</pre></div>
-</div>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Plot/gempy.plot_2d.html#gempy.plot_2d" title="gempy.plot_2d" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">plot_2d</span></a><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">section_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;section1&#39;</span><span class="p">])</span>
-<a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
-</pre></div>
-</div>
-<img alt="section1" class="sphx-glr-single-img" src="../../_images/sphx_glr_ch1_3b_cross_sections_003.png" />
-<p>sphinx_gallery_thumbnail_number = 4</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Plot/gempy.plot_2d.html#gempy.plot_2d" title="gempy.plot_2d" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">plot_2d</span></a><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">section_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;section1&#39;</span><span class="p">,</span> <span class="s1">&#39;section2&#39;</span><span class="p">,</span>
-                                     <span class="s1">&#39;section3&#39;</span><span class="p">,</span> <span class="s1">&#39;topography&#39;</span><span class="p">],</span>
-           <span class="n">show_topography</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
-</pre></div>
-</div>
-<img alt="section1, section2, section3, Geological map" class="sphx-glr-single-img" src="../../_images/sphx_glr_ch1_3b_cross_sections_004.png" />
-</div>
-<div class="section" id="get-polygons-of-formations-in-sections">
-<h3>Get polygons of formations in sections<a class="headerlink" href="#get-polygons-of-formations-in-sections" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gempy.core.grid_modules</span> <span class="kn">import</span> <span class="n">section_utils</span>
-</pre></div>
-</div>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">polygondict</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cdict</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">extent</span></a> <span class="o">=</span> <span class="n">section_utils</span><span class="o">.</span><span class="n">get_polygon_dictionary</span><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="s1">&#39;section1&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<img alt="section1" class="sphx-glr-single-img" src="../../_images/sphx_glr_ch1_3b_cross_sections_005.png" />
-<p>this stores the xy points in the sections for every surface.</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">polygondict</span></a>
-</pre></div>
-</div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;Main_Fault&#39;: [Path(array([[ 574.17067095,   12.5       ],
-       [ 579.82756057,   24.46977031],
-       [ 585.98562123,   37.5       ],
-       [ 597.80057151,   62.5       ],
-       [ 608.11183182,   84.31824749],
-       [ 609.61552173,   87.5       ],
-       [ 621.43047197,  112.5       ],
-       [ 633.24542214,  137.5       ],
-       [ 636.39610307,  144.16672499],
-       [ 645.06037231,  162.5       ],
-       [ 656.87532242,  187.5       ],
-       [ 664.68037432,  204.01520291],
-       [ 668.69027248,  212.5       ],
-       [ 680.50522252,  237.5       ],
-       [ 692.32017246,  262.5       ],
-       [ 692.96464556,  263.86368142],
-       [ 704.13512239,  287.5       ],
-       [ 715.95007222,  312.5       ],
-       [ 721.24891681,  323.71216065],
-       [ 727.76502198,  337.5       ],
-       [ 739.57997167,  362.5       ],
-       [ 749.53318806,  383.56064086],
-       [ 751.39492124,  387.5       ],
-       [ 763.20987076,  412.5       ],
-       [ 775.02482014,  437.5       ],
-       [ 777.81745931,  443.40912215],
-       [ 786.83976946,  462.5       ],
-       [ 798.65471867,  487.5       ],
-       [ 806.10173055,  503.25760459],
-       [ 810.46966778,  512.5       ],
-       [ 822.28461683,  537.5       ],
-       [ 834.09956581,  562.5       ],
-       [ 834.3860018 ,  563.10608807],
-       [ 845.91451478,  587.5       ],
-       [ 857.72946375,  612.5       ],
-       [ 862.67027305,  622.95457162],
-       [ 869.54441277,  637.5       ],
-       [ 881.35936189,  662.5       ],
-       [ 890.9545443 ,  682.80305444],
-       [ 893.17431118,  687.5       ],
-       [ 904.98926066,  712.5       ],
-       [ 916.80421044,  737.5       ],
-       [ 919.23881554,  742.65153476],
-       [ 928.61916045,  762.5       ],
-       [ 940.43411081,  787.5       ],
-       [ 947.52308679,  802.50001157],
-       [ 952.24906145,  812.5       ],
-       [ 964.0640123 ,  837.5       ],
-       [ 975.80735804,  862.34848563],
-       [ 975.87896343,  862.5       ],
-       [ 987.69391447,  887.5       ],
-       [ 999.50886559,  912.5       ],
-       [1004.09162928,  922.19695847],
-       [1011.3238165 ,  937.5       ],
-       [1023.13876714,  962.5       ],
-       [1032.37590053,  982.04543398],
-       [1034.95371749,  987.5       ],
-       [1046.76866726, 1012.5       ],
-       [1058.58361672, 1037.5       ],
-       [1060.66017178, 1041.89391445],
-       [1070.39856554, 1062.5       ],
-       [1082.21351398, 1087.5       ],
-       [1088.94444303, 1101.74240063],
-       [1094.028462  , 1112.5       ],
-       [1105.84340964, 1137.5       ],
-       [1117.22871427, 1161.59089132],
-       [1117.65835711, 1162.5       ],
-       [1129.47330433, 1187.5       ],
-       [1141.28825157, 1212.5       ],
-       [1145.51298552, 1221.43938375],
-       [1153.10319884, 1237.5       ],
-       [1164.91814625, 1262.5       ],
-       [1173.79725677, 1281.2878753 ],
-       [1176.73309388, 1287.5       ],
-       [1188.54804172, 1312.5       ],
-       [1200.36298983, 1337.5       ],
-       [1202.08152802, 1341.13636416],
-       [1212.17793821, 1362.5       ],
-       [1223.99288681, 1387.5       ],
-       [1230.36579926, 1400.98484991],
-       [1235.80783565, 1412.5       ],
-       [1247.62278468, 1437.5       ],
-       [1258.65007051, 1460.83333321],
-       [1259.43773385, 1462.5       ],
-       [1271.25268319, 1487.5       ],
-       [1283.06763259, 1512.5       ],
-       [1286.93434176, 1520.6818149 ],
-       [1294.88258208, 1537.5       ],
-       [1306.69753162, 1562.5       ],
-       [1315.21861301, 1580.53029576],
-       [1318.51248119, 1587.5       ],
-       [1330.32743081, 1612.5       ],
-       [1342.14238044, 1637.5       ],
-       [1343.50288425, 1640.37877618],
-       [1353.95733012, 1662.5       ],
-       [1365.77227981, 1687.5       ],
-       [1371.7871555 , 1700.22725628],
-       [1377.58722952, 1712.5       ],
-       [1389.40217926, 1737.5       ],
-       [1400.07142675, 1760.07573611],
-       [1401.217129  , 1762.5       ],
-       [1413.03207879, 1787.5       ],
-       [1424.84702857, 1812.5       ],
-       [1428.355698  , 1819.92421572],
-       [1436.66197839, 1837.5       ],
-       [1448.47692822, 1862.5       ],
-       [1456.63996924, 1879.77269511],
-       [1460.29187806, 1887.5       ],
-       [1472.10682793, 1912.5       ],
-       [1483.92177779, 1937.5       ],
-       [1484.92424049, 1939.62117427],
-       [1495.7367277 , 1962.5       ],
-       [1507.55167761, 1987.5       ]]), None)], &#39;basement&#39;: [Path(array([[  42.42640687,   12.5       ],
-       [  70.71067812,   12.5       ],
-       [  98.99494937,   12.5       ],
-       [ 127.27922061,   12.5       ],
-       [ 155.56349186,   12.5       ],
-       [ 183.84776311,   12.5       ],
-       [ 212.13203436,   12.5       ],
-       [ 240.4163056 ,   12.5       ],
-       [ 268.70057685,   12.5       ],
-       [ 296.9848481 ,   12.5       ],
-       [ 325.26911935,   12.5       ],
-       [ 353.55339059,   12.5       ],
-       [ 381.83766184,   12.5       ],
-       [ 410.12193309,   12.5       ],
-       [ 438.40620434,   12.5       ],
-       [ 466.69047558,   12.5       ],
-       [ 494.97474683,   12.5       ],
-       [ 523.25901808,   12.5       ],
-       [ 551.54328933,   12.5       ],
-       [ 579.82756057,   12.5       ],
-       [ 608.11183182,   12.5       ],
-       [ 636.39610307,   12.5       ],
-       [ 664.68037432,   12.5       ],
-       [ 692.96464556,   12.5       ],
-       [ 721.24891681,   12.5       ],
-       [ 749.53318806,   12.5       ],
-       [ 777.81745931,   12.5       ],
-       [ 806.10173055,   12.5       ],
-       [ 834.3860018 ,   12.5       ],
-       [ 862.67027305,   12.5       ],
-       [ 890.9545443 ,   12.5       ],
-       [ 919.23881554,   12.5       ],
-       [ 947.52308679,   12.5       ],
-       [ 975.80735804,   12.5       ],
-       [1004.09162928,   12.5       ],
-       [1032.37590053,   12.5       ],
-       [1060.66017178,   12.5       ],
-       [1088.94444303,   12.5       ],
-       [1117.22871427,   12.5       ],
-       [1145.51298552,   12.5       ],
-       [1173.79725677,   12.5       ],
-       [1202.08152802,   12.5       ],
-       [1230.36579926,   12.5       ],
-       [1258.65007051,   12.5       ],
-       [1286.93434176,   12.5       ],
-       [1315.21861301,   12.5       ],
-       [1343.50288425,   12.5       ],
-       [1371.7871555 ,   12.5       ],
-       [1400.07142675,   12.5       ],
-       [1428.355698  ,   12.5       ],
-       [1456.63996924,   12.5       ],
-       [1484.92424049,   12.5       ],
-       [1513.20851174,   12.5       ],
-       [1541.49278299,   12.5       ],
-       [1569.77705423,   12.5       ],
-       [1598.06132548,   12.5       ],
-       [1626.34559673,   12.5       ],
-       [1654.62986798,   12.5       ],
-       [1682.91413922,   12.5       ],
-       [1711.19841047,   12.5       ],
-       [1739.48268172,   12.5       ],
-       [1767.76695297,   12.5       ],
-       [1796.05122421,   12.5       ],
-       [1824.33549546,   12.5       ],
-       [1852.61976671,   12.5       ],
-       [1880.90403796,   12.5       ],
-       [1909.1883092 ,   12.5       ],
-       [1937.47258045,   12.5       ],
-       [1965.7568517 ,   12.5       ],
-       [1994.04112295,   12.5       ],
-       [2022.32539419,   12.5       ],
-       [2050.60966544,   12.5       ],
-       [2078.89393669,   12.5       ],
-       [2107.17820794,   12.5       ],
-       [2135.46247918,   12.5       ],
-       [2163.74675043,   12.5       ],
-       [2192.03102168,   12.5       ],
-       [2220.31529293,   12.5       ],
-       [2248.59956417,   12.5       ],
-       [2276.88383542,   12.5       ],
-       [2305.16810667,   12.5       ],
-       [2333.45237792,   12.5       ],
-       [2361.73664916,   12.5       ],
-       [2390.02092041,   12.5       ],
-       [2418.30519166,   12.5       ],
-       [2446.58946291,   12.5       ],
-       [2474.87373415,   12.5       ],
-       [2503.1580054 ,   12.5       ],
-       [2531.44227665,   12.5       ],
-       [2559.7265479 ,   12.5       ],
-       [2588.01081914,   12.5       ],
-       [2616.29509039,   12.5       ],
-       [2644.57936164,   12.5       ],
-       [2672.86363289,   12.5       ],
-       [2701.14790413,   12.5       ],
-       [2729.43217538,   12.5       ],
-       [2757.71644663,   12.5       ],
-       [2786.00071787,   12.5       ],
-       [2814.28498912,   12.5       ],
-       [2814.28498912,   37.5       ],
-       [2814.28498912,   62.5       ],
-       [2814.28498912,   87.5       ],
-       [2814.28498912,  112.5       ],
-       [2814.28498912,  137.5       ],
-       [2814.28498912,  162.5       ],
-       [2814.28498912,  187.5       ],
-       [2814.28498912,  212.5       ],
-       [2814.28498912,  237.5       ],
-       [2814.28498912,  262.5       ],
-       [2814.28498912,  287.5       ],
-       [2814.28498912,  312.5       ],
-       [2814.28498912,  337.5       ],
-       [2814.28498912,  362.5       ],
-       [2814.28498912,  387.5       ],
-       [2814.28498912,  412.5       ],
-       [2814.28498912,  437.5       ],
-       [2814.28498912,  462.5       ],
-       [2814.28498912,  487.5       ],
-       [2814.28498912,  512.5       ],
-       [2814.28498912,  530.70249112],
-       [2786.00071787,  528.67888304],
-       [2757.71644663,  526.45550966],
-       [2729.43217538,  524.04259333],
-       [2701.14790413,  521.45126404],
-       [2672.86363289,  518.6935596 ],
-       [2644.57936164,  515.7824269 ],
-       [2616.29509039,  512.73172601],
-       [2614.22424405,  512.5       ],
-       [2588.01081914,  509.51790168],
-       [2559.7265479 ,  506.18896243],
-       [2531.44227665,  502.76479404],
-       [2503.1580054 ,  499.26344384],
-       [2474.87373415,  495.70417852],
-       [2446.58946291,  492.10762941],
-       [2418.30519166,  488.49599581],
-       [2410.45228012,  487.5       ],
-       [2390.02092041,  484.85799256],
-       [2361.73664916,  481.24205509],
-       [2333.45237792,  477.691421  ],
-       [2305.16810667,  474.23921798],
-       [2276.88383542,  470.92254946],
-       [2248.59956417,  467.78319635],
-       [2220.31529293,  464.86830284],
-       [2194.90006732,  462.5       ],
-       [2192.03102168,  462.2278048 ],
-       [2163.74675043,  459.900879  ],
-       [2135.46247918,  457.98121402],
-       [2107.17820794,  456.53974454],
-       [2078.89393669,  455.64533105],
-       [2050.60966544,  455.35806243],
-       [2022.32539419,  455.73745043],
-       [1994.04112295,  456.8423739 ],
-       [1965.7568517 ,  458.7294106 ],
-       [1937.47258045,  461.45124923],
-       [1929.19873478,  462.5       ],
-       [1909.1883092 ,  465.01923988],
-       [1880.90403796,  469.47910473],
-       [1852.61976671,  474.87640015],
-       [1824.33549546,  481.23345556],
-       [1800.11143975,  487.5       ],
-       [1796.05122421,  488.54430067],
-       [1767.76695297,  496.70182285],
-       [1739.48268172,  505.79638949],
-       [1720.43237803,  512.5       ],
-       [1711.19841047,  515.73653318],
-       [1682.91413922,  526.39215208],
-       [1655.40858081,  537.5       ],
-       [1654.62986798,  537.81354117],
-       [1626.34559673,  549.67523704],
-       [1598.06132548,  562.08090452],
-       [1597.11675768,  562.5       ],
-       [1569.77705423,  574.61317505],
-       [1541.49278299,  587.3317178 ],
-       [1541.11006864,  587.5       ],
-       [1513.20851174,  599.74383567],
-       [1484.92424049,  611.86547906],
-       [1483.34494081,  612.5       ],
-       [1456.63996924,  623.18478005],
-       [1428.355698  ,  633.66786361],
-       [1416.75115021,  637.5       ],
-       [1400.07142675,  642.95712662],
-       [1371.7871555 ,  650.92482784],
-       [1343.50288425,  657.53448541],
-       [1316.75538678,  662.5       ],
-       [1315.21861301,  662.77854879],
-       [1286.93434176,  666.68517928],
-       [1258.65007051,  669.49795691],
-       [1230.36579926,  671.37271142],
-       [1202.08152802,  672.44627224],
-       [1173.79725677,  672.82772203],
-       [1145.51298552,  672.60322108],
-       [1117.22871427,  671.84449016],
-       [1088.94444303,  670.61596012],
-       [1060.66017178,  668.97972048],
-       [1032.37590053,  666.99894401],
-       [1004.09162928,  664.74058103],
-       [ 978.37969761,  662.5       ],
-       [ 975.80735804,  662.27310871],
-       [ 947.52308679,  659.63503358],
-       [ 919.23881554,  656.97022823],
-       [ 890.9545443 ,  654.38523751],
-       [ 888.67222224,  637.5       ],
-       [ 862.67027305,  616.72897701],
-       [ 857.36700392,  612.5       ],
-       [ 854.09395844,  587.5       ],
-       [ 834.3860018 ,  571.64797198],
-       [ 822.91792488,  562.5       ],
-       [ 819.64576648,  537.5       ],
-       [ 816.5326664 ,  512.5       ],
-       [ 806.10173055,  504.14036014],
-       [ 785.27305623,  487.5       ],
-       [ 782.23563597,  462.5       ],
-       [ 777.81745931,  458.96436696],
-       [ 750.88947598,  437.5       ],
-       [ 749.53318806,  426.16874769],
-       [ 721.24891681,  427.70000377],
-       [ 692.96464556,  430.11728504],
-       [ 664.68037432,  433.49241081],
-       [ 638.81789195,  437.5       ],
-       [ 636.39610307,  437.86912912],
-       [ 608.11183182,  443.2321005 ],
-       [ 579.82756057,  449.62437252],
-       [ 551.54328933,  457.02628326],
-       [ 533.07361982,  462.5       ],
-       [ 523.25901808,  465.37822056],
-       [ 494.97474683,  474.6053904 ],
-       [ 466.69047558,  484.68188837],
-       [ 459.35104628,  487.5       ],
-       [ 438.40620434,  495.47297294],
-       [ 410.12193309,  506.92658235],
-       [ 397.04272944,  512.5       ],
-       [ 381.83766184,  518.92386937],
-       [ 353.55339059,  531.37433101],
-       [ 340.08027525,  537.5       ],
-       [ 325.26911935,  544.17256257],
-       [ 296.9848481 ,  557.22837609],
-       [ 285.7630113 ,  562.5       ],
-       [ 268.70057685,  570.43500544],
-       [ 240.4163056 ,  583.73037757],
-       [ 232.44308048,  587.5       ],
-       [ 212.13203436,  596.99720483],
-       [ 183.84776311,  610.21694327],
-       [ 178.94506184,  612.5       ],
-       [ 155.56349186,  623.25898852],
-       [ 127.27922061,  636.14975008],
-       [ 124.28243115,  637.5       ],
-       [  98.99494937,  648.75079128],
-       [  70.71067812,  661.12115844],
-       [  67.50025396,  662.5       ],
-       [  42.42640687,  673.12915045],
-       [  14.14213562,  684.842795  ],
-       [  14.14213562,  662.5       ],
-       [  14.14213562,  637.5       ],
-       [  14.14213562,  612.5       ],
-       [  14.14213562,  587.5       ],
-       [  14.14213562,  562.5       ],
-       [  14.14213562,  537.5       ],
-       [  14.14213562,  512.5       ],
-       [  14.14213562,  487.5       ],
-       [  14.14213562,  462.5       ],
-       [  14.14213562,  437.5       ],
-       [  14.14213562,  412.5       ],
-       [  14.14213562,  387.5       ],
-       [  14.14213562,  362.5       ],
-       [  14.14213562,  337.5       ],
-       [  14.14213562,  312.5       ],
-       [  14.14213562,  287.5       ],
-       [  14.14213562,  262.5       ],
-       [  14.14213562,  237.5       ],
-       [  14.14213562,  212.5       ],
-       [  14.14213562,  187.5       ],
-       [  14.14213562,  162.5       ],
-       [  14.14213562,  137.5       ],
-       [  14.14213562,  112.5       ],
-       [  14.14213562,   87.5       ],
-       [  14.14213562,   62.5       ],
-       [  14.14213562,   37.5       ],
-       [  14.14213562,   12.5       ],
-       [  42.42640687,   12.5       ]]), array([ 1,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2, 79], dtype=uint8))], &#39;Sandstone_1&#39;: [Path(array([[ 664.68037432,  433.49241081],
-       [ 692.96464556,  430.11728504],
-       [ 721.24891681,  427.70000377],
-       [ 749.53318806,  426.16874769],
-       [ 750.88947598,  437.5       ],
-       [ 777.81745931,  458.96436696],
-       [ 782.23563597,  462.5       ],
-       [ 785.27305623,  487.5       ],
-       [ 806.10173055,  504.14036014],
-       [ 816.5326664 ,  512.5       ],
-       [ 819.64576648,  537.5       ],
-       [ 822.91792488,  562.5       ],
-       [ 834.3860018 ,  571.64797198],
-       [ 854.09395844,  587.5       ],
-       [ 857.36700392,  612.5       ],
-       [ 862.67027305,  616.72897701],
-       [ 888.67222224,  637.5       ],
-       [ 890.9545443 ,  654.38523751],
-       [ 919.23881554,  656.97022823],
-       [ 947.52308679,  659.63503358],
-       [ 975.80735804,  662.27310871],
-       [ 978.37969761,  662.5       ],
-       [1004.09162928,  664.74058103],
-       [1032.37590053,  666.99894401],
-       [1060.66017178,  668.97972048],
-       [1088.94444303,  670.61596012],
-       [1117.22871427,  671.84449016],
-       [1145.51298552,  672.60322108],
-       [1173.79725677,  672.82772203],
-       [1202.08152802,  672.44627224],
-       [1230.36579926,  671.37271142],
-       [1258.65007051,  669.49795691],
-       [1286.93434176,  666.68517928],
-       [1315.21861301,  662.77854879],
-       [1316.75538678,  662.5       ],
-       [1343.50288425,  657.53448541],
-       [1371.7871555 ,  650.92482784],
-       [1400.07142675,  642.95712662],
-       [1416.75115021,  637.5       ],
-       [1428.355698  ,  633.66786361],
-       [1456.63996924,  623.18478005],
-       [1483.34494081,  612.5       ],
-       [1484.92424049,  611.86547906],
-       [1513.20851174,  599.74383567],
-       [1541.11006864,  587.5       ],
-       [1541.49278299,  587.3317178 ],
-       [1569.77705423,  574.61317505],
-       [1597.11675768,  562.5       ],
-       [1598.06132548,  562.08090452],
-       [1626.34559673,  549.67523704],
-       [1654.62986798,  537.81354117],
-       [1655.40858081,  537.5       ],
-       [1682.91413922,  526.39215208],
-       [1711.19841047,  515.73653318],
-       [1720.43237803,  512.5       ],
-       [1739.48268172,  505.79638949],
-       [1767.76695297,  496.70182285],
-       [1796.05122421,  488.54430067],
-       [1800.11143975,  487.5       ],
-       [1824.33549546,  481.23345556],
-       [1852.61976671,  474.87640015],
-       [1880.90403796,  469.47910473],
-       [1909.1883092 ,  465.01923988],
-       [1929.19873478,  462.5       ],
-       [1937.47258045,  461.45124923],
-       [1965.7568517 ,  458.7294106 ],
-       [1994.04112295,  456.8423739 ],
-       [2022.32539419,  455.73745043],
-       [2050.60966544,  455.35806243],
-       [2078.89393669,  455.64533105],
-       [2107.17820794,  456.53974454],
-       [2135.46247918,  457.98121402],
-       [2163.74675043,  459.900879  ],
-       [2192.03102168,  462.2278048 ],
-       [2194.90006732,  462.5       ],
-       [2220.31529293,  464.86830284],
-       [2248.59956417,  467.78319635],
-       [2276.88383542,  470.92254946],
-       [2305.16810667,  474.23921798],
-       [2333.45237792,  477.691421  ],
-       [2361.73664916,  481.24205509],
-       [2390.02092041,  484.85799256],
-       [2410.45228012,  487.5       ],
-       [2418.30519166,  488.49599581],
-       [2446.58946291,  492.10762941],
-       [2474.87373415,  495.70417852],
-       [2503.1580054 ,  499.26344384],
-       [2531.44227665,  502.76479404],
-       [2559.7265479 ,  506.18896243],
-       [2588.01081914,  509.51790168],
-       [2614.22424405,  512.5       ],
-       [2616.29509039,  512.73172601],
-       [2644.57936164,  515.7824269 ],
-       [2672.86363289,  518.6935596 ],
-       [2701.14790413,  521.45126404],
-       [2729.43217538,  524.04259333],
-       [2757.71644663,  526.45550966],
-       [2786.00071787,  528.67888304],
-       [2814.28498912,  530.70249112],
-       [2814.28498912,  537.5       ],
-       [2814.28498912,  562.5       ],
-       [2814.28498912,  587.5       ],
-       [2814.28498912,  612.5       ],
-       [2814.28498912,  637.5       ],
-       [2814.28498912,  662.5       ],
-       [2814.28498912,  687.5       ],
-       [2814.28498912,  712.5       ],
-       [2814.28498912,  737.5       ],
-       [2814.28498912,  762.5       ],
-       [2814.28498912,  787.5       ],
-       [2814.28498912,  795.41042437],
-       [2786.00071787,  793.70708547],
-       [2757.71644663,  791.86200981],
-       [2729.43217538,  789.88947272],
-       [2701.14790413,  787.80496201],
-       [2697.19531205,  787.5       ],
-       [2672.86363289,  785.60405759],
-       [2644.57936164,  783.31983458],
-       [2616.29509039,  780.9746483 ],
-       [2588.01081914,  778.58868376],
-       [2559.7265479 ,  776.18321412],
-       [2531.44227665,  773.78050673],
-       [2503.1580054 ,  771.40369266],
-       [2474.87373415,  769.07659292],
-       [2446.58946291,  766.82349415],
-       [2418.30519166,  764.66886724],
-       [2390.02092041,  762.63702357],
-       [2387.96469779,  762.5       ],
-       [2361.73664916,  760.71919822],
-       [2333.45237792,  758.96811717],
-       [2305.16810667,  757.40803509],
-       [2276.88383542,  756.05876658],
-       [2248.59956417,  754.93753001],
-       [2220.31529293,  754.0583726 ],
-       [2192.03102168,  753.43164846],
-       [2163.74675043,  753.0635768 ],
-       [2135.46247918,  752.95589133],
-       [2107.17820794,  753.1071978 ],
-       [2078.89393669,  753.55296155],
-       [2050.60966544,  754.39834462],
-       [2022.32539419,  755.75527928],
-       [1994.04112295,  757.72842197],
-       [1965.7568517 ,  760.41326063],
-       [1948.76456676,  762.5       ],
-       [1937.47258045,  763.86287472],
-       [1909.1883092 ,  768.11638565],
-       [1880.90403796,  773.27881034],
-       [1852.61976671,  779.39127599],
-       [1824.33549546,  786.47813146],
-       [1820.73130996,  787.5       ],
-       [1796.05122421,  794.39495411],
-       [1767.76695297,  803.23020453],
-       [1740.83505112,  812.5       ],
-       [1739.48268172,  812.9583566 ],
-       [1711.19841047,  823.30406739],
-       [1682.91413922,  834.37434221],
-       [1675.33493056,  837.5       ],
-       [1654.62986798,  845.86320389],
-       [1626.34559673,  857.72842735],
-       [1615.27083152,  862.5       ],
-       [1598.06132548,  869.71005796],
-       [1569.77705423,  881.66942354],
-       [1555.99873571,  887.5       ],
-       [1541.49278299,  893.39742477],
-       [1513.20851174,  904.67599426],
-       [1492.95647814,  912.5       ],
-       [1484.92424049,  915.4194905 ],
-       [1456.63996924,  925.11332574],
-       [1428.355698  ,  933.84199975],
-       [1414.30091121,  937.5       ],
-       [1400.07142675,  940.951548  ],
-       [1371.7871555 ,  946.72276751],
-       [1343.50288425,  951.86983719],
-       [1315.21861301,  956.28406315],
-       [1286.93434176,  959.86212851],
-       [1259.12787001,  962.5       ],
-       [1258.65007051,  962.54540021],
-       [1230.36579926,  964.28916507],
-       [1202.08152802,  965.1978777 ],
-       [1173.79725677,  965.35901235],
-       [1145.51298552,  964.87947025],
-       [1117.22871427,  963.87389038],
-       [1089.80410925,  962.5       ],
-       [1088.94444303,  962.45547325],
-       [1060.66017178,  960.69864555],
-       [1032.37590053,  958.74271294],
-       [1028.70851276,  937.5       ],
-       [1004.09162928,  918.3238487 ],
-       [ 996.62186915,  912.5       ],
-       [ 992.53279567,  887.5       ],
-       [ 984.28633452,  862.5       ],
-       [ 975.80735804,  856.01492104],
-       [ 956.79173131,  837.5       ],
-       [ 952.9741284 ,  812.5       ],
-       [ 947.52308679,  808.18537277],
-       [ 921.36845919,  787.5       ],
-       [ 919.23881554,  773.01856968],
-       [ 890.9545443 ,  770.39761812],
-       [ 862.67027305,  768.09388284],
-       [ 834.3860018 ,  766.21038343],
-       [ 806.10173055,  764.85267025],
-       [ 777.81745931,  764.12519828],
-       [ 749.53318806,  764.12681218],
-       [ 721.24891681,  764.94578523],
-       [ 692.96464556,  766.65498285],
-       [ 664.68037432,  769.30774464],
-       [ 636.39610307,  772.9349917 ],
-       [ 608.11183182,  777.54388949],
-       [ 579.82756057,  783.11816833],
-       [ 560.75373033,  787.5       ],
-       [ 551.54328933,  789.59717612],
-       [ 523.25901808,  796.8912842 ],
-       [ 494.97474683,  804.97706301],
-       [ 470.78435583,  812.5       ],
-       [ 466.69047558,  813.75929948],
-       [ 438.40620434,  823.07503981],
-       [ 410.12193309,  832.91698374],
-       [ 397.52128099,  837.5       ],
-       [ 381.83766184,  843.13238286],
-       [ 353.55339059,  853.64351726],
-       [ 330.31968387,  862.5       ],
-       [ 325.26911935,  864.39944007],
-       [ 296.9848481 ,  875.24470212],
-       [ 268.70057685,  886.21235555],
-       [ 265.40575757,  887.5       ],
-       [ 240.4163056 ,  897.13096373],
-       [ 212.13203436,  908.04222778],
-       [ 200.55083448,  912.5       ],
-       [ 183.84776311,  918.84086342],
-       [ 155.56349186,  929.50814734],
-       [ 134.14833574,  937.5       ],
-       [ 127.27922061,  940.02908246],
-       [  98.99494937,  950.31433911],
-       [  70.71067812,  960.42373705],
-       [  64.79457868,  962.5       ],
-       [  42.42640687,  970.25019541],
-       [  14.14213562,  979.83681311],
-       [  14.14213562,  962.5       ],
-       [  14.14213562,  937.5       ],
-       [  14.14213562,  912.5       ],
-       [  14.14213562,  887.5       ],
-       [  14.14213562,  862.5       ],
-       [  14.14213562,  837.5       ],
-       [  14.14213562,  812.5       ],
-       [  14.14213562,  787.5       ],
-       [  14.14213562,  762.5       ],
-       [  14.14213562,  737.5       ],
-       [  14.14213562,  712.5       ],
-       [  14.14213562,  687.5       ],
-       [  14.14213562,  684.842795  ],
-       [  42.42640687,  673.12915045],
-       [  67.50025396,  662.5       ],
-       [  70.71067812,  661.12115844],
-       [  98.99494937,  648.75079128],
-       [ 124.28243115,  637.5       ],
-       [ 127.27922061,  636.14975008],
-       [ 155.56349186,  623.25898852],
-       [ 178.94506184,  612.5       ],
-       [ 183.84776311,  610.21694327],
-       [ 212.13203436,  596.99720483],
-       [ 232.44308048,  587.5       ],
-       [ 240.4163056 ,  583.73037757],
-       [ 268.70057685,  570.43500544],
-       [ 285.7630113 ,  562.5       ],
-       [ 296.9848481 ,  557.22837609],
-       [ 325.26911935,  544.17256257],
-       [ 340.08027525,  537.5       ],
-       [ 353.55339059,  531.37433101],
-       [ 381.83766184,  518.92386937],
-       [ 397.04272944,  512.5       ],
-       [ 410.12193309,  506.92658235],
-       [ 438.40620434,  495.47297294],
-       [ 459.35104628,  487.5       ],
-       [ 466.69047558,  484.68188837],
-       [ 494.97474683,  474.6053904 ],
-       [ 523.25901808,  465.37822056],
-       [ 533.07361982,  462.5       ],
-       [ 551.54328933,  457.02628326],
-       [ 579.82756057,  449.62437252],
-       [ 608.11183182,  443.2321005 ],
-       [ 636.39610307,  437.86912912],
-       [ 638.81789195,  437.5       ],
-       [ 664.68037432,  433.49241081]]), array([ 1,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2, 79], dtype=uint8))], &#39;Shale&#39;: [Path(array([[1965.7568517 ,  760.41326063],
-       [1994.04112295,  757.72842197],
-       [2022.32539419,  755.75527928],
-       [2050.60966544,  754.39834462],
-       [2078.89393669,  753.55296155],
-       [2107.17820794,  753.1071978 ],
-       [2135.46247918,  752.95589133],
-       [2163.74675043,  753.0635768 ],
-       [2192.03102168,  753.43164846],
-       [2220.31529293,  754.0583726 ],
-       [2248.59956417,  754.93753001],
-       [2276.88383542,  756.05876658],
-       [2305.16810667,  757.40803509],
-       [2333.45237792,  758.96811717],
-       [2361.73664916,  760.71919822],
-       [2387.96469779,  762.5       ],
-       [2390.02092041,  762.63702357],
-       [2418.30519166,  764.66886724],
-       [2446.58946291,  766.82349415],
-       [2474.87373415,  769.07659292],
-       [2503.1580054 ,  771.40369266],
-       [2531.44227665,  773.78050673],
-       [2559.7265479 ,  776.18321412],
-       [2588.01081914,  778.58868376],
-       [2616.29509039,  780.9746483 ],
-       [2644.57936164,  783.31983458],
-       [2672.86363289,  785.60405759],
-       [2697.19531205,  787.5       ],
-       [2701.14790413,  787.80496201],
-       [2729.43217538,  789.88947272],
-       [2757.71644663,  791.86200981],
-       [2786.00071787,  793.70708547],
-       [2814.28498912,  795.41042437],
-       [2814.28498912,  812.5       ],
-       [2814.28498912,  837.5       ],
-       [2814.28498912,  862.5       ],
-       [2814.28498912,  887.5       ],
-       [2814.28498912,  912.5       ],
-       [2814.28498912,  937.5       ],
-       [2814.28498912,  962.5       ],
-       [2814.28498912,  987.5       ],
-       [2814.28498912,  996.30122584],
-       [2786.00071787,  994.29092173],
-       [2757.71644663,  992.14237359],
-       [2729.43217538,  989.86911725],
-       [2701.31551425,  987.5       ],
-       [2701.14790413,  987.48584027],
-       [2672.86363289,  984.99532429],
-       [2644.57936164,  982.42772007],
-       [2616.29509039,  979.80181145],
-       [2588.01081914,  977.13774544],
-       [2559.7265479 ,  974.45704251],
-       [2531.44227665,  971.78259168],
-       [2503.1580054 ,  969.138626  ],
-       [2474.87373415,  966.55067308],
-       [2446.58946291,  964.04547475],
-       [2428.36002465,  962.5       ],
-       [2418.30519166,  961.64481716],
-       [2390.02092041,  959.37302984],
-       [2361.73664916,  957.27055384],
-       [2333.45237792,  955.36747679],
-       [2305.16810667,  953.69402029],
-       [2276.88383542,  952.28017452],
-       [2248.59956417,  951.15530699],
-       [2220.31529293,  950.34777916],
-       [2192.03102168,  949.88461476],
-       [2163.74675043,  949.79125136],
-       [2135.46247918,  950.09135585],
-       [2107.17820794,  950.80735477],
-       [2078.89393669,  951.97744721],
-       [2050.60966544,  953.66902679],
-       [2022.32539419,  955.95113422],
-       [1994.04112295,  958.88743623],
-       [1966.0207787 ,  962.5       ],
-       [1965.7568517 ,  962.53395881],
-       [1937.47258045,  966.89546123],
-       [1909.1883092 ,  972.04171702],
-       [1880.90403796,  977.99330706],
-       [1852.61976671,  984.75470752],
-       [1842.30074989,  987.5       ],
-       [1824.33549546,  992.27099633],
-       [1796.05122421, 1000.51580047],
-       [1767.76695297, 1009.45459353],
-       [1758.71955056, 1012.5       ],
-       [1739.48268172, 1018.95494456],
-       [1711.19841047, 1028.93161751],
-       [1687.75699519, 1037.5       ],
-       [1682.91413922, 1039.2634641 ],
-       [1654.62986798, 1049.74820159],
-       [1626.34559673, 1060.27458911],
-       [1620.2661491 , 1062.5       ],
-       [1598.06132548, 1070.59536301],
-       [1569.77705423, 1080.56864419],
-       [1549.0108089 , 1087.5       ],
-       [1541.49278299, 1089.99128639],
-       [1513.20851174, 1098.64691021],
-       [1484.92424049, 1106.49972437],
-       [1460.86459807, 1112.5       ],
-       [1456.63996924, 1113.53523796],
-       [1428.355698  , 1119.81439583],
-       [1400.07142675, 1125.6036979 ],
-       [1371.7871555 , 1130.96384993],
-       [1343.50288425, 1135.8700744 ],
-       [1333.09092729, 1137.5       ],
-       [1315.21861301, 1140.24690343],
-       [1286.93434176, 1144.07194987],
-       [1258.65007051, 1147.32725214],
-       [1230.36579926, 1150.01183287],
-       [1202.08152802, 1152.15297368],
-       [1173.79725677, 1153.79890033],
-       [1145.51298552, 1155.01195094],
-       [1117.22871427, 1140.26760022],
-       [1113.53264801, 1137.5       ],
-       [1108.54994217, 1112.5       ],
-       [1088.94444303, 1097.7497446 ],
-       [1075.36832289, 1087.5       ],
-       [1070.56406939, 1062.5       ],
-       [1060.66017178, 1054.97350803],
-       [1037.73708018, 1037.5       ],
-       [1033.14742583, 1012.5       ],
-       [1032.37590053, 1008.22024614],
-       [1004.09162928, 1006.73170906],
-       [ 975.80735804, 1005.2327561 ],
-       [ 947.52308679, 1003.81538033],
-       [ 919.23881554, 1002.56882756],
-       [ 890.9545443 , 1001.58003088],
-       [ 862.67027305, 1000.9333153 ],
-       [ 834.3860018 , 1000.70940401],
-       [ 806.10173055, 1000.98384353],
-       [ 777.81745931, 1001.82502143],
-       [ 749.53318806, 1003.29199139],
-       [ 721.24891681, 1005.43234822],
-       [ 692.96464556, 1008.28040457],
-       [ 664.68037432, 1011.85589974],
-       [ 660.43259375, 1012.5       ],
-       [ 636.39610307, 1016.11809152],
-       [ 608.11183182, 1021.08566024],
-       [ 579.82756057, 1026.74280945],
-       [ 551.54328933, 1033.05365358],
-       [ 533.35415717, 1037.5       ],
-       [ 523.25901808, 1039.94269958],
-       [ 494.97474683, 1047.32721915],
-       [ 466.69047558, 1055.20331319],
-       [ 441.84637403, 1062.5       ],
-       [ 438.40620434, 1063.49879242],
-       [ 410.12193309, 1072.07690984],
-       [ 381.83766184, 1080.96252098],
-       [ 361.60185777, 1087.5       ],
-       [ 353.55339059, 1090.06923348],
-       [ 325.26911935, 1099.29848853],
-       [ 296.9848481 , 1108.67074258],
-       [ 285.55517715, 1112.5       ],
-       [ 268.70057685, 1118.08086691],
-       [ 240.4163056 , 1127.50477445],
-       [ 212.13203436, 1136.94185515],
-       [ 210.45761265, 1137.5       ],
-       [ 183.84776311, 1146.27222804],
-       [ 155.56349186, 1155.54411101],
-       [ 134.16103667, 1162.5       ],
-       [ 127.27922061, 1164.71354134],
-       [  98.99494937, 1173.71454536],
-       [  70.71067812, 1182.58583369],
-       [  54.7804542 , 1187.5       ],
-       [  42.42640687, 1191.27515439],
-       [  14.14213562, 1199.75730675],
-       [  14.14213562, 1187.5       ],
-       [  14.14213562, 1162.5       ],
-       [  14.14213562, 1137.5       ],
-       [  14.14213562, 1112.5       ],
-       [  14.14213562, 1087.5       ],
-       [  14.14213562, 1062.5       ],
-       [  14.14213562, 1037.5       ],
-       [  14.14213562, 1012.5       ],
-       [  14.14213562,  987.5       ],
-       [  14.14213562,  979.83681311],
-       [  42.42640687,  970.25019541],
-       [  64.79457868,  962.5       ],
-       [  70.71067812,  960.42373705],
-       [  98.99494937,  950.31433911],
-       [ 127.27922061,  940.02908246],
-       [ 134.14833574,  937.5       ],
-       [ 155.56349186,  929.50814734],
-       [ 183.84776311,  918.84086342],
-       [ 200.55083448,  912.5       ],
-       [ 212.13203436,  908.04222778],
-       [ 240.4163056 ,  897.13096373],
-       [ 265.40575757,  887.5       ],
-       [ 268.70057685,  886.21235555],
-       [ 296.9848481 ,  875.24470212],
-       [ 325.26911935,  864.39944007],
-       [ 330.31968387,  862.5       ],
-       [ 353.55339059,  853.64351726],
-       [ 381.83766184,  843.13238286],
-       [ 397.52128099,  837.5       ],
-       [ 410.12193309,  832.91698374],
-       [ 438.40620434,  823.07503981],
-       [ 466.69047558,  813.75929948],
-       [ 470.78435583,  812.5       ],
-       [ 494.97474683,  804.97706301],
-       [ 523.25901808,  796.8912842 ],
-       [ 551.54328933,  789.59717612],
-       [ 560.75373033,  787.5       ],
-       [ 579.82756057,  783.11816833],
-       [ 608.11183182,  777.54388949],
-       [ 636.39610307,  772.9349917 ],
-       [ 664.68037432,  769.30774464],
-       [ 692.96464556,  766.65498285],
-       [ 721.24891681,  764.94578523],
-       [ 749.53318806,  764.12681218],
-       [ 777.81745931,  764.12519828],
-       [ 806.10173055,  764.85267025],
-       [ 834.3860018 ,  766.21038343],
-       [ 862.67027305,  768.09388284],
-       [ 890.9545443 ,  770.39761812],
-       [ 919.23881554,  773.01856968],
-       [ 921.36845919,  787.5       ],
-       [ 947.52308679,  808.18537277],
-       [ 952.9741284 ,  812.5       ],
-       [ 956.79173131,  837.5       ],
-       [ 975.80735804,  856.01492104],
-       [ 984.28633452,  862.5       ],
-       [ 992.53279567,  887.5       ],
-       [ 996.62186915,  912.5       ],
-       [1004.09162928,  918.3238487 ],
-       [1028.70851276,  937.5       ],
-       [1032.37590053,  958.74271294],
-       [1060.66017178,  960.69864555],
-       [1088.94444303,  962.45547325],
-       [1089.80410925,  962.5       ],
-       [1117.22871427,  963.87389038],
-       [1145.51298552,  964.87947025],
-       [1173.79725677,  965.35901235],
-       [1202.08152802,  965.1978777 ],
-       [1230.36579926,  964.28916507],
-       [1258.65007051,  962.54540021],
-       [1259.12787001,  962.5       ],
-       [1286.93434176,  959.86212851],
-       [1315.21861301,  956.28406315],
-       [1343.50288425,  951.86983719],
-       [1371.7871555 ,  946.72276751],
-       [1400.07142675,  940.951548  ],
-       [1414.30091121,  937.5       ],
-       [1428.355698  ,  933.84199975],
-       [1456.63996924,  925.11332574],
-       [1484.92424049,  915.4194905 ],
-       [1492.95647814,  912.5       ],
-       [1513.20851174,  904.67599426],
-       [1541.49278299,  893.39742477],
-       [1555.99873571,  887.5       ],
-       [1569.77705423,  881.66942354],
-       [1598.06132548,  869.71005796],
-       [1615.27083152,  862.5       ],
-       [1626.34559673,  857.72842735],
-       [1654.62986798,  845.86320389],
-       [1675.33493056,  837.5       ],
-       [1682.91413922,  834.37434221],
-       [1711.19841047,  823.30406739],
-       [1739.48268172,  812.9583566 ],
-       [1740.83505112,  812.5       ],
-       [1767.76695297,  803.23020453],
-       [1796.05122421,  794.39495411],
-       [1820.73130996,  787.5       ],
-       [1824.33549546,  786.47813146],
-       [1852.61976671,  779.39127599],
-       [1880.90403796,  773.27881034],
-       [1909.1883092 ,  768.11638565],
-       [1937.47258045,  763.86287472],
-       [1948.76456676,  762.5       ],
-       [1965.7568517 ,  760.41326063]]), array([ 1,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2, 79],
-      dtype=uint8))], &#39;Siltstone&#39;: [Path(array([[1994.04112295,  958.88743623],
-       [2022.32539419,  955.95113422],
-       [2050.60966544,  953.66902679],
-       [2078.89393669,  951.97744721],
-       [2107.17820794,  950.80735477],
-       [2135.46247918,  950.09135585],
-       [2163.74675043,  949.79125136],
-       [2192.03102168,  949.88461476],
-       [2220.31529293,  950.34777916],
-       [2248.59956417,  951.15530699],
-       [2276.88383542,  952.28017452],
-       [2305.16810667,  953.69402029],
-       [2333.45237792,  955.36747679],
-       [2361.73664916,  957.27055384],
-       [2390.02092041,  959.37302984],
-       [2418.30519166,  961.64481716],
-       [2428.36002465,  962.5       ],
-       [2446.58946291,  964.04547475],
-       [2474.87373415,  966.55067308],
-       [2503.1580054 ,  969.138626  ],
-       [2531.44227665,  971.78259168],
-       [2559.7265479 ,  974.45704251],
-       [2588.01081914,  977.13774544],
-       [2616.29509039,  979.80181145],
-       [2644.57936164,  982.42772007],
-       [2672.86363289,  984.99532429],
-       [2701.14790413,  987.48584027],
-       [2701.31551425,  987.5       ],
-       [2729.43217538,  989.86911725],
-       [2757.71644663,  992.14237359],
-       [2786.00071787,  994.29092173],
-       [2814.28498912,  996.30122584],
-       [2814.28498912, 1012.5       ],
-       [2814.28498912, 1037.5       ],
-       [2814.28498912, 1062.5       ],
-       [2814.28498912, 1087.5       ],
-       [2814.28498912, 1112.5       ],
-       [2814.28498912, 1137.5       ],
-       [2814.28498912, 1162.5       ],
-       [2814.28498912, 1187.5       ],
-       [2814.28498912, 1205.11800132],
-       [2786.00071787, 1202.68358183],
-       [2757.71644663, 1200.10564609],
-       [2729.43217538, 1197.39557303],
-       [2701.14790413, 1194.5658301 ],
-       [2672.86363289, 1191.63003285],
-       [2644.57936164, 1188.60301276],
-       [2634.53095556, 1187.5       ],
-       [2616.29509039, 1185.50340524],
-       [2588.01081914, 1182.34960151],
-       [2559.7265479 , 1179.15994465],
-       [2531.44227665, 1175.95540348],
-       [2503.1580054 , 1172.75870396],
-       [2474.87373415, 1169.59449452],
-       [2446.58946291, 1166.48954686],
-       [2418.30519166, 1163.47300247],
-       [2408.80911566, 1162.5       ],
-       [2390.02092041, 1160.58550511],
-       [2361.73664916, 1157.86020555],
-       [2333.45237792, 1155.33159799],
-       [2305.16810667, 1153.04195067],
-       [2276.88383542, 1151.03819834],
-       [2248.59956417, 1149.3728506 ],
-       [2220.31529293, 1148.10514128],
-       [2192.03102168, 1147.30245251],
-       [2163.74675043, 1147.04199408],
-       [2135.46247918, 1147.41256165],
-       [2107.17820794, 1148.51373434],
-       [2078.89393669, 1150.40503158],
-       [2050.60966544, 1153.06437667],
-       [2022.32539419, 1156.46424145],
-       [1994.04112295, 1160.58474108],
-       [1982.79881216, 1162.5       ],
-       [1965.7568517 , 1165.42810358],
-       [1937.47258045, 1170.96682712],
-       [1909.1883092 , 1177.16907966],
-       [1880.90403796, 1184.01325423],
-       [1867.68033769, 1187.5       ],
-       [1852.61976671, 1191.47459466],
-       [1824.33549546, 1199.49863439],
-       [1796.05122421, 1208.02576409],
-       [1781.95564708, 1212.5       ],
-       [1767.76695297, 1216.97810673],
-       [1739.48268172, 1226.25417619],
-       [1711.19841047, 1235.76249654],
-       [1706.11771858, 1237.5       ],
-       [1682.91413922, 1245.34090421],
-       [1654.62986798, 1254.87986307],
-       [1631.67998342, 1262.5       ],
-       [1626.34559673, 1264.24568362],
-       [1598.06132548, 1273.25962955],
-       [1569.77705423, 1281.85681884],
-       [1550.07866757, 1287.5       ],
-       [1541.49278299, 1289.92575464],
-       [1513.20851174, 1297.37335408],
-       [1484.92424049, 1304.2076109 ],
-       [1456.63996924, 1310.42662494],
-       [1446.2251565 , 1312.5       ],
-       [1428.355698  , 1316.02482484],
-       [1400.07142675, 1321.05707772],
-       [1371.7871555 , 1325.58847443],
-       [1343.50288425, 1329.66638085],
-       [1315.21861301, 1333.33459083],
-       [1286.93434176, 1336.63327939],
-       [1278.657525  , 1337.5       ],
-       [1258.65007051, 1339.58601727],
-       [1230.36579926, 1342.24100707],
-       [1202.08152802, 1338.64052916],
-       [1200.5204674 , 1337.5       ],
-       [1195.09496009, 1312.5       ],
-       [1189.71519019, 1287.5       ],
-       [1173.79725677, 1275.80741039],
-       [1155.72946076, 1262.5       ],
-       [1150.47517612, 1237.5       ],
-       [1145.51298552, 1233.83164395],
-       [1117.22871427, 1214.86424923],
-       [1088.94444303, 1215.83222481],
-       [1060.66017178, 1216.65190791],
-       [1032.37590053, 1217.38695757],
-       [1004.09162928, 1218.10169271],
-       [ 975.80735804, 1218.86017267],
-       [ 947.52308679, 1219.72545008],
-       [ 919.23881554, 1220.75885966],
-       [ 890.9545443 , 1222.01924435],
-       [ 862.67027305, 1223.56206981],
-       [ 834.3860018 , 1225.43843001],
-       [ 806.10173055, 1227.69398932],
-       [ 777.81745931, 1230.3679356 ],
-       [ 749.53318806, 1233.49203285],
-       [ 721.24891681, 1237.08986065],
-       [ 718.39289958, 1237.5       ],
-       [ 692.96464556, 1241.13960164],
-       [ 664.68037432, 1245.67481707],
-       [ 636.39610307, 1250.6972501 ],
-       [ 608.11183182, 1256.1964394 ],
-       [ 579.82756057, 1262.15451694],
-       [ 578.29402407, 1262.5       ],
-       [ 551.54328933, 1268.49066902],
-       [ 523.25901808, 1275.22586561],
-       [ 494.97474683, 1282.33016252],
-       [ 475.3024218 , 1287.5       ],
-       [ 466.69047558, 1289.74793617],
-       [ 438.40620434, 1297.41485058],
-       [ 410.12193309, 1305.33686631],
-       [ 385.22438639, 1312.5       ],
-       [ 381.83766184, 1313.4675395 ],
-       [ 353.55339059, 1321.72071701],
-       [ 325.26911935, 1330.11509847],
-       [ 300.69520001, 1337.5       ],
-       [ 296.9848481 , 1338.60735743],
-       [ 268.70057685, 1347.12124677],
-       [ 240.4163056 , 1355.67619457],
-       [ 217.88682352, 1362.5       ],
-       [ 212.13203436, 1364.23176037],
-       [ 183.84776311, 1372.73035285],
-       [ 155.56349186, 1381.18842132],
-       [ 134.29863065, 1387.5       ],
-       [ 127.27922061, 1389.57114189],
-       [  98.99494937, 1397.83528821],
-       [  70.71067812, 1405.99566751],
-       [  47.82705201, 1412.5       ],
-       [  42.42640687, 1414.02701537],
-       [  14.14213562, 1421.8904499 ],
-       [  14.14213562, 1412.5       ],
-       [  14.14213562, 1387.5       ],
-       [  14.14213562, 1362.5       ],
-       [  14.14213562, 1337.5       ],
-       [  14.14213562, 1312.5       ],
-       [  14.14213562, 1287.5       ],
-       [  14.14213562, 1262.5       ],
-       [  14.14213562, 1237.5       ],
-       [  14.14213562, 1212.5       ],
-       [  14.14213562, 1199.75730675],
-       [  42.42640687, 1191.27515439],
-       [  54.7804542 , 1187.5       ],
-       [  70.71067812, 1182.58583369],
-       [  98.99494937, 1173.71454536],
-       [ 127.27922061, 1164.71354134],
-       [ 134.16103667, 1162.5       ],
-       [ 155.56349186, 1155.54411101],
-       [ 183.84776311, 1146.27222804],
-       [ 210.45761265, 1137.5       ],
-       [ 212.13203436, 1136.94185515],
-       [ 240.4163056 , 1127.50477445],
-       [ 268.70057685, 1118.08086691],
-       [ 285.55517715, 1112.5       ],
-       [ 296.9848481 , 1108.67074258],
-       [ 325.26911935, 1099.29848853],
-       [ 353.55339059, 1090.06923348],
-       [ 361.60185777, 1087.5       ],
-       [ 381.83766184, 1080.96252098],
-       [ 410.12193309, 1072.07690984],
-       [ 438.40620434, 1063.49879242],
-       [ 441.84637403, 1062.5       ],
-       [ 466.69047558, 1055.20331319],
-       [ 494.97474683, 1047.32721915],
-       [ 523.25901808, 1039.94269958],
-       [ 533.35415717, 1037.5       ],
-       [ 551.54328933, 1033.05365358],
-       [ 579.82756057, 1026.74280945],
-       [ 608.11183182, 1021.08566024],
-       [ 636.39610307, 1016.11809152],
-       [ 660.43259375, 1012.5       ],
-       [ 664.68037432, 1011.85589974],
-       [ 692.96464556, 1008.28040457],
-       [ 721.24891681, 1005.43234822],
-       [ 749.53318806, 1003.29199139],
-       [ 777.81745931, 1001.82502143],
-       [ 806.10173055, 1000.98384353],
-       [ 834.3860018 , 1000.70940401],
-       [ 862.67027305, 1000.9333153 ],
-       [ 890.9545443 , 1001.58003088],
-       [ 919.23881554, 1002.56882756],
-       [ 947.52308679, 1003.81538033],
-       [ 975.80735804, 1005.2327561 ],
-       [1004.09162928, 1006.73170906],
-       [1032.37590053, 1008.22024614],
-       [1033.14742583, 1012.5       ],
-       [1037.73708018, 1037.5       ],
-       [1060.66017178, 1054.97350803],
-       [1070.56406939, 1062.5       ],
-       [1075.36832289, 1087.5       ],
-       [1088.94444303, 1097.7497446 ],
-       [1108.54994217, 1112.5       ],
-       [1113.53264801, 1137.5       ],
-       [1117.22871427, 1140.26760022],
-       [1145.51298552, 1155.01195094],
-       [1173.79725677, 1153.79890033],
-       [1202.08152802, 1152.15297368],
-       [1230.36579926, 1150.01183287],
-       [1258.65007051, 1147.32725214],
-       [1286.93434176, 1144.07194987],
-       [1315.21861301, 1140.24690343],
-       [1333.09092729, 1137.5       ],
-       [1343.50288425, 1135.8700744 ],
-       [1371.7871555 , 1130.96384993],
-       [1400.07142675, 1125.6036979 ],
-       [1428.355698  , 1119.81439583],
-       [1456.63996924, 1113.53523796],
-       [1460.86459807, 1112.5       ],
-       [1484.92424049, 1106.49972437],
-       [1513.20851174, 1098.64691021],
-       [1541.49278299, 1089.99128639],
-       [1549.0108089 , 1087.5       ],
-       [1569.77705423, 1080.56864419],
-       [1598.06132548, 1070.59536301],
-       [1620.2661491 , 1062.5       ],
-       [1626.34559673, 1060.27458911],
-       [1654.62986798, 1049.74820159],
-       [1682.91413922, 1039.2634641 ],
-       [1687.75699519, 1037.5       ],
-       [1711.19841047, 1028.93161751],
-       [1739.48268172, 1018.95494456],
-       [1758.71955056, 1012.5       ],
-       [1767.76695297, 1009.45459353],
-       [1796.05122421, 1000.51580047],
-       [1824.33549546,  992.27099633],
-       [1842.30074989,  987.5       ],
-       [1852.61976671,  984.75470752],
-       [1880.90403796,  977.99330706],
-       [1909.1883092 ,  972.04171702],
-       [1937.47258045,  966.89546123],
-       [1965.7568517 ,  962.53395881],
-       [1966.0207787 ,  962.5       ],
-       [1994.04112295,  958.88743623]]), array([ 1,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2, 79], dtype=uint8))], &#39;Sandstone_2&#39;: [Path(array([[1994.04112295, 1160.58474108],
-       [2022.32539419, 1156.46424145],
-       [2050.60966544, 1153.06437667],
-       [2078.89393669, 1150.40503158],
-       [2107.17820794, 1148.51373434],
-       [2135.46247918, 1147.41256165],
-       [2163.74675043, 1147.04199408],
-       [2192.03102168, 1147.30245251],
-       [2220.31529293, 1148.10514128],
-       [2248.59956417, 1149.3728506 ],
-       [2276.88383542, 1151.03819834],
-       [2305.16810667, 1153.04195067],
-       [2333.45237792, 1155.33159799],
-       [2361.73664916, 1157.86020555],
-       [2390.02092041, 1160.58550511],
-       [2408.80911566, 1162.5       ],
-       [2418.30519166, 1163.47300247],
-       [2446.58946291, 1166.48954686],
-       [2474.87373415, 1169.59449452],
-       [2503.1580054 , 1172.75870396],
-       [2531.44227665, 1175.95540348],
-       [2559.7265479 , 1179.15994465],
-       [2588.01081914, 1182.34960151],
-       [2616.29509039, 1185.50340524],
-       [2634.53095556, 1187.5       ],
-       [2644.57936164, 1188.60301276],
-       [2672.86363289, 1191.63003285],
-       [2701.14790413, 1194.5658301 ],
-       [2729.43217538, 1197.39557303],
-       [2757.71644663, 1200.10564609],
-       [2786.00071787, 1202.68358183],
-       [2814.28498912, 1205.11800132],
-       [2814.28498912, 1212.5       ],
-       [2814.28498912, 1237.5       ],
-       [2814.28498912, 1262.5       ],
-       [2814.28498912, 1287.5       ],
-       [2814.28498912, 1312.5       ],
-       [2814.28498912, 1337.5       ],
-       [2814.28498912, 1362.5       ],
-       [2814.28498912, 1387.5       ],
-       [2814.28498912, 1412.5       ],
-       [2814.28498912, 1437.5       ],
-       [2814.28498912, 1462.5       ],
-       [2814.28498912, 1487.5       ],
-       [2814.28498912, 1512.5       ],
-       [2814.28498912, 1537.5       ],
-       [2814.28498912, 1562.5       ],
-       [2814.28498912, 1587.5       ],
-       [2814.28498912, 1612.5       ],
-       [2814.28498912, 1637.5       ],
-       [2814.28498912, 1662.5       ],
-       [2814.28498912, 1687.5       ],
-       [2814.28498912, 1712.5       ],
-       [2814.28498912, 1737.5       ],
-       [2814.28498912, 1762.5       ],
-       [2814.28498912, 1787.5       ],
-       [2814.28498912, 1812.5       ],
-       [2814.28498912, 1837.5       ],
-       [2814.28498912, 1862.5       ],
-       [2814.28498912, 1887.5       ],
-       [2814.28498912, 1912.5       ],
-       [2814.28498912, 1937.5       ],
-       [2814.28498912, 1962.5       ],
-       [2814.28498912, 1987.5       ],
-       [2786.00071787, 1987.5       ],
-       [2757.71644663, 1987.5       ],
-       [2729.43217538, 1987.5       ],
-       [2701.14790413, 1987.5       ],
-       [2672.86363289, 1987.5       ],
-       [2644.57936164, 1987.5       ],
-       [2616.29509039, 1987.5       ],
-       [2588.01081914, 1987.5       ],
-       [2559.7265479 , 1987.5       ],
-       [2531.44227665, 1987.5       ],
-       [2503.1580054 , 1987.5       ],
-       [2474.87373415, 1987.5       ],
-       [2446.58946291, 1987.5       ],
-       [2418.30519166, 1987.5       ],
-       [2390.02092041, 1987.5       ],
-       [2361.73664916, 1987.5       ],
-       [2333.45237792, 1987.5       ],
-       [2305.16810667, 1987.5       ],
-       [2276.88383542, 1987.5       ],
-       [2248.59956417, 1987.5       ],
-       [2220.31529293, 1987.5       ],
-       [2192.03102168, 1987.5       ],
-       [2163.74675043, 1987.5       ],
-       [2135.46247918, 1987.5       ],
-       [2107.17820794, 1987.5       ],
-       [2078.89393669, 1987.5       ],
-       [2050.60966544, 1987.5       ],
-       [2022.32539419, 1987.5       ],
-       [1994.04112295, 1987.5       ],
-       [1965.7568517 , 1987.5       ],
-       [1937.47258045, 1987.5       ],
-       [1909.1883092 , 1987.5       ],
-       [1880.90403796, 1987.5       ],
-       [1852.61976671, 1987.5       ],
-       [1824.33549546, 1987.5       ],
-       [1796.05122421, 1987.5       ],
-       [1767.76695297, 1987.5       ],
-       [1739.48268172, 1987.5       ],
-       [1711.19841047, 1987.5       ],
-       [1682.91413922, 1987.5       ],
-       [1654.62986798, 1987.5       ],
-       [1626.34559673, 1987.5       ],
-       [1598.06132548, 1987.5       ],
-       [1569.77705423, 1987.5       ],
-       [1541.49278299, 1987.5       ],
-       [1513.20851174, 1987.5       ],
-       [1484.92424049, 1987.5       ],
-       [1456.63996924, 1987.5       ],
-       [1428.355698  , 1987.5       ],
-       [1400.07142675, 1987.5       ],
-       [1371.7871555 , 1987.5       ],
-       [1343.50288425, 1987.5       ],
-       [1315.21861301, 1987.5       ],
-       [1286.93434176, 1987.5       ],
-       [1258.65007051, 1987.5       ],
-       [1230.36579926, 1987.5       ],
-       [1202.08152802, 1987.5       ],
-       [1173.79725677, 1987.5       ],
-       [1145.51298552, 1987.5       ],
-       [1117.22871427, 1987.5       ],
-       [1088.94444303, 1987.5       ],
-       [1060.66017178, 1987.5       ],
-       [1032.37590053, 1987.5       ],
-       [1004.09162928, 1987.5       ],
-       [ 975.80735804, 1987.5       ],
-       [ 947.52308679, 1987.5       ],
-       [ 919.23881554, 1987.5       ],
-       [ 890.9545443 , 1987.5       ],
-       [ 862.67027305, 1987.5       ],
-       [ 834.3860018 , 1987.5       ],
-       [ 806.10173055, 1987.5       ],
-       [ 777.81745931, 1987.5       ],
-       [ 749.53318806, 1987.5       ],
-       [ 721.24891681, 1987.5       ],
-       [ 692.96464556, 1987.5       ],
-       [ 664.68037432, 1987.5       ],
-       [ 636.39610307, 1987.5       ],
-       [ 608.11183182, 1987.5       ],
-       [ 579.82756057, 1987.5       ],
-       [ 551.54328933, 1987.5       ],
-       [ 523.25901808, 1987.5       ],
-       [ 494.97474683, 1987.5       ],
-       [ 466.69047558, 1987.5       ],
-       [ 438.40620434, 1987.5       ],
-       [ 410.12193309, 1987.5       ],
-       [ 381.83766184, 1987.5       ],
-       [ 353.55339059, 1987.5       ],
-       [ 325.26911935, 1987.5       ],
-       [ 296.9848481 , 1987.5       ],
-       [ 268.70057685, 1987.5       ],
-       [ 240.4163056 , 1987.5       ],
-       [ 212.13203436, 1987.5       ],
-       [ 183.84776311, 1987.5       ],
-       [ 155.56349186, 1987.5       ],
-       [ 127.27922061, 1987.5       ],
-       [  98.99494937, 1987.5       ],
-       [  70.71067812, 1987.5       ],
-       [  42.42640687, 1987.5       ],
-       [  14.14213562, 1987.5       ],
-       [  14.14213562, 1962.5       ],
-       [  14.14213562, 1937.5       ],
-       [  14.14213562, 1912.5       ],
-       [  14.14213562, 1887.5       ],
-       [  14.14213562, 1862.5       ],
-       [  14.14213562, 1837.5       ],
-       [  14.14213562, 1812.5       ],
-       [  14.14213562, 1787.5       ],
-       [  14.14213562, 1762.5       ],
-       [  14.14213562, 1737.5       ],
-       [  14.14213562, 1712.5       ],
-       [  14.14213562, 1687.5       ],
-       [  14.14213562, 1662.5       ],
-       [  14.14213562, 1637.5       ],
-       [  14.14213562, 1612.5       ],
-       [  14.14213562, 1587.5       ],
-       [  14.14213562, 1562.5       ],
-       [  14.14213562, 1537.5       ],
-       [  14.14213562, 1512.5       ],
-       [  14.14213562, 1487.5       ],
-       [  14.14213562, 1462.5       ],
-       [  14.14213562, 1437.5       ],
-       [  14.14213562, 1421.8904499 ],
-       [  42.42640687, 1414.02701537],
-       [  47.82705201, 1412.5       ],
-       [  70.71067812, 1405.99566751],
-       [  98.99494937, 1397.83528821],
-       [ 127.27922061, 1389.57114189],
-       [ 134.29863065, 1387.5       ],
-       [ 155.56349186, 1381.18842132],
-       [ 183.84776311, 1372.73035285],
-       [ 212.13203436, 1364.23176037],
-       [ 217.88682352, 1362.5       ],
-       [ 240.4163056 , 1355.67619457],
-       [ 268.70057685, 1347.12124677],
-       [ 296.9848481 , 1338.60735743],
-       [ 300.69520001, 1337.5       ],
-       [ 325.26911935, 1330.11509847],
-       [ 353.55339059, 1321.72071701],
-       [ 381.83766184, 1313.4675395 ],
-       [ 385.22438639, 1312.5       ],
-       [ 410.12193309, 1305.33686631],
-       [ 438.40620434, 1297.41485058],
-       [ 466.69047558, 1289.74793617],
-       [ 475.3024218 , 1287.5       ],
-       [ 494.97474683, 1282.33016252],
-       [ 523.25901808, 1275.22586561],
-       [ 551.54328933, 1268.49066902],
-       [ 578.29402407, 1262.5       ],
-       [ 579.82756057, 1262.15451694],
-       [ 608.11183182, 1256.1964394 ],
-       [ 636.39610307, 1250.6972501 ],
-       [ 664.68037432, 1245.67481707],
-       [ 692.96464556, 1241.13960164],
-       [ 718.39289958, 1237.5       ],
-       [ 721.24891681, 1237.08986065],
-       [ 749.53318806, 1233.49203285],
-       [ 777.81745931, 1230.3679356 ],
-       [ 806.10173055, 1227.69398932],
-       [ 834.3860018 , 1225.43843001],
-       [ 862.67027305, 1223.56206981],
-       [ 890.9545443 , 1222.01924435],
-       [ 919.23881554, 1220.75885966],
-       [ 947.52308679, 1219.72545008],
-       [ 975.80735804, 1218.86017267],
-       [1004.09162928, 1218.10169271],
-       [1032.37590053, 1217.38695757],
-       [1060.66017178, 1216.65190791],
-       [1088.94444303, 1215.83222481],
-       [1117.22871427, 1214.86424923],
-       [1145.51298552, 1233.83164395],
-       [1150.47517612, 1237.5       ],
-       [1155.72946076, 1262.5       ],
-       [1173.79725677, 1275.80741039],
-       [1189.71519019, 1287.5       ],
-       [1195.09496009, 1312.5       ],
-       [1200.5204674 , 1337.5       ],
-       [1202.08152802, 1338.64052916],
-       [1230.36579926, 1342.24100707],
-       [1258.65007051, 1339.58601727],
-       [1278.657525  , 1337.5       ],
-       [1286.93434176, 1336.63327939],
-       [1315.21861301, 1333.33459083],
-       [1343.50288425, 1329.66638085],
-       [1371.7871555 , 1325.58847443],
-       [1400.07142675, 1321.05707772],
-       [1428.355698  , 1316.02482484],
-       [1446.2251565 , 1312.5       ],
-       [1456.63996924, 1310.42662494],
-       [1484.92424049, 1304.2076109 ],
-       [1513.20851174, 1297.37335408],
-       [1541.49278299, 1289.92575464],
-       [1550.07866757, 1287.5       ],
-       [1569.77705423, 1281.85681884],
-       [1598.06132548, 1273.25962955],
-       [1626.34559673, 1264.24568362],
-       [1631.67998342, 1262.5       ],
-       [1654.62986798, 1254.87986307],
-       [1682.91413922, 1245.34090421],
-       [1706.11771858, 1237.5       ],
-       [1711.19841047, 1235.76249654],
-       [1739.48268172, 1226.25417619],
-       [1767.76695297, 1216.97810673],
-       [1781.95564708, 1212.5       ],
-       [1796.05122421, 1208.02576409],
-       [1824.33549546, 1199.49863439],
-       [1852.61976671, 1191.47459466],
-       [1867.68033769, 1187.5       ],
-       [1880.90403796, 1184.01325423],
-       [1909.1883092 , 1177.16907966],
-       [1937.47258045, 1170.96682712],
-       [1965.7568517 , 1165.42810358],
-       [1982.79881216, 1162.5       ],
-       [1994.04112295, 1160.58474108]]), array([ 1,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
-        2,  2,  2,  2, 79], dtype=uint8))]}
-</pre></div>
-</div>
-<div class="section" id="look-at-resulting-polygons">
-<h4>Look at resulting polygons:<a class="headerlink" href="#look-at-resulting-polygons" title="Permalink to this headline">¶</a></h4>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.path</span>
-<span class="kn">import</span> <span class="nn">matplotlib.patches</span> <span class="k">as</span> <span class="nn">patches</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span>
+    <span class="n">section_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;section1&#39;</span><span class="p">,</span> <span class="s1">&#39;section2&#39;</span><span class="p">,</span> <span class="s1">&#39;section3&#39;</span><span class="p">,</span> <span class="s1">&#39;topography&#39;</span><span class="p">],</span>
+    <span class="n">show_topography</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">plot_pathdict</span><span class="p">(</span><span class="n">pathdict</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cdict</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">extent</span></a><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">surfaces</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><a href="../../Model/gempy.core.model.ImplicitCoKriging.html#gempy.core.model.ImplicitCoKriging.surfaces" title="gempy.core.model.ImplicitCoKriging.surfaces" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-method"><span class="n">geo_model</span><span class="o">.</span><span class="n">surfaces</span><span class="o">.</span><span class="n">df</span></a><span class="p">[</span><span class="s1">&#39;surface&#39;</span><span class="p">])[:</span><span class="o">-</span><span class="mi">1</span><span class="p">][::</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>
-    <span class="k">if</span> <span class="n">ax</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">()</span>
-    <span class="k">for</span> <span class="n">formation</span> <span class="ow">in</span> <span class="n">surfaces</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">pathdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">formation</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">path</span> <span class="o">!=</span><span class="p">[]:</span>
-                <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">==</span> <a href="https://matplotlib.org/api/path_api.html#matplotlib.path.Path" title="matplotlib.path.Path" class="sphx-glr-backref-module-matplotlib-path sphx-glr-backref-type-py-class"><span class="n">matplotlib</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">Path</span></a><span class="p">:</span>
-                    <span class="n">patch</span> <span class="o">=</span> <a href="https://matplotlib.org/api/_as_gen/matplotlib.patches.PathPatch.html#matplotlib.patches.PathPatch" title="matplotlib.patches.PathPatch" class="sphx-glr-backref-module-matplotlib-patches sphx-glr-backref-type-py-class"><span class="n">patches</span><span class="o">.</span><span class="n">PathPatch</span></a><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cdict</span></a><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">formation</span><span class="p">,</span> <span class="s1">&#39;k&#39;</span><span class="p">))</span>
-                    <span class="n">ax</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">patch</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span><span class="p">:</span>
-                    <span class="k">for</span> <span class="n">subpath</span> <span class="ow">in</span> <span class="n">path</span><span class="p">:</span>
-                        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">subpath</span> <span class="o">==</span> <a href="https://matplotlib.org/api/path_api.html#matplotlib.path.Path" title="matplotlib.path.Path" class="sphx-glr-backref-module-matplotlib-path sphx-glr-backref-type-py-class"><span class="n">matplotlib</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">Path</span></a><span class="p">)</span>
-                        <span class="n">patch</span> <span class="o">=</span> <a href="https://matplotlib.org/api/_as_gen/matplotlib.patches.PathPatch.html#matplotlib.patches.PathPatch" title="matplotlib.patches.PathPatch" class="sphx-glr-backref-module-matplotlib-patches sphx-glr-backref-type-py-class"><span class="n">patches</span><span class="o">.</span><span class="n">PathPatch</span></a><span class="p">(</span><span class="n">subpath</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cdict</span></a><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">formation</span><span class="p">,</span> <span class="s1">&#39;k&#39;</span><span class="p">))</span>
-                        <span class="n">ax</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">patch</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">extent</span></a><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">])</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">extent</span></a><span class="p">[:</span><span class="mi">2</span><span class="p">])</span>
-    <a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
+<span class="c1"># sphinx_gallery_thumbnail_number = 4</span>
 </pre></div>
 </div>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_pathdict</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">polygondict</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cdict</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">extent</span></a><span class="p">)</span>
-</pre></div>
-</div>
-<img alt="ch1 3b cross sections" class="sphx-glr-single-img" src="../../_images/sphx_glr_ch1_3b_cross_sections_006.png" />
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_pathdict</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">polygondict</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cdict</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">extent</span></a><span class="p">,</span> <span class="n">surfaces</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;basement&#39;</span><span class="p">,</span> <span class="s1">&#39;Main_Fault&#39;</span><span class="p">])</span>
+<img src="../../_images/sphx_glr_ch1_3b_cross_sections_004.png" srcset="../../_images/sphx_glr_ch1_3b_cross_sections_004.png" alt="section1, section2, section3, Geological map" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/leguark/gempy_viewer/gempy_viewer/API/_plot_2d_sections_api.py:104: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
+  warnings.warn(
 
-<span class="n">gp</span><span class="o">.</span><span class="n">save_model</span><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">)</span>
+&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f8561659f90&gt;
 </pre></div>
 </div>
-<img alt="ch1 3b cross sections" class="sphx-glr-single-img" src="../../_images/sphx_glr_ch1_3b_cross_sections_007.png" />
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>True
-</pre></div>
-</div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  7.628 seconds)</p>
-<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-tutorials-ch1-fundamentals-ch1-3b-cross-sections-py">
-<div class="sphx-glr-download sphx-glr-download-python docutils container">
-<p><a class="reference download internal" download="" href="../../_downloads/eb8d0d3d6a9395c2de9e287b381668d0/ch1_3b_cross_sections.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">ch1_3b_cross_sections.py</span></code></a></p>
-</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 4.121 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-tutorials-ch1-fundamentals-ch1-3b-cross-sections-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/e7bee486f7454614b4de4c8599b51683/ch1_3b_cross_sections.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">ch1_3b_cross_sections.ipynb</span></code></a></p>
 </div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/eb8d0d3d6a9395c2de9e287b381668d0/ch1_3b_cross_sections.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">ch1_3b_cross_sections.py</span></code></a></p>
+</div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
-</div>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
           </div>
@@ -1881,7 +296,7 @@ drift equations     [3, 3]
         <div class="sphinxsidebarwrapper">
 <p class="logo">
   <a href="../../index.html">
-    <img class="logo" src="../../_static/./logos/gempy.png" alt="Logo"/>
+    <img class="logo" src="../../_static/logos/gempy.png" alt="Logo"/>
     
   </a>
 </p>
@@ -1892,24 +307,12 @@ drift equations     [3, 3]
 
 
 <p>
-<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
+<iframe src="https://ghbtns.com/github-btn.html?user=gempy-project&repo=gempy&type=star&count=true&size=large&v=2"
   allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
 </p>
 
 
 
-
-
-    
-
-<p>
-<a class="badge" href="https://travis-ci.org/cgre-aachen/gempy">
-    <img
-        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
-        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
-    />
-</a>
-</p>
 
 
 <h3>Navigation</h3>
@@ -1918,22 +321,21 @@ drift equations     [3, 3]
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../projects.html">Additional projects</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Getting started</span></p>
+<p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">GemPy Tutorials</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="../index.html#chapter-1-gempy-fundamentals">Chapter 1: GemPy fundamentals</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#chapter-2-gempy-geophysics">Chapter 2: GemPy Geophysics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#chapter-1-gempy-fundamentals">Chapter 1: GemPy fundamentals</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#chapter-3-domain-kriging">Chapter 3: Domain Kriging</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#chapter-4-topological-analysis">Chapter 4: Topological analysis</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#chapter-4-topological-analysis">Chapter 4: Topological analysis</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../examples/index.html">Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../integrations/index.html">Integrations</a></li>
 </ul>
-<p class="caption"><span class="caption-text">API Reference</span></p>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../code.html">Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_reference.html">Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_reference.html#data-classes">Data Classes</a></li>
 </ul>
 
 <div class="relations">
@@ -1941,8 +343,10 @@ drift equations     [3, 3]
 <ul>
   <li><a href="../../index.html">Documentation overview</a><ul>
   <li><a href="../index.html">GemPy Tutorials</a><ul>
+  <li><a href="index.html">Chapter 1: GemPy fundamentals</a><ul>
       <li>Previous: <a href="ch1_3a_grids.html" title="previous chapter">1.3a: Grids.</a></li>
       <li>Next: <a href="ch1_3c_topography.html" title="next chapter">1.3c: Adding topography to geological models</a></li>
+  </ul></li>
   </ul></li>
   </ul></li>
 </ul>
@@ -1951,12 +355,12 @@ drift equations     [3, 3]
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -1970,11 +374,11 @@ drift equations     [3, 3]
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2017-2021, CGRE-Aachen Team.
+      &copy;2017-2024, Gempy Developers.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
       
       |
       <a href="../../_sources/tutorials/ch1_fundamentals/ch1_3b_cross_sections.rst.txt"

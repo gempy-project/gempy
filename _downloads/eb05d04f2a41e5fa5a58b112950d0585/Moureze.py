@@ -3,20 +3,20 @@ Moureze
 ~~~~~~~
 
 """
+import os
 
 # %% 
 # These two lines are necessary only if gempy is not installed
-import sys, os
-os.environ["THEANO_FLAGS"] = "mode=FAST_RUN,device=cpu"
 
 # Importing gempy
 import gempy as gp
+import gempy_viewer as gpv
 
 # Aux imports
 import numpy as np
-import pandas as pn
-import matplotlib.pyplot as plt
+import pandas as pd
 
+from gempy_engine.config import AvailableBackends
 
 # %%
 # Loading surface points from repository:
@@ -27,15 +27,26 @@ import matplotlib.pyplot as plt
 # 
 
 # %% 
-Moureze_points = pn.read_csv(
-    'https://raw.githubusercontent.com/Loop3D/ImplicitBenchmark/master/Moureze/Moureze_Points.csv', sep=';',
-    names=['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', '_'], header=0, )
-Sections_EW = pn.read_csv('https://raw.githubusercontent.com/Loop3D/ImplicitBenchmark/master/Moureze/Sections_EW.csv',
-                          sep=';',
-                          names=['X', 'Y', 'Z', 'ID', '_'], header=1).dropna()
-Sections_NS = pn.read_csv('https://raw.githubusercontent.com/Loop3D/ImplicitBenchmark/master/Moureze/Sections_NS.csv',
-                          sep=';',
-                          names=['X', 'Y', 'Z', 'ID', '_'], header=1).dropna()
+
+data_path = os.path.abspath('../../data/input_data/Moureze')
+Moureze_points = pd.read_csv(
+    filepath_or_buffer=data_path + '/Moureze_Points.csv',
+    sep=';',
+    names=['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', '_'],
+    header=0,
+)
+
+Sections_EW = pd.read_csv(
+    filepath_or_buffer=data_path + '/Sections_EW.csv',
+    sep=';',
+    names=['X', 'Y', 'Z', 'ID', '_'], header=1
+).dropna()
+
+Sections_NS = pd.read_csv(
+    filepath_or_buffer=data_path + '/Sections_NS.csv',
+    sep=';',
+    names=['X', 'Y', 'Z', 'ID', '_'], header=1
+).dropna()
 
 # %%
 # Extracting the orientatins:
@@ -43,19 +54,19 @@ Sections_NS = pn.read_csv('https://raw.githubusercontent.com/Loop3D/ImplicitBenc
 
 # %% 
 mask_surfpoints = Moureze_points['G_x'] < -9999
-surfpoints = Moureze_points[mask_surfpoints]
-orientations = Moureze_points[~mask_surfpoints]
+surface_points = Moureze_points[mask_surfpoints][::10]
+orientations = Moureze_points[~mask_surfpoints][::10]
 
 # %%
 # Giving an arbitrary value name to the surface
 # 
 
 # %% 
-surfpoints['surface'] = '0'
+surface_points['surface'] = '0'
 orientations['surface'] = '0'
 
 # %% 
-surfpoints.tail()
+surface_points.tail()
 
 # %% 
 orientations.tail()
@@ -87,23 +98,46 @@ np.array([156, 206, 76]).prod()
 resolution_requ = [156, 206, 76]
 resolution = [77, 103, 38]
 resolution_low = [45, 51, 38]
-geo_model = gp.create_model('Moureze')
-geo_model = gp.init_data(geo_model,
-                         extent=[-5, 305, -5, 405, -200, -50], resolution=resolution_low,
-                         surface_points_df=surfpoints, orientations_df=orientations,
-                         surface_name='surface',
-                         add_basement=True)
+
+
+surface_points_table: gp.data.SurfacePointsTable = gp.data.SurfacePointsTable.from_arrays(
+    x=surface_points['X'].values,
+    y=surface_points['Y'].values,
+    z=surface_points['Z'].values,
+    names=surface_points['surface'].values.astype(str)
+)
+
+orientations_table: gp.data.OrientationsTable = gp.data.OrientationsTable.from_arrays(
+    x=orientations['X'].values,
+    y=orientations['Y'].values,
+    z=orientations['Z'].values,
+    G_x=orientations['G_x'].values,
+    G_y=orientations['G_y'].values,
+    G_z=orientations['G_z'].values,
+    names=orientations['surface'].values.astype(str),
+    name_id_map=surface_points_table.name_id_map  # ! Make sure that ids and names are shared
+)
+
+structural_frame: gp.data.StructuralFrame = gp.data.StructuralFrame.from_data_tables(
+    surface_points=surface_points_table,
+    orientations=orientations_table
+)
+
+geo_model: gp.data.GeoModel = gp.create_geomodel(
+    project_name='Moureze',
+    extent=[-5, 305, -5, 405, -200, -50],
+    resolution=resolution_low,
+    refinement=5,
+    structural_frame=structural_frame
+)
 
 # %%
 # Now we can see how the data looks so far:
 # 
 
 # %% 
-gp.plot_2d(geo_model, direction='y')
+gpv.plot_2d(geo_model, direction='y')
 
-# %% 
-gp.set_interpolator(geo_model,
-                    theano_optimizer='fast_run', dtype='float64')
 
 # %%
 # The default range is always the diagonal of the extent. Since in this
@@ -112,12 +146,17 @@ gp.set_interpolator(geo_model,
 # 
 
 # %% 
-
-new_range = geo_model.get_additional_data().loc[('Kriging', 'range'), 'values'] * 0.2
-geo_model.modify_kriging_parameters('range', new_range)
-
+geo_model.interpolation_options.kernel_options.range *= 0.2
 # %%
-gp.compute_model(geo_model, set_solutions=True, sort_surfaces=False)
+gp.compute_model(
+    gempy_model=geo_model,
+    engine_config=gp.data.GemPyEngineConfig(
+        use_gpu=False, 
+        dtype='float32',
+        backend=AvailableBackends.PYTORCH
+    )
+)
+
 
 # %%
 # Time
@@ -148,48 +187,10 @@ gp.compute_model(geo_model, set_solutions=True, sort_surfaces=False)
 
 # %% 
 
-gp.plot_2d(geo_model, cell_number=[16], series_n=0, show_scalar=True)
+gpv.plot_2d(geo_model, cell_number='mid', series_n=0, show_scalar=True)
 # %% 
-gp.plot_2d(geo_model, cell_number=16, show_data=True, direction='y')
+gpv.plot_2d(geo_model, cell_number='mid', show_data=True, direction='y')
 
 # %%
 # sphinx_gallery_thumbnail_number = 4
-gp.plot_3d(geo_model)
-
-
-# %%
-# |image0|
-# 
-# .. |image0| image:: ./Moureze.png
-# 
-# 
-
-
-# %%
-# Export data:
-# ~~~~~~~~~~~~
-# 
-# The solution is stored in a numpy array of the following shape. Axis 0
-# are the scalar fields of each correspondent series/faults in the
-# following order (except basement):
-# 
-
-# %% 
-geo_model.series
-
-# %%
-# For the surfaces, there are two numpy arrays, one with vertices and the
-# other with triangles. Axis 0 is each surface in the order:
-# 
-
-# %% 
-geo_model.surfaces
-
-
-# %%
-# np.save('Moureze_scalar', geo_model.solutions.scalar_field_matrix)
-# np.save('Moureze_ver', geo_model.solutions.vertices)
-# np.save('Moureze_edges', geo_model.solutions.edges)
-# gp.plot.export_to_vtk(geo_model, 'Moureze')
-
-gp.save_model(geo_model)
+gpv.plot_3d(geo_model)

@@ -10,7 +10,7 @@
     .. note::
         :class: sphx-glr-download-link-note
 
-        Click :ref:`here <sphx_glr_download_tutorials_ch1_fundamentals_ch1_4_onlap_relations.py>`
+        :ref:`Go to the end <sphx_glr_download_tutorials_ch1_fundamentals_ch1_4_onlap_relations.py>`
         to download the full example code
 
 .. rst-class:: sphx-glr-example-title
@@ -21,23 +21,35 @@
 1.4: Unconformity relationships
 ===============================
 
-.. GENERATED FROM PYTHON SOURCE LINES 8-9
+.. GENERATED FROM PYTHON SOURCE LINES 6-8
+
+.. code-block:: Python
+
+    # sphinx_gallery_thumbnail_number = 2
+
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 9-10
 
 Importing gempy
 
-.. GENERATED FROM PYTHON SOURCE LINES 9-19
+.. GENERATED FROM PYTHON SOURCE LINES 10-19
 
-.. code-block:: python3
+.. code-block:: Python
 
     import gempy as gp
+    import gempy_viewer as gpv
 
     # Aux imports
     import numpy as np
-    import pandas as pd
     import os
 
     np.random.seed(1515)
-    pd.set_option('precision', 2)
 
 
 
@@ -46,28 +58,30 @@ Importing gempy
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 20-24
+.. GENERATED FROM PYTHON SOURCE LINES 20-22
 
 We import a model from an existing folder, representing a subduction
-zone with onlap relationships. The theano function is automatically
-recombined to allow changes.
+zone with onlap relationships.
+
+.. GENERATED FROM PYTHON SOURCE LINES 22-38
+
+.. code-block:: Python
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 26-38
+    data_path = os.path.abspath('../../')
 
-.. code-block:: python3
+    geo_model: gp.data.GeoModel = gp.create_geomodel(
+        project_name='Onlap_relations',
+        extent=[-200, 1000, -500, 500, -1000, 0],
+        resolution=[50, 50, 50],
+        refinement=6,
+        importer_helper=gp.data.ImporterHelper(
+            path_to_orientations=data_path + "/data/input_data/tut-ch1-4/tut_ch1-4_orientations.csv",
+            path_to_surface_points=data_path + "/data/input_data/tut-ch1-4/tut_ch1-4_points.csv",
+        )
+    )
 
-    cwd = os.getcwd()
-    if not 'examples' in cwd:
-        data_path = os.getcwd() + '/examples/'
-    else:
-        data_path = cwd + '/../../'
-
-    geo_model = gp.load_model(r'Tutorial_ch1-8_Onlap_relations',
-                              path=data_path + 'data/gempy_models/Tutorial_ch1-8_Onlap_relations',
-                              recompile=True)
-
-    geo_model.meta.project_name = "Onlap_relations"
+    gp.set_topography_from_random(grid=geo_model.grid, d_z=np.array([-600, -100]))
 
 
 
@@ -75,90 +89,235 @@ recombined to allow changes.
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
-    Active grids: ['regular']
-    Setting kriging parameters to their default values.
-    Compiling theano function...
-    Level of Optimization:  fast_compile
-    Device:  cpu
-    Precision:  float64
-    Number of faults:  0
-    Compilation Done!
-    Kriging values: 
-                               values
-    range                    1854.72
-    $C_o$                   81904.76
-    drift equations  [3, 3, 3, 3, 3]
-    nugget grad                 0.01
-    nugget scalar                0.0
+    Active grids: ['regular' 'topography']
 
+    <gempy.core.data.grid_modules.topography.Topography object at 0x7f856496c760>
 
 
 
 .. GENERATED FROM PYTHON SOURCE LINES 39-41
 
-.. code-block:: python3
+.. code-block:: Python
 
-    gp.plot_2d(geo_model)
-
-
-
-
-.. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_4_onlap_relations_001.png
-    :alt: Cell Number: mid Direction: y
-    :class: sphx-glr-single-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-
-    <gempy.plot.visualization_2d.Plot2D object at 0x7fcc41806fd0>
+    gpv.plot_2d(geo_model)
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 42-45
 
-.. code-block:: python3
-
-    geo_model.set_regular_grid([-200, 1000, -500, 500, -1000, 0], [50, 50, 50])
-    geo_model.set_topography(d_z=np.array([-600, -100]))
-
-
-
+.. image-sg:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_4_onlap_relations_001.png
+   :alt: Cell Number: mid Direction: y
+   :srcset: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_4_onlap_relations_001.png
+   :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
-    Active grids: ['regular']
-    Active grids: ['regular' 'topography']
 
-    Grid Object. Values: 
-    array([[-188.        , -490.        , -990.        ],
-           [-188.        , -490.        , -970.        ],
-           [-188.        , -490.        , -950.        ],
-           ...,
-           [1000.        ,  459.18367347, -508.13810685],
-           [1000.        ,  479.59183673, -499.68180865],
-           [1000.        ,  500.        , -498.66045422]])
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f8561068640>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 46-48
+.. GENERATED FROM PYTHON SOURCE LINES 44-45
 
-.. code-block:: python3
+Raw structural frame
 
-    s = gp.compute_model(geo_model, compute_mesh=True, debug=False)
+.. GENERATED FROM PYTHON SOURCE LINES 45-47
+
+.. code-block:: Python
+
+    geo_model.structural_frame
+
+
+
+
+
+
+.. raw:: html
+
+    <div class="output_subarea output_html rendered_html output_result">
+
+            <table>
+              <tr><td>Structural Groups:</td><td>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>default_formation</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #015482;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>onlap_surface</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #9f0052;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>rock1</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #ffbe00;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>rock2</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #728f02;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>rock3</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #443988;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>seafloor</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            </td></tr>
+              <tr><td>Fault Relations:</td><td><table style="border-collapse: collapse; table-layout: fixed;"><th></th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">default_fo...</th><tr><th>default_formation</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr></table></td></tr>
+              <tr><td></td><td>
+            <table>
+              <tr>
+                <td><div style="display: inline-block; background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></div> True</td>
+                <td><div style="display: inline-block; background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></div> False</td>
+              </tr>
+            </table>
+            </td></tr>
+            </table>
+        
+    </div>
+    <br />
+    <br />
+
+.. GENERATED FROM PYTHON SOURCE LINES 48-89
+
+.. code-block:: Python
+
+    geo_model.transform.apply_anisotropy(gp.data.GlobalAnisotropy.NONE)
+    gp.add_structural_group(
+        model=geo_model,
+        group_index=0,
+        structural_group_name="seafloor_series",
+        elements=[geo_model.structural_frame.get_element_by_name("seafloor")],
+        structural_relation=gp.data.StackRelationType.ERODE,
+    )
+
+    gp.add_structural_group(
+        model=geo_model,
+        group_index=1,
+        structural_group_name="right_series",
+        elements=[
+            geo_model.structural_frame.get_element_by_name("rock1"),
+            geo_model.structural_frame.get_element_by_name("rock2"),
+        ],
+        structural_relation=gp.data.StackRelationType.ONLAP
+    )
+
+    gp.add_structural_group(
+        model=geo_model,
+        group_index=2,
+        structural_group_name="onlap_series",
+        elements=[geo_model.structural_frame.get_element_by_name("onlap_surface")],
+        structural_relation=gp.data.StackRelationType.ERODE
+    )
+
+    gp.add_structural_group(
+        model=geo_model,
+        group_index=3,
+        structural_group_name="left_series",
+        elements=[geo_model.structural_frame.get_element_by_name("rock3")],
+        structural_relation=gp.data.StackRelationType.BASEMENT
+    )
+
+    gp.remove_structural_group_by_name(model=geo_model, group_name="default_formation")
+
+    # Final structural frame
+    geo_model.structural_frame
+
+
+
+
+
+
+.. raw:: html
+
+    <div class="output_subarea output_html rendered_html output_result">
+
+            <table>
+              <tr><td>Structural Groups:</td><td>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>seafloor_series</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #443988;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>seafloor</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>right_series</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.ONLAP</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #9f0052;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>rock1</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #ffbe00;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>rock2</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>onlap_series</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #015482;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>onlap_surface</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>left_series</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.BASEMENT</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #728f02;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>rock3</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            </td></tr>
+              <tr><td>Fault Relations:</td><td><table style="border-collapse: collapse; table-layout: fixed;"><th></th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">seafloor_s...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">right_seri...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">onlap_seri...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">left_serie...</th><tr><th>seafloor_series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>right_series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>onlap_series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>left_series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr></table></td></tr>
+              <tr><td></td><td>
+            <table>
+              <tr>
+                <td><div style="display: inline-block; background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></div> True</td>
+                <td><div style="display: inline-block; background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></div> False</td>
+              </tr>
+            </table>
+            </td></tr>
+            </table>
+        
+    </div>
+    <br />
+    <br />
+
+.. GENERATED FROM PYTHON SOURCE LINES 90-92
+
+.. code-block:: Python
+
+    s = gp.compute_model(geo_model)
 
 
 
@@ -166,57 +325,99 @@ recombined to allow changes.
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
-    /WorkSSD/PythonProjects/gempy/gempy/core/solution.py:173: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify 'dtype=object' when creating the ndarray.
-      self.geological_map = np.array(
+    Setting Backend To: AvailableBackends.numpy
+    /home/leguark/gempy/gempy/core/data/geo_model.py:118: UserWarning: Both octree levels and resolution are set. The default grid for the `raw_array_solution`and plots will be the dense regular grid. To use octrees instead, set resolution to None in the regular grid.
+      warnings.warn("Both octree levels and resolution are set. The default grid for the `raw_array_solution`"
+    /home/leguark/gempy_engine/gempy_engine/modules/dual_contouring/dual_contouring_interface.py:38: RuntimeWarning: divide by zero encountered in divide
+      weight_x = ((scalar_at_sp - scalar_8[:, :, 4:]) / scalar_dx).reshape(-1, 4, 1)
+    /home/leguark/gempy_engine/gempy_engine/modules/dual_contouring/dual_contouring_interface.py:39: RuntimeWarning: divide by zero encountered in divide
+      weight_y = ((scalar_at_sp - scalar_8[:, :, [2, 3, 6, 7]]) / scalar_d_y).reshape(-1, 4, 1)
+    /home/leguark/gempy_engine/gempy_engine/modules/dual_contouring/dual_contouring_interface.py:48: RuntimeWarning: invalid value encountered in multiply
+      intersect_dx = d_x[:, :, :] * weight_x[:, :, :]
+    /home/leguark/gempy_engine/gempy_engine/modules/dual_contouring/dual_contouring_interface.py:49: RuntimeWarning: invalid value encountered in multiply
+      intersect_dy = d_y[:, :, :] * weight_y[:, :, :]
+    /home/leguark/gempy_engine/gempy_engine/modules/dual_contouring/dual_contouring_interface.py:38: RuntimeWarning: divide by zero encountered in divide
+      weight_x = ((scalar_at_sp - scalar_8[:, :, 4:]) / scalar_dx).reshape(-1, 4, 1)
+    /home/leguark/gempy_engine/gempy_engine/modules/dual_contouring/dual_contouring_interface.py:39: RuntimeWarning: divide by zero encountered in divide
+      weight_y = ((scalar_at_sp - scalar_8[:, :, [2, 3, 6, 7]]) / scalar_d_y).reshape(-1, 4, 1)
+    /home/leguark/gempy_engine/gempy_engine/modules/dual_contouring/dual_contouring_interface.py:48: RuntimeWarning: invalid value encountered in multiply
+      intersect_dx = d_x[:, :, :] * weight_x[:, :, :]
+    /home/leguark/gempy_engine/gempy_engine/modules/dual_contouring/dual_contouring_interface.py:49: RuntimeWarning: invalid value encountered in multiply
+      intersect_dy = d_y[:, :, :] * weight_y[:, :, :]
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 49-51
+.. GENERATED FROM PYTHON SOURCE LINES 93-103
 
-.. code-block:: python3
+.. code-block:: Python
 
-    gp.plot_2d(geo_model, cell_number=25, show_data=True)
+    gpv.plot_2d(geo_model, show_data=True)
+    gpv.plot_3d(
+        model=geo_model,
+        show_surfaces=True,
+        show_data=True,
+        image=True,
+        show_topography=True,
+        kwargs_plot_structured_grid={'opacity': .2}
+    )
 
 
 
 
-.. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_4_onlap_relations_002.png
-    :alt: Cell Number: 25 Direction: y
-    :class: sphx-glr-single-img
+.. image-sg:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_4_onlap_relations_002.png
+   :alt: ch1 4 onlap relations
+   :srcset: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_4_onlap_relations_002.png
+   :class: sphx-glr-single-img
+
+.. image-sg:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_4_onlap_relations_003.png
+   :alt: Cell Number: mid Direction: y
+   :srcset: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_4_onlap_relations_003.png
+   :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7fcc7498beb0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f8564aef460>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 52-65
+.. GENERATED FROM PYTHON SOURCE LINES 104-132
 
-.. code-block:: python3
+.. code-block:: Python
 
-    gp.plot_2d(geo_model, 2, regular_grid=geo_model.solutions.mask_matrix_pad[0],
-               show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
+    gpv.plot_2d(
+        model=geo_model,
+        cell_number=2,
+        override_regular_grid=geo_model.solutions.raw_arrays.mask_matrix[0],
+        show_data=True, kwargs_lithology={'cmap': 'gray', 'norm': None}
+    )
 
-    gp.plot_2d(geo_model, 2, regular_grid=geo_model.solutions.mask_matrix_pad[1],
-               show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
+    gpv.plot_2d(
+        model=geo_model,
+        cell_number=2,
+        override_regular_grid=geo_model.solutions.raw_arrays.mask_matrix[1],
+        show_data=True, kwargs_lithology={'cmap': 'gray', 'norm': None}
+    )
 
-    gp.plot_2d(geo_model, 2, regular_grid=geo_model.solutions.mask_matrix_pad[2],
-               show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
+    gpv.plot_2d(
+        model=geo_model,
+        cell_number=2,
+        override_regular_grid=geo_model.solutions.raw_arrays.mask_matrix[2],
+        show_data=True, kwargs_lithology={'cmap': 'gray', 'norm': None}
+    )
 
-    gp.plot_2d(geo_model, 2, regular_grid=geo_model.solutions.mask_matrix_pad[3],
-               show_data=True, kwargs_regular_grid={'cmap': 'gray', 'norm': None})
-
+    gpv.plot_2d(
+        model=geo_model,
+        cell_number=2,
+        override_regular_grid=geo_model.solutions.raw_arrays.mask_matrix[3],
+        show_data=True, kwargs_lithology={'cmap': 'gray', 'norm': None}
+    )
 
 
 
@@ -226,96 +427,136 @@ recombined to allow changes.
 
     *
 
-      .. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_4_onlap_relations_003.png
-          :alt: Cell Number: mid Direction: y
-          :class: sphx-glr-multi-img
+      .. image-sg:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_4_onlap_relations_004.png
+         :alt: Cell Number: 2 Direction: y
+         :srcset: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_4_onlap_relations_004.png
+         :class: sphx-glr-multi-img
 
     *
 
-      .. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_4_onlap_relations_004.png
-          :alt: Cell Number: mid Direction: y
-          :class: sphx-glr-multi-img
+      .. image-sg:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_4_onlap_relations_005.png
+         :alt: Cell Number: 2 Direction: y
+         :srcset: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_4_onlap_relations_005.png
+         :class: sphx-glr-multi-img
 
     *
 
-      .. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_4_onlap_relations_005.png
-          :alt: Cell Number: mid Direction: y
-          :class: sphx-glr-multi-img
+      .. image-sg:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_4_onlap_relations_006.png
+         :alt: Cell Number: 2 Direction: y
+         :srcset: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_4_onlap_relations_006.png
+         :class: sphx-glr-multi-img
 
     *
 
-      .. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_4_onlap_relations_006.png
-          :alt: Cell Number: mid Direction: y
-          :class: sphx-glr-multi-img
+      .. image-sg:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_4_onlap_relations_007.png
+         :alt: Cell Number: 2 Direction: y
+         :srcset: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_4_onlap_relations_007.png
+         :class: sphx-glr-multi-img
 
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7fcc466ccf70>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f8561522350>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 66-67
+.. GENERATED FROM PYTHON SOURCE LINES 133-160
 
-sphinx_gallery_thumbnail_number = 7
+.. code-block:: Python
 
-.. GENERATED FROM PYTHON SOURCE LINES 67-71
+    gpv.plot_2d(
+        model=geo_model,
+        cell_number=2,
+        override_regular_grid=geo_model.solutions.raw_arrays.mask_matrix_squeezed[0],
+        show_data=True, kwargs_lithology={'cmap': 'gray', 'norm': None}
+    )
 
-.. code-block:: python3
+    gpv.plot_2d(
+        model=geo_model,
+        cell_number=2,
+        override_regular_grid=geo_model.solutions.raw_arrays.mask_matrix_squeezed[1],
+        show_data=True, kwargs_lithology={'cmap': 'gray', 'norm': None}
+    )
 
-    p3d = gp.plot_3d(geo_model, show_surfaces=True, show_data=True, image=False,
-                     show_topography=True,
-                     kwargs_plot_structured_grid={'opacity': .2})
+    gpv.plot_2d(
+        model=geo_model,
+        cell_number=2,
+        override_regular_grid=geo_model.solutions.raw_arrays.mask_matrix_squeezed[2],
+        show_data=True, kwargs_lithology={'cmap': 'gray', 'norm': None}
+    )
 
-    gp.save_model(geo_model)
+    gpv.plot_2d(
+        model=geo_model,
+        cell_number=2,
+        override_regular_grid=geo_model.solutions.raw_arrays.mask_matrix_squeezed[3],
+        show_data=True, kwargs_lithology={'cmap': 'gray', 'norm': None}
+    )
 
 
-.. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_4_onlap_relations_007.png
-    :alt: ch1 4 onlap relations
-    :class: sphx-glr-single-img
+
+.. rst-class:: sphx-glr-horizontal
+
+
+    *
+
+      .. image-sg:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_4_onlap_relations_008.png
+         :alt: Cell Number: 2 Direction: y
+         :srcset: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_4_onlap_relations_008.png
+         :class: sphx-glr-multi-img
+
+    *
+
+      .. image-sg:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_4_onlap_relations_009.png
+         :alt: Cell Number: 2 Direction: y
+         :srcset: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_4_onlap_relations_009.png
+         :class: sphx-glr-multi-img
+
+    *
+
+      .. image-sg:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_4_onlap_relations_010.png
+         :alt: Cell Number: 2 Direction: y
+         :srcset: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_4_onlap_relations_010.png
+         :class: sphx-glr-multi-img
+
+    *
+
+      .. image-sg:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_4_onlap_relations_011.png
+         :alt: Cell Number: 2 Direction: y
+         :srcset: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_4_onlap_relations_011.png
+         :class: sphx-glr-multi-img
 
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
 
-    True
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f856190f580>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  6.901 seconds)
+   **Total running time of the script:** (0 minutes 9.933 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_4_onlap_relations.py:
 
+.. only:: html
 
-.. only :: html
+  .. container:: sphx-glr-footer sphx-glr-footer-example
 
- .. container:: sphx-glr-footer
-    :class: sphx-glr-footer-example
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
+      :download:`Download Jupyter notebook: ch1_4_onlap_relations.ipynb <ch1_4_onlap_relations.ipynb>`
 
+    .. container:: sphx-glr-download sphx-glr-download-python
 
-  .. container:: sphx-glr-download sphx-glr-download-python
-
-     :download:`Download Python source code: ch1_4_onlap_relations.py <ch1_4_onlap_relations.py>`
-
-
-
-  .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-     :download:`Download Jupyter notebook: ch1_4_onlap_relations.ipynb <ch1_4_onlap_relations.ipynb>`
+      :download:`Download Python source code: ch1_4_onlap_relations.py <ch1_4_onlap_relations.py>`
 
 
 .. only:: html

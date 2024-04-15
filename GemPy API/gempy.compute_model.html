@@ -1,27 +1,25 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>gempy.compute_model &#8212; GemPy 2.2.8 documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-rendered-html.css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>gempy.compute_model &#8212; GemPy 2023.2.0b1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=270d38c7" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <script src="../_static/documentation_options.js?v=acace1bb"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="gempy.compute_model_at" href="gempy.compute_model_at.html" />
-    <link rel="prev" title="gempy.activate_interactive_df" href="gempy.activate_interactive_df.html" />
+    <link rel="next" title="gempy.create_geomodel" href="gempy.create_geomodel.html" />
+    <link rel="prev" title="Code" href="../api_reference.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -38,154 +36,47 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="gempy-compute-model">
-<h1>gempy.compute_model<a class="headerlink" href="#gempy-compute-model" title="Permalink to this headline">¶</a></h1>
+  <section id="gempy-compute-model">
+<h1>gempy.compute_model<a class="headerlink" href="#gempy-compute-model" title="Link to this heading">¶</a></h1>
 <dl class="py function">
-<dt id="gempy.compute_model">
-<code class="sig-prename descclassname">gempy.</code><code class="sig-name descname">compute_model</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span><span class="p">:</span> <span class="n"><a class="reference internal" href="../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project">gempy.core.model.Project</a></span></em>, <em class="sig-param"><span class="n">output</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">at</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.20)">numpy.ndarray</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">compute_mesh</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">reset_weights</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">reset_scalar</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">reset_block</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">sort_surfaces</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">set_solutions</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="../Solution/gempy.core.solution.Solution.html#gempy.core.solution.Solution" title="gempy.core.solution.Solution">gempy.core.solution.Solution</a><a class="reference internal" href="../_modules/gempy/gempy_api.html#compute_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy.compute_model" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the geological model and any extra output given in the
-additional data option.</p>
+<dt class="sig sig-object py" id="gempy.compute_model">
+<span class="sig-prename descclassname"><span class="pre">gempy.</span></span><span class="sig-name descname"><span class="pre">compute_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gempy_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../Modeling%20Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.geo_model.GeoModel"><span class="pre">GeoModel</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">engine_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GemPyEngineConfig</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../Modeling%20Classes/gempy.core.data.Solutions.html#gempy.core.data.Solutions" title="gempy_engine.core.data.solutions.Solutions"><span class="pre">Solutions</span></a></span></span><a class="reference internal" href="../_modules/gempy/API/compute_API.html#compute_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gempy.compute_model" title="Link to this definition">¶</a></dt>
+<dd><p>Compute the geological model given the provided GemPy model.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>model</strong> (<a class="reference internal" href="../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project"><em>Project</em></a>) – [s0] Container class of all objects that constitute a GemPy model.</p></li>
-<li><p><strong>output</strong> (<em>str {'geology'</em><em>, </em><em>'gravity'}</em>) – Compute the lithologies or gravity</p></li>
-<li><p><strong>at</strong> (<em>np.ndarray</em>) – </p></li>
-<li><p><strong>compute_mesh</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – if True compute marching cubes: [s1] Compute the surface (vertices and edges) of a given surface by computing     marching cubes (by skimage)</p></li>
-<li><p><strong>reset_weights</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Not Implemented</p></li>
-<li><p><strong>reset_scalar</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Not Implemented</p></li>
-<li><p><strong>reset_block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Not Implemented</p></li>
-<li><p><strong>sort_surfaces</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – if True call
-Project.set_surface_order_from_solution: [s2]     Order the surfaces respect the last computation. Therefore if you call this method,    after sorting surface_points without recomputing you may get wrong results.</p></li>
-<li><p><strong>debug</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – if True, the computed interpolation are not stored in any
-object but instead returned</p></li>
-<li><p><strong>set_solutions</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Default True. If True set the results into the
-<code class="xref py py-class docutils literal notranslate"><span class="pre">Solutions</span></code> linked object.</p></li>
-<li><p><strong>**kwargs</strong> – </p></li>
+<li><p><strong>gempy_model</strong> (<a class="reference internal" href="../Modeling%20Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel"><em>GeoModel</em></a>) – The GemPy model to compute.</p></li>
+<li><p><strong>engine_config</strong> (<em>Optional</em><em>[</em><em>GemPyEngineConfig</em><em>]</em>) – Configuration for the computational engine. Defaults to None, in which case a default configuration will be used.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Keyword Arguments</dt>
-<dd class="field-even"><p><strong>compute_mesh_options</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – options for the marching cube function. 1)
-rescale: True</p>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the provided backend in the engine_config is not supported.</p>
 </dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Solutions</span></code></p>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The computed geological model.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="../Modeling%20Classes/gempy.core.data.Solutions.html#gempy.core.data.Solutions" title="gempy.core.data.Solutions">Solutions</a></p>
 </dd>
 </dl>
 </dd></dl>
 
-<div class="section" id="examples-using-gempy-compute-model">
-<h2>Examples using <code class="docutils literal notranslate"><span class="pre">gempy.compute_model</span></code><a class="headerlink" href="#examples-using-gempy-compute-model" title="Permalink to this headline">¶</a></h2>
-<div class="sphx-glr-thumbcontainer" tooltip="Getting Started"><div class="figure align-default" id="id1">
-<img alt="Getting Started" src="../_images/sphx_glr_get_started_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../getting_started/get_started.html#sphx-glr-getting-started-get-started-py"><span class="std std-ref">Getting Started</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="1.1 -Basics of geological modeling with GemPy"><div class="figure align-default" id="id2">
-<img alt="1.1 -Basics of geological modeling with GemPy" src="../_images/sphx_glr_ch1_1_basics_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../tutorials/ch1_fundamentals/ch1_1_basics.html#sphx-glr-tutorials-ch1-fundamentals-ch1-1-basics-py"><span class="std std-ref">1.1 -Basics of geological modeling with GemPy</span></a></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="1.3b: 2-D sections"><div class="figure align-default" id="id3">
-<img alt="1.3b: 2-D sections" src="../_images/sphx_glr_ch1_3b_cross_sections_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../tutorials/ch1_fundamentals/ch1_3b_cross_sections.html#sphx-glr-tutorials-ch1-fundamentals-ch1-3b-cross-sections-py"><span class="std std-ref">1.3b: 2-D sections</span></a></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="1.3c: Adding topography to geological models"><div class="figure align-default" id="id4">
-<img alt="1.3c: Adding topography to geological models" src="../_images/sphx_glr_ch1_3c_topography_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../tutorials/ch1_fundamentals/ch1_3c_topography.html#sphx-glr-tutorials-ch1-fundamentals-ch1-3c-topography-py"><span class="std std-ref">1.3c: Adding topography to geological models</span></a></span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="1.4: Unconformity relationships"><div class="figure align-default" id="id5">
-<img alt="1.4: Unconformity relationships" src="../_images/sphx_glr_ch1_4_onlap_relations_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../tutorials/ch1_fundamentals/ch1_4_onlap_relations.html#sphx-glr-tutorials-ch1-fundamentals-ch1-4-onlap-relations-py"><span class="std std-ref">1.4: Unconformity relationships</span></a></span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="1.5: Fault relations"><div class="figure align-default" id="id6">
-<img alt="1.5: Fault relations" src="../_images/sphx_glr_ch1_5_fault_relations_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../tutorials/ch1_fundamentals/ch1_5_fault_relations.html#sphx-glr-tutorials-ch1-fundamentals-ch1-5-fault-relations-py"><span class="std std-ref">1.5: Fault relations</span></a></span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="1.6: 2D Visualization."><div class="figure align-default" id="id7">
-<img alt="1.6: 2D Visualization." src="../_images/sphx_glr_ch1_6_2d_visualization_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../tutorials/ch1_fundamentals/ch1_6_2d_visualization.html#sphx-glr-tutorials-ch1-fundamentals-ch1-6-2d-visualization-py"><span class="std std-ref">1.6: 2D Visualization.</span></a></span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="1.7: 3-D Visualization"><div class="figure align-default" id="id8">
-<img alt="1.7: 3-D Visualization" src="../_images/sphx_glr_ch1_7_3d_visualization_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../tutorials/ch1_fundamentals/ch1_7_3d_visualization.html#sphx-glr-tutorials-ch1-fundamentals-ch1-7-3d-visualization-py"><span class="std std-ref">1.7: 3-D Visualization</span></a></span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="2.1 Forward Gravity: Simple example"><div class="figure align-default" id="id9">
-<img alt="2.1 Forward Gravity: Simple example" src="../_images/sphx_glr_ch2_1_gravity_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../tutorials/ch2-Geophysics/ch2_1_gravity.html#sphx-glr-tutorials-ch2-geophysics-ch2-1-gravity-py"><span class="std std-ref">2.1 Forward Gravity: Simple example</span></a></span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="3.1: Simple example of kriging in gempy"><div class="figure align-default" id="id10">
-<img alt="3.1: Simple example of kriging in gempy" src="../_images/sphx_glr_ch3_1_kriging_interpolation_and_simulation_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../tutorials/ch3-Interpolations/ch3_1_kriging_interpolation_and_simulation.html#sphx-glr-tutorials-ch3-interpolations-ch3-1-kriging-interpolation-and-simulation-py"><span class="std std-ref">3.1: Simple example of kriging in gempy</span></a></span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="Chapter 4: Analyzing Geomodel Topology"><div class="figure align-default" id="id11">
-<img alt="Chapter 4: Analyzing Geomodel Topology" src="../_images/sphx_glr_ch4-1-Topology_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../tutorials/ch4-Topology/ch4-1-Topology.html#sphx-glr-tutorials-ch4-topology-ch4-1-topology-py"><span class="std std-ref">Chapter 4: Analyzing Geomodel Topology</span></a></span><a class="headerlink" href="#id11" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="Model 1 - Horizontal stratigraphic"><div class="figure align-default" id="id12">
-<img alt="Model 1 - Horizontal stratigraphic" src="../_images/sphx_glr_1_horizontal_stratigraphic_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/geometries/1_horizontal_stratigraphic.html#sphx-glr-examples-geometries-1-horizontal-stratigraphic-py"><span class="std std-ref">Model 1 - Horizontal stratigraphic</span></a></span><a class="headerlink" href="#id12" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="Model 2 - Anticline"><div class="figure align-default" id="id13">
-<img alt="Model 2 - Anticline" src="../_images/sphx_glr_2_fold_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/geometries/2_fold.html#sphx-glr-examples-geometries-2-fold-py"><span class="std std-ref">Model 2 - Anticline</span></a></span><a class="headerlink" href="#id13" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="Model 3 - Recumbent Fold"><div class="figure align-default" id="id14">
-<img alt="Model 3 - Recumbent Fold" src="../_images/sphx_glr_3_recumbent_fold_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/geometries/3_recumbent_fold.html#sphx-glr-examples-geometries-3-recumbent-fold-py"><span class="std std-ref">Model 3 - Recumbent Fold</span></a></span><a class="headerlink" href="#id14" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="Model 4 - Pinchout"><div class="figure align-default" id="id15">
-<img alt="Model 4 - Pinchout" src="../_images/sphx_glr_4_pinchout_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/geometries/4_pinchout.html#sphx-glr-examples-geometries-4-pinchout-py"><span class="std std-ref">Model 4 - Pinchout</span></a></span><a class="headerlink" href="#id15" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="Model 5 - Fault"><div class="figure align-default" id="id16">
-<img alt="Model 5 - Fault" src="../_images/sphx_glr_5_fault_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/geometries/5_fault.html#sphx-glr-examples-geometries-5-fault-py"><span class="std std-ref">Model 5 - Fault</span></a></span><a class="headerlink" href="#id16" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="Model 6 - Unconformity"><div class="figure align-default" id="id17">
-<img alt="Model 6 - Unconformity" src="../_images/sphx_glr_6_unconformity_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/geometries/6_unconformity.html#sphx-glr-examples-geometries-6-unconformity-py"><span class="std std-ref">Model 6 - Unconformity</span></a></span><a class="headerlink" href="#id17" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="Model 7 - Combination"><div class="figure align-default" id="id18">
-<img alt="Model 7 - Combination" src="../_images/sphx_glr_7_combination_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/geometries/7_combination.html#sphx-glr-examples-geometries-7-combination-py"><span class="std std-ref">Model 7 - Combination</span></a></span><a class="headerlink" href="#id18" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="Alesmodel: Plotting sections and maps."><div class="figure align-default" id="id19">
-<img alt="Alesmodel: Plotting sections and maps." src="../_images/sphx_glr_Alesmodel_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/real/Alesmodel.html#sphx-glr-examples-real-alesmodel-py"><span class="std std-ref">Alesmodel: Plotting sections and maps.</span></a></span><a class="headerlink" href="#id19" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="Claudius"><div class="figure align-default" id="id20">
-<img alt="Claudius" src="../_images/sphx_glr_Claudius_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/real/Claudius.html#sphx-glr-examples-real-claudius-py"><span class="std std-ref">Claudius</span></a></span><a class="headerlink" href="#id20" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="Greenstone."><div class="figure align-default" id="id21">
-<img alt="Greenstone." src="../_images/sphx_glr_Greenstone_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/real/Greenstone.html#sphx-glr-examples-real-greenstone-py"><span class="std std-ref">Greenstone.</span></a></span><a class="headerlink" href="#id21" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="Hecho"><div class="figure align-default" id="id22">
-<img alt="Hecho" src="../_images/sphx_glr_Hecho_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/real/Hecho.html#sphx-glr-examples-real-hecho-py"><span class="std std-ref">Hecho</span></a></span><a class="headerlink" href="#id22" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="Moureze"><div class="figure align-default" id="id23">
-<img alt="Moureze" src="../_images/sphx_glr_Moureze_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/real/Moureze.html#sphx-glr-examples-real-moureze-py"><span class="std std-ref">Moureze</span></a></span><a class="headerlink" href="#id23" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="Perth basin."><div class="figure align-default" id="id24">
-<img alt="Perth basin." src="../_images/sphx_glr_Perth_basin_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../examples/real/Perth_basin.html#sphx-glr-examples-real-perth-basin-py"><span class="std std-ref">Perth basin.</span></a></span><a class="headerlink" href="#id24" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="Export a geological model from GemPy to use in MOOSE"><div class="figure align-default" id="id25">
-<img alt="Export a geological model from GemPy to use in MOOSE" src="../_images/sphx_glr_gempy_export_MOOSE_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../integrations/gempy_export_MOOSE.html#sphx-glr-integrations-gempy-export-moose-py"><span class="std std-ref">Export a geological model from GemPy to use in MOOSE</span></a></span><a class="headerlink" href="#id25" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="Transform 2019: Integrating Striplog and GemPy"><div class="figure align-default" id="id26">
-<img alt="Transform 2019: Integrating Striplog and GemPy" src="../_images/sphx_glr_gempy_striplog_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../integrations/gempy_striplog.html#sphx-glr-integrations-gempy-striplog-py"><span class="std std-ref">Transform 2019: Integrating Striplog and GemPy</span></a></span><a class="headerlink" href="#id26" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="GemPy - Subsurface Link"><div class="figure align-default" id="id27">
-<img alt="GemPy - Subsurface Link" src="../_images/sphx_glr_gempy_subsurface_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../integrations/gempy_subsurface.html#sphx-glr-integrations-gempy-subsurface-py"><span class="std std-ref">GemPy - Subsurface Link</span></a></span><a class="headerlink" href="#id27" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-clear"></div></div>
-</div>
+<section id="examples-using-gempy-compute-model">
+<h2>Examples using <code class="docutils literal notranslate"><span class="pre">gempy.compute_model</span></code><a class="headerlink" href="#examples-using-gempy-compute-model" title="Link to this heading">¶</a></h2>
+<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="3.1: Simple example of kriging in gempy"><img alt="" src="../_images/sphx_glr_ch3_1_kriging_interpolation_and_simulation_thumb.png" />
+<p><a class="reference internal" href="../tutorials/ch3-Interpolations/ch3_1_kriging_interpolation_and_simulation.html#sphx-glr-tutorials-ch3-interpolations-ch3-1-kriging-interpolation-and-simulation-py"><span class="std std-ref">3.1: Simple example of kriging in gempy</span></a></p>
+  <div class="sphx-glr-thumbnail-title">3.1: Simple example of kriging in gempy</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Chapter 4: Analyzing Geomodel Topology"><img alt="" src="../_images/sphx_glr_ch4-1-Topology_thumb.png" />
+<p><a class="reference internal" href="../tutorials/ch4-Topology/ch4-1-Topology.html#sphx-glr-tutorials-ch4-topology-ch4-1-topology-py"><span class="std std-ref">Chapter 4: Analyzing Geomodel Topology</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Chapter 4: Analyzing Geomodel Topology</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="# %% # .. admonition:: Explanation # #       This model is quite unstable in general and requir..."><img alt="" src="../_images/sphx_glr_Alesmodel_thumb.png" />
+<p><a class="reference internal" href="../examples/real/Alesmodel.html#sphx-glr-examples-real-alesmodel-py"><span class="std std-ref">Alesmodel: Plotting sections and maps.</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Alesmodel: Plotting sections and maps.</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Greenstone."><img alt="" src="../_images/sphx_glr_Greenstone_thumb.png" />
+<p><a class="reference internal" href="../examples/real/Greenstone.html#sphx-glr-examples-real-greenstone-py"><span class="std std-ref">Greenstone.</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Greenstone.</div>
+</div></div><div class="sphx-glr-clear"></div></section>
+</section>
 
 
           </div>
@@ -196,7 +87,7 @@ rescale: True</p>
         <div class="sphinxsidebarwrapper">
 <p class="logo">
   <a href="../index.html">
-    <img class="logo" src="../_static/./logos/gempy.png" alt="Logo"/>
+    <img class="logo" src="../_static/logos/gempy.png" alt="Logo"/>
     
   </a>
 </p>
@@ -207,24 +98,12 @@ rescale: True</p>
 
 
 <p>
-<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
+<iframe src="https://ghbtns.com/github-btn.html?user=gempy-project&repo=gempy&type=star&count=true&size=large&v=2"
   allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
 </p>
 
 
 
-
-
-    
-
-<p>
-<a class="badge" href="https://travis-ci.org/cgre-aachen/gempy">
-    <img
-        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
-        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
-    />
-</a>
-</p>
 
 
 <h3>Navigation</h3>
@@ -233,35 +112,28 @@ rescale: True</p>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../projects.html">Additional projects</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Getting started</span></p>
+<p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">GemPy Tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../integrations/index.html">Integrations</a></li>
 </ul>
-<p class="caption"><span class="caption-text">API Reference</span></p>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="../code.html">Code</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="../code.html#gempy-api">GemPy API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../code.html#model">Model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../code.html#plot">Plot</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../code.html#data">Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../code.html#grids">Grids</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../code.html#geometric-data">Geometric Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../code.html#interpolator">Interpolator</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../code.html#solution">Solution</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api_reference.html">Code</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../api_reference.html#gempy-api">GemPy API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference.html#plot">Plot</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../api_reference.html#data-classes">Data Classes</a></li>
 </ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
-  <li><a href="../code.html">Code</a><ul>
-      <li>Previous: <a href="gempy.activate_interactive_df.html" title="previous chapter">gempy.activate_interactive_df</a></li>
-      <li>Next: <a href="gempy.compute_model_at.html" title="next chapter">gempy.compute_model_at</a></li>
+  <li><a href="../api_reference.html">Code</a><ul>
+      <li>Previous: <a href="../api_reference.html" title="previous chapter">Code</a></li>
+      <li>Next: <a href="gempy.create_geomodel.html" title="next chapter">gempy.create_geomodel</a></li>
   </ul></li>
   </ul></li>
 </ul>
@@ -270,12 +142,12 @@ rescale: True</p>
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -289,11 +161,11 @@ rescale: True</p>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2017-2021, CGRE-Aachen Team.
+      &copy;2017-2024, Gempy Developers.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
       
       |
       <a href="../_sources/GemPy API/gempy.compute_model.rst.txt"

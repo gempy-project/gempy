@@ -10,7 +10,7 @@
     .. note::
         :class: sphx-glr-download-link-note
 
-        Click :ref:`here <sphx_glr_download_examples_real_Alesmodel.py>`
+        :ref:`Go to the end <sphx_glr_download_examples_real_Alesmodel.py>`
         to download the full example code
 
 .. rst-class:: sphx-glr-example-title
@@ -21,15 +21,24 @@
 Alesmodel: Plotting sections and maps.
 ======================================
 
-.. GENERATED FROM PYTHON SOURCE LINES 6-12
+# %%
+# .. admonition:: Explanation
+#
+#       This model is quite unstable in general and requires float64 to find a solution. The lack of data on
+#       one of the corners for the TRIAS and LIAS series makes that the model bends in an unrealistic
+#       way and erodes CARBO that disappears on that section. The easy way to solve this is to add more data in that area but
+#       I leave as it is since I did no constructed the model.
+#
 
-.. code-block:: python3
+.. GENERATED FROM PYTHON SOURCE LINES 15-22
+
+.. code-block:: Python
 
 
     import gempy as gp
-    import numpy as np
-    import matplotlib.pyplot as plt
+    import gempy_viewer as gpv
     import os
+    import numpy as np
 
 
 
@@ -38,9 +47,10 @@ Alesmodel: Plotting sections and maps.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 13-23
 
-.. code-block:: python3
+.. GENERATED FROM PYTHON SOURCE LINES 23-33
+
+.. code-block:: Python
 
     cwd = os.getcwd()
     if 'examples' not in cwd:
@@ -59,16 +69,38 @@ Alesmodel: Plotting sections and maps.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 24-31
+.. GENERATED FROM PYTHON SOURCE LINES 34-45
 
-.. code-block:: python3
+.. code-block:: Python
 
-    resolution = [100, 100, 100]
-    extent = np.array([729550.0, 751500.0, 1913500.0, 1923650.0, -1800.0, 800.0])
-    geo_model = gp.create_model('Alesmodel')
-    gp.init_data(geo_model, extent=extent, resolution=resolution,
-                 path_i=path_interf,
-                 path_o=path_orient)
+    geo_model: gp.data.GeoModel = gp.create_geomodel(
+        project_name='Claudius',
+        extent=[729550.0, 751500.0, 1913500.0, 1923650.0, -1800.0, 800.0],
+        resolution=None,
+        refinement=6,
+        importer_helper=gp.data.ImporterHelper(
+            path_to_orientations=path_orient,
+            path_to_surface_points=path_interf,
+        )
+    )
+
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 46-53
+
+.. code-block:: Python
+
+    gp.set_section_grid(
+        grid=geo_model.grid,
+        section_dict={
+            'section1': ([732000, 1916000], [745000, 1916000], [200, 150])
+        }
+    )
 
 
 
@@ -76,34 +108,9 @@ Alesmodel: Plotting sections and maps.
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
-    Active grids: ['regular']
-
-    Alesmodel  2021-04-18 11:31
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 32-35
-
-.. code-block:: python3
-
-    sdict = {'section1': ([732000, 1916000], [745000, 1916000], [200, 150])}
-    geo_model.set_section_grid(sdict)
-
-
-
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    Active grids: ['regular' 'sections']
+    Active grids: ['sections']
 
 
 .. raw:: html
@@ -133,372 +140,363 @@ Alesmodel: Plotting sections and maps.
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 36-37
+.. GENERATED FROM PYTHON SOURCE LINES 54-55
 
 sorting of lithologies
 
-.. GENERATED FROM PYTHON SOURCE LINES 37-44
+.. GENERATED FROM PYTHON SOURCE LINES 55-68
 
-.. code-block:: python3
+.. code-block:: Python
 
-    gp.map_stack_to_surfaces(geo_model, {'fault_left': ('fault_left'),
-                                         'fault_right': ('fault_right'),
-                                         'fault_lr': ('fault_lr'),
-                                         'Trias_Series': ('TRIAS', 'LIAS'),
-                                         'Carbon_Series': ('CARBO'),
-                                         'Basement_Series': ('basement')}, remove_unused_series=True)
-
-
-
-
-
-
-.. raw:: html
-
-    <div class="output_subarea output_html rendered_html output_result">
-    <style  type="text/css" >
-    #T_a76f7_row0_col3{
-                background-color:  #015482;
-            }#T_a76f7_row1_col3{
-                background-color:  #ffbe00;
-            }#T_a76f7_row2_col3{
-                background-color:  #9f0052;
-            }#T_a76f7_row3_col3{
-                background-color:  #728f02;
-            }#T_a76f7_row4_col3{
-                background-color:  #443988;
-            }#T_a76f7_row5_col3{
-                background-color:  #ff3f20;
-            }#T_a76f7_row6_col3{
-                background-color:  #5DA629;
-            }</style><table id="T_a76f7_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
-                    <tr>
-                            <th id="T_a76f7_level0_row0" class="row_heading level0 row0" >0</th>
-                            <td id="T_a76f7_row0_col0" class="data row0 col0" >fault_left</td>
-                            <td id="T_a76f7_row0_col1" class="data row0 col1" >fault_left</td>
-                            <td id="T_a76f7_row0_col2" class="data row0 col2" >1</td>
-                            <td id="T_a76f7_row0_col3" class="data row0 col3" >#015482</td>
-                            <td id="T_a76f7_row0_col4" class="data row0 col4" >1</td>
-                </tr>
-                <tr>
-                            <th id="T_a76f7_level0_row1" class="row_heading level0 row1" >2</th>
-                            <td id="T_a76f7_row1_col0" class="data row1 col0" >fault_right</td>
-                            <td id="T_a76f7_row1_col1" class="data row1 col1" >fault_right</td>
-                            <td id="T_a76f7_row1_col2" class="data row1 col2" >1</td>
-                            <td id="T_a76f7_row1_col3" class="data row1 col3" >#ffbe00</td>
-                            <td id="T_a76f7_row1_col4" class="data row1 col4" >2</td>
-                </tr>
-                <tr>
-                            <th id="T_a76f7_level0_row2" class="row_heading level0 row2" >1</th>
-                            <td id="T_a76f7_row2_col0" class="data row2 col0" >fault_lr</td>
-                            <td id="T_a76f7_row2_col1" class="data row2 col1" >fault_lr</td>
-                            <td id="T_a76f7_row2_col2" class="data row2 col2" >1</td>
-                            <td id="T_a76f7_row2_col3" class="data row2 col3" >#9f0052</td>
-                            <td id="T_a76f7_row2_col4" class="data row2 col4" >3</td>
-                </tr>
-                <tr>
-                            <th id="T_a76f7_level0_row3" class="row_heading level0 row3" >3</th>
-                            <td id="T_a76f7_row3_col0" class="data row3 col0" >TRIAS</td>
-                            <td id="T_a76f7_row3_col1" class="data row3 col1" >Trias_Series</td>
-                            <td id="T_a76f7_row3_col2" class="data row3 col2" >1</td>
-                            <td id="T_a76f7_row3_col3" class="data row3 col3" >#728f02</td>
-                            <td id="T_a76f7_row3_col4" class="data row3 col4" >4</td>
-                </tr>
-                <tr>
-                            <th id="T_a76f7_level0_row4" class="row_heading level0 row4" >4</th>
-                            <td id="T_a76f7_row4_col0" class="data row4 col0" >LIAS</td>
-                            <td id="T_a76f7_row4_col1" class="data row4 col1" >Trias_Series</td>
-                            <td id="T_a76f7_row4_col2" class="data row4 col2" >2</td>
-                            <td id="T_a76f7_row4_col3" class="data row4 col3" >#443988</td>
-                            <td id="T_a76f7_row4_col4" class="data row4 col4" >5</td>
-                </tr>
-                <tr>
-                            <th id="T_a76f7_level0_row5" class="row_heading level0 row5" >5</th>
-                            <td id="T_a76f7_row5_col0" class="data row5 col0" >CARBO</td>
-                            <td id="T_a76f7_row5_col1" class="data row5 col1" >Carbon_Series</td>
-                            <td id="T_a76f7_row5_col2" class="data row5 col2" >1</td>
-                            <td id="T_a76f7_row5_col3" class="data row5 col3" >#ff3f20</td>
-                            <td id="T_a76f7_row5_col4" class="data row5 col4" >6</td>
-                </tr>
-                <tr>
-                            <th id="T_a76f7_level0_row6" class="row_heading level0 row6" >6</th>
-                            <td id="T_a76f7_row6_col0" class="data row6 col0" >basement</td>
-                            <td id="T_a76f7_row6_col1" class="data row6 col1" >Basement_Series</td>
-                            <td id="T_a76f7_row6_col2" class="data row6 col2" >1</td>
-                            <td id="T_a76f7_row6_col3" class="data row6 col3" >#5DA629</td>
-                            <td id="T_a76f7_row6_col4" class="data row6 col4" >7</td>
-                </tr>
-        </tbody></table>
-    </div>
-    <br />
-    <br />
-
-.. GENERATED FROM PYTHON SOURCE LINES 45-49
-
-.. code-block:: python3
-
-    colordict = {'LIAS': '#015482', 'TRIAS': '#9f0052', 'CARBO': '#ffbe00', 'basement': '#728f02',
-                 'fault_left': '#2a2a2a', 'fault_right': '#545454', 'fault_lr': '#a5a391'}
-    geo_model.surfaces.colors.change_colors(colordict)
+    gp.map_stack_to_surfaces(
+        gempy_model=geo_model,
+        mapping_object={
+            'fault_left'     : 'fault_left',
+            'fault_right'    : 'fault_right',
+            'fault_lr'       : 'fault_lr',
+            'Trias_Series'   : ('TRIAS', 'LIAS'),
+            'Carbon_Series'  : 'CARBO',
+            'Basement_Series': 'basement'
+        },
+        remove_unused_series=True
+    )
 
 
 
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 50-52
-
-.. code-block:: python3
-
-    a = gp.plot_2d(geo_model, direction='y')
-
-
-
-
-.. image:: /examples/real/images/sphx_glr_Alesmodel_001.png
-    :alt: Cell Number: mid Direction: y
-    :class: sphx-glr-single-img
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 53-55
-
-.. code-block:: python3
-
-    geo_model.rescaling
-
-
-
-
-
-
-.. raw:: html
-
-    <div class="output_subarea output_html rendered_html output_result">
-    <table border="1" class="dataframe">
-      <thead>
-        <tr style="text-align: right;">
-          <th></th>
-          <th>values</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th>rescaling factor</th>
-          <td>26804.17</td>
-        </tr>
-        <tr>
-          <th>centers</th>
-          <td>[739263.6925, 1917834.9612500002, 402.6439239999999]</td>
-        </tr>
-      </tbody>
-    </table>
-    </div>
-    <br />
-    <br />
-
-.. GENERATED FROM PYTHON SOURCE LINES 56-58
-
-.. code-block:: python3
-
-    gp.plot.plot_section_traces(geo_model)
-
-
-
-
-.. image:: /examples/real/images/sphx_glr_Alesmodel_002.png
-    :alt: Cell Number: -1 Direction: z
-    :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
+ .. code-block:: none
+
+    Could not find element 'basement' in any group.
+
+
+.. raw:: html
+
+    <div class="output_subarea output_html rendered_html output_result">
+
+            <table>
+              <tr><td>Structural Groups:</td><td>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>fault_left</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #728f02;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>fault_left</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>fault_right</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #ff3f20;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>fault_right</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>fault_lr</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #443988;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>fault_lr</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>Trias_Series</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #ffbe00;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>TRIAS</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #9f0052;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>LIAS</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>Carbon_Series</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #015482;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>CARBO</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            </td></tr>
+              <tr><td>Fault Relations:</td><td><table style="border-collapse: collapse; table-layout: fixed;"><th></th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">fault_left</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">fault_righ...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">fault_lr</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Trias_Seri...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Carbon_Ser...</th><tr><th>fault_left</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>fault_right</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>fault_lr</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>Trias_Series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>Carbon_Series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr></table></td></tr>
+              <tr><td></td><td>
+            <table>
+              <tr>
+                <td><div style="display: inline-block; background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></div> True</td>
+                <td><div style="display: inline-block; background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></div> False</td>
+              </tr>
+            </table>
+            </td></tr>
+            </table>
+        
+    </div>
+    <br />
+    <br />
+
+.. GENERATED FROM PYTHON SOURCE LINES 69-70
+
+Change colors
+
+.. GENERATED FROM PYTHON SOURCE LINES 70-74
+
+.. code-block:: Python
+
+    geo_model.structural_frame.get_element_by_name("LIAS").color = "#015482"
+    geo_model.structural_frame.get_element_by_name("TRIAS").color = "#9f0052"
+    geo_model.structural_frame.get_element_by_name("CARBO").color = "#ffbe00"
+
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 75-77
+
+.. code-block:: Python
+
+    a = gpv.plot_2d(geo_model, direction='y')
+
+
+
+
+.. image-sg:: /examples/real/images/sphx_glr_Alesmodel_001.png
+   :alt: Cell Number: mid Direction: y
+   :srcset: /examples/real/images/sphx_glr_Alesmodel_001.png
+   :class: sphx-glr-single-img
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 78-80
+
+.. code-block:: Python
+
+    gpv.plot_section_traces(geo_model)
+
+
+
+
+.. image-sg:: /examples/real/images/sphx_glr_Alesmodel_002.png
+   :alt: Cell Number: -1 Direction: z
+   :srcset: /examples/real/images/sphx_glr_Alesmodel_002.png
+   :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
 
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7fcb8c099610>
+    <function plot_section_traces at 0x7f49524f1bd0>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 59-62
+.. GENERATED FROM PYTHON SOURCE LINES 81-84
 
 Faults
 ''''''
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 64-66
+.. GENERATED FROM PYTHON SOURCE LINES 86-96
 
-.. code-block:: python3
+.. code-block:: Python
 
-    geo_model.set_is_fault(['fault_right', 'fault_left', 'fault_lr'], change_color=True)
+    gp.set_is_fault(
+        frame=geo_model.structural_frame,
+        fault_groups=[
+            geo_model.structural_frame.get_group_by_name('fault_left'),
+            geo_model.structural_frame.get_group_by_name('fault_right'),
+            geo_model.structural_frame.get_group_by_name('fault_lr')
+        ],
+        change_color=True
+    )
 
 
 
 
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    Fault colors changed. If you do not like this behavior, set change_color to False.
 
 
 .. raw:: html
 
     <div class="output_subarea output_html rendered_html output_result">
-    <table border="1" class="dataframe">
-      <thead>
-        <tr style="text-align: right;">
-          <th></th>
-          <th>order_series</th>
-          <th>BottomRelation</th>
-          <th>isActive</th>
-          <th>isFault</th>
-          <th>isFinite</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th>fault_left</th>
-          <td>1</td>
-          <td>Fault</td>
-          <td>True</td>
-          <td>True</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>fault_right</th>
-          <td>2</td>
-          <td>Fault</td>
-          <td>True</td>
-          <td>True</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>fault_lr</th>
-          <td>3</td>
-          <td>Fault</td>
-          <td>True</td>
-          <td>True</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>Trias_Series</th>
-          <td>4</td>
-          <td>Erosion</td>
-          <td>True</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>Carbon_Series</th>
-          <td>5</td>
-          <td>Erosion</td>
-          <td>True</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>Basement_Series</th>
-          <td>6</td>
-          <td>Erosion</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-      </tbody>
-    </table>
+
+            <table>
+              <tr><td>Structural Groups:</td><td>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>fault_left</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.FAULT</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #527682;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>fault_left</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>fault_right</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.FAULT</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #527682;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>fault_right</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>fault_lr</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.FAULT</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #527682;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>fault_lr</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>Trias_Series</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #9f0052;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>TRIAS</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #015482;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>LIAS</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>Carbon_Series</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #ffbe00;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>CARBO</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            </td></tr>
+              <tr><td>Fault Relations:</td><td><table style="border-collapse: collapse; table-layout: fixed;"><th></th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">fault_left</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">fault_righ...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">fault_lr</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Trias_Seri...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Carbon_Ser...</th><tr><th>fault_left</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>fault_right</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>fault_lr</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>Trias_Series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>Carbon_Series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr></table></td></tr>
+              <tr><td></td><td>
+            <table>
+              <tr>
+                <td><div style="display: inline-block; background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></div> True</td>
+                <td><div style="display: inline-block; background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></div> False</td>
+              </tr>
+            </table>
+            </td></tr>
+            </table>
+        
     </div>
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 67-72
-
-.. code-block:: python3
-
-    gp.set_interpolator(geo_model,
-                        output=['geology'], compile_theano=True,
-                        theano_optimizer='fast_run', dtype='float64',
-                        verbose=[])
-
-
-
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    Setting kriging parameters to their default values.
-    Compiling theano function...
-    Level of Optimization:  fast_run
-    Device:  cpu
-    Precision:  float64
-    Number of faults:  3
-    Compilation Done!
-    Kriging values: 
-                                  values
-    range                      24322.52
-    $C_o$                   14085357.14
-    drift equations  [3, 3, 3, 3, 3, 3]
-
-    <gempy.core.interpolator.InterpolatorModel object at 0x7fccb8a38160>
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 73-76
+.. GENERATED FROM PYTHON SOURCE LINES 97-100
 
 Topography
 ~~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 78-80
+.. GENERATED FROM PYTHON SOURCE LINES 102-111
 
-.. code-block:: python3
+.. code-block:: Python
 
-    geo_model.set_topography(source='gdal', filepath=path_dem)
+    gp.set_topography_from_file(
+        grid=geo_model.grid,
+        filepath=path_dem,
+        crop_to_extent=[729550.0, 751500.0, 1_913_500.0, 1923650.0]
+    )
+
+
+    gpv.plot_3d(geo_model, show_topography=True, ve=1, image=True)
 
 
 
+
+.. image-sg:: /examples/real/images/sphx_glr_Alesmodel_003.png
+   :alt: Alesmodel
+   :srcset: /examples/real/images/sphx_glr_Alesmodel_003.png
+   :class: sphx-glr-single-img
+
+.. image-sg:: /examples/real/images/sphx_glr_Alesmodel_004.png
+   :alt: Alesmodel
+   :srcset: /examples/real/images/sphx_glr_Alesmodel_004.png
+   :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
-    Cropped raster to geo_model.grid.extent.
-    depending on the size of the raster, this can take a while...
-    storing converted file...
-    Active grids: ['regular' 'topography' 'sections']
+    Active grids: ['topography' 'sections']
 
-    Grid Object. Values: 
-    array([[ 7.29659750e+05,  1.91355075e+06, -1.78700000e+03],
-           [ 7.29659750e+05,  1.91355075e+06, -1.76100000e+03],
-           [ 7.29659750e+05,  1.91355075e+06, -1.73500000e+03],
-           ...,
-           [ 7.45000000e+05,  1.91600000e+06,  7.65100671e+02],
-           [ 7.45000000e+05,  1.91600000e+06,  7.82550336e+02],
-           [ 7.45000000e+05,  1.91600000e+06,  8.00000000e+02]])
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f4904317df0>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 81-83
+.. GENERATED FROM PYTHON SOURCE LINES 112-114
 
-.. code-block:: python3
+.. code-block:: Python
 
-    geo_model.surfaces
+    carbo = geo_model.structural_frame.get_group_by_name("Carbon_Series")
+
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 115-123
+
+.. code-block:: Python
+
+    geo_model.interpolation_options.number_octree_levels_surface = 4
+    geo_model.interpolation_options.kernel_options.range = .8
+    gp.modify_surface_points(
+        geo_model=geo_model,
+        elements_names=["CARBO", "LIAS", "TRIAS"],
+        nugget=0.005
+    )
 
 
 
@@ -508,227 +506,380 @@ Topography
 .. raw:: html
 
     <div class="output_subarea output_html rendered_html output_result">
-    <style  type="text/css" >
-    #T_7a99f_row0_col3,#T_7a99f_row1_col3,#T_7a99f_row2_col3{
-                background-color:  #527682;
-            }#T_7a99f_row3_col3{
-                background-color:  #9f0052;
-            }#T_7a99f_row4_col3{
-                background-color:  #015482;
-            }#T_7a99f_row5_col3{
-                background-color:  #ffbe00;
-            }#T_7a99f_row6_col3{
-                background-color:  #728f02;
-            }</style><table id="T_7a99f_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
-                    <tr>
-                            <th id="T_7a99f_level0_row0" class="row_heading level0 row0" >0</th>
-                            <td id="T_7a99f_row0_col0" class="data row0 col0" >fault_left</td>
-                            <td id="T_7a99f_row0_col1" class="data row0 col1" >fault_left</td>
-                            <td id="T_7a99f_row0_col2" class="data row0 col2" >1</td>
-                            <td id="T_7a99f_row0_col3" class="data row0 col3" >#527682</td>
-                            <td id="T_7a99f_row0_col4" class="data row0 col4" >1</td>
-                </tr>
-                <tr>
-                            <th id="T_7a99f_level0_row1" class="row_heading level0 row1" >2</th>
-                            <td id="T_7a99f_row1_col0" class="data row1 col0" >fault_right</td>
-                            <td id="T_7a99f_row1_col1" class="data row1 col1" >fault_right</td>
-                            <td id="T_7a99f_row1_col2" class="data row1 col2" >1</td>
-                            <td id="T_7a99f_row1_col3" class="data row1 col3" >#527682</td>
-                            <td id="T_7a99f_row1_col4" class="data row1 col4" >2</td>
-                </tr>
-                <tr>
-                            <th id="T_7a99f_level0_row2" class="row_heading level0 row2" >1</th>
-                            <td id="T_7a99f_row2_col0" class="data row2 col0" >fault_lr</td>
-                            <td id="T_7a99f_row2_col1" class="data row2 col1" >fault_lr</td>
-                            <td id="T_7a99f_row2_col2" class="data row2 col2" >1</td>
-                            <td id="T_7a99f_row2_col3" class="data row2 col3" >#527682</td>
-                            <td id="T_7a99f_row2_col4" class="data row2 col4" >3</td>
-                </tr>
-                <tr>
-                            <th id="T_7a99f_level0_row3" class="row_heading level0 row3" >3</th>
-                            <td id="T_7a99f_row3_col0" class="data row3 col0" >TRIAS</td>
-                            <td id="T_7a99f_row3_col1" class="data row3 col1" >Trias_Series</td>
-                            <td id="T_7a99f_row3_col2" class="data row3 col2" >1</td>
-                            <td id="T_7a99f_row3_col3" class="data row3 col3" >#9f0052</td>
-                            <td id="T_7a99f_row3_col4" class="data row3 col4" >4</td>
-                </tr>
-                <tr>
-                            <th id="T_7a99f_level0_row4" class="row_heading level0 row4" >4</th>
-                            <td id="T_7a99f_row4_col0" class="data row4 col0" >LIAS</td>
-                            <td id="T_7a99f_row4_col1" class="data row4 col1" >Trias_Series</td>
-                            <td id="T_7a99f_row4_col2" class="data row4 col2" >2</td>
-                            <td id="T_7a99f_row4_col3" class="data row4 col3" >#015482</td>
-                            <td id="T_7a99f_row4_col4" class="data row4 col4" >5</td>
-                </tr>
-                <tr>
-                            <th id="T_7a99f_level0_row5" class="row_heading level0 row5" >5</th>
-                            <td id="T_7a99f_row5_col0" class="data row5 col0" >CARBO</td>
-                            <td id="T_7a99f_row5_col1" class="data row5 col1" >Carbon_Series</td>
-                            <td id="T_7a99f_row5_col2" class="data row5 col2" >1</td>
-                            <td id="T_7a99f_row5_col3" class="data row5 col3" >#ffbe00</td>
-                            <td id="T_7a99f_row5_col4" class="data row5 col4" >6</td>
-                </tr>
-                <tr>
-                            <th id="T_7a99f_level0_row6" class="row_heading level0 row6" >6</th>
-                            <td id="T_7a99f_row6_col0" class="data row6 col0" >basement</td>
-                            <td id="T_7a99f_row6_col1" class="data row6 col1" >Basement_Series</td>
-                            <td id="T_7a99f_row6_col2" class="data row6 col2" >1</td>
-                            <td id="T_7a99f_row6_col3" class="data row6 col3" >#728f02</td>
-                            <td id="T_7a99f_row6_col4" class="data row6 col4" >7</td>
-                </tr>
-        </tbody></table>
+
+            <table>
+              <tr><td>Structural Groups:</td><td>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>fault_left</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.FAULT</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #527682;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>fault_left</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>fault_right</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.FAULT</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #527682;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>fault_right</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>fault_lr</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.FAULT</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #527682;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>fault_lr</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>Trias_Series</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #9f0052;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>TRIAS</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #015482;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>LIAS</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>Carbon_Series</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #ffbe00;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>CARBO</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            </td></tr>
+              <tr><td>Fault Relations:</td><td><table style="border-collapse: collapse; table-layout: fixed;"><th></th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">fault_left</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">fault_righ...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">fault_lr</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Trias_Seri...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Carbon_Ser...</th><tr><th>fault_left</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>fault_right</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>fault_lr</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>Trias_Series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>Carbon_Series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr></table></td></tr>
+              <tr><td></td><td>
+            <table>
+              <tr>
+                <td><div style="display: inline-block; background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></div> True</td>
+                <td><div style="display: inline-block; background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></div> False</td>
+              </tr>
+            </table>
+            </td></tr>
+            </table>
+        
     </div>
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 84-86
+.. GENERATED FROM PYTHON SOURCE LINES 124-127
 
-.. code-block:: python3
+.. code-block:: Python
 
-    _ = gp.compute_model(geo_model, compute_mesh=True, compute_mesh_options={'rescale': False})
+    print(geo_model.structural_frame)
+    geo_model.structural_frame
 
 
-
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 87-90
-
-.. code-block:: python3
-
-    gp.plot_2d(geo_model, cell_number=[4], direction=['y'], show_topography=True,
-               show_data=True)
-
-
-
-
-.. image:: /examples/real/images/sphx_glr_Alesmodel_003.png
-    :alt: Cell Number: 4 Direction: y
-    :class: sphx-glr-single-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-
-    <gempy.plot.visualization_2d.Plot2D object at 0x7fcc6bb90a60>
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 91-94
-
-.. code-block:: python3
-
-    gp.plot_2d(geo_model, section_names=['topography'], show_data=False,
-               show_boundaries=False)
-
-
-
-
-.. image:: /examples/real/images/sphx_glr_Alesmodel_004.png
-    :alt: Geological map
-    :class: sphx-glr-single-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-
-    <gempy.plot.visualization_2d.Plot2D object at 0x7fcc2a5945e0>
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 95-96
-
-sphinx_gallery_thumbnail_number = 5
-
-.. GENERATED FROM PYTHON SOURCE LINES 96-98
-
-.. code-block:: python3
-
-    gp.plot_3d(geo_model)
-
-
-
-
-.. image:: /examples/real/images/sphx_glr_Alesmodel_005.png
-    :alt: Alesmodel
-    :class: sphx-glr-single-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-
-    <gempy.plot.vista.GemPyToVista object at 0x7fcb8ad989d0>
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 99-101
-
-np.save('Ales_vert3', geo_model.solutions.vertices)
-np.save('Ales_edges3', geo_model.solutions.edges)
-
-.. GENERATED FROM PYTHON SOURCE LINES 103-104
-
-gp.plot.plot_ar(geo_model)
-
-.. GENERATED FROM PYTHON SOURCE LINES 104-105
-
-.. code-block:: python3
-
-
-    gp.save_model(geo_model)
 
 
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
+ .. code-block:: none
+
+    StructuralFrame(
+            structural_groups=[
+    StructuralGroup(
+            name=fault_left,
+            structural_relation=StackRelationType.FAULT,
+            elements=[
+    Element(
+            name=fault_left,
+            color=#527682,
+            is_active=True
+    )
+    ]
+    ),
+    StructuralGroup(
+            name=fault_right,
+            structural_relation=StackRelationType.FAULT,
+            elements=[
+    Element(
+            name=fault_right,
+            color=#527682,
+            is_active=True
+    )
+    ]
+    ),
+    StructuralGroup(
+            name=fault_lr,
+            structural_relation=StackRelationType.FAULT,
+            elements=[
+    Element(
+            name=fault_lr,
+            color=#527682,
+            is_active=True
+    )
+    ]
+    ),
+    StructuralGroup(
+            name=Trias_Series,
+            structural_relation=StackRelationType.ERODE,
+            elements=[
+    Element(
+            name=TRIAS,
+            color=#9f0052,
+            is_active=True
+    ),
+    Element(
+            name=LIAS,
+            color=#015482,
+            is_active=True
+    )
+    ]
+    ),
+    StructuralGroup(
+            name=Carbon_Series,
+            structural_relation=StackRelationType.ERODE,
+            elements=[
+    Element(
+            name=CARBO,
+            color=#ffbe00,
+            is_active=True
+    )
+    ]
+    )
+    ],
+            fault_relations=
+    [[False, False, False,  True,  True],
+     [False, False, False,  True,  True],
+     [False, False, False,  True,  True],
+     [False, False, False, False, False],
+     [False, False, False, False, False]],
+
+
+
+.. raw:: html
+
+    <div class="output_subarea output_html rendered_html output_result">
+
+            <table>
+              <tr><td>Structural Groups:</td><td>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>fault_left</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.FAULT</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #527682;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>fault_left</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>fault_right</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.FAULT</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #527682;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>fault_right</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>fault_lr</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.FAULT</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #527682;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>fault_lr</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>Trias_Series</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #9f0052;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>TRIAS</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #015482;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>LIAS</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>Carbon_Series</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #ffbe00;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>CARBO</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            </td></tr>
+              <tr><td>Fault Relations:</td><td><table style="border-collapse: collapse; table-layout: fixed;"><th></th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">fault_left</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">fault_righ...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">fault_lr</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Trias_Seri...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Carbon_Ser...</th><tr><th>fault_left</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>fault_right</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>fault_lr</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>Trias_Series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>Carbon_Series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr></table></td></tr>
+              <tr><td></td><td>
+            <table>
+              <tr>
+                <td><div style="display: inline-block; background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></div> True</td>
+                <td><div style="display: inline-block; background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></div> False</td>
+              </tr>
+            </table>
+            </td></tr>
+            </table>
+        
+    </div>
+    <br />
+    <br />
+
+.. GENERATED FROM PYTHON SOURCE LINES 128-140
+
+.. code-block:: Python
+
+    geo_model.interpolation_options.mesh_extraction = False
+    _ = gp.compute_model(
+        geo_model,
+        engine_config=gp.data.GemPyEngineConfig(
+            backend=gp.data.AvailableBackends.PYTORCH,
+            use_gpu=True,
+            dtype="float64"
+        ))
+
+
+    gpv.plot_2d(geo_model, show_topography=False, section_names=['topography'], show_lith=True)
+
+
+
+
+.. image-sg:: /examples/real/images/sphx_glr_Alesmodel_005.png
+   :alt: Geological map
+   :srcset: /examples/real/images/sphx_glr_Alesmodel_005.png
+   :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+    Setting Backend To: AvailableBackends.PYTORCH
+
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f4909f04a60>
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 141-144
+
+.. code-block:: Python
+
+    gpv.plot_2d(geo_model, cell_number=[4], direction=['y'], show_topography=True, show_data=True)
+    gpv.plot_2d(geo_model, cell_number=[-4], direction=['y'], show_topography=True, show_data=True)
+
+
+
+
+.. rst-class:: sphx-glr-horizontal
+
+
+    *
+
+      .. image-sg:: /examples/real/images/sphx_glr_Alesmodel_006.png
+         :alt: Cell Number: 4 Direction: y
+         :srcset: /examples/real/images/sphx_glr_Alesmodel_006.png
+         :class: sphx-glr-multi-img
+
+    *
+
+      .. image-sg:: /examples/real/images/sphx_glr_Alesmodel_007.png
+         :alt: Cell Number: -4 Direction: y
+         :srcset: /examples/real/images/sphx_glr_Alesmodel_007.png
+         :class: sphx-glr-multi-img
+
+
+.. rst-class:: sphx-glr-script-out
 
  .. code-block:: none
 
 
-    True
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f490265be20>
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 145-146
+
+sphinx_gallery_thumbnail_number = -1
+
+.. GENERATED FROM PYTHON SOURCE LINES 146-147
+
+.. code-block:: Python
+
+    gpv.plot_3d(geo_model, show_lith=True, show_topography=True, kwargs_plot_structured_grid={'opacity': 0.8})
+
+
+
+.. image-sg:: /examples/real/images/sphx_glr_Alesmodel_008.png
+   :alt: Alesmodel
+   :srcset: /examples/real/images/sphx_glr_Alesmodel_008.png
+   :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f49024e0b20>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 2 minutes  3.841 seconds)
+   **Total running time of the script:** (0 minutes 31.237 seconds)
 
 
 .. _sphx_glr_download_examples_real_Alesmodel.py:
 
+.. only:: html
 
-.. only :: html
+  .. container:: sphx-glr-footer sphx-glr-footer-example
 
- .. container:: sphx-glr-footer
-    :class: sphx-glr-footer-example
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
+      :download:`Download Jupyter notebook: Alesmodel.ipynb <Alesmodel.ipynb>`
 
+    .. container:: sphx-glr-download sphx-glr-download-python
 
-  .. container:: sphx-glr-download sphx-glr-download-python
-
-     :download:`Download Python source code: Alesmodel.py <Alesmodel.py>`
-
-
-
-  .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-     :download:`Download Jupyter notebook: Alesmodel.ipynb <Alesmodel.ipynb>`
+      :download:`Download Python source code: Alesmodel.py <Alesmodel.py>`
 
 
 .. only:: html

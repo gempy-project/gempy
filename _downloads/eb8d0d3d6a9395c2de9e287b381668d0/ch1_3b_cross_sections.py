@@ -7,8 +7,10 @@
 # %%
 # Importing
 import gempy as gp
+import gempy_viewer as gpv
 import numpy as np
 import matplotlib.pyplot as plt
+
 np.random.seed(1234)
 
 # %%
@@ -17,19 +19,35 @@ np.random.seed(1234)
 # 
 
 # %% 
-geo_model = gp.create_model('Tutorial_ch1-1_Basics')
-
 # Importing the data from CSV-files and setting extent and resolution
 data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
 
-gp.init_data(geo_model, [0, 2000., 0, 2000., 0, 2000.], [5, 5, 5],
-             path_o=data_path + "/data/input_data/tut_chapter1/simple_fault_model_orientations.csv",
-             path_i=data_path + "/data/input_data/tut_chapter1/simple_fault_model_points.csv", default_values=True)
-gp.map_stack_to_surfaces(geo_model,
-                         {"Fault_Series": 'Main_Fault',
-                          "Strat_Series": ('Sandstone_2', 'Siltstone',
-                                           'Shale', 'Sandstone_1', 'basement')}, remove_unused_series=True)
-geo_model.set_is_fault(['Fault_Series'])
+geo_model: gp.data.GeoModel = gp.create_geomodel(
+    project_name='Tutorial_ch1_1_Basics',
+    extent=[0, 2000, 0, 2000, 0, 750],
+    resolution=[20, 20, 20],  # * Here we define the resolution of the voxels
+    refinement=4,  # * Here we define the number of octree levels. If octree levels are defined, the resolution is ignored.
+    importer_helper=gp.data.ImporterHelper(
+        path_to_orientations=data_path + "/data/input_data/getting_started/simple_fault_model_orientations.csv",
+        path_to_surface_points=data_path + "/data/input_data/getting_started/simple_fault_model_points.csv",
+        hash_surface_points="4cdd54cd510cf345a583610585f2206a2936a05faaae05595b61febfc0191563",
+        hash_orientations="7ba1de060fc8df668d411d0207a326bc94a6cdca9f5fe2ed511fd4db6b3f3526"
+    )
+)
+
+gp.map_stack_to_surfaces(
+    gempy_model=geo_model,
+    mapping_object=  # TODO: This mapping I do not like it too much. We should be able to do it passing the data objects directly
+    {
+        "Fault_Series": 'Main_Fault',
+        "Strat_Series": ('Sandstone_2', 'Siltstone', 'Shale', 'Sandstone_1')
+    }
+)
+
+gp.set_is_fault(
+    frame=geo_model.structural_frame,
+    fault_groups=['Fault_Series']
+)
 
 # %%
 # Add sections
@@ -43,10 +61,14 @@ geo_model.set_is_fault(['Fault_Series'])
 # 
 
 # %% 
-section_dict = {'section1': ([0, 0], [2000, 2000], [100, 80]),
-                'section2': ([800, 0], [800, 2000], [150, 100]),
-                'section3': ([0, 200], [1500, 500], [200, 150])}  # p1,p2,resolution
-geo_model.set_section_grid(section_dict)
+gp.set_section_grid(
+    grid=geo_model.grid,
+    section_dict={
+        'section1': ([0, 0], [2000, 2000], [100, 80]),
+        'section2': ([800, 0], [800, 2000], [150, 100]),
+        'section3': ([0, 200], [1500, 500], [200, 150])
+    }  # p1,p2,resolution
+)
 
 # %%
 # Add topography
@@ -54,86 +76,41 @@ geo_model.set_section_grid(section_dict)
 # 
 
 # %% 
-geo_model.set_topography(fd=1.2, d_z=np.array([600, 2000]), resolution=np.array([50, 50]))
+gp.set_topography_from_random(
+    grid=geo_model.grid,
+    fractal_dimension=1.2,
+    d_z=np.array([300, 750]),
+    topography_resolution=np.array([50, 50])
+)
 
 # %%
 # Active grids:
 # 
 
 # %% 
-geo_model.get_active_grids()
+geo_model.grid.active_grids_bool
 
 # %% 
-gp.plot.plot_section_traces(geo_model)
-plt.show()
+gpv.plot_section_traces(geo_model)
 
 # %% 
-gp.set_interpolator(geo_model)
 
 # %% 
-sol = gp.compute_model(geo_model, compute_mesh=False)
+geo_model.interpolation_options.mesh_extraction = False
+sol = gp.compute_model(geo_model)
 
 # %% 
-gp.plot_2d(geo_model, section_names=['topography'])
+gpv.plot_2d(geo_model, section_names=['topography'])
 
 # %% 
-gp.plot_2d(geo_model, section_names=['section1'])
-plt.show()
+gpv.plot_2d(geo_model, section_names=['section1'])
 
 # %%
+gpv.plot_2d(
+    model=geo_model,
+    section_names=['section1', 'section2', 'section3', 'topography'],
+    show_topography=True
+)
+
+
 # sphinx_gallery_thumbnail_number = 4
-gp.plot_2d(geo_model, section_names=['section1', 'section2',
-                                     'section3', 'topography'],
-           show_topography=True)
-plt.show()
-
-# %%
-# Get polygons of formations in sections
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# 
-
-# %% 
-from gempy.core.grid_modules import section_utils
-
-# %% 
-polygondict, cdict, extent = section_utils.get_polygon_dictionary(geo_model, 'section1')
-
-# %% 
-# this stores the xy points in the sections for every surface.
-polygondict
-
-# %%
-# Look at resulting polygons:
-# '''''''''''''''''''''''''''
-#
-
-# %%
-import matplotlib.path
-import matplotlib.patches as patches
-
-
-def plot_pathdict(pathdict, cdict, extent, ax=None, surfaces=list(geo_model.surfaces.df['surface'])[:-1][::-1]):
-    if ax == None:
-        fig, ax = plt.subplots()
-    for formation in surfaces:
-        for path in pathdict.get(formation):
-            if path !=[]:
-                if type(path) == matplotlib.path.Path:
-                    patch = patches.PathPatch(path, fill=False, lw=1, edgecolor=cdict.get(formation, 'k'))
-                    ax.add_patch(patch)
-                elif type(path) == list:
-                    for subpath in path:
-                        assert type(subpath == matplotlib.path.Path)
-                        patch = patches.PathPatch(subpath, fill=False, lw=1, edgecolor=cdict.get(formation, 'k'))
-                        ax.add_patch(patch)
-    ax.set_ylim(extent[2:4])
-    ax.set_xlim(extent[:2])
-    plt.show()
-
-# %%
-plot_pathdict(polygondict, cdict, extent)
-
-# %%
-plot_pathdict(polygondict, cdict, extent, surfaces=['basement', 'Main_Fault'])
-
-gp.save_model(geo_model)

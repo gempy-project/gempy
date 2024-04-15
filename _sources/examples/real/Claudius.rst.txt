@@ -10,7 +10,7 @@
     .. note::
         :class: sphx-glr-download-link-note
 
-        Click :ref:`here <sphx_glr_download_examples_real_Claudius.py>`
+        :ref:`Go to the end <sphx_glr_download_examples_real_Claudius.py>`
         to download the full example code
 
 .. rst-class:: sphx-glr-example-title
@@ -19,17 +19,17 @@
 
 
 Claudius
-~~~~~~~~
+========
 
 .. GENERATED FROM PYTHON SOURCE LINES 8-18
 
-.. code-block:: python3
+.. code-block:: Python
 
     import sys, os
-    os.environ["THEANO_FLAGS"] = "mode=FAST_RUN,device=cpu"
 
     # Importing gempy
     import gempy as gp
+    import gempy_viewer as gpv
 
     # Aux imports
     import numpy as np
@@ -51,22 +51,38 @@ With pandas we can do it directly from the web and with the right args
 we can directly tidy the data in gempy style:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 27-42
+.. GENERATED FROM PYTHON SOURCE LINES 27-58
 
-.. code-block:: python3
+.. code-block:: Python
+
+
+    data_path = os.path.abspath('../../data/input_data/Claudius')
+
+    reduce_data_by = 30
 
     dfs = []
     for letter in 'ABCD':
-        dfs.append(pn.read_csv('https://raw.githubusercontent.com/Loop3D/ImplicitBenchmark/master/Claudius/' +
-                               letter + 'Points.csv', sep=';',
-                               names=['X', 'Y', 'Z', 'surface', 'cutoff'], header=0)[::5])
+        dfs.append(
+            pn.read_csv(
+                filepath_or_buffer=f"{data_path}/{letter}Points.csv",
+                sep=';',
+                names=['X', 'Y', 'Z', 'surface', 'cutoff'],
+                header=0
+            )[::reduce_data_by]
+        )
+
     # Add fault:
-    dfs.append(pn.read_csv('https://raw.githubusercontent.com/Loop3D/ImplicitBenchmark/master/Claudius/Fault.csv',
-                           names=['X', 'Y', 'Z', 'surface'], header=0, sep=';'))
+    dfs.append(
+        pn.read_csv(
+            filepath_or_buffer=f"{data_path}/Fault.csv",
+            names=['X', 'Y', 'Z', 'surface'],
+            header=0,
+            sep=','
+        )
+    )
 
     surface_points = pn.concat(dfs, sort=True)
-    surface_points['surface'] =surface_points['surface'].astype('str')
-    # surface_points['surface'] = surface_points['surface'].astype('str')
+    surface_points['surface'] = surface_points['surface'].astype('str')
     surface_points.reset_index(inplace=True, drop=False)
     surface_points.tail()
 
@@ -106,47 +122,47 @@ we can directly tidy the data in gempy style:
       </thead>
       <tbody>
         <tr>
-          <th>4079</th>
+          <th>755</th>
           <td>88</td>
-          <td>551099.25</td>
-          <td>7.82e+06</td>
-          <td>-10466.86</td>
+          <td>551099.250977</td>
+          <td>7.817652e+06</td>
+          <td>-10466.863281</td>
           <td>NaN</td>
           <td>Claudius_fault</td>
         </tr>
         <tr>
-          <th>4080</th>
+          <th>756</th>
           <td>89</td>
-          <td>551160.81</td>
-          <td>7.82e+06</td>
-          <td>-10356.46</td>
+          <td>551160.807495</td>
+          <td>7.817503e+06</td>
+          <td>-10356.463867</td>
           <td>NaN</td>
           <td>Claudius_fault</td>
         </tr>
         <tr>
-          <th>4081</th>
+          <th>757</th>
           <td>90</td>
-          <td>551131.90</td>
-          <td>7.82e+06</td>
-          <td>-10383.32</td>
+          <td>551131.898438</td>
+          <td>7.817659e+06</td>
+          <td>-10383.323242</td>
           <td>NaN</td>
           <td>Claudius_fault</td>
         </tr>
         <tr>
-          <th>4082</th>
+          <th>758</th>
           <td>91</td>
-          <td>551164.41</td>
-          <td>7.82e+06</td>
-          <td>-10299.96</td>
+          <td>551164.412476</td>
+          <td>7.817654e+06</td>
+          <td>-10299.957031</td>
           <td>NaN</td>
           <td>Claudius_fault</td>
         </tr>
         <tr>
-          <th>4083</th>
+          <th>759</th>
           <td>92</td>
-          <td>551197.19</td>
-          <td>7.82e+06</td>
-          <td>-10216.82</td>
+          <td>551197.192139</td>
+          <td>7.817647e+06</td>
+          <td>-10216.820312</td>
           <td>NaN</td>
           <td>Claudius_fault</td>
         </tr>
@@ -157,9 +173,9 @@ we can directly tidy the data in gempy style:
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 43-45
+.. GENERATED FROM PYTHON SOURCE LINES 59-61
 
-.. code-block:: python3
+.. code-block:: Python
 
     surface_points.dtypes
 
@@ -168,8 +184,6 @@ we can directly tidy the data in gempy style:
 
 
 .. rst-class:: sphx-glr-script-out
-
- Out:
 
  .. code-block:: none
 
@@ -184,14 +198,14 @@ we can directly tidy the data in gempy style:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 46-48
+.. GENERATED FROM PYTHON SOURCE LINES 62-64
 
 How many points are per surface
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 50-52
+.. GENERATED FROM PYTHON SOURCE LINES 66-68
 
-.. code-block:: python3
+.. code-block:: Python
 
     surface_points.groupby('surface').count()
 
@@ -239,35 +253,35 @@ How many points are per surface
       <tbody>
         <tr>
           <th>0</th>
-          <td>1000</td>
-          <td>1000</td>
-          <td>1000</td>
-          <td>1000</td>
-          <td>1000</td>
+          <td>167</td>
+          <td>167</td>
+          <td>167</td>
+          <td>167</td>
+          <td>167</td>
         </tr>
         <tr>
           <th>250</th>
-          <td>1000</td>
-          <td>1000</td>
-          <td>1000</td>
-          <td>1000</td>
-          <td>1000</td>
+          <td>167</td>
+          <td>167</td>
+          <td>167</td>
+          <td>167</td>
+          <td>167</td>
         </tr>
         <tr>
           <th>330</th>
-          <td>991</td>
-          <td>991</td>
-          <td>991</td>
-          <td>991</td>
-          <td>991</td>
+          <td>166</td>
+          <td>166</td>
+          <td>166</td>
+          <td>166</td>
+          <td>166</td>
         </tr>
         <tr>
           <th>60</th>
-          <td>1000</td>
-          <td>1000</td>
-          <td>1000</td>
-          <td>1000</td>
-          <td>1000</td>
+          <td>167</td>
+          <td>167</td>
+          <td>167</td>
+          <td>167</td>
+          <td>167</td>
         </tr>
         <tr>
           <th>Claudius_fault</th>
@@ -284,20 +298,24 @@ How many points are per surface
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 53-55
+.. GENERATED FROM PYTHON SOURCE LINES 69-71
 
 Now we do the same with the orientations:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 57-72
+.. GENERATED FROM PYTHON SOURCE LINES 73-92
 
-.. code-block:: python3
+.. code-block:: Python
 
     dfs = []
 
     for surf in ['0', '330']:
-        o = pn.read_csv('https://raw.githubusercontent.com/Loop3D/ImplicitBenchmark/master/Claudius/Dips.csv', sep=';',
-                        names=['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', '-'], header=1)
+        o = pn.read_csv(
+            filepath_or_buffer=f"{data_path}/Dips.csv",
+            sep=';',
+            names=['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', '-'],
+            header=1
+        )
 
         # Orientation needs to belong to a surface. This is mainly to categorize to which series belong and to
         # use the same color
@@ -349,61 +367,61 @@ Now we do the same with the orientations:
         <tr>
           <th>43</th>
           <td>19</td>
-          <td>0.98</td>
-          <td>0.19</td>
-          <td>0.14</td>
-          <td>-0.97</td>
-          <td>550989.31</td>
-          <td>7.82e+06</td>
-          <td>-9782.97</td>
+          <td>0.976692</td>
+          <td>0.187195</td>
+          <td>0.138165</td>
+          <td>-0.972558</td>
+          <td>550989.3105</td>
+          <td>7817210.527</td>
+          <td>-9782.967773</td>
           <td>330</td>
         </tr>
         <tr>
           <th>44</th>
           <td>20</td>
-          <td>0.25</td>
-          <td>-0.08</td>
-          <td>-0.04</td>
-          <td>-1.00</td>
-          <td>550939.31</td>
-          <td>7.82e+06</td>
-          <td>-9958.43</td>
+          <td>0.248187</td>
+          <td>-0.080561</td>
+          <td>-0.043063</td>
+          <td>-0.995819</td>
+          <td>550939.3105</td>
+          <td>7821227.309</td>
+          <td>-9958.425781</td>
           <td>330</td>
         </tr>
         <tr>
           <th>45</th>
           <td>21</td>
-          <td>0.65</td>
-          <td>-0.16</td>
-          <td>0.08</td>
-          <td>-0.98</td>
-          <td>549276.81</td>
-          <td>7.82e+06</td>
-          <td>-9985.13</td>
+          <td>0.649480</td>
+          <td>-0.161328</td>
+          <td>0.075208</td>
+          <td>-0.984031</td>
+          <td>549276.8105</td>
+          <td>7820682.980</td>
+          <td>-9985.125977</td>
           <td>330</td>
         </tr>
         <tr>
           <th>46</th>
           <td>22</td>
-          <td>0.05</td>
-          <td>-0.01</td>
-          <td>-0.15</td>
-          <td>-0.99</td>
-          <td>548976.81</td>
-          <td>7.82e+06</td>
-          <td>-9974.27</td>
+          <td>0.050025</td>
+          <td>-0.012103</td>
+          <td>-0.153309</td>
+          <td>-0.988104</td>
+          <td>548976.8105</td>
+          <td>7820345.121</td>
+          <td>-9974.265625</td>
           <td>330</td>
         </tr>
         <tr>
           <th>47</th>
           <td>23</td>
-          <td>0.76</td>
-          <td>0.37</td>
-          <td>-0.19</td>
-          <td>-0.91</td>
-          <td>549764.31</td>
-          <td>7.82e+06</td>
-          <td>-9901.21</td>
+          <td>0.759421</td>
+          <td>0.369490</td>
+          <td>-0.187053</td>
+          <td>-0.910213</td>
+          <td>549764.3105</td>
+          <td>7820457.738</td>
+          <td>-9901.208984</td>
           <td>330</td>
         </tr>
       </tbody>
@@ -413,9 +431,9 @@ Now we do the same with the orientations:
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 73-75
+.. GENERATED FROM PYTHON SOURCE LINES 93-95
 
-.. code-block:: python3
+.. code-block:: Python
 
     orientations.dtypes
 
@@ -424,8 +442,6 @@ Now we do the same with the orientations:
 
 
 .. rst-class:: sphx-glr-script-out
-
- Out:
 
  .. code-block:: none
 
@@ -443,7 +459,7 @@ Now we do the same with the orientations:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 76-84
+.. GENERATED FROM PYTHON SOURCE LINES 96-104
 
 Data initialization:
 ~~~~~~~~~~~~~~~~~~~~
@@ -454,68 +470,143 @@ Suggested size of the axis-aligned modeling box: Origin: 548800 7816600
 Suggested resolution: 100m x 100m x -90m (grid size 38 x 55 x 30)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 86-87
+.. GENERATED FROM PYTHON SOURCE LINES 106-107
 
 Number of voxels:
 
-.. GENERATED FROM PYTHON SOURCE LINES 87-89
+.. GENERATED FROM PYTHON SOURCE LINES 107-159
 
-.. code-block:: python3
+.. code-block:: Python
 
     np.array([38, 55, 30]).prod()
 
+    surface_points_table: gp.data.SurfacePointsTable = gp.data.SurfacePointsTable.from_arrays(
+        x=surface_points['X'].values,
+        y=surface_points['Y'].values,
+        z=surface_points['Z'].values,
+        names=surface_points['surface'].values
+    )
+
+    orientations_table: gp.data.OrientationsTable = gp.data.OrientationsTable.from_arrays(
+        x=orientations['X'].values,
+        y=orientations['Y'].values,
+        z=orientations['Z'].values,
+        G_x=orientations['G_x'].values,
+        G_y=orientations['G_y'].values,
+        G_z=orientations['G_z'].values,
+        names=orientations['surface'].values,
+        name_id_map=surface_points_table.name_id_map  # ! Make sure that ids and names are shared
+    )
+
+    structural_frame: gp.data.StructuralFrame = gp.data.StructuralFrame.from_data_tables(
+        surface_points=surface_points_table,
+        orientations=orientations_table
+    )
+
+    geo_model: gp.data.GeoModel = gp.create_geomodel(
+        project_name='Claudius',
+        extent=[548800, 552500, 7816600, 7822000, -11010, -8400],
+        resolution=[38, 55, 30],
+        refinement=5,
+        structural_frame=structural_frame
+    )
+
+    group_fault = gp.data.StructuralGroup(
+        name='Fault1',
+        elements=[geo_model.structural_frame.structural_elements.pop(-2)],
+        structural_relation=gp.data.StackRelationType.FAULT,
+        fault_relations=gp.data.FaultsRelationSpecialCase.OFFSET_ALL
+    )
+
+    geo_model.structural_frame.get_group_by_name("default_formation").elements.pop(-1)
+
+    # Insert the fault group into the structural frame:
+    geo_model.structural_frame.insert_group(0, group_fault)
+
+    gp.set_is_fault(
+        frame=geo_model.structural_frame,
+        fault_groups=[geo_model.structural_frame.get_group_by_name('Fault1')]
+    )
+
+    print(geo_model)
+
 
 
 
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
+    {'_interpolation_options': InterpolationOptions(kernel_options={'range': 5, 'c_o': 10, 'uni_degree': 1, 'i_res': 4, 'gi_res': 2, 'number_dimensions': 3, 'kernel_function': <AvailableKernelFunctions.cubic: KernelFunction(base_function=<function cubic_function at 0x7f857a0a1b40>, derivative_div_r=<function cubic_function_p_div_r at 0x7f857a0a1bd0>, second_derivative=<function cubic_function_a at 0x7f857a0a1c60>, consume_sq_distance=False)>, 'kernel_solver': <Solvers.DEFAULT: 1>, 'compute_condition_number': False, 'optimizing_condition_number': False, 'condition_number': None}, _number_octree_levels=5, current_octree_level=0, block_solutions_type=BlockSolutionType.OCTREE, compute_scalar_gradient=False, mesh_extraction=True, mesh_extraction_masking_options=MeshExtractionMaskingOptions.INTERSECT, mesh_extraction_fancy=True, debug=True, debug_water_tight=False, sigmoid_slope=50000, evaluation_chunk_size=50000, _number_octree_levels_surface=4, _model_name=None),
+     'grid': <gempy.core.data.grid.Grid object at 0x7f8561b42260>,
+     'meta': GeoModelMeta(name='Claudius',
+                          creation_date=None,
+                          last_modification_date=None,
+                          owner=None),
+     'structural_frame': StructuralFrame(
+            structural_groups=[
+    StructuralGroup(
+            name=Fault1,
+            structural_relation=StackRelationType.FAULT,
+            elements=[
+    Element(
+            name=Claudius_fault,
+            color=#527682,
+            is_active=True
+    )
+    ]
+    ),
+    StructuralGroup(
+            name=default_formation,
+            structural_relation=StackRelationType.ERODE,
+            elements=[
+    Element(
+            name=0,
+            color=#015482,
+            is_active=True
+    ),
+    Element(
+            name=250,
+            color=#9f0052,
+            is_active=True
+    ),
+    Element(
+            name=330,
+            color=#ffbe00,
+            is_active=True
+    ),
+    Element(
+            name=60,
+            color=#728f02,
+            is_active=True
+    )
+    ]
+    )
+    ],
+            fault_relations=
+    [[False,  True],
+     [False, False]],
+    ,
+     'transform': {'_is_default_transform': False,
+     'position': array([ -550658.0605    , -7819213.97425586,     9824.6748045 ]),
+     'rotation': array([0., 0., 0.]),
+     'scale': array([9.56397917e-05, 9.56397917e-05, 9.56397917e-05])}}
 
-    62700
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 90-97
-
-.. code-block:: python3
-
-    geo_model = gp.create_model('Claudius')
-    # Importing the data from csv files and settign extent and resolution
-    geo_model = gp.init_data(geo_model,
-                             extent=[548800, 552500, 7816600, 7822000, -11010, -8400], resolution=[38, 55, 30],
-                             surface_points_df=surface_points[::5], orientations_df=orientations, surface_name='surface',
-                             add_basement=True)
-
-
-
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    Active grids: ['regular']
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 98-101
+.. GENERATED FROM PYTHON SOURCE LINES 160-163
 
 We are going to increase the smoothness (nugget) of the data to increase
 the conditional number of the matrix:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 103-105
+.. GENERATED FROM PYTHON SOURCE LINES 165-167
 
-.. code-block:: python3
+.. code-block:: Python
 
-    geo_model.modify_surface_points(geo_model.surface_points.df.index, smooth=0.1).df.tail()
+    gp.modify_surface_points(geo_model, nugget=0.01)
 
 
 
@@ -525,126 +616,74 @@ the conditional number of the matrix:
 .. raw:: html
 
     <div class="output_subarea output_html rendered_html output_result">
-    <div>
-    <style scoped>
-        .dataframe tbody tr th:only-of-type {
-            vertical-align: middle;
-        }
 
-        .dataframe tbody tr th {
-            vertical-align: top;
-        }
-
-        .dataframe thead th {
-            text-align: right;
-        }
-    </style>
-    <table border="1" class="dataframe">
-      <thead>
-        <tr style="text-align: right;">
-          <th></th>
-          <th>X</th>
-          <th>Y</th>
-          <th>Z</th>
-          <th>X_c</th>
-          <th>Y_c</th>
-          <th>Z_c</th>
-          <th>surface</th>
-          <th>series</th>
-          <th>id</th>
-          <th>order_series</th>
-          <th>smooth</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th>4060</th>
-          <td>551031.98</td>
-          <td>7.82e+06</td>
-          <td>-10920.00</td>
-          <td>0.54</td>
-          <td>0.27</td>
-          <td>0.40</td>
-          <td>Claudius_fault</td>
-          <td>Default series</td>
-          <td>5</td>
-          <td>1</td>
-          <td>0.1</td>
-        </tr>
-        <tr>
-          <th>4065</th>
-          <td>551117.12</td>
-          <td>7.82e+06</td>
-          <td>-10773.67</td>
-          <td>0.54</td>
-          <td>0.25</td>
-          <td>0.41</td>
-          <td>Claudius_fault</td>
-          <td>Default series</td>
-          <td>5</td>
-          <td>1</td>
-          <td>0.1</td>
-        </tr>
-        <tr>
-          <th>4070</th>
-          <td>551003.82</td>
-          <td>7.82e+06</td>
-          <td>-10920.00</td>
-          <td>0.53</td>
-          <td>0.31</td>
-          <td>0.40</td>
-          <td>Claudius_fault</td>
-          <td>Default series</td>
-          <td>5</td>
-          <td>1</td>
-          <td>0.1</td>
-        </tr>
-        <tr>
-          <th>4075</th>
-          <td>551036.30</td>
-          <td>7.82e+06</td>
-          <td>-10714.67</td>
-          <td>0.54</td>
-          <td>0.34</td>
-          <td>0.42</td>
-          <td>Claudius_fault</td>
-          <td>Default series</td>
-          <td>5</td>
-          <td>1</td>
-          <td>0.1</td>
-        </tr>
-        <tr>
-          <th>4080</th>
-          <td>551160.81</td>
-          <td>7.82e+06</td>
-          <td>-10356.46</td>
-          <td>0.55</td>
-          <td>0.34</td>
-          <td>0.45</td>
-          <td>Claudius_fault</td>
-          <td>Default series</td>
-          <td>5</td>
-          <td>1</td>
-          <td>0.1</td>
-        </tr>
-      </tbody>
-    </table>
-    </div>
+            <table>
+              <tr><td>Structural Groups:</td><td>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>Fault1</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.FAULT</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #527682;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Claudius_fault</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>default_formation</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #015482;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>0</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #9f0052;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>250</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #ffbe00;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>330</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #728f02;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>60</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            </td></tr>
+              <tr><td>Fault Relations:</td><td><table style="border-collapse: collapse; table-layout: fixed;"><th></th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Fault1</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">default_fo...</th><tr><th>Fault1</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>default_formation</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr></table></td></tr>
+              <tr><td></td><td>
+            <table>
+              <tr>
+                <td><div style="display: inline-block; background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></div> True</td>
+                <td><div style="display: inline-block; background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></div> False</td>
+              </tr>
+            </table>
+            </td></tr>
+            </table>
+        
     </div>
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 106-109
+.. GENERATED FROM PYTHON SOURCE LINES 168-171
 
 Also the original poles are pointing downwards. We can change the
 direction by calling the following:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 111-113
+.. GENERATED FROM PYTHON SOURCE LINES 173-175
 
-.. code-block:: python3
+.. code-block:: Python
 
-    geo_model.modify_orientations(geo_model.orientations.df.index, polarity=-1).df.tail()
+    gp.modify_orientations(geo_model, polarity=-1)
 
 
 
@@ -654,328 +693,87 @@ direction by calling the following:
 .. raw:: html
 
     <div class="output_subarea output_html rendered_html output_result">
-    <div>
-    <style scoped>
-        .dataframe tbody tr th:only-of-type {
-            vertical-align: middle;
-        }
 
-        .dataframe tbody tr th {
-            vertical-align: top;
-        }
-
-        .dataframe thead th {
-            text-align: right;
-        }
-    </style>
-    <table border="1" class="dataframe">
-      <thead>
-        <tr style="text-align: right;">
-          <th></th>
-          <th>X</th>
-          <th>Y</th>
-          <th>Z</th>
-          <th>X_c</th>
-          <th>Y_c</th>
-          <th>Z_c</th>
-          <th>G_x</th>
-          <th>G_y</th>
-          <th>G_z</th>
-          <th>dip</th>
-          <th>azimuth</th>
-          <th>polarity</th>
-          <th>surface</th>
-          <th>series</th>
-          <th>id</th>
-          <th>order_series</th>
-          <th>smooth</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th>43</th>
-          <td>550989.31</td>
-          <td>7.82e+06</td>
-          <td>-9782.97</td>
-          <td>0.53</td>
-          <td>0.31</td>
-          <td>0.50</td>
-          <td>-0.19</td>
-          <td>-0.14</td>
-          <td>0.97</td>
-          <td>166.55</td>
-          <td>53.57</td>
-          <td>-1.0</td>
-          <td>330</td>
-          <td>Default series</td>
-          <td>4</td>
-          <td>1</td>
-          <td>0.01</td>
-        </tr>
-        <tr>
-          <th>44</th>
-          <td>550939.31</td>
-          <td>7.82e+06</td>
-          <td>-9958.43</td>
-          <td>0.53</td>
-          <td>0.69</td>
-          <td>0.49</td>
-          <td>0.08</td>
-          <td>0.04</td>
-          <td>1.00</td>
-          <td>174.76</td>
-          <td>241.87</td>
-          <td>-1.0</td>
-          <td>330</td>
-          <td>Default series</td>
-          <td>4</td>
-          <td>1</td>
-          <td>0.01</td>
-        </tr>
-        <tr>
-          <th>45</th>
-          <td>549276.81</td>
-          <td>7.82e+06</td>
-          <td>-9985.13</td>
-          <td>0.37</td>
-          <td>0.64</td>
-          <td>0.48</td>
-          <td>0.16</td>
-          <td>-0.08</td>
-          <td>0.98</td>
-          <td>169.75</td>
-          <td>294.99</td>
-          <td>-1.0</td>
-          <td>330</td>
-          <td>Default series</td>
-          <td>4</td>
-          <td>1</td>
-          <td>0.01</td>
-        </tr>
-        <tr>
-          <th>46</th>
-          <td>548976.81</td>
-          <td>7.82e+06</td>
-          <td>-9974.27</td>
-          <td>0.34</td>
-          <td>0.61</td>
-          <td>0.49</td>
-          <td>0.01</td>
-          <td>0.15</td>
-          <td>0.99</td>
-          <td>171.15</td>
-          <td>184.51</td>
-          <td>-1.0</td>
-          <td>330</td>
-          <td>Default series</td>
-          <td>4</td>
-          <td>1</td>
-          <td>0.01</td>
-        </tr>
-        <tr>
-          <th>47</th>
-          <td>549764.31</td>
-          <td>7.82e+06</td>
-          <td>-9901.21</td>
-          <td>0.41</td>
-          <td>0.62</td>
-          <td>0.49</td>
-          <td>-0.37</td>
-          <td>0.19</td>
-          <td>0.91</td>
-          <td>155.53</td>
-          <td>116.85</td>
-          <td>-1.0</td>
-          <td>330</td>
-          <td>Default series</td>
-          <td>4</td>
-          <td>1</td>
-          <td>0.01</td>
-        </tr>
-      </tbody>
-    </table>
-    </div>
+            <table>
+              <tr><td>Structural Groups:</td><td>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>Fault1</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.FAULT</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #527682;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Claudius_fault</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>default_formation</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #015482;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>0</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #9f0052;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>250</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #ffbe00;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>330</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #728f02;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>60</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            </td></tr>
+              <tr><td>Fault Relations:</td><td><table style="border-collapse: collapse; table-layout: fixed;"><th></th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Fault1</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">default_fo...</th><tr><th>Fault1</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>default_formation</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr></table></td></tr>
+              <tr><td></td><td>
+            <table>
+              <tr>
+                <td><div style="display: inline-block; background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></div> True</td>
+                <td><div style="display: inline-block; background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></div> False</td>
+              </tr>
+            </table>
+            </td></tr>
+            </table>
+        
     </div>
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 114-118
+.. GENERATED FROM PYTHON SOURCE LINES 176-180
 
 We need an orientation per series/fault. The faults does not have
 orientation so the easiest is to create an orientation from the surface
 points availablle:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 120-123
+.. GENERATED FROM PYTHON SOURCE LINES 180-194
 
-.. code-block:: python3
-
-    fault_idx = geo_model.surface_points.df.index[geo_model.surface_points.df['surface'] == 'Claudius_fault']
-    gp.set_orientation_from_surface_points(geo_model, fault_idx).df.tail()
+.. code-block:: Python
 
 
-
-
-
-
-.. raw:: html
-
-    <div class="output_subarea output_html rendered_html output_result">
-    <div>
-    <style scoped>
-        .dataframe tbody tr th:only-of-type {
-            vertical-align: middle;
-        }
-
-        .dataframe tbody tr th {
-            vertical-align: top;
-        }
-
-        .dataframe thead th {
-            text-align: right;
-        }
-    </style>
-    <table border="1" class="dataframe">
-      <thead>
-        <tr style="text-align: right;">
-          <th></th>
-          <th>X</th>
-          <th>Y</th>
-          <th>Z</th>
-          <th>X_c</th>
-          <th>Y_c</th>
-          <th>Z_c</th>
-          <th>G_x</th>
-          <th>G_y</th>
-          <th>G_z</th>
-          <th>dip</th>
-          <th>azimuth</th>
-          <th>polarity</th>
-          <th>surface</th>
-          <th>series</th>
-          <th>id</th>
-          <th>order_series</th>
-          <th>smooth</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th>44</th>
-          <td>550939.31</td>
-          <td>7.82e+06</td>
-          <td>-9958.43</td>
-          <td>0.53</td>
-          <td>0.69</td>
-          <td>0.49</td>
-          <td>0.08</td>
-          <td>0.04</td>
-          <td>1.00</td>
-          <td>174.76</td>
-          <td>241.87</td>
-          <td>-1.0</td>
-          <td>330</td>
-          <td>Default series</td>
-          <td>4</td>
-          <td>1</td>
-          <td>0.01</td>
-        </tr>
-        <tr>
-          <th>45</th>
-          <td>549276.81</td>
-          <td>7.82e+06</td>
-          <td>-9985.13</td>
-          <td>0.37</td>
-          <td>0.64</td>
-          <td>0.48</td>
-          <td>0.16</td>
-          <td>-0.08</td>
-          <td>0.98</td>
-          <td>169.75</td>
-          <td>294.99</td>
-          <td>-1.0</td>
-          <td>330</td>
-          <td>Default series</td>
-          <td>4</td>
-          <td>1</td>
-          <td>0.01</td>
-        </tr>
-        <tr>
-          <th>46</th>
-          <td>548976.81</td>
-          <td>7.82e+06</td>
-          <td>-9974.27</td>
-          <td>0.34</td>
-          <td>0.61</td>
-          <td>0.49</td>
-          <td>0.01</td>
-          <td>0.15</td>
-          <td>0.99</td>
-          <td>171.15</td>
-          <td>184.51</td>
-          <td>-1.0</td>
-          <td>330</td>
-          <td>Default series</td>
-          <td>4</td>
-          <td>1</td>
-          <td>0.01</td>
-        </tr>
-        <tr>
-          <th>47</th>
-          <td>549764.31</td>
-          <td>7.82e+06</td>
-          <td>-9901.21</td>
-          <td>0.41</td>
-          <td>0.62</td>
-          <td>0.49</td>
-          <td>-0.37</td>
-          <td>0.19</td>
-          <td>0.91</td>
-          <td>155.53</td>
-          <td>116.85</td>
-          <td>-1.0</td>
-          <td>330</td>
-          <td>Default series</td>
-          <td>4</td>
-          <td>1</td>
-          <td>0.01</td>
-        </tr>
-        <tr>
-          <th>48</th>
-          <td>551218.85</td>
-          <td>7.82e+06</td>
-          <td>-10341.64</td>
-          <td>0.55</td>
-          <td>0.30</td>
-          <td>0.45</td>
-          <td>-0.93</td>
-          <td>-0.08</td>
-          <td>0.35</td>
-          <td>69.78</td>
-          <td>264.83</td>
-          <td>1.0</td>
-          <td>Claudius_fault</td>
-          <td>Default series</td>
-          <td>5</td>
-          <td>1</td>
-          <td>0.01</td>
-        </tr>
-      </tbody>
-    </table>
-    </div>
-    </div>
-    <br />
-    <br />
-
-.. GENERATED FROM PYTHON SOURCE LINES 124-126
-
-Now we can see how the data looks so far:
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 128-130
-
-.. code-block:: python3
-
-    geo_model.surfaces
+    element = geo_model.structural_frame.get_element_by_name("Claudius_fault")
+    new_orientations: gp.data.OrientationsTable = gp.create_orientations_from_surface_points_coords(
+        xyz_coords=element.surface_points.xyz
+    )
+    gp.add_orientations(
+        geo_model=geo_model,
+        x=new_orientations.data['X'],
+        y=new_orientations.data['Y'],
+        z=new_orientations.data['Z'],
+        pole_vector=new_orientations.grads,
+        elements_names="Claudius_fault"
+    )
 
 
 
@@ -985,326 +783,192 @@ Now we can see how the data looks so far:
 .. raw:: html
 
     <div class="output_subarea output_html rendered_html output_result">
-    <style  type="text/css" >
-    #T_19c3c_row0_col3{
-                background-color:  #015482;
-            }#T_19c3c_row1_col3{
-                background-color:  #9f0052;
-            }#T_19c3c_row2_col3{
-                background-color:  #ffbe00;
-            }#T_19c3c_row3_col3{
-                background-color:  #728f02;
-            }#T_19c3c_row4_col3{
-                background-color:  #443988;
-            }#T_19c3c_row5_col3{
-                background-color:  #ff3f20;
-            }</style><table id="T_19c3c_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
-                    <tr>
-                            <th id="T_19c3c_level0_row0" class="row_heading level0 row0" >0</th>
-                            <td id="T_19c3c_row0_col0" class="data row0 col0" >0</td>
-                            <td id="T_19c3c_row0_col1" class="data row0 col1" >Default series</td>
-                            <td id="T_19c3c_row0_col2" class="data row0 col2" >1</td>
-                            <td id="T_19c3c_row0_col3" class="data row0 col3" >#015482</td>
-                            <td id="T_19c3c_row0_col4" class="data row0 col4" >1</td>
-                </tr>
-                <tr>
-                            <th id="T_19c3c_level0_row1" class="row_heading level0 row1" >1</th>
-                            <td id="T_19c3c_row1_col0" class="data row1 col0" >60</td>
-                            <td id="T_19c3c_row1_col1" class="data row1 col1" >Default series</td>
-                            <td id="T_19c3c_row1_col2" class="data row1 col2" >2</td>
-                            <td id="T_19c3c_row1_col3" class="data row1 col3" >#9f0052</td>
-                            <td id="T_19c3c_row1_col4" class="data row1 col4" >2</td>
-                </tr>
-                <tr>
-                            <th id="T_19c3c_level0_row2" class="row_heading level0 row2" >2</th>
-                            <td id="T_19c3c_row2_col0" class="data row2 col0" >250</td>
-                            <td id="T_19c3c_row2_col1" class="data row2 col1" >Default series</td>
-                            <td id="T_19c3c_row2_col2" class="data row2 col2" >3</td>
-                            <td id="T_19c3c_row2_col3" class="data row2 col3" >#ffbe00</td>
-                            <td id="T_19c3c_row2_col4" class="data row2 col4" >3</td>
-                </tr>
-                <tr>
-                            <th id="T_19c3c_level0_row3" class="row_heading level0 row3" >3</th>
-                            <td id="T_19c3c_row3_col0" class="data row3 col0" >330</td>
-                            <td id="T_19c3c_row3_col1" class="data row3 col1" >Default series</td>
-                            <td id="T_19c3c_row3_col2" class="data row3 col2" >4</td>
-                            <td id="T_19c3c_row3_col3" class="data row3 col3" >#728f02</td>
-                            <td id="T_19c3c_row3_col4" class="data row3 col4" >4</td>
-                </tr>
-                <tr>
-                            <th id="T_19c3c_level0_row4" class="row_heading level0 row4" >4</th>
-                            <td id="T_19c3c_row4_col0" class="data row4 col0" >Claudius_fault</td>
-                            <td id="T_19c3c_row4_col1" class="data row4 col1" >Default series</td>
-                            <td id="T_19c3c_row4_col2" class="data row4 col2" >5</td>
-                            <td id="T_19c3c_row4_col3" class="data row4 col3" >#443988</td>
-                            <td id="T_19c3c_row4_col4" class="data row4 col4" >5</td>
-                </tr>
-                <tr>
-                            <th id="T_19c3c_level0_row5" class="row_heading level0 row5" >5</th>
-                            <td id="T_19c3c_row5_col0" class="data row5 col0" >basement</td>
-                            <td id="T_19c3c_row5_col1" class="data row5 col1" >Basement</td>
-                            <td id="T_19c3c_row5_col2" class="data row5 col2" >1</td>
-                            <td id="T_19c3c_row5_col3" class="data row5 col3" >#ff3f20</td>
-                            <td id="T_19c3c_row5_col4" class="data row5 col4" >6</td>
-                </tr>
-        </tbody></table>
+
+            <table>
+              <tr><td>Structural Groups:</td><td>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>Fault1</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.FAULT</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #527682;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Claudius_fault</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>default_formation</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #015482;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>0</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #9f0052;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>250</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #ffbe00;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>330</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #728f02;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>60</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            </td></tr>
+              <tr><td>Fault Relations:</td><td><table style="border-collapse: collapse; table-layout: fixed;"><th></th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Fault1</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">default_fo...</th><tr><th>Fault1</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>default_formation</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr></table></td></tr>
+              <tr><td></td><td>
+            <table>
+              <tr>
+                <td><div style="display: inline-block; background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></div> True</td>
+                <td><div style="display: inline-block; background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></div> False</td>
+              </tr>
+            </table>
+            </td></tr>
+            </table>
+        
     </div>
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 131-133
+.. GENERATED FROM PYTHON SOURCE LINES 195-197
 
-.. code-block:: python3
+.. code-block:: Python
 
-    gp.plot_2d(geo_model, direction='y')
-
-
+    gpv.plot_2d(geo_model, direction='y')
 
 
-.. image:: /examples/real/images/sphx_glr_Claudius_001.png
-    :alt: Cell Number: mid Direction: y
-    :class: sphx-glr-single-img
+
+
+.. image-sg:: /examples/real/images/sphx_glr_Claudius_001.png
+   :alt: Cell Number: mid Direction: y
+   :srcset: /examples/real/images/sphx_glr_Claudius_001.png
+   :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7fcc46042a60>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f8517306080>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 134-136
-
-By default all surfaces belong to one unique series.
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 138-140
-
-.. code-block:: python3
-
-    geo_model.surfaces
-
-
-
-
-
-
-.. raw:: html
-
-    <div class="output_subarea output_html rendered_html output_result">
-    <style  type="text/css" >
-    #T_5e1db_row0_col3{
-                background-color:  #015482;
-            }#T_5e1db_row1_col3{
-                background-color:  #9f0052;
-            }#T_5e1db_row2_col3{
-                background-color:  #ffbe00;
-            }#T_5e1db_row3_col3{
-                background-color:  #728f02;
-            }#T_5e1db_row4_col3{
-                background-color:  #443988;
-            }#T_5e1db_row5_col3{
-                background-color:  #ff3f20;
-            }</style><table id="T_5e1db_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
-                    <tr>
-                            <th id="T_5e1db_level0_row0" class="row_heading level0 row0" >0</th>
-                            <td id="T_5e1db_row0_col0" class="data row0 col0" >0</td>
-                            <td id="T_5e1db_row0_col1" class="data row0 col1" >Default series</td>
-                            <td id="T_5e1db_row0_col2" class="data row0 col2" >1</td>
-                            <td id="T_5e1db_row0_col3" class="data row0 col3" >#015482</td>
-                            <td id="T_5e1db_row0_col4" class="data row0 col4" >1</td>
-                </tr>
-                <tr>
-                            <th id="T_5e1db_level0_row1" class="row_heading level0 row1" >1</th>
-                            <td id="T_5e1db_row1_col0" class="data row1 col0" >60</td>
-                            <td id="T_5e1db_row1_col1" class="data row1 col1" >Default series</td>
-                            <td id="T_5e1db_row1_col2" class="data row1 col2" >2</td>
-                            <td id="T_5e1db_row1_col3" class="data row1 col3" >#9f0052</td>
-                            <td id="T_5e1db_row1_col4" class="data row1 col4" >2</td>
-                </tr>
-                <tr>
-                            <th id="T_5e1db_level0_row2" class="row_heading level0 row2" >2</th>
-                            <td id="T_5e1db_row2_col0" class="data row2 col0" >250</td>
-                            <td id="T_5e1db_row2_col1" class="data row2 col1" >Default series</td>
-                            <td id="T_5e1db_row2_col2" class="data row2 col2" >3</td>
-                            <td id="T_5e1db_row2_col3" class="data row2 col3" >#ffbe00</td>
-                            <td id="T_5e1db_row2_col4" class="data row2 col4" >3</td>
-                </tr>
-                <tr>
-                            <th id="T_5e1db_level0_row3" class="row_heading level0 row3" >3</th>
-                            <td id="T_5e1db_row3_col0" class="data row3 col0" >330</td>
-                            <td id="T_5e1db_row3_col1" class="data row3 col1" >Default series</td>
-                            <td id="T_5e1db_row3_col2" class="data row3 col2" >4</td>
-                            <td id="T_5e1db_row3_col3" class="data row3 col3" >#728f02</td>
-                            <td id="T_5e1db_row3_col4" class="data row3 col4" >4</td>
-                </tr>
-                <tr>
-                            <th id="T_5e1db_level0_row4" class="row_heading level0 row4" >4</th>
-                            <td id="T_5e1db_row4_col0" class="data row4 col0" >Claudius_fault</td>
-                            <td id="T_5e1db_row4_col1" class="data row4 col1" >Default series</td>
-                            <td id="T_5e1db_row4_col2" class="data row4 col2" >5</td>
-                            <td id="T_5e1db_row4_col3" class="data row4 col3" >#443988</td>
-                            <td id="T_5e1db_row4_col4" class="data row4 col4" >5</td>
-                </tr>
-                <tr>
-                            <th id="T_5e1db_level0_row5" class="row_heading level0 row5" >5</th>
-                            <td id="T_5e1db_row5_col0" class="data row5 col0" >basement</td>
-                            <td id="T_5e1db_row5_col1" class="data row5 col1" >Basement</td>
-                            <td id="T_5e1db_row5_col2" class="data row5 col2" >1</td>
-                            <td id="T_5e1db_row5_col3" class="data row5 col3" >#ff3f20</td>
-                            <td id="T_5e1db_row5_col4" class="data row5 col4" >6</td>
-                </tr>
-        </tbody></table>
-    </div>
-    <br />
-    <br />
-
-.. GENERATED FROM PYTHON SOURCE LINES 141-143
+.. GENERATED FROM PYTHON SOURCE LINES 198-200
 
 We will need to separate with surface belong to each series:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 145-147
+.. GENERATED FROM PYTHON SOURCE LINES 200-209
 
-.. code-block:: python3
-
-    stratigraphy = 'fixed'
+.. code-block:: Python
 
 
-
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 148-164
-
-.. code-block:: python3
-
-    if stratigraphy == 'original':
-        gp.map_stack_to_surfaces(geo_model, {'Fault': 'Claudius_fault',
-                                             'Default series': ('0', '60', '250', '330'),
-                                             })
-        # Ordering the events from younger to older:
-        geo_model.reorder_series(['Fault', 'Default series', 'Basement'])
-
-
-    elif stratigraphy == 'fixed':
-        gp.map_stack_to_surfaces(geo_model, {'Default series': ('0', '60', '250'),
-                                             'Fault': 'Claudius_fault',
-                                             'Uncomformity': '330',
-                                             })
-        # Ordering the events from younger to older:
-        geo_model.reorder_series(['Default series', 'Fault', 'Uncomformity', 'Basement'])
+    gp.map_stack_to_surfaces(
+        gempy_model=geo_model,
+        mapping_object={
+            'Default series': ('0', '60', '250'),
+            'Fault': 'Claudius_fault',
+            'Uncomformity': '330',
+        }
+    )
 
 
 
 
 
+.. raw:: html
 
+    <div class="output_subarea output_html rendered_html output_result">
 
+            <table>
+              <tr><td>Structural Groups:</td><td>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>Default series</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #015482;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>0</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #728f02;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>60</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #9f0052;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>250</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>Fault</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #527682;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Claudius_fault</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>Uncomformity</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #ffbe00;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>330</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            </td></tr>
+              <tr><td>Fault Relations:</td><td><table style="border-collapse: collapse; table-layout: fixed;"><th></th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Default se...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Fault</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Uncomformi...</th><tr><th>Default series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>Fault</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>Uncomformity</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr></table></td></tr>
+              <tr><td></td><td>
+            <table>
+              <tr>
+                <td><div style="display: inline-block; background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></div> True</td>
+                <td><div style="display: inline-block; background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></div> False</td>
+              </tr>
+            </table>
+            </td></tr>
+            </table>
+        
+    </div>
+    <br />
+    <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 165-167
+.. GENERATED FROM PYTHON SOURCE LINES 210-212
 
 So far we did not specify which series/faults are actula faults:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 169-171
+.. GENERATED FROM PYTHON SOURCE LINES 214-221
 
-.. code-block:: python3
+.. code-block:: Python
 
-    geo_model.set_is_fault('Fault')
+    gp.set_is_fault(
+        frame=geo_model.structural_frame,
+        fault_groups=[geo_model.structural_frame.get_group_by_name('Fault')]
+    )
 
-
-
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    Fault colors changed. If you do not like this behavior, set change_color to False.
-
-
-.. raw:: html
-
-    <div class="output_subarea output_html rendered_html output_result">
-    <table border="1" class="dataframe">
-      <thead>
-        <tr style="text-align: right;">
-          <th></th>
-          <th>order_series</th>
-          <th>BottomRelation</th>
-          <th>isActive</th>
-          <th>isFault</th>
-          <th>isFinite</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th>Default series</th>
-          <td>1</td>
-          <td>Erosion</td>
-          <td>True</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>Fault</th>
-          <td>2</td>
-          <td>Fault</td>
-          <td>True</td>
-          <td>True</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>Uncomformity</th>
-          <td>3</td>
-          <td>Erosion</td>
-          <td>True</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>Basement</th>
-          <td>4</td>
-          <td>Erosion</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-      </tbody>
-    </table>
-    </div>
-    <br />
-    <br />
-
-.. GENERATED FROM PYTHON SOURCE LINES 172-174
-
-Ordering the events from younger to older:
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 176-177
-
-geo_model.reorder_series(['Default series', 'Fault', 'Uncomformity', 'Basement'])
-
-.. GENERATED FROM PYTHON SOURCE LINES 180-183
-
-Check which series/faults are affected by other faults (rows offset
-columns):
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 185-187
-
-.. code-block:: python3
-
-    geo_model.faults.faults_relations_df
+    geo_model.structural_frame
 
 
 
@@ -1314,110 +978,83 @@ columns):
 .. raw:: html
 
     <div class="output_subarea output_html rendered_html output_result">
-    <div>
-    <style scoped>
-        .dataframe tbody tr th:only-of-type {
-            vertical-align: middle;
-        }
 
-        .dataframe tbody tr th {
-            vertical-align: top;
-        }
-
-        .dataframe thead th {
-            text-align: right;
-        }
-    </style>
-    <table border="1" class="dataframe">
-      <thead>
-        <tr style="text-align: right;">
-          <th></th>
-          <th>Default series</th>
-          <th>Fault</th>
-          <th>Uncomformity</th>
-          <th>Basement</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th>Default series</th>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>Fault</th>
-          <td>False</td>
-          <td>False</td>
-          <td>True</td>
-          <td>True</td>
-        </tr>
-        <tr>
-          <th>Uncomformity</th>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>Basement</th>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-      </tbody>
-    </table>
-    </div>
+            <table>
+              <tr><td>Structural Groups:</td><td>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>Default series</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #015482;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>0</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #728f02;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>60</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #9f0052;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>250</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>Fault</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.FAULT</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #527682;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Claudius_fault</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>Uncomformity</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #ffbe00;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>330</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            </td></tr>
+              <tr><td>Fault Relations:</td><td><table style="border-collapse: collapse; table-layout: fixed;"><th></th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Default se...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Fault</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Uncomformi...</th><tr><th>Default series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>Fault</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>Uncomformity</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr></table></td></tr>
+              <tr><td></td><td>
+            <table>
+              <tr>
+                <td><div style="display: inline-block; background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></div> True</td>
+                <td><div style="display: inline-block; background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></div> False</td>
+              </tr>
+            </table>
+            </td></tr>
+            </table>
+        
     </div>
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 188-190
+.. GENERATED FROM PYTHON SOURCE LINES 222-232
 
-Now we are good to go:
+.. code-block:: Python
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 192-195
-
-.. code-block:: python3
-
-    gp.set_interpolator(geo_model, theano_optimizer='fast_run',
-                        compile_theano=True)
-
-
-
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    Setting kriging parameters to their default values.
-    Compiling theano function...
-    Level of Optimization:  fast_run
-    Device:  cpu
-    Precision:  float64
-    Number of faults:  1
-    Compilation Done!
-    Kriging values: 
-                            values
-    range                 7047.13
-    $C_o$              1182430.95
-    drift equations  [3, 3, 3, 3]
-
-    <gempy.core.interpolator.InterpolatorModel object at 0x7fcc6b70cd60>
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 196-198
-
-.. code-block:: python3
-
-    gp.compute_model(geo_model)
+    geo_model.interpolation_options.kernel_options.range = 1
+    gp.compute_model(
+        geo_model,
+        gp.data.GemPyEngineConfig(
+            backend=gp.data.AvailableBackends.numpy,
+            use_gpu=False,
+            dtype='float64'
+        )
+    )
 
 
 
@@ -1425,78 +1062,76 @@ Now we are good to go:
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
+    Setting Backend To: AvailableBackends.numpy
 
 
-    Lithology ids 
-      [5. 5. 5. ... 1. 1. 1.] 
+.. raw:: html
+
+    <div class="output_subarea output_html rendered_html output_result">
+    <b>Solutions:</b> 5 Octree Levels, 5 DualContouringMeshes
+    </div>
+    <br />
+    <br />
+
+.. GENERATED FROM PYTHON SOURCE LINES 233-237
+
+.. code-block:: Python
+
+    sect = ['mid']
+
+    gpv.plot_2d(geo_model, cell_number=sect, series_n=1, show_scalar=True, direction='x')
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 199-204
-
-.. code-block:: python3
-
-    sect = [35]
-
-    gp.plot_2d(geo_model, cell_number=sect, series_n=1, show_scalar=True, direction='x')
-
-
-
-
-
-.. image:: /examples/real/images/sphx_glr_Claudius_002.png
-    :alt: Cell Number: 35 Direction: x
-    :class: sphx-glr-single-img
+.. image-sg:: /examples/real/images/sphx_glr_Claudius_002.png
+   :alt: Cell Number: mid Direction: x
+   :srcset: /examples/real/images/sphx_glr_Claudius_002.png
+   :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7fcc46bbdac0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f851715caf0>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 205-207
+.. GENERATED FROM PYTHON SOURCE LINES 238-240
 
-.. code-block:: python3
+.. code-block:: Python
 
-    gp.plot_2d(geo_model, cell_number=sect, show_data=True, direction='x')
-
-
+    gpv.plot_2d(geo_model, cell_number=sect, show_data=True, direction='x')
 
 
-.. image:: /examples/real/images/sphx_glr_Claudius_003.png
-    :alt: Cell Number: 35 Direction: x
-    :class: sphx-glr-single-img
+
+
+.. image-sg:: /examples/real/images/sphx_glr_Claudius_003.png
+   :alt: Cell Number: mid Direction: x
+   :srcset: /examples/real/images/sphx_glr_Claudius_003.png
+   :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7fcc74890a60>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f851715ef50>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 208-212
+.. GENERATED FROM PYTHON SOURCE LINES 241-245
 
-.. code-block:: python3
+.. code-block:: Python
 
-    gp.plot_2d(geo_model, cell_number=[28], series_n=0, direction='y', show_scalar=True)
-    gp.plot_2d(geo_model, cell_number=[28], series_n=1, direction='y', show_scalar=True)
-    gp.plot_2d(geo_model, cell_number=[28], series_n=2, direction='y', show_scalar=True)
+    gpv.plot_2d(geo_model, cell_number=[28], series_n=0, direction='y', show_scalar=True)
+    gpv.plot_2d(geo_model, cell_number=[28], series_n=1, direction='y', show_scalar=True)
+    gpv.plot_2d(geo_model, cell_number=[28], series_n=2, direction='y', show_scalar=True)
 
 
 
@@ -1506,363 +1141,103 @@ Now we are good to go:
 
     *
 
-      .. image:: /examples/real/images/sphx_glr_Claudius_004.png
-          :alt: Cell Number: 28 Direction: y
-          :class: sphx-glr-multi-img
+      .. image-sg:: /examples/real/images/sphx_glr_Claudius_004.png
+         :alt: Cell Number: 28 Direction: y
+         :srcset: /examples/real/images/sphx_glr_Claudius_004.png
+         :class: sphx-glr-multi-img
 
     *
 
-      .. image:: /examples/real/images/sphx_glr_Claudius_005.png
-          :alt: Cell Number: 28 Direction: y
-          :class: sphx-glr-multi-img
+      .. image-sg:: /examples/real/images/sphx_glr_Claudius_005.png
+         :alt: Cell Number: 28 Direction: y
+         :srcset: /examples/real/images/sphx_glr_Claudius_005.png
+         :class: sphx-glr-multi-img
 
     *
 
-      .. image:: /examples/real/images/sphx_glr_Claudius_006.png
-          :alt: Cell Number: 28 Direction: y
-          :class: sphx-glr-multi-img
+      .. image-sg:: /examples/real/images/sphx_glr_Claudius_006.png
+         :alt: Cell Number: 28 Direction: y
+         :srcset: /examples/real/images/sphx_glr_Claudius_006.png
+         :class: sphx-glr-multi-img
 
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7fcc6b8d83a0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f850ccf29e0>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 213-215
+.. GENERATED FROM PYTHON SOURCE LINES 246-248
 
-.. code-block:: python3
+.. code-block:: Python
 
-    gp.plot_2d(geo_model, cell_number=[28], show_data=True, direction='y')
-
-
+    gpv.plot_2d(geo_model, cell_number=[28], show_data=True, direction='y')
 
 
-.. image:: /examples/real/images/sphx_glr_Claudius_007.png
-    :alt: Cell Number: 28 Direction: y
-    :class: sphx-glr-single-img
+
+
+.. image-sg:: /examples/real/images/sphx_glr_Claudius_007.png
+   :alt: Cell Number: 28 Direction: y
+   :srcset: /examples/real/images/sphx_glr_Claudius_007.png
+   :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7fccd0e70df0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f850cd782e0>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 216-222
+.. GENERATED FROM PYTHON SOURCE LINES 249-252
 
-.. code-block:: python3
+.. code-block:: Python
 
 
     # sphinx_gallery_thumbnail_number = 8
-    gp.plot_3d(geo_model)
+    gpv.plot_3d(geo_model, show_lith=True, show_data=True, show_boundaries=True)
 
 
 
-
-
-
-.. image:: /examples/real/images/sphx_glr_Claudius_008.png
-    :alt: Claudius
-    :class: sphx-glr-single-img
+.. image-sg:: /examples/real/images/sphx_glr_Claudius_008.png
+   :alt: Claudius
+   :srcset: /examples/real/images/sphx_glr_Claudius_008.png
+   :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
 
-    <gempy.plot.vista.GemPyToVista object at 0x7fcb8ae53910>
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 223-230
-
-Export data:
-~~~~~~~~~~~~
-
-The solution is stored in a numpy array of the following shape. Axis 0
-are the scalar fields of each correspondent series/faults in the
-following order (except basement):
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 232-234
-
-.. code-block:: python3
-
-    geo_model.series
-
-
-
-
-
-
-.. raw:: html
-
-    <div class="output_subarea output_html rendered_html output_result">
-    <table border="1" class="dataframe">
-      <thead>
-        <tr style="text-align: right;">
-          <th></th>
-          <th>order_series</th>
-          <th>BottomRelation</th>
-          <th>isActive</th>
-          <th>isFault</th>
-          <th>isFinite</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th>Default series</th>
-          <td>1</td>
-          <td>Erosion</td>
-          <td>True</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>Fault</th>
-          <td>2</td>
-          <td>Fault</td>
-          <td>True</td>
-          <td>True</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>Uncomformity</th>
-          <td>3</td>
-          <td>Erosion</td>
-          <td>True</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>Basement</th>
-          <td>4</td>
-          <td>Erosion</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-      </tbody>
-    </table>
-    </div>
-    <br />
-    <br />
-
-.. GENERATED FROM PYTHON SOURCE LINES 235-238
-
-For the surfaces, there are two numpy arrays, one with vertices and the
-other with triangles. Axis 0 is each surface in the order:
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 240-243
-
-.. code-block:: python3
-
-    geo_model.surfaces
-
-
-
-
-
-
-
-.. raw:: html
-
-    <div class="output_subarea output_html rendered_html output_result">
-    <style  type="text/css" >
-    #T_c6962_row0_col3{
-                background-color:  #015482;
-            }#T_c6962_row1_col3{
-                background-color:  #9f0052;
-            }#T_c6962_row2_col3{
-                background-color:  #ffbe00;
-            }#T_c6962_row3_col3{
-                background-color:  #527682;
-            }#T_c6962_row4_col3{
-                background-color:  #728f02;
-            }#T_c6962_row5_col3{
-                background-color:  #ff3f20;
-            }</style><table id="T_c6962_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
-                    <tr>
-                            <th id="T_c6962_level0_row0" class="row_heading level0 row0" >0</th>
-                            <td id="T_c6962_row0_col0" class="data row0 col0" >0</td>
-                            <td id="T_c6962_row0_col1" class="data row0 col1" >Default series</td>
-                            <td id="T_c6962_row0_col2" class="data row0 col2" >1</td>
-                            <td id="T_c6962_row0_col3" class="data row0 col3" >#015482</td>
-                            <td id="T_c6962_row0_col4" class="data row0 col4" >1</td>
-                </tr>
-                <tr>
-                            <th id="T_c6962_level0_row1" class="row_heading level0 row1" >1</th>
-                            <td id="T_c6962_row1_col0" class="data row1 col0" >60</td>
-                            <td id="T_c6962_row1_col1" class="data row1 col1" >Default series</td>
-                            <td id="T_c6962_row1_col2" class="data row1 col2" >2</td>
-                            <td id="T_c6962_row1_col3" class="data row1 col3" >#9f0052</td>
-                            <td id="T_c6962_row1_col4" class="data row1 col4" >2</td>
-                </tr>
-                <tr>
-                            <th id="T_c6962_level0_row2" class="row_heading level0 row2" >2</th>
-                            <td id="T_c6962_row2_col0" class="data row2 col0" >250</td>
-                            <td id="T_c6962_row2_col1" class="data row2 col1" >Default series</td>
-                            <td id="T_c6962_row2_col2" class="data row2 col2" >3</td>
-                            <td id="T_c6962_row2_col3" class="data row2 col3" >#ffbe00</td>
-                            <td id="T_c6962_row2_col4" class="data row2 col4" >3</td>
-                </tr>
-                <tr>
-                            <th id="T_c6962_level0_row3" class="row_heading level0 row3" >4</th>
-                            <td id="T_c6962_row3_col0" class="data row3 col0" >Claudius_fault</td>
-                            <td id="T_c6962_row3_col1" class="data row3 col1" >Fault</td>
-                            <td id="T_c6962_row3_col2" class="data row3 col2" >1</td>
-                            <td id="T_c6962_row3_col3" class="data row3 col3" >#527682</td>
-                            <td id="T_c6962_row3_col4" class="data row3 col4" >4</td>
-                </tr>
-                <tr>
-                            <th id="T_c6962_level0_row4" class="row_heading level0 row4" >3</th>
-                            <td id="T_c6962_row4_col0" class="data row4 col0" >330</td>
-                            <td id="T_c6962_row4_col1" class="data row4 col1" >Uncomformity</td>
-                            <td id="T_c6962_row4_col2" class="data row4 col2" >1</td>
-                            <td id="T_c6962_row4_col3" class="data row4 col3" >#728f02</td>
-                            <td id="T_c6962_row4_col4" class="data row4 col4" >5</td>
-                </tr>
-                <tr>
-                            <th id="T_c6962_level0_row5" class="row_heading level0 row5" >5</th>
-                            <td id="T_c6962_row5_col0" class="data row5 col0" >basement</td>
-                            <td id="T_c6962_row5_col1" class="data row5 col1" >Basement</td>
-                            <td id="T_c6962_row5_col2" class="data row5 col2" >1</td>
-                            <td id="T_c6962_row5_col3" class="data row5 col3" >#ff3f20</td>
-                            <td id="T_c6962_row5_col4" class="data row5 col4" >6</td>
-                </tr>
-        </tbody></table>
-    </div>
-    <br />
-    <br />
-
-.. GENERATED FROM PYTHON SOURCE LINES 244-248
-
-np.save('Claudius_scalar', geo_model.solutions.scalar_field_matrix)
-np.save('Claudius_ver', geo_model.solutions.vertices)
-np.save('Claudius_edges', geo_model.solutions.edges)
-gp.plot.export_to_vtk(geo_model, 'Claudius')
-
-.. GENERATED FROM PYTHON SOURCE LINES 251-277
-
-Timing:
--------
-
-Fault
-~~~~~
-
-Dense 20k input, 62k voxels
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
--  CPU Memory 8 Gb 44.9 s ± 150 ms per loop (mean ± std. dev. of 7 runs,
-   1 loop each)
--  GPU Memory 6.8 gb:
-
-   -  2.13 s ± 3.39 ms per loop (mean ± std. dev. of 7 runs, 1 loop
-      each) + steps **str** = [64.56394268] + steps **str** =
-      [9927.69441126] + steps **str** = [196.15202667]
-
-   -  1.13 s ± 2.08 ms per loop (mean ± std. dev. of 7 runs, 1 loop
-      each)
-
-      ::
-
-         + steps __str__ = [645.63943742]
-         + steps __str__ = [99276.94573919]
-         + steps __str__ = [1961.52029888]
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 280-283
-
-Export to gocad
----------------
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 285-298
-
-.. code-block:: python3
-
-    def write_property_to_gocad_voxet(propertyfilename, propertyvalues):
-        """
-        This function writes a numpy array into the right format for a gocad
-        voxet property file. This assumet there is a property already added to the .vo file,
-        and is just updating the file.
-        propertyfile - string giving the path to the file to write
-        propertyvalues - numpy array nz,ny,nx ordering and in float format
-        """
-        propertyvalues = propertyvalues.astype('>f4')  # big endian
-        #     array = propertyvalues.newbyteorder()
-        propertyvalues.tofile(propertyfilename)
-
-
-
-
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 299-302
-
-.. code-block:: python3
-
-    write_property_to_gocad_voxet('claudius_sf_gempy',
-                                  geo_model.solutions.scalar_field_matrix[1].reshape([38, 55, 30]).ravel('F'))
-
-    gp.save_model(geo_model)
-
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-
-    True
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f850c35cac0>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  26.141 seconds)
+   **Total running time of the script:** (1 minutes 2.331 seconds)
 
 
 .. _sphx_glr_download_examples_real_Claudius.py:
 
+.. only:: html
 
-.. only :: html
+  .. container:: sphx-glr-footer sphx-glr-footer-example
 
- .. container:: sphx-glr-footer
-    :class: sphx-glr-footer-example
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
+      :download:`Download Jupyter notebook: Claudius.ipynb <Claudius.ipynb>`
 
+    .. container:: sphx-glr-download sphx-glr-download-python
 
-  .. container:: sphx-glr-download sphx-glr-download-python
-
-     :download:`Download Python source code: Claudius.py <Claudius.py>`
-
-
-
-  .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-     :download:`Download Jupyter notebook: Claudius.ipynb <Claudius.ipynb>`
+      :download:`Download Python source code: Claudius.py <Claudius.py>`
 
 
 .. only:: html

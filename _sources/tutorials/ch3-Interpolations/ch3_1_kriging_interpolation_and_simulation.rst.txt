@@ -10,7 +10,7 @@
     .. note::
         :class: sphx-glr-download-link-note
 
-        Click :ref:`here <sphx_glr_download_tutorials_ch3-Interpolations_ch3_1_kriging_interpolation_and_simulation.py>`
+        :ref:`Go to the end <sphx_glr_download_tutorials_ch3-Interpolations_ch3_1_kriging_interpolation_and_simulation.py>`
         to download the full example code
 
 .. rst-class:: sphx-glr-example-title
@@ -33,18 +33,20 @@ gempy examples.
 
 Importing GemPy
 
-.. GENERATED FROM PYTHON SOURCE LINES 16-27
+.. GENERATED FROM PYTHON SOURCE LINES 16-29
 
-.. code-block:: python3
+.. code-block:: Python
 
     import gempy as gp
+    import gempy_viewer as gpv
 
     # Importing auxiliary libraries
     import numpy as np
     import matplotlib.pyplot as plt
+    import os
 
     # new for this
-    from gempy.assets import kriging
+    from gempy_plugins.kriging import kriging
 
     np.random.seed(5555)
 
@@ -55,19 +57,51 @@ Importing GemPy
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 28-30
+.. GENERATED FROM PYTHON SOURCE LINES 30-32
 
 Creating the model by importing the input data and displaying it:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 32-37
+.. GENERATED FROM PYTHON SOURCE LINES 34-47
 
-.. code-block:: python3
+.. code-block:: Python
 
-    data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
-    geo_data = gp.create_data('kriging', extent=[0, 1000, 0, 50, 0, 1000], resolution=[50, 1, 50],
-                              path_o=data_path + "/data/input_data/jan_models/model1_orientations.csv",
-                              path_i=data_path + "/data/input_data/jan_models/model1_surface_points.csv")
+    data_path = os.path.abspath('../../')
+
+    geo_data: gp.data.GeoModel = gp.create_geomodel(
+        project_name='kriging',
+        extent=[0, 1000, 0, 50, 0, 1000],
+        resolution=[50, 10, 50],
+        refinement=1,
+        importer_helper=gp.data.ImporterHelper(
+            path_to_orientations=data_path + "/data/input_data/jan_models/model1_orientations.csv",
+            path_to_surface_points=data_path + "/data/input_data/jan_models/model1_surface_points.csv",
+        )
+    )
+
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 48-50
+
+Setting and ordering the units and series:
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 52-60
+
+.. code-block:: Python
+
+    gp.map_stack_to_surfaces(
+        gempy_model=geo_data,
+        mapping_object={
+            "Strat_Series": ('rock2', 'rock1'),
+            "Basement_Series": ('basement')
+        }
+    )
 
 
 
@@ -75,83 +109,63 @@ Creating the model by importing the input data and displaying it:
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
-    Active grids: ['regular']
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 38-40
-
-Setting and ordering the units and series:
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 42-45
-
-.. code-block:: python3
-
-    gp.map_stack_to_surfaces(geo_data, {"Strat_Series": ('rock2', 'rock1'),
-                                         "Basement_Series": ('basement')})
-
-
-
-
+    Could not find element 'basement' in any group.
 
 
 .. raw:: html
 
     <div class="output_subarea output_html rendered_html output_result">
-    <style  type="text/css" >
-    #T_da883_row0_col3{
-                background-color:  #015482;
-            }#T_da883_row1_col3{
-                background-color:  #9f0052;
-            }#T_da883_row2_col3{
-                background-color:  #ffbe00;
-            }</style><table id="T_da883_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
-                    <tr>
-                            <th id="T_da883_level0_row0" class="row_heading level0 row0" >0</th>
-                            <td id="T_da883_row0_col0" class="data row0 col0" >rock2</td>
-                            <td id="T_da883_row0_col1" class="data row0 col1" >Strat_Series</td>
-                            <td id="T_da883_row0_col2" class="data row0 col2" >1</td>
-                            <td id="T_da883_row0_col3" class="data row0 col3" >#015482</td>
-                            <td id="T_da883_row0_col4" class="data row0 col4" >1</td>
-                </tr>
-                <tr>
-                            <th id="T_da883_level0_row1" class="row_heading level0 row1" >1</th>
-                            <td id="T_da883_row1_col0" class="data row1 col0" >rock1</td>
-                            <td id="T_da883_row1_col1" class="data row1 col1" >Strat_Series</td>
-                            <td id="T_da883_row1_col2" class="data row1 col2" >2</td>
-                            <td id="T_da883_row1_col3" class="data row1 col3" >#9f0052</td>
-                            <td id="T_da883_row1_col4" class="data row1 col4" >2</td>
-                </tr>
-                <tr>
-                            <th id="T_da883_level0_row2" class="row_heading level0 row2" >2</th>
-                            <td id="T_da883_row2_col0" class="data row2 col0" >basement</td>
-                            <td id="T_da883_row2_col1" class="data row2 col1" >Basement_Series</td>
-                            <td id="T_da883_row2_col2" class="data row2 col2" >1</td>
-                            <td id="T_da883_row2_col3" class="data row2 col3" >#ffbe00</td>
-                            <td id="T_da883_row2_col4" class="data row2 col4" >3</td>
-                </tr>
-        </tbody></table>
+
+            <table>
+              <tr><td>Structural Groups:</td><td>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>Strat_Series</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #9f0052;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>rock2</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #015482;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>rock1</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            </td></tr>
+              <tr><td>Fault Relations:</td><td><table style="border-collapse: collapse; table-layout: fixed;"><th></th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Strat_Seri...</th><tr><th>Strat_Series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr></table></td></tr>
+              <tr><td></td><td>
+            <table>
+              <tr>
+                <td><div style="display: inline-block; background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></div> True</td>
+                <td><div style="display: inline-block; background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></div> False</td>
+              </tr>
+            </table>
+            </td></tr>
+            </table>
+        
     </div>
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 46-48
+.. GENERATED FROM PYTHON SOURCE LINES 61-63
 
 Calculating the model:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 50-53
+.. GENERATED FROM PYTHON SOURCE LINES 65-66
 
-.. code-block:: python3
+no mesh computed as basically 2D model
 
-    interp_data = gp.set_interpolator(geo_data, compile_theano=True,
-                                      theano_optimizer='fast_compile')
+.. GENERATED FROM PYTHON SOURCE LINES 66-68
+
+.. code-block:: Python
+
+    sol = gp.compute_model(geo_data)
 
 
 
@@ -159,74 +173,51 @@ Calculating the model:
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
-    Setting kriging parameters to their default values.
-    Compiling theano function...
-    Level of Optimization:  fast_compile
-    Device:  cpu
-    Precision:  float64
-    Number of faults:  0
-    Compilation Done!
-    Kriging values: 
-                        values
-    range              1415.1
-    $C_o$            47678.57
-    drift equations    [3, 3]
+    Setting Backend To: AvailableBackends.numpy
+    /home/leguark/gempy_engine/gempy_engine/modules/dual_contouring/dual_contouring_interface.py:38: RuntimeWarning: divide by zero encountered in divide
+      weight_x = ((scalar_at_sp - scalar_8[:, :, 4:]) / scalar_dx).reshape(-1, 4, 1)
+    /home/leguark/gempy_engine/gempy_engine/modules/dual_contouring/dual_contouring_interface.py:39: RuntimeWarning: divide by zero encountered in divide
+      weight_y = ((scalar_at_sp - scalar_8[:, :, [2, 3, 6, 7]]) / scalar_d_y).reshape(-1, 4, 1)
+    /home/leguark/gempy_engine/gempy_engine/modules/dual_contouring/dual_contouring_interface.py:48: RuntimeWarning: invalid value encountered in multiply
+      intersect_dx = d_x[:, :, :] * weight_x[:, :, :]
+    /home/leguark/gempy_engine/gempy_engine/modules/dual_contouring/dual_contouring_interface.py:49: RuntimeWarning: invalid value encountered in multiply
+      intersect_dy = d_y[:, :, :] * weight_y[:, :, :]
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 54-55
-
-no mesh computed as basically 2D model
-
-.. GENERATED FROM PYTHON SOURCE LINES 55-57
-
-.. code-block:: python3
-
-    sol = gp.compute_model(geo_data, compute_mesh=False)
-
-
-
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 58-60
+.. GENERATED FROM PYTHON SOURCE LINES 69-71
 
 So here is the very simple, basically 2D model that we created:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 62-64
+.. GENERATED FROM PYTHON SOURCE LINES 73-75
 
-.. code-block:: python3
+.. code-block:: Python
 
-    gp.plot_2d(geo_data, cell_number=0, show_data=False)
-
-
+    gpv.plot_2d(geo_data, cell_number=0, show_data=False)
 
 
-.. image:: /tutorials/ch3-Interpolations/images/sphx_glr_ch3_1_kriging_interpolation_and_simulation_001.png
-    :alt: Cell Number: 0 Direction: y
-    :class: sphx-glr-single-img
+
+
+.. image-sg:: /tutorials/ch3-Interpolations/images/sphx_glr_ch3_1_kriging_interpolation_and_simulation_001.png
+   :alt: Cell Number: 0 Direction: y
+   :srcset: /tutorials/ch3-Interpolations/images/sphx_glr_ch3_1_kriging_interpolation_and_simulation_001.png
+   :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7fcc6baa02e0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f490cb745e0>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 65-75
+.. GENERATED FROM PYTHON SOURCE LINES 76-86
 
 1) Creating domain
 ------------------
@@ -239,13 +230,13 @@ is 2. In addition we define four input data points in cond_data, each
 defined by x,y,z coordinate and a measurement value.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 77-78
+.. GENERATED FROM PYTHON SOURCE LINES 88-89
 
 conditioning data (data measured at locations)
 
-.. GENERATED FROM PYTHON SOURCE LINES 78-81
+.. GENERATED FROM PYTHON SOURCE LINES 89-92
 
-.. code-block:: python3
+.. code-block:: Python
 
     cond_data = np.array([[100, .5, 500, 2], [900, .5, 500, 1],
                           [500, .5, 550, 1], [300, .5, 400, 5]])
@@ -257,15 +248,20 @@ conditioning data (data measured at locations)
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 82-83
+.. GENERATED FROM PYTHON SOURCE LINES 93-94
 
 creating a domain object from the gempy solution, a defined domain conditioning data
 
-.. GENERATED FROM PYTHON SOURCE LINES 83-85
+.. GENERATED FROM PYTHON SOURCE LINES 94-101
 
-.. code-block:: python3
+.. code-block:: Python
 
-    domain = kriging.domain(model=sol, domain=[2], data=cond_data)
+    domain = kriging.Domain(
+        model_solutions=sol,
+        transform=geo_data.transform,
+        domain=[2],
+        data=cond_data
+    )
 
 
 
@@ -274,29 +270,32 @@ creating a domain object from the gempy solution, a defined domain conditioning 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 86-89
+.. GENERATED FROM PYTHON SOURCE LINES 102-105
 
 2) Creating a variogram model
 -----------------------------
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 91-94
+.. GENERATED FROM PYTHON SOURCE LINES 107-113
 
-.. code-block:: python3
+.. code-block:: Python
 
-    variogram_model = kriging.variogram_model(theoretical_model='exponential',
-                                              range_=200, sill=np.var(cond_data[:, 3]))
-
-
-
-
-
+    variogram_model = kriging.VariogramModel(
+        theoretical_model='exponential',
+        range_=200,
+        sill=np.var(cond_data[:, 3])
+    )
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 95-98
 
-.. code-block:: python3
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 114-117
+
+.. code-block:: Python
 
     variogram_model.plot(type_='both', show_parameters=True)
     plt.show()
@@ -304,51 +303,53 @@ creating a domain object from the gempy solution, a defined domain conditioning 
 
 
 
-.. image:: /tutorials/ch3-Interpolations/images/sphx_glr_ch3_1_kriging_interpolation_and_simulation_002.png
-    :alt: Models of spatial correlation
-    :class: sphx-glr-single-img
+.. image-sg:: /tutorials/ch3-Interpolations/images/sphx_glr_ch3_1_kriging_interpolation_and_simulation_002.png
+   :alt: Models of spatial correlation
+   :srcset: /tutorials/ch3-Interpolations/images/sphx_glr_ch3_1_kriging_interpolation_and_simulation_002.png
+   :class: sphx-glr-single-img
 
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 99-102
+.. GENERATED FROM PYTHON SOURCE LINES 118-121
 
 3) Kriging interpolation
 ------------------------
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 105-108
+.. GENERATED FROM PYTHON SOURCE LINES 124-127
 
 In the following we define an object called kriging_model and set all
 input parameters. Finally we generate the kriged field.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 110-112
+.. GENERATED FROM PYTHON SOURCE LINES 129-131
 
-.. code-block:: python3
+.. code-block:: Python
 
-    solution = kriging.create_kriged_field(domain, variogram_model)
-
-
+    kriging_solution = kriging.create_kriged_field(domain, variogram_model)
 
 
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 113-117
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 132-136
 
 The result of our calculation is saved in the following dataframe,
 containing an estimated value and the kriging variance for each point in
 the grid:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 119-121
+.. GENERATED FROM PYTHON SOURCE LINES 138-141
 
-.. code-block:: python3
+.. code-block:: Python
 
-    solution.results_df.head()
+    kriging_solution.results_df.head()
+
 
 
 
@@ -386,43 +387,43 @@ the grid:
       <tbody>
         <tr>
           <th>0</th>
-          <td>10.0</td>
-          <td>25.0</td>
-          <td>410.0</td>
-          <td>2.24</td>
-          <td>2.13</td>
+          <td>10.0016</td>
+          <td>2.5016</td>
+          <td>410.0016</td>
+          <td>2.241542</td>
+          <td>2.103698</td>
         </tr>
         <tr>
           <th>1</th>
-          <td>10.0</td>
-          <td>25.0</td>
-          <td>430.0</td>
-          <td>2.20</td>
-          <td>2.01</td>
+          <td>10.0016</td>
+          <td>2.5016</td>
+          <td>430.0016</td>
+          <td>2.193555</td>
+          <td>1.979810</td>
         </tr>
         <tr>
           <th>2</th>
-          <td>10.0</td>
-          <td>25.0</td>
-          <td>450.0</td>
-          <td>2.15</td>
-          <td>1.90</td>
+          <td>10.0016</td>
+          <td>2.5016</td>
+          <td>450.0016</td>
+          <td>2.144345</td>
+          <td>1.865440</td>
         </tr>
         <tr>
           <th>3</th>
-          <td>10.0</td>
-          <td>25.0</td>
-          <td>470.0</td>
-          <td>2.10</td>
-          <td>1.81</td>
+          <td>10.0016</td>
+          <td>2.5016</td>
+          <td>470.0016</td>
+          <td>2.097883</td>
+          <td>1.774970</td>
         </tr>
         <tr>
           <th>4</th>
-          <td>10.0</td>
-          <td>25.0</td>
-          <td>490.0</td>
-          <td>2.07</td>
-          <td>1.77</td>
+          <td>10.0016</td>
+          <td>2.5016</td>
+          <td>490.0016</td>
+          <td>2.058535</td>
+          <td>1.724997</td>
         </tr>
       </tbody>
     </table>
@@ -431,70 +432,78 @@ the grid:
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 122-125
+.. GENERATED FROM PYTHON SOURCE LINES 142-145
 
 It is also possible to plot the results in cross section similar to the
 way gempy models are plotted.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 127-132
+.. GENERATED FROM PYTHON SOURCE LINES 148-165
 
-.. code-block:: python3
+.. code-block:: Python
 
-    solution.plot_results(geo_data=geo_data, prop='val', contour=False,
-                          direction='y', cell_number=0, alpha=0.7,
-                          show_data=False, legend=True)
-    plt.show()
+    from gempy_viewer.modules.plot_2d.visualization_2d import Plot2D
 
-
-
-
-.. image:: /tutorials/ch3-Interpolations/images/sphx_glr_ch3_1_kriging_interpolation_and_simulation_003.png
-    :alt: ch3 1 kriging interpolation and simulation
-    :class: sphx-glr-single-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    /WorkSSD/PythonProjects/gempy/gempy/assets/kriging.py:265: MatplotlibDeprecationWarning: You are modifying the state of a globally registered colormap. In future versions, you will not be able to modify a registered colormap in-place. To remove this warning, you can make a copy of the colormap first. cmap = copy.copy(mpl.cm.get_cmap("viridis"))
-      cmap.set_bad(color='w', alpha=alpha) #define color and alpha for nan values
+    plot_2d: Plot2D = gpv.plot_2d(
+        model=geo_data,
+        cell_number=0,
+        show_data=False,
+        show=False,
+        kwargs_lithology={ 'alpha': 0.5 }
+    )
+    kriging.plot_kriging_results(
+        geo_data=geo_data,
+        kriging_solution=kriging_solution,
+        plot_2d=plot_2d,
+        title='Kriging interpolation: Estimated values',
+        result_column=['estimated value']
+    )
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 133-137
-
-.. code-block:: python3
-
-    solution.plot_results(geo_data=geo_data, prop='both', contour=False,
-                          direction='y', cell_number=0, alpha=0,
-                          interpolation='bilinear', show_data=False)
-    plt.show()
-
-
-
-.. image:: /tutorials/ch3-Interpolations/images/sphx_glr_ch3_1_kriging_interpolation_and_simulation_004.png
-    :alt: Estimated value, Variance
-    :class: sphx-glr-single-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    /WorkSSD/PythonProjects/gempy/gempy/assets/kriging.py:265: MatplotlibDeprecationWarning: You are modifying the state of a globally registered colormap. In future versions, you will not be able to modify a registered colormap in-place. To remove this warning, you can make a copy of the colormap first. cmap = copy.copy(mpl.cm.get_cmap("viridis"))
-      cmap.set_bad(color='w', alpha=alpha) #define color and alpha for nan values
+.. image-sg:: /tutorials/ch3-Interpolations/images/sphx_glr_ch3_1_kriging_interpolation_and_simulation_003.png
+   :alt: Kriging interpolation: Estimated values
+   :srcset: /tutorials/ch3-Interpolations/images/sphx_glr_ch3_1_kriging_interpolation_and_simulation_003.png
+   :class: sphx-glr-single-img
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 138-145
+
+.. GENERATED FROM PYTHON SOURCE LINES 166-182
+
+.. code-block:: Python
+
+    plot_2d_both = gpv.plot_2d(
+        model=geo_data,
+        cell_number=[0, 0],
+        show_data=False,
+        show=False,
+        kwargs_lithology={ 'alpha': 0.5 }
+    )
+
+    kriging.plot_kriging_results(
+        geo_data=geo_data,
+        kriging_solution=kriging_solution,
+        plot_2d=plot_2d_both,
+        title='Kriging interpolation: Estimated values',
+        result_column=['estimated value', 'estimation variance']
+    )
+
+
+
+
+.. image-sg:: /tutorials/ch3-Interpolations/images/sphx_glr_ch3_1_kriging_interpolation_and_simulation_004.png
+   :alt: Kriging interpolation: Estimated values, Kriging interpolation: Estimated values
+   :srcset: /tutorials/ch3-Interpolations/images/sphx_glr_ch3_1_kriging_interpolation_and_simulation_004.png
+   :class: sphx-glr-single-img
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 183-190
 
 4) Simulated field
 ------------------
@@ -504,9 +513,9 @@ field (stationary Gaussian Field) can be generated. A Sequential
 Gaussian Simulation approach is applied in this module:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 147-149
+.. GENERATED FROM PYTHON SOURCE LINES 192-194
 
-.. code-block:: python3
+.. code-block:: Python
 
     solution_sim = kriging.create_gaussian_field(domain, variogram_model)
 
@@ -517,9 +526,9 @@ Gaussian Simulation approach is applied in this module:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 150-152
+.. GENERATED FROM PYTHON SOURCE LINES 195-197
 
-.. code-block:: python3
+.. code-block:: Python
 
     solution_sim.results_df.head()
 
@@ -558,44 +567,44 @@ Gaussian Simulation approach is applied in this module:
       </thead>
       <tbody>
         <tr>
-          <th>16</th>
-          <td>10.0</td>
-          <td>25.0</td>
-          <td>410.0</td>
-          <td>2.61</td>
-          <td>1.48</td>
+          <th>1774</th>
+          <td>10.0016</td>
+          <td>2.5016</td>
+          <td>410.0016</td>
+          <td>4.420467</td>
+          <td>0.122209</td>
         </tr>
         <tr>
-          <th>157</th>
-          <td>10.0</td>
-          <td>25.0</td>
-          <td>430.0</td>
-          <td>2.38</td>
-          <td>0.28</td>
+          <th>4701</th>
+          <td>10.0016</td>
+          <td>2.5016</td>
+          <td>430.0016</td>
+          <td>4.893653</td>
+          <td>0.108040</td>
         </tr>
         <tr>
-          <th>276</th>
-          <td>10.0</td>
-          <td>25.0</td>
-          <td>450.0</td>
-          <td>3.98</td>
-          <td>0.24</td>
+          <th>3463</th>
+          <td>10.0016</td>
+          <td>2.5016</td>
+          <td>450.0016</td>
+          <td>4.874381</td>
+          <td>0.177325</td>
         </tr>
         <tr>
-          <th>25</th>
-          <td>10.0</td>
-          <td>25.0</td>
-          <td>470.0</td>
-          <td>2.54</td>
-          <td>0.53</td>
+          <th>3227</th>
+          <td>10.0016</td>
+          <td>2.5016</td>
+          <td>470.0016</td>
+          <td>4.983143</td>
+          <td>0.220953</td>
         </tr>
         <tr>
-          <th>267</th>
-          <td>10.0</td>
-          <td>25.0</td>
-          <td>490.0</td>
-          <td>0.76</td>
-          <td>0.28</td>
+          <th>4528</th>
+          <td>10.0016</td>
+          <td>2.5016</td>
+          <td>490.0016</td>
+          <td>3.747620</td>
+          <td>0.108041</td>
         </tr>
       </tbody>
     </table>
@@ -604,9 +613,9 @@ Gaussian Simulation approach is applied in this module:
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 153-155
+.. GENERATED FROM PYTHON SOURCE LINES 198-200
 
-.. code-block:: python3
+.. code-block:: Python
 
     solution_sim.results_df['estimated value']
 
@@ -616,80 +625,83 @@ Gaussian Simulation approach is applied in this module:
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
 
-    16     2.61
-    157    2.38
-    276    3.98
-    25     2.54
-    267    0.76
-           ... 
-    55     3.76
-    165    3.32
-    427    2.01
-    303    1.96
-    187    2.04
-    Name: estimated value, Length: 500, dtype: float64
+    1774    4.420467
+    4701    4.893653
+    3463    4.874381
+    3227    4.983143
+    4528    3.747620
+              ...   
+    1712    3.540901
+    390     3.863402
+    1039    4.134937
+    3379    3.144726
+    4090    2.446597
+    Name: estimated value, Length: 5000, dtype: float64
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 156-157
+.. GENERATED FROM PYTHON SOURCE LINES 201-216
 
-sphinx_gallery_thumbnail_number = 3
+.. code-block:: Python
 
-.. GENERATED FROM PYTHON SOURCE LINES 157-161
-
-.. code-block:: python3
-
-    solution_sim.plot_results(geo_data=geo_data, prop='val', contour=False, direction='y', cell_number=0, alpha=0.7,
-                              show_data=True, legend=True)
-    plt.show()
-
-
-
-
-.. image:: /tutorials/ch3-Interpolations/images/sphx_glr_ch3_1_kriging_interpolation_and_simulation_005.png
-    :alt: ch3 1 kriging interpolation and simulation
-    :class: sphx-glr-single-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    /WorkSSD/PythonProjects/gempy/gempy/assets/kriging.py:265: MatplotlibDeprecationWarning: You are modifying the state of a globally registered colormap. In future versions, you will not be able to modify a registered colormap in-place. To remove this warning, you can make a copy of the colormap first. cmap = copy.copy(mpl.cm.get_cmap("viridis"))
-      cmap.set_bad(color='w', alpha=alpha) #define color and alpha for nan values
+    plot_2d: Plot2D = gpv.plot_2d(
+        model=geo_data,
+        cell_number=0,
+        show_data=False,
+        show=False,
+        kwargs_lithology={ 'alpha': 0.5 }
+    )
+    kriging.plot_kriging_results(
+        geo_data=geo_data,
+        kriging_solution=solution_sim,
+        plot_2d=plot_2d,
+        title='Kriging interpolation: Estimated values',
+        result_column=['estimated value']
+    )
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 162-164
-
-.. code-block:: python3
-
-    solution_sim.plot_results(geo_data=geo_data, prop='both', contour=False, direction='y', cell_number=0, alpha=0,
-                              interpolation='bilinear', show_data=False)
-    plt.show()
+.. image-sg:: /tutorials/ch3-Interpolations/images/sphx_glr_ch3_1_kriging_interpolation_and_simulation_005.png
+   :alt: Kriging interpolation: Estimated values
+   :srcset: /tutorials/ch3-Interpolations/images/sphx_glr_ch3_1_kriging_interpolation_and_simulation_005.png
+   :class: sphx-glr-single-img
 
 
-.. image:: /tutorials/ch3-Interpolations/images/sphx_glr_ch3_1_kriging_interpolation_and_simulation_006.png
-    :alt: Estimated value, Variance
-    :class: sphx-glr-single-img
 
 
-.. rst-class:: sphx-glr-script-out
 
- Out:
+.. GENERATED FROM PYTHON SOURCE LINES 217-233
 
- .. code-block:: none
+.. code-block:: Python
 
-    /WorkSSD/PythonProjects/gempy/gempy/assets/kriging.py:265: MatplotlibDeprecationWarning: You are modifying the state of a globally registered colormap. In future versions, you will not be able to modify a registered colormap in-place. To remove this warning, you can make a copy of the colormap first. cmap = copy.copy(mpl.cm.get_cmap("viridis"))
-      cmap.set_bad(color='w', alpha=alpha) #define color and alpha for nan values
+    plot_2d_both = gpv.plot_2d(
+        model=geo_data,
+        cell_number=[0, 0],
+        show_data=False,
+        show=False,
+        kwargs_lithology={ 'alpha': 0.5 }
+    )
+
+    kriging.plot_kriging_results(
+        geo_data=geo_data,
+        kriging_solution=solution_sim,
+        plot_2d=plot_2d_both,
+        title='Kriging interpolation: Estimated values',
+        result_column=['estimated value', 'estimation variance']
+    )
+    # sphinx_gallery_thumbnail_number = 3
+
+
+
+.. image-sg:: /tutorials/ch3-Interpolations/images/sphx_glr_ch3_1_kriging_interpolation_and_simulation_006.png
+   :alt: Kriging interpolation: Estimated values, Kriging interpolation: Estimated values
+   :srcset: /tutorials/ch3-Interpolations/images/sphx_glr_ch3_1_kriging_interpolation_and_simulation_006.png
+   :class: sphx-glr-single-img
+
 
 
 
@@ -697,28 +709,22 @@ sphinx_gallery_thumbnail_number = 3
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  7.495 seconds)
+   **Total running time of the script:** (15 minutes 23.937 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch3-Interpolations_ch3_1_kriging_interpolation_and_simulation.py:
 
+.. only:: html
 
-.. only :: html
+  .. container:: sphx-glr-footer sphx-glr-footer-example
 
- .. container:: sphx-glr-footer
-    :class: sphx-glr-footer-example
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
+      :download:`Download Jupyter notebook: ch3_1_kriging_interpolation_and_simulation.ipynb <ch3_1_kriging_interpolation_and_simulation.ipynb>`
 
+    .. container:: sphx-glr-download sphx-glr-download-python
 
-  .. container:: sphx-glr-download sphx-glr-download-python
-
-     :download:`Download Python source code: ch3_1_kriging_interpolation_and_simulation.py <ch3_1_kriging_interpolation_and_simulation.py>`
-
-
-
-  .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-     :download:`Download Jupyter notebook: ch3_1_kriging_interpolation_and_simulation.ipynb <ch3_1_kriging_interpolation_and_simulation.ipynb>`
+      :download:`Download Python source code: ch3_1_kriging_interpolation_and_simulation.py <ch3_1_kriging_interpolation_and_simulation.py>`
 
 
 .. only:: html

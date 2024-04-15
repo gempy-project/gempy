@@ -2,12 +2,22 @@
 Alesmodel: Plotting sections and maps.
 ======================================
 
+# %%
+# .. admonition:: Explanation
+#
+#       This model is quite unstable in general and requires float64 to find a solution. The lack of data on
+#       one of the corners for the TRIAS and LIAS series makes that the model bends in an unrealistic
+#       way and erodes CARBO that disappears on that section. The easy way to solve this is to add more data in that area but
+#       I leave as it is since I did no constructed the model.
+#
+
 """
 
 import gempy as gp
-import numpy as np
-import matplotlib.pyplot as plt
+import gempy_viewer as gpv
 import os
+import numpy as np
+
 
 # %%
 cwd = os.getcwd()
@@ -21,39 +31,51 @@ path_orient = data_path + "/data/input_data/AlesModel/2018_orient_clust_n_init5_
 path_dem = data_path + "/data/input_data/AlesModel/_cropped_DEM_coarse.tif"
 
 # %% 
-resolution = [100, 100, 100]
-extent = np.array([729550.0, 751500.0, 1913500.0, 1923650.0, -1800.0, 800.0])
-geo_model = gp.create_model('Alesmodel')
-gp.init_data(geo_model, extent=extent, resolution=resolution,
-             path_i=path_interf,
-             path_o=path_orient)
+geo_model: gp.data.GeoModel = gp.create_geomodel(
+    project_name='Claudius',
+    extent=[729550.0, 751500.0, 1913500.0, 1923650.0, -1800.0, 800.0],
+    resolution=None,
+    refinement=6,
+    importer_helper=gp.data.ImporterHelper(
+        path_to_orientations=path_orient,
+        path_to_surface_points=path_interf,
+    )
+)
 
 # %% 
-sdict = {'section1': ([732000, 1916000], [745000, 1916000], [200, 150])}
-geo_model.set_section_grid(sdict)
+gp.set_section_grid(
+    grid=geo_model.grid,
+    section_dict={
+        'section1': ([732000, 1916000], [745000, 1916000], [200, 150])
+    }
+)
 
 # %% 
 # sorting of lithologies
-gp.map_stack_to_surfaces(geo_model, {'fault_left': ('fault_left'),
-                                     'fault_right': ('fault_right'),
-                                     'fault_lr': ('fault_lr'),
-                                     'Trias_Series': ('TRIAS', 'LIAS'),
-                                     'Carbon_Series': ('CARBO'),
-                                     'Basement_Series': ('basement')}, remove_unused_series=True)
+gp.map_stack_to_surfaces(
+    gempy_model=geo_model,
+    mapping_object={
+        'fault_left'     : 'fault_left',
+        'fault_right'    : 'fault_right',
+        'fault_lr'       : 'fault_lr',
+        'Trias_Series'   : ('TRIAS', 'LIAS'),
+        'Carbon_Series'  : 'CARBO',
+        'Basement_Series': 'basement'
+    },
+    remove_unused_series=True
+)
 
 # %% 
-colordict = {'LIAS': '#015482', 'TRIAS': '#9f0052', 'CARBO': '#ffbe00', 'basement': '#728f02',
-             'fault_left': '#2a2a2a', 'fault_right': '#545454', 'fault_lr': '#a5a391'}
-geo_model.surfaces.colors.change_colors(colordict)
+# Change colors
+geo_model.structural_frame.get_element_by_name("LIAS").color = "#015482"
+geo_model.structural_frame.get_element_by_name("TRIAS").color = "#9f0052"
+geo_model.structural_frame.get_element_by_name("CARBO").color = "#ffbe00"
 
 # %% 
-a = gp.plot_2d(geo_model, direction='y')
+a = gpv.plot_2d(geo_model, direction='y')
 
 # %% 
-geo_model.rescaling
-
-# %% 
-gp.plot.plot_section_traces(geo_model)
+gpv.plot_section_traces(geo_model)
 
 # %%
 # Faults
@@ -61,13 +83,15 @@ gp.plot.plot_section_traces(geo_model)
 # 
 
 # %% 
-geo_model.set_is_fault(['fault_right', 'fault_left', 'fault_lr'], change_color=True)
-
-# %% 
-gp.set_interpolator(geo_model,
-                    output=['geology'], compile_theano=True,
-                    theano_optimizer='fast_run', dtype='float64',
-                    verbose=[])
+gp.set_is_fault(
+    frame=geo_model.structural_frame,
+    fault_groups=[
+        geo_model.structural_frame.get_group_by_name('fault_left'),
+        geo_model.structural_frame.get_group_by_name('fault_right'),
+        geo_model.structural_frame.get_group_by_name('fault_lr')
+    ],
+    change_color=True
+)
 
 # %%
 # Topography
@@ -75,31 +99,48 @@ gp.set_interpolator(geo_model,
 # 
 
 # %% 
-geo_model.set_topography(source='gdal', filepath=path_dem)
+gp.set_topography_from_file(
+    grid=geo_model.grid,
+    filepath=path_dem,
+    crop_to_extent=[729550.0, 751500.0, 1_913_500.0, 1923650.0]
+)
 
-# %% 
-geo_model.surfaces
 
-# %% 
-_ = gp.compute_model(geo_model, compute_mesh=True, compute_mesh_options={'rescale': False})
-
-# %% 
-gp.plot_2d(geo_model, cell_number=[4], direction=['y'], show_topography=True,
-           show_data=True)
-
-# %% 
-gp.plot_2d(geo_model, section_names=['topography'], show_data=False,
-           show_boundaries=False)
+gpv.plot_3d(geo_model, show_topography=True, ve=1, image=True)
 
 # %%
-# sphinx_gallery_thumbnail_number = 5
-gp.plot_3d(geo_model)
+carbo = geo_model.structural_frame.get_group_by_name("Carbon_Series")
 
 # %%
-# np.save('Ales_vert3', geo_model.solutions.vertices)
-# np.save('Ales_edges3', geo_model.solutions.edges)
+geo_model.interpolation_options.number_octree_levels_surface = 4
+geo_model.interpolation_options.kernel_options.range = .8
+gp.modify_surface_points(
+    geo_model=geo_model,
+    elements_names=["CARBO", "LIAS", "TRIAS"],
+    nugget=0.005
+)
 
 # %% 
-# gp.plot.plot_ar(geo_model)
+print(geo_model.structural_frame)
+geo_model.structural_frame
 
-gp.save_model(geo_model)
+# %% 
+geo_model.interpolation_options.mesh_extraction = False
+_ = gp.compute_model(
+    geo_model,
+    engine_config=gp.data.GemPyEngineConfig(
+        backend=gp.data.AvailableBackends.PYTORCH,
+        use_gpu=True,
+        dtype="float64"
+    ))
+
+
+gpv.plot_2d(geo_model, show_topography=False, section_names=['topography'], show_lith=True)
+
+# %% 
+gpv.plot_2d(geo_model, cell_number=[4], direction=['y'], show_topography=True, show_data=True)
+gpv.plot_2d(geo_model, cell_number=[-4], direction=['y'], show_topography=True, show_data=True)
+
+# %%
+# sphinx_gallery_thumbnail_number = -1
+gpv.plot_3d(geo_model, show_lith=True, show_topography=True, kwargs_plot_structured_grid={'opacity': 0.8})

@@ -1,0 +1,167 @@
+
+
+.. _sphx_glr_examples_geometries:
+
+Simple geometries
+-----------------
+Some simple geometries.
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This script demonstrates how to create a basic model of horizontally stacked layers using GemPy...">
+
+.. only:: html
+
+  .. image:: /examples/geometries/images/thumb/sphx_glr_a01_horizontal_stratigraphic_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_geometries_a01_horizontal_stratigraphic.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Model 1 - Horizontal stratigraphic</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This script demonstrates how to create a geological model of an anticline structure using GemPy...">
+
+.. only:: html
+
+  .. image:: /examples/geometries/images/thumb/sphx_glr_b02_fold_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_geometries_b02_fold.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Model 2 - Anticline</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This script demonstrates how to create a geological model of a recumbent fold using GemPy, a Py...">
+
+.. only:: html
+
+  .. image:: /examples/geometries/images/thumb/sphx_glr_c03_recumbent_fold_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_geometries_c03_recumbent_fold.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Model 3 - Recumbent Fold</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This script demonstrates how to create a geological model with a layer of varying thickness (pi...">
+
+.. only:: html
+
+  .. image:: /examples/geometries/images/thumb/sphx_glr_d04_pinchout_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_geometries_d04_pinchout.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Model 4 - Pinchout</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This script demonstrates how to create a simple fault model with constant offset using GemPy, a...">
+
+.. only:: html
+
+  .. image:: /examples/geometries/images/thumb/sphx_glr_e05_fault_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_geometries_e05_fault.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Model 5 - Fault</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This script creates an unconformity cutting an anticline structure using GemPy, an open-source,...">
+
+.. only:: html
+
+  .. image:: /examples/geometries/images/thumb/sphx_glr_f06_unconformity_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_geometries_f06_unconformity.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Model 6 - Unconformity</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This script creates a folded domain featuring an unconformity and a fault using GemPy, an open-...">
+
+.. only:: html
+
+  .. image:: /examples/geometries/images/thumb/sphx_glr_g07_combination_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_geometries_g07_combination.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Model 7 - Combination</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="GemPy Models - Some More Complex Examples">
+
+.. only:: html
+
+  .. image:: /examples/geometries/images/thumb/sphx_glr_h08_more_examples_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_geometries_h08_more_examples.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">GemPy Models - Some More Complex Examples</div>
+    </div>
+
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /examples/geometries/a01_horizontal_stratigraphic
+   /examples/geometries/b02_fold
+   /examples/geometries/c03_recumbent_fold
+   /examples/geometries/d04_pinchout
+   /examples/geometries/e05_fault
+   /examples/geometries/f06_unconformity
+   /examples/geometries/g07_combination
+   /examples/geometries/h08_more_examples
+

@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>gempy_engine.core.data.options &#8212; GemPy 2023.2.0b1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/alabaster.css?v=270d38c7" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery.css?v=61a4c737" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <script src="../../../../_static/documentation_options.js?v=acace1bb"></script>
+    <script src="../../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for gempy_engine.core.data.options</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">enum</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">asdict</span>
+
+<span class="kn">import</span> <span class="nn">gempy_engine.config</span>
+<span class="kn">from</span> <span class="nn">gempy_engine.core.data.kernel_classes.solvers</span> <span class="kn">import</span> <span class="n">Solvers</span>
+<span class="kn">from</span> <span class="nn">gempy_engine.core.data.kernel_classes.kernel_functions</span> <span class="kn">import</span> <span class="n">AvailableKernelFunctions</span>
+<span class="kn">from</span> <span class="nn">gempy_engine.core.data.raw_arrays_solution</span> <span class="kn">import</span> <span class="n">RawArraysSolution</span>
+
+
+<span class="k">class</span> <span class="nc">MeshExtractionMaskingOptions</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="n">NOTHING</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>  <span class="c1"># * This is only for testing</span>
+    <span class="n">DISJOINT</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">INTERSECT</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">RAW</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+
+
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">KernelOptions</span><span class="p">:</span>
+    <span class="nb">range</span><span class="p">:</span> <span class="nb">int</span>  <span class="c1"># TODO: have constructor from RegularGrid</span>
+    <span class="n">c_o</span><span class="p">:</span> <span class="nb">float</span>  <span class="c1"># TODO: This should be a property</span>
+    <span class="n">uni_degree</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">i_res</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">4.</span>
+    <span class="n">gi_res</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">2.</span>
+    <span class="n">number_dimensions</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span>
+
+    <span class="n">kernel_function</span><span class="p">:</span> <span class="n">AvailableKernelFunctions</span> <span class="o">=</span> <span class="n">AvailableKernelFunctions</span><span class="o">.</span><span class="n">exponential</span>
+    <span class="n">kernel_solver</span><span class="p">:</span> <span class="n">Solvers</span> <span class="o">=</span> <span class="n">Solvers</span><span class="o">.</span><span class="n">DEFAULT</span>
+
+    <span class="n">compute_condition_number</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">optimizing_condition_number</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">condition_number</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n_uni_eq</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">uni_degree</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_dimensions</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">uni_degree</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_dimensions</span> <span class="o">*</span> <span class="mi">3</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">uni_degree</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;uni_degree must be 0,1 or 2&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">n</span>
+
+    <span class="k">def</span> <span class="nf">update_options</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates the options of the KernelOptions class based on the provided keyword arguments.</span>
+
+<span class="sd">        Kwargs:</span>
+<span class="sd">            range (int): Defines the range for the kernel. Must be provided. </span>
+<span class="sd">            c_o (float): A floating point value. Must be provided.</span>
+<span class="sd">            uni_degree (int, optional): Degree for unification. Defaults to 1.</span>
+<span class="sd">            i_res (float, optional): Resolution for `i`. Defaults to 4.0.</span>
+<span class="sd">            gi_res (float, optional): Resolution for `gi`. Defaults to 2.0.</span>
+<span class="sd">            number_dimensions (int, optional): Number of dimensions. Defaults to 3.</span>
+<span class="sd">            kernel_function (AvailableKernelFunctions, optional): The function used for the kernel. Defaults to AvailableKernelFunctions.exponential.</span>
+<span class="sd">            compute_condition_number (bool, optional): Whether to compute the condition number. Defaults to False.</span>
+<span class="sd">            kernel_solver (Solvers, optional): Solver for the kernel. Defaults to Solvers.DEFAULT.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            Warning: If a provided keyword is not a recognized attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>  <span class="c1"># checks if the attribute exists</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>  <span class="c1"># sets the attribute to the provided value</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> is not a recognized attribute and will be ignored.&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Using a tuple to hash all the values together</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">range</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">c_o</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">uni_degree</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">i_res</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gi_res</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">number_dimensions</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">kernel_function</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">compute_condition_number</span><span class="p">,</span>
+        <span class="p">))</span>
+    
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;KernelOptions(</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">=</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s1">&#39;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">k</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">asdict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">())</span><span class="si">}</span><span class="s2">)&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_repr_html_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">html</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            &lt;table&gt;</span>
+<span class="s2">                &lt;tr&gt;&lt;td colspan=&#39;2&#39; style=&#39;text-align:center&#39;&gt;&lt;b&gt;KernelOptions&lt;/b&gt;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">                </span><span class="si">{</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&lt;tr&gt;&lt;td&gt;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">&lt;/td&gt;&lt;td&gt;</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s1">&lt;/td&gt;&lt;/tr&gt;&#39;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">k</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">asdict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">())</span><span class="si">}</span>
+<span class="s2">            &lt;/table&gt;</span>
+<span class="s2">            &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">html</span>
+
+
+<div class="viewcode-block" id="InterpolationOptions">
+<a class="viewcode-back" href="../../../../Modeling%20Classes/gempy.core.data.InterpolationOptions.html#gempy.core.data.InterpolationOptions">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">InterpolationOptions</span><span class="p">:</span>
+    <span class="c1"># @off</span>
+    <span class="n">kernel_options</span>                 <span class="p">:</span> <span class="n">KernelOptions</span>                <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># * This is the compression of the fields above and the way to go in the future</span>
+
+    <span class="n">_number_octree_levels</span>           <span class="p">:</span> <span class="nb">int</span>                          <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">current_octree_level</span>            <span class="p">:</span> <span class="nb">int</span>                          <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># * Make this a read only property </span>
+    <span class="n">block_solutions_type</span><span class="p">:</span> <span class="n">RawArraysSolution</span><span class="o">.</span><span class="n">BlockSolutionType</span> <span class="o">=</span> <span class="n">RawArraysSolution</span><span class="o">.</span><span class="n">BlockSolutionType</span><span class="o">.</span><span class="n">OCTREE</span>
+
+    <span class="n">compute_scalar_gradient</span>        <span class="p">:</span> <span class="nb">bool</span>                         <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="n">mesh_extraction</span>                <span class="p">:</span> <span class="nb">bool</span>                         <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">mesh_extraction_masking_options</span><span class="p">:</span> <span class="n">MeshExtractionMaskingOptions</span> <span class="o">=</span> <span class="n">MeshExtractionMaskingOptions</span><span class="o">.</span><span class="n">INTERSECT</span>
+    <span class="n">mesh_extraction_fancy</span>          <span class="p">:</span> <span class="nb">bool</span>                         <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="n">debug</span>                          <span class="p">:</span> <span class="nb">bool</span>                         <span class="o">=</span> <span class="n">gempy_engine</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">DEBUG_MODE</span>
+    <span class="n">debug_water_tight</span>              <span class="p">:</span> <span class="nb">bool</span>                         <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="n">sigmoid_slope</span>                  <span class="p">:</span> <span class="nb">int</span>                          <span class="o">=</span> <span class="mi">50_000</span>
+    <span class="n">evaluation_chunk_size</span>          <span class="p">:</span> <span class="nb">int</span>                          <span class="o">=</span> <span class="mi">50_000</span>
+    <span class="n">_number_octree_levels_surface</span>  <span class="p">:</span> <span class="nb">int</span>                          <span class="o">=</span> <span class="mi">4</span>
+    
+    <span class="n">_model_name</span>                    <span class="p">:</span> <span class="nb">str</span>                          <span class="o">=</span> <span class="kc">None</span> <span class="c1"># : Model name for the cache</span>
+
+    
+<div class="viewcode-block" id="InterpolationOptions.__init__">
+<a class="viewcode-back" href="../../../../Modeling%20Classes/gempy.core.data.InterpolationOptions.html#gempy.core.data.InterpolationOptions.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="nb">range</span>                     <span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span><span class="p">,</span>
+            <span class="n">c_o</span>                       <span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+            <span class="n">uni_degree</span>                <span class="p">:</span> <span class="nb">int</span>                              <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="n">i_res</span>                     <span class="p">:</span> <span class="nb">float</span>                            <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
+            <span class="n">gi_res</span>                    <span class="p">:</span> <span class="nb">float</span>                            <span class="o">=</span> <span class="mi">2</span>                                   <span class="p">,</span> <span class="c1"># ! This should be DEP</span>
+            <span class="n">number_dimensions</span>         <span class="p">:</span> <span class="nb">int</span>                              <span class="o">=</span> <span class="mi">3</span>                                   <span class="p">,</span> <span class="c1"># ? This probably too</span>
+            <span class="n">number_octree_levels</span>      <span class="p">:</span> <span class="nb">int</span>                              <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="n">kernel_function</span>           <span class="p">:</span> <span class="n">AvailableKernelFunctions</span>         <span class="o">=</span> <span class="n">AvailableKernelFunctions</span><span class="o">.</span><span class="n">cubic</span><span class="p">,</span>
+            <span class="n">mesh_extraction</span>           <span class="p">:</span> <span class="nb">bool</span>                             <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">compute_scalar_gradient</span>   <span class="p">:</span> <span class="nb">bool</span>                             <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">compute_condition_number</span>  <span class="p">:</span> <span class="nb">bool</span>                             <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_number_octree_levels</span> <span class="o">=</span> <span class="n">number_octree_levels</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">kernel_options</span> <span class="o">=</span> <span class="n">KernelOptions</span><span class="p">(</span>
+            <span class="nb">range</span>                      <span class="o">=</span> <span class="nb">range</span><span class="p">,</span>
+            <span class="n">c_o</span>                        <span class="o">=</span> <span class="n">c_o</span><span class="p">,</span>
+            <span class="n">uni_degree</span>                 <span class="o">=</span> <span class="n">uni_degree</span><span class="p">,</span>
+            <span class="n">i_res</span>                      <span class="o">=</span> <span class="n">i_res</span><span class="p">,</span>
+            <span class="n">gi_res</span>                     <span class="o">=</span> <span class="n">gi_res</span><span class="p">,</span>
+            <span class="n">number_dimensions</span>          <span class="o">=</span> <span class="n">number_dimensions</span><span class="p">,</span>
+            <span class="n">kernel_function</span>            <span class="o">=</span> <span class="n">kernel_function</span><span class="p">,</span>
+            <span class="n">compute_condition_number</span> <span class="o">=</span> <span class="n">compute_condition_number</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mesh_extraction</span>         <span class="o">=</span> <span class="n">mesh_extraction</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">compute_scalar_gradient</span> <span class="o">=</span> <span class="n">compute_scalar_gradient</span></div>
+
+
+    <span class="c1"># @on</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;InterpolationOptions(</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">=</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s1">&#39;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">k</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">asdict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">())</span><span class="si">}</span><span class="s2">)&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_repr_html_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">html</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                &lt;table&gt;</span>
+<span class="s2">                    &lt;tr&gt;&lt;td colspan=&#39;2&#39; style=&#39;text-align:center&#39;&gt;&lt;b&gt;InterpolationOptions&lt;/b&gt;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">                    </span><span class="si">{</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&lt;tr&gt;&lt;td&gt;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">&lt;/td&gt;&lt;td&gt;</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">_repr_html_</span><span class="p">()</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">KernelOptions</span><span class="p">)</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="n">v</span><span class="si">}</span><span class="s1">&lt;/td&gt;&lt;/tr&gt;&#39;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">k</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">asdict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">())</span><span class="si">}</span>
+<span class="s2">                &lt;/table&gt;</span>
+<span class="s2">                &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">html</span>
+
+<div class="viewcode-block" id="InterpolationOptions.update_options">
+<a class="viewcode-back" href="../../../../Modeling%20Classes/gempy.core.data.InterpolationOptions.html#gempy.core.data.InterpolationOptions.update_options">[docs]</a>
+    <span class="k">def</span> <span class="nf">update_options</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates the options of the class based on the provided keyword arguments.</span>
+
+<span class="sd">        Kwargs:</span>
+<span class="sd">            kernel_options (KernelOptions, optional): Options for the kernel. Default is None.</span>
+<span class="sd">            number_octree_levels (int, optional): Number of octree levels. Default is 1.</span>
+<span class="sd">            current_octree_level (int, optional): Current octree level. Default is 0.</span>
+<span class="sd">            compute_scalar_gradient (bool, optional): Whether to compute the scalar gradient. Default is False.</span>
+<span class="sd">            dual_contouring (bool, optional): Whether to use dual contouring. Default is True.</span>
+<span class="sd">            mesh_extraction_masking_options (MeshExtractionMaskingOptions, optional): Options for dual contouring masking.</span>
+<span class="sd">            dual_contouring_fancy (bool, optional): Fancy version of dual contouring. Default is True.</span>
+<span class="sd">            debug (bool, optional): Debug mode status. Default is derived from config.</span>
+<span class="sd">            debug_water_tight (bool, optional): Debug mode for water-tight conditions. Default is False.</span>
+<span class="sd">            tensor_dtype (str, optional): Data type for tensors. Default is derived from config.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            Warning: If a provided keyword is not a recognized attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>  <span class="c1"># checks if the attribute exists</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>  <span class="c1"># sets the attribute to the provided value</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> is not a recognized attribute and will be ignored.&quot;</span><span class="p">)</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">number_octree_levels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Return whatever is bigger between the number of octree levels and the number of octree levels for surfaces</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh_extraction</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_number_octree_levels</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_number_octree_levels_surface</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_number_octree_levels</span>
+    
+    <span class="nd">@number_octree_levels</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">number_octree_levels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="c1"># Check value is at least 1</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">value</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;number_octree_levels must be at least 1&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_number_octree_levels</span> <span class="o">=</span> <span class="n">value</span>
+        
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">compute_corners</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">is_not_last_octree</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_last_octree_level</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">is_dual_contouring</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh_extraction</span>
+        <span class="n">is_octree_for_surfaces</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_octree_level</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_octree_levels_surface</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">is_dual_contouring_and_octree_is_for_surfaces</span> <span class="o">=</span> <span class="n">is_dual_contouring</span> <span class="ow">and</span> <span class="n">is_octree_for_surfaces</span>
+        
+        <span class="n">compute_corners</span> <span class="o">=</span> <span class="n">is_dual_contouring_and_octree_is_for_surfaces</span> <span class="ow">or</span> <span class="n">is_not_last_octree</span>
+        <span class="k">return</span> <span class="n">compute_corners</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_last_octree_level</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_octree_level</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_octree_levels</span> <span class="o">-</span> <span class="mi">1</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">range</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel_options</span><span class="o">.</span><span class="n">range</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">c_o</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel_options</span><span class="o">.</span><span class="n">c_o</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">uni_degree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel_options</span><span class="o">.</span><span class="n">uni_degree</span>
+
+    <span class="nd">@uni_degree</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">uni_degree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;The uni_degree attribute is deprecated and will be removed in the future. &quot;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kernel_options</span><span class="o">.</span><span class="n">uni_degree</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">i_res</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel_options</span><span class="o">.</span><span class="n">i_res</span>
+
+    <span class="nd">@i_res</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">i_res</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;The i_res attribute is deprecated and will be removed in the future. &quot;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kernel_options</span><span class="o">.</span><span class="n">i_res</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">gi_res</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel_options</span><span class="o">.</span><span class="n">gi_res</span>
+
+    <span class="nd">@gi_res</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">gi_res</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;The gi_res attribute is deprecated and will be removed in the future. &quot;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kernel_options</span><span class="o">.</span><span class="n">gi_res</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">number_dimensions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel_options</span><span class="o">.</span><span class="n">number_dimensions</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">kernel_function</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel_options</span><span class="o">.</span><span class="n">kernel_function</span>
+
+    <span class="nd">@kernel_function</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">kernel_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;The kernel_function attribute is deprecated and will be removed in the future. &quot;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kernel_options</span><span class="o">.</span><span class="n">kernel_function</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n_uni_eq</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel_options</span><span class="o">.</span><span class="n">n_uni_eq</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">number_octree_levels_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># if self._number_octree_levels_surface &gt;= self.number_octree_levels -1:</span>
+        <span class="c1">#     return self.number_octree_levels </span>
+        <span class="c1"># else:</span>
+        <span class="c1">#     return self._number_octree_levels_surface</span>
+        <span class="c1"># ? Should we make this just a property</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_number_octree_levels_surface</span>
+        
+    <span class="nd">@number_octree_levels_surface</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">number_octree_levels_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="c1"># Check value is between 1 and number_octree_levels</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">value</span><span class="p">:</span> 
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;number_octree_levels_surface must be at least 1&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_number_octree_levels_surface</span> <span class="o">=</span> <span class="n">value</span></div>
+
+    
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../../index.html">
+    <img class="logo" src="../../../../_static/logos/gempy.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=gempy-project&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../index.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../projects.html">Additional projects</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/index.html">GemPy Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples/index.html">Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api_reference.html">Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api_reference.html#data-classes">Data Classes</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017-2024, Gempy Developers.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,23 +1,21 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="../../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Claudius &#8212; GemPy 2.2.8 documentation</title>
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/gallery-rendered-html.css" />
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Claudius &#8212; GemPy 2023.2.0b1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=270d38c7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=61a4c737" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <script src="../../_static/documentation_options.js?v=acace1bb"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Greenstone." href="Greenstone.html" />
@@ -40,41 +38,55 @@
             
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
-<p>Click <a class="reference internal" href="#sphx-glr-download-examples-real-claudius-py"><span class="std std-ref">here</span></a>
+<p><a class="reference internal" href="#sphx-glr-download-examples-real-claudius-py"><span class="std std-ref">Go to the end</span></a>
 to download the full example code</p>
 </div>
-<div class="sphx-glr-example-title section" id="claudius">
-<span id="sphx-glr-examples-real-claudius-py"></span><h1>Claudius<a class="headerlink" href="#claudius" title="Permalink to this headline">¶</a></h1>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span>
-<a href="https://docs.python.org/3/library/os.html#os.environ" title="os.environ" class="sphx-glr-backref-module-os sphx-glr-backref-type-py-data"><span class="n">os</span><span class="o">.</span><span class="n">environ</span></a><span class="p">[</span><span class="s2">&quot;THEANO_FLAGS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;mode=FAST_RUN,device=cpu&quot;</span>
+<section class="sphx-glr-example-title" id="claudius">
+<span id="sphx-glr-examples-real-claudius-py"></span><h1>Claudius<a class="headerlink" href="#claudius" title="Link to this heading">¶</a></h1>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span>
 
 <span class="c1"># Importing gempy</span>
 <span class="kn">import</span> <span class="nn">gempy</span> <span class="k">as</span> <span class="nn">gp</span>
+<span class="kn">import</span> <span class="nn">gempy_viewer</span> <span class="k">as</span> <span class="nn">gpv</span>
 
 <span class="c1"># Aux imports</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pn</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="loading-data-from-repository">
-<h1>Loading data from repository:<a class="headerlink" href="#loading-data-from-repository" title="Permalink to this headline">¶</a></h1>
+<section id="loading-data-from-repository">
+<h2>Loading data from repository:<a class="headerlink" href="#loading-data-from-repository" title="Link to this heading">¶</a></h2>
 <p>With pandas we can do it directly from the web and with the right args
 we can directly tidy the data in gempy style:</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dfs</span></a> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">for</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">letter</span></a> <span class="ow">in</span> <span class="s1">&#39;ABCD&#39;</span><span class="p">:</span>
-    <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dfs</span></a><span class="o">.</span><span class="n">append</span><span class="p">(</span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_csv.html#pandas.read_csv" title="pandas.read_csv" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-function"><span class="n">pn</span><span class="o">.</span><span class="n">read_csv</span></a><span class="p">(</span><span class="s1">&#39;https://raw.githubusercontent.com/Loop3D/ImplicitBenchmark/master/Claudius/&#39;</span> <span class="o">+</span>
-                           <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">letter</span></a> <span class="o">+</span> <span class="s1">&#39;Points.csv&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;;&#39;</span><span class="p">,</span>
-                           <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">,</span> <span class="s1">&#39;surface&#39;</span><span class="p">,</span> <span class="s1">&#39;cutoff&#39;</span><span class="p">],</span> <span class="n">header</span><span class="o">=</span><span class="mi">0</span><span class="p">)[::</span><span class="mi">5</span><span class="p">])</span>
-<span class="c1"># Add fault:</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dfs</span></a><span class="o">.</span><span class="n">append</span><span class="p">(</span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_csv.html#pandas.read_csv" title="pandas.read_csv" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-function"><span class="n">pn</span><span class="o">.</span><span class="n">read_csv</span></a><span class="p">(</span><span class="s1">&#39;https://raw.githubusercontent.com/Loop3D/ImplicitBenchmark/master/Claudius/Fault.csv&#39;</span><span class="p">,</span>
-                       <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">,</span> <span class="s1">&#39;surface&#39;</span><span class="p">],</span> <span class="n">header</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;;&#39;</span><span class="p">))</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">data_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s1">&#39;../../data/input_data/Claudius&#39;</span><span class="p">)</span>
 
-<a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">surface_points</span></a> <span class="o">=</span> <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.concat.html#pandas.concat" title="pandas.concat" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-function"><span class="n">pn</span><span class="o">.</span><span class="n">concat</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dfs</span></a><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">surface_points</span></a><span class="p">[</span><span class="s1">&#39;surface&#39;</span><span class="p">]</span> <span class="o">=</span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">surface_points</span></a><span class="p">[</span><span class="s1">&#39;surface&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;str&#39;</span><span class="p">)</span>
-<span class="c1"># surface_points[&#39;surface&#39;] = surface_points[&#39;surface&#39;].astype(&#39;str&#39;)</span>
-<a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.reset_index.html#pandas.DataFrame.reset_index" title="pandas.DataFrame.reset_index" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-method"><span class="n">surface_points</span><span class="o">.</span><span class="n">reset_index</span></a><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">drop</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.tail.html#pandas.DataFrame.tail" title="pandas.DataFrame.tail" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-method"><span class="n">surface_points</span><span class="o">.</span><span class="n">tail</span></a><span class="p">()</span>
+<span class="n">reduce_data_by</span> <span class="o">=</span> <span class="mi">30</span>
+
+<span class="n">dfs</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">letter</span> <span class="ow">in</span> <span class="s1">&#39;ABCD&#39;</span><span class="p">:</span>
+    <span class="n">dfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="n">pn</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
+            <span class="n">filepath_or_buffer</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">data_path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">letter</span><span class="si">}</span><span class="s2">Points.csv&quot;</span><span class="p">,</span>
+            <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;;&#39;</span><span class="p">,</span>
+            <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">,</span> <span class="s1">&#39;surface&#39;</span><span class="p">,</span> <span class="s1">&#39;cutoff&#39;</span><span class="p">],</span>
+            <span class="n">header</span><span class="o">=</span><span class="mi">0</span>
+        <span class="p">)[::</span><span class="n">reduce_data_by</span><span class="p">]</span>
+    <span class="p">)</span>
+
+<span class="c1"># Add fault:</span>
+<span class="n">dfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+    <span class="n">pn</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
+        <span class="n">filepath_or_buffer</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">data_path</span><span class="si">}</span><span class="s2">/Fault.csv&quot;</span><span class="p">,</span>
+        <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">,</span> <span class="s1">&#39;surface&#39;</span><span class="p">],</span>
+        <span class="n">header</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;,&#39;</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+
+<span class="n">surface_points</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">dfs</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">surface_points</span><span class="p">[</span><span class="s1">&#39;surface&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">surface_points</span><span class="p">[</span><span class="s1">&#39;surface&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;str&#39;</span><span class="p">)</span>
+<span class="n">surface_points</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">drop</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">surface_points</span><span class="o">.</span><span class="n">tail</span><span class="p">()</span>
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
@@ -106,47 +118,47 @@ we can directly tidy the data in gempy style:</p>
   </thead>
   <tbody>
     <tr>
-      <th>4079</th>
+      <th>755</th>
       <td>88</td>
-      <td>551099.25</td>
-      <td>7.82e+06</td>
-      <td>-10466.86</td>
+      <td>551099.250977</td>
+      <td>7.817652e+06</td>
+      <td>-10466.863281</td>
       <td>NaN</td>
       <td>Claudius_fault</td>
     </tr>
     <tr>
-      <th>4080</th>
+      <th>756</th>
       <td>89</td>
-      <td>551160.81</td>
-      <td>7.82e+06</td>
-      <td>-10356.46</td>
+      <td>551160.807495</td>
+      <td>7.817503e+06</td>
+      <td>-10356.463867</td>
       <td>NaN</td>
       <td>Claudius_fault</td>
     </tr>
     <tr>
-      <th>4081</th>
+      <th>757</th>
       <td>90</td>
-      <td>551131.90</td>
-      <td>7.82e+06</td>
-      <td>-10383.32</td>
+      <td>551131.898438</td>
+      <td>7.817659e+06</td>
+      <td>-10383.323242</td>
       <td>NaN</td>
       <td>Claudius_fault</td>
     </tr>
     <tr>
-      <th>4082</th>
+      <th>758</th>
       <td>91</td>
-      <td>551164.41</td>
-      <td>7.82e+06</td>
-      <td>-10299.96</td>
+      <td>551164.412476</td>
+      <td>7.817654e+06</td>
+      <td>-10299.957031</td>
       <td>NaN</td>
       <td>Claudius_fault</td>
     </tr>
     <tr>
-      <th>4083</th>
+      <th>759</th>
       <td>92</td>
-      <td>551197.19</td>
-      <td>7.82e+06</td>
-      <td>-10216.82</td>
+      <td>551197.192139</td>
+      <td>7.817647e+06</td>
+      <td>-10216.820312</td>
       <td>NaN</td>
       <td>Claudius_fault</td>
     </tr>
@@ -155,10 +167,9 @@ we can directly tidy the data in gempy style:</p>
 </div>
 </div>
 <br />
-<br /><div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.dtypes.html#pandas.DataFrame.dtypes" title="pandas.DataFrame.dtypes" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-method"><span class="n">surface_points</span><span class="o">.</span><span class="n">dtypes</span></a>
+<br /><div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">surface_points</span><span class="o">.</span><span class="n">dtypes</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>index        int64
 X          float64
 Y          float64
@@ -169,7 +180,7 @@ dtype: object
 </pre></div>
 </div>
 <p>How many points are per surface</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.groupby.html#pandas.DataFrame.groupby" title="pandas.DataFrame.groupby" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-method"><span class="n">surface_points</span><span class="o">.</span><span class="n">groupby</span></a><span class="p">(</span><span class="s1">&#39;surface&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">surface_points</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;surface&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
@@ -209,35 +220,35 @@ dtype: object
   <tbody>
     <tr>
       <th>0</th>
-      <td>1000</td>
-      <td>1000</td>
-      <td>1000</td>
-      <td>1000</td>
-      <td>1000</td>
+      <td>167</td>
+      <td>167</td>
+      <td>167</td>
+      <td>167</td>
+      <td>167</td>
     </tr>
     <tr>
       <th>250</th>
-      <td>1000</td>
-      <td>1000</td>
-      <td>1000</td>
-      <td>1000</td>
-      <td>1000</td>
+      <td>167</td>
+      <td>167</td>
+      <td>167</td>
+      <td>167</td>
+      <td>167</td>
     </tr>
     <tr>
       <th>330</th>
-      <td>991</td>
-      <td>991</td>
-      <td>991</td>
-      <td>991</td>
-      <td>991</td>
+      <td>166</td>
+      <td>166</td>
+      <td>166</td>
+      <td>166</td>
+      <td>166</td>
     </tr>
     <tr>
       <th>60</th>
-      <td>1000</td>
-      <td>1000</td>
-      <td>1000</td>
-      <td>1000</td>
-      <td>1000</td>
+      <td>167</td>
+      <td>167</td>
+      <td>167</td>
+      <td>167</td>
+      <td>167</td>
     </tr>
     <tr>
       <th>Claudius_fault</th>
@@ -253,20 +264,24 @@ dtype: object
 </div>
 <br />
 <br /><p>Now we do the same with the orientations:</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dfs</span></a> <span class="o">=</span> <span class="p">[]</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">dfs</span> <span class="o">=</span> <span class="p">[]</span>
 
-<span class="k">for</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">surf</span></a> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;330&#39;</span><span class="p">]:</span>
-    <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">o</span></a> <span class="o">=</span> <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_csv.html#pandas.read_csv" title="pandas.read_csv" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-function"><span class="n">pn</span><span class="o">.</span><span class="n">read_csv</span></a><span class="p">(</span><span class="s1">&#39;https://raw.githubusercontent.com/Loop3D/ImplicitBenchmark/master/Claudius/Dips.csv&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;;&#39;</span><span class="p">,</span>
-                    <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">,</span> <span class="s1">&#39;G_x&#39;</span><span class="p">,</span> <span class="s1">&#39;G_y&#39;</span><span class="p">,</span> <span class="s1">&#39;G_z&#39;</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">],</span> <span class="n">header</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">surf</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;330&#39;</span><span class="p">]:</span>
+    <span class="n">o</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
+        <span class="n">filepath_or_buffer</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">data_path</span><span class="si">}</span><span class="s2">/Dips.csv&quot;</span><span class="p">,</span>
+        <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;;&#39;</span><span class="p">,</span>
+        <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">,</span> <span class="s1">&#39;G_x&#39;</span><span class="p">,</span> <span class="s1">&#39;G_y&#39;</span><span class="p">,</span> <span class="s1">&#39;G_z&#39;</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">],</span>
+        <span class="n">header</span><span class="o">=</span><span class="mi">1</span>
+    <span class="p">)</span>
 
     <span class="c1"># Orientation needs to belong to a surface. This is mainly to categorize to which series belong and to</span>
     <span class="c1"># use the same color</span>
-    <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">o</span></a><span class="p">[</span><span class="s1">&#39;surface&#39;</span><span class="p">]</span> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">surf</span></a>
-    <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dfs</span></a><span class="o">.</span><span class="n">append</span><span class="p">(</span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">o</span></a><span class="p">)</span>
-<a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">orientations</span></a> <span class="o">=</span> <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.concat.html#pandas.concat" title="pandas.concat" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-function"><span class="n">pn</span><span class="o">.</span><span class="n">concat</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dfs</span></a><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.reset_index.html#pandas.DataFrame.reset_index" title="pandas.DataFrame.reset_index" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-method"><span class="n">orientations</span><span class="o">.</span><span class="n">reset_index</span></a><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">drop</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">o</span><span class="p">[</span><span class="s1">&#39;surface&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">surf</span>
+    <span class="n">dfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+<span class="n">orientations</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">dfs</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">orientations</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">drop</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-<a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.tail.html#pandas.DataFrame.tail" title="pandas.DataFrame.tail" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-method"><span class="n">orientations</span><span class="o">.</span><span class="n">tail</span></a><span class="p">()</span>
+<span class="n">orientations</span><span class="o">.</span><span class="n">tail</span><span class="p">()</span>
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
@@ -303,61 +318,61 @@ dtype: object
     <tr>
       <th>43</th>
       <td>19</td>
-      <td>0.98</td>
-      <td>0.19</td>
-      <td>0.14</td>
-      <td>-0.97</td>
-      <td>550989.31</td>
-      <td>7.82e+06</td>
-      <td>-9782.97</td>
+      <td>0.976692</td>
+      <td>0.187195</td>
+      <td>0.138165</td>
+      <td>-0.972558</td>
+      <td>550989.3105</td>
+      <td>7817210.527</td>
+      <td>-9782.967773</td>
       <td>330</td>
     </tr>
     <tr>
       <th>44</th>
       <td>20</td>
-      <td>0.25</td>
-      <td>-0.08</td>
-      <td>-0.04</td>
-      <td>-1.00</td>
-      <td>550939.31</td>
-      <td>7.82e+06</td>
-      <td>-9958.43</td>
+      <td>0.248187</td>
+      <td>-0.080561</td>
+      <td>-0.043063</td>
+      <td>-0.995819</td>
+      <td>550939.3105</td>
+      <td>7821227.309</td>
+      <td>-9958.425781</td>
       <td>330</td>
     </tr>
     <tr>
       <th>45</th>
       <td>21</td>
-      <td>0.65</td>
-      <td>-0.16</td>
-      <td>0.08</td>
-      <td>-0.98</td>
-      <td>549276.81</td>
-      <td>7.82e+06</td>
-      <td>-9985.13</td>
+      <td>0.649480</td>
+      <td>-0.161328</td>
+      <td>0.075208</td>
+      <td>-0.984031</td>
+      <td>549276.8105</td>
+      <td>7820682.980</td>
+      <td>-9985.125977</td>
       <td>330</td>
     </tr>
     <tr>
       <th>46</th>
       <td>22</td>
-      <td>0.05</td>
-      <td>-0.01</td>
-      <td>-0.15</td>
-      <td>-0.99</td>
-      <td>548976.81</td>
-      <td>7.82e+06</td>
-      <td>-9974.27</td>
+      <td>0.050025</td>
+      <td>-0.012103</td>
+      <td>-0.153309</td>
+      <td>-0.988104</td>
+      <td>548976.8105</td>
+      <td>7820345.121</td>
+      <td>-9974.265625</td>
       <td>330</td>
     </tr>
     <tr>
       <th>47</th>
       <td>23</td>
-      <td>0.76</td>
-      <td>0.37</td>
-      <td>-0.19</td>
-      <td>-0.91</td>
-      <td>549764.31</td>
-      <td>7.82e+06</td>
-      <td>-9901.21</td>
+      <td>0.759421</td>
+      <td>0.369490</td>
+      <td>-0.187053</td>
+      <td>-0.910213</td>
+      <td>549764.3105</td>
+      <td>7820457.738</td>
+      <td>-9901.208984</td>
       <td>330</td>
     </tr>
   </tbody>
@@ -365,10 +380,9 @@ dtype: object
 </div>
 </div>
 <br />
-<br /><div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.dtypes.html#pandas.DataFrame.dtypes" title="pandas.DataFrame.dtypes" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-method"><span class="n">orientations</span><span class="o">.</span><span class="n">dtypes</span></a>
+<br /><div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">orientations</span><span class="o">.</span><span class="n">dtypes</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>index        int64
 -          float64
 G_x        float64
@@ -381,1014 +395,539 @@ surface     object
 dtype: object
 </pre></div>
 </div>
-</div>
-<div class="section" id="data-initialization">
-<h1>Data initialization:<a class="headerlink" href="#data-initialization" title="Permalink to this headline">¶</a></h1>
+</section>
+<section id="data-initialization">
+<h2>Data initialization:<a class="headerlink" href="#data-initialization" title="Link to this heading">¶</a></h2>
 <p>Suggested size of the axis-aligned modeling box: Origin: 548800 7816600
 -8400 Maximum: 552500 7822000 -11010</p>
 <p>Suggested resolution: 100m x 100m x -90m (grid size 38 x 55 x 30)</p>
 <p>Number of voxels:</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><span class="mi">38</span><span class="p">,</span> <span class="mi">55</span><span class="p">,</span> <span class="mi">30</span><span class="p">])</span><span class="o">.</span><span class="n">prod</span><span class="p">()</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><span class="mi">38</span><span class="p">,</span> <span class="mi">55</span><span class="p">,</span> <span class="mi">30</span><span class="p">])</span><span class="o">.</span><span class="n">prod</span><span class="p">()</span>
+
+<a href="../../Modeling Classes/gempy.core.data.SurfacePointsTable.html#gempy.core.data.SurfacePointsTable" title="gempy.core.data.SurfacePointsTable" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">surface_points_table</span></a><span class="p">:</span> <a href="../../Modeling Classes/gempy.core.data.SurfacePointsTable.html#gempy.core.data.SurfacePointsTable" title="gempy.core.data.SurfacePointsTable" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class"><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">SurfacePointsTable</span></a> <span class="o">=</span> <a href="../../Modeling Classes/gempy.core.data.SurfacePointsTable.html#gempy.core.data.SurfacePointsTable" title="gempy.core.data.SurfacePointsTable" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class"><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">SurfacePointsTable</span></a><span class="o">.</span><span class="n">from_arrays</span><span class="p">(</span>
+    <span class="n">x</span><span class="o">=</span><span class="n">surface_points</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+    <span class="n">y</span><span class="o">=</span><span class="n">surface_points</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+    <span class="n">z</span><span class="o">=</span><span class="n">surface_points</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+    <span class="n">names</span><span class="o">=</span><span class="n">surface_points</span><span class="p">[</span><span class="s1">&#39;surface&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+<span class="p">)</span>
+
+<a href="../../Modeling Classes/gempy.core.data.OrientationsTable.html#gempy.core.data.OrientationsTable" title="gempy.core.data.OrientationsTable" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">orientations_table</span></a><span class="p">:</span> <a href="../../Modeling Classes/gempy.core.data.OrientationsTable.html#gempy.core.data.OrientationsTable" title="gempy.core.data.OrientationsTable" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class"><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">OrientationsTable</span></a> <span class="o">=</span> <a href="../../Modeling Classes/gempy.core.data.OrientationsTable.html#gempy.core.data.OrientationsTable" title="gempy.core.data.OrientationsTable" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class"><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">OrientationsTable</span></a><span class="o">.</span><span class="n">from_arrays</span><span class="p">(</span>
+    <span class="n">x</span><span class="o">=</span><span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+    <span class="n">y</span><span class="o">=</span><span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+    <span class="n">z</span><span class="o">=</span><span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+    <span class="n">G_x</span><span class="o">=</span><span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;G_x&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+    <span class="n">G_y</span><span class="o">=</span><span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;G_y&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+    <span class="n">G_z</span><span class="o">=</span><span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;G_z&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+    <span class="n">names</span><span class="o">=</span><span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;surface&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+    <span class="n">name_id_map</span><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.SurfacePointsTable.html#gempy.core.data.SurfacePointsTable" title="gempy.core.data.SurfacePointsTable" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">surface_points_table</span></a><span class="o">.</span><span class="n">name_id_map</span>  <span class="c1"># ! Make sure that ids and names are shared</span>
+<span class="p">)</span>
+
+<a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">structural_frame</span></a><span class="p">:</span> <a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class"><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">StructuralFrame</span></a> <span class="o">=</span> <a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class"><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">StructuralFrame</span></a><span class="o">.</span><span class="n">from_data_tables</span><span class="p">(</span>
+    <span class="n">surface_points</span><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.SurfacePointsTable.html#gempy.core.data.SurfacePointsTable" title="gempy.core.data.SurfacePointsTable" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">surface_points_table</span></a><span class="p">,</span>
+    <span class="n">orientations</span><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.OrientationsTable.html#gempy.core.data.OrientationsTable" title="gempy.core.data.OrientationsTable" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">orientations_table</span></a>
+<span class="p">)</span>
+
+<a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">:</span> <a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class"><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GeoModel</span></a> <span class="o">=</span> <a href="../../GemPy API/gempy.create_geomodel.html#gempy.create_geomodel" title="gempy.create_geomodel" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">create_geomodel</span></a><span class="p">(</span>
+    <span class="n">project_name</span><span class="o">=</span><span class="s1">&#39;Claudius&#39;</span><span class="p">,</span>
+    <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="mi">548800</span><span class="p">,</span> <span class="mi">552500</span><span class="p">,</span> <span class="mi">7816600</span><span class="p">,</span> <span class="mi">7822000</span><span class="p">,</span> <span class="o">-</span><span class="mi">11010</span><span class="p">,</span> <span class="o">-</span><span class="mi">8400</span><span class="p">],</span>
+    <span class="n">resolution</span><span class="o">=</span><span class="p">[</span><span class="mi">38</span><span class="p">,</span> <span class="mi">55</span><span class="p">,</span> <span class="mi">30</span><span class="p">],</span>
+    <span class="n">refinement</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">structural_frame</span></a><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">structural_frame</span></a>
+<span class="p">)</span>
+
+<a href="../../Modeling Classes/gempy.core.data.StructuralGroup.html#gempy.core.data.StructuralGroup" title="gempy.core.data.StructuralGroup" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">group_fault</span></a> <span class="o">=</span> <a href="../../Modeling Classes/gempy.core.data.StructuralGroup.html#gempy.core.data.StructuralGroup" title="gempy.core.data.StructuralGroup" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class"><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">StructuralGroup</span></a><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Fault1&#39;</span><span class="p">,</span>
+    <span class="n">elements</span><span class="o">=</span><span class="p">[</span><a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame.structural_elements" title="gempy.core.data.StructuralFrame.structural_elements" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-property"><span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span><span class="o">.</span><span class="n">structural_elements</span><span class="o">.</span><span class="n">pop</span></a><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">)],</span>
+    <span class="n">structural_relation</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">StackRelationType</span><span class="o">.</span><span class="n">FAULT</span><span class="p">,</span>
+    <span class="n">fault_relations</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">FaultsRelationSpecialCase</span><span class="o">.</span><span class="n">OFFSET_ALL</span>
+<span class="p">)</span>
+
+<a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span></a><span class="o">.</span><span class="n">get_group_by_name</span><span class="p">(</span><span class="s2">&quot;default_formation&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">elements</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># Insert the fault group into the structural frame:</span>
+<a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span></a><span class="o">.</span><span class="n">insert_group</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <a href="../../Modeling Classes/gempy.core.data.StructuralGroup.html#gempy.core.data.StructuralGroup" title="gempy.core.data.StructuralGroup" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">group_fault</span></a><span class="p">)</span>
+
+<span class="n">gp</span><span class="o">.</span><span class="n">set_is_fault</span><span class="p">(</span>
+    <span class="n">frame</span><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span></a><span class="p">,</span>
+    <span class="n">fault_groups</span><span class="o">=</span><span class="p">[</span><a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span></a><span class="o">.</span><span class="n">get_group_by_name</span><span class="p">(</span><span class="s1">&#39;Fault1&#39;</span><span class="p">)]</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>62700
-</pre></div>
-</div>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a> <span class="o">=</span> <a href="../../GemPy API/gempy.create_model.html#gempy.create_model" title="gempy.create_model" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">create_model</span></a><span class="p">(</span><span class="s1">&#39;Claudius&#39;</span><span class="p">)</span>
-<span class="c1"># Importing the data from csv files and settign extent and resolution</span>
-<a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a> <span class="o">=</span> <a href="../../GemPy API/gempy.init_data.html#gempy.init_data" title="gempy.init_data" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">init_data</span></a><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span>
-                         <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="mi">548800</span><span class="p">,</span> <span class="mi">552500</span><span class="p">,</span> <span class="mi">7816600</span><span class="p">,</span> <span class="mi">7822000</span><span class="p">,</span> <span class="o">-</span><span class="mi">11010</span><span class="p">,</span> <span class="o">-</span><span class="mi">8400</span><span class="p">],</span> <span class="n">resolution</span><span class="o">=</span><span class="p">[</span><span class="mi">38</span><span class="p">,</span> <span class="mi">55</span><span class="p">,</span> <span class="mi">30</span><span class="p">],</span>
-                         <span class="n">surface_points_df</span><span class="o">=</span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">surface_points</span></a><span class="p">[::</span><span class="mi">5</span><span class="p">],</span> <span class="n">orientations_df</span><span class="o">=</span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">orientations</span></a><span class="p">,</span> <span class="n">surface_name</span><span class="o">=</span><span class="s1">&#39;surface&#39;</span><span class="p">,</span>
-                         <span class="n">add_basement</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-</div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Active grids: [&#39;regular&#39;]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;_interpolation_options&#39;: InterpolationOptions(kernel_options={&#39;range&#39;: 5, &#39;c_o&#39;: 10, &#39;uni_degree&#39;: 1, &#39;i_res&#39;: 4, &#39;gi_res&#39;: 2, &#39;number_dimensions&#39;: 3, &#39;kernel_function&#39;: &lt;AvailableKernelFunctions.cubic: KernelFunction(base_function=&lt;function cubic_function at 0x7f857a0a1b40&gt;, derivative_div_r=&lt;function cubic_function_p_div_r at 0x7f857a0a1bd0&gt;, second_derivative=&lt;function cubic_function_a at 0x7f857a0a1c60&gt;, consume_sq_distance=False)&gt;, &#39;kernel_solver&#39;: &lt;Solvers.DEFAULT: 1&gt;, &#39;compute_condition_number&#39;: False, &#39;optimizing_condition_number&#39;: False, &#39;condition_number&#39;: None}, _number_octree_levels=5, current_octree_level=0, block_solutions_type=BlockSolutionType.OCTREE, compute_scalar_gradient=False, mesh_extraction=True, mesh_extraction_masking_options=MeshExtractionMaskingOptions.INTERSECT, mesh_extraction_fancy=True, debug=True, debug_water_tight=False, sigmoid_slope=50000, evaluation_chunk_size=50000, _number_octree_levels_surface=4, _model_name=None),
+ &#39;grid&#39;: &lt;gempy.core.data.grid.Grid object at 0x7f8561b42260&gt;,
+ &#39;meta&#39;: GeoModelMeta(name=&#39;Claudius&#39;,
+                      creation_date=None,
+                      last_modification_date=None,
+                      owner=None),
+ &#39;structural_frame&#39;: StructuralFrame(
+        structural_groups=[
+StructuralGroup(
+        name=Fault1,
+        structural_relation=StackRelationType.FAULT,
+        elements=[
+Element(
+        name=Claudius_fault,
+        color=#527682,
+        is_active=True
+)
+]
+),
+StructuralGroup(
+        name=default_formation,
+        structural_relation=StackRelationType.ERODE,
+        elements=[
+Element(
+        name=0,
+        color=#015482,
+        is_active=True
+),
+Element(
+        name=250,
+        color=#9f0052,
+        is_active=True
+),
+Element(
+        name=330,
+        color=#ffbe00,
+        is_active=True
+),
+Element(
+        name=60,
+        color=#728f02,
+        is_active=True
+)
+]
+)
+],
+        fault_relations=
+[[False,  True],
+ [False, False]],
+,
+ &#39;transform&#39;: {&#39;_is_default_transform&#39;: False,
+ &#39;position&#39;: array([ -550658.0605    , -7819213.97425586,     9824.6748045 ]),
+ &#39;rotation&#39;: array([0., 0., 0.]),
+ &#39;scale&#39;: array([9.56397917e-05, 9.56397917e-05, 9.56397917e-05])}}
 </pre></div>
 </div>
 <p>We are going to increase the smoothness (nugget) of the data to increase
 the conditional number of the matrix:</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Model/gempy.core.model.ImplicitCoKriging.html#gempy.core.model.ImplicitCoKriging.modify_surface_points" title="gempy.core.model.ImplicitCoKriging.modify_surface_points" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-method"><span class="n">geo_model</span><span class="o">.</span><span class="n">modify_surface_points</span></a><span class="p">(</span><a href="../../Model/gempy.core.model.ImplicitCoKriging.html#gempy.core.model.ImplicitCoKriging.surface_points" title="gempy.core.model.ImplicitCoKriging.surface_points" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-method"><span class="n">geo_model</span><span class="o">.</span><span class="n">surface_points</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span></a><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">tail</span><span class="p">()</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">modify_surface_points</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">nugget</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
 
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
+        <table>
+          <tr><td>Structural Groups:</td><td>
+    <table style="border-left:1.2px solid black;>
+      <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+      <tr><td>Name:</td><td>Fault1</td></tr>
+      <tr><td>Structural Relation:</td><td>StackRelationType.FAULT</td></tr>
+      <tr><td>Elements:</td><td>
+    <table width="50%" style="border-left:15px solid #527682;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>Claudius_fault</td></tr>
+    </table>
+        </td></tr>
+    </table>
+        <br>
+    <table style="border-left:1.2px solid black;>
+      <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+      <tr><td>Name:</td><td>default_formation</td></tr>
+      <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+      <tr><td>Elements:</td><td>
+    <table width="50%" style="border-left:15px solid #015482;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>0</td></tr>
+    </table>
+        <br>
+    <table width="50%" style="border-left:15px solid #9f0052;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>250</td></tr>
+    </table>
+        <br>
+    <table width="50%" style="border-left:15px solid #ffbe00;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>330</td></tr>
+    </table>
+        <br>
+    <table width="50%" style="border-left:15px solid #728f02;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>60</td></tr>
+    </table>
+        </td></tr>
+    </table>
+        </td></tr>
+          <tr><td>Fault Relations:</td><td><table style="border-collapse: collapse; table-layout: fixed;"><th></th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Fault1</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">default_fo...</th><tr><th>Fault1</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>default_formation</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr></table></td></tr>
+          <tr><td></td><td>
+        <table>
+          <tr>
+            <td><div style="display: inline-block; background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></div> True</td>
+            <td><div style="display: inline-block; background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></div> False</td>
+          </tr>
+        </table>
+        </td></tr>
+        </table>
 
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>X</th>
-      <th>Y</th>
-      <th>Z</th>
-      <th>X_c</th>
-      <th>Y_c</th>
-      <th>Z_c</th>
-      <th>surface</th>
-      <th>series</th>
-      <th>id</th>
-      <th>order_series</th>
-      <th>smooth</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>4060</th>
-      <td>551031.98</td>
-      <td>7.82e+06</td>
-      <td>-10920.00</td>
-      <td>0.54</td>
-      <td>0.27</td>
-      <td>0.40</td>
-      <td>Claudius_fault</td>
-      <td>Default series</td>
-      <td>5</td>
-      <td>1</td>
-      <td>0.1</td>
-    </tr>
-    <tr>
-      <th>4065</th>
-      <td>551117.12</td>
-      <td>7.82e+06</td>
-      <td>-10773.67</td>
-      <td>0.54</td>
-      <td>0.25</td>
-      <td>0.41</td>
-      <td>Claudius_fault</td>
-      <td>Default series</td>
-      <td>5</td>
-      <td>1</td>
-      <td>0.1</td>
-    </tr>
-    <tr>
-      <th>4070</th>
-      <td>551003.82</td>
-      <td>7.82e+06</td>
-      <td>-10920.00</td>
-      <td>0.53</td>
-      <td>0.31</td>
-      <td>0.40</td>
-      <td>Claudius_fault</td>
-      <td>Default series</td>
-      <td>5</td>
-      <td>1</td>
-      <td>0.1</td>
-    </tr>
-    <tr>
-      <th>4075</th>
-      <td>551036.30</td>
-      <td>7.82e+06</td>
-      <td>-10714.67</td>
-      <td>0.54</td>
-      <td>0.34</td>
-      <td>0.42</td>
-      <td>Claudius_fault</td>
-      <td>Default series</td>
-      <td>5</td>
-      <td>1</td>
-      <td>0.1</td>
-    </tr>
-    <tr>
-      <th>4080</th>
-      <td>551160.81</td>
-      <td>7.82e+06</td>
-      <td>-10356.46</td>
-      <td>0.55</td>
-      <td>0.34</td>
-      <td>0.45</td>
-      <td>Claudius_fault</td>
-      <td>Default series</td>
-      <td>5</td>
-      <td>1</td>
-      <td>0.1</td>
-    </tr>
-  </tbody>
-</table>
-</div>
 </div>
 <br />
 <br /><p>Also the original poles are pointing downwards. We can change the
 direction by calling the following:</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Model/gempy.core.model.ImplicitCoKriging.html#gempy.core.model.ImplicitCoKriging.modify_orientations" title="gempy.core.model.ImplicitCoKriging.modify_orientations" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-method"><span class="n">geo_model</span><span class="o">.</span><span class="n">modify_orientations</span></a><span class="p">(</span><a href="../../Model/gempy.core.model.ImplicitCoKriging.html#gempy.core.model.ImplicitCoKriging.orientations" title="gempy.core.model.ImplicitCoKriging.orientations" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-method"><span class="n">geo_model</span><span class="o">.</span><span class="n">orientations</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span></a><span class="p">,</span> <span class="n">polarity</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">tail</span><span class="p">()</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">modify_orientations</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">polarity</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
 
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
+        <table>
+          <tr><td>Structural Groups:</td><td>
+    <table style="border-left:1.2px solid black;>
+      <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+      <tr><td>Name:</td><td>Fault1</td></tr>
+      <tr><td>Structural Relation:</td><td>StackRelationType.FAULT</td></tr>
+      <tr><td>Elements:</td><td>
+    <table width="50%" style="border-left:15px solid #527682;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>Claudius_fault</td></tr>
+    </table>
+        </td></tr>
+    </table>
+        <br>
+    <table style="border-left:1.2px solid black;>
+      <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+      <tr><td>Name:</td><td>default_formation</td></tr>
+      <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+      <tr><td>Elements:</td><td>
+    <table width="50%" style="border-left:15px solid #015482;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>0</td></tr>
+    </table>
+        <br>
+    <table width="50%" style="border-left:15px solid #9f0052;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>250</td></tr>
+    </table>
+        <br>
+    <table width="50%" style="border-left:15px solid #ffbe00;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>330</td></tr>
+    </table>
+        <br>
+    <table width="50%" style="border-left:15px solid #728f02;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>60</td></tr>
+    </table>
+        </td></tr>
+    </table>
+        </td></tr>
+          <tr><td>Fault Relations:</td><td><table style="border-collapse: collapse; table-layout: fixed;"><th></th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Fault1</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">default_fo...</th><tr><th>Fault1</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>default_formation</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr></table></td></tr>
+          <tr><td></td><td>
+        <table>
+          <tr>
+            <td><div style="display: inline-block; background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></div> True</td>
+            <td><div style="display: inline-block; background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></div> False</td>
+          </tr>
+        </table>
+        </td></tr>
+        </table>
 
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>X</th>
-      <th>Y</th>
-      <th>Z</th>
-      <th>X_c</th>
-      <th>Y_c</th>
-      <th>Z_c</th>
-      <th>G_x</th>
-      <th>G_y</th>
-      <th>G_z</th>
-      <th>dip</th>
-      <th>azimuth</th>
-      <th>polarity</th>
-      <th>surface</th>
-      <th>series</th>
-      <th>id</th>
-      <th>order_series</th>
-      <th>smooth</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>43</th>
-      <td>550989.31</td>
-      <td>7.82e+06</td>
-      <td>-9782.97</td>
-      <td>0.53</td>
-      <td>0.31</td>
-      <td>0.50</td>
-      <td>-0.19</td>
-      <td>-0.14</td>
-      <td>0.97</td>
-      <td>166.55</td>
-      <td>53.57</td>
-      <td>-1.0</td>
-      <td>330</td>
-      <td>Default series</td>
-      <td>4</td>
-      <td>1</td>
-      <td>0.01</td>
-    </tr>
-    <tr>
-      <th>44</th>
-      <td>550939.31</td>
-      <td>7.82e+06</td>
-      <td>-9958.43</td>
-      <td>0.53</td>
-      <td>0.69</td>
-      <td>0.49</td>
-      <td>0.08</td>
-      <td>0.04</td>
-      <td>1.00</td>
-      <td>174.76</td>
-      <td>241.87</td>
-      <td>-1.0</td>
-      <td>330</td>
-      <td>Default series</td>
-      <td>4</td>
-      <td>1</td>
-      <td>0.01</td>
-    </tr>
-    <tr>
-      <th>45</th>
-      <td>549276.81</td>
-      <td>7.82e+06</td>
-      <td>-9985.13</td>
-      <td>0.37</td>
-      <td>0.64</td>
-      <td>0.48</td>
-      <td>0.16</td>
-      <td>-0.08</td>
-      <td>0.98</td>
-      <td>169.75</td>
-      <td>294.99</td>
-      <td>-1.0</td>
-      <td>330</td>
-      <td>Default series</td>
-      <td>4</td>
-      <td>1</td>
-      <td>0.01</td>
-    </tr>
-    <tr>
-      <th>46</th>
-      <td>548976.81</td>
-      <td>7.82e+06</td>
-      <td>-9974.27</td>
-      <td>0.34</td>
-      <td>0.61</td>
-      <td>0.49</td>
-      <td>0.01</td>
-      <td>0.15</td>
-      <td>0.99</td>
-      <td>171.15</td>
-      <td>184.51</td>
-      <td>-1.0</td>
-      <td>330</td>
-      <td>Default series</td>
-      <td>4</td>
-      <td>1</td>
-      <td>0.01</td>
-    </tr>
-    <tr>
-      <th>47</th>
-      <td>549764.31</td>
-      <td>7.82e+06</td>
-      <td>-9901.21</td>
-      <td>0.41</td>
-      <td>0.62</td>
-      <td>0.49</td>
-      <td>-0.37</td>
-      <td>0.19</td>
-      <td>0.91</td>
-      <td>155.53</td>
-      <td>116.85</td>
-      <td>-1.0</td>
-      <td>330</td>
-      <td>Default series</td>
-      <td>4</td>
-      <td>1</td>
-      <td>0.01</td>
-    </tr>
-  </tbody>
-</table>
-</div>
 </div>
 <br />
 <br /><p>We need an orientation per series/fault. The faults does not have
 orientation so the easiest is to create an orientation from the surface
 points availablle:</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Int64Index.html#pandas.Int64Index" title="pandas.Int64Index" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fault_idx</span></a> <span class="o">=</span> <a href="../../Model/gempy.core.model.ImplicitCoKriging.html#gempy.core.model.ImplicitCoKriging.surface_points" title="gempy.core.model.ImplicitCoKriging.surface_points" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-method"><span class="n">geo_model</span><span class="o">.</span><span class="n">surface_points</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span></a><span class="p">[</span><a href="../../Model/gempy.core.model.ImplicitCoKriging.html#gempy.core.model.ImplicitCoKriging.surface_points" title="gempy.core.model.ImplicitCoKriging.surface_points" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-method"><span class="n">geo_model</span><span class="o">.</span><span class="n">surface_points</span><span class="o">.</span><span class="n">df</span></a><span class="p">[</span><span class="s1">&#39;surface&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Claudius_fault&#39;</span><span class="p">]</span>
-<span class="n">gp</span><span class="o">.</span><span class="n">set_orientation_from_surface_points</span><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Int64Index.html#pandas.Int64Index" title="pandas.Int64Index" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fault_idx</span></a><span class="p">)</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">tail</span><span class="p">()</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../Modeling Classes/gempy.core.data.StructuralElement.html#gempy.core.data.StructuralElement" title="gempy.core.data.StructuralElement" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">element</span></a> <span class="o">=</span> <a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span></a><span class="o">.</span><span class="n">get_element_by_name</span><span class="p">(</span><span class="s2">&quot;Claudius_fault&quot;</span><span class="p">)</span>
+<a href="../../Modeling Classes/gempy.core.data.OrientationsTable.html#gempy.core.data.OrientationsTable" title="gempy.core.data.OrientationsTable" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">new_orientations</span></a><span class="p">:</span> <a href="../../Modeling Classes/gempy.core.data.OrientationsTable.html#gempy.core.data.OrientationsTable" title="gempy.core.data.OrientationsTable" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class"><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">OrientationsTable</span></a> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">create_orientations_from_surface_points_coords</span><span class="p">(</span>
+    <span class="n">xyz_coords</span><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.StructuralElement.html#gempy.core.data.StructuralElement" title="gempy.core.data.StructuralElement" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">element</span></a><span class="o">.</span><span class="n">surface_points</span><span class="o">.</span><span class="n">xyz</span>
+<span class="p">)</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">add_orientations</span><span class="p">(</span>
+    <a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span>
+    <span class="n">x</span><span class="o">=</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">new_orientations</span><span class="o">.</span><span class="n">data</span></a><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span>
+    <span class="n">y</span><span class="o">=</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">new_orientations</span><span class="o">.</span><span class="n">data</span></a><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span>
+    <span class="n">z</span><span class="o">=</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">new_orientations</span><span class="o">.</span><span class="n">data</span></a><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">],</span>
+    <span class="n">pole_vector</span><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.OrientationsTable.html#gempy.core.data.OrientationsTable" title="gempy.core.data.OrientationsTable" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">new_orientations</span></a><span class="o">.</span><span class="n">grads</span><span class="p">,</span>
+    <span class="n">elements_names</span><span class="o">=</span><span class="s2">&quot;Claudius_fault&quot;</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
 
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
+        <table>
+          <tr><td>Structural Groups:</td><td>
+    <table style="border-left:1.2px solid black;>
+      <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+      <tr><td>Name:</td><td>Fault1</td></tr>
+      <tr><td>Structural Relation:</td><td>StackRelationType.FAULT</td></tr>
+      <tr><td>Elements:</td><td>
+    <table width="50%" style="border-left:15px solid #527682;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>Claudius_fault</td></tr>
+    </table>
+        </td></tr>
+    </table>
+        <br>
+    <table style="border-left:1.2px solid black;>
+      <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+      <tr><td>Name:</td><td>default_formation</td></tr>
+      <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+      <tr><td>Elements:</td><td>
+    <table width="50%" style="border-left:15px solid #015482;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>0</td></tr>
+    </table>
+        <br>
+    <table width="50%" style="border-left:15px solid #9f0052;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>250</td></tr>
+    </table>
+        <br>
+    <table width="50%" style="border-left:15px solid #ffbe00;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>330</td></tr>
+    </table>
+        <br>
+    <table width="50%" style="border-left:15px solid #728f02;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>60</td></tr>
+    </table>
+        </td></tr>
+    </table>
+        </td></tr>
+          <tr><td>Fault Relations:</td><td><table style="border-collapse: collapse; table-layout: fixed;"><th></th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Fault1</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">default_fo...</th><tr><th>Fault1</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>default_formation</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr></table></td></tr>
+          <tr><td></td><td>
+        <table>
+          <tr>
+            <td><div style="display: inline-block; background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></div> True</td>
+            <td><div style="display: inline-block; background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></div> False</td>
+          </tr>
+        </table>
+        </td></tr>
+        </table>
 
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>X</th>
-      <th>Y</th>
-      <th>Z</th>
-      <th>X_c</th>
-      <th>Y_c</th>
-      <th>Z_c</th>
-      <th>G_x</th>
-      <th>G_y</th>
-      <th>G_z</th>
-      <th>dip</th>
-      <th>azimuth</th>
-      <th>polarity</th>
-      <th>surface</th>
-      <th>series</th>
-      <th>id</th>
-      <th>order_series</th>
-      <th>smooth</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>44</th>
-      <td>550939.31</td>
-      <td>7.82e+06</td>
-      <td>-9958.43</td>
-      <td>0.53</td>
-      <td>0.69</td>
-      <td>0.49</td>
-      <td>0.08</td>
-      <td>0.04</td>
-      <td>1.00</td>
-      <td>174.76</td>
-      <td>241.87</td>
-      <td>-1.0</td>
-      <td>330</td>
-      <td>Default series</td>
-      <td>4</td>
-      <td>1</td>
-      <td>0.01</td>
-    </tr>
-    <tr>
-      <th>45</th>
-      <td>549276.81</td>
-      <td>7.82e+06</td>
-      <td>-9985.13</td>
-      <td>0.37</td>
-      <td>0.64</td>
-      <td>0.48</td>
-      <td>0.16</td>
-      <td>-0.08</td>
-      <td>0.98</td>
-      <td>169.75</td>
-      <td>294.99</td>
-      <td>-1.0</td>
-      <td>330</td>
-      <td>Default series</td>
-      <td>4</td>
-      <td>1</td>
-      <td>0.01</td>
-    </tr>
-    <tr>
-      <th>46</th>
-      <td>548976.81</td>
-      <td>7.82e+06</td>
-      <td>-9974.27</td>
-      <td>0.34</td>
-      <td>0.61</td>
-      <td>0.49</td>
-      <td>0.01</td>
-      <td>0.15</td>
-      <td>0.99</td>
-      <td>171.15</td>
-      <td>184.51</td>
-      <td>-1.0</td>
-      <td>330</td>
-      <td>Default series</td>
-      <td>4</td>
-      <td>1</td>
-      <td>0.01</td>
-    </tr>
-    <tr>
-      <th>47</th>
-      <td>549764.31</td>
-      <td>7.82e+06</td>
-      <td>-9901.21</td>
-      <td>0.41</td>
-      <td>0.62</td>
-      <td>0.49</td>
-      <td>-0.37</td>
-      <td>0.19</td>
-      <td>0.91</td>
-      <td>155.53</td>
-      <td>116.85</td>
-      <td>-1.0</td>
-      <td>330</td>
-      <td>Default series</td>
-      <td>4</td>
-      <td>1</td>
-      <td>0.01</td>
-    </tr>
-    <tr>
-      <th>48</th>
-      <td>551218.85</td>
-      <td>7.82e+06</td>
-      <td>-10341.64</td>
-      <td>0.55</td>
-      <td>0.30</td>
-      <td>0.45</td>
-      <td>-0.93</td>
-      <td>-0.08</td>
-      <td>0.35</td>
-      <td>69.78</td>
-      <td>264.83</td>
-      <td>1.0</td>
-      <td>Claudius_fault</td>
-      <td>Default series</td>
-      <td>5</td>
-      <td>1</td>
-      <td>0.01</td>
-    </tr>
-  </tbody>
-</table>
-</div>
 </div>
 <br />
-<br /><p>Now we can see how the data looks so far:</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Model/gempy.core.model.ImplicitCoKriging.html#gempy.core.model.ImplicitCoKriging.surfaces" title="gempy.core.model.ImplicitCoKriging.surfaces" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-method"><span class="n">geo_model</span><span class="o">.</span><span class="n">surfaces</span></a>
+<br /><div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_Claudius_001.png" srcset="../../_images/sphx_glr_Claudius_001.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f8517306080&gt;
+</pre></div>
+</div>
+<p>We will need to separate with surface belong to each series:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../GemPy API/gempy.map_stack_to_surfaces.html#gempy.map_stack_to_surfaces" title="gempy.map_stack_to_surfaces" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">map_stack_to_surfaces</span></a><span class="p">(</span>
+    <span class="n">gempy_model</span><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span>
+    <span class="n">mapping_object</span><span class="o">=</span><span class="p">{</span>
+        <span class="s1">&#39;Default series&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;60&#39;</span><span class="p">,</span> <span class="s1">&#39;250&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;Fault&#39;</span><span class="p">:</span> <span class="s1">&#39;Claudius_fault&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;Uncomformity&#39;</span><span class="p">:</span> <span class="s1">&#39;330&#39;</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
-<style  type="text/css" >
-#T_19c3c_row0_col3{
-            background-color:  #015482;
-        }#T_19c3c_row1_col3{
-            background-color:  #9f0052;
-        }#T_19c3c_row2_col3{
-            background-color:  #ffbe00;
-        }#T_19c3c_row3_col3{
-            background-color:  #728f02;
-        }#T_19c3c_row4_col3{
-            background-color:  #443988;
-        }#T_19c3c_row5_col3{
-            background-color:  #ff3f20;
-        }</style><table id="T_19c3c_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
-                <tr>
-                        <th id="T_19c3c_level0_row0" class="row_heading level0 row0" >0</th>
-                        <td id="T_19c3c_row0_col0" class="data row0 col0" >0</td>
-                        <td id="T_19c3c_row0_col1" class="data row0 col1" >Default series</td>
-                        <td id="T_19c3c_row0_col2" class="data row0 col2" >1</td>
-                        <td id="T_19c3c_row0_col3" class="data row0 col3" >#015482</td>
-                        <td id="T_19c3c_row0_col4" class="data row0 col4" >1</td>
-            </tr>
-            <tr>
-                        <th id="T_19c3c_level0_row1" class="row_heading level0 row1" >1</th>
-                        <td id="T_19c3c_row1_col0" class="data row1 col0" >60</td>
-                        <td id="T_19c3c_row1_col1" class="data row1 col1" >Default series</td>
-                        <td id="T_19c3c_row1_col2" class="data row1 col2" >2</td>
-                        <td id="T_19c3c_row1_col3" class="data row1 col3" >#9f0052</td>
-                        <td id="T_19c3c_row1_col4" class="data row1 col4" >2</td>
-            </tr>
-            <tr>
-                        <th id="T_19c3c_level0_row2" class="row_heading level0 row2" >2</th>
-                        <td id="T_19c3c_row2_col0" class="data row2 col0" >250</td>
-                        <td id="T_19c3c_row2_col1" class="data row2 col1" >Default series</td>
-                        <td id="T_19c3c_row2_col2" class="data row2 col2" >3</td>
-                        <td id="T_19c3c_row2_col3" class="data row2 col3" >#ffbe00</td>
-                        <td id="T_19c3c_row2_col4" class="data row2 col4" >3</td>
-            </tr>
-            <tr>
-                        <th id="T_19c3c_level0_row3" class="row_heading level0 row3" >3</th>
-                        <td id="T_19c3c_row3_col0" class="data row3 col0" >330</td>
-                        <td id="T_19c3c_row3_col1" class="data row3 col1" >Default series</td>
-                        <td id="T_19c3c_row3_col2" class="data row3 col2" >4</td>
-                        <td id="T_19c3c_row3_col3" class="data row3 col3" >#728f02</td>
-                        <td id="T_19c3c_row3_col4" class="data row3 col4" >4</td>
-            </tr>
-            <tr>
-                        <th id="T_19c3c_level0_row4" class="row_heading level0 row4" >4</th>
-                        <td id="T_19c3c_row4_col0" class="data row4 col0" >Claudius_fault</td>
-                        <td id="T_19c3c_row4_col1" class="data row4 col1" >Default series</td>
-                        <td id="T_19c3c_row4_col2" class="data row4 col2" >5</td>
-                        <td id="T_19c3c_row4_col3" class="data row4 col3" >#443988</td>
-                        <td id="T_19c3c_row4_col4" class="data row4 col4" >5</td>
-            </tr>
-            <tr>
-                        <th id="T_19c3c_level0_row5" class="row_heading level0 row5" >5</th>
-                        <td id="T_19c3c_row5_col0" class="data row5 col0" >basement</td>
-                        <td id="T_19c3c_row5_col1" class="data row5 col1" >Basement</td>
-                        <td id="T_19c3c_row5_col2" class="data row5 col2" >1</td>
-                        <td id="T_19c3c_row5_col3" class="data row5 col3" >#ff3f20</td>
-                        <td id="T_19c3c_row5_col4" class="data row5 col4" >6</td>
-            </tr>
-    </tbody></table>
+
+        <table>
+          <tr><td>Structural Groups:</td><td>
+    <table style="border-left:1.2px solid black;>
+      <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+      <tr><td>Name:</td><td>Default series</td></tr>
+      <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+      <tr><td>Elements:</td><td>
+    <table width="50%" style="border-left:15px solid #015482;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>0</td></tr>
+    </table>
+        <br>
+    <table width="50%" style="border-left:15px solid #728f02;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>60</td></tr>
+    </table>
+        <br>
+    <table width="50%" style="border-left:15px solid #9f0052;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>250</td></tr>
+    </table>
+        </td></tr>
+    </table>
+        <br>
+    <table style="border-left:1.2px solid black;>
+      <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+      <tr><td>Name:</td><td>Fault</td></tr>
+      <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+      <tr><td>Elements:</td><td>
+    <table width="50%" style="border-left:15px solid #527682;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>Claudius_fault</td></tr>
+    </table>
+        </td></tr>
+    </table>
+        <br>
+    <table style="border-left:1.2px solid black;>
+      <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+      <tr><td>Name:</td><td>Uncomformity</td></tr>
+      <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+      <tr><td>Elements:</td><td>
+    <table width="50%" style="border-left:15px solid #ffbe00;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>330</td></tr>
+    </table>
+        </td></tr>
+    </table>
+        </td></tr>
+          <tr><td>Fault Relations:</td><td><table style="border-collapse: collapse; table-layout: fixed;"><th></th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Default se...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Fault</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Uncomformi...</th><tr><th>Default series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>Fault</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>Uncomformity</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr></table></td></tr>
+          <tr><td></td><td>
+        <table>
+          <tr>
+            <td><div style="display: inline-block; background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></div> True</td>
+            <td><div style="display: inline-block; background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></div> False</td>
+          </tr>
+        </table>
+        </td></tr>
+        </table>
+
 </div>
 <br />
-<br /><div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Plot/gempy.plot_2d.html#gempy.plot_2d" title="gempy.plot_2d" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">plot_2d</span></a><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<img alt="Cell Number: mid Direction: y" class="sphx-glr-single-img" src="../../_images/sphx_glr_Claudius_001.png" />
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy.plot.visualization_2d.Plot2D object at 0x7fcc46042a60&gt;
-</pre></div>
-</div>
-<p>By default all surfaces belong to one unique series.</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Model/gempy.core.model.ImplicitCoKriging.html#gempy.core.model.ImplicitCoKriging.surfaces" title="gempy.core.model.ImplicitCoKriging.surfaces" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-method"><span class="n">geo_model</span><span class="o">.</span><span class="n">surfaces</span></a>
+<br /><p>So far we did not specify which series/faults are actula faults:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">set_is_fault</span><span class="p">(</span>
+    <span class="n">frame</span><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span></a><span class="p">,</span>
+    <span class="n">fault_groups</span><span class="o">=</span><span class="p">[</span><a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span></a><span class="o">.</span><span class="n">get_group_by_name</span><span class="p">(</span><span class="s1">&#39;Fault&#39;</span><span class="p">)]</span>
+<span class="p">)</span>
+
+<a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span></a>
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
-<style  type="text/css" >
-#T_5e1db_row0_col3{
-            background-color:  #015482;
-        }#T_5e1db_row1_col3{
-            background-color:  #9f0052;
-        }#T_5e1db_row2_col3{
-            background-color:  #ffbe00;
-        }#T_5e1db_row3_col3{
-            background-color:  #728f02;
-        }#T_5e1db_row4_col3{
-            background-color:  #443988;
-        }#T_5e1db_row5_col3{
-            background-color:  #ff3f20;
-        }</style><table id="T_5e1db_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
-                <tr>
-                        <th id="T_5e1db_level0_row0" class="row_heading level0 row0" >0</th>
-                        <td id="T_5e1db_row0_col0" class="data row0 col0" >0</td>
-                        <td id="T_5e1db_row0_col1" class="data row0 col1" >Default series</td>
-                        <td id="T_5e1db_row0_col2" class="data row0 col2" >1</td>
-                        <td id="T_5e1db_row0_col3" class="data row0 col3" >#015482</td>
-                        <td id="T_5e1db_row0_col4" class="data row0 col4" >1</td>
-            </tr>
-            <tr>
-                        <th id="T_5e1db_level0_row1" class="row_heading level0 row1" >1</th>
-                        <td id="T_5e1db_row1_col0" class="data row1 col0" >60</td>
-                        <td id="T_5e1db_row1_col1" class="data row1 col1" >Default series</td>
-                        <td id="T_5e1db_row1_col2" class="data row1 col2" >2</td>
-                        <td id="T_5e1db_row1_col3" class="data row1 col3" >#9f0052</td>
-                        <td id="T_5e1db_row1_col4" class="data row1 col4" >2</td>
-            </tr>
-            <tr>
-                        <th id="T_5e1db_level0_row2" class="row_heading level0 row2" >2</th>
-                        <td id="T_5e1db_row2_col0" class="data row2 col0" >250</td>
-                        <td id="T_5e1db_row2_col1" class="data row2 col1" >Default series</td>
-                        <td id="T_5e1db_row2_col2" class="data row2 col2" >3</td>
-                        <td id="T_5e1db_row2_col3" class="data row2 col3" >#ffbe00</td>
-                        <td id="T_5e1db_row2_col4" class="data row2 col4" >3</td>
-            </tr>
-            <tr>
-                        <th id="T_5e1db_level0_row3" class="row_heading level0 row3" >3</th>
-                        <td id="T_5e1db_row3_col0" class="data row3 col0" >330</td>
-                        <td id="T_5e1db_row3_col1" class="data row3 col1" >Default series</td>
-                        <td id="T_5e1db_row3_col2" class="data row3 col2" >4</td>
-                        <td id="T_5e1db_row3_col3" class="data row3 col3" >#728f02</td>
-                        <td id="T_5e1db_row3_col4" class="data row3 col4" >4</td>
-            </tr>
-            <tr>
-                        <th id="T_5e1db_level0_row4" class="row_heading level0 row4" >4</th>
-                        <td id="T_5e1db_row4_col0" class="data row4 col0" >Claudius_fault</td>
-                        <td id="T_5e1db_row4_col1" class="data row4 col1" >Default series</td>
-                        <td id="T_5e1db_row4_col2" class="data row4 col2" >5</td>
-                        <td id="T_5e1db_row4_col3" class="data row4 col3" >#443988</td>
-                        <td id="T_5e1db_row4_col4" class="data row4 col4" >5</td>
-            </tr>
-            <tr>
-                        <th id="T_5e1db_level0_row5" class="row_heading level0 row5" >5</th>
-                        <td id="T_5e1db_row5_col0" class="data row5 col0" >basement</td>
-                        <td id="T_5e1db_row5_col1" class="data row5 col1" >Basement</td>
-                        <td id="T_5e1db_row5_col2" class="data row5 col2" >1</td>
-                        <td id="T_5e1db_row5_col3" class="data row5 col3" >#ff3f20</td>
-                        <td id="T_5e1db_row5_col4" class="data row5 col4" >6</td>
-            </tr>
-    </tbody></table>
+
+        <table>
+          <tr><td>Structural Groups:</td><td>
+    <table style="border-left:1.2px solid black;>
+      <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+      <tr><td>Name:</td><td>Default series</td></tr>
+      <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+      <tr><td>Elements:</td><td>
+    <table width="50%" style="border-left:15px solid #015482;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>0</td></tr>
+    </table>
+        <br>
+    <table width="50%" style="border-left:15px solid #728f02;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>60</td></tr>
+    </table>
+        <br>
+    <table width="50%" style="border-left:15px solid #9f0052;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>250</td></tr>
+    </table>
+        </td></tr>
+    </table>
+        <br>
+    <table style="border-left:1.2px solid black;>
+      <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+      <tr><td>Name:</td><td>Fault</td></tr>
+      <tr><td>Structural Relation:</td><td>StackRelationType.FAULT</td></tr>
+      <tr><td>Elements:</td><td>
+    <table width="50%" style="border-left:15px solid #527682;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>Claudius_fault</td></tr>
+    </table>
+        </td></tr>
+    </table>
+        <br>
+    <table style="border-left:1.2px solid black;>
+      <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+      <tr><td>Name:</td><td>Uncomformity</td></tr>
+      <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+      <tr><td>Elements:</td><td>
+    <table width="50%" style="border-left:15px solid #ffbe00;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>330</td></tr>
+    </table>
+        </td></tr>
+    </table>
+        </td></tr>
+          <tr><td>Fault Relations:</td><td><table style="border-collapse: collapse; table-layout: fixed;"><th></th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Default se...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Fault</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Uncomformi...</th><tr><th>Default series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>Fault</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>Uncomformity</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr></table></td></tr>
+          <tr><td></td><td>
+        <table>
+          <tr>
+            <td><div style="display: inline-block; background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></div> True</td>
+            <td><div style="display: inline-block; background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></div> False</td>
+          </tr>
+        </table>
+        </td></tr>
+        </table>
+
 </div>
 <br />
-<br /><p>We will need to separate with surface belong to each series:</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">stratigraphy</span></a> <span class="o">=</span> <span class="s1">&#39;fixed&#39;</span>
+<br /><div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="o">.</span><span class="n">interpolation_options</span><span class="o">.</span><span class="n">kernel_options</span><span class="o">.</span><span class="n">range</span> <span class="o">=</span> <span class="mi">1</span>
+<a href="../../GemPy API/gempy.compute_model.html#gempy.compute_model" title="gempy.compute_model" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span></a><span class="p">(</span>
+    <a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span>
+    <span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GemPyEngineConfig</span><span class="p">(</span>
+        <span class="n">backend</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">AvailableBackends</span><span class="o">.</span><span class="n">numpy</span><span class="p">,</span>
+        <span class="n">use_gpu</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float64&#39;</span>
+    <span class="p">)</span>
+<span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">stratigraphy</span></a> <span class="o">==</span> <span class="s1">&#39;original&#39;</span><span class="p">:</span>
-    <a href="../../GemPy API/gempy.map_stack_to_surfaces.html#gempy.map_stack_to_surfaces" title="gempy.map_stack_to_surfaces" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">map_stack_to_surfaces</span></a><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Fault&#39;</span><span class="p">:</span> <span class="s1">&#39;Claudius_fault&#39;</span><span class="p">,</span>
-                                         <span class="s1">&#39;Default series&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;60&#39;</span><span class="p">,</span> <span class="s1">&#39;250&#39;</span><span class="p">,</span> <span class="s1">&#39;330&#39;</span><span class="p">),</span>
-                                         <span class="p">})</span>
-    <span class="c1"># Ordering the events from younger to older:</span>
-    <a href="../../Model/gempy.core.model.ImplicitCoKriging.html#gempy.core.model.ImplicitCoKriging.reorder_series" title="gempy.core.model.ImplicitCoKriging.reorder_series" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-method"><span class="n">geo_model</span><span class="o">.</span><span class="n">reorder_series</span></a><span class="p">([</span><span class="s1">&#39;Fault&#39;</span><span class="p">,</span> <span class="s1">&#39;Default series&#39;</span><span class="p">,</span> <span class="s1">&#39;Basement&#39;</span><span class="p">])</span>
-
-
-<span class="k">elif</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">stratigraphy</span></a> <span class="o">==</span> <span class="s1">&#39;fixed&#39;</span><span class="p">:</span>
-    <a href="../../GemPy API/gempy.map_stack_to_surfaces.html#gempy.map_stack_to_surfaces" title="gempy.map_stack_to_surfaces" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">map_stack_to_surfaces</span></a><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Default series&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;60&#39;</span><span class="p">,</span> <span class="s1">&#39;250&#39;</span><span class="p">),</span>
-                                         <span class="s1">&#39;Fault&#39;</span><span class="p">:</span> <span class="s1">&#39;Claudius_fault&#39;</span><span class="p">,</span>
-                                         <span class="s1">&#39;Uncomformity&#39;</span><span class="p">:</span> <span class="s1">&#39;330&#39;</span><span class="p">,</span>
-                                         <span class="p">})</span>
-    <span class="c1"># Ordering the events from younger to older:</span>
-    <a href="../../Model/gempy.core.model.ImplicitCoKriging.html#gempy.core.model.ImplicitCoKriging.reorder_series" title="gempy.core.model.ImplicitCoKriging.reorder_series" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-method"><span class="n">geo_model</span><span class="o">.</span><span class="n">reorder_series</span></a><span class="p">([</span><span class="s1">&#39;Default series&#39;</span><span class="p">,</span> <span class="s1">&#39;Fault&#39;</span><span class="p">,</span> <span class="s1">&#39;Uncomformity&#39;</span><span class="p">,</span> <span class="s1">&#39;Basement&#39;</span><span class="p">])</span>
-</pre></div>
-</div>
-<p>So far we did not specify which series/faults are actula faults:</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Model/gempy.core.model.ImplicitCoKriging.html#gempy.core.model.ImplicitCoKriging.set_is_fault" title="gempy.core.model.ImplicitCoKriging.set_is_fault" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-method"><span class="n">geo_model</span><span class="o">.</span><span class="n">set_is_fault</span></a><span class="p">(</span><span class="s1">&#39;Fault&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Fault colors changed. If you do not like this behavior, set change_color to False.
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting Backend To: AvailableBackends.numpy
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>order_series</th>
-      <th>BottomRelation</th>
-      <th>isActive</th>
-      <th>isFault</th>
-      <th>isFinite</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>Default series</th>
-      <td>1</td>
-      <td>Erosion</td>
-      <td>True</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>Fault</th>
-      <td>2</td>
-      <td>Fault</td>
-      <td>True</td>
-      <td>True</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>Uncomformity</th>
-      <td>3</td>
-      <td>Erosion</td>
-      <td>True</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>Basement</th>
-      <td>4</td>
-      <td>Erosion</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-  </tbody>
-</table>
+<b>Solutions:</b> 5 Octree Levels, 5 DualContouringMeshes
 </div>
 <br />
-<br /><p>Ordering the events from younger to older:</p>
-<p>geo_model.reorder_series([‘Default series’, ‘Fault’, ‘Uncomformity’, ‘Basement’])</p>
-<p>Check which series/faults are affected by other faults (rows offset
-columns):</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Model/gempy.core.model.ImplicitCoKriging.html#gempy.core.model.ImplicitCoKriging.faults" title="gempy.core.model.ImplicitCoKriging.faults" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-method"><span class="n">geo_model</span><span class="o">.</span><span class="n">faults</span><span class="o">.</span><span class="n">faults_relations_df</span></a>
-</pre></div>
-</div>
-<div class="output_subarea output_html rendered_html output_result">
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
+<br /><div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">sect</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;mid&#39;</span><span class="p">]</span>
 
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>Default series</th>
-      <th>Fault</th>
-      <th>Uncomformity</th>
-      <th>Basement</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>Default series</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>Fault</th>
-      <td>False</td>
-      <td>False</td>
-      <td>True</td>
-      <td>True</td>
-    </tr>
-    <tr>
-      <th>Uncomformity</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>Basement</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-</div>
-<br />
-<br /><p>Now we are good to go:</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">set_interpolator</span><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">theano_optimizer</span><span class="o">=</span><span class="s1">&#39;fast_run&#39;</span><span class="p">,</span>
-                    <span class="n">compile_theano</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="n">sect</span><span class="p">,</span> <span class="n">series_n</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">show_scalar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting kriging parameters to their default values.
-Compiling theano function...
-Level of Optimization:  fast_run
-Device:  cpu
-Precision:  float64
-Number of faults:  1
-Compilation Done!
-Kriging values:
-                        values
-range                 7047.13
-$C_o$              1182430.95
-drift equations  [3, 3, 3, 3]
-
-&lt;gempy.core.interpolator.InterpolatorModel object at 0x7fcc6b70cd60&gt;
+<img src="../../_images/sphx_glr_Claudius_002.png" srcset="../../_images/sphx_glr_Claudius_002.png" alt="Cell Number: mid Direction: x" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f851715caf0&gt;
 </pre></div>
 </div>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../GemPy API/gempy.compute_model.html#gempy.compute_model" title="gempy.compute_model" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span></a><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="n">sect</span><span class="p">,</span> <span class="n">show_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Lithology ids
-  [5. 5. 5. ... 1. 1. 1.]
+<img src="../../_images/sphx_glr_Claudius_003.png" srcset="../../_images/sphx_glr_Claudius_003.png" alt="Cell Number: mid Direction: x" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f851715ef50&gt;
 </pre></div>
 </div>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sect</span></a> <span class="o">=</span> <span class="p">[</span><span class="mi">35</span><span class="p">]</span>
-
-<a href="../../Plot/gempy.plot_2d.html#gempy.plot_2d" title="gempy.plot_2d" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">plot_2d</span></a><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sect</span></a><span class="p">,</span> <span class="n">series_n</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">show_scalar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<img alt="Cell Number: 35 Direction: x" class="sphx-glr-single-img" src="../../_images/sphx_glr_Claudius_002.png" />
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy.plot.visualization_2d.Plot2D object at 0x7fcc46bbdac0&gt;
-</pre></div>
-</div>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Plot/gempy.plot_2d.html#gempy.plot_2d" title="gempy.plot_2d" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">plot_2d</span></a><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sect</span></a><span class="p">,</span> <span class="n">show_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<img alt="Cell Number: 35 Direction: x" class="sphx-glr-single-img" src="../../_images/sphx_glr_Claudius_003.png" />
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy.plot.visualization_2d.Plot2D object at 0x7fcc74890a60&gt;
-</pre></div>
-</div>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Plot/gempy.plot_2d.html#gempy.plot_2d" title="gempy.plot_2d" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">plot_2d</span></a><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="p">[</span><span class="mi">28</span><span class="p">],</span> <span class="n">series_n</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">show_scalar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<a href="../../Plot/gempy.plot_2d.html#gempy.plot_2d" title="gempy.plot_2d" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">plot_2d</span></a><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="p">[</span><span class="mi">28</span><span class="p">],</span> <span class="n">series_n</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">show_scalar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<a href="../../Plot/gempy.plot_2d.html#gempy.plot_2d" title="gempy.plot_2d" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">plot_2d</span></a><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="p">[</span><span class="mi">28</span><span class="p">],</span> <span class="n">series_n</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">show_scalar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="p">[</span><span class="mi">28</span><span class="p">],</span> <span class="n">series_n</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">show_scalar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="p">[</span><span class="mi">28</span><span class="p">],</span> <span class="n">series_n</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">show_scalar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="p">[</span><span class="mi">28</span><span class="p">],</span> <span class="n">series_n</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">show_scalar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <ul class="sphx-glr-horizontal">
-<li><img alt="Cell Number: 28 Direction: y" class="sphx-glr-multi-img" src="../../_images/sphx_glr_Claudius_004.png" />
-</li>
-<li><img alt="Cell Number: 28 Direction: y" class="sphx-glr-multi-img" src="../../_images/sphx_glr_Claudius_005.png" />
-</li>
-<li><img alt="Cell Number: 28 Direction: y" class="sphx-glr-multi-img" src="../../_images/sphx_glr_Claudius_006.png" />
-</li>
+<li><img src="../../_images/sphx_glr_Claudius_004.png" srcset="../../_images/sphx_glr_Claudius_004.png" alt="Cell Number: 28 Direction: y" class = "sphx-glr-multi-img"/></li>
+<li><img src="../../_images/sphx_glr_Claudius_005.png" srcset="../../_images/sphx_glr_Claudius_005.png" alt="Cell Number: 28 Direction: y" class = "sphx-glr-multi-img"/></li>
+<li><img src="../../_images/sphx_glr_Claudius_006.png" srcset="../../_images/sphx_glr_Claudius_006.png" alt="Cell Number: 28 Direction: y" class = "sphx-glr-multi-img"/></li>
 </ul>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy.plot.visualization_2d.Plot2D object at 0x7fcc6b8d83a0&gt;
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f850ccf29e0&gt;
 </pre></div>
 </div>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Plot/gempy.plot_2d.html#gempy.plot_2d" title="gempy.plot_2d" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">plot_2d</span></a><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="p">[</span><span class="mi">28</span><span class="p">],</span> <span class="n">show_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="p">[</span><span class="mi">28</span><span class="p">],</span> <span class="n">show_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<img alt="Cell Number: 28 Direction: y" class="sphx-glr-single-img" src="../../_images/sphx_glr_Claudius_007.png" />
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy.plot.visualization_2d.Plot2D object at 0x7fccd0e70df0&gt;
+<img src="../../_images/sphx_glr_Claudius_007.png" srcset="../../_images/sphx_glr_Claudius_007.png" alt="Cell Number: 28 Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f850cd782e0&gt;
 </pre></div>
 </div>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># sphinx_gallery_thumbnail_number = 8</span>
-<a href="../../Plot/gempy.plot_3d.html#gempy.plot_3d" title="gempy.plot_3d" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">plot_3d</span></a><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># sphinx_gallery_thumbnail_number = 8</span>
+<span class="n">gpv</span><span class="o">.</span><span class="n">plot_3d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">show_lith</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show_boundaries</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<img alt="Claudius" class="sphx-glr-single-img" src="../../_images/sphx_glr_Claudius_008.png" />
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy.plot.vista.GemPyToVista object at 0x7fcb8ae53910&gt;
+<img src="../../_images/sphx_glr_Claudius_008.png" srcset="../../_images/sphx_glr_Claudius_008.png" alt="Claudius" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f850c35cac0&gt;
 </pre></div>
 </div>
-</div>
-<div class="section" id="export-data">
-<h1>Export data:<a class="headerlink" href="#export-data" title="Permalink to this headline">¶</a></h1>
-<p>The solution is stored in a numpy array of the following shape. Axis 0
-are the scalar fields of each correspondent series/faults in the
-following order (except basement):</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Model/gempy.core.model.ImplicitCoKriging.html#gempy.core.model.ImplicitCoKriging.series" title="gempy.core.model.ImplicitCoKriging.series" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-method"><span class="n">geo_model</span><span class="o">.</span><span class="n">series</span></a>
-</pre></div>
-</div>
-<div class="output_subarea output_html rendered_html output_result">
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>order_series</th>
-      <th>BottomRelation</th>
-      <th>isActive</th>
-      <th>isFault</th>
-      <th>isFinite</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>Default series</th>
-      <td>1</td>
-      <td>Erosion</td>
-      <td>True</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>Fault</th>
-      <td>2</td>
-      <td>Fault</td>
-      <td>True</td>
-      <td>True</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>Uncomformity</th>
-      <td>3</td>
-      <td>Erosion</td>
-      <td>True</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>Basement</th>
-      <td>4</td>
-      <td>Erosion</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-<br />
-<br /><p>For the surfaces, there are two numpy arrays, one with vertices and the
-other with triangles. Axis 0 is each surface in the order:</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Model/gempy.core.model.ImplicitCoKriging.html#gempy.core.model.ImplicitCoKriging.surfaces" title="gempy.core.model.ImplicitCoKriging.surfaces" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-method"><span class="n">geo_model</span><span class="o">.</span><span class="n">surfaces</span></a>
-</pre></div>
-</div>
-<div class="output_subarea output_html rendered_html output_result">
-<style  type="text/css" >
-#T_c6962_row0_col3{
-            background-color:  #015482;
-        }#T_c6962_row1_col3{
-            background-color:  #9f0052;
-        }#T_c6962_row2_col3{
-            background-color:  #ffbe00;
-        }#T_c6962_row3_col3{
-            background-color:  #527682;
-        }#T_c6962_row4_col3{
-            background-color:  #728f02;
-        }#T_c6962_row5_col3{
-            background-color:  #ff3f20;
-        }</style><table id="T_c6962_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
-                <tr>
-                        <th id="T_c6962_level0_row0" class="row_heading level0 row0" >0</th>
-                        <td id="T_c6962_row0_col0" class="data row0 col0" >0</td>
-                        <td id="T_c6962_row0_col1" class="data row0 col1" >Default series</td>
-                        <td id="T_c6962_row0_col2" class="data row0 col2" >1</td>
-                        <td id="T_c6962_row0_col3" class="data row0 col3" >#015482</td>
-                        <td id="T_c6962_row0_col4" class="data row0 col4" >1</td>
-            </tr>
-            <tr>
-                        <th id="T_c6962_level0_row1" class="row_heading level0 row1" >1</th>
-                        <td id="T_c6962_row1_col0" class="data row1 col0" >60</td>
-                        <td id="T_c6962_row1_col1" class="data row1 col1" >Default series</td>
-                        <td id="T_c6962_row1_col2" class="data row1 col2" >2</td>
-                        <td id="T_c6962_row1_col3" class="data row1 col3" >#9f0052</td>
-                        <td id="T_c6962_row1_col4" class="data row1 col4" >2</td>
-            </tr>
-            <tr>
-                        <th id="T_c6962_level0_row2" class="row_heading level0 row2" >2</th>
-                        <td id="T_c6962_row2_col0" class="data row2 col0" >250</td>
-                        <td id="T_c6962_row2_col1" class="data row2 col1" >Default series</td>
-                        <td id="T_c6962_row2_col2" class="data row2 col2" >3</td>
-                        <td id="T_c6962_row2_col3" class="data row2 col3" >#ffbe00</td>
-                        <td id="T_c6962_row2_col4" class="data row2 col4" >3</td>
-            </tr>
-            <tr>
-                        <th id="T_c6962_level0_row3" class="row_heading level0 row3" >4</th>
-                        <td id="T_c6962_row3_col0" class="data row3 col0" >Claudius_fault</td>
-                        <td id="T_c6962_row3_col1" class="data row3 col1" >Fault</td>
-                        <td id="T_c6962_row3_col2" class="data row3 col2" >1</td>
-                        <td id="T_c6962_row3_col3" class="data row3 col3" >#527682</td>
-                        <td id="T_c6962_row3_col4" class="data row3 col4" >4</td>
-            </tr>
-            <tr>
-                        <th id="T_c6962_level0_row4" class="row_heading level0 row4" >3</th>
-                        <td id="T_c6962_row4_col0" class="data row4 col0" >330</td>
-                        <td id="T_c6962_row4_col1" class="data row4 col1" >Uncomformity</td>
-                        <td id="T_c6962_row4_col2" class="data row4 col2" >1</td>
-                        <td id="T_c6962_row4_col3" class="data row4 col3" >#728f02</td>
-                        <td id="T_c6962_row4_col4" class="data row4 col4" >5</td>
-            </tr>
-            <tr>
-                        <th id="T_c6962_level0_row5" class="row_heading level0 row5" >5</th>
-                        <td id="T_c6962_row5_col0" class="data row5 col0" >basement</td>
-                        <td id="T_c6962_row5_col1" class="data row5 col1" >Basement</td>
-                        <td id="T_c6962_row5_col2" class="data row5 col2" >1</td>
-                        <td id="T_c6962_row5_col3" class="data row5 col3" >#ff3f20</td>
-                        <td id="T_c6962_row5_col4" class="data row5 col4" >6</td>
-            </tr>
-    </tbody></table>
-</div>
-<br />
-<br /><p>np.save(‘Claudius_scalar’, geo_model.solutions.scalar_field_matrix)
-np.save(‘Claudius_ver’, geo_model.solutions.vertices)
-np.save(‘Claudius_edges’, geo_model.solutions.edges)
-gp.plot.export_to_vtk(geo_model, ‘Claudius’)</p>
-<div class="section" id="timing">
-<h2>Timing:<a class="headerlink" href="#timing" title="Permalink to this headline">¶</a></h2>
-</div>
-</div>
-<div class="section" id="fault">
-<h1>Fault<a class="headerlink" href="#fault" title="Permalink to this headline">¶</a></h1>
-<ul>
-<li><p>CPU Memory 8 Gb 44.9 s ± 150 ms per loop (mean ± std. dev. of 7 runs,
-1 loop each)</p></li>
-<li><p>GPU Memory 6.8 gb:</p>
-<ul>
-<li><p>2.13 s ± 3.39 ms per loop (mean ± std. dev. of 7 runs, 1 loop
-each) + steps <strong>str</strong> = [64.56394268] + steps <strong>str</strong> =
-[9927.69441126] + steps <strong>str</strong> = [196.15202667]</p></li>
-<li><p>1.13 s ± 2.08 ms per loop (mean ± std. dev. of 7 runs, 1 loop
-each)</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="o">+</span> <span class="n">steps</span> <span class="fm">__str__</span> <span class="o">=</span> <span class="p">[</span><span class="mf">645.63943742</span><span class="p">]</span>
-<span class="o">+</span> <span class="n">steps</span> <span class="fm">__str__</span> <span class="o">=</span> <span class="p">[</span><span class="mf">99276.94573919</span><span class="p">]</span>
-<span class="o">+</span> <span class="n">steps</span> <span class="fm">__str__</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1961.52029888</span><span class="p">]</span>
-</pre></div>
-</div>
-</li>
-</ul>
-</li>
-</ul>
-<div class="section" id="export-to-gocad">
-<h2>Export to gocad<a class="headerlink" href="#export-to-gocad" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">write_property_to_gocad_voxet</span><span class="p">(</span><span class="n">propertyfilename</span><span class="p">,</span> <span class="n">propertyvalues</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This function writes a numpy array into the right format for a gocad</span>
-<span class="sd">    voxet property file. This assumet there is a property already added to the .vo file,</span>
-<span class="sd">    and is just updating the file.</span>
-<span class="sd">    propertyfile - string giving the path to the file to write</span>
-<span class="sd">    propertyvalues - numpy array nz,ny,nx ordering and in float format</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">propertyvalues</span> <span class="o">=</span> <span class="n">propertyvalues</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;&gt;f4&#39;</span><span class="p">)</span>  <span class="c1"># big endian</span>
-    <span class="c1">#     array = propertyvalues.newbyteorder()</span>
-    <span class="n">propertyvalues</span><span class="o">.</span><span class="n">tofile</span><span class="p">(</span><span class="n">propertyfilename</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">write_property_to_gocad_voxet</span><span class="p">(</span><span class="s1">&#39;claudius_sf_gempy&#39;</span><span class="p">,</span>
-                              <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span><span class="o">.</span><span class="n">solutions</span><span class="o">.</span><span class="n">scalar_field_matrix</span></a><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">([</span><span class="mi">38</span><span class="p">,</span> <span class="mi">55</span><span class="p">,</span> <span class="mi">30</span><span class="p">])</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="s1">&#39;F&#39;</span><span class="p">))</span>
-
-<span class="n">gp</span><span class="o">.</span><span class="n">save_model</span><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">)</span>
-</pre></div>
-</div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>True
-</pre></div>
-</div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  26.141 seconds)</p>
-<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-examples-real-claudius-py">
-<div class="sphx-glr-download sphx-glr-download-python docutils container">
-<p><a class="reference download internal" download="" href="../../_downloads/868581edb8553ebb422e7c862df0b204/Claudius.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">Claudius.py</span></code></a></p>
-</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 2.331 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-examples-real-claudius-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/78f89ab5884b0e6e46c42af58b0766b1/Claudius.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">Claudius.ipynb</span></code></a></p>
 </div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/868581edb8553ebb422e7c862df0b204/Claudius.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">Claudius.py</span></code></a></p>
+</div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
-</div>
-</div>
+</section>
+</section>
 
 
           </div>
@@ -1399,7 +938,7 @@ each)</p>
         <div class="sphinxsidebarwrapper">
 <p class="logo">
   <a href="../../index.html">
-    <img class="logo" src="../../_static/./logos/gempy.png" alt="Logo"/>
+    <img class="logo" src="../../_static/logos/gempy.png" alt="Logo"/>
     
   </a>
 </p>
@@ -1410,24 +949,12 @@ each)</p>
 
 
 <p>
-<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
+<iframe src="https://ghbtns.com/github-btn.html?user=gempy-project&repo=gempy&type=star&count=true&size=large&v=2"
   allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
 </p>
 
 
 
-
-
-    
-
-<p>
-<a class="badge" href="https://travis-ci.org/cgre-aachen/gempy">
-    <img
-        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
-        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
-    />
-</a>
-</p>
 
 
 <h3>Navigation</h3>
@@ -1436,20 +963,19 @@ each)</p>
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../projects.html">Additional projects</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Getting started</span></p>
+<p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">GemPy Tutorials</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">Examples</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../index.html#simple-geometries">Simple geometries</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../index.html#real-case-studies">Real case studies</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../integrations/index.html">Integrations</a></li>
 </ul>
-<p class="caption"><span class="caption-text">API Reference</span></p>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../code.html">Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_reference.html">Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_reference.html#data-classes">Data Classes</a></li>
 </ul>
 
 <div class="relations">
@@ -1457,8 +983,10 @@ each)</p>
 <ul>
   <li><a href="../../index.html">Documentation overview</a><ul>
   <li><a href="../index.html">Examples</a><ul>
+  <li><a href="index.html">Real case studies</a><ul>
       <li>Previous: <a href="Alesmodel.html" title="previous chapter">Alesmodel: Plotting sections and maps.</a></li>
       <li>Next: <a href="Greenstone.html" title="next chapter">Greenstone.</a></li>
+  </ul></li>
   </ul></li>
   </ul></li>
 </ul>
@@ -1467,12 +995,12 @@ each)</p>
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -1486,11 +1014,11 @@ each)</p>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2017-2021, CGRE-Aachen Team.
+      &copy;2017-2024, Gempy Developers.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
       
       |
       <a href="../../_sources/examples/real/Claudius.rst.txt"

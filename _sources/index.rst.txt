@@ -9,7 +9,7 @@
 About
 =====
 Open-source software for implicit 3D structural geological modeling in Python.
-****************************************************************
+******************************************************************************
 
 Overview
 --------
@@ -21,14 +21,11 @@ powerful **implicit** approach. From the ground up, ``GemPy`` was designed to be
 uncertainty analysis regarding subsurface structures.
 
 .. Check out the documentation either in `gempy.org <https://www.gempy.org/>`_
-(better option), or `read the docs <http://gempy.readthedocs.io/>`_.
-
-
-
+ (better option), or `read the docs <http://gempy.readthedocs.io/>`_.
 
 3D models created with GemPy may look like this:
 
-.. image:: ./images/perth_example.png
+.. image:: ./_images/perth_example.png
 
 Contents:
 
@@ -43,16 +40,14 @@ Contents:
    :maxdepth: 2
    :caption: Getting started
 
-   getting_started/index
    tutorials/index
    examples/index
-   integrations/index
 
 .. toctree::
    :maxdepth: 2
    :caption: API Reference
 
-   code
+   api_reference
 
 
 Features
@@ -109,7 +104,7 @@ geological input data types:
 combining multiple stratigraphic sequences and
 complex fault networks to be considered in the modeling process.
 
-.. image:: ./images/modeling_principle.png
+.. image:: ./_images/modeling_principle.png
 
 
 
@@ -146,7 +141,7 @@ links have to be considered as highly experimental and they are not yet
 part of the stable release. If you are interested in these features,
 feel free to contact us.
 
-.. image:: images/vtkFault.png
+.. image:: _images/vtkFault.png
    :target: https://cgre-aachen.github.io/gempy/_images/sphx_glr_ch1_1_basics_009.png
    :width: 70%
 
@@ -160,7 +155,7 @@ geological modeling methods.
 ``GemPy`` was designed from the ground up to support stochastic geological
 modeling for uncertainty analysis (e.g. Monte Carlo simulations, Bayesian
 inference). This was achieved by writing ``GemPy``'s core architecture
-using the numerical computation library `Theano <http://deeplearning.net/software/theano/>`_
+using the numerical computation library `aesara <http://deeplearning.net/software/aesara/>`_
 to couple it with the probabilistic programming
 framework `PyMC3 <https://pymc-devs.github.io/pymc3/notebooks/getting_started.html>`_.
 This enables the use of advanced sampling methods (e.g. Hamiltonian Monte
@@ -184,12 +179,12 @@ via PyMC will then result in different model realizations.
    -->
 
 
-Theano allows the automated computation of gradients, opening the door to
- the use of advanced gradient-based sampling methods
+aesara allows the automated computation of gradients, opening the door to
+the use of advanced gradient-based sampling methods
 coupling ``GemPy`` and
 `PyMC3 <https://pymc-devs.github.io/pymc3/notebooks/getting_started.html>`_
-for advanced stochastic modeling. Also, the use of Theano allows making
-use of GPUs through cuda (see the Theano documentation for more information.
+for advanced stochastic modeling. Also, the use of aesara allows making
+use of GPUs through cuda (see the aesara documentation for more information.
 
 Making use of vtk interactivity and `Qgrid <https://github.com/quantopian/qgrid>`_ ,
 ``GemPy`` provides a functional interface to interact with input data and models.

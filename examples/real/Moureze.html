@@ -1,23 +1,21 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="../../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Moureze &#8212; GemPy 2.2.8 documentation</title>
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/gallery-rendered-html.css" />
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Moureze &#8212; GemPy 2023.2.0b1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=270d38c7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=61a4c737" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <script src="../../_static/documentation_options.js?v=acace1bb"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Perth basin." href="Perth_basin.html" />
@@ -40,52 +38,64 @@
             
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
-<p>Click <a class="reference internal" href="#sphx-glr-download-examples-real-moureze-py"><span class="std std-ref">here</span></a>
+<p><a class="reference internal" href="#sphx-glr-download-examples-real-moureze-py"><span class="std std-ref">Go to the end</span></a>
 to download the full example code</p>
 </div>
-<div class="sphx-glr-example-title section" id="moureze">
-<span id="sphx-glr-examples-real-moureze-py"></span><h1>Moureze<a class="headerlink" href="#moureze" title="Permalink to this headline">¶</a></h1>
+<section class="sphx-glr-example-title" id="moureze">
+<span id="sphx-glr-examples-real-moureze-py"></span><h1>Moureze<a class="headerlink" href="#moureze" title="Link to this heading">¶</a></h1>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+</pre></div>
+</div>
 <p>These two lines are necessary only if gempy is not installed</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span>
-<a href="https://docs.python.org/3/library/os.html#os.environ" title="os.environ" class="sphx-glr-backref-module-os sphx-glr-backref-type-py-data"><span class="n">os</span><span class="o">.</span><span class="n">environ</span></a><span class="p">[</span><span class="s2">&quot;THEANO_FLAGS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;mode=FAST_RUN,device=cpu&quot;</span>
-
-<span class="c1"># Importing gempy</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Importing gempy</span>
 <span class="kn">import</span> <span class="nn">gempy</span> <span class="k">as</span> <span class="nn">gp</span>
+<span class="kn">import</span> <span class="nn">gempy_viewer</span> <span class="k">as</span> <span class="nn">gpv</span>
 
 <span class="c1"># Aux imports</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pn</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">from</span> <span class="nn">gempy_engine.config</span> <span class="kn">import</span> <span class="n">AvailableBackends</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="loading-surface-points-from-repository">
-<h1>Loading surface points from repository:<a class="headerlink" href="#loading-surface-points-from-repository" title="Permalink to this headline">¶</a></h1>
+</section>
+<section id="loading-surface-points-from-repository">
+<h1>Loading surface points from repository:<a class="headerlink" href="#loading-surface-points-from-repository" title="Link to this heading">¶</a></h1>
 <p>With pandas we can do it directly from the web and with the right args
 we can directly tidy the data in gempy style:</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Moureze_points</span></a> <span class="o">=</span> <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_csv.html#pandas.read_csv" title="pandas.read_csv" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-function"><span class="n">pn</span><span class="o">.</span><span class="n">read_csv</span></a><span class="p">(</span>
-    <span class="s1">&#39;https://raw.githubusercontent.com/Loop3D/ImplicitBenchmark/master/Moureze/Moureze_Points.csv&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;;&#39;</span><span class="p">,</span>
-    <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">,</span> <span class="s1">&#39;G_x&#39;</span><span class="p">,</span> <span class="s1">&#39;G_y&#39;</span><span class="p">,</span> <span class="s1">&#39;G_z&#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">],</span> <span class="n">header</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="p">)</span>
-<a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Sections_EW</span></a> <span class="o">=</span> <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_csv.html#pandas.read_csv" title="pandas.read_csv" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-function"><span class="n">pn</span><span class="o">.</span><span class="n">read_csv</span></a><span class="p">(</span><span class="s1">&#39;https://raw.githubusercontent.com/Loop3D/ImplicitBenchmark/master/Moureze/Sections_EW.csv&#39;</span><span class="p">,</span>
-                          <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;;&#39;</span><span class="p">,</span>
-                          <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">,</span> <span class="s1">&#39;ID&#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">],</span> <span class="n">header</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
-<a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Sections_NS</span></a> <span class="o">=</span> <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_csv.html#pandas.read_csv" title="pandas.read_csv" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-function"><span class="n">pn</span><span class="o">.</span><span class="n">read_csv</span></a><span class="p">(</span><span class="s1">&#39;https://raw.githubusercontent.com/Loop3D/ImplicitBenchmark/master/Moureze/Sections_NS.csv&#39;</span><span class="p">,</span>
-                          <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;;&#39;</span><span class="p">,</span>
-                          <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">,</span> <span class="s1">&#39;ID&#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">],</span> <span class="n">header</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">data_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s1">&#39;../../data/input_data/Moureze&#39;</span><span class="p">)</span>
+<span class="n">Moureze_points</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
+    <span class="n">filepath_or_buffer</span><span class="o">=</span><span class="n">data_path</span> <span class="o">+</span> <span class="s1">&#39;/Moureze_Points.csv&#39;</span><span class="p">,</span>
+    <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;;&#39;</span><span class="p">,</span>
+    <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">,</span> <span class="s1">&#39;G_x&#39;</span><span class="p">,</span> <span class="s1">&#39;G_y&#39;</span><span class="p">,</span> <span class="s1">&#39;G_z&#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">],</span>
+    <span class="n">header</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">Sections_EW</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
+    <span class="n">filepath_or_buffer</span><span class="o">=</span><span class="n">data_path</span> <span class="o">+</span> <span class="s1">&#39;/Sections_EW.csv&#39;</span><span class="p">,</span>
+    <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;;&#39;</span><span class="p">,</span>
+    <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">,</span> <span class="s1">&#39;ID&#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">],</span> <span class="n">header</span><span class="o">=</span><span class="mi">1</span>
+<span class="p">)</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+
+<span class="n">Sections_NS</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
+    <span class="n">filepath_or_buffer</span><span class="o">=</span><span class="n">data_path</span> <span class="o">+</span> <span class="s1">&#39;/Sections_NS.csv&#39;</span><span class="p">,</span>
+    <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;;&#39;</span><span class="p">,</span>
+    <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">,</span> <span class="s1">&#39;ID&#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">],</span> <span class="n">header</span><span class="o">=</span><span class="mi">1</span>
+<span class="p">)</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>Extracting the orientatins:</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.html#pandas.Series" title="pandas.Series" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mask_surfpoints</span></a> <span class="o">=</span> <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Moureze_points</span></a><span class="p">[</span><span class="s1">&#39;G_x&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mi">9999</span>
-<a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">surfpoints</span></a> <span class="o">=</span> <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Moureze_points</span></a><span class="p">[</span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.html#pandas.Series" title="pandas.Series" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mask_surfpoints</span></a><span class="p">]</span>
-<a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">orientations</span></a> <span class="o">=</span> <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Moureze_points</span></a><span class="p">[</span><span class="o">~</span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.html#pandas.Series" title="pandas.Series" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mask_surfpoints</span></a><span class="p">]</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">mask_surfpoints</span> <span class="o">=</span> <span class="n">Moureze_points</span><span class="p">[</span><span class="s1">&#39;G_x&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mi">9999</span>
+<span class="n">surface_points</span> <span class="o">=</span> <span class="n">Moureze_points</span><span class="p">[</span><span class="n">mask_surfpoints</span><span class="p">][::</span><span class="mi">10</span><span class="p">]</span>
+<span class="n">orientations</span> <span class="o">=</span> <span class="n">Moureze_points</span><span class="p">[</span><span class="o">~</span><span class="n">mask_surfpoints</span><span class="p">][::</span><span class="mi">10</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>Giving an arbitrary value name to the surface</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">surfpoints</span></a><span class="p">[</span><span class="s1">&#39;surface&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span>
-<a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">orientations</span></a><span class="p">[</span><span class="s1">&#39;surface&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">surface_points</span><span class="p">[</span><span class="s1">&#39;surface&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span>
+<span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;surface&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span>
 </pre></div>
 </div>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.tail.html#pandas.DataFrame.tail" title="pandas.DataFrame.tail" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-method"><span class="n">surfpoints</span><span class="o">.</span><span class="n">tail</span></a><span class="p">()</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">surface_points</span><span class="o">.</span><span class="n">tail</span><span class="p">()</span>
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
@@ -119,58 +129,58 @@ we can directly tidy the data in gempy style:</p>
   </thead>
   <tbody>
     <tr>
-      <th>3425</th>
-      <td>177.43</td>
-      <td>155.90</td>
-      <td>-152.01</td>
+      <th>3370</th>
+      <td>224.000000</td>
+      <td>65.335228</td>
+      <td>-120.0000</td>
       <td>-99999.0</td>
       <td>-99999.0</td>
       <td>-99999.0</td>
-      <td>0.05</td>
+      <td>0.670953</td>
       <td>0</td>
     </tr>
     <tr>
-      <th>3426</th>
-      <td>89.92</td>
-      <td>86.35</td>
-      <td>-120.03</td>
+      <th>3386</th>
+      <td>232.000000</td>
+      <td>20.000000</td>
+      <td>-85.1014</td>
       <td>-99999.0</td>
       <td>-99999.0</td>
       <td>-99999.0</td>
-      <td>0.07</td>
+      <td>0.700194</td>
       <td>0</td>
     </tr>
     <tr>
-      <th>3427</th>
-      <td>75.94</td>
-      <td>116.72</td>
-      <td>-140.02</td>
+      <th>3396</th>
+      <td>135.939468</td>
+      <td>154.308319</td>
+      <td>-154.0210</td>
       <td>-99999.0</td>
       <td>-99999.0</td>
       <td>-99999.0</td>
-      <td>0.78</td>
+      <td>0.351625</td>
       <td>0</td>
     </tr>
     <tr>
-      <th>3428</th>
-      <td>177.96</td>
-      <td>233.83</td>
-      <td>-148.83</td>
+      <th>3411</th>
+      <td>296.000000</td>
+      <td>378.000000</td>
+      <td>-156.4050</td>
       <td>-99999.0</td>
       <td>-99999.0</td>
       <td>-99999.0</td>
-      <td>0.52</td>
+      <td>0.852947</td>
       <td>0</td>
     </tr>
     <tr>
-      <th>3429</th>
-      <td>46.49</td>
-      <td>17.74</td>
-      <td>-148.02</td>
+      <th>3424</th>
+      <td>91.960609</td>
+      <td>151.813431</td>
+      <td>-83.2593</td>
       <td>-99999.0</td>
       <td>-99999.0</td>
       <td>-99999.0</td>
-      <td>0.11</td>
+      <td>0.950689</td>
       <td>0</td>
     </tr>
   </tbody>
@@ -178,7 +188,7 @@ we can directly tidy the data in gempy style:</p>
 </div>
 </div>
 <br />
-<br /><div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.tail.html#pandas.DataFrame.tail" title="pandas.DataFrame.tail" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-method"><span class="n">orientations</span><span class="o">.</span><span class="n">tail</span></a><span class="p">()</span>
+<br /><div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">orientations</span><span class="o">.</span><span class="n">tail</span><span class="p">()</span>
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
@@ -211,59 +221,59 @@ we can directly tidy the data in gempy style:</p>
     </tr>
   </thead>
   <tbody>
+    <tr>
+      <th>3186</th>
+      <td>139.936676</td>
+      <td>207.712677</td>
+      <td>-154.766</td>
+      <td>-0.034360</td>
+      <td>0.068784</td>
+      <td>0.997040</td>
+      <td>0.050783</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3254</th>
+      <td>109.926086</td>
+      <td>47.649914</td>
+      <td>-135.337</td>
+      <td>0.351890</td>
+      <td>-0.766284</td>
+      <td>-0.537571</td>
+      <td>0.942560</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3315</th>
+      <td>158.341888</td>
+      <td>211.320877</td>
+      <td>-147.312</td>
+      <td>0.053863</td>
+      <td>0.143364</td>
+      <td>0.988203</td>
+      <td>0.053091</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3371</th>
+      <td>0.734351</td>
+      <td>90.000000</td>
+      <td>-100.000</td>
+      <td>0.756724</td>
+      <td>0.533905</td>
+      <td>0.377245</td>
+      <td>0.170960</td>
+      <td>0</td>
+    </tr>
     <tr>
       <th>3409</th>
-      <td>47.97</td>
-      <td>129.89</td>
-      <td>-132.01</td>
-      <td>-0.45</td>
-      <td>-0.85</td>
-      <td>0.27</td>
-      <td>0.02</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>3420</th>
-      <td>175.94</td>
-      <td>293.73</td>
-      <td>-138.02</td>
-      <td>0.22</td>
-      <td>-0.88</td>
-      <td>0.41</td>
-      <td>0.44</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>3421</th>
-      <td>203.97</td>
-      <td>367.73</td>
-      <td>-150.01</td>
-      <td>0.22</td>
-      <td>-0.97</td>
-      <td>-0.10</td>
-      <td>0.71</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>3422</th>
-      <td>133.93</td>
-      <td>225.62</td>
-      <td>-146.76</td>
-      <td>0.32</td>
-      <td>-0.87</td>
-      <td>-0.37</td>
-      <td>0.13</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>3430</th>
-      <td>290.00</td>
-      <td>180.00</td>
-      <td>-103.54</td>
-      <td>0.13</td>
-      <td>-0.19</td>
-      <td>0.97</td>
-      <td>0.68</td>
+      <td>47.970890</td>
+      <td>129.885971</td>
+      <td>-132.010</td>
+      <td>-0.453523</td>
+      <td>-0.849487</td>
+      <td>0.269609</td>
+      <td>0.016933</td>
       <td>0</td>
     </tr>
   </tbody>
@@ -271,258 +281,148 @@ we can directly tidy the data in gempy style:</p>
 </div>
 </div>
 <br />
-<br /></div>
-<div class="section" id="data-initialization">
-<h1>Data initialization:<a class="headerlink" href="#data-initialization" title="Permalink to this headline">¶</a></h1>
+<br /></section>
+<section id="data-initialization">
+<h1>Data initialization:<a class="headerlink" href="#data-initialization" title="Link to this heading">¶</a></h1>
 <p>Suggested size of the axis-aligned modeling box:</p>
 <p>Origin: -5 -5 -200</p>
 <p>Maximum: 305 405 -50</p>
 <p>Suggested resolution: 2m (grid size 156 x 206 x 76)</p>
-</div>
-<div class="section" id="only-using-one-orientation-because-otherwhise-it-gets-a-mess">
-<h1>Only using one orientation because otherwhise it gets a mess<a class="headerlink" href="#only-using-one-orientation-because-otherwhise-it-gets-a-mess" title="Permalink to this headline">¶</a></h1>
+</section>
+<section id="only-using-one-orientation-because-otherwhise-it-gets-a-mess">
+<h1>Only using one orientation because otherwhise it gets a mess<a class="headerlink" href="#only-using-one-orientation-because-otherwhise-it-gets-a-mess" title="Link to this heading">¶</a></h1>
 <p>Number voxels</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><span class="mi">156</span><span class="p">,</span> <span class="mi">206</span><span class="p">,</span> <span class="mi">76</span><span class="p">])</span><span class="o">.</span><span class="n">prod</span><span class="p">()</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><span class="mi">156</span><span class="p">,</span> <span class="mi">206</span><span class="p">,</span> <span class="mi">76</span><span class="p">])</span><span class="o">.</span><span class="n">prod</span><span class="p">()</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>2442336
 </pre></div>
 </div>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">resolution_requ</span></a> <span class="o">=</span> <span class="p">[</span><span class="mi">156</span><span class="p">,</span> <span class="mi">206</span><span class="p">,</span> <span class="mi">76</span><span class="p">]</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">resolution</span></a> <span class="o">=</span> <span class="p">[</span><span class="mi">77</span><span class="p">,</span> <span class="mi">103</span><span class="p">,</span> <span class="mi">38</span><span class="p">]</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">resolution_low</span></a> <span class="o">=</span> <span class="p">[</span><span class="mi">45</span><span class="p">,</span> <span class="mi">51</span><span class="p">,</span> <span class="mi">38</span><span class="p">]</span>
-<a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a> <span class="o">=</span> <a href="../../GemPy API/gempy.create_model.html#gempy.create_model" title="gempy.create_model" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">create_model</span></a><span class="p">(</span><span class="s1">&#39;Moureze&#39;</span><span class="p">)</span>
-<a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a> <span class="o">=</span> <a href="../../GemPy API/gempy.init_data.html#gempy.init_data" title="gempy.init_data" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">init_data</span></a><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span>
-                         <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">305</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">405</span><span class="p">,</span> <span class="o">-</span><span class="mi">200</span><span class="p">,</span> <span class="o">-</span><span class="mi">50</span><span class="p">],</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">resolution</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">resolution_low</span></a><span class="p">,</span>
-                         <span class="n">surface_points_df</span><span class="o">=</span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">surfpoints</span></a><span class="p">,</span> <span class="n">orientations_df</span><span class="o">=</span><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.DataFrame" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">orientations</span></a><span class="p">,</span>
-                         <span class="n">surface_name</span><span class="o">=</span><span class="s1">&#39;surface&#39;</span><span class="p">,</span>
-                         <span class="n">add_basement</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-</div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Active grids: [&#39;regular&#39;]
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">resolution_requ</span> <span class="o">=</span> <span class="p">[</span><span class="mi">156</span><span class="p">,</span> <span class="mi">206</span><span class="p">,</span> <span class="mi">76</span><span class="p">]</span>
+<span class="n">resolution</span> <span class="o">=</span> <span class="p">[</span><span class="mi">77</span><span class="p">,</span> <span class="mi">103</span><span class="p">,</span> <span class="mi">38</span><span class="p">]</span>
+<span class="n">resolution_low</span> <span class="o">=</span> <span class="p">[</span><span class="mi">45</span><span class="p">,</span> <span class="mi">51</span><span class="p">,</span> <span class="mi">38</span><span class="p">]</span>
+
+
+<a href="../../Modeling Classes/gempy.core.data.SurfacePointsTable.html#gempy.core.data.SurfacePointsTable" title="gempy.core.data.SurfacePointsTable" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">surface_points_table</span></a><span class="p">:</span> <a href="../../Modeling Classes/gempy.core.data.SurfacePointsTable.html#gempy.core.data.SurfacePointsTable" title="gempy.core.data.SurfacePointsTable" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class"><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">SurfacePointsTable</span></a> <span class="o">=</span> <a href="../../Modeling Classes/gempy.core.data.SurfacePointsTable.html#gempy.core.data.SurfacePointsTable" title="gempy.core.data.SurfacePointsTable" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class"><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">SurfacePointsTable</span></a><span class="o">.</span><span class="n">from_arrays</span><span class="p">(</span>
+    <span class="n">x</span><span class="o">=</span><span class="n">surface_points</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+    <span class="n">y</span><span class="o">=</span><span class="n">surface_points</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+    <span class="n">z</span><span class="o">=</span><span class="n">surface_points</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+    <span class="n">names</span><span class="o">=</span><span class="n">surface_points</span><span class="p">[</span><span class="s1">&#39;surface&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+<span class="p">)</span>
+
+<a href="../../Modeling Classes/gempy.core.data.OrientationsTable.html#gempy.core.data.OrientationsTable" title="gempy.core.data.OrientationsTable" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">orientations_table</span></a><span class="p">:</span> <a href="../../Modeling Classes/gempy.core.data.OrientationsTable.html#gempy.core.data.OrientationsTable" title="gempy.core.data.OrientationsTable" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class"><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">OrientationsTable</span></a> <span class="o">=</span> <a href="../../Modeling Classes/gempy.core.data.OrientationsTable.html#gempy.core.data.OrientationsTable" title="gempy.core.data.OrientationsTable" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class"><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">OrientationsTable</span></a><span class="o">.</span><span class="n">from_arrays</span><span class="p">(</span>
+    <span class="n">x</span><span class="o">=</span><span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+    <span class="n">y</span><span class="o">=</span><span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+    <span class="n">z</span><span class="o">=</span><span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+    <span class="n">G_x</span><span class="o">=</span><span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;G_x&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+    <span class="n">G_y</span><span class="o">=</span><span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;G_y&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+    <span class="n">G_z</span><span class="o">=</span><span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;G_z&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+    <span class="n">names</span><span class="o">=</span><span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;surface&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">),</span>
+    <span class="n">name_id_map</span><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.SurfacePointsTable.html#gempy.core.data.SurfacePointsTable" title="gempy.core.data.SurfacePointsTable" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">surface_points_table</span></a><span class="o">.</span><span class="n">name_id_map</span>  <span class="c1"># ! Make sure that ids and names are shared</span>
+<span class="p">)</span>
+
+<a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">structural_frame</span></a><span class="p">:</span> <a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class"><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">StructuralFrame</span></a> <span class="o">=</span> <a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class"><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">StructuralFrame</span></a><span class="o">.</span><span class="n">from_data_tables</span><span class="p">(</span>
+    <span class="n">surface_points</span><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.SurfacePointsTable.html#gempy.core.data.SurfacePointsTable" title="gempy.core.data.SurfacePointsTable" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">surface_points_table</span></a><span class="p">,</span>
+    <span class="n">orientations</span><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.OrientationsTable.html#gempy.core.data.OrientationsTable" title="gempy.core.data.OrientationsTable" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">orientations_table</span></a>
+<span class="p">)</span>
+
+<a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">:</span> <a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class"><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GeoModel</span></a> <span class="o">=</span> <a href="../../GemPy API/gempy.create_geomodel.html#gempy.create_geomodel" title="gempy.create_geomodel" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">create_geomodel</span></a><span class="p">(</span>
+    <span class="n">project_name</span><span class="o">=</span><span class="s1">&#39;Moureze&#39;</span><span class="p">,</span>
+    <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">305</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">405</span><span class="p">,</span> <span class="o">-</span><span class="mi">200</span><span class="p">,</span> <span class="o">-</span><span class="mi">50</span><span class="p">],</span>
+    <span class="n">resolution</span><span class="o">=</span><span class="n">resolution_low</span><span class="p">,</span>
+    <span class="n">refinement</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">structural_frame</span></a><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">structural_frame</span></a>
+<span class="p">)</span>
 </pre></div>
 </div>
 <p>Now we can see how the data looks so far:</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Plot/gempy.plot_2d.html#gempy.plot_2d" title="gempy.plot_2d" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">plot_2d</span></a><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<img alt="Cell Number: mid Direction: y" class="sphx-glr-single-img" src="../../_images/sphx_glr_Moureze_001.png" />
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy.plot.visualization_2d.Plot2D object at 0x7fcb8a163970&gt;
-</pre></div>
-</div>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">set_interpolator</span><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span>
-                    <span class="n">theano_optimizer</span><span class="o">=</span><span class="s1">&#39;fast_run&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float64&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting kriging parameters to their default values.
-Compiling theano function...
-Level of Optimization:  fast_run
-Device:  cpu
-Precision:  float64
-Number of faults:  0
-Compilation Done!
-Kriging values:
-                   values
-range             535.44
-$C_o$            6826.19
-drift equations   [3, 3]
-
-&lt;gempy.core.interpolator.InterpolatorModel object at 0x7fcb8c089220&gt;
+<img src="../../_images/sphx_glr_Moureze_001.png" srcset="../../_images/sphx_glr_Moureze_001.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f8561520430&gt;
 </pre></div>
 </div>
 <p>The default range is always the diagonal of the extent. Since in this
 model data is very close we will need to reduce the range to 5-10% of
 that value:</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">new_range</span></a> <span class="o">=</span> <a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="o">.</span><span class="n">get_additional_data</span><span class="p">()</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="s1">&#39;Kriging&#39;</span><span class="p">,</span> <span class="s1">&#39;range&#39;</span><span class="p">),</span> <span class="s1">&#39;values&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.2</span>
-<a href="../../Model/gempy.core.model.ImplicitCoKriging.html#gempy.core.model.ImplicitCoKriging.modify_kriging_parameters" title="gempy.core.model.ImplicitCoKriging.modify_kriging_parameters" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-method"><span class="n">geo_model</span><span class="o">.</span><span class="n">modify_kriging_parameters</span></a><span class="p">(</span><span class="s1">&#39;range&#39;</span><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#float" title="builtins.float" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">new_range</span></a><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="o">.</span><span class="n">interpolation_options</span><span class="o">.</span><span class="n">kernel_options</span><span class="o">.</span><span class="n">range</span> <span class="o">*=</span> <span class="mf">0.2</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../GemPy API/gempy.compute_model.html#gempy.compute_model" title="gempy.compute_model" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span></a><span class="p">(</span>
+    <span class="n">gempy_model</span><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span>
+    <span class="n">engine_config</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GemPyEngineConfig</span><span class="p">(</span>
+        <span class="n">use_gpu</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">,</span>
+        <span class="n">backend</span><span class="o">=</span><span class="n">AvailableBackends</span><span class="o">.</span><span class="n">PYTORCH</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting Backend To: AvailableBackends.PYTORCH
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>values</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>range</th>
-      <td>107.09</td>
-    </tr>
-    <tr>
-      <th>$C_o$</th>
-      <td>6826.19</td>
-    </tr>
-    <tr>
-      <th>drift equations</th>
-      <td>[3, 3]</td>
-    </tr>
-  </tbody>
-</table>
+<b>Solutions:</b> 5 Octree Levels, 1 DualContouringMeshes
 </div>
 <br />
-<br /><div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../GemPy API/gempy.compute_model.html#gempy.compute_model" title="gempy.compute_model" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span></a><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">set_solutions</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sort_surfaces</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</pre></div>
-</div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Lithology ids
-  [2. 2. 2. ... 1. 1. 1.]
-</pre></div>
-</div>
-</div>
-<div class="section" id="time">
-<h1>Time<a class="headerlink" href="#time" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="k-voxels-3-5k-points">
-<h2>300k voxels 3.5k points<a class="headerlink" href="#k-voxels-3-5k-points" title="Permalink to this headline">¶</a></h2>
+<br /></section>
+<section id="time">
+<h1>Time<a class="headerlink" href="#time" title="Link to this heading">¶</a></h1>
+<section id="k-voxels-3-5k-points">
+<h2>300k voxels 3.5k points<a class="headerlink" href="#k-voxels-3-5k-points" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>Nvidia 2080: 500 ms ± 1.3 ms per loop (mean ± std. dev. of 7 runs, 1
 loop each), Memory 1 Gb</p></li>
 <li><p>CPU 14.2 s ± 82.4 ms per loop (mean ± std. dev. of 7 runs, 1 loop
 each), Memory: 1.3 Gb</p></li>
 </ul>
-</div>
-<div class="section" id="m-voxels-3-5k-points">
-<h2>2.4 M voxels, 3.5k points<a class="headerlink" href="#m-voxels-3-5k-points" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="m-voxels-3-5k-points">
+<h2>2.4 M voxels, 3.5k points<a class="headerlink" href="#m-voxels-3-5k-points" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>CPU 2min 33s ± 216 ms per loop (mean ± std. dev. of 7 runs, 1 loop
 each) Memory: 1.3 GB</p></li>
 <li><p>Nvidia 2080: 1.92 s ± 6.74 ms per loop (mean ± std. dev. of 7 runs, 1
 loop each) 1 Gb</p></li>
 </ul>
-</div>
-<div class="section" id="m-voxels-3-5k-points-3-5-k-orientations">
-<h2>2.4 M voxels, 3.5k points 3.5 k orientations<a class="headerlink" href="#m-voxels-3-5k-points-3-5-k-orientations" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="m-voxels-3-5k-points-3-5-k-orientations">
+<h2>2.4 M voxels, 3.5k points 3.5 k orientations<a class="headerlink" href="#m-voxels-3-5k-points-3-5-k-orientations" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>Nvidia 2080: 2.53 s ± 1.31 ms per loop (mean ± std. dev. of 7 runs, 1
 loop each)</p></li>
 </ul>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Plot/gempy.plot_2d.html#gempy.plot_2d" title="gempy.plot_2d" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">plot_2d</span></a><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="p">[</span><span class="mi">16</span><span class="p">],</span> <span class="n">series_n</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">show_scalar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="s1">&#39;mid&#39;</span><span class="p">,</span> <span class="n">series_n</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">show_scalar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<img alt="Cell Number: 16 Direction: y" class="sphx-glr-single-img" src="../../_images/sphx_glr_Moureze_002.png" />
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy.plot.visualization_2d.Plot2D object at 0x7fcc7468b7f0&gt;
+<img src="../../_images/sphx_glr_Moureze_002.png" srcset="../../_images/sphx_glr_Moureze_002.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f850c35e980&gt;
 </pre></div>
 </div>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Plot/gempy.plot_2d.html#gempy.plot_2d" title="gempy.plot_2d" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">plot_2d</span></a><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">show_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="s1">&#39;mid&#39;</span><span class="p">,</span> <span class="n">show_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<img alt="Cell Number: 16 Direction: y" class="sphx-glr-single-img" src="../../_images/sphx_glr_Moureze_003.png" />
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy.plot.visualization_2d.Plot2D object at 0x7fcc2d021e20&gt;
+<img src="../../_images/sphx_glr_Moureze_003.png" srcset="../../_images/sphx_glr_Moureze_003.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f8570f49120&gt;
 </pre></div>
 </div>
 <p>sphinx_gallery_thumbnail_number = 4</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Plot/gempy.plot_3d.html#gempy.plot_3d" title="gempy.plot_3d" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">plot_3d</span></a><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_3d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<img alt="Moureze" class="sphx-glr-single-img" src="../../_images/sphx_glr_Moureze_004.png" />
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy.plot.vista.GemPyToVista object at 0x7fcc3c89d370&gt;
+<img src="../../_images/sphx_glr_Moureze_004.png" srcset="../../_images/sphx_glr_Moureze_004.png" alt="Moureze" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f850c35e980&gt;
 </pre></div>
 </div>
-<p><img alt="image0" src="examples/real/./Moureze.png" /></p>
-</div>
-</div>
-<div class="section" id="export-data">
-<h1>Export data:<a class="headerlink" href="#export-data" title="Permalink to this headline">¶</a></h1>
-<p>The solution is stored in a numpy array of the following shape. Axis 0
-are the scalar fields of each correspondent series/faults in the
-following order (except basement):</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Model/gempy.core.model.ImplicitCoKriging.html#gempy.core.model.ImplicitCoKriging.series" title="gempy.core.model.ImplicitCoKriging.series" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-method"><span class="n">geo_model</span><span class="o">.</span><span class="n">series</span></a>
-</pre></div>
-</div>
-<div class="output_subarea output_html rendered_html output_result">
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>order_series</th>
-      <th>BottomRelation</th>
-      <th>isActive</th>
-      <th>isFault</th>
-      <th>isFinite</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>Default series</th>
-      <td>1</td>
-      <td>Erosion</td>
-      <td>True</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>Basement</th>
-      <td>2</td>
-      <td>Erosion</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-<br />
-<br /><p>For the surfaces, there are two numpy arrays, one with vertices and the
-other with triangles. Axis 0 is each surface in the order:</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Model/gempy.core.model.ImplicitCoKriging.html#gempy.core.model.ImplicitCoKriging.surfaces" title="gempy.core.model.ImplicitCoKriging.surfaces" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-method"><span class="n">geo_model</span><span class="o">.</span><span class="n">surfaces</span></a>
-</pre></div>
-</div>
-<div class="output_subarea output_html rendered_html output_result">
-<style  type="text/css" >
-#T_06884_row0_col3{
-            background-color:  #015482;
-        }#T_06884_row1_col3{
-            background-color:  #9f0052;
-        }</style><table id="T_06884_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
-                <tr>
-                        <th id="T_06884_level0_row0" class="row_heading level0 row0" >0</th>
-                        <td id="T_06884_row0_col0" class="data row0 col0" >0</td>
-                        <td id="T_06884_row0_col1" class="data row0 col1" >Default series</td>
-                        <td id="T_06884_row0_col2" class="data row0 col2" >1</td>
-                        <td id="T_06884_row0_col3" class="data row0 col3" >#015482</td>
-                        <td id="T_06884_row0_col4" class="data row0 col4" >1</td>
-            </tr>
-            <tr>
-                        <th id="T_06884_level0_row1" class="row_heading level0 row1" >1</th>
-                        <td id="T_06884_row1_col0" class="data row1 col0" >basement</td>
-                        <td id="T_06884_row1_col1" class="data row1 col1" >Basement</td>
-                        <td id="T_06884_row1_col2" class="data row1 col2" >1</td>
-                        <td id="T_06884_row1_col3" class="data row1 col3" >#9f0052</td>
-                        <td id="T_06884_row1_col4" class="data row1 col4" >2</td>
-            </tr>
-    </tbody></table>
-</div>
-<br />
-<br /><p>np.save(‘Moureze_scalar’, geo_model.solutions.scalar_field_matrix)
-np.save(‘Moureze_ver’, geo_model.solutions.vertices)
-np.save(‘Moureze_edges’, geo_model.solutions.edges)
-gp.plot.export_to_vtk(geo_model, ‘Moureze’)</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">save_model</span><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">)</span>
-</pre></div>
-</div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>True
-</pre></div>
-</div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 2 minutes  4.415 seconds)</p>
-<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-examples-real-moureze-py">
-<div class="sphx-glr-download sphx-glr-download-python docutils container">
-<p><a class="reference download internal" download="" href="../../_downloads/eb05d04f2a41e5fa5a58b112950d0585/Moureze.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">Moureze.py</span></code></a></p>
-</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 4.856 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-examples-real-moureze-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/2d7d09aaf014992a3cad066b50a20c60/Moureze.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">Moureze.ipynb</span></code></a></p>
 </div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/eb05d04f2a41e5fa5a58b112950d0585/Moureze.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">Moureze.py</span></code></a></p>
+</div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
-</div>
+</section>
+</section>
 
 
           </div>
@@ -533,7 +433,7 @@ gp.plot.export_to_vtk(geo_model, ‘Moureze’)</p>
         <div class="sphinxsidebarwrapper">
 <p class="logo">
   <a href="../../index.html">
-    <img class="logo" src="../../_static/./logos/gempy.png" alt="Logo"/>
+    <img class="logo" src="../../_static/logos/gempy.png" alt="Logo"/>
     
   </a>
 </p>
@@ -544,24 +444,12 @@ gp.plot.export_to_vtk(geo_model, ‘Moureze’)</p>
 
 
 <p>
-<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
+<iframe src="https://ghbtns.com/github-btn.html?user=gempy-project&repo=gempy&type=star&count=true&size=large&v=2"
   allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
 </p>
 
 
 
-
-
-    
-
-<p>
-<a class="badge" href="https://travis-ci.org/cgre-aachen/gempy">
-    <img
-        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
-        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
-    />
-</a>
-</p>
 
 
 <h3>Navigation</h3>
@@ -570,20 +458,19 @@ gp.plot.export_to_vtk(geo_model, ‘Moureze’)</p>
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../projects.html">Additional projects</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Getting started</span></p>
+<p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">GemPy Tutorials</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">Examples</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../index.html#simple-geometries">Simple geometries</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../index.html#real-case-studies">Real case studies</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../integrations/index.html">Integrations</a></li>
 </ul>
-<p class="caption"><span class="caption-text">API Reference</span></p>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../code.html">Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_reference.html">Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_reference.html#data-classes">Data Classes</a></li>
 </ul>
 
 <div class="relations">
@@ -591,8 +478,10 @@ gp.plot.export_to_vtk(geo_model, ‘Moureze’)</p>
 <ul>
   <li><a href="../../index.html">Documentation overview</a><ul>
   <li><a href="../index.html">Examples</a><ul>
+  <li><a href="index.html">Real case studies</a><ul>
       <li>Previous: <a href="Hecho.html" title="previous chapter">Hecho</a></li>
       <li>Next: <a href="Perth_basin.html" title="next chapter">Perth basin.</a></li>
+  </ul></li>
   </ul></li>
   </ul></li>
 </ul>
@@ -601,12 +490,12 @@ gp.plot.export_to_vtk(geo_model, ‘Moureze’)</p>
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -620,11 +509,11 @@ gp.plot.export_to_vtk(geo_model, ‘Moureze’)</p>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2017-2021, CGRE-Aachen Team.
+      &copy;2017-2024, Gempy Developers.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
       
       |
       <a href="../../_sources/examples/real/Moureze.rst.txt"

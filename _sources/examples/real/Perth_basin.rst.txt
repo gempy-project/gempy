@@ -10,7 +10,7 @@
     .. note::
         :class: sphx-glr-download-link-note
 
-        Click :ref:`here <sphx_glr_download_examples_real_Perth_basin.py>`
+        :ref:`Go to the end <sphx_glr_download_examples_real_Perth_basin.py>`
         to download the full example code
 
 .. rst-class:: sphx-glr-example-title
@@ -21,19 +21,21 @@
 Perth basin.
 ============
 
-.. GENERATED FROM PYTHON SOURCE LINES 5-15
+.. GENERATED FROM PYTHON SOURCE LINES 5-17
 
-.. code-block:: python3
+.. code-block:: Python
 
     import os
 
     # Importing GemPy
     import gempy as gp
+    import gempy_viewer as gpv
 
     # Importing auxiliary libraries
     import matplotlib
+
     matplotlib.rcParams['figure.figsize'] = (20.0, 10.0)
-    os.environ["THEANO_FLAGS"] = "mode=FAST_RUN,device=cuda"
+    os.environ["aesara_FLAGS"] = "mode=FAST_RUN,device=cuda"
 
 
 
@@ -42,51 +44,50 @@ Perth basin.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 16-19
+.. GENERATED FROM PYTHON SOURCE LINES 18-24
 
-.. code-block:: python3
+.. code-block:: Python
 
-    data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
-    geo_model = gp.create_model('Perth_Basin')
-
-
-
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 20-26
-
-.. code-block:: python3
-
-    gp.init_data(geo_model,
-                 extent=[337000, 400000, 6640000, 6710000, -18000, 1000],
-                 resolution=[100, 100, 100],
-                 path_i=data_path + "/data/input_data/Perth_basin/Paper_GU2F_sc_faults_topo_Points.csv",
-                 path_o=data_path + "/data/input_data/Perth_basin/Paper_GU2F_sc_faults_topo_Foliations.csv")
+    cwd = os.getcwd()
+    if 'examples' not in cwd:
+        data_path = os.getcwd() + '/examples'
+    else:
+        data_path = cwd + '/../..'
 
 
 
 
 
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    Active grids: ['regular']
-
-    Perth_Basin  2021-04-18 11:38
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 27-29
+.. GENERATED FROM PYTHON SOURCE LINES 25-36
 
-.. code-block:: python3
+.. code-block:: Python
 
-    geo_model.surfaces
+    geo_model: gp.data.GeoModel = gp.create_geomodel(
+        project_name='Perth_Basin',
+        extent=[337000, 400000, 6640000, 6710000, -18000, 1000],
+        resolution=[100, 100, 100],
+        refinement=4,
+        importer_helper=gp.data.ImporterHelper(
+            path_to_orientations=data_path + "/data/input_data/perth_basin/Paper_GU2F_sc_faults_topo_Foliations.csv",
+            path_to_surface_points=data_path + "/data/input_data/perth_basin/Paper_GU2F_sc_faults_topo_Points.csv",
+        )
+    )
+
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 37-39
+
+.. code-block:: Python
+
+    geo_model.structural_frame
 
 
 
@@ -96,201 +97,120 @@ Perth basin.
 .. raw:: html
 
     <div class="output_subarea output_html rendered_html output_result">
-    <style  type="text/css" >
-    #T_1c18d_row0_col3{
-                background-color:  #015482;
-            }#T_1c18d_row1_col3{
-                background-color:  #9f0052;
-            }#T_1c18d_row2_col3{
-                background-color:  #ffbe00;
-            }#T_1c18d_row3_col3{
-                background-color:  #728f02;
-            }#T_1c18d_row4_col3{
-                background-color:  #443988;
-            }#T_1c18d_row5_col3{
-                background-color:  #ff3f20;
-            }#T_1c18d_row6_col3{
-                background-color:  #5DA629;
-            }#T_1c18d_row7_col3{
-                background-color:  #4878d0;
-            }#T_1c18d_row8_col3{
-                background-color:  #ee854a;
-            }#T_1c18d_row9_col3{
-                background-color:  #6acc64;
-            }#T_1c18d_row10_col3{
-                background-color:  #d65f5f;
-            }#T_1c18d_row11_col3{
-                background-color:  #956cb4;
-            }#T_1c18d_row12_col3{
-                background-color:  #8c613c;
-            }#T_1c18d_row13_col3{
-                background-color:  #dc7ec0;
-            }#T_1c18d_row14_col3{
-                background-color:  #797979;
-            }#T_1c18d_row15_col3{
-                background-color:  #d5bb67;
-            }#T_1c18d_row16_col3{
-                background-color:  #82c6e2;
-            }</style><table id="T_1c18d_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
-                    <tr>
-                            <th id="T_1c18d_level0_row0" class="row_heading level0 row0" >0</th>
-                            <td id="T_1c18d_row0_col0" class="data row0 col0" >Lesueur</td>
-                            <td id="T_1c18d_row0_col1" class="data row0 col1" >Default series</td>
-                            <td id="T_1c18d_row0_col2" class="data row0 col2" >1</td>
-                            <td id="T_1c18d_row0_col3" class="data row0 col3" >#015482</td>
-                            <td id="T_1c18d_row0_col4" class="data row0 col4" >1</td>
-                </tr>
-                <tr>
-                            <th id="T_1c18d_level0_row1" class="row_heading level0 row1" >1</th>
-                            <td id="T_1c18d_row1_col0" class="data row1 col0" >Permian</td>
-                            <td id="T_1c18d_row1_col1" class="data row1 col1" >Default series</td>
-                            <td id="T_1c18d_row1_col2" class="data row1 col2" >2</td>
-                            <td id="T_1c18d_row1_col3" class="data row1 col3" >#9f0052</td>
-                            <td id="T_1c18d_row1_col4" class="data row1 col4" >2</td>
-                </tr>
-                <tr>
-                            <th id="T_1c18d_level0_row2" class="row_heading level0 row2" >2</th>
-                            <td id="T_1c18d_row2_col0" class="data row2 col0" >Woodada_Kockatea</td>
-                            <td id="T_1c18d_row2_col1" class="data row2 col1" >Default series</td>
-                            <td id="T_1c18d_row2_col2" class="data row2 col2" >3</td>
-                            <td id="T_1c18d_row2_col3" class="data row2 col3" >#ffbe00</td>
-                            <td id="T_1c18d_row2_col4" class="data row2 col4" >3</td>
-                </tr>
-                <tr>
-                            <th id="T_1c18d_level0_row3" class="row_heading level0 row3" >3</th>
-                            <td id="T_1c18d_row3_col0" class="data row3 col0" >Yarragadee</td>
-                            <td id="T_1c18d_row3_col1" class="data row3 col1" >Default series</td>
-                            <td id="T_1c18d_row3_col2" class="data row3 col2" >4</td>
-                            <td id="T_1c18d_row3_col3" class="data row3 col3" >#728f02</td>
-                            <td id="T_1c18d_row3_col4" class="data row3 col4" >4</td>
-                </tr>
-                <tr>
-                            <th id="T_1c18d_level0_row4" class="row_heading level0 row4" >4</th>
-                            <td id="T_1c18d_row4_col0" class="data row4 col0" >Eneabba</td>
-                            <td id="T_1c18d_row4_col1" class="data row4 col1" >Default series</td>
-                            <td id="T_1c18d_row4_col2" class="data row4 col2" >5</td>
-                            <td id="T_1c18d_row4_col3" class="data row4 col3" >#443988</td>
-                            <td id="T_1c18d_row4_col4" class="data row4 col4" >5</td>
-                </tr>
-                <tr>
-                            <th id="T_1c18d_level0_row5" class="row_heading level0 row5" >5</th>
-                            <td id="T_1c18d_row5_col0" class="data row5 col0" >Cattamarra</td>
-                            <td id="T_1c18d_row5_col1" class="data row5 col1" >Default series</td>
-                            <td id="T_1c18d_row5_col2" class="data row5 col2" >6</td>
-                            <td id="T_1c18d_row5_col3" class="data row5 col3" >#ff3f20</td>
-                            <td id="T_1c18d_row5_col4" class="data row5 col4" >6</td>
-                </tr>
-                <tr>
-                            <th id="T_1c18d_level0_row6" class="row_heading level0 row6" >6</th>
-                            <td id="T_1c18d_row6_col0" class="data row6 col0" >Cadda</td>
-                            <td id="T_1c18d_row6_col1" class="data row6 col1" >Default series</td>
-                            <td id="T_1c18d_row6_col2" class="data row6 col2" >7</td>
-                            <td id="T_1c18d_row6_col3" class="data row6 col3" >#5DA629</td>
-                            <td id="T_1c18d_row6_col4" class="data row6 col4" >7</td>
-                </tr>
-                <tr>
-                            <th id="T_1c18d_level0_row7" class="row_heading level0 row7" >7</th>
-                            <td id="T_1c18d_row7_col0" class="data row7 col0" >Cretaceous</td>
-                            <td id="T_1c18d_row7_col1" class="data row7 col1" >Default series</td>
-                            <td id="T_1c18d_row7_col2" class="data row7 col2" >8</td>
-                            <td id="T_1c18d_row7_col3" class="data row7 col3" >#4878d0</td>
-                            <td id="T_1c18d_row7_col4" class="data row7 col4" >8</td>
-                </tr>
-                <tr>
-                            <th id="T_1c18d_level0_row8" class="row_heading level0 row8" >8</th>
-                            <td id="T_1c18d_row8_col0" class="data row8 col0" >Darling</td>
-                            <td id="T_1c18d_row8_col1" class="data row8 col1" >Default series</td>
-                            <td id="T_1c18d_row8_col2" class="data row8 col2" >9</td>
-                            <td id="T_1c18d_row8_col3" class="data row8 col3" >#ee854a</td>
-                            <td id="T_1c18d_row8_col4" class="data row8 col4" >9</td>
-                </tr>
-                <tr>
-                            <th id="T_1c18d_level0_row9" class="row_heading level0 row9" >9</th>
-                            <td id="T_1c18d_row9_col0" class="data row9 col0" >Urella_North</td>
-                            <td id="T_1c18d_row9_col1" class="data row9 col1" >Default series</td>
-                            <td id="T_1c18d_row9_col2" class="data row9 col2" >10</td>
-                            <td id="T_1c18d_row9_col3" class="data row9 col3" >#6acc64</td>
-                            <td id="T_1c18d_row9_col4" class="data row9 col4" >10</td>
-                </tr>
-                <tr>
-                            <th id="T_1c18d_level0_row10" class="row_heading level0 row10" >10</th>
-                            <td id="T_1c18d_row10_col0" class="data row10 col0" >Eneabba_South</td>
-                            <td id="T_1c18d_row10_col1" class="data row10 col1" >Default series</td>
-                            <td id="T_1c18d_row10_col2" class="data row10 col2" >11</td>
-                            <td id="T_1c18d_row10_col3" class="data row10 col3" >#d65f5f</td>
-                            <td id="T_1c18d_row10_col4" class="data row10 col4" >11</td>
-                </tr>
-                <tr>
-                            <th id="T_1c18d_level0_row11" class="row_heading level0 row11" >11</th>
-                            <td id="T_1c18d_row11_col0" class="data row11 col0" >Coomallo</td>
-                            <td id="T_1c18d_row11_col1" class="data row11 col1" >Default series</td>
-                            <td id="T_1c18d_row11_col2" class="data row11 col2" >12</td>
-                            <td id="T_1c18d_row11_col3" class="data row11 col3" >#956cb4</td>
-                            <td id="T_1c18d_row11_col4" class="data row11 col4" >12</td>
-                </tr>
-                <tr>
-                            <th id="T_1c18d_level0_row12" class="row_heading level0 row12" >12</th>
-                            <td id="T_1c18d_row12_col0" class="data row12 col0" >Hypo_fault_E</td>
-                            <td id="T_1c18d_row12_col1" class="data row12 col1" >Default series</td>
-                            <td id="T_1c18d_row12_col2" class="data row12 col2" >13</td>
-                            <td id="T_1c18d_row12_col3" class="data row12 col3" >#8c613c</td>
-                            <td id="T_1c18d_row12_col4" class="data row12 col4" >13</td>
-                </tr>
-                <tr>
-                            <th id="T_1c18d_level0_row13" class="row_heading level0 row13" >13</th>
-                            <td id="T_1c18d_row13_col0" class="data row13 col0" >Hypo_fault_W</td>
-                            <td id="T_1c18d_row13_col1" class="data row13 col1" >Default series</td>
-                            <td id="T_1c18d_row13_col2" class="data row13 col2" >14</td>
-                            <td id="T_1c18d_row13_col3" class="data row13 col3" >#dc7ec0</td>
-                            <td id="T_1c18d_row13_col4" class="data row13 col4" >14</td>
-                </tr>
-                <tr>
-                            <th id="T_1c18d_level0_row14" class="row_heading level0 row14" >14</th>
-                            <td id="T_1c18d_row14_col0" class="data row14 col0" >Urella_South</td>
-                            <td id="T_1c18d_row14_col1" class="data row14 col1" >Default series</td>
-                            <td id="T_1c18d_row14_col2" class="data row14 col2" >15</td>
-                            <td id="T_1c18d_row14_col3" class="data row14 col3" >#797979</td>
-                            <td id="T_1c18d_row14_col4" class="data row14 col4" >15</td>
-                </tr>
-                <tr>
-                            <th id="T_1c18d_level0_row15" class="row_heading level0 row15" >15</th>
-                            <td id="T_1c18d_row15_col0" class="data row15 col0" >Abrolhos_Transfer</td>
-                            <td id="T_1c18d_row15_col1" class="data row15 col1" >Default series</td>
-                            <td id="T_1c18d_row15_col2" class="data row15 col2" >16</td>
-                            <td id="T_1c18d_row15_col3" class="data row15 col3" >#d5bb67</td>
-                            <td id="T_1c18d_row15_col4" class="data row15 col4" >16</td>
-                </tr>
-                <tr>
-                            <th id="T_1c18d_level0_row16" class="row_heading level0 row16" >16</th>
-                            <td id="T_1c18d_row16_col0" class="data row16 col0" >basement</td>
-                            <td id="T_1c18d_row16_col1" class="data row16 col1" >Basement</td>
-                            <td id="T_1c18d_row16_col2" class="data row16 col2" >1</td>
-                            <td id="T_1c18d_row16_col3" class="data row16 col3" >#82c6e2</td>
-                            <td id="T_1c18d_row16_col4" class="data row16 col4" >17</td>
-                </tr>
-        </tbody></table>
+
+            <table>
+              <tr><td>Structural Groups:</td><td>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>default_formation</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #015482;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Abrolhos_Transfer</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #9f0052;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Cadda</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #ffbe00;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Cattamarra</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #728f02;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Coomallo</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #443988;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Cretaceous</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #ff3f20;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Darling</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #5DA629;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Eneabba</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #b271d0;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Eneabba_South</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #72e54a;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Hypo_fault_E</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #583bd1;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Hypo_fault_W</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #d0e63d;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Lesueur</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #b949e2;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Permian</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #95ce4b;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Urella_North</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #6d2b9f;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Urella_South</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #60eb91;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Woodada_Kockatea</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #d746be;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Yarragadee</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            </td></tr>
+              <tr><td>Fault Relations:</td><td><table style="border-collapse: collapse; table-layout: fixed;"><th></th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">default_fo...</th><tr><th>default_formation</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr></table></td></tr>
+              <tr><td></td><td>
+            <table>
+              <tr>
+                <td><div style="display: inline-block; background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></div> True</td>
+                <td><div style="display: inline-block; background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></div> False</td>
+              </tr>
+            </table>
+            </td></tr>
+            </table>
+        
     </div>
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 30-32
+.. GENERATED FROM PYTHON SOURCE LINES 40-46
 
-.. code-block:: python3
+.. code-block:: Python
 
     del_surfaces = ['Cadda', 'Woodada_Kockatea', 'Cattamarra']
+    for s in del_surfaces:
+        gp.remove_element_by_name(geo_model, s)
 
-
-
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 33-35
-
-.. code-block:: python3
-
-    geo_model.delete_surfaces(del_surfaces, remove_data=True)
+    geo_model.structural_frame
 
 
 
@@ -300,162 +220,114 @@ Perth basin.
 .. raw:: html
 
     <div class="output_subarea output_html rendered_html output_result">
-    <style  type="text/css" >
-    #T_0a45f_row0_col3{
-                background-color:  #015482;
-            }#T_0a45f_row1_col3{
-                background-color:  #9f0052;
-            }#T_0a45f_row2_col3{
-                background-color:  #728f02;
-            }#T_0a45f_row3_col3{
-                background-color:  #443988;
-            }#T_0a45f_row4_col3{
-                background-color:  #4878d0;
-            }#T_0a45f_row5_col3{
-                background-color:  #ee854a;
-            }#T_0a45f_row6_col3{
-                background-color:  #6acc64;
-            }#T_0a45f_row7_col3{
-                background-color:  #d65f5f;
-            }#T_0a45f_row8_col3{
-                background-color:  #956cb4;
-            }#T_0a45f_row9_col3{
-                background-color:  #8c613c;
-            }#T_0a45f_row10_col3{
-                background-color:  #dc7ec0;
-            }#T_0a45f_row11_col3{
-                background-color:  #797979;
-            }#T_0a45f_row12_col3{
-                background-color:  #d5bb67;
-            }#T_0a45f_row13_col3{
-                background-color:  #82c6e2;
-            }</style><table id="T_0a45f_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
-                    <tr>
-                            <th id="T_0a45f_level0_row0" class="row_heading level0 row0" >0</th>
-                            <td id="T_0a45f_row0_col0" class="data row0 col0" >Lesueur</td>
-                            <td id="T_0a45f_row0_col1" class="data row0 col1" >Default series</td>
-                            <td id="T_0a45f_row0_col2" class="data row0 col2" >1</td>
-                            <td id="T_0a45f_row0_col3" class="data row0 col3" >#015482</td>
-                            <td id="T_0a45f_row0_col4" class="data row0 col4" >1</td>
-                </tr>
-                <tr>
-                            <th id="T_0a45f_level0_row1" class="row_heading level0 row1" >1</th>
-                            <td id="T_0a45f_row1_col0" class="data row1 col0" >Permian</td>
-                            <td id="T_0a45f_row1_col1" class="data row1 col1" >Default series</td>
-                            <td id="T_0a45f_row1_col2" class="data row1 col2" >2</td>
-                            <td id="T_0a45f_row1_col3" class="data row1 col3" >#9f0052</td>
-                            <td id="T_0a45f_row1_col4" class="data row1 col4" >2</td>
-                </tr>
-                <tr>
-                            <th id="T_0a45f_level0_row2" class="row_heading level0 row2" >3</th>
-                            <td id="T_0a45f_row2_col0" class="data row2 col0" >Yarragadee</td>
-                            <td id="T_0a45f_row2_col1" class="data row2 col1" >Default series</td>
-                            <td id="T_0a45f_row2_col2" class="data row2 col2" >3</td>
-                            <td id="T_0a45f_row2_col3" class="data row2 col3" >#728f02</td>
-                            <td id="T_0a45f_row2_col4" class="data row2 col4" >3</td>
-                </tr>
-                <tr>
-                            <th id="T_0a45f_level0_row3" class="row_heading level0 row3" >4</th>
-                            <td id="T_0a45f_row3_col0" class="data row3 col0" >Eneabba</td>
-                            <td id="T_0a45f_row3_col1" class="data row3 col1" >Default series</td>
-                            <td id="T_0a45f_row3_col2" class="data row3 col2" >4</td>
-                            <td id="T_0a45f_row3_col3" class="data row3 col3" >#443988</td>
-                            <td id="T_0a45f_row3_col4" class="data row3 col4" >4</td>
-                </tr>
-                <tr>
-                            <th id="T_0a45f_level0_row4" class="row_heading level0 row4" >7</th>
-                            <td id="T_0a45f_row4_col0" class="data row4 col0" >Cretaceous</td>
-                            <td id="T_0a45f_row4_col1" class="data row4 col1" >Default series</td>
-                            <td id="T_0a45f_row4_col2" class="data row4 col2" >5</td>
-                            <td id="T_0a45f_row4_col3" class="data row4 col3" >#4878d0</td>
-                            <td id="T_0a45f_row4_col4" class="data row4 col4" >5</td>
-                </tr>
-                <tr>
-                            <th id="T_0a45f_level0_row5" class="row_heading level0 row5" >8</th>
-                            <td id="T_0a45f_row5_col0" class="data row5 col0" >Darling</td>
-                            <td id="T_0a45f_row5_col1" class="data row5 col1" >Default series</td>
-                            <td id="T_0a45f_row5_col2" class="data row5 col2" >6</td>
-                            <td id="T_0a45f_row5_col3" class="data row5 col3" >#ee854a</td>
-                            <td id="T_0a45f_row5_col4" class="data row5 col4" >6</td>
-                </tr>
-                <tr>
-                            <th id="T_0a45f_level0_row6" class="row_heading level0 row6" >9</th>
-                            <td id="T_0a45f_row6_col0" class="data row6 col0" >Urella_North</td>
-                            <td id="T_0a45f_row6_col1" class="data row6 col1" >Default series</td>
-                            <td id="T_0a45f_row6_col2" class="data row6 col2" >7</td>
-                            <td id="T_0a45f_row6_col3" class="data row6 col3" >#6acc64</td>
-                            <td id="T_0a45f_row6_col4" class="data row6 col4" >7</td>
-                </tr>
-                <tr>
-                            <th id="T_0a45f_level0_row7" class="row_heading level0 row7" >10</th>
-                            <td id="T_0a45f_row7_col0" class="data row7 col0" >Eneabba_South</td>
-                            <td id="T_0a45f_row7_col1" class="data row7 col1" >Default series</td>
-                            <td id="T_0a45f_row7_col2" class="data row7 col2" >8</td>
-                            <td id="T_0a45f_row7_col3" class="data row7 col3" >#d65f5f</td>
-                            <td id="T_0a45f_row7_col4" class="data row7 col4" >8</td>
-                </tr>
-                <tr>
-                            <th id="T_0a45f_level0_row8" class="row_heading level0 row8" >11</th>
-                            <td id="T_0a45f_row8_col0" class="data row8 col0" >Coomallo</td>
-                            <td id="T_0a45f_row8_col1" class="data row8 col1" >Default series</td>
-                            <td id="T_0a45f_row8_col2" class="data row8 col2" >9</td>
-                            <td id="T_0a45f_row8_col3" class="data row8 col3" >#956cb4</td>
-                            <td id="T_0a45f_row8_col4" class="data row8 col4" >9</td>
-                </tr>
-                <tr>
-                            <th id="T_0a45f_level0_row9" class="row_heading level0 row9" >12</th>
-                            <td id="T_0a45f_row9_col0" class="data row9 col0" >Hypo_fault_E</td>
-                            <td id="T_0a45f_row9_col1" class="data row9 col1" >Default series</td>
-                            <td id="T_0a45f_row9_col2" class="data row9 col2" >10</td>
-                            <td id="T_0a45f_row9_col3" class="data row9 col3" >#8c613c</td>
-                            <td id="T_0a45f_row9_col4" class="data row9 col4" >10</td>
-                </tr>
-                <tr>
-                            <th id="T_0a45f_level0_row10" class="row_heading level0 row10" >13</th>
-                            <td id="T_0a45f_row10_col0" class="data row10 col0" >Hypo_fault_W</td>
-                            <td id="T_0a45f_row10_col1" class="data row10 col1" >Default series</td>
-                            <td id="T_0a45f_row10_col2" class="data row10 col2" >11</td>
-                            <td id="T_0a45f_row10_col3" class="data row10 col3" >#dc7ec0</td>
-                            <td id="T_0a45f_row10_col4" class="data row10 col4" >11</td>
-                </tr>
-                <tr>
-                            <th id="T_0a45f_level0_row11" class="row_heading level0 row11" >14</th>
-                            <td id="T_0a45f_row11_col0" class="data row11 col0" >Urella_South</td>
-                            <td id="T_0a45f_row11_col1" class="data row11 col1" >Default series</td>
-                            <td id="T_0a45f_row11_col2" class="data row11 col2" >12</td>
-                            <td id="T_0a45f_row11_col3" class="data row11 col3" >#797979</td>
-                            <td id="T_0a45f_row11_col4" class="data row11 col4" >12</td>
-                </tr>
-                <tr>
-                            <th id="T_0a45f_level0_row12" class="row_heading level0 row12" >15</th>
-                            <td id="T_0a45f_row12_col0" class="data row12 col0" >Abrolhos_Transfer</td>
-                            <td id="T_0a45f_row12_col1" class="data row12 col1" >Default series</td>
-                            <td id="T_0a45f_row12_col2" class="data row12 col2" >13</td>
-                            <td id="T_0a45f_row12_col3" class="data row12 col3" >#d5bb67</td>
-                            <td id="T_0a45f_row12_col4" class="data row12 col4" >13</td>
-                </tr>
-                <tr>
-                            <th id="T_0a45f_level0_row13" class="row_heading level0 row13" >16</th>
-                            <td id="T_0a45f_row13_col0" class="data row13 col0" >basement</td>
-                            <td id="T_0a45f_row13_col1" class="data row13 col1" >Basement</td>
-                            <td id="T_0a45f_row13_col2" class="data row13 col2" >1</td>
-                            <td id="T_0a45f_row13_col3" class="data row13 col3" >#82c6e2</td>
-                            <td id="T_0a45f_row13_col4" class="data row13 col4" >14</td>
-                </tr>
-        </tbody></table>
+
+            <table>
+              <tr><td>Structural Groups:</td><td>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>default_formation</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #015482;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Abrolhos_Transfer</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #728f02;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Coomallo</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #443988;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Cretaceous</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #ff3f20;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Darling</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #5DA629;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Eneabba</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #b271d0;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Eneabba_South</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #72e54a;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Hypo_fault_E</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #583bd1;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Hypo_fault_W</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #d0e63d;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Lesueur</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #b949e2;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Permian</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #95ce4b;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Urella_North</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #6d2b9f;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Urella_South</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #d746be;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Yarragadee</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            </td></tr>
+              <tr><td>Fault Relations:</td><td><table style="border-collapse: collapse; table-layout: fixed;"><th></th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">default_fo...</th><tr><th>default_formation</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr></table></td></tr>
+              <tr><td></td><td>
+            <table>
+              <tr>
+                <td><div style="display: inline-block; background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></div> True</td>
+                <td><div style="display: inline-block; background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></div> False</td>
+              </tr>
+            </table>
+            </td></tr>
+            </table>
+        
     </div>
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 36-37
+.. GENERATED FROM PYTHON SOURCE LINES 47-62
 
-%debug
+.. code-block:: Python
 
-.. GENERATED FROM PYTHON SOURCE LINES 39-41
-
-.. code-block:: python3
-
-    geo_model.stack
+    gp.map_stack_to_surfaces(
+        gempy_model=geo_model,
+        mapping_object={
+            "fault_Abrolhos_Transfer": ["Abrolhos_Transfer"],
+            "fault_Coomallo": ["Coomallo"],
+            "fault_Eneabba_South": ["Eneabba_South"],
+            "fault_Hypo_fault_W": ["Hypo_fault_W"],
+            "fault_Hypo_fault_E": ["Hypo_fault_E"],
+            "fault_Urella_North": ["Urella_North"],
+            "fault_Darling": ["Darling"],
+            "fault_Urella_South": ["Urella_South"],
+            "Sedimentary_Series": ['Cretaceous', 'Yarragadee', 'Eneabba', 'Lesueur', 'Permian']
+        }
+    )
 
 
 
@@ -465,479 +337,177 @@ Perth basin.
 .. raw:: html
 
     <div class="output_subarea output_html rendered_html output_result">
-    <table border="1" class="dataframe">
-      <thead>
-        <tr style="text-align: right;">
-          <th></th>
-          <th>order_series</th>
-          <th>BottomRelation</th>
-          <th>isActive</th>
-          <th>isFault</th>
-          <th>isFinite</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th>Default series</th>
-          <td>1</td>
-          <td>Erosion</td>
-          <td>True</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>Basement</th>
-          <td>2</td>
-          <td>Erosion</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-      </tbody>
-    </table>
+
+            <table>
+              <tr><td>Structural Groups:</td><td>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>fault_Abrolhos_Transfer</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #015482;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Abrolhos_Transfer</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>fault_Coomallo</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #728f02;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Coomallo</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>fault_Eneabba_South</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #b271d0;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Eneabba_South</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>fault_Hypo_fault_W</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #583bd1;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Hypo_fault_W</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>fault_Hypo_fault_E</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #72e54a;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Hypo_fault_E</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>fault_Urella_North</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #95ce4b;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Urella_North</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>fault_Darling</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #ff3f20;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Darling</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>fault_Urella_South</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #6d2b9f;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Urella_South</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>Sedimentary_Series</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #443988;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Cretaceous</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #d746be;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Yarragadee</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #5DA629;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Eneabba</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #d0e63d;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Lesueur</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #b949e2;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Permian</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            </td></tr>
+              <tr><td>Fault Relations:</td><td><table style="border-collapse: collapse; table-layout: fixed;"><th></th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">fault_Abro...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">fault_Coom...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">fault_Enea...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">fault_Hypo...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">fault_Hypo...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">fault_Urel...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">fault_Darl...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">fault_Urel...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Sedimentar...</th><tr><th>fault_Abrolhos_Transfer</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>fault_Coomallo</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>fault_Eneabba_South</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>fault_Hypo_fault_W</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>fault_Hypo_fault_E</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>fault_Urella_North</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>fault_Darling</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>fault_Urella_South</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>Sedimentary_Series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr></table></td></tr>
+              <tr><td></td><td>
+            <table>
+              <tr>
+                <td><div style="display: inline-block; background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></div> True</td>
+                <td><div style="display: inline-block; background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></div> False</td>
+              </tr>
+            </table>
+            </td></tr>
+            </table>
+        
     </div>
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 42-58
-
-.. code-block:: python3
-
-    gp.map_stack_to_surfaces(geo_model,
-                              {"fault_Abrolhos_Transfer": ["Abrolhos_Transfer"],
-                               "fault_Coomallo": ["Coomallo"],
-                               "fault_Eneabba_South": ["Eneabba_South"],
-                               "fault_Hypo_fault_W": ["Hypo_fault_W"],
-                               "fault_Hypo_fault_E": ["Hypo_fault_E"],
-                               "fault_Urella_North": ["Urella_North"],
-                               "fault_Urella_South": ["Urella_South"],
-                               "fault_Darling": ["Darling"],
-                               "Sedimentary_Series": ['Cretaceous',
-                                                      'Yarragadee',
-                                                      'Eneabba',
-                                                      'Lesueur',
-                                                      'Permian']
-                               })
-
-
-
-
-
-
-.. raw:: html
-
-    <div class="output_subarea output_html rendered_html output_result">
-    <style  type="text/css" >
-    #T_d3328_row0_col3{
-                background-color:  #d5bb67;
-            }#T_d3328_row1_col3{
-                background-color:  #956cb4;
-            }#T_d3328_row2_col3{
-                background-color:  #d65f5f;
-            }#T_d3328_row3_col3{
-                background-color:  #dc7ec0;
-            }#T_d3328_row4_col3{
-                background-color:  #8c613c;
-            }#T_d3328_row5_col3{
-                background-color:  #6acc64;
-            }#T_d3328_row6_col3{
-                background-color:  #797979;
-            }#T_d3328_row7_col3{
-                background-color:  #ee854a;
-            }#T_d3328_row8_col3{
-                background-color:  #015482;
-            }#T_d3328_row9_col3{
-                background-color:  #9f0052;
-            }#T_d3328_row10_col3{
-                background-color:  #728f02;
-            }#T_d3328_row11_col3{
-                background-color:  #443988;
-            }#T_d3328_row12_col3{
-                background-color:  #4878d0;
-            }#T_d3328_row13_col3{
-                background-color:  #82c6e2;
-            }</style><table id="T_d3328_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
-                    <tr>
-                            <th id="T_d3328_level0_row0" class="row_heading level0 row0" >15</th>
-                            <td id="T_d3328_row0_col0" class="data row0 col0" >Abrolhos_Transfer</td>
-                            <td id="T_d3328_row0_col1" class="data row0 col1" >fault_Abrolhos_Transfer</td>
-                            <td id="T_d3328_row0_col2" class="data row0 col2" >1</td>
-                            <td id="T_d3328_row0_col3" class="data row0 col3" >#d5bb67</td>
-                            <td id="T_d3328_row0_col4" class="data row0 col4" >1</td>
-                </tr>
-                <tr>
-                            <th id="T_d3328_level0_row1" class="row_heading level0 row1" >11</th>
-                            <td id="T_d3328_row1_col0" class="data row1 col0" >Coomallo</td>
-                            <td id="T_d3328_row1_col1" class="data row1 col1" >fault_Coomallo</td>
-                            <td id="T_d3328_row1_col2" class="data row1 col2" >1</td>
-                            <td id="T_d3328_row1_col3" class="data row1 col3" >#956cb4</td>
-                            <td id="T_d3328_row1_col4" class="data row1 col4" >2</td>
-                </tr>
-                <tr>
-                            <th id="T_d3328_level0_row2" class="row_heading level0 row2" >10</th>
-                            <td id="T_d3328_row2_col0" class="data row2 col0" >Eneabba_South</td>
-                            <td id="T_d3328_row2_col1" class="data row2 col1" >fault_Eneabba_South</td>
-                            <td id="T_d3328_row2_col2" class="data row2 col2" >1</td>
-                            <td id="T_d3328_row2_col3" class="data row2 col3" >#d65f5f</td>
-                            <td id="T_d3328_row2_col4" class="data row2 col4" >3</td>
-                </tr>
-                <tr>
-                            <th id="T_d3328_level0_row3" class="row_heading level0 row3" >13</th>
-                            <td id="T_d3328_row3_col0" class="data row3 col0" >Hypo_fault_W</td>
-                            <td id="T_d3328_row3_col1" class="data row3 col1" >fault_Hypo_fault_W</td>
-                            <td id="T_d3328_row3_col2" class="data row3 col2" >1</td>
-                            <td id="T_d3328_row3_col3" class="data row3 col3" >#dc7ec0</td>
-                            <td id="T_d3328_row3_col4" class="data row3 col4" >4</td>
-                </tr>
-                <tr>
-                            <th id="T_d3328_level0_row4" class="row_heading level0 row4" >12</th>
-                            <td id="T_d3328_row4_col0" class="data row4 col0" >Hypo_fault_E</td>
-                            <td id="T_d3328_row4_col1" class="data row4 col1" >fault_Hypo_fault_E</td>
-                            <td id="T_d3328_row4_col2" class="data row4 col2" >1</td>
-                            <td id="T_d3328_row4_col3" class="data row4 col3" >#8c613c</td>
-                            <td id="T_d3328_row4_col4" class="data row4 col4" >5</td>
-                </tr>
-                <tr>
-                            <th id="T_d3328_level0_row5" class="row_heading level0 row5" >9</th>
-                            <td id="T_d3328_row5_col0" class="data row5 col0" >Urella_North</td>
-                            <td id="T_d3328_row5_col1" class="data row5 col1" >fault_Urella_North</td>
-                            <td id="T_d3328_row5_col2" class="data row5 col2" >1</td>
-                            <td id="T_d3328_row5_col3" class="data row5 col3" >#6acc64</td>
-                            <td id="T_d3328_row5_col4" class="data row5 col4" >6</td>
-                </tr>
-                <tr>
-                            <th id="T_d3328_level0_row6" class="row_heading level0 row6" >14</th>
-                            <td id="T_d3328_row6_col0" class="data row6 col0" >Urella_South</td>
-                            <td id="T_d3328_row6_col1" class="data row6 col1" >fault_Urella_South</td>
-                            <td id="T_d3328_row6_col2" class="data row6 col2" >1</td>
-                            <td id="T_d3328_row6_col3" class="data row6 col3" >#797979</td>
-                            <td id="T_d3328_row6_col4" class="data row6 col4" >7</td>
-                </tr>
-                <tr>
-                            <th id="T_d3328_level0_row7" class="row_heading level0 row7" >8</th>
-                            <td id="T_d3328_row7_col0" class="data row7 col0" >Darling</td>
-                            <td id="T_d3328_row7_col1" class="data row7 col1" >fault_Darling</td>
-                            <td id="T_d3328_row7_col2" class="data row7 col2" >1</td>
-                            <td id="T_d3328_row7_col3" class="data row7 col3" >#ee854a</td>
-                            <td id="T_d3328_row7_col4" class="data row7 col4" >8</td>
-                </tr>
-                <tr>
-                            <th id="T_d3328_level0_row8" class="row_heading level0 row8" >0</th>
-                            <td id="T_d3328_row8_col0" class="data row8 col0" >Lesueur</td>
-                            <td id="T_d3328_row8_col1" class="data row8 col1" >Sedimentary_Series</td>
-                            <td id="T_d3328_row8_col2" class="data row8 col2" >1</td>
-                            <td id="T_d3328_row8_col3" class="data row8 col3" >#015482</td>
-                            <td id="T_d3328_row8_col4" class="data row8 col4" >9</td>
-                </tr>
-                <tr>
-                            <th id="T_d3328_level0_row9" class="row_heading level0 row9" >1</th>
-                            <td id="T_d3328_row9_col0" class="data row9 col0" >Permian</td>
-                            <td id="T_d3328_row9_col1" class="data row9 col1" >Sedimentary_Series</td>
-                            <td id="T_d3328_row9_col2" class="data row9 col2" >2</td>
-                            <td id="T_d3328_row9_col3" class="data row9 col3" >#9f0052</td>
-                            <td id="T_d3328_row9_col4" class="data row9 col4" >10</td>
-                </tr>
-                <tr>
-                            <th id="T_d3328_level0_row10" class="row_heading level0 row10" >3</th>
-                            <td id="T_d3328_row10_col0" class="data row10 col0" >Yarragadee</td>
-                            <td id="T_d3328_row10_col1" class="data row10 col1" >Sedimentary_Series</td>
-                            <td id="T_d3328_row10_col2" class="data row10 col2" >3</td>
-                            <td id="T_d3328_row10_col3" class="data row10 col3" >#728f02</td>
-                            <td id="T_d3328_row10_col4" class="data row10 col4" >11</td>
-                </tr>
-                <tr>
-                            <th id="T_d3328_level0_row11" class="row_heading level0 row11" >4</th>
-                            <td id="T_d3328_row11_col0" class="data row11 col0" >Eneabba</td>
-                            <td id="T_d3328_row11_col1" class="data row11 col1" >Sedimentary_Series</td>
-                            <td id="T_d3328_row11_col2" class="data row11 col2" >4</td>
-                            <td id="T_d3328_row11_col3" class="data row11 col3" >#443988</td>
-                            <td id="T_d3328_row11_col4" class="data row11 col4" >12</td>
-                </tr>
-                <tr>
-                            <th id="T_d3328_level0_row12" class="row_heading level0 row12" >7</th>
-                            <td id="T_d3328_row12_col0" class="data row12 col0" >Cretaceous</td>
-                            <td id="T_d3328_row12_col1" class="data row12 col1" >Sedimentary_Series</td>
-                            <td id="T_d3328_row12_col2" class="data row12 col2" >5</td>
-                            <td id="T_d3328_row12_col3" class="data row12 col3" >#4878d0</td>
-                            <td id="T_d3328_row12_col4" class="data row12 col4" >13</td>
-                </tr>
-                <tr>
-                            <th id="T_d3328_level0_row13" class="row_heading level0 row13" >16</th>
-                            <td id="T_d3328_row13_col0" class="data row13 col0" >basement</td>
-                            <td id="T_d3328_row13_col1" class="data row13 col1" >Basement</td>
-                            <td id="T_d3328_row13_col2" class="data row13 col2" >1</td>
-                            <td id="T_d3328_row13_col3" class="data row13 col3" >#82c6e2</td>
-                            <td id="T_d3328_row13_col4" class="data row13 col4" >14</td>
-                </tr>
-        </tbody></table>
-    </div>
-    <br />
-    <br />
-
-.. GENERATED FROM PYTHON SOURCE LINES 59-61
-
-.. code-block:: python3
-
-    geo_model.series
-
-
-
-
-
-
-.. raw:: html
-
-    <div class="output_subarea output_html rendered_html output_result">
-    <table border="1" class="dataframe">
-      <thead>
-        <tr style="text-align: right;">
-          <th></th>
-          <th>order_series</th>
-          <th>BottomRelation</th>
-          <th>isActive</th>
-          <th>isFault</th>
-          <th>isFinite</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th>fault_Abrolhos_Transfer</th>
-          <td>1</td>
-          <td>Erosion</td>
-          <td>True</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>fault_Coomallo</th>
-          <td>2</td>
-          <td>Erosion</td>
-          <td>True</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>fault_Eneabba_South</th>
-          <td>3</td>
-          <td>Erosion</td>
-          <td>True</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>fault_Hypo_fault_W</th>
-          <td>4</td>
-          <td>Erosion</td>
-          <td>True</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>fault_Hypo_fault_E</th>
-          <td>5</td>
-          <td>Erosion</td>
-          <td>True</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>fault_Urella_North</th>
-          <td>6</td>
-          <td>Erosion</td>
-          <td>True</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>fault_Urella_South</th>
-          <td>7</td>
-          <td>Erosion</td>
-          <td>True</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>fault_Darling</th>
-          <td>8</td>
-          <td>Erosion</td>
-          <td>True</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>Sedimentary_Series</th>
-          <td>9</td>
-          <td>Erosion</td>
-          <td>True</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>Basement</th>
-          <td>10</td>
-          <td>Erosion</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-      </tbody>
-    </table>
-    </div>
-    <br />
-    <br />
-
-.. GENERATED FROM PYTHON SOURCE LINES 62-74
-
-.. code-block:: python3
-
-    order_series = ["fault_Abrolhos_Transfer",
-                    "fault_Coomallo",
-                    "fault_Eneabba_South",
-                    "fault_Hypo_fault_W",
-                    "fault_Hypo_fault_E",
-                    "fault_Urella_North",
-                    "fault_Darling",
-                    "fault_Urella_South",
-                    "Sedimentary_Series", 'Basement']
-
-    geo_model.reorder_series(order_series)
-
-
-
-
-
-
-.. raw:: html
-
-    <div class="output_subarea output_html rendered_html output_result">
-    <table border="1" class="dataframe">
-      <thead>
-        <tr style="text-align: right;">
-          <th></th>
-          <th>order_series</th>
-          <th>BottomRelation</th>
-          <th>isActive</th>
-          <th>isFault</th>
-          <th>isFinite</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th>fault_Abrolhos_Transfer</th>
-          <td>1</td>
-          <td>Erosion</td>
-          <td>True</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>fault_Coomallo</th>
-          <td>2</td>
-          <td>Erosion</td>
-          <td>True</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>fault_Eneabba_South</th>
-          <td>3</td>
-          <td>Erosion</td>
-          <td>True</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>fault_Hypo_fault_W</th>
-          <td>4</td>
-          <td>Erosion</td>
-          <td>True</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>fault_Hypo_fault_E</th>
-          <td>5</td>
-          <td>Erosion</td>
-          <td>True</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>fault_Urella_North</th>
-          <td>6</td>
-          <td>Erosion</td>
-          <td>True</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>fault_Darling</th>
-          <td>7</td>
-          <td>Erosion</td>
-          <td>True</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>fault_Urella_South</th>
-          <td>8</td>
-          <td>Erosion</td>
-          <td>True</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>Sedimentary_Series</th>
-          <td>9</td>
-          <td>Erosion</td>
-          <td>True</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>Basement</th>
-          <td>10</td>
-          <td>Erosion</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-      </tbody>
-    </table>
-    </div>
-    <br />
-    <br />
-
-.. GENERATED FROM PYTHON SOURCE LINES 75-77
-
-Drop input data from the deleted series:
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 79-82
-
-.. code-block:: python3
-
-    geo_model.surface_points.df.dropna(inplace=True)
-    geo_model.orientations.df.dropna(inplace=True)
-
-
-
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 83-86
+.. GENERATED FROM PYTHON SOURCE LINES 63-66
 
 Select which series are faults
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 88-90
+.. GENERATED FROM PYTHON SOURCE LINES 66-82
 
-.. code-block:: python3
+.. code-block:: Python
 
-    geo_model.faults
+
+    gp.set_is_fault(
+        geo_model,
+        fault_groups=[
+            "fault_Abrolhos_Transfer",
+            "fault_Coomallo",
+            "fault_Eneabba_South",
+            "fault_Hypo_fault_W",
+            "fault_Hypo_fault_E",
+            "fault_Urella_North",
+            "fault_Darling",
+            "fault_Urella_South"
+        ],
+    )
+
 
 
 
@@ -947,116 +517,162 @@ Select which series are faults
 .. raw:: html
 
     <div class="output_subarea output_html rendered_html output_result">
-    <table border="1" class="dataframe">
-      <thead>
-        <tr style="text-align: right;">
-          <th></th>
-          <th>order_series</th>
-          <th>BottomRelation</th>
-          <th>isActive</th>
-          <th>isFault</th>
-          <th>isFinite</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th>fault_Abrolhos_Transfer</th>
-          <td>1</td>
-          <td>Erosion</td>
-          <td>True</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>fault_Coomallo</th>
-          <td>2</td>
-          <td>Erosion</td>
-          <td>True</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>fault_Eneabba_South</th>
-          <td>3</td>
-          <td>Erosion</td>
-          <td>True</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>fault_Hypo_fault_W</th>
-          <td>4</td>
-          <td>Erosion</td>
-          <td>True</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>fault_Hypo_fault_E</th>
-          <td>5</td>
-          <td>Erosion</td>
-          <td>True</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>fault_Urella_North</th>
-          <td>6</td>
-          <td>Erosion</td>
-          <td>True</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>fault_Darling</th>
-          <td>7</td>
-          <td>Erosion</td>
-          <td>True</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>fault_Urella_South</th>
-          <td>8</td>
-          <td>Erosion</td>
-          <td>True</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>Sedimentary_Series</th>
-          <td>9</td>
-          <td>Erosion</td>
-          <td>True</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>Basement</th>
-          <td>10</td>
-          <td>Erosion</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-      </tbody>
-    </table>
+
+            <table>
+              <tr><td>Structural Groups:</td><td>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>fault_Abrolhos_Transfer</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.FAULT</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #527682;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Abrolhos_Transfer</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>fault_Coomallo</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.FAULT</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #527682;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Coomallo</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>fault_Eneabba_South</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.FAULT</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #527682;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Eneabba_South</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>fault_Hypo_fault_W</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.FAULT</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #527682;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Hypo_fault_W</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>fault_Hypo_fault_E</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.FAULT</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #527682;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Hypo_fault_E</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>fault_Urella_North</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.FAULT</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #527682;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Urella_North</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>fault_Darling</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.FAULT</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #527682;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Darling</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>fault_Urella_South</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.FAULT</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #527682;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Urella_South</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>Sedimentary_Series</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #443988;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Cretaceous</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #d746be;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Yarragadee</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #5DA629;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Eneabba</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #d0e63d;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Lesueur</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #b949e2;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Permian</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            </td></tr>
+              <tr><td>Fault Relations:</td><td><table style="border-collapse: collapse; table-layout: fixed;"><th></th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">fault_Abro...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">fault_Coom...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">fault_Enea...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">fault_Hypo...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">fault_Hypo...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">fault_Urel...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">fault_Darl...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">fault_Urel...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Sedimentar...</th><tr><th>fault_Abrolhos_Transfer</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>fault_Coomallo</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>fault_Eneabba_South</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>fault_Hypo_fault_W</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>fault_Hypo_fault_E</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>fault_Urella_North</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>fault_Darling</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>fault_Urella_South</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>Sedimentary_Series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr></table></td></tr>
+              <tr><td></td><td>
+            <table>
+              <tr>
+                <td><div style="display: inline-block; background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></div> True</td>
+                <td><div style="display: inline-block; background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></div> False</td>
+              </tr>
+            </table>
+            </td></tr>
+            </table>
+        
     </div>
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 91-100
+.. GENERATED FROM PYTHON SOURCE LINES 83-84
 
-.. code-block:: python3
+gp.set_fault_relation(geo_model, fr)
 
-    geo_model.set_is_fault(["fault_Abrolhos_Transfer",
-                            "fault_Coomallo",
-                            "fault_Eneabba_South",
-                            "fault_Hypo_fault_W",
-                            "fault_Hypo_fault_E",
-                            "fault_Urella_North",
-                            "fault_Darling",
-                            "fault_Urella_South"])
+.. GENERATED FROM PYTHON SOURCE LINES 84-87
+
+.. code-block:: Python
+
+
+    print(geo_model.structural_frame.fault_relations)
 
 
 
@@ -1064,630 +680,105 @@ Select which series are faults
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
-    Fault colors changed. If you do not like this behavior, set change_color to False.
-
-
-.. raw:: html
-
-    <div class="output_subarea output_html rendered_html output_result">
-    <table border="1" class="dataframe">
-      <thead>
-        <tr style="text-align: right;">
-          <th></th>
-          <th>order_series</th>
-          <th>BottomRelation</th>
-          <th>isActive</th>
-          <th>isFault</th>
-          <th>isFinite</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th>fault_Abrolhos_Transfer</th>
-          <td>1</td>
-          <td>Fault</td>
-          <td>True</td>
-          <td>True</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>fault_Coomallo</th>
-          <td>2</td>
-          <td>Fault</td>
-          <td>True</td>
-          <td>True</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>fault_Eneabba_South</th>
-          <td>3</td>
-          <td>Fault</td>
-          <td>True</td>
-          <td>True</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>fault_Hypo_fault_W</th>
-          <td>4</td>
-          <td>Fault</td>
-          <td>True</td>
-          <td>True</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>fault_Hypo_fault_E</th>
-          <td>5</td>
-          <td>Fault</td>
-          <td>True</td>
-          <td>True</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>fault_Urella_North</th>
-          <td>6</td>
-          <td>Fault</td>
-          <td>True</td>
-          <td>True</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>fault_Darling</th>
-          <td>7</td>
-          <td>Fault</td>
-          <td>True</td>
-          <td>True</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>fault_Urella_South</th>
-          <td>8</td>
-          <td>Fault</td>
-          <td>True</td>
-          <td>True</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>Sedimentary_Series</th>
-          <td>9</td>
-          <td>Erosion</td>
-          <td>True</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>Basement</th>
-          <td>10</td>
-          <td>Erosion</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-      </tbody>
-    </table>
-    </div>
-    <br />
-    <br />
-
-.. GENERATED FROM PYTHON SOURCE LINES 101-104
-
-Fault Network
--------------
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 106-108
-
-.. code-block:: python3
-
-    geo_model.faults.faults_relations_df
+    [[False False False False False False False False  True]
+     [False False False False False False False False  True]
+     [False False False False False False False False  True]
+     [False False False False False False False False  True]
+     [False False False False False False False False  True]
+     [False False False False False False False False  True]
+     [False False False False False False False False  True]
+     [False False False False False False False False  True]
+     [False False False False False False False False False]]
 
 
 
 
-
-
-.. raw:: html
-
-    <div class="output_subarea output_html rendered_html output_result">
-    <div>
-    <style scoped>
-        .dataframe tbody tr th:only-of-type {
-            vertical-align: middle;
-        }
-
-        .dataframe tbody tr th {
-            vertical-align: top;
-        }
-
-        .dataframe thead th {
-            text-align: right;
-        }
-    </style>
-    <table border="1" class="dataframe">
-      <thead>
-        <tr style="text-align: right;">
-          <th></th>
-          <th>fault_Abrolhos_Transfer</th>
-          <th>fault_Coomallo</th>
-          <th>fault_Eneabba_South</th>
-          <th>fault_Hypo_fault_W</th>
-          <th>fault_Hypo_fault_E</th>
-          <th>fault_Urella_North</th>
-          <th>fault_Darling</th>
-          <th>fault_Urella_South</th>
-          <th>Sedimentary_Series</th>
-          <th>Basement</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th>fault_Abrolhos_Transfer</th>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>True</td>
-          <td>True</td>
-        </tr>
-        <tr>
-          <th>fault_Coomallo</th>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>True</td>
-          <td>True</td>
-        </tr>
-        <tr>
-          <th>fault_Eneabba_South</th>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>True</td>
-          <td>True</td>
-        </tr>
-        <tr>
-          <th>fault_Hypo_fault_W</th>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>True</td>
-          <td>True</td>
-        </tr>
-        <tr>
-          <th>fault_Hypo_fault_E</th>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>True</td>
-          <td>True</td>
-        </tr>
-        <tr>
-          <th>fault_Urella_North</th>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>True</td>
-          <td>True</td>
-        </tr>
-        <tr>
-          <th>fault_Darling</th>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>True</td>
-          <td>True</td>
-        </tr>
-        <tr>
-          <th>fault_Urella_South</th>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>True</td>
-          <td>True</td>
-        </tr>
-        <tr>
-          <th>Sedimentary_Series</th>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>Basement</th>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-      </tbody>
-    </table>
-    </div>
-    </div>
-    <br />
-    <br />
-
-.. GENERATED FROM PYTHON SOURCE LINES 109-111
-
-.. code-block:: python3
-
-    fr = geo_model.faults.faults_relations_df.values
-
-
-
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 112-115
-
-.. code-block:: python3
-
-    fr[:, :-2] = False
-    fr
-
-
-
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-
-    array([[False, False, False, False, False, False, False, False,  True,
-             True],
-           [False, False, False, False, False, False, False, False,  True,
-             True],
-           [False, False, False, False, False, False, False, False,  True,
-             True],
-           [False, False, False, False, False, False, False, False,  True,
-             True],
-           [False, False, False, False, False, False, False, False,  True,
-             True],
-           [False, False, False, False, False, False, False, False,  True,
-             True],
-           [False, False, False, False, False, False, False, False,  True,
-             True],
-           [False, False, False, False, False, False, False, False,  True,
-             True],
-           [False, False, False, False, False, False, False, False, False,
-            False],
-           [False, False, False, False, False, False, False, False, False,
-            False]])
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 116-118
-
-.. code-block:: python3
-
-    geo_model.set_fault_relation(fr)
-
-
-
-
-
-
-.. raw:: html
-
-    <div class="output_subarea output_html rendered_html output_result">
-    <div>
-    <style scoped>
-        .dataframe tbody tr th:only-of-type {
-            vertical-align: middle;
-        }
-
-        .dataframe tbody tr th {
-            vertical-align: top;
-        }
-
-        .dataframe thead th {
-            text-align: right;
-        }
-    </style>
-    <table border="1" class="dataframe">
-      <thead>
-        <tr style="text-align: right;">
-          <th></th>
-          <th>fault_Abrolhos_Transfer</th>
-          <th>fault_Coomallo</th>
-          <th>fault_Eneabba_South</th>
-          <th>fault_Hypo_fault_W</th>
-          <th>fault_Hypo_fault_E</th>
-          <th>fault_Urella_North</th>
-          <th>fault_Darling</th>
-          <th>fault_Urella_South</th>
-          <th>Sedimentary_Series</th>
-          <th>Basement</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th>fault_Abrolhos_Transfer</th>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>True</td>
-          <td>True</td>
-        </tr>
-        <tr>
-          <th>fault_Coomallo</th>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>True</td>
-          <td>True</td>
-        </tr>
-        <tr>
-          <th>fault_Eneabba_South</th>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>True</td>
-          <td>True</td>
-        </tr>
-        <tr>
-          <th>fault_Hypo_fault_W</th>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>True</td>
-          <td>True</td>
-        </tr>
-        <tr>
-          <th>fault_Hypo_fault_E</th>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>True</td>
-          <td>True</td>
-        </tr>
-        <tr>
-          <th>fault_Urella_North</th>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>True</td>
-          <td>True</td>
-        </tr>
-        <tr>
-          <th>fault_Darling</th>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>True</td>
-          <td>True</td>
-        </tr>
-        <tr>
-          <th>fault_Urella_South</th>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>True</td>
-          <td>True</td>
-        </tr>
-        <tr>
-          <th>Sedimentary_Series</th>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>Basement</th>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-      </tbody>
-    </table>
-    </div>
-    </div>
-    <br />
-    <br />
-
-.. GENERATED FROM PYTHON SOURCE LINES 119-120
+.. GENERATED FROM PYTHON SOURCE LINES 88-89
 
 %matplotlib inline
 
-.. GENERATED FROM PYTHON SOURCE LINES 120-122
+.. GENERATED FROM PYTHON SOURCE LINES 89-91
 
-.. code-block:: python3
+.. code-block:: Python
 
-    gp.plot_2d(geo_model, direction=['z'])
-
-
+    gpv.plot_2d(geo_model, direction=['z'])
 
 
-.. image:: /examples/real/images/sphx_glr_Perth_basin_001.png
-    :alt: Cell Number: mid Direction: z
-    :class: sphx-glr-single-img
+
+
+.. image-sg:: /examples/real/images/sphx_glr_Perth_basin_001.png
+   :alt: Cell Number: mid Direction: z
+   :srcset: /examples/real/images/sphx_glr_Perth_basin_001.png
+   :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
-
- Out:
 
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7fcc47746910>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f850c2814e0>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 123-125
+.. GENERATED FROM PYTHON SOURCE LINES 92-94
 
-.. code-block:: python3
+.. code-block:: Python
 
-    geo_model.set_topography(source='random')
+    gp.set_topography_from_random(geo_model.grid)
 
 
 
 
 
 .. rst-class:: sphx-glr-script-out
-
- Out:
 
  .. code-block:: none
 
     [-2800.  1000.]
     Active grids: ['regular' 'topography']
 
-    Grid Object. Values: 
-    array([[ 3.37315000e+05,  6.64035000e+06, -1.79050000e+04],
-           [ 3.37315000e+05,  6.64035000e+06, -1.77150000e+04],
-           [ 3.37315000e+05,  6.64035000e+06, -1.75250000e+04],
-           ...,
-           [ 4.00000000e+05,  6.70858586e+06, -1.27047172e+03],
-           [ 4.00000000e+05,  6.70929293e+06, -1.36072471e+03],
-           [ 4.00000000e+05,  6.71000000e+06, -1.50378496e+03]])
+    <gempy.core.data.grid_modules.topography.Topography object at 0x7f850c280b20>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 126-128
+.. GENERATED FROM PYTHON SOURCE LINES 95-97
 
-.. code-block:: python3
+.. code-block:: Python
 
-    gp.plot_3d(geo_model)
+    gpv.plot_3d(geo_model)
 
 
 
 
-.. image:: /examples/real/images/sphx_glr_Perth_basin_002.png
-    :alt: Perth basin
-    :class: sphx-glr-single-img
+.. image-sg:: /examples/real/images/sphx_glr_Perth_basin_002.png
+   :alt: Perth basin
+   :srcset: /examples/real/images/sphx_glr_Perth_basin_002.png
+   :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
 
-    <gempy.plot.vista.GemPyToVista object at 0x7fcc2a5b8a30>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f850c2814e0>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 129-134
+.. GENERATED FROM PYTHON SOURCE LINES 98-106
 
-.. code-block:: python3
+.. code-block:: Python
 
-    interp_data = gp.set_interpolator(geo_model,
-                                      compile_theano=True,
-                                      theano_optimizer='fast_run', gradient=False,
-                                      dtype='float32')
+    gp.compute_model(
+        gempy_model=geo_model,
+        engine_config= gp.data.GemPyEngineConfig(
+            backend=gp.data.AvailableBackends.PYTORCH,
+            dtype="float64",
+        )
+    )
 
 
 
@@ -1695,243 +786,145 @@ Fault Network
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
-    Setting kriging parameters to their default values.
-    Compiling theano function...
-    Level of Optimization:  fast_run
-    Device:  cpu
-    Precision:  float32
-    Number of faults:  8
-    Compilation Done!
-    Kriging values: 
-                                              values
-    range                                  96072.89
-    $C_o$                              219761904.76
-    drift equations  [3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+    Setting Backend To: AvailableBackends.PYTORCH
+    Chunking done: 21 chunks
+    Chunking done: 21 chunks
+    Chunking done: 21 chunks
+    Chunking done: 21 chunks
+    Chunking done: 21 chunks
+    Chunking done: 21 chunks
+    Chunking done: 21 chunks
+    Chunking done: 21 chunks
+    Chunking done: 21 chunks
+
+
+.. raw:: html
+
+    <div class="output_subarea output_html rendered_html output_result">
+    <b>Solutions:</b> 4 Octree Levels, 13 DualContouringMeshes
+    </div>
+    <br />
+    <br />
+
+.. GENERATED FROM PYTHON SOURCE LINES 107-109
+
+.. code-block:: Python
+
+    gpv.plot_2d(geo_model, cell_number="mid")
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 135-137
-
-.. code-block:: python3
-
-    gp.compute_model(geo_model)
-
-
-
+.. image-sg:: /examples/real/images/sphx_glr_Perth_basin_003.png
+   :alt: Cell Number: mid Direction: y
+   :srcset: /examples/real/images/sphx_glr_Perth_basin_003.png
+   :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
 
-
-    Lithology ids 
-      [14.       14.       14.       ... 14.       13.035703 13.      ] 
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f851715ffa0>
 
 
 
+.. GENERATED FROM PYTHON SOURCE LINES 110-112
 
-.. GENERATED FROM PYTHON SOURCE LINES 138-140
+.. code-block:: Python
 
-.. code-block:: python3
-
-    gp.plot_2d(geo_model, cell_number=[25])
+    gpv.plot_2d(geo_model, cell_number="mid", series_n=-1, show_scalar=True)
 
 
 
 
-.. image:: /examples/real/images/sphx_glr_Perth_basin_003.png
-    :alt: Cell Number: 25 Direction: y
-    :class: sphx-glr-single-img
+.. image-sg:: /examples/real/images/sphx_glr_Perth_basin_004.png
+   :alt: Cell Number: mid Direction: y
+   :srcset: /examples/real/images/sphx_glr_Perth_basin_004.png
+   :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7fcc2a5b8a30>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f851715cb80>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 141-143
+.. GENERATED FROM PYTHON SOURCE LINES 113-115
 
-.. code-block:: python3
+.. code-block:: Python
 
-    gp.plot_2d(geo_model, cell_number=[25], series_n=-1, show_scalar=True)
-
-
+    gpv.plot_2d(geo_model, cell_number=[12], direction=["y"], show_data=True, show_topography=True)
 
 
-.. image:: /examples/real/images/sphx_glr_Perth_basin_004.png
-    :alt: Cell Number: 25 Direction: y
-    :class: sphx-glr-single-img
+
+
+.. image-sg:: /examples/real/images/sphx_glr_Perth_basin_005.png
+   :alt: Cell Number: 12 Direction: y
+   :srcset: /examples/real/images/sphx_glr_Perth_basin_005.png
+   :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7fcc465b2a00>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f850cffd690>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 144-146
-
-.. code-block:: python3
-
-    gp.plot_2d(geo_model, cell_number=[12], direction=["y"], show_data=True, show_topography=True)
-
-
-
-
-.. image:: /examples/real/images/sphx_glr_Perth_basin_005.png
-    :alt: Cell Number: 12 Direction: y
-    :class: sphx-glr-single-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-
-    <gempy.plot.visualization_2d.Plot2D object at 0x7fcb8b4b8670>
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 147-148
+.. GENERATED FROM PYTHON SOURCE LINES 116-117
 
 sphinx_gallery_thumbnail_number = 6
 
-.. GENERATED FROM PYTHON SOURCE LINES 148-150
+.. GENERATED FROM PYTHON SOURCE LINES 117-117
 
-.. code-block:: python3
+.. code-block:: Python
 
-    gp.plot_3d(geo_model, show_topography=True)
-
-
+    gpv.plot_3d(geo_model, show_topography=True)
 
 
-.. image:: /examples/real/images/sphx_glr_Perth_basin_006.png
-    :alt: Perth basin
-    :class: sphx-glr-single-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-
-    <gempy.plot.vista.GemPyToVista object at 0x7fcb8b7d3640>
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 151-181
-
-Times
------
-
-Fast run
-^^^^^^^^
-
--  1M voxels:
-
-   -  CPU: intel® Core™ i7-7700HQ CPU @ 2.80GHz × 8 15 s ± 1.02 s per
-      loop (mean ± std. dev. of 7 runs, 1 loop each)
-   -  GPU (4gb) not enough memmory
-   -  Ceres 1M voxels 2080 851 ms
-
--  250k voxels
-
-   -  GPU 1050Ti: 3.11 s ± 11.8 ms per loop (mean ± std. dev. of 7 runs,
-      1 loop each)
-   -  CPU: intel® Core™ i7-7700HQ CPU @ 2.80GHz × 8 2.27 s ± 47.3 ms
-   -  
-
-Fast Compile
-^^^^^^^^^^^^
-
--  250k voxels
-
-   -  GPU 1050Ti: 3.7 s ± 11.8 ms per loop (mean ± std. dev. of 7 runs,
-      1 loop each)
-   -  CPU: intel® Core™ i7-7700HQ CPU @ 2.80GHz × 8 14.2 s ± 51.1 ms per
-      loop (mean ± std. dev. of 7 runs, 1 loop each)
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 183-185
-
-%%timeit
-gp.compute_model(geo_model)
-
-.. GENERATED FROM PYTHON SOURCE LINES 187-190
-
-ver = np.load('ver.npy')
-sim = np.load('sim.npy')
-lith_block = np.load('lith.npy')
-
-.. GENERATED FROM PYTHON SOURCE LINES 190-191
-
-.. code-block:: python3
-
-
-    gp.save_model(geo_model)
-
+.. image-sg:: /examples/real/images/sphx_glr_Perth_basin_006.png
+   :alt: Perth basin
+   :srcset: /examples/real/images/sphx_glr_Perth_basin_006.png
+   :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
 
-    True
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f850c3a5cf0>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  0.762 seconds)
+   **Total running time of the script:** (0 minutes 38.530 seconds)
 
 
 .. _sphx_glr_download_examples_real_Perth_basin.py:
 
+.. only:: html
 
-.. only :: html
+  .. container:: sphx-glr-footer sphx-glr-footer-example
 
- .. container:: sphx-glr-footer
-    :class: sphx-glr-footer-example
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
+      :download:`Download Jupyter notebook: Perth_basin.ipynb <Perth_basin.ipynb>`
 
+    .. container:: sphx-glr-download sphx-glr-download-python
 
-  .. container:: sphx-glr-download sphx-glr-download-python
-
-     :download:`Download Python source code: Perth_basin.py <Perth_basin.py>`
-
-
-
-  .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-     :download:`Download Jupyter notebook: Perth_basin.ipynb <Perth_basin.ipynb>`
+      :download:`Download Python source code: Perth_basin.py <Perth_basin.py>`
 
 
 .. only:: html

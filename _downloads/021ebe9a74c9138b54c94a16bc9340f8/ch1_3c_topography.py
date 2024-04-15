@@ -6,8 +6,8 @@
 
 # %%
 import gempy as gp
+import gempy_viewer as gpv
 import numpy as np
-import matplotlib.pyplot as plt
 import os
 
 # %%
@@ -16,24 +16,28 @@ import os
 # 
 
 # %%
-data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
+data_path = os.path.abspath('../../')
 
-geo_model = gp.create_model('Single_layer_topo')
-gp.init_data(geo_model, extent=[450000, 460000, 70000, 80000, -1000, 500],
-             resolution=[50, 50, 50],
-             path_i=data_path + "/data/input_data/tut-ch1-7/onelayer_interfaces.csv",
-             path_o=data_path + "/data/input_data/tut-ch1-7/onelayer_orient.csv")
-
-# %% 
-# use happy spring colors! 
-geo_model.surfaces.colors.change_colors({'layer1': '#ff8000', 'basement': '#88cc60'})
-
-# %% 
-gp.map_stack_to_surfaces(geo_model, {'series': ('layer1', 'basement')})
+geo_model: gp.data.GeoModel = gp.create_geomodel(
+    project_name='Single_layer_topo',
+    extent=[450000, 460000, 70000, 80000, -1000, 500],
+    resolution=[50, 50, 50],
+    refinement=4,
+    importer_helper=gp.data.ImporterHelper(
+        path_to_orientations=data_path + "/data/input_data/tut-ch1-7/onelayer_orient.csv",
+        path_to_surface_points=data_path + "/data/input_data/tut-ch1-7/onelayer_interfaces.csv",
+    )
+)
 
 # %% 
-s = {'s1': ([450000, 75000], [460000, 75500], [100, 100])}
-geo_model.set_section_grid(s)
+
+# %% 
+gp.set_section_grid(
+    grid=geo_model.grid,
+    section_dict={
+        'section1': ([450000, 75000], [460000, 75500], [100, 100]),
+    }
+)
 
 # %%
 # 2. Adding topography
@@ -45,24 +49,30 @@ geo_model.set_section_grid(s)
 # 2 a. Load from raster file
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^
 # 
-
+#
+# .. admonition:: Coming soon: Importing raster data
+#
+#     This feature is not yet available in the current version of GemPy. Probably will be moved to `subsurface` since
+#     coupling it with the geological model does not add much value.
+#
 # %%
+
 # This is to make it work in sphinx gallery
-cwd = os.getcwd()
-if not 'examples' in cwd:
-    path_dir = os.getcwd() + '/examples/tutorials/ch5_probabilistic_modeling'
-else:
-    path_dir = cwd
-
-fp = path_dir + "/../../data/input_data/tut-ch1-7/bogota.tif"
-
-# %% 
-geo_model.set_topography(source='gdal', filepath=fp)
-gp.plot_2d(geo_model, show_topography=True, section_names=['topography'], show_lith=False,
-           show_boundaries=False,
-           kwargs_topography={'cmap': 'gray', 'norm': None}
-           )
-plt.show()
+# cwd = os.getcwd()
+# if not 'examples' in cwd:
+#     path_dir = os.getcwd() + '/examples/tutorials/ch5_probabilistic_modeling'
+# else:
+#     path_dir = cwd
+# 
+# fp = path_dir + "/../../data/input_data/tut-ch1-7/bogota.tif"
+# 
+# # %% 
+# geo_model.set_topography(source='gdal', filepath=fp)
+# gp.plot_2d(geo_model, show_topography=True, section_names=['topography'], show_lith=False,
+#            show_boundaries=False,
+#            kwargs_topography={'cmap': 'gray', 'norm': None}
+#            )
+# plt.show()
 
 # %%
 # 2 b. create fun topography
@@ -79,9 +89,9 @@ plt.show()
 
 # %%
 # sphinx_gallery_thumbnail_number = 2
-geo_model.set_topography(source='random')
-gp.plot_2d(geo_model, show_topography=True, section_names=['topography'])
-plt.show()
+
+gp.set_topography_from_random(grid=geo_model.grid)
+gpv.plot_2d(geo_model, show_topography=True, section_names=['topography'])
 
 # %%
 # It has additional keywords to play around with:
@@ -106,23 +116,12 @@ plt.show()
 # 
 
 # %% 
-geo_model.set_topography(source='random', fd=1.9, d_z=np.array([0, 250]),
-                         resolution=np.array([200, 200]))
-
-# %%
-# Note that each time this function is called, a new random topography is
-# created. If you particularly like the generated topography or if you
-# have loaded a large file with gdal, you can save the topography object
-# and load it again later:
-# 
-
-# %% 
-# save:
-geo_model._grid.topography.save('test_topo')
-
-# %% 
-# load:
-geo_model.set_topography(source='saved', filepath='test_topo.npy')
+gp.set_topography_from_random(
+    grid=geo_model.grid,
+    fractal_dimension=1.9,
+    d_z=np.array([0, 250]),
+    topography_resolution=np.array([200, 200])
+)
 
 # %%
 # Compute model
@@ -130,10 +129,7 @@ geo_model.set_topography(source='saved', filepath='test_topo.npy')
 # 
 
 # %% 
-gp.set_interpolator(geo_model)
-
-# %% 
-gp.compute_model(geo_model, compute_mesh=False, set_solutions=True)
+gp.compute_model(geo_model)
 
 # %%
 # Visualize:
@@ -144,26 +140,27 @@ gp.compute_model(geo_model, compute_mesh=False, set_solutions=True)
 #
 
 # %% 
-gp.plot_2d(geo_model, show_topography=True, section_names=['topography'], show_boundaries=False, show_data=True)
-plt.show()
-
+gpv.plot_2d(geo_model, show_topography=True, section_names=['topography'], show_boundaries=False, show_data=True)
 
 # %% 
-gp.plot_2d(geo_model, show_topography=True, section_names=['s1'])
-plt.show()
+gpv.plot_2d(geo_model, show_topography=True, section_names=['section1'])
 
 # %%
-g3d = gp.plot_3d(geo_model,
-                 show_topography=True,
-                 show_lith=False,
-                 show_surfaces=False,
-                 show_results=False,
-                 ve=5)
+g3d = gpv.plot_3d(
+    model=geo_model,
+    show_topography=True,
+    show_lith=False,
+    show_surfaces=False,
+    show_results=False,
+    ve=5
+)
 
 # %%
 # sphinx_gallery_thumbnail_number = 3
-g3d = gp.plot_3d(geo_model,
-                 show_topography=True,
-                 show_lith=True,
-                 show_surfaces=True,
-                 ve=5)
+g3d = gpv.plot_3d(
+    model=geo_model,
+    show_topography=True,
+    show_lith=True,
+    show_surfaces=True,
+    ve=5
+)

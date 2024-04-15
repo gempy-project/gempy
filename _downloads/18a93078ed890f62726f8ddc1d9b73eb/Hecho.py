@@ -3,21 +3,17 @@ Hecho
 ~~~~~
 
 """
+import os
 
+import numpy as np
 # %% 
-# These two lines are necessary only if gempy is not installed
-import sys, os
-import urllib
-
-os.environ["THEANO_FLAGS"] = "mode=FAST_RUN,device=cpu"
-# Importing gempy
-import gempy as gp
 
 # Aux imports
-import numpy as np
 import pandas as pn
-import matplotlib.pyplot as plt
 
+# Importing gempy
+import gempy as gp
+import gempy_viewer as gpv
 
 # %%
 # Loading surface points from repository:
@@ -28,25 +24,27 @@ import matplotlib.pyplot as plt
 # 
 
 # %% 
+
+data_path = os.path.abspath('../../data/input_data/Hecho')
 dfs = []
-data_amount = 'Full'
 
 # First stratigraphic data
 for letter in range(1, 10):
-
-    try:
-        dfs.append(pn.read_csv('https://raw.githubusercontent.com/Loop3D/ImplicitBenchmark/master'
-                               f'/Hecho/{data_amount}/H' +
-                               str(letter) + '.csv', sep=';',
-                               names=['X', 'Y', 'Z', 'surface', '_'], header=0))
-    except urllib.error.HTTPError as e:
-        print(e, letter)
+    dfs.append(pn.read_csv(
+        filepath_or_buffer=data_path + '/H' + str(letter) + '.csv',
+        sep=';',
+        names=['X', 'Y', 'Z', 'surface', '_'],
+        header=0
+    ))
 
 # Also faults
 for f in range(1, 4):
-    fault_df = pn.read_csv('https://raw.githubusercontent.com/Loop3D/ImplicitBenchmark/master/Hecho/F' +
-                           str(f) + 'Line.csv',
-                           sep=';', names=['X', 'Y', 'Z'], header=0)
+    fault_df = pn.read_csv(
+        filepath_or_buffer=data_path + '/F' + str(f) + 'Line.csv',
+        sep=';',
+        names=['X', 'Y', 'Z'],
+        header=0
+    )
     fault_df['surface'] = 'f' + str(f)
     dfs.append(fault_df)
 
@@ -60,9 +58,12 @@ surface_points.tail()
 # 
 
 # %% 
-orientations = pn.read_csv('https://raw.githubusercontent.com/Loop3D/ImplicitBenchmark/master/Hecho/Sparse/Dips.csv',
-                           sep=';',
-                           names=['X', 'Y', 'Z', 'G_x', 'G_z', '_'], header=0)
+orientations = pn.read_csv(
+    filepath_or_buffer=data_path + '/Dips.csv',
+    sep=';',
+    names=['X', 'Y', 'Z', 'G_x', 'G_z', '_'],
+    header=0
+)
 # Orientation needs to belong to a surface. This is mainly to categorize to which series belong and to
 # use the same color
 orientations['surface'] = 0
@@ -70,9 +71,15 @@ orientations['surface'] = 0
 # We fill the laking direction with a dummy value:
 orientations['G_y'] = 0
 
-# Drop unecesary data point
-orientations.drop([1, 3, 4], inplace=True)
-orientations
+# Replace -99999.00000 with NaN
+orientations.replace(-99999.00000, np.nan, inplace=True)
+
+# Drop irrelevant columns
+orientations.drop(columns=['_'], inplace=True)
+
+# Remove rows containing NaN
+orientations.dropna(inplace=True)
+
 
 # %%
 # Data initialization:
@@ -83,19 +90,45 @@ orientations
 # 
 # Suggested resolution: 0.05m (grid size 321 x 21 x 91)
 # 
+# %%
 
-# %% 
-geo_model = gp.create_model('Moureze')
-geo_model = gp.init_data(geo_model, extent=[0, 16, -0.5, 0.5, 0, 4.5], resolution=[321, 21, 91],
-                         surface_points_df=surface_points, orientations_df=orientations,
-                         surface_name='surface',
-                         add_basement=True)
+surface_points_table: gp.data.SurfacePointsTable = gp.data.SurfacePointsTable.from_arrays(
+    x=surface_points['X'].values,
+    y=surface_points['Y'].values,
+    z=surface_points['Z'].values,
+    names=surface_points['surface'].values.astype(str)
+)
 
-# %% 
-geo_model.orientations.df.at[5, 'surface']
+orientations_table: gp.data.OrientationsTable = gp.data.OrientationsTable.from_arrays(
+    x=orientations['X'].values,
+    y=orientations['Y'].values,
+    z=orientations['Z'].values,
+    G_x=orientations['G_x'].values,
+    G_y=orientations['G_y'].values,
+    G_z=orientations['G_z'].values,
+    names=orientations['surface'].values.astype(str),
+    name_id_map=surface_points_table.name_id_map  # ! Make sure that ids and names are shared
+)
 
-# %% 
-geo_model.orientations.df
+structural_frame: gp.data.StructuralFrame = gp.data.StructuralFrame.from_data_tables(
+    surface_points=surface_points_table,
+    orientations=orientations_table
+)
+
+geo_model: gp.data.GeoModel = gp.create_geomodel(
+    project_name='Moureze',
+    extent=[0, 16, -0.5, 0.5, 0, 4.5],
+    resolution=[321, 21, 91],
+    refinement=4,
+    structural_frame=structural_frame
+)
+
+gp.set_section_grid(
+    grid=geo_model.grid,
+    section_dict={
+        'section': ([0, 0], [16, 0], [321, 91])
+    },
+)
 
 # %%
 # We need an orientation per series/fault. The faults does not have
@@ -106,32 +139,42 @@ geo_model.orientations.df
 # %% 
 f_names = ['f1', 'f2', 'f3']
 for fn in f_names:
-    fault_idx = geo_model.surface_points.df.index[geo_model.surface_points.df['surface'] == fn]
-    gp.set_orientation_from_surface_points(geo_model, fault_idx)
+    element = geo_model.structural_frame.get_element_by_name(fn)
+    new_orientations = gp.create_orientations_from_surface_points_coords(
+        xyz_coords=element.surface_points.xyz
+    )
+    gp.add_orientations(
+        geo_model=geo_model,
+        x=new_orientations.data['X'],
+        y=new_orientations.data['Y'],
+        z=new_orientations.data['Z'],
+        pole_vector=new_orientations.grads,
+        elements_names=fn
+    )
 
 # %%
 # Now we can see how the data looks so far:
 # 
 
 # %% 
-gp.plot_2d(geo_model)
+gpv.plot_2d(geo_model)
 
 # %%
 # By default all surfaces belong to one unique series.
 # 
 
 # %% 
-geo_model.surfaces
-
-# %% 
-geo_model.orientations.df.dtypes
+geo_model.structural_frame
 
 # %%
 # We will need to separate with surface belong to each series:
 # 
 
 # %% 
-gp.map_stack_to_surfaces(geo_model, {'Fault1': 'f1', 'Fault2': 'f2', 'Fault3': 'f3'})
+gp.map_stack_to_surfaces(
+    gempy_model=geo_model,
+    mapping_object={'Fault1': 'f1', 'Fault2': 'f2', 'Fault3': 'f3'}
+)
 
 # %%
 # However if we want the faults to offset the “Default series”, they will
@@ -139,21 +182,16 @@ gp.map_stack_to_surfaces(geo_model, {'Fault1': 'f1', 'Fault2': 'f2', 'Fault3': '
 # 
 
 # %% 
-geo_model.modify_order_series(4, 'Default series')
 
 # %%
 # Lastly, so far we did not specify which series/faults are actula faults:
 # 
 
 # %% 
-geo_model.set_is_fault(['Fault1', 'Fault2', 'Fault3'])
-
-# %%
-# Now we are good to go:
-# 
-
-# %% 
-gp.set_interpolator(geo_model, theano_optimizer='fast_run', dtype='float64')
+gp.set_is_fault(
+    frame=geo_model,
+    fault_groups=['Fault1', 'Fault2', 'Fault3']
+)
 
 # %%
 # The default range is always the diagonal of the extent. Since in this
@@ -162,12 +200,9 @@ gp.set_interpolator(geo_model, theano_optimizer='fast_run', dtype='float64')
 # 
 
 # %%
-new_range = geo_model.get_additional_data().loc[('Kriging', 'range'), 'values'] * 0.2
-geo_model.modify_kriging_parameters('range', new_range)
-
-
+geo_model.interpolation_options.kernel_options.range *= 0.2
 # %% 
-gp.compute_model(geo_model, sort_surfaces=True, compute_mesh=False)
+gp.compute_model(geo_model, gp.data.GemPyEngineConfig(use_gpu=True, dtype='float64'))
 
 # %%
 # Time
@@ -178,57 +213,14 @@ gp.compute_model(geo_model, sort_surfaces=True, compute_mesh=False)
 # 
 
 # %% 
-gp.plot_2d(geo_model, cell_number=[10], series_n=3, show_scalar=True)
+gpv.plot_2d(geo_model, cell_number=[10], series_n=3, show_scalar=True)
 
 # %% 
-gp.plot_2d(geo_model, cell_number=[10], show_data=True)
+gpv.plot_2d(geo_model, cell_number=[10], show_data=True)
+
+# %%
+gpv.plot_2d(geo_model, section_names=['section'], show_data=True)
 
 # %%
 # sphinx_gallery_thumbnail_number = 3
-gp.plot_3d(geo_model, kwargs_plot_structured_grid={'opacity': 8})
-
-
-# %%
-# Export data:
-# ~~~~~~~~~~~~
-# 
-# The solution is stored in a numpy array of the following shape. Axis 0
-# are the scalar fields of each correspondent series/faults in the
-# following order (except basement):
-# 
-
-# %% 
-geo_model.series
-
-# %%
-# For the surfaces, there are two numpy arrays, one with vertices and the
-# other with triangles. Axis 0 is each surface in the order:
-# 
-
-# %% 
-geo_model.surfaces
-
-# %% 
-np.save('Hecho_scalar', geo_model.solutions.scalar_field_matrix)
-
-
-# %%
-def write_property_to_gocad_voxet(propertyfilename, propertyvalues):
-    """
-    This function writes a numpy array into the right format for a gocad
-    voxet property file. This assumet there is a property already added to the .vo file,
-    and is just updating the file.
-    propertyfile - string giving the path to the file to write
-    propertyvalues - numpy array nz,ny,nx ordering and in float format
-    """
-    propertyvalues = propertyvalues.astype('>f4')  # big endian
-    #     array = propertyvalues.newbyteorder()
-    propertyvalues.tofile(propertyfilename)
-
-
-# %%
-write_property_to_gocad_voxet(f'hecho_sf_gempy_{data_amount}',
-                              geo_model.solutions.scalar_field_matrix[3].reshape([321, 21, 91]).ravel('F'))
-
-# %%
-4
+gpv.plot_3d(geo_model, kwargs_plot_structured_grid={'opacity': .2})

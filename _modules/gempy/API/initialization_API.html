@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>gempy.API.initialization_API &#8212; GemPy 2023.2.0b1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=270d38c7" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=61a4c737" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <script src="../../../_static/documentation_options.js?v=acace1bb"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for gempy.API.initialization_API</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">ndarray</span>
+
+<span class="kn">from</span> <span class="nn">gempy.API.io_API</span> <span class="kn">import</span> <span class="n">read_surface_points</span><span class="p">,</span> <span class="n">read_orientations</span>
+<span class="kn">from</span> <span class="nn">gempy_engine.core.data</span> <span class="kn">import</span> <span class="n">InterpolationOptions</span>
+<span class="kn">from</span> <span class="nn">..core.data.geo_model</span> <span class="kn">import</span> <span class="n">GeoModel</span>
+<span class="kn">from</span> <span class="nn">..core.data.grid</span> <span class="kn">import</span> <span class="n">Grid</span>
+<span class="kn">from</span> <span class="nn">..core.data.importer_helper</span> <span class="kn">import</span> <span class="n">ImporterHelper</span>
+<span class="kn">from</span> <span class="nn">..core.data.orientations</span> <span class="kn">import</span> <span class="n">OrientationsTable</span>
+<span class="kn">from</span> <span class="nn">..core.data.structural_frame</span> <span class="kn">import</span> <span class="n">StructuralFrame</span>
+<span class="kn">from</span> <span class="nn">..core.data.surface_points</span> <span class="kn">import</span> <span class="n">SurfacePointsTable</span>
+<span class="kn">from</span> <span class="nn">..optional_dependencies</span> <span class="kn">import</span> <span class="n">require_pooch</span>
+
+
+<div class="viewcode-block" id="create_geomodel">
+<a class="viewcode-back" href="../../../GemPy%20API/gempy.create_geomodel.html#gempy.create_geomodel">[docs]</a>
+<span class="k">def</span> <span class="nf">create_geomodel</span><span class="p">(</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">project_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;default_project&#39;</span><span class="p">,</span>
+        <span class="n">extent</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">resolution</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">refinement</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">structural_frame</span><span class="p">:</span> <span class="n">StructuralFrame</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">importer_helper</span><span class="p">:</span> <span class="n">ImporterHelper</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GeoModel</span><span class="p">:</span>  <span class="c1"># ? Do I need to pass pandas read kwargs?</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a GeoModel instance.</span>
+
+<span class="sd">    This function initializes a GeoModel object, including its grid and interpolation options.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        project_name (str, optional): The name of the project. Defaults to &#39;default_project&#39;.</span>
+<span class="sd">        extent (Union[list, ndarray], optional): The 3D extent of the grid. Defaults to None.</span>
+<span class="sd">        resolution (Union[list, ndarray], optional): The resolution of the grid. Defaults to None.</span>
+<span class="sd">        refinement (int, optional): Defaults to 1.</span>
+<span class="sd">        structural_frame (StructuralFrame, optional): The structural frame of the GeoModel. Defaults to None.</span>
+<span class="sd">        importer_helper (ImporterHelper, optional): Helper object to import structural elements. Defaults to None.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        GeoModel: The initialized GeoModel object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># init resolutions well</span>
+    <span class="k">if</span> <span class="n">resolution</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">grid</span><span class="p">:</span> <span class="n">Grid</span> <span class="o">=</span> <span class="n">Grid</span><span class="p">(</span>
+            <span class="n">extent</span><span class="o">=</span><span class="n">extent</span><span class="p">,</span>
+            <span class="n">resolution</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">2</span> <span class="o">**</span> <span class="n">refinement</span><span class="p">]</span> <span class="o">*</span> <span class="mi">3</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="n">grid</span><span class="o">.</span><span class="n">set_inactive</span><span class="p">(</span><span class="s2">&quot;regular&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">grid</span> <span class="o">=</span> <span class="n">Grid</span><span class="p">(</span>
+            <span class="n">extent</span><span class="o">=</span><span class="n">extent</span><span class="p">,</span>
+            <span class="n">resolution</span><span class="o">=</span><span class="n">resolution</span>
+        <span class="p">)</span>
+
+    <span class="n">interpolation_options</span><span class="p">:</span> <span class="n">InterpolationOptions</span> <span class="o">=</span> <span class="n">InterpolationOptions</span><span class="p">(</span>
+        <span class="nb">range</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="n">c_o</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+        <span class="n">mesh_extraction</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">number_octree_levels</span><span class="o">=</span><span class="n">refinement</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">match</span> <span class="p">(</span><span class="n">structural_frame</span><span class="p">,</span> <span class="n">importer_helper</span><span class="p">):</span>
+        <span class="k">case</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="c1"># ? For now my gut feeling is that is better to pass the structural frame explicitly</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Either structural_frame or importer_helper must be provided. You can use StructuralFrame.initialize_default_structure() to create a default structural frame.&quot;</span><span class="p">)</span>
+            <span class="n">structural_frame</span> <span class="o">=</span> <span class="n">StructuralFrame</span><span class="o">.</span><span class="n">initialize_default_structure</span><span class="p">()</span>
+        <span class="k">case</span><span class="w"> </span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="k">_</span><span class="p">):</span>
+            <span class="n">structural_frame</span> <span class="o">=</span> <span class="n">_initialize_structural_frame</span><span class="p">(</span><span class="n">importer_helper</span><span class="p">)</span>
+        <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+    <span class="n">geo_model</span><span class="p">:</span> <span class="n">GeoModel</span> <span class="o">=</span> <span class="n">GeoModel</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="n">project_name</span><span class="p">,</span>
+        <span class="n">structural_frame</span><span class="o">=</span><span class="n">structural_frame</span><span class="p">,</span>
+        <span class="n">grid</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span>
+        <span class="n">interpolation_options</span><span class="o">=</span><span class="n">interpolation_options</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">geo_model</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">create_data_legacy</span><span class="p">(</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">project_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;default_project&#39;</span><span class="p">,</span>
+        <span class="n">extent</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">resolution</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">path_i</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">path_o</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GeoModel</span><span class="p">:</span>  <span class="c1"># ? Do I need to pass pandas read kwargs?</span>
+
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;This method is deprecated. Use create_geomodel instead.&quot;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">create_geomodel</span><span class="p">(</span>
+        <span class="n">project_name</span><span class="o">=</span><span class="n">project_name</span><span class="p">,</span>
+        <span class="n">extent</span><span class="o">=</span><span class="n">extent</span><span class="p">,</span>
+        <span class="n">resolution</span><span class="o">=</span><span class="n">resolution</span><span class="p">,</span>
+        <span class="n">importer_helper</span><span class="o">=</span><span class="n">ImporterHelper</span><span class="p">(</span>
+            <span class="n">path_to_surface_points</span><span class="o">=</span><span class="n">path_i</span><span class="p">,</span>
+            <span class="n">path_to_orientations</span><span class="o">=</span><span class="n">path_o</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_initialize_structural_frame</span><span class="p">(</span><span class="n">importer_helper</span><span class="p">:</span> <span class="n">ImporterHelper</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StructuralFrame</span><span class="p">:</span>
+    <span class="n">surface_points</span><span class="p">,</span> <span class="n">orientations</span> <span class="o">=</span> <span class="n">_read_input_points</span><span class="p">(</span><span class="n">importer_helper</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">StructuralFrame</span><span class="o">.</span><span class="n">from_data_tables</span><span class="p">(</span><span class="n">surface_points</span><span class="p">,</span> <span class="n">orientations</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_read_input_points</span><span class="p">(</span><span class="n">importer_helper</span><span class="p">:</span> <span class="n">ImporterHelper</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">SurfacePointsTable</span><span class="p">,</span> <span class="n">OrientationsTable</span><span class="p">):</span>
+    <span class="n">orientations_file</span><span class="p">,</span> <span class="n">surface_points_file</span> <span class="o">=</span> <span class="n">_fetch_data_with_pooch</span><span class="p">(</span>
+        <span class="n">orientations_hash</span><span class="o">=</span><span class="n">importer_helper</span><span class="o">.</span><span class="n">hash_orientations</span><span class="p">,</span>
+        <span class="n">orientations_path</span><span class="o">=</span><span class="n">importer_helper</span><span class="o">.</span><span class="n">path_to_orientations</span><span class="p">,</span>
+        <span class="n">surface_points_hash</span><span class="o">=</span><span class="n">importer_helper</span><span class="o">.</span><span class="n">hash_surface_points</span><span class="p">,</span>
+        <span class="n">surface_points_path</span><span class="o">=</span><span class="n">importer_helper</span><span class="o">.</span><span class="n">path_to_surface_points</span>
+    <span class="p">)</span>
+
+    <span class="n">surface_points</span><span class="p">:</span> <span class="n">SurfacePointsTable</span> <span class="o">=</span> <span class="n">read_surface_points</span><span class="p">(</span>
+        <span class="n">path</span><span class="o">=</span><span class="n">surface_points_file</span><span class="p">,</span>
+        <span class="n">coord_x_name</span><span class="o">=</span><span class="n">importer_helper</span><span class="o">.</span><span class="n">coord_x_name</span><span class="p">,</span>
+        <span class="n">coord_y_name</span><span class="o">=</span><span class="n">importer_helper</span><span class="o">.</span><span class="n">coord_y_name</span><span class="p">,</span>
+        <span class="n">coord_z_name</span><span class="o">=</span><span class="n">importer_helper</span><span class="o">.</span><span class="n">coord_z_name</span><span class="p">,</span>
+        <span class="n">surface_name</span><span class="o">=</span><span class="n">importer_helper</span><span class="o">.</span><span class="n">surface_name</span><span class="p">,</span>
+        <span class="n">pandas_kwargs</span><span class="o">=</span><span class="n">importer_helper</span><span class="o">.</span><span class="n">pandas_reader_kwargs</span>
+    <span class="p">)</span>
+
+    <span class="n">orientations</span><span class="p">:</span> <span class="n">OrientationsTable</span> <span class="o">=</span> <span class="n">read_orientations</span><span class="p">(</span>
+        <span class="n">path</span><span class="o">=</span><span class="n">orientations_file</span><span class="p">,</span>
+        <span class="n">coord_x_name</span><span class="o">=</span><span class="n">importer_helper</span><span class="o">.</span><span class="n">coord_x_name</span><span class="p">,</span>
+        <span class="n">coord_y_name</span><span class="o">=</span><span class="n">importer_helper</span><span class="o">.</span><span class="n">coord_y_name</span><span class="p">,</span>
+        <span class="n">coord_z_name</span><span class="o">=</span><span class="n">importer_helper</span><span class="o">.</span><span class="n">coord_z_name</span><span class="p">,</span>
+        <span class="n">surface_name</span><span class="o">=</span><span class="n">importer_helper</span><span class="o">.</span><span class="n">surface_name</span><span class="p">,</span>
+        <span class="n">gx_name</span><span class="o">=</span><span class="n">importer_helper</span><span class="o">.</span><span class="n">gx_name</span><span class="p">,</span>
+        <span class="n">gy_name</span><span class="o">=</span><span class="n">importer_helper</span><span class="o">.</span><span class="n">gy_name</span><span class="p">,</span>
+        <span class="n">gz_name</span><span class="o">=</span><span class="n">importer_helper</span><span class="o">.</span><span class="n">gz_name</span><span class="p">,</span>
+        <span class="n">pandas_kwargs</span><span class="o">=</span><span class="n">importer_helper</span><span class="o">.</span><span class="n">pandas_reader_kwargs</span><span class="p">,</span>
+        <span class="n">name_id_map</span><span class="o">=</span><span class="n">surface_points</span><span class="o">.</span><span class="n">name_id_map</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">surface_points</span><span class="p">,</span> <span class="n">orientations</span>
+
+
+<span class="k">def</span> <span class="nf">_fetch_data_with_pooch</span><span class="p">(</span><span class="n">orientations_hash</span><span class="p">,</span> <span class="n">orientations_path</span><span class="p">,</span> <span class="n">surface_points_hash</span><span class="p">,</span> <span class="n">surface_points_path</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">is_url</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="kn">import</span> <span class="n">urlparse</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">urlparse</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">all</span><span class="p">([</span><span class="n">result</span><span class="o">.</span><span class="n">scheme</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">netloc</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="n">pooch</span> <span class="o">=</span> <span class="n">require_pooch</span><span class="p">()</span> <span class="k">if</span> <span class="n">is_url</span><span class="p">(</span><span class="n">surface_points_path</span><span class="p">)</span> <span class="ow">or</span> <span class="n">is_url</span><span class="p">(</span><span class="n">orientations_path</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="c1"># * Fetch or define path for surface points</span>
+    <span class="k">if</span> <span class="n">is_url</span><span class="p">(</span><span class="n">surface_points_path</span><span class="p">):</span>
+        <span class="n">surface_points_file</span> <span class="o">=</span> <span class="n">pooch</span><span class="o">.</span><span class="n">retrieve</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="n">surface_points_path</span><span class="p">,</span>
+            <span class="n">known_hash</span><span class="o">=</span><span class="n">surface_points_hash</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Surface points hash: &quot;</span><span class="p">,</span> <span class="n">pooch</span><span class="o">.</span><span class="n">file_hash</span><span class="p">(</span><span class="n">surface_points_file</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">surface_points_file</span> <span class="o">=</span> <span class="n">surface_points_path</span>
+    <span class="c1"># * Fetch or define path for orientations</span>
+    <span class="k">if</span> <span class="n">is_url</span><span class="p">(</span><span class="n">orientations_path</span><span class="p">):</span>
+        <span class="n">orientations_file</span> <span class="o">=</span> <span class="n">pooch</span><span class="o">.</span><span class="n">retrieve</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="n">orientations_path</span><span class="p">,</span>
+            <span class="n">known_hash</span><span class="o">=</span><span class="n">orientations_hash</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Orientations hash: &quot;</span><span class="p">,</span> <span class="n">pooch</span><span class="o">.</span><span class="n">file_hash</span><span class="p">(</span><span class="n">orientations_file</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">orientations_file</span> <span class="o">=</span> <span class="n">orientations_path</span>
+    <span class="k">return</span> <span class="n">orientations_file</span><span class="p">,</span> <span class="n">surface_points_file</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../index.html">
+    <img class="logo" src="../../../_static/logos/gempy.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=gempy-project&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../projects.html">Additional projects</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/index.html">GemPy Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/index.html">Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_reference.html">Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_reference.html#data-classes">Data Classes</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017-2024, Gempy Developers.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

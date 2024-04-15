@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>gempy.core.data.Grid &#8212; GemPy 2023.2.0b1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=270d38c7" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <script src="../_static/documentation_options.js?v=acace1bb"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="gempy.core.data.Solutions" href="gempy.core.data.Solutions.html" />
+    <link rel="prev" title="gempy.core.data.InterpolationOptions" href="gempy.core.data.InterpolationOptions.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="gempy-core-data-grid">
+<h1>gempy.core.data.Grid<a class="headerlink" href="#gempy-core-data-grid" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="gempy.core.data.Grid">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gempy.core.data.</span></span><span class="sig-name descname"><span class="pre">Grid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">extent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data/grid.html#Grid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gempy.core.data.Grid" title="Link to this definition">¶</a></dt>
+<dd><p>Class to generate grids.</p>
+<p>This class is used to create points to evaluate the geological model.
+This class serves a container which transmits the XYZ coordinates to the
+interpolator. There are several type of grid objects feeding into the Grid class</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> – See below</p>
+</dd>
+<dt class="field-even">Keyword Arguments<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>regular</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.grid_modules.grid_types.RegularGrid</span></code>) – [s0]</p></li>
+<li><p><strong>custom</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.grid_modules.grid_types.CustomGrid</span></code>) – [s1]</p></li>
+<li><p><strong>topography</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.grid_modules.grid_types.Topography</span></code>) – [s2]</p></li>
+<li><p><strong>sections</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.grid_modules.grid_types.Sections</span></code>) – [s3]</p></li>
+<li><p><strong>gravity</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.grid_modules.grid_types.Gravity</span></code>) – </p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gempy.core.data.Grid.values">
+<span class="sig-name descname"><span class="pre">values</span></span><a class="headerlink" href="#gempy.core.data.Grid.values" title="Link to this definition">¶</a></dt>
+<dd><p>coordinates where the model is going to be evaluated. This is the coordinates
+concatenation of all active grids.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gempy.core.data.Grid.values_r">
+<span class="sig-name descname"><span class="pre">values_r</span></span><a class="headerlink" href="#gempy.core.data.Grid.values_r" title="Link to this definition">¶</a></dt>
+<dd><p>rescaled coordinates where the model is going to be evaluated</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gempy.core.data.Grid.length">
+<span class="sig-name descname"><span class="pre">length</span></span><a class="headerlink" href="#gempy.core.data.Grid.length" title="Link to this definition">¶</a></dt>
+<dd><p>I a array which contain the slicing index for each grid type in order. The first element will
+be 0, the second the length of the regular grid; the third custom and so on. This can be used to slice the
+solutions correspondent to each of the grids</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gempy.core.data.Grid.grid_types">
+<span class="sig-name descname"><span class="pre">grid_types</span></span><a class="headerlink" href="#gempy.core.data.Grid.grid_types" title="Link to this definition">¶</a></dt>
+<dd><p>names of the current grids of GemPy</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gempy.core.data.Grid.active_grids_bool">
+<span class="sig-name descname"><span class="pre">active_grids_bool</span></span><a class="headerlink" href="#gempy.core.data.Grid.active_grids_bool" title="Link to this definition">¶</a></dt>
+<dd><p>boolean array which controls which type of grid is going to be computed and
+hence on the property <cite>values</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray[bool]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gempy.core.data.Grid.regular_grid">
+<span class="sig-name descname"><span class="pre">regular_grid</span></span><a class="headerlink" href="#gempy.core.data.Grid.regular_grid" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.grid_modules.grid_types.RegularGrid</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gempy.core.data.Grid.custom_grid">
+<span class="sig-name descname"><span class="pre">custom_grid</span></span><a class="headerlink" href="#gempy.core.data.Grid.custom_grid" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.grid_modules.grid_types.CustomGrid</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gempy.core.data.Grid.topography">
+<span class="sig-name descname"><span class="pre">topography</span></span><a class="headerlink" href="#gempy.core.data.Grid.topography" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.grid_modules.grid_types.Topography</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gempy.core.data.Grid.sections">
+<span class="sig-name descname"><span class="pre">sections</span></span><a class="headerlink" href="#gempy.core.data.Grid.sections" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.grid_modules.grid_types.Sections</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gempy.core.data.Grid.gravity_grid">
+<span class="sig-name descname"><span class="pre">gravity_grid</span></span><a class="headerlink" href="#gempy.core.data.Grid.gravity_grid" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.grid_modules.grid_types.Gravity</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<section id="examples-using-gempy-core-data-grid">
+<h2>Examples using <code class="docutils literal notranslate"><span class="pre">gempy.core.data.Grid</span></code><a class="headerlink" href="#examples-using-gempy-core-data-grid" title="Link to this heading">¶</a></h2>
+<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="1.3a: Grids."><img alt="" src="../_images/sphx_glr_ch1_3a_grids_thumb.png" />
+<p><a class="reference internal" href="../tutorials/ch1_fundamentals/ch1_3a_grids.html#sphx-glr-tutorials-ch1-fundamentals-ch1-3a-grids-py"><span class="std std-ref">1.3a: Grids.</span></a></p>
+  <div class="sphx-glr-thumbnail-title">1.3a: Grids.</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="# %% # .. admonition:: Explanation # #       This model is quite unstable in general and requir..."><img alt="" src="../_images/sphx_glr_Alesmodel_thumb.png" />
+<p><a class="reference internal" href="../examples/real/Alesmodel.html#sphx-glr-examples-real-alesmodel-py"><span class="std std-ref">Alesmodel: Plotting sections and maps.</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Alesmodel: Plotting sections and maps.</div>
+</div></div><div class="sphx-glr-clear"></div><p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.Grid.__init__" title="gempy.core.data.Grid.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([extent, resolution])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data.Grid.create_centered_grid" title="gempy.core.data.Grid.create_centered_grid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_centered_grid</span></code></a>(centers, radius[, ...])</p></td>
+<td><p>Initialize gravity grid.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.Grid.create_custom_grid_" title="gempy.core.data.Grid.create_custom_grid_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_custom_grid_</span></code></a>(custom_grid)</p></td>
+<td><p>Set a new regular grid and activate it.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data.Grid.create_regular_grid" title="gempy.core.data.Grid.create_regular_grid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_regular_grid</span></code></a>([extent, resolution, ...])</p></td>
+<td><p>Set a new regular grid and activate it.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_section_grid</span></code>(section_dict)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data.Grid.create_topography_" title="gempy.core.data.Grid.create_topography_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_topography_</span></code></a>([source])</p></td>
+<td><p>Create a topography grid and activate it.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.Grid.deactivate_all_grids" title="gempy.core.data.Grid.deactivate_all_grids"><code class="xref py py-obj docutils literal notranslate"><span class="pre">deactivate_all_grids</span></code></a>()</p></td>
+<td><p>Deactivates the active grids array :return:</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_grid</span></code>(grid_name)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_grid_args</span></code>(grid_name)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_section_args</span></code>(section_name)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.Grid.set_active" title="gempy.core.data.Grid.set_active"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_active</span></code></a>(grid_name)</p></td>
+<td><p>Set active a given or several grids :param grid_name: :type grid_name: str, list</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_inactive</span></code>(grid_name)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.Grid.update_grid_values" title="gempy.core.data.Grid.update_grid_values"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_grid_values</span></code></a>()</p></td>
+<td><p>Copy XYZ coordinates from each specific grid to Grid.values for those which are active.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">active_grids</span></code></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="gempy.core.data.Grid.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">extent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data/grid.html#Grid.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gempy.core.data.Grid.__init__" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gempy.core.data.Grid.create_regular_grid">
+<span class="sig-name descname"><span class="pre">create_regular_grid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">extent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set_active</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data/grid.html#Grid.create_regular_grid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gempy.core.data.Grid.create_regular_grid" title="Link to this definition">¶</a></dt>
+<dd><p>Set a new regular grid and activate it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>extent</strong> (<em>np.ndarray</em>) – [x_min, x_max, y_min, y_max, z_min, z_max]</p></li>
+<li><p><strong>resolution</strong> (<em>np.ndarray</em>) – [nx, ny, nz]</p></li>
+</ul>
+</dd>
+</dl>
+<p>RegularGrid Docs</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gempy.core.data.Grid.create_custom_grid_">
+<span class="sig-name descname"><span class="pre">create_custom_grid_</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">custom_grid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data/grid.html#Grid.create_custom_grid_"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gempy.core.data.Grid.create_custom_grid_" title="Link to this definition">¶</a></dt>
+<dd><p>Set a new regular grid and activate it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>custom_grid</strong> (<em>np.array</em>) – [s0]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gempy.core.data.Grid.create_topography_">
+<span class="sig-name descname"><span class="pre">create_topography_</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'random'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data/grid.html#Grid.create_topography_"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gempy.core.data.Grid.create_topography_" title="Link to this definition">¶</a></dt>
+<dd><p>Create a topography grid and activate it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>source</strong> – <ul class="simple">
+<li><p>‘gdal’:  Load topography from a raster file.</p></li>
+<li><p>’random’: Generate random topography (based on a fractal grid).</p></li>
+<li><p>’saved’: Load topography that was saved with the topography.save() function.
+This is useful after loading and saving a heavy raster file with gdal once or after saving a
+random topography with the save() function. This .npy file can then be set as topography.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">Keyword Arguments<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>'gdal'</strong> (<em>source =</em>) – <ul>
+<li><p>filepath:   path to raster file, e.g. ‘.tif’, (for all file formats see
+<a class="reference external" href="https://gdal.org/drivers/raster/index.html">https://gdal.org/drivers/raster/index.html</a>)</p></li>
+</ul>
+</p></li>
+<li><p><strong>'random'</strong> (<em>source =</em>) – <ul>
+<li><p>fd:         fractal dimension, defaults to 2.0</p></li>
+<li><p>d_z:        maximum height difference. If none, last 20% of the model in z direction</p></li>
+<li><p>extent:     extent in xy direction. If none, geo_model.grid.extent</p></li>
+<li><p>resolution: desired resolution of the topography array. If none, geo_model.grid.resoution</p></li>
+</ul>
+</p></li>
+<li><p><strong>'saved'</strong> (<em>source =</em>) – <ul>
+<li><p>filepath:   path to the .npy file that was created using the topography.save() function</p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>class:gempy.core.data.Topography</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gempy.core.data.Grid.create_centered_grid">
+<span class="sig-name descname"><span class="pre">create_centered_grid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">centers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data/grid.html#Grid.create_centered_grid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gempy.core.data.Grid.create_centered_grid" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize gravity grid. Deactivate the rest of the grids</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gempy.core.data.Grid.deactivate_all_grids">
+<span class="sig-name descname"><span class="pre">deactivate_all_grids</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data/grid.html#Grid.deactivate_all_grids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gempy.core.data.Grid.deactivate_all_grids" title="Link to this definition">¶</a></dt>
+<dd><p>Deactivates the active grids array
+:return:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gempy.core.data.Grid.set_active">
+<span class="sig-name descname"><span class="pre">set_active</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grid_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data/grid.html#Grid.set_active"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gempy.core.data.Grid.set_active" title="Link to this definition">¶</a></dt>
+<dd><p>Set active a given or several grids
+:param grid_name:
+:type grid_name: str, list</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gempy.core.data.Grid.update_grid_values">
+<span class="sig-name descname"><span class="pre">update_grid_values</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data/grid.html#Grid.update_grid_values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gempy.core.data.Grid.update_grid_values" title="Link to this definition">¶</a></dt>
+<dd><p>Copy XYZ coordinates from each specific grid to Grid.values for those which are active.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>values</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/logos/gempy.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=gempy-project&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../projects.html">Additional projects</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">GemPy Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../api_reference.html">Code</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api_reference.html#data-classes">Data Classes</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../api_reference.html#module-gempy.core.data">Modeling Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference.html#helper-classes">Helper Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference.html#enumerators">Enumerators</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../api_reference.html">Code</a><ul>
+      <li>Previous: <a href="gempy.core.data.InterpolationOptions.html" title="previous chapter">gempy.core.data.InterpolationOptions</a></li>
+      <li>Next: <a href="gempy.core.data.Solutions.html" title="next chapter">gempy.core.data.Solutions</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017-2024, Gempy Developers.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+      |
+      <a href="../_sources/Modeling Classes/gempy.core.data.Grid.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

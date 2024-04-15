@@ -10,7 +10,7 @@
     .. note::
         :class: sphx-glr-download-link-note
 
-        Click :ref:`here <sphx_glr_download_tutorials_ch1_fundamentals_ch1_3a_grids.py>`
+        :ref:`Go to the end <sphx_glr_download_tutorials_ch1_fundamentals_ch1_3a_grids.py>`
         to download the full example code
 
 .. rst-class:: sphx-glr-example-title
@@ -21,18 +21,17 @@
 1.3a: Grids.
 ============
 
-.. GENERATED FROM PYTHON SOURCE LINES 5-15
+.. GENERATED FROM PYTHON SOURCE LINES 5-14
 
-.. code-block:: python3
+.. code-block:: Python
 
 
     import numpy as np
-    import pandas as pd
-    from gempy.core.data import Grid
-    from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 unused import
     import matplotlib.pyplot as plt
 
-    pd.set_option('precision', 2)
+    import gempy as gp
+    from gempy.core.data import Grid
+
     np.random.seed(55500)
 
 
@@ -42,7 +41,7 @@
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 16-23
+.. GENERATED FROM PYTHON SOURCE LINES 15-22
 
 The Grid Class
 --------------
@@ -52,9 +51,9 @@ subclasses. Its main purpose is to feed coordinates XYZ to the
 interpolator.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 25-27
+.. GENERATED FROM PYTHON SOURCE LINES 24-26
 
-.. code-block:: python3
+.. code-block:: Python
 
     grid = Grid()
 
@@ -65,7 +64,7 @@ interpolator.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 28-33
+.. GENERATED FROM PYTHON SOURCE LINES 27-32
 
 The most important attribute of Grid is ``values`` (and ``values_r``
 which are the values rescaled) which are the 3D points in space that
@@ -73,14 +72,14 @@ kriging will be evaluated on. This array will be feed by "grid types" on
 a **composition** relation with Grid:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 36-38
+.. GENERATED FROM PYTHON SOURCE LINES 35-37
 
-.. image:: /../../_static/grids.jpg
+.. image:: /_static/grids.jpg
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 40-42
+.. GENERATED FROM PYTHON SOURCE LINES 39-41
 
-.. code-block:: python3
+.. code-block:: Python
 
     grid.values, grid.values_r
 
@@ -90,8 +89,6 @@ a **composition** relation with Grid:
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
 
@@ -99,16 +96,16 @@ a **composition** relation with Grid:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 43-47
+.. GENERATED FROM PYTHON SOURCE LINES 42-46
 
 At the moment of writing this tutorial, there is 5 grid types. The
 number of grid types is scalable and down the road we aim to connect
 other grid packages (like `Discretize <https://pypi.org/project/discretize/>`_) as an extra Grid type
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 49-51
+.. GENERATED FROM PYTHON SOURCE LINES 48-50
 
-.. code-block:: python3
+.. code-block:: Python
 
     grid.grid_types
 
@@ -118,79 +115,23 @@ other grid packages (like `Discretize <https://pypi.org/project/discretize/>`_) 
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
 
-    array(['regular', 'custom', 'topography', 'sections', 'centered'],
-          dtype='<U10')
+    array(['regular', 'custom', 'topography', 'sections', 'centered',
+           'octree'], dtype='<U10')
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 52-55
+.. GENERATED FROM PYTHON SOURCE LINES 51-54
 
 Each grid contains its own ``values`` attribute as well as other
 methods to manipulate them depending on the type of grid.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 57-59
+.. GENERATED FROM PYTHON SOURCE LINES 56-58
 
-.. code-block:: python3
-
-    grid.regular_grid.values
-
-
-
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-
-    array([], shape=(0, 3), dtype=float64)
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 60-63
-
-We can see what grids are activated (i.e. they are going to be
-interpolated and therefore will live on ``Grid().values``) by:
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 65-67
-
-.. code-block:: python3
-
-    grid.active_grids
-
-
-
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-
-    array([False, False, False, False, False])
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 68-71
-
-By default only the *regular grid* (``grid.regular_grid``\ ) is active. However, since the regular
-grid is still empty ``Grid().values`` is empty too.
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 73-75
-
-.. code-block:: python3
+.. code-block:: Python
 
     grid.values
 
@@ -200,7 +141,55 @@ grid is still empty ``Grid().values`` is empty too.
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
+ .. code-block:: none
+
+
+    array([], shape=(0, 3), dtype=float64)
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 59-62
+
+We can see what grids are activated (i.e. they are going to be
+interpolated and therefore will live on ``Grid().values``) by:
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 64-66
+
+.. code-block:: Python
+
+    grid.active_grids_bool
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+
+    array([False, False, False, False, False, False])
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 67-70
+
+By default only the *regular grid* (``grid.regular_grid``\ ) is active. However, since the regular
+grid is still empty ``Grid().values`` is empty too.
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 72-74
+
+.. code-block:: Python
+
+    grid.values
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
 
  .. code-block:: none
 
@@ -209,14 +198,14 @@ grid is still empty ``Grid().values`` is empty too.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 76-78
+.. GENERATED FROM PYTHON SOURCE LINES 75-77
 
 The last important attribute of Grid is the length:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 80-82
+.. GENERATED FROM PYTHON SOURCE LINES 79-81
 
-.. code-block:: python3
+.. code-block:: Python
 
     grid.length
 
@@ -226,8 +215,6 @@ The last important attribute of Grid is the length:
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
 
@@ -235,7 +222,7 @@ The last important attribute of Grid is the length:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 83-89
+.. GENERATED FROM PYTHON SOURCE LINES 82-88
 
 Length gives back the interface indices between grids on the
 ``Grid().values`` attribute. This can be used after interpolation to
@@ -244,9 +231,9 @@ type. You can use the method get\_grid\_args to return the indices by
 name:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 91-93
+.. GENERATED FROM PYTHON SOURCE LINES 90-92
 
-.. code-block:: python3
+.. code-block:: Python
 
     grid.get_grid_args('topography')
 
@@ -256,8 +243,6 @@ name:
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
 
@@ -265,13 +250,13 @@ name:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 94-97
+.. GENERATED FROM PYTHON SOURCE LINES 93-96
 
 By now all is a bit confusing because we have no values. Lets start
 adding values to the different grids:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 100-106
+.. GENERATED FROM PYTHON SOURCE LINES 99-105
 
 Regular grid
 ~~~~~~~~~~~~
@@ -280,9 +265,9 @@ The ``Grid`` class has a bunch of methods to set each grid type and
 activate them.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 108-110
+.. GENERATED FROM PYTHON SOURCE LINES 107-109
 
-.. code-block:: python3
+.. code-block:: Python
 
     help(grid.create_regular_grid)
 
@@ -292,13 +277,11 @@ activate them.
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
-    Help on method create_regular_grid in module gempy.core.data:
+    Help on method create_regular_grid in module gempy.core.data.grid:
 
-    create_regular_grid(extent=None, resolution=None, set_active=True, *args, **kwargs) method of gempy.core.data.Grid instance
+    create_regular_grid(extent=None, resolution=None, set_active=True, *args, **kwargs) method of gempy.core.data.grid.Grid instance
         Set a new regular grid and activate it.
     
         Args:
@@ -306,44 +289,14 @@ activate them.
             resolution (np.ndarray): [nx, ny, nz]
     
         RegularGrid Docs
-         (inserted) 
-    
-    
-            Class with the methods and properties to manage 3D regular grids where the model will be interpolated.
-    
-    
-    
-            Args:
-    
-                extent (np.ndarray):  [x_min, x_max, y_min, y_max, z_min, z_max]
-    
-                resolution (np.ndarray): [nx, ny, nz]
-    
-    
-    
-            Attributes:
-    
-                extent (np.ndarray):  [x_min, x_max, y_min, y_max, z_min, z_max]
-    
-                resolution (np.ndarray): [nx, ny, nz]
-    
-                values (np.ndarray): XYZ coordinates
-    
-                mask_topo (np.ndarray, dtype=bool): same shape as values. Values above the topography are False
-    
-                dx (float): size of the cells on x
-    
-                dy (float): size of the cells on y
-    
-                dz (float): size of the cells on z
 
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 111-113
+.. GENERATED FROM PYTHON SOURCE LINES 110-112
 
-.. code-block:: python3
+.. code-block:: Python
 
     grid.create_regular_grid(extent=[0, 100, 0, 100, -100, 0], resolution=[20, 20, 20])
 
@@ -353,23 +306,21 @@ activate them.
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
 
-    <gempy.core.grid_modules.grid_types.RegularGrid object at 0x7fcc6bb90370>
+    <gempy.core.data.grid_modules.grid_types.RegularGrid object at 0x7f49496d0b20>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 114-116
+.. GENERATED FROM PYTHON SOURCE LINES 113-115
 
 Now the regular grid object composed on ``Grid`` has been filled:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 118-120
+.. GENERATED FROM PYTHON SOURCE LINES 117-119
 
-.. code-block:: python3
+.. code-block:: Python
 
     grid.regular_grid.values
 
@@ -379,8 +330,6 @@ Now the regular grid object composed on ``Grid`` has been filled:
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
 
@@ -394,17 +343,17 @@ Now the regular grid object composed on ``Grid`` has been filled:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 121-124
+.. GENERATED FROM PYTHON SOURCE LINES 120-123
 
 And the regular grid has been set active (it was already active in any
 case):
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 126-128
+.. GENERATED FROM PYTHON SOURCE LINES 125-127
 
-.. code-block:: python3
+.. code-block:: Python
 
-    grid.active_grids
+    grid.active_grids_bool
 
 
 
@@ -412,23 +361,21 @@ case):
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
 
-    array([ True, False, False, False, False])
+    array([False, False, False, False, False, False])
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 129-131
+.. GENERATED FROM PYTHON SOURCE LINES 128-130
 
 Therefore the grid values will be equal to the regular grid:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 133-135
+.. GENERATED FROM PYTHON SOURCE LINES 132-134
 
-.. code-block:: python3
+.. code-block:: Python
 
     grid.values
 
@@ -438,29 +385,21 @@ Therefore the grid values will be equal to the regular grid:
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
 
-    array([[  2.5,   2.5, -97.5],
-           [  2.5,   2.5, -92.5],
-           [  2.5,   2.5, -87.5],
-           ...,
-           [ 97.5,  97.5, -12.5],
-           [ 97.5,  97.5,  -7.5],
-           [ 97.5,  97.5,  -2.5]])
+    array([], shape=(0, 3), dtype=float64)
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 136-138
+.. GENERATED FROM PYTHON SOURCE LINES 135-137
 
 And the indices to extract the different arrays:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 140-142
+.. GENERATED FROM PYTHON SOURCE LINES 139-141
 
-.. code-block:: python3
+.. code-block:: Python
 
     grid.length
 
@@ -470,16 +409,14 @@ And the indices to extract the different arrays:
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
 
-    array([   0, 8000, 8000, 8000, 8000, 8000])
+    array([0, 0, 0, 0, 0, 0])
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 143-148
+.. GENERATED FROM PYTHON SOURCE LINES 142-147
 
 Custom grid
 ~~~~~~~~~~~
@@ -487,30 +424,35 @@ Custom grid
 Completely free XYZ values.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 150-154
+.. GENERATED FROM PYTHON SOURCE LINES 149-151
 
-.. code-block:: python3
+.. code-block:: Python
 
-    grid.create_custom_grid(np.array([[1, 2, 3],
-                                      [4, 5, 6],
-                                      [7, 8, 9]]))
+    gp.set_custom_grid(grid, np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]]))
 
 
 
 
 
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+    Active grids: ['custom']
+
+    <gempy.core.data.grid_modules.grid_types.CustomGrid object at 0x7f49496d0df0>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 155-158
+.. GENERATED FROM PYTHON SOURCE LINES 152-155
 
 Again ``set_any_grid`` will create a grid and activate it. So now the
 compose object will contain values:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 160-162
+.. GENERATED FROM PYTHON SOURCE LINES 157-159
 
-.. code-block:: python3
+.. code-block:: Python
 
     grid.custom_grid.values
 
@@ -519,8 +461,6 @@ compose object will contain values:
 
 
 .. rst-class:: sphx-glr-script-out
-
- Out:
 
  .. code-block:: none
 
@@ -531,16 +471,16 @@ compose object will contain values:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 163-165
+.. GENERATED FROM PYTHON SOURCE LINES 160-162
 
 and since it is active, will be added to the grid.values stack:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 167-169
+.. GENERATED FROM PYTHON SOURCE LINES 164-166
 
-.. code-block:: python3
+.. code-block:: Python
 
-    grid.active_grids
+    grid.active_grids_bool
 
 
 
@@ -548,18 +488,16 @@ and since it is active, will be added to the grid.values stack:
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
 
-    array([ True,  True, False, False, False])
+    array([False,  True, False, False, False, False])
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 170-172
+.. GENERATED FROM PYTHON SOURCE LINES 167-169
 
-.. code-block:: python3
+.. code-block:: Python
 
     grid.values.shape
 
@@ -569,24 +507,22 @@ and since it is active, will be added to the grid.values stack:
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
 
-    (8003, 3)
+    (0, 3)
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 173-176
+.. GENERATED FROM PYTHON SOURCE LINES 170-173
 
 We can still recover those values with ``get_grid`` or by getting the
 slicing args:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 178-180
+.. GENERATED FROM PYTHON SOURCE LINES 175-177
 
-.. code-block:: python3
+.. code-block:: Python
 
     grid.get_grid('custom')
 
@@ -596,20 +532,16 @@ slicing args:
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
 
-    array([[1., 2., 3.],
-           [4., 5., 6.],
-           [7., 8., 9.]])
+    array([], shape=(0, 3), dtype=float64)
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 181-184
+.. GENERATED FROM PYTHON SOURCE LINES 178-181
 
-.. code-block:: python3
+.. code-block:: Python
 
     l0, l1 = grid.get_grid_args('custom')
     l0, l1
@@ -620,18 +552,16 @@ slicing args:
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
 
-    (8000, 8003)
+    (0, 0)
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 185-187
+.. GENERATED FROM PYTHON SOURCE LINES 182-184
 
-.. code-block:: python3
+.. code-block:: Python
 
     grid.values[l0:l1]
 
@@ -641,18 +571,14 @@ slicing args:
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
 
-    array([[1., 2., 3.],
-           [4., 5., 6.],
-           [7., 8., 9.]])
+    array([], shape=(0, 3), dtype=float64)
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 188-195
+.. GENERATED FROM PYTHON SOURCE LINES 185-192
 
 Topography
 ~~~~~~~~~~
@@ -662,11 +588,11 @@ contains methods to create manual topographies as well as gdal for
 dealing with raster data. By default we will create a random topography:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 197-199
+.. GENERATED FROM PYTHON SOURCE LINES 194-196
 
-.. code-block:: python3
+.. code-block:: Python
 
-    grid.create_topography()
+    gp.set_topography_from_random(grid)
 
 
 
@@ -674,44 +600,42 @@ dealing with raster data. By default we will create a random topography:
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
     [-20.   0.]
+    Active grids: ['custom' 'topography']
 
+    <gempy.core.data.grid_modules.topography.Topography object at 0x7f4949769690>
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 197-199
+
+.. code-block:: Python
+
+    grid.active_grids_bool
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+
+    array([False,  True,  True, False, False, False])
 
 
 
 .. GENERATED FROM PYTHON SOURCE LINES 200-202
 
-.. code-block:: python3
-
-    grid.active_grids
-
-
-
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-
-    array([ True,  True,  True, False, False])
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 203-205
-
 Now the grid values will contain both the regular grid and topography:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 207-209
+.. GENERATED FROM PYTHON SOURCE LINES 204-206
 
-.. code-block:: python3
+.. code-block:: Python
 
     grid.values, grid.length
 
@@ -721,29 +645,21 @@ Now the grid values will contain both the regular grid and topography:
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
 
-    (array([[  2.5       ,   2.5       , -97.5       ],
-           [  2.5       ,   2.5       , -92.5       ],
-           [  2.5       ,   2.5       , -87.5       ],
-           ...,
-           [100.        ,  89.47368421, -14.13839552],
-           [100.        ,  94.73684211, -16.12793911],
-           [100.        , 100.        , -16.21462612]]), array([   0, 8000, 8003, 8403, 8403, 8403]))
+    (array([], shape=(0, 3), dtype=float64), array([0, 0, 0, 0, 0, 0]))
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 210-212
+.. GENERATED FROM PYTHON SOURCE LINES 207-209
 
 The topography args are got as follows:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 214-217
+.. GENERATED FROM PYTHON SOURCE LINES 211-214
 
-.. code-block:: python3
+.. code-block:: Python
 
     l0, l1 = grid.get_grid_args('topography')
     l0, l1
@@ -754,23 +670,21 @@ The topography args are got as follows:
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
 
-    (8003, 8403)
+    (0, 0)
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 218-220
+.. GENERATED FROM PYTHON SOURCE LINES 215-217
 
 And we can slice the values array as any other numpy array:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 222-224
+.. GENERATED FROM PYTHON SOURCE LINES 219-221
 
-.. code-block:: python3
+.. code-block:: Python
 
     grid.values[l0: l1]
 
@@ -780,29 +694,21 @@ And we can slice the values array as any other numpy array:
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
 
-    array([[  0.        ,   0.        , -14.23224119],
-           [  0.        ,   5.26315789, -14.18893341],
-           [  0.        ,  10.52631579, -13.54018217],
-           ...,
-           [100.        ,  89.47368421, -14.13839552],
-           [100.        ,  94.73684211, -16.12793911],
-           [100.        , 100.        , -16.21462612]])
+    array([], shape=(0, 3), dtype=float64)
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 225-227
+.. GENERATED FROM PYTHON SOURCE LINES 222-224
 
 We can compare it to the topography.values:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 229-231
+.. GENERATED FROM PYTHON SOURCE LINES 226-228
 
-.. code-block:: python3
+.. code-block:: Python
 
     grid.topography.values
 
@@ -812,8 +718,6 @@ We can compare it to the topography.values:
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
 
@@ -827,15 +731,15 @@ We can compare it to the topography.values:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 232-235
+.. GENERATED FROM PYTHON SOURCE LINES 229-232
 
 Now that we have more than one grid we can activate and deactivate any
 of them in real time:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 237-240
+.. GENERATED FROM PYTHON SOURCE LINES 234-237
 
-.. code-block:: python3
+.. code-block:: Python
 
     grid.set_inactive('topography')
     grid.set_inactive('regular')
@@ -846,23 +750,21 @@ of them in real time:
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
 
-    array([False,  True, False, False, False])
+    array([False,  True, False, False, False, False])
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 241-243
+.. GENERATED FROM PYTHON SOURCE LINES 238-240
 
 Since now all grids are deactivated the values will be empty:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 245-247
+.. GENERATED FROM PYTHON SOURCE LINES 242-244
 
-.. code-block:: python3
+.. code-block:: Python
 
     grid.values
 
@@ -871,8 +773,6 @@ Since now all grids are deactivated the values will be empty:
 
 
 .. rst-class:: sphx-glr-script-out
-
- Out:
 
  .. code-block:: none
 
@@ -883,9 +783,9 @@ Since now all grids are deactivated the values will be empty:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 248-250
+.. GENERATED FROM PYTHON SOURCE LINES 245-247
 
-.. code-block:: python3
+.. code-block:: Python
 
     grid.set_active('topography')
 
@@ -895,18 +795,16 @@ Since now all grids are deactivated the values will be empty:
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
 
-    array([False,  True,  True, False, False])
+    array([False,  True,  True, False, False, False])
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 251-253
+.. GENERATED FROM PYTHON SOURCE LINES 248-250
 
-.. code-block:: python3
+.. code-block:: Python
 
     grid.values, grid.values.shape
 
@@ -915,8 +813,6 @@ Since now all grids are deactivated the values will be empty:
 
 
 .. rst-class:: sphx-glr-script-out
-
- Out:
 
  .. code-block:: none
 
@@ -931,9 +827,9 @@ Since now all grids are deactivated the values will be empty:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 254-256
+.. GENERATED FROM PYTHON SOURCE LINES 251-253
 
-.. code-block:: python3
+.. code-block:: Python
 
     grid.set_active('regular')
 
@@ -943,18 +839,16 @@ Since now all grids are deactivated the values will be empty:
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
 
-    array([ True,  True,  True, False, False])
+    array([ True,  True,  True, False, False, False])
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 257-259
+.. GENERATED FROM PYTHON SOURCE LINES 254-256
 
-.. code-block:: python3
+.. code-block:: Python
 
     grid.values
 
@@ -963,8 +857,6 @@ Since now all grids are deactivated the values will be empty:
 
 
 .. rst-class:: sphx-glr-script-out
-
- Out:
 
  .. code-block:: none
 
@@ -979,7 +871,7 @@ Since now all grids are deactivated the values will be empty:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 260-269
+.. GENERATED FROM PYTHON SOURCE LINES 257-266
 
 Centered Grid
 ~~~~~~~~~~~~~
@@ -991,41 +883,85 @@ decreases with distance (e.g. gravity: Check `tutorial 2.2-Cell-selection <https
 )
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 271-274
+.. GENERATED FROM PYTHON SOURCE LINES 268-275
 
-.. code-block:: python3
+.. code-block:: Python
 
-    grid.create_centered_grid(centers=np.array([[300, 0, 0], [0, 0, 0]]),
-                              resolution=[10, 10, 20], radius=100)
-
-
-
-
-
-
+    gp.set_centered_grid(
+        grid,
+        centers=np.array([[300, 0, 0], [0, 0, 0]]),
+        resolution=[10, 10, 20],
+        radius=np.array([100, 100, 100])
+    )
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 275-279
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+    Active grids: ['regular' 'custom' 'topography' 'centered']
+
+    CenteredGrid(centers=array([[300,   0,   0],
+           [  0,   0,   0]]), resolution=[10, 10, 20], radius=array([100, 100, 100]), kernel_grid_centers=array([[-100.        , -100.        ,   -6.        ],
+           [-100.        , -100.        ,   -7.2       ],
+           [-100.        , -100.        ,   -7.52912998],
+           ...,
+           [ 100.        ,  100.        ,  -79.90178533],
+           [ 100.        ,  100.        , -100.17119644],
+           [ 100.        ,  100.        , -126.        ]]), left_voxel_edges=array([[ 34.1886117 ,  34.1886117 ,  -0.6       ],
+           [ 34.1886117 ,  34.1886117 ,  -0.6       ],
+           [ 34.1886117 ,  34.1886117 ,  -0.16456499],
+           ...,
+           [ 34.1886117 ,  34.1886117 ,  -7.95331123],
+           [ 34.1886117 ,  34.1886117 , -10.13470556],
+           [ 34.1886117 ,  34.1886117 , -12.91440178]]), right_voxel_edges=array([[ 34.1886117 ,  34.1886117 ,  -0.6       ],
+           [ 34.1886117 ,  34.1886117 ,  -0.16456499],
+           [ 34.1886117 ,  34.1886117 ,  -0.20970105],
+           ...,
+           [ 34.1886117 ,  34.1886117 , -10.13470556],
+           [ 34.1886117 ,  34.1886117 , -12.91440178],
+           [ 34.1886117 ,  34.1886117 , -12.91440178]]))
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 276-280
 
 Resolution and radius create a geometric spaced kernel (blue dots) which
 will be use to create a grid around each of the center points (red
 dots):
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 281-296
+.. GENERATED FROM PYTHON SOURCE LINES 282-311
 
-.. code-block:: python3
+.. code-block:: Python
 
 
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
 
-    ax.scatter(grid.values[:, 0], grid.values[:, 1], grid.values[:, 2], '.', alpha=.2)
-    ax.scatter(np.array([[300, 0, 0], [0, 0, 0]])[:, 0],
-               np.array([[300, 0, 0], [0, 0, 0]])[:, 1],
-               np.array([[300, 0, 0], [0, 0, 0]])[:, 2], c='r', alpha=1, s=30)
+    ax.scatter(
+        grid.centered_grid.values[:, 0],
+        grid.centered_grid.values[:, 1],
+        grid.centered_grid.values[:, 2],
+        '.',
+        alpha=.2
+    )
+
+    ax.scatter(
+        np.array([[300, 0, 0], [0, 0, 0]])[:, 0],
+        np.array([[300, 0, 0], [0, 0, 0]])[:, 1],
+        np.array([[300, 0, 0], [0, 0, 0]])[:, 2],
+        c='r',
+        alpha=1,
+        s=30
+    )
 
     ax.set_xlim(-100, 400)
+    ax.set_ylim(-100, 100)
+    ax.set_zlim(-120, 0)
     ax.set_xlabel('X Label')
     ax.set_ylabel('Y Label')
     ax.set_zlabel('Z Label')
@@ -1034,47 +970,42 @@ dots):
 
 
 
-.. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_3a_grids_001.png
-    :alt: ch1 3a grids
-    :class: sphx-glr-single-img
+.. image-sg:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_3a_grids_001.png
+   :alt: ch1 3a grids
+   :srcset: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_3a_grids_001.png
+   :class: sphx-glr-single-img
 
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 297-302
+.. GENERATED FROM PYTHON SOURCE LINES 312-317
 
 Section Grid
 ~~~~~~~~~~~~
 
-This grid type has its own tutorial. See ch1-3b
+This grid type has its own tutorial. See :doc: `ch1_3b_cross_sections`
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.295 seconds)
+   **Total running time of the script:** (0 minutes 0.193 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_3a_grids.py:
 
+.. only:: html
 
-.. only :: html
+  .. container:: sphx-glr-footer sphx-glr-footer-example
 
- .. container:: sphx-glr-footer
-    :class: sphx-glr-footer-example
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
+      :download:`Download Jupyter notebook: ch1_3a_grids.ipynb <ch1_3a_grids.ipynb>`
 
+    .. container:: sphx-glr-download sphx-glr-download-python
 
-  .. container:: sphx-glr-download sphx-glr-download-python
-
-     :download:`Download Python source code: ch1_3a_grids.py <ch1_3a_grids.py>`
-
-
-
-  .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-     :download:`Download Jupyter notebook: ch1_3a_grids.ipynb <ch1_3a_grids.ipynb>`
+      :download:`Download Python source code: ch1_3a_grids.py <ch1_3a_grids.py>`
 
 
 .. only:: html

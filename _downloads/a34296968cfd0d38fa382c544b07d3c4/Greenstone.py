@@ -2,76 +2,55 @@
 Greenstone.
 ===========
 """
+import os
 
 # Importing gempy
 import gempy as gp
-
-# Aux imports
-import numpy as np
-import matplotlib.pyplot as plt
-import os
+import gempy_viewer as gpv
 
 print(gp.__version__)
 
-# %% 
-geo_model = gp.create_model('Greenstone')
-
 # %%
 
-data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
+data_path = os.path.abspath('../../data/input_data/tut_SandStone')
 
-# Importing the data from csv files and settign extent and resolution
-geo_model = gp.init_data(geo_model, [696000, 747000, 6863000, 6930000, -20000, 200], [50, 50, 50],
-                         path_o=data_path + "/data/input_data/tut_SandStone/SandStone_Foliations.csv",
-                         path_i=data_path + "/data/input_data/tut_SandStone/SandStone_Points.csv")
+# Importing the data from csv
 
-# %% 
-gp.plot_2d(geo_model, direction=['z'])
-
-# %% 
-gp.map_stack_to_surfaces(geo_model, {"EarlyGranite_Series": 'EarlyGranite',
-                                     "BIF_Series": ('SimpleMafic2', 'SimpleBIF'),
-                                     "SimpleMafic_Series": 'SimpleMafic1', 'Basement': 'basement'})
-
-# %% 
-geo_model.add_surface_values([2.61, 2.92, 3.1, 2.92, 2.61])
-
-# %% 
-gp.set_interpolator(geo_model,
-                    compile_theano=True,
-                    theano_optimizer='fast_compile',
-                    verbose=[])
+geo_model: gp.data.GeoModel = gp.create_geomodel(
+    project_name='Greenstone',
+    extent=[696000, 747000, 6863000, 6930000, -20000, 200],  # * Here we define the extent of the model
+    refinement=6,
+    # * Here we define the number of octree levels. If octree levels are defined, the resolution is ignored.
+    importer_helper=gp.data.ImporterHelper(
+        path_to_orientations=data_path + "/SandStone_Foliations.csv",
+        path_to_surface_points=data_path + "/SandStone_Points.csv",
+        hash_surface_points=None,
+        hash_orientations=None
+    )
+)
 
 # %% 
-gp.compute_model(geo_model, set_solutions=True)
+gpv.plot_2d(geo_model, direction=['z'])
 
 # %% 
-gp.plot_2d(geo_model, cell_number=[-1], direction=['z'], show_data=False)
+gp.map_stack_to_surfaces(
+    gempy_model=geo_model,
+    mapping_object={
+        "EarlyGranite_Series": 'EarlyGranite',
+        "BIF_Series": ('SimpleMafic2', 'SimpleBIF'),
+        "SimpleMafic_Series": 'SimpleMafic1', 'Basement': 'basement'
+    }
+)
 
 # %% 
-gp.plot_2d(geo_model, cell_number=[25], direction='x')
+gp.compute_model(geo_model)
 
 # %% 
-geo_model.solutions.values_matrix
+gpv.plot_2d(geo_model, cell_number=[-1], direction=['z'], show_data=False)
 
 # %% 
-p2d = gp.plot_2d(geo_model, cell_number=[25], block=geo_model.solutions.values_matrix,
-           direction=['y'], show_data=True,
-           kwargs_regular_grid={'cmap': 'viridis', 'norm':None})
+gpv.plot_2d(geo_model, cell_number=['mid'], direction='x')
 
 # %%
-# sphinx_gallery_thumbnail_number = 5
-gp.plot_3d(geo_model)
-
-# %% 
-np.save('greenstone_ver', geo_model.solutions.vertices)
-np.save('greenstone_edges', geo_model.solutions.edges)
-
-# %%
-# Saving the model
-# ~~~~~~~~~~~~~~~~
-# 
-
-# %% 
-# gp.save_model(geo_model, path=os.pardir + '/data/gempy_models')
-gp.save_model(geo_model)
+# sphinx_gallery_thumbnail_number = -1
+gpv.plot_3d(geo_model)

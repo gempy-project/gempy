@@ -1,0 +1,133 @@
+
+
+.. _sphx_glr_examples_real:
+
+Real case studies
+-----------------
+
+These models are built with real data
+
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="# %% # .. admonition:: Explanation # #       This model is quite unstable in general and requir...">
+
+.. only:: html
+
+  .. image:: /examples/real/images/thumb/sphx_glr_Alesmodel_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_real_Alesmodel.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Alesmodel: Plotting sections and maps.</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Claudius">
+
+.. only:: html
+
+  .. image:: /examples/real/images/thumb/sphx_glr_Claudius_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_real_Claudius.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Claudius</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Greenstone.">
+
+.. only:: html
+
+  .. image:: /examples/real/images/thumb/sphx_glr_Greenstone_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_real_Greenstone.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Greenstone.</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Hecho">
+
+.. only:: html
+
+  .. image:: /examples/real/images/thumb/sphx_glr_Hecho_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_real_Hecho.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Hecho</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Moureze">
+
+.. only:: html
+
+  .. image:: /examples/real/images/thumb/sphx_glr_Moureze_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_real_Moureze.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Moureze</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Perth basin.">
+
+.. only:: html
+
+  .. image:: /examples/real/images/thumb/sphx_glr_Perth_basin_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_real_Perth_basin.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Perth basin.</div>
+    </div>
+
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /examples/real/Alesmodel
+   /examples/real/Claudius
+   /examples/real/Greenstone
+   /examples/real/Hecho
+   /examples/real/Moureze
+   /examples/real/Perth_basin
+

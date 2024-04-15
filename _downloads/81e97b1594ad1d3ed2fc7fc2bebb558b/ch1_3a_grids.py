@@ -4,12 +4,11 @@
 """
 
 import numpy as np
-import pandas as pd
-from gempy.core.data import Grid
-from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 unused import
 import matplotlib.pyplot as plt
 
-pd.set_option('precision', 2)
+import gempy as gp
+from gempy.core.data import Grid
+
 np.random.seed(55500)
 
 # %%
@@ -33,7 +32,7 @@ grid = Grid()
 
 
 # %%
-# .. image:: /../../_static/grids.jpg
+# .. image:: /_static/grids.jpg
 # 
 
 # %% 
@@ -54,7 +53,7 @@ grid.grid_types
 # 
 
 # %% 
-grid.regular_grid.values
+grid.values
 
 # %%
 # We can see what grids are activated (i.e. they are going to be
@@ -62,7 +61,7 @@ grid.regular_grid.values
 # 
 
 # %% 
-grid.active_grids
+grid.active_grids_bool
 
 # %%
 # By default only the *regular grid* (``grid.regular_grid``\ ) is active. However, since the regular
@@ -123,7 +122,7 @@ grid.regular_grid.values
 # 
 
 # %% 
-grid.active_grids
+grid.active_grids_bool
 
 # %%
 # Therefore the grid values will be equal to the regular grid:
@@ -147,9 +146,7 @@ grid.length
 # 
 
 # %% 
-grid.create_custom_grid(np.array([[1, 2, 3],
-                                  [4, 5, 6],
-                                  [7, 8, 9]]))
+gp.set_custom_grid(grid, np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]]))
 
 # %%
 # Again ``set_any_grid`` will create a grid and activate it. So now the
@@ -164,7 +161,7 @@ grid.custom_grid.values
 # 
 
 # %% 
-grid.active_grids
+grid.active_grids_bool
 
 # %% 
 grid.values.shape
@@ -194,10 +191,10 @@ grid.values[l0:l1]
 # 
 
 # %%
-grid.create_topography()
+gp.set_topography_from_random(grid)
 
 # %% 
-grid.active_grids
+grid.active_grids_bool
 
 # %%
 # Now the grid values will contain both the regular grid and topography:
@@ -268,8 +265,12 @@ grid.values
 # 
 
 # %% 
-grid.create_centered_grid(centers=np.array([[300, 0, 0], [0, 0, 0]]),
-                          resolution=[10, 10, 20], radius=100)
+gp.set_centered_grid(
+    grid,
+    centers=np.array([[300, 0, 0], [0, 0, 0]]),
+    resolution=[10, 10, 20],
+    radius=np.array([100, 100, 100])
+)
 
 # %%
 # Resolution and radius create a geometric spaced kernel (blue dots) which
@@ -282,12 +283,26 @@ grid.create_centered_grid(centers=np.array([[300, 0, 0], [0, 0, 0]]),
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 
-ax.scatter(grid.values[:, 0], grid.values[:, 1], grid.values[:, 2], '.', alpha=.2)
-ax.scatter(np.array([[300, 0, 0], [0, 0, 0]])[:, 0],
-           np.array([[300, 0, 0], [0, 0, 0]])[:, 1],
-           np.array([[300, 0, 0], [0, 0, 0]])[:, 2], c='r', alpha=1, s=30)
+ax.scatter(
+    grid.centered_grid.values[:, 0],
+    grid.centered_grid.values[:, 1],
+    grid.centered_grid.values[:, 2],
+    '.',
+    alpha=.2
+)
+
+ax.scatter(
+    np.array([[300, 0, 0], [0, 0, 0]])[:, 0],
+    np.array([[300, 0, 0], [0, 0, 0]])[:, 1],
+    np.array([[300, 0, 0], [0, 0, 0]])[:, 2],
+    c='r',
+    alpha=1,
+    s=30
+)
 
 ax.set_xlim(-100, 400)
+ax.set_ylim(-100, 100)
+ax.set_zlim(-120, 0)
 ax.set_xlabel('X Label')
 ax.set_ylabel('Y Label')
 ax.set_zlabel('Z Label')
@@ -297,5 +312,5 @@ plt.show()
 # Section Grid
 # ~~~~~~~~~~~~
 # 
-# This grid type has its own tutorial. See ch1-3b
+# This grid type has its own tutorial. See :doc: `ch1_3b_cross_sections`
 #

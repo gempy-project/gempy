@@ -10,7 +10,7 @@
     .. note::
         :class: sphx-glr-download-link-note
 
-        Click :ref:`here <sphx_glr_download_examples_real_Hecho.py>`
+        :ref:`Go to the end <sphx_glr_download_examples_real_Hecho.py>`
         to download the full example code
 
 .. rst-class:: sphx-glr-example-title
@@ -21,25 +21,31 @@
 Hecho
 ~~~~~
 
-.. GENERATED FROM PYTHON SOURCE LINES 8-9
+.. GENERATED FROM PYTHON SOURCE LINES 6-9
 
-These two lines are necessary only if gempy is not installed
+.. code-block:: Python
 
-.. GENERATED FROM PYTHON SOURCE LINES 9-22
+    import os
 
-.. code-block:: python3
+    import numpy as np
 
-    import sys, os
-    import urllib
 
-    os.environ["THEANO_FLAGS"] = "mode=FAST_RUN,device=cpu"
-    # Importing gempy
-    import gempy as gp
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 10-18
+
+.. code-block:: Python
+
 
     # Aux imports
-    import numpy as np
     import pandas as pn
-    import matplotlib.pyplot as plt
+
+    # Importing gempy
+    import gempy as gp
+    import gempy_viewer as gpv
 
 
 
@@ -48,8 +54,7 @@ These two lines are necessary only if gempy is not installed
 
 
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 23-29
+.. GENERATED FROM PYTHON SOURCE LINES 19-25
 
 Loading surface points from repository:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -58,29 +63,31 @@ With pandas we can do it directly from the web and with the right args
 we can directly tidy the data in gempy style:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 31-58
+.. GENERATED FROM PYTHON SOURCE LINES 27-56
 
-.. code-block:: python3
+.. code-block:: Python
 
+
+    data_path = os.path.abspath('../../data/input_data/Hecho')
     dfs = []
-    data_amount = 'Full'
 
     # First stratigraphic data
     for letter in range(1, 10):
-
-        try:
-            dfs.append(pn.read_csv('https://raw.githubusercontent.com/Loop3D/ImplicitBenchmark/master'
-                                   f'/Hecho/{data_amount}/H' +
-                                   str(letter) + '.csv', sep=';',
-                                   names=['X', 'Y', 'Z', 'surface', '_'], header=0))
-        except urllib.error.HTTPError as e:
-            print(e, letter)
+        dfs.append(pn.read_csv(
+            filepath_or_buffer=data_path + '/H' + str(letter) + '.csv',
+            sep=';',
+            names=['X', 'Y', 'Z', 'surface', '_'],
+            header=0
+        ))
 
     # Also faults
     for f in range(1, 4):
-        fault_df = pn.read_csv('https://raw.githubusercontent.com/Loop3D/ImplicitBenchmark/master/Hecho/F' +
-                               str(f) + 'Line.csv',
-                               sep=';', names=['X', 'Y', 'Z'], header=0)
+        fault_df = pn.read_csv(
+            filepath_or_buffer=data_path + '/F' + str(f) + 'Line.csv',
+            sep=';',
+            names=['X', 'Y', 'Z'],
+            header=0
+        )
         fault_df['surface'] = 'f' + str(f)
         dfs.append(fault_df)
 
@@ -127,45 +134,45 @@ we can directly tidy the data in gempy style:
         <tr>
           <th>761</th>
           <td>6</td>
-          <td>11.14</td>
-          <td>-0.17</td>
-          <td>1.53</td>
+          <td>11.143734</td>
+          <td>-0.172893</td>
+          <td>1.53226</td>
           <td>NaN</td>
           <td>f3</td>
         </tr>
         <tr>
           <th>762</th>
           <td>7</td>
-          <td>11.17</td>
-          <td>0.28</td>
-          <td>1.68</td>
+          <td>11.171513</td>
+          <td>0.284198</td>
+          <td>1.68442</td>
           <td>NaN</td>
           <td>f3</td>
         </tr>
         <tr>
           <th>763</th>
           <td>8</td>
-          <td>11.16</td>
-          <td>0.40</td>
-          <td>1.82</td>
+          <td>11.159113</td>
+          <td>0.399711</td>
+          <td>1.81939</td>
           <td>NaN</td>
           <td>f3</td>
         </tr>
         <tr>
           <th>764</th>
           <td>9</td>
-          <td>11.07</td>
-          <td>0.03</td>
-          <td>1.92</td>
+          <td>11.069008</td>
+          <td>0.032232</td>
+          <td>1.92030</td>
           <td>NaN</td>
           <td>f3</td>
         </tr>
         <tr>
           <th>765</th>
           <td>10</td>
-          <td>10.89</td>
-          <td>-0.43</td>
-          <td>2.10</td>
+          <td>10.885192</td>
+          <td>-0.428004</td>
+          <td>2.10412</td>
           <td>NaN</td>
           <td>f3</td>
         </tr>
@@ -176,18 +183,21 @@ we can directly tidy the data in gempy style:
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 59-61
+.. GENERATED FROM PYTHON SOURCE LINES 57-59
 
 Now we do the same with the orientations:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 63-77
+.. GENERATED FROM PYTHON SOURCE LINES 61-84
 
-.. code-block:: python3
+.. code-block:: Python
 
-    orientations = pn.read_csv('https://raw.githubusercontent.com/Loop3D/ImplicitBenchmark/master/Hecho/Sparse/Dips.csv',
-                               sep=';',
-                               names=['X', 'Y', 'Z', 'G_x', 'G_z', '_'], header=0)
+    orientations = pn.read_csv(
+        filepath_or_buffer=data_path + '/Dips.csv',
+        sep=';',
+        names=['X', 'Y', 'Z', 'G_x', 'G_z', '_'],
+        header=0
+    )
     # Orientation needs to belong to a surface. This is mainly to categorize to which series belong and to
     # use the same color
     orientations['surface'] = 0
@@ -195,88 +205,24 @@ Now we do the same with the orientations:
     # We fill the laking direction with a dummy value:
     orientations['G_y'] = 0
 
-    # Drop unecesary data point
-    orientations.drop([1, 3, 4], inplace=True)
-    orientations
+    # Replace -99999.00000 with NaN
+    orientations.replace(-99999.00000, np.nan, inplace=True)
+
+    # Drop irrelevant columns
+    orientations.drop(columns=['_'], inplace=True)
+
+    # Remove rows containing NaN
+    orientations.dropna(inplace=True)
 
 
 
 
 
 
-.. raw:: html
 
-    <div class="output_subarea output_html rendered_html output_result">
-    <div>
-    <style scoped>
-        .dataframe tbody tr th:only-of-type {
-            vertical-align: middle;
-        }
 
-        .dataframe tbody tr th {
-            vertical-align: top;
-        }
 
-        .dataframe thead th {
-            text-align: right;
-        }
-    </style>
-    <table border="1" class="dataframe">
-      <thead>
-        <tr style="text-align: right;">
-          <th></th>
-          <th>X</th>
-          <th>Y</th>
-          <th>Z</th>
-          <th>G_x</th>
-          <th>G_z</th>
-          <th>_</th>
-          <th>surface</th>
-          <th>G_y</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th>0</th>
-          <td>3.81</td>
-          <td>0.16</td>
-          <td>0.58</td>
-          <td>0.62</td>
-          <td>0.79</td>
-          <td>4</td>
-          <td>0</td>
-          <td>0</td>
-        </tr>
-        <tr>
-          <th>2</th>
-          <td>9.87</td>
-          <td>0.06</td>
-          <td>2.52</td>
-          <td>-0.76</td>
-          <td>0.64</td>
-          <td>20</td>
-          <td>0</td>
-          <td>0</td>
-        </tr>
-        <tr>
-          <th>5</th>
-          <td>4.83</td>
-          <td>-0.03</td>
-          <td>3.33</td>
-          <td>0.07</td>
-          <td>1.00</td>
-          <td>28</td>
-          <td>0</td>
-          <td>0</td>
-        </tr>
-      </tbody>
-    </table>
-    </div>
-    </div>
-    <br />
-    <br />
-
-.. GENERATED FROM PYTHON SOURCE LINES 78-86
+.. GENERATED FROM PYTHON SOURCE LINES 85-94
 
 Data initialization:
 ~~~~~~~~~~~~~~~~~~~~
@@ -286,16 +232,50 @@ Maximum: 16 0.5 4.5
 
 Suggested resolution: 0.05m (grid size 321 x 21 x 91)
 
+%%
 
-.. GENERATED FROM PYTHON SOURCE LINES 88-94
+.. GENERATED FROM PYTHON SOURCE LINES 94-133
 
-.. code-block:: python3
+.. code-block:: Python
 
-    geo_model = gp.create_model('Moureze')
-    geo_model = gp.init_data(geo_model, extent=[0, 16, -0.5, 0.5, 0, 4.5], resolution=[321, 21, 91],
-                             surface_points_df=surface_points, orientations_df=orientations,
-                             surface_name='surface',
-                             add_basement=True)
+
+    surface_points_table: gp.data.SurfacePointsTable = gp.data.SurfacePointsTable.from_arrays(
+        x=surface_points['X'].values,
+        y=surface_points['Y'].values,
+        z=surface_points['Z'].values,
+        names=surface_points['surface'].values.astype(str)
+    )
+
+    orientations_table: gp.data.OrientationsTable = gp.data.OrientationsTable.from_arrays(
+        x=orientations['X'].values,
+        y=orientations['Y'].values,
+        z=orientations['Z'].values,
+        G_x=orientations['G_x'].values,
+        G_y=orientations['G_y'].values,
+        G_z=orientations['G_z'].values,
+        names=orientations['surface'].values.astype(str),
+        name_id_map=surface_points_table.name_id_map  # ! Make sure that ids and names are shared
+    )
+
+    structural_frame: gp.data.StructuralFrame = gp.data.StructuralFrame.from_data_tables(
+        surface_points=surface_points_table,
+        orientations=orientations_table
+    )
+
+    geo_model: gp.data.GeoModel = gp.create_geomodel(
+        project_name='Moureze',
+        extent=[0, 16, -0.5, 0.5, 0, 4.5],
+        resolution=[321, 21, 91],
+        refinement=4,
+        structural_frame=structural_frame
+    )
+
+    gp.set_section_grid(
+        grid=geo_model.grid,
+        section_dict={
+            'section': ([0, 0], [16, 0], [321, 91])
+        },
+    )
 
 
 
@@ -303,773 +283,110 @@ Suggested resolution: 0.05m (grid size 321 x 21 x 91)
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
-    Active grids: ['regular']
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 95-97
-
-.. code-block:: python3
-
-    geo_model.orientations.df.at[5, 'surface']
-
-
-
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-
-    0
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 98-100
-
-.. code-block:: python3
-
-    geo_model.orientations.df
-
-
-
-
+    Active grids: ['regular' 'sections']
 
 
 .. raw:: html
 
     <div class="output_subarea output_html rendered_html output_result">
-    <div>
-    <style scoped>
-        .dataframe tbody tr th:only-of-type {
-            vertical-align: middle;
-        }
-
-        .dataframe tbody tr th {
-            vertical-align: top;
-        }
-
-        .dataframe thead th {
-            text-align: right;
-        }
-    </style>
     <table border="1" class="dataframe">
       <thead>
         <tr style="text-align: right;">
           <th></th>
-          <th>X</th>
-          <th>Y</th>
-          <th>Z</th>
-          <th>X_c</th>
-          <th>Y_c</th>
-          <th>Z_c</th>
-          <th>G_x</th>
-          <th>G_y</th>
-          <th>G_z</th>
-          <th>dip</th>
-          <th>azimuth</th>
-          <th>polarity</th>
-          <th>surface</th>
-          <th>series</th>
-          <th>id</th>
-          <th>order_series</th>
-          <th>smooth</th>
+          <th>start</th>
+          <th>stop</th>
+          <th>resolution</th>
+          <th>dist</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <th>0</th>
-          <td>3.81</td>
-          <td>0.16</td>
-          <td>0.58</td>
-          <td>0.37</td>
-          <td>0.51</td>
-          <td>0.45</td>
-          <td>0.62</td>
-          <td>0.0</td>
-          <td>0.79</td>
-          <td>38.25</td>
-          <td>90.0</td>
-          <td>1</td>
-          <td>0</td>
-          <td>Default series</td>
-          <td>1</td>
-          <td>1</td>
-          <td>0.01</td>
-        </tr>
-        <tr>
-          <th>2</th>
-          <td>9.87</td>
-          <td>0.06</td>
-          <td>2.52</td>
-          <td>0.57</td>
-          <td>0.50</td>
-          <td>0.51</td>
-          <td>-0.76</td>
-          <td>0.0</td>
-          <td>0.64</td>
-          <td>49.86</td>
-          <td>270.0</td>
-          <td>1</td>
-          <td>0</td>
-          <td>Default series</td>
-          <td>1</td>
-          <td>1</td>
-          <td>0.01</td>
-        </tr>
-        <tr>
-          <th>5</th>
-          <td>4.83</td>
-          <td>-0.03</td>
-          <td>3.33</td>
-          <td>0.40</td>
-          <td>0.50</td>
-          <td>0.54</td>
-          <td>0.07</td>
-          <td>0.0</td>
-          <td>1.00</td>
-          <td>3.89</td>
-          <td>90.0</td>
-          <td>1</td>
-          <td>0</td>
-          <td>Default series</td>
-          <td>1</td>
-          <td>1</td>
-          <td>0.01</td>
+          <th>section</th>
+          <td>[0, 0]</td>
+          <td>[16, 0]</td>
+          <td>[321, 91]</td>
+          <td>16.0</td>
         </tr>
       </tbody>
     </table>
     </div>
-    </div>
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 101-105
+.. GENERATED FROM PYTHON SOURCE LINES 134-138
 
 We need an orientation per series/fault. The faults does not have
 orientation so the easiest is to create an orientation from the surface
 points availablle:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 107-112
+.. GENERATED FROM PYTHON SOURCE LINES 140-155
 
-.. code-block:: python3
+.. code-block:: Python
 
     f_names = ['f1', 'f2', 'f3']
     for fn in f_names:
-        fault_idx = geo_model.surface_points.df.index[geo_model.surface_points.df['surface'] == fn]
-        gp.set_orientation_from_surface_points(geo_model, fault_idx)
+        element = geo_model.structural_frame.get_element_by_name(fn)
+        new_orientations = gp.create_orientations_from_surface_points_coords(
+            xyz_coords=element.surface_points.xyz
+        )
+        gp.add_orientations(
+            geo_model=geo_model,
+            x=new_orientations.data['X'],
+            y=new_orientations.data['Y'],
+            z=new_orientations.data['Z'],
+            pole_vector=new_orientations.grads,
+            elements_names=fn
+        )
 
 
 
 
 
 
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 113-115
-
-Now we can see how the data looks so far:
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 117-119
-
-.. code-block:: python3
-
-    gp.plot_2d(geo_model)
-
-
-
-
-.. image:: /examples/real/images/sphx_glr_Hecho_001.png
-    :alt: Cell Number: mid Direction: y
-    :class: sphx-glr-single-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-
-    <gempy.plot.visualization_2d.Plot2D object at 0x7fccd1ea9970>
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 120-122
-
-By default all surfaces belong to one unique series.
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 124-126
-
-.. code-block:: python3
-
-    geo_model.surfaces
-
-
-
-
-
-
-.. raw:: html
-
-    <div class="output_subarea output_html rendered_html output_result">
-    <style  type="text/css" >
-    #T_e1423_row0_col3{
-                background-color:  #015482;
-            }#T_e1423_row1_col3{
-                background-color:  #9f0052;
-            }#T_e1423_row2_col3{
-                background-color:  #ffbe00;
-            }#T_e1423_row3_col3{
-                background-color:  #728f02;
-            }#T_e1423_row4_col3{
-                background-color:  #443988;
-            }#T_e1423_row5_col3{
-                background-color:  #ff3f20;
-            }#T_e1423_row6_col3{
-                background-color:  #5DA629;
-            }#T_e1423_row7_col3{
-                background-color:  #4878d0;
-            }#T_e1423_row8_col3{
-                background-color:  #ee854a;
-            }#T_e1423_row9_col3{
-                background-color:  #6acc64;
-            }#T_e1423_row10_col3{
-                background-color:  #d65f5f;
-            }#T_e1423_row11_col3{
-                background-color:  #956cb4;
-            }#T_e1423_row12_col3{
-                background-color:  #8c613c;
-            }</style><table id="T_e1423_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
-                    <tr>
-                            <th id="T_e1423_level0_row0" class="row_heading level0 row0" >0</th>
-                            <td id="T_e1423_row0_col0" class="data row0 col0" >0</td>
-                            <td id="T_e1423_row0_col1" class="data row0 col1" >Default series</td>
-                            <td id="T_e1423_row0_col2" class="data row0 col2" >1</td>
-                            <td id="T_e1423_row0_col3" class="data row0 col3" >#015482</td>
-                            <td id="T_e1423_row0_col4" class="data row0 col4" >1</td>
-                </tr>
-                <tr>
-                            <th id="T_e1423_level0_row1" class="row_heading level0 row1" >1</th>
-                            <td id="T_e1423_row1_col0" class="data row1 col0" >0.78</td>
-                            <td id="T_e1423_row1_col1" class="data row1 col1" >Default series</td>
-                            <td id="T_e1423_row1_col2" class="data row1 col2" >2</td>
-                            <td id="T_e1423_row1_col3" class="data row1 col3" >#9f0052</td>
-                            <td id="T_e1423_row1_col4" class="data row1 col4" >2</td>
-                </tr>
-                <tr>
-                            <th id="T_e1423_level0_row2" class="row_heading level0 row2" >2</th>
-                            <td id="T_e1423_row2_col0" class="data row2 col0" >1.15</td>
-                            <td id="T_e1423_row2_col1" class="data row2 col1" >Default series</td>
-                            <td id="T_e1423_row2_col2" class="data row2 col2" >3</td>
-                            <td id="T_e1423_row2_col3" class="data row2 col3" >#ffbe00</td>
-                            <td id="T_e1423_row2_col4" class="data row2 col4" >3</td>
-                </tr>
-                <tr>
-                            <th id="T_e1423_level0_row3" class="row_heading level0 row3" >3</th>
-                            <td id="T_e1423_row3_col0" class="data row3 col0" >1.90</td>
-                            <td id="T_e1423_row3_col1" class="data row3 col1" >Default series</td>
-                            <td id="T_e1423_row3_col2" class="data row3 col2" >4</td>
-                            <td id="T_e1423_row3_col3" class="data row3 col3" >#728f02</td>
-                            <td id="T_e1423_row3_col4" class="data row3 col4" >4</td>
-                </tr>
-                <tr>
-                            <th id="T_e1423_level0_row4" class="row_heading level0 row4" >4</th>
-                            <td id="T_e1423_row4_col0" class="data row4 col0" >2.50</td>
-                            <td id="T_e1423_row4_col1" class="data row4 col1" >Default series</td>
-                            <td id="T_e1423_row4_col2" class="data row4 col2" >5</td>
-                            <td id="T_e1423_row4_col3" class="data row4 col3" >#443988</td>
-                            <td id="T_e1423_row4_col4" class="data row4 col4" >5</td>
-                </tr>
-                <tr>
-                            <th id="T_e1423_level0_row5" class="row_heading level0 row5" >5</th>
-                            <td id="T_e1423_row5_col0" class="data row5 col0" >3.10</td>
-                            <td id="T_e1423_row5_col1" class="data row5 col1" >Default series</td>
-                            <td id="T_e1423_row5_col2" class="data row5 col2" >6</td>
-                            <td id="T_e1423_row5_col3" class="data row5 col3" >#ff3f20</td>
-                            <td id="T_e1423_row5_col4" class="data row5 col4" >6</td>
-                </tr>
-                <tr>
-                            <th id="T_e1423_level0_row6" class="row_heading level0 row6" >6</th>
-                            <td id="T_e1423_row6_col0" class="data row6 col0" >3.90</td>
-                            <td id="T_e1423_row6_col1" class="data row6 col1" >Default series</td>
-                            <td id="T_e1423_row6_col2" class="data row6 col2" >7</td>
-                            <td id="T_e1423_row6_col3" class="data row6 col3" >#5DA629</td>
-                            <td id="T_e1423_row6_col4" class="data row6 col4" >7</td>
-                </tr>
-                <tr>
-                            <th id="T_e1423_level0_row7" class="row_heading level0 row7" >7</th>
-                            <td id="T_e1423_row7_col0" class="data row7 col0" >4.40</td>
-                            <td id="T_e1423_row7_col1" class="data row7 col1" >Default series</td>
-                            <td id="T_e1423_row7_col2" class="data row7 col2" >8</td>
-                            <td id="T_e1423_row7_col3" class="data row7 col3" >#4878d0</td>
-                            <td id="T_e1423_row7_col4" class="data row7 col4" >8</td>
-                </tr>
-                <tr>
-                            <th id="T_e1423_level0_row8" class="row_heading level0 row8" >8</th>
-                            <td id="T_e1423_row8_col0" class="data row8 col0" >5.20</td>
-                            <td id="T_e1423_row8_col1" class="data row8 col1" >Default series</td>
-                            <td id="T_e1423_row8_col2" class="data row8 col2" >9</td>
-                            <td id="T_e1423_row8_col3" class="data row8 col3" >#ee854a</td>
-                            <td id="T_e1423_row8_col4" class="data row8 col4" >9</td>
-                </tr>
-                <tr>
-                            <th id="T_e1423_level0_row9" class="row_heading level0 row9" >9</th>
-                            <td id="T_e1423_row9_col0" class="data row9 col0" >f1</td>
-                            <td id="T_e1423_row9_col1" class="data row9 col1" >Default series</td>
-                            <td id="T_e1423_row9_col2" class="data row9 col2" >10</td>
-                            <td id="T_e1423_row9_col3" class="data row9 col3" >#6acc64</td>
-                            <td id="T_e1423_row9_col4" class="data row9 col4" >10</td>
-                </tr>
-                <tr>
-                            <th id="T_e1423_level0_row10" class="row_heading level0 row10" >10</th>
-                            <td id="T_e1423_row10_col0" class="data row10 col0" >f2</td>
-                            <td id="T_e1423_row10_col1" class="data row10 col1" >Default series</td>
-                            <td id="T_e1423_row10_col2" class="data row10 col2" >11</td>
-                            <td id="T_e1423_row10_col3" class="data row10 col3" >#d65f5f</td>
-                            <td id="T_e1423_row10_col4" class="data row10 col4" >11</td>
-                </tr>
-                <tr>
-                            <th id="T_e1423_level0_row11" class="row_heading level0 row11" >11</th>
-                            <td id="T_e1423_row11_col0" class="data row11 col0" >f3</td>
-                            <td id="T_e1423_row11_col1" class="data row11 col1" >Default series</td>
-                            <td id="T_e1423_row11_col2" class="data row11 col2" >12</td>
-                            <td id="T_e1423_row11_col3" class="data row11 col3" >#956cb4</td>
-                            <td id="T_e1423_row11_col4" class="data row11 col4" >12</td>
-                </tr>
-                <tr>
-                            <th id="T_e1423_level0_row12" class="row_heading level0 row12" >12</th>
-                            <td id="T_e1423_row12_col0" class="data row12 col0" >basement</td>
-                            <td id="T_e1423_row12_col1" class="data row12 col1" >Basement</td>
-                            <td id="T_e1423_row12_col2" class="data row12 col2" >1</td>
-                            <td id="T_e1423_row12_col3" class="data row12 col3" >#8c613c</td>
-                            <td id="T_e1423_row12_col4" class="data row12 col4" >13</td>
-                </tr>
-        </tbody></table>
-    </div>
-    <br />
-    <br />
-
-.. GENERATED FROM PYTHON SOURCE LINES 127-129
-
-.. code-block:: python3
-
-    geo_model.orientations.df.dtypes
-
-
-
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-
-    X                float64
-    Y                float64
-    Z                float64
-    X_c              float64
-    Y_c              float64
-    Z_c              float64
-    G_x              float64
-    G_y              float64
-    G_z              float64
-    dip              float64
-    azimuth          float64
-    polarity           int64
-    surface         category
-    series          category
-    id                 int64
-    order_series       int64
-    smooth           float64
-    dtype: object
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 130-132
-
-We will need to separate with surface belong to each series:
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 134-136
-
-.. code-block:: python3
-
-    gp.map_stack_to_surfaces(geo_model, {'Fault1': 'f1', 'Fault2': 'f2', 'Fault3': 'f3'})
-
-
-
-
-
-
-.. raw:: html
-
-    <div class="output_subarea output_html rendered_html output_result">
-    <style  type="text/css" >
-    #T_d2328_row0_col3{
-                background-color:  #015482;
-            }#T_d2328_row1_col3{
-                background-color:  #9f0052;
-            }#T_d2328_row2_col3{
-                background-color:  #ffbe00;
-            }#T_d2328_row3_col3{
-                background-color:  #728f02;
-            }#T_d2328_row4_col3{
-                background-color:  #443988;
-            }#T_d2328_row5_col3{
-                background-color:  #ff3f20;
-            }#T_d2328_row6_col3{
-                background-color:  #5DA629;
-            }#T_d2328_row7_col3{
-                background-color:  #4878d0;
-            }#T_d2328_row8_col3{
-                background-color:  #ee854a;
-            }#T_d2328_row9_col3{
-                background-color:  #6acc64;
-            }#T_d2328_row10_col3{
-                background-color:  #d65f5f;
-            }#T_d2328_row11_col3{
-                background-color:  #956cb4;
-            }#T_d2328_row12_col3{
-                background-color:  #8c613c;
-            }</style><table id="T_d2328_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
-                    <tr>
-                            <th id="T_d2328_level0_row0" class="row_heading level0 row0" >0</th>
-                            <td id="T_d2328_row0_col0" class="data row0 col0" >0</td>
-                            <td id="T_d2328_row0_col1" class="data row0 col1" >Default series</td>
-                            <td id="T_d2328_row0_col2" class="data row0 col2" >1</td>
-                            <td id="T_d2328_row0_col3" class="data row0 col3" >#015482</td>
-                            <td id="T_d2328_row0_col4" class="data row0 col4" >1</td>
-                </tr>
-                <tr>
-                            <th id="T_d2328_level0_row1" class="row_heading level0 row1" >1</th>
-                            <td id="T_d2328_row1_col0" class="data row1 col0" >0.78</td>
-                            <td id="T_d2328_row1_col1" class="data row1 col1" >Default series</td>
-                            <td id="T_d2328_row1_col2" class="data row1 col2" >2</td>
-                            <td id="T_d2328_row1_col3" class="data row1 col3" >#9f0052</td>
-                            <td id="T_d2328_row1_col4" class="data row1 col4" >2</td>
-                </tr>
-                <tr>
-                            <th id="T_d2328_level0_row2" class="row_heading level0 row2" >2</th>
-                            <td id="T_d2328_row2_col0" class="data row2 col0" >1.15</td>
-                            <td id="T_d2328_row2_col1" class="data row2 col1" >Default series</td>
-                            <td id="T_d2328_row2_col2" class="data row2 col2" >3</td>
-                            <td id="T_d2328_row2_col3" class="data row2 col3" >#ffbe00</td>
-                            <td id="T_d2328_row2_col4" class="data row2 col4" >3</td>
-                </tr>
-                <tr>
-                            <th id="T_d2328_level0_row3" class="row_heading level0 row3" >3</th>
-                            <td id="T_d2328_row3_col0" class="data row3 col0" >1.90</td>
-                            <td id="T_d2328_row3_col1" class="data row3 col1" >Default series</td>
-                            <td id="T_d2328_row3_col2" class="data row3 col2" >4</td>
-                            <td id="T_d2328_row3_col3" class="data row3 col3" >#728f02</td>
-                            <td id="T_d2328_row3_col4" class="data row3 col4" >4</td>
-                </tr>
-                <tr>
-                            <th id="T_d2328_level0_row4" class="row_heading level0 row4" >4</th>
-                            <td id="T_d2328_row4_col0" class="data row4 col0" >2.50</td>
-                            <td id="T_d2328_row4_col1" class="data row4 col1" >Default series</td>
-                            <td id="T_d2328_row4_col2" class="data row4 col2" >5</td>
-                            <td id="T_d2328_row4_col3" class="data row4 col3" >#443988</td>
-                            <td id="T_d2328_row4_col4" class="data row4 col4" >5</td>
-                </tr>
-                <tr>
-                            <th id="T_d2328_level0_row5" class="row_heading level0 row5" >5</th>
-                            <td id="T_d2328_row5_col0" class="data row5 col0" >3.10</td>
-                            <td id="T_d2328_row5_col1" class="data row5 col1" >Default series</td>
-                            <td id="T_d2328_row5_col2" class="data row5 col2" >6</td>
-                            <td id="T_d2328_row5_col3" class="data row5 col3" >#ff3f20</td>
-                            <td id="T_d2328_row5_col4" class="data row5 col4" >6</td>
-                </tr>
-                <tr>
-                            <th id="T_d2328_level0_row6" class="row_heading level0 row6" >6</th>
-                            <td id="T_d2328_row6_col0" class="data row6 col0" >3.90</td>
-                            <td id="T_d2328_row6_col1" class="data row6 col1" >Default series</td>
-                            <td id="T_d2328_row6_col2" class="data row6 col2" >7</td>
-                            <td id="T_d2328_row6_col3" class="data row6 col3" >#5DA629</td>
-                            <td id="T_d2328_row6_col4" class="data row6 col4" >7</td>
-                </tr>
-                <tr>
-                            <th id="T_d2328_level0_row7" class="row_heading level0 row7" >7</th>
-                            <td id="T_d2328_row7_col0" class="data row7 col0" >4.40</td>
-                            <td id="T_d2328_row7_col1" class="data row7 col1" >Default series</td>
-                            <td id="T_d2328_row7_col2" class="data row7 col2" >8</td>
-                            <td id="T_d2328_row7_col3" class="data row7 col3" >#4878d0</td>
-                            <td id="T_d2328_row7_col4" class="data row7 col4" >8</td>
-                </tr>
-                <tr>
-                            <th id="T_d2328_level0_row8" class="row_heading level0 row8" >8</th>
-                            <td id="T_d2328_row8_col0" class="data row8 col0" >5.20</td>
-                            <td id="T_d2328_row8_col1" class="data row8 col1" >Default series</td>
-                            <td id="T_d2328_row8_col2" class="data row8 col2" >9</td>
-                            <td id="T_d2328_row8_col3" class="data row8 col3" >#ee854a</td>
-                            <td id="T_d2328_row8_col4" class="data row8 col4" >9</td>
-                </tr>
-                <tr>
-                            <th id="T_d2328_level0_row9" class="row_heading level0 row9" >9</th>
-                            <td id="T_d2328_row9_col0" class="data row9 col0" >f1</td>
-                            <td id="T_d2328_row9_col1" class="data row9 col1" >Fault1</td>
-                            <td id="T_d2328_row9_col2" class="data row9 col2" >1</td>
-                            <td id="T_d2328_row9_col3" class="data row9 col3" >#6acc64</td>
-                            <td id="T_d2328_row9_col4" class="data row9 col4" >10</td>
-                </tr>
-                <tr>
-                            <th id="T_d2328_level0_row10" class="row_heading level0 row10" >10</th>
-                            <td id="T_d2328_row10_col0" class="data row10 col0" >f2</td>
-                            <td id="T_d2328_row10_col1" class="data row10 col1" >Fault2</td>
-                            <td id="T_d2328_row10_col2" class="data row10 col2" >1</td>
-                            <td id="T_d2328_row10_col3" class="data row10 col3" >#d65f5f</td>
-                            <td id="T_d2328_row10_col4" class="data row10 col4" >11</td>
-                </tr>
-                <tr>
-                            <th id="T_d2328_level0_row11" class="row_heading level0 row11" >11</th>
-                            <td id="T_d2328_row11_col0" class="data row11 col0" >f3</td>
-                            <td id="T_d2328_row11_col1" class="data row11 col1" >Fault3</td>
-                            <td id="T_d2328_row11_col2" class="data row11 col2" >1</td>
-                            <td id="T_d2328_row11_col3" class="data row11 col3" >#956cb4</td>
-                            <td id="T_d2328_row11_col4" class="data row11 col4" >12</td>
-                </tr>
-                <tr>
-                            <th id="T_d2328_level0_row12" class="row_heading level0 row12" >12</th>
-                            <td id="T_d2328_row12_col0" class="data row12 col0" >basement</td>
-                            <td id="T_d2328_row12_col1" class="data row12 col1" >Basement</td>
-                            <td id="T_d2328_row12_col2" class="data row12 col2" >1</td>
-                            <td id="T_d2328_row12_col3" class="data row12 col3" >#8c613c</td>
-                            <td id="T_d2328_row12_col4" class="data row12 col4" >13</td>
-                </tr>
-        </tbody></table>
-    </div>
-    <br />
-    <br />
-
-.. GENERATED FROM PYTHON SOURCE LINES 137-140
-
-However if we want the faults to offset the “Default series”, they will
-need to be more recent (higher on the pile). We can modify the order by:
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 142-144
-
-.. code-block:: python3
-
-    geo_model.modify_order_series(4, 'Default series')
-
-
-
-
-
-
-.. raw:: html
-
-    <div class="output_subarea output_html rendered_html output_result">
-    <table border="1" class="dataframe">
-      <thead>
-        <tr style="text-align: right;">
-          <th></th>
-          <th>order_series</th>
-          <th>BottomRelation</th>
-          <th>isActive</th>
-          <th>isFault</th>
-          <th>isFinite</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th>Fault3</th>
-          <td>1</td>
-          <td>Erosion</td>
-          <td>True</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>Fault1</th>
-          <td>2</td>
-          <td>Erosion</td>
-          <td>True</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>Fault2</th>
-          <td>3</td>
-          <td>Erosion</td>
-          <td>True</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>Default series</th>
-          <td>4</td>
-          <td>Erosion</td>
-          <td>True</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>Basement</th>
-          <td>5</td>
-          <td>Erosion</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-      </tbody>
-    </table>
-    </div>
-    <br />
-    <br />
-
-.. GENERATED FROM PYTHON SOURCE LINES 145-147
-
-Lastly, so far we did not specify which series/faults are actula faults:
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 149-151
-
-.. code-block:: python3
-
-    geo_model.set_is_fault(['Fault1', 'Fault2', 'Fault3'])
-
-
-
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    Fault colors changed. If you do not like this behavior, set change_color to False.
-
-
-.. raw:: html
-
-    <div class="output_subarea output_html rendered_html output_result">
-    <table border="1" class="dataframe">
-      <thead>
-        <tr style="text-align: right;">
-          <th></th>
-          <th>order_series</th>
-          <th>BottomRelation</th>
-          <th>isActive</th>
-          <th>isFault</th>
-          <th>isFinite</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th>Fault3</th>
-          <td>1</td>
-          <td>Fault</td>
-          <td>True</td>
-          <td>True</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>Fault1</th>
-          <td>2</td>
-          <td>Fault</td>
-          <td>True</td>
-          <td>True</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>Fault2</th>
-          <td>3</td>
-          <td>Fault</td>
-          <td>True</td>
-          <td>True</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>Default series</th>
-          <td>4</td>
-          <td>Erosion</td>
-          <td>True</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>Basement</th>
-          <td>5</td>
-          <td>Erosion</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-      </tbody>
-    </table>
-    </div>
-    <br />
-    <br />
-
-.. GENERATED FROM PYTHON SOURCE LINES 152-154
-
-Now we are good to go:
 
 
 .. GENERATED FROM PYTHON SOURCE LINES 156-158
 
-.. code-block:: python3
-
-    gp.set_interpolator(geo_model, theano_optimizer='fast_run', dtype='float64')
+Now we can see how the data looks so far:
 
 
+.. GENERATED FROM PYTHON SOURCE LINES 160-162
 
+.. code-block:: Python
+
+    gpv.plot_2d(geo_model)
+
+
+
+
+.. image-sg:: /examples/real/images/sphx_glr_Hecho_001.png
+   :alt: Cell Number: mid Direction: y
+   :srcset: /examples/real/images/sphx_glr_Hecho_001.png
+   :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
-    Setting kriging parameters to their default values.
-    Compiling theano function...
-    Level of Optimization:  fast_run
-    Device:  cpu
-    Precision:  float64
-    Number of faults:  3
-    Compilation Done!
-    Kriging values: 
-                               values
-    range                      16.65
-    $C_o$                        6.6
-    drift equations  [3, 3, 3, 3, 3]
 
-    <gempy.core.interpolator.InterpolatorModel object at 0x7fcb8b176eb0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f850ccd8520>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 159-163
+.. GENERATED FROM PYTHON SOURCE LINES 163-165
 
-The default range is always the diagonal of the extent. Since in this
-model data is very close we will need to reduce the range to 5-10% of
-that value:
+By default all surfaces belong to one unique series.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 165-169
+.. GENERATED FROM PYTHON SOURCE LINES 167-169
 
-.. code-block:: python3
+.. code-block:: Python
 
-    new_range = geo_model.get_additional_data().loc[('Kriging', 'range'), 'values'] * 0.2
-    geo_model.modify_kriging_parameters('range', new_range)
-
+    geo_model.structural_frame
 
 
 
@@ -1079,37 +396,377 @@ that value:
 .. raw:: html
 
     <div class="output_subarea output_html rendered_html output_result">
-    <table border="1" class="dataframe">
-      <thead>
-        <tr style="text-align: right;">
-          <th></th>
-          <th>values</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th>range</th>
-          <td>3.33</td>
-        </tr>
-        <tr>
-          <th>$C_o$</th>
-          <td>6.6</td>
-        </tr>
-        <tr>
-          <th>drift equations</th>
-          <td>[3, 3, 3, 3, 3]</td>
-        </tr>
-      </tbody>
-    </table>
+
+            <table>
+              <tr><td>Structural Groups:</td><td>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>default_formation</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #015482;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>0</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #9f0052;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>0.78</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #ffbe00;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>1.15</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #728f02;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>1.9</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #443988;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>2.5</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #ff3f20;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>3.1</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #5DA629;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>3.9</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #b271d0;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>4.4</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #72e54a;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>5.2</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #583bd1;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>f1</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #d0e63d;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>f2</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #b949e2;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>f3</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            </td></tr>
+              <tr><td>Fault Relations:</td><td><table style="border-collapse: collapse; table-layout: fixed;"><th></th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">default_fo...</th><tr><th>default_formation</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr></table></td></tr>
+              <tr><td></td><td>
+            <table>
+              <tr>
+                <td><div style="display: inline-block; background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></div> True</td>
+                <td><div style="display: inline-block; background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></div> False</td>
+              </tr>
+            </table>
+            </td></tr>
+            </table>
+        
     </div>
     <br />
     <br />
 
 .. GENERATED FROM PYTHON SOURCE LINES 170-172
 
-.. code-block:: python3
+We will need to separate with surface belong to each series:
 
-    gp.compute_model(geo_model, sort_surfaces=True, compute_mesh=False)
+
+.. GENERATED FROM PYTHON SOURCE LINES 174-179
+
+.. code-block:: Python
+
+    gp.map_stack_to_surfaces(
+        gempy_model=geo_model,
+        mapping_object={'Fault1': 'f1', 'Fault2': 'f2', 'Fault3': 'f3'}
+    )
+
+
+
+
+
+
+.. raw:: html
+
+    <div class="output_subarea output_html rendered_html output_result">
+
+            <table>
+              <tr><td>Structural Groups:</td><td>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>Fault1</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #583bd1;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>f1</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>Fault2</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #d0e63d;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>f2</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>Fault3</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #b949e2;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>f3</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>default_formation</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #015482;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>0</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #9f0052;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>0.78</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #ffbe00;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>1.15</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #728f02;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>1.9</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #443988;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>2.5</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #ff3f20;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>3.1</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #5DA629;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>3.9</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #b271d0;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>4.4</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #72e54a;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>5.2</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            </td></tr>
+              <tr><td>Fault Relations:</td><td><table style="border-collapse: collapse; table-layout: fixed;"><th></th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Fault1</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Fault2</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Fault3</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">default_fo...</th><tr><th>Fault1</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>Fault2</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>Fault3</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>default_formation</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr></table></td></tr>
+              <tr><td></td><td>
+            <table>
+              <tr>
+                <td><div style="display: inline-block; background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></div> True</td>
+                <td><div style="display: inline-block; background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></div> False</td>
+              </tr>
+            </table>
+            </td></tr>
+            </table>
+        
+    </div>
+    <br />
+    <br />
+
+.. GENERATED FROM PYTHON SOURCE LINES 180-183
+
+However if we want the faults to offset the “Default series”, they will
+need to be more recent (higher on the pile). We can modify the order by:
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 187-189
+
+Lastly, so far we did not specify which series/faults are actula faults:
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 191-196
+
+.. code-block:: Python
+
+    gp.set_is_fault(
+        frame=geo_model,
+        fault_groups=['Fault1', 'Fault2', 'Fault3']
+    )
+
+
+
+
+
+
+.. raw:: html
+
+    <div class="output_subarea output_html rendered_html output_result">
+
+            <table>
+              <tr><td>Structural Groups:</td><td>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>Fault1</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.FAULT</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #527682;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>f1</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>Fault2</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.FAULT</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #527682;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>f2</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>Fault3</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.FAULT</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #527682;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>f3</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>default_formation</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #015482;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>0</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #9f0052;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>0.78</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #ffbe00;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>1.15</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #728f02;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>1.9</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #443988;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>2.5</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #ff3f20;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>3.1</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #5DA629;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>3.9</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #b271d0;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>4.4</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #72e54a;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>5.2</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            </td></tr>
+              <tr><td>Fault Relations:</td><td><table style="border-collapse: collapse; table-layout: fixed;"><th></th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Fault1</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Fault2</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Fault3</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">default_fo...</th><tr><th>Fault1</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>Fault2</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>Fault3</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>default_formation</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr></table></td></tr>
+              <tr><td></td><td>
+            <table>
+              <tr>
+                <td><div style="display: inline-block; background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></div> True</td>
+                <td><div style="display: inline-block; background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></div> False</td>
+              </tr>
+            </table>
+            </td></tr>
+            </table>
+        
+    </div>
+    <br />
+    <br />
+
+.. GENERATED FROM PYTHON SOURCE LINES 197-201
+
+The default range is always the diagonal of the extent. Since in this
+model data is very close we will need to reduce the range to 5-10% of
+that value:
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 203-204
+
+.. code-block:: Python
+
+    geo_model.interpolation_options.kernel_options.range *= 0.2
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 205-207
+
+.. code-block:: Python
+
+    gp.compute_model(geo_model, gp.data.GemPyEngineConfig(use_gpu=True, dtype='float64'))
 
 
 
@@ -1117,20 +774,24 @@ that value:
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
+    Setting Backend To: AvailableBackends.numpy
+    Chunking done: 13 chunks
+    Chunking done: 13 chunks
+    Chunking done: 13 chunks
+    Chunking done: 13 chunks
 
 
-    Lithology ids 
-      [10.         10.         10.         ... 10.          9.99645237
-      8.09615495] 
+.. raw:: html
 
+    <div class="output_subarea output_html rendered_html output_result">
+    <b>Solutions:</b> 4 Octree Levels, 12 DualContouringMeshes
+    </div>
+    <br />
+    <br />
 
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 173-179
+.. GENERATED FROM PYTHON SOURCE LINES 208-214
 
 Time
 ~~~~
@@ -1139,418 +800,124 @@ Time
    loop each)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 181-183
+.. GENERATED FROM PYTHON SOURCE LINES 216-218
 
-.. code-block:: python3
+.. code-block:: Python
 
-    gp.plot_2d(geo_model, cell_number=[10], series_n=3, show_scalar=True)
-
-
-
-
-.. image:: /examples/real/images/sphx_glr_Hecho_002.png
-    :alt: Cell Number: 10 Direction: y
-    :class: sphx-glr-single-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-
-    <gempy.plot.visualization_2d.Plot2D object at 0x7fcc3c7aaee0>
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 184-186
-
-.. code-block:: python3
-
-    gp.plot_2d(geo_model, cell_number=[10], show_data=True)
+    gpv.plot_2d(geo_model, cell_number=[10], series_n=3, show_scalar=True)
 
 
 
 
-.. image:: /examples/real/images/sphx_glr_Hecho_003.png
-    :alt: Cell Number: 10 Direction: y
-    :class: sphx-glr-single-img
+.. image-sg:: /examples/real/images/sphx_glr_Hecho_002.png
+   :alt: Cell Number: 10 Direction: y
+   :srcset: /examples/real/images/sphx_glr_Hecho_002.png
+   :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
+ .. code-block:: none
+
+
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f850cd9ab30>
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 219-221
+
+.. code-block:: Python
+
+    gpv.plot_2d(geo_model, cell_number=[10], show_data=True)
+
+
+
+
+.. image-sg:: /examples/real/images/sphx_glr_Hecho_003.png
+   :alt: Cell Number: 10 Direction: y
+   :srcset: /examples/real/images/sphx_glr_Hecho_003.png
+   :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
 
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7fcb8b8b5970>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f850cd78460>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 187-188
+.. GENERATED FROM PYTHON SOURCE LINES 222-224
+
+.. code-block:: Python
+
+    gpv.plot_2d(geo_model, section_names=['section'], show_data=True)
+
+
+
+
+.. image-sg:: /examples/real/images/sphx_glr_Hecho_004.png
+   :alt: section
+   :srcset: /examples/real/images/sphx_glr_Hecho_004.png
+   :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f850c2297b0>
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 225-226
 
 sphinx_gallery_thumbnail_number = 3
 
-.. GENERATED FROM PYTHON SOURCE LINES 188-191
+.. GENERATED FROM PYTHON SOURCE LINES 226-227
 
-.. code-block:: python3
+.. code-block:: Python
 
-    gp.plot_3d(geo_model, kwargs_plot_structured_grid={'opacity': 8})
-
-
+    gpv.plot_3d(geo_model, kwargs_plot_structured_grid={'opacity': .2})
 
 
 
-.. image:: /examples/real/images/sphx_glr_Hecho_004.png
-    :alt: Hecho
-    :class: sphx-glr-single-img
+.. image-sg:: /examples/real/images/sphx_glr_Hecho_005.png
+   :alt: Hecho
+   :srcset: /examples/real/images/sphx_glr_Hecho_005.png
+   :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
 
-    <gempy.plot.vista.GemPyToVista object at 0x7fcc46b3f1f0>
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 192-199
-
-Export data:
-~~~~~~~~~~~~
-
-The solution is stored in a numpy array of the following shape. Axis 0
-are the scalar fields of each correspondent series/faults in the
-following order (except basement):
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 201-203
-
-.. code-block:: python3
-
-    geo_model.series
-
-
-
-
-
-
-.. raw:: html
-
-    <div class="output_subarea output_html rendered_html output_result">
-    <table border="1" class="dataframe">
-      <thead>
-        <tr style="text-align: right;">
-          <th></th>
-          <th>order_series</th>
-          <th>BottomRelation</th>
-          <th>isActive</th>
-          <th>isFault</th>
-          <th>isFinite</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th>Fault3</th>
-          <td>1</td>
-          <td>Fault</td>
-          <td>True</td>
-          <td>True</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>Fault1</th>
-          <td>2</td>
-          <td>Fault</td>
-          <td>True</td>
-          <td>True</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>Fault2</th>
-          <td>3</td>
-          <td>Fault</td>
-          <td>True</td>
-          <td>True</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>Default series</th>
-          <td>4</td>
-          <td>Erosion</td>
-          <td>True</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>Basement</th>
-          <td>5</td>
-          <td>Erosion</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-      </tbody>
-    </table>
-    </div>
-    <br />
-    <br />
-
-.. GENERATED FROM PYTHON SOURCE LINES 204-207
-
-For the surfaces, there are two numpy arrays, one with vertices and the
-other with triangles. Axis 0 is each surface in the order:
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 209-211
-
-.. code-block:: python3
-
-    geo_model.surfaces
-
-
-
-
-
-
-.. raw:: html
-
-    <div class="output_subarea output_html rendered_html output_result">
-    <style  type="text/css" >
-    #T_ae548_row0_col3,#T_ae548_row1_col3,#T_ae548_row2_col3{
-                background-color:  #527682;
-            }#T_ae548_row3_col3{
-                background-color:  #015482;
-            }#T_ae548_row4_col3{
-                background-color:  #9f0052;
-            }#T_ae548_row5_col3{
-                background-color:  #ffbe00;
-            }#T_ae548_row6_col3{
-                background-color:  #443988;
-            }#T_ae548_row7_col3{
-                background-color:  #ff3f20;
-            }#T_ae548_row8_col3{
-                background-color:  #728f02;
-            }#T_ae548_row9_col3{
-                background-color:  #5DA629;
-            }#T_ae548_row10_col3{
-                background-color:  #4878d0;
-            }#T_ae548_row11_col3{
-                background-color:  #ee854a;
-            }#T_ae548_row12_col3{
-                background-color:  #8c613c;
-            }</style><table id="T_ae548_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>    </tr></thead><tbody>
-                    <tr>
-                            <th id="T_ae548_level0_row0" class="row_heading level0 row0" >11</th>
-                            <td id="T_ae548_row0_col0" class="data row0 col0" >f3</td>
-                            <td id="T_ae548_row0_col1" class="data row0 col1" >Fault3</td>
-                            <td id="T_ae548_row0_col2" class="data row0 col2" >1</td>
-                            <td id="T_ae548_row0_col3" class="data row0 col3" >#527682</td>
-                            <td id="T_ae548_row0_col4" class="data row0 col4" >1</td>
-                </tr>
-                <tr>
-                            <th id="T_ae548_level0_row1" class="row_heading level0 row1" >9</th>
-                            <td id="T_ae548_row1_col0" class="data row1 col0" >f1</td>
-                            <td id="T_ae548_row1_col1" class="data row1 col1" >Fault1</td>
-                            <td id="T_ae548_row1_col2" class="data row1 col2" >1</td>
-                            <td id="T_ae548_row1_col3" class="data row1 col3" >#527682</td>
-                            <td id="T_ae548_row1_col4" class="data row1 col4" >2</td>
-                </tr>
-                <tr>
-                            <th id="T_ae548_level0_row2" class="row_heading level0 row2" >10</th>
-                            <td id="T_ae548_row2_col0" class="data row2 col0" >f2</td>
-                            <td id="T_ae548_row2_col1" class="data row2 col1" >Fault2</td>
-                            <td id="T_ae548_row2_col2" class="data row2 col2" >1</td>
-                            <td id="T_ae548_row2_col3" class="data row2 col3" >#527682</td>
-                            <td id="T_ae548_row2_col4" class="data row2 col4" >3</td>
-                </tr>
-                <tr>
-                            <th id="T_ae548_level0_row3" class="row_heading level0 row3" >0</th>
-                            <td id="T_ae548_row3_col0" class="data row3 col0" >0</td>
-                            <td id="T_ae548_row3_col1" class="data row3 col1" >Default series</td>
-                            <td id="T_ae548_row3_col2" class="data row3 col2" >1</td>
-                            <td id="T_ae548_row3_col3" class="data row3 col3" >#015482</td>
-                            <td id="T_ae548_row3_col4" class="data row3 col4" >4</td>
-                </tr>
-                <tr>
-                            <th id="T_ae548_level0_row4" class="row_heading level0 row4" >1</th>
-                            <td id="T_ae548_row4_col0" class="data row4 col0" >0.78</td>
-                            <td id="T_ae548_row4_col1" class="data row4 col1" >Default series</td>
-                            <td id="T_ae548_row4_col2" class="data row4 col2" >2</td>
-                            <td id="T_ae548_row4_col3" class="data row4 col3" >#9f0052</td>
-                            <td id="T_ae548_row4_col4" class="data row4 col4" >5</td>
-                </tr>
-                <tr>
-                            <th id="T_ae548_level0_row5" class="row_heading level0 row5" >2</th>
-                            <td id="T_ae548_row5_col0" class="data row5 col0" >1.15</td>
-                            <td id="T_ae548_row5_col1" class="data row5 col1" >Default series</td>
-                            <td id="T_ae548_row5_col2" class="data row5 col2" >3</td>
-                            <td id="T_ae548_row5_col3" class="data row5 col3" >#ffbe00</td>
-                            <td id="T_ae548_row5_col4" class="data row5 col4" >6</td>
-                </tr>
-                <tr>
-                            <th id="T_ae548_level0_row6" class="row_heading level0 row6" >4</th>
-                            <td id="T_ae548_row6_col0" class="data row6 col0" >2.50</td>
-                            <td id="T_ae548_row6_col1" class="data row6 col1" >Default series</td>
-                            <td id="T_ae548_row6_col2" class="data row6 col2" >4</td>
-                            <td id="T_ae548_row6_col3" class="data row6 col3" >#443988</td>
-                            <td id="T_ae548_row6_col4" class="data row6 col4" >7</td>
-                </tr>
-                <tr>
-                            <th id="T_ae548_level0_row7" class="row_heading level0 row7" >5</th>
-                            <td id="T_ae548_row7_col0" class="data row7 col0" >3.10</td>
-                            <td id="T_ae548_row7_col1" class="data row7 col1" >Default series</td>
-                            <td id="T_ae548_row7_col2" class="data row7 col2" >5</td>
-                            <td id="T_ae548_row7_col3" class="data row7 col3" >#ff3f20</td>
-                            <td id="T_ae548_row7_col4" class="data row7 col4" >8</td>
-                </tr>
-                <tr>
-                            <th id="T_ae548_level0_row8" class="row_heading level0 row8" >3</th>
-                            <td id="T_ae548_row8_col0" class="data row8 col0" >1.90</td>
-                            <td id="T_ae548_row8_col1" class="data row8 col1" >Default series</td>
-                            <td id="T_ae548_row8_col2" class="data row8 col2" >6</td>
-                            <td id="T_ae548_row8_col3" class="data row8 col3" >#728f02</td>
-                            <td id="T_ae548_row8_col4" class="data row8 col4" >9</td>
-                </tr>
-                <tr>
-                            <th id="T_ae548_level0_row9" class="row_heading level0 row9" >6</th>
-                            <td id="T_ae548_row9_col0" class="data row9 col0" >3.90</td>
-                            <td id="T_ae548_row9_col1" class="data row9 col1" >Default series</td>
-                            <td id="T_ae548_row9_col2" class="data row9 col2" >7</td>
-                            <td id="T_ae548_row9_col3" class="data row9 col3" >#5DA629</td>
-                            <td id="T_ae548_row9_col4" class="data row9 col4" >10</td>
-                </tr>
-                <tr>
-                            <th id="T_ae548_level0_row10" class="row_heading level0 row10" >7</th>
-                            <td id="T_ae548_row10_col0" class="data row10 col0" >4.40</td>
-                            <td id="T_ae548_row10_col1" class="data row10 col1" >Default series</td>
-                            <td id="T_ae548_row10_col2" class="data row10 col2" >8</td>
-                            <td id="T_ae548_row10_col3" class="data row10 col3" >#4878d0</td>
-                            <td id="T_ae548_row10_col4" class="data row10 col4" >11</td>
-                </tr>
-                <tr>
-                            <th id="T_ae548_level0_row11" class="row_heading level0 row11" >8</th>
-                            <td id="T_ae548_row11_col0" class="data row11 col0" >5.20</td>
-                            <td id="T_ae548_row11_col1" class="data row11 col1" >Default series</td>
-                            <td id="T_ae548_row11_col2" class="data row11 col2" >9</td>
-                            <td id="T_ae548_row11_col3" class="data row11 col3" >#ee854a</td>
-                            <td id="T_ae548_row11_col4" class="data row11 col4" >12</td>
-                </tr>
-                <tr>
-                            <th id="T_ae548_level0_row12" class="row_heading level0 row12" >12</th>
-                            <td id="T_ae548_row12_col0" class="data row12 col0" >basement</td>
-                            <td id="T_ae548_row12_col1" class="data row12 col1" >Basement</td>
-                            <td id="T_ae548_row12_col2" class="data row12 col2" >1</td>
-                            <td id="T_ae548_row12_col3" class="data row12 col3" >#8c613c</td>
-                            <td id="T_ae548_row12_col4" class="data row12 col4" >13</td>
-                </tr>
-        </tbody></table>
-    </div>
-    <br />
-    <br />
-
-.. GENERATED FROM PYTHON SOURCE LINES 212-215
-
-.. code-block:: python3
-
-    np.save('Hecho_scalar', geo_model.solutions.scalar_field_matrix)
-
-
-
-
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 216-229
-
-.. code-block:: python3
-
-    def write_property_to_gocad_voxet(propertyfilename, propertyvalues):
-        """
-        This function writes a numpy array into the right format for a gocad
-        voxet property file. This assumet there is a property already added to the .vo file,
-        and is just updating the file.
-        propertyfile - string giving the path to the file to write
-        propertyvalues - numpy array nz,ny,nx ordering and in float format
-        """
-        propertyvalues = propertyvalues.astype('>f4')  # big endian
-        #     array = propertyvalues.newbyteorder()
-        propertyvalues.tofile(propertyfilename)
-
-
-
-
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 230-233
-
-.. code-block:: python3
-
-    write_property_to_gocad_voxet(f'hecho_sf_gempy_{data_amount}',
-                                  geo_model.solutions.scalar_field_matrix[3].reshape([321, 21, 91]).ravel('F'))
-
-
-
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 234-235
-
-.. code-block:: python3
-
-    4
-
-
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-
-    4
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f850c246440>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 2 minutes  42.685 seconds)
+   **Total running time of the script:** (5 minutes 41.156 seconds)
 
 
 .. _sphx_glr_download_examples_real_Hecho.py:
 
+.. only:: html
 
-.. only :: html
+  .. container:: sphx-glr-footer sphx-glr-footer-example
 
- .. container:: sphx-glr-footer
-    :class: sphx-glr-footer-example
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
+      :download:`Download Jupyter notebook: Hecho.ipynb <Hecho.ipynb>`
 
+    .. container:: sphx-glr-download sphx-glr-download-python
 
-  .. container:: sphx-glr-download sphx-glr-download-python
-
-     :download:`Download Python source code: Hecho.py <Hecho.py>`
-
-
-
-  .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-     :download:`Download Jupyter notebook: Hecho.ipynb <Hecho.ipynb>`
+      :download:`Download Python source code: Hecho.py <Hecho.py>`
 
 
 .. only:: html
