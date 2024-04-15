@@ -7,3 +7,4 @@ class ExampleModel(Enum):
     ANTICLINE = auto()
     ONE_FAULT = auto()
     COMBINATION = auto()
+    ONE_FAULT_GRAVITY = auto()

@@ -17,6 +17,8 @@ def generate_example_model(example_model: ExampleModel, compute_model: bool = Tr
             return _generate_2_5d_model(compute_model)
         case ExampleModel.COMBINATION:
             return _generate_combination_model(compute_model)
+        case ExampleModel.ONE_FAULT_GRAVITY:
+            return _generate_one_fault_model_gravity(compute_model)
         case _:
             raise NotImplementedError(f"Example model {example_model} not implemented.")
 
@@ -210,8 +212,8 @@ def _generate_one_fault_model(compute_model: bool) -> gp.data.GeoModel:
     gp.map_stack_to_surfaces(
         gempy_model=geo_data,
         mapping_object={
-            "Fault_Series": 'fault',
-            "Strat_Series": ('rock2', 'rock1')
+                "Fault_Series": 'fault',
+                "Strat_Series": ('rock2', 'rock1')
         }
     )
 
@@ -223,7 +225,6 @@ def _generate_one_fault_model(compute_model: bool) -> gp.data.GeoModel:
         frame=geo_data,
         fault_groups=['Fault_Series']
     )
-    
 
     if compute_model:
         # Compute the geological model
@@ -257,9 +258,9 @@ def _generate_combination_model(compute_model: bool) -> gp.data.GeoModel:
     gp.map_stack_to_surfaces(
         gempy_model=geo_data,
         mapping_object={
-            "Fault_Series": ('fault'),
-            "Strat_Series1": ('rock3'),
-            "Strat_Series2": ('rock2', 'rock1'),
+                "Fault_Series" : ('fault'),
+                "Strat_Series1": ('rock3'),
+                "Strat_Series2": ('rock2', 'rock1'),
         }
     )
 
@@ -281,3 +282,155 @@ def _generate_combination_model(compute_model: bool) -> gp.data.GeoModel:
         )
 
     return geo_data
+
+
+def _generate_one_fault_model_gravity(compute_model):
+    from gempy_engine.core.backend_tensor import BackendTensor
+    from gempy.optional_dependencies import require_pandas
+    pd = require_pandas()
+    
+    resolution = [150, 10, 150]
+    extent = [0, 200, -100, 100, -100, 0]
+
+    # %%
+    # Configure GemPy for geological modeling with PyTorch backend
+    BackendTensor.change_backend_gempy(engine_backend=gp.data.AvailableBackends.PYTORCH, dtype="float64")
+
+    geo_model: gp.data.GeoModel = gp.create_geomodel(
+        project_name='Fault model',
+        extent=extent,
+        resolution=resolution,
+        structural_frame=gp.data.StructuralFrame.initialize_default_structure()
+    )
+
+    interpolation_options = geo_model.interpolation_options
+    interpolation_options.mesh_extraction = True
+    interpolation_options.kernel_options.range = .7
+    interpolation_options.kernel_options.c_o = 3
+    interpolation_options.kernel_options.compute_condition_number = True
+
+    gp.add_surface_points(
+        geo_model=geo_model,
+        x=[40, 60, 120, 140],
+        y=[0, 0, 0, 0],
+        z=[-50, -50, -60, -60],
+        elements_names=['surface1', 'surface1', 'surface1', 'surface1']
+    )
+
+    gp.add_orientations(
+        geo_model=geo_model,
+        x=[130],
+        y=[0],
+        z=[-50],
+        elements_names=['surface1'],
+        pole_vector=[[0, 0, 1.]]
+    )
+
+    # Define second element
+    element2 = gp.data.StructuralElement(
+        name='surface2',
+        color=next(geo_model.structural_frame.color_generator),
+        surface_points=gp.data.SurfacePointsTable.from_arrays(
+            x=np.array([120]),
+            y=np.array([0]),
+            z=np.array([-40]),
+            names='surface2'
+        ),
+        orientations=gp.data.OrientationsTable.initialize_empty()
+    )
+
+    # Add second element to structural frame
+    geo_model.structural_frame.structural_groups[0].append_element(element2)
+
+    # add fault
+    # Calculate orientation from point values
+    fault_point_1 = (80, -20)
+    fault_point_2 = (110, -80)
+
+    # calculate angle
+    angle = np.arctan((fault_point_2[0] - fault_point_1[0]) / (fault_point_2[1] - fault_point_1[1]))
+
+    x = np.cos(angle)
+    z = - np.sin(angle)
+
+    element_fault = gp.data.StructuralElement(
+        name='fault1',
+        color=next(geo_model.structural_frame.color_generator),
+        surface_points=gp.data.SurfacePointsTable.from_arrays(
+            x=np.array([fault_point_1[0], fault_point_2[0]]),
+            y=np.array([0, 0]),
+            z=np.array([fault_point_1[1], fault_point_2[1]]),
+            names='fault1'
+        ),
+        orientations=gp.data.OrientationsTable.from_arrays(
+            x=np.array([fault_point_1[0]]),
+            y=np.array([0]),
+            z=np.array([fault_point_1[1]]),
+            G_x=np.array([x]),
+            G_y=np.array([0]),
+            G_z=np.array([z]),
+            names='fault1'
+        )
+    )
+
+    group_fault = gp.data.StructuralGroup(
+        name='Fault1',
+        elements=[element_fault],
+        structural_relation=gp.data.StackRelationType.FAULT,
+        fault_relations=gp.data.FaultsRelationSpecialCase.OFFSET_ALL
+    )
+
+    # Insert the fault group into the structural frame:
+    geo_model.structural_frame.insert_group(0, group_fault)
+    # %% md
+    ## Compute model
+    # %%
+    geo_model.update_transform(gp.data.GlobalAnisotropy.NONE)
+    
+    interesting_columns = pd.DataFrame()
+    x_vals = np.arange(20, 191, 10)
+    interesting_columns['X'] = x_vals
+    interesting_columns['Y'] = np.zeros_like(x_vals)
+
+    # Configuring the data correctly is key for accurate gravity calculations.
+    device_location = interesting_columns[['X', 'Y']]
+    device_location['Z'] = 0  # Add a Z-coordinate
+
+    # Set up a centered grid for geophysical calculations
+    # This grid will be used for gravity gradient calculations.
+    gp.set_centered_grid(
+        grid=geo_model.grid,
+        centers=device_location,
+        resolution=np.array([75, 5, 150]),
+        radius=np.array([150, 10, 300])
+    )
+
+    # Calculate the gravity gradient using GemPy
+    # Gravity gradient data is critical for geophysical modeling and inversion.
+    gravity_gradient = gp.calculate_gravity_gradient(geo_model.grid.centered_grid)
+
+    densities_tensor = BackendTensor.t.array([2., 2., 3., 2.])
+    densities_tensor.requires_grad = True
+
+    # Set geophysics input for the GemPy model
+    # Configuring this input is crucial for the forward gravity calculation.
+    geo_model.geophysics_input = gp.data.GeophysicsInput(
+        tz=BackendTensor.t.array(gravity_gradient),
+        densities=densities_tensor
+    )
+
+    # %%
+    # Compute the geological model with geophysical data
+    # This computation integrates the geological model with gravity data.
+    if compute_model:
+        sol = gp.compute_model(
+            gempy_model=geo_model,
+            engine_config=gp.data.GemPyEngineConfig(
+                backend=gp.data.AvailableBackends.PYTORCH,
+                dtype='float64'
+            )
+        )
+        grav = - sol.gravity
+        grav[0].backward()
+    
+    return geo_model
