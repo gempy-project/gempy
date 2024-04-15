@@ -427,7 +427,8 @@ def _generate_one_fault_model_gravity(compute_model):
             gempy_model=geo_model,
             engine_config=gp.data.GemPyEngineConfig(
                 backend=gp.data.AvailableBackends.PYTORCH,
-                dtype='float64'
+                dtype='float32',
+                use_gpu=True
             )
         )
         grav = - sol.gravity
