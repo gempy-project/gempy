@@ -304,7 +304,7 @@ def _generate_one_fault_model_gravity(compute_model):
     )
 
     interpolation_options = geo_model.interpolation_options
-    interpolation_options.mesh_extraction = True
+    interpolation_options.mesh_extraction = False
     interpolation_options.kernel_options.range = .7
     interpolation_options.kernel_options.c_o = 3
     interpolation_options.kernel_options.compute_condition_number = True
@@ -388,7 +388,9 @@ def _generate_one_fault_model_gravity(compute_model):
     geo_model.update_transform(gp.data.GlobalAnisotropy.NONE)
     
     interesting_columns = pd.DataFrame()
-    x_vals = np.arange(20, 191, 10)
+    # x_vals = np.arange(20, 191, 10)
+
+    x_vals = np.linspace(20, 191, 6)
     interesting_columns['X'] = x_vals
     interesting_columns['Y'] = np.zeros_like(x_vals)
 
@@ -401,7 +403,7 @@ def _generate_one_fault_model_gravity(compute_model):
     gp.set_centered_grid(
         grid=geo_model.grid,
         centers=device_location,
-        resolution=np.array([75, 5, 150]),
+        resolution=np.array([75/3, 5, 150/3]),
         radius=np.array([150, 10, 300])
     )
 
