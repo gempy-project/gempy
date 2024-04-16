@@ -1,20 +1,20 @@
-# <p align="center"><img src="docs/readme_images/header_combined_slim.png" width="1000"></p>
-
-> Open-source, implicit 3D structural geological modeling in Python.
-
+# <p align="center"><img src="https://github.com/gempy-project/gempy/blob/main/docs/readme_images/header_combined_slim.png" width="1000"></p> 
+ 
+[![GitHub Stars](https://img.shields.io/github/stars/cgre-aachen/gempy.svg)](https://github.com/cgre-aachen/gempy/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/cgre-aachen/gempy.svg)](https://github.com/cgre-aachen/gempy/network)
 [![PyPI](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/release/python-31013/)
 [![PyPI](https://img.shields.io/badge/pypi-1.0-blue.svg)](https://pypi.org/project/gempy/)
 [![license: EUPL v1.2](https://img.shields.io/badge/license-EUPL%20v1.2-blue.svg)](https://github.com/cgre-aachen/gempy/blob/master/LICENSE)
 [![Documentation Status](https://assets.readthedocs.org/static/projects/badges/passing-flat.svg)](http://docs.gempy.org)
 [![DOI](https://zenodo.org/badge/96211155.svg)](https://zenodo.org/badge/latestdoi/96211155)
 
-## What's New: GemPy v3 Pre-release!
 
-GemPy v3 is gearing up for its official launch. Our team is diligently working on refining the documentation and adding the final touches. Delve into the exciting new features in the [What's New in GemPy v3](WhatsNewGemPy3.md). Experience GemPy v3 firsthand by installing the pre-release version from PyPi:
+## What's New: GemPy 2024.1 (a.k.a GemPy v3) Release!
 
-`$ pip install gempy --pre`
 
-In the meantime, you can explore the updated documentation [here](https://gempy-project.github.io/temp_gp3_docs/).
+Welcome to the era of GemPy v3! We are thrilled to announce the release of the latest version, a product of meticulous planning, redesign, and rigorous testing. While the core essence remains intact, v3 brings significant enhancements and novelties that promise to revolutionize your geomodeling experience.
+
+ Delve into the exciting new features in the [What's New in GemPy v3](WhatsNewGemPy3.md). 
 
 ## Overview
 
@@ -27,14 +27,7 @@ powerful **implicit representation** approach.
 
 We provide the latest release version of GemPy via PyPi package services. We highly recommend using PyPi,
 
-`$ pip install gempy`
-
-
-## Requirements
-
-The following versions are required/strongly recommended for the main dependencies of GemPy (as of June 2023):
-- python <= 3.10 (required by aesara)
-- numpy
+`$ pip install gempy[base]`
  
 ## Resources
 
@@ -49,16 +42,136 @@ If you find a bug or have a feature request, create an [issue](https://github.co
 
 Follow these [guidelines](https://github.com/cgre-aachen/gempy/blob/WIP_readme-update-march21/CONTRIBUTING.md) to contribute to GemPy.
 
-<a name="ref"></a>
-## References 
 
-* de la Varga, M., Schaaf, A., and Wellmann, F. (2019). [GemPy 1.0: open-source stochastic geological modeling and inversion](https://gmd.copernicus.org/articles/12/1/2019/gmd-12-1-2019.pdf), Geosci. Model Dev., 12, 1-32.
-* Wellmann, F., & Caumon, G. (2018). [3-D Structural geological models: Concepts, methods, and uncertainties.](https://hal.univ-lorraine.fr/hal-01921494/file/structural_models_for_geophysicsHAL.pdf) In Advances in Geophysics (Vol. 59, pp. 1-121). Elsevier.
-* Calcagno, P., Chilès, J. P., Courrioux, G., & Guillen, A. (2008). [Geological modelling from field data and geological knowledge: Part I. Modelling method coupling 3D potential-field interpolation and geological rules](https://www.sciencedirect.com/science/article/abs/pii/S0031920108001258). Physics of the Earth and Planetary Interiors, 171(1-4), 147-157.
-* Lajaunie, C., Courrioux, G., & Manuel, L. (1997). [Foliation fields and 3D cartography in geology: principles of a method based on potential interpolation](https://link.springer.com/article/10.1007/BF02775087). Mathematical Geology, 29(4), 571-584.
+
+## Gallery
+### Geometries
+
+<p>
+<table>
+<tr>
+
+  <td>
+  <a href="https://docs.gempy.org/examples/geometries/a01_horizontal_stratigraphic.html#sphx-glr-examples-geometries-a01-horizontal-stratigraphic-py">
+  <img alt="colormapped image plot thumbnail" src="https://docs.gempy.org/_images/sphx_glr_a01_horizontal_stratigraphic_003.png" width="300" />
+  </a>
+  </td>
+  
+  <td>
+  <a href="https://docs.gempy.org/examples/geometries/b02_fold.html#sphx-glr-examples-geometries-b02-fold-py">
+  <img alt="colormapped image plot thumbnail" src="https://docs.gempy.org/_images/sphx_glr_b02_fold_003.png" width="300" />
+  </a>
+  </td>
+  
+   <td>
+  <a href="https://docs.gempy.org/examples/geometries/c03_recumbent_fold.html#sphx-glr-examples-geometries-c03-recumbent-fold-py">
+  <img alt="colormapped image plot thumbnail" src="https://docs.gempy.org/_images/sphx_glr_c03_recumbent_fold_003.png" width="300" />
+  </a>
+  </td>
+
+</tr>
+<tr>
+
+  <td>
+  <a href="https://docs.gempy.org/examples/geometries/d04_pinchout.html#sphx-glr-examples-geometries-d04-pinchout-py">
+  <img alt="colormapped image plot thumbnail" src="https://docs.gempy.org/_images/sphx_glr_d04_pinchout_003.png" width="300" />
+  </a>
+  </td>
+  
+  <td>
+  <a href="https://docs.gempy.org/examples/geometries/e05_fault.html#sphx-glr-examples-geometries-e05-fault-py">
+  <img alt="colormapped image plot thumbnail" src="https://docs.gempy.org/_images/sphx_glr_e05_fault_003.png" width="300" />
+  </a>
+  </td>
+  
+  <td>
+  <a href="https://docs.gempy.org/examples/geometries/f06_unconformity.html#sphx-glr-examples-geometries-f06-unconformity-py">
+  <img alt="colormapped image plot thumbnail" src="https://docs.gempy.org/_images/sphx_glr_f06_unconformity_002.png" width="300" />
+  </a>
+  </td>
+
+</tr>
+</table>
+</p>
+
+### Features
+
+<p>
+<table>
+<tr>
+
+  <td>
+  <a href="https://docs.gempy.org/tutorials/ch1_fundamentals/ch1_3b_cross_sections.html#sphx-glr-tutorials-ch1-fundamentals-ch1-3b-cross-sections-py">
+  <img alt="colormapped image plot thumbnail" src="https://docs.gempy.org/_images/sphx_glr_ch1_3b_cross_sections_004.png" width="300" />
+  </a>
+  </td>
+  
+  <td>
+  <a href="https://docs.gempy.org/tutorials/ch1_fundamentals/ch1_4_onlap_relations.html#sphx-glr-tutorials-ch1-fundamentals-ch1-4-onlap-relations-py">
+  <img alt="colormapped image plot thumbnail" src="https://docs.gempy.org/_images/sphx_glr_ch1_4_onlap_relations_002.png" width="300" />
+  </a>
+  </td>
+  
+   <td>
+  <a href="https://docs.gempy.org/examples/geometries/g07_combination.html#sphx-glr-examples-geometries-g07-combination-py">
+  <img alt="colormapped image plot thumbnail" src="https://docs.gempy.org/_images/sphx_glr_g07_combination_005.png" width="300" />
+  </a>
+  </td>
+
+</tr>
+<tr>
+  <td>
+  <a href="https://docs.gempy.org/tutorials/ch3-Interpolations/ch3_1_kriging_interpolation_and_simulation.html#sphx-glr-tutorials-ch3-interpolations-ch3-1-kriging-interpolation-and-simulation-py">
+  <img alt="colormapped image plot thumbnail" src="https://docs.gempy.org/_images/sphx_glr_ch3_1_kriging_interpolation_and_simulation_003.png" width="300" />
+  </a>
+  </td>
+  
+  <td>
+  <a href="https://docs.gempy.org/tutorials/ch4-Topology/ch4-1-Topology.html#sphx-glr-tutorials-ch4-topology-ch4-1-topology-py">
+  <img alt="colormapped image plot thumbnail" src="https://docs.gempy.org/_images/sphx_glr_ch4-1-Topology_005.png" width="300" />
+  </a>
+  </td>
+  
+  <td>
+  <a href="https://docs.gempy.org/tutorials/ch4-Topology/ch4-1-Topology.html#sphx-glr-tutorials-ch4-topology-ch4-1-topology-py">
+  <img alt="colormapped image plot thumbnail" src="https://docs.gempy.org/_images/sphx_glr_ch4-1-Topology_004.png" width="300" />
+  </a>
+  </td>
+
+</tr>
+</table>
+
+
+
+### Case studies
+
+<p>
+<table>
+<tr>
+
+  <td>
+  <a href="https://docs.gempy.org/examples/real/Alesmodel.html#sphx-glr-examples-real-alesmodel-py">
+  <img alt="colormapped image plot thumbnail" src="https://docs.gempy.org/_images/sphx_glr_Alesmodel_008.png" width="300" />
+  </a>
+  </td>
+  
+  <td>
+  <a href="https://docs.gempy.org/examples/real/Perth_basin.html#sphx-glr-examples-real-perth-basin-py">
+  <img alt="colormapped image plot thumbnail" src="https://docs.gempy.org/_images/sphx_glr_Perth_basin_006.png" width="300" />
+  </a>
+  </td>
+  
+   <td>
+  <a href="https://docs.gempy.org/examples/real/Greenstone.html#sphx-glr-examples-real-greenstone-py">
+  <img alt="colormapped image plot thumbnail" src="https://docs.gempy.org/_images/sphx_glr_Greenstone_004.png" width="300" />
+  </a>
+  </td>
+</tr>
+</table>
+
+<a name="ref"></a>
 
 ## Publications using GemPy
-
 
 
 * Brisson, S., Wellmann, F., Chudalla, N., von Harten, J., & von Hagke, C. (2023). [Estimating uncertainties in 3-D models of complex fold-and-thrust belts: A case study of the Eastern Alps triangle zone](https://www.sciencedirect.com/science/article/pii/S2590197423000046). Applied Computing and Geosciences, 18, 100115.
@@ -89,131 +202,9 @@ Please let us know if your publication is missing!
 
 A continuously growing list of gempy-applications (e.g. listing real-world models) can be found [here](https://hackmd.io/@Japhiolite/B1juPvCxc).
 
-## Gallery
+## References 
 
-### Geometries
-
-<p>
-<table>
-<tr>
-
-  <td>
-  <a href="https://docs.gempy.org/examples/geometries/1_horizontal_stratigraphic.html#sphx-glr-examples-geometries-1-horizontal-stratigraphic-py">
-  <img alt="colormapped image plot thumbnail" src="docs/readme_images/model1_nodata.png" width="300" />
-  </a>
-  </td>
-  
-  <td>
-  <a href="https://docs.gempy.org/examples/geometries/2_fold.html#sphx-glr-examples-geometries-2-fold-py">
-  <img alt="colormapped image plot thumbnail" src="docs/readme_images/model2_nodata.png" width="300" />
-  </a>
-  </td>
-  
-   <td>
-  <a href="https://docs.gempy.org/examples/geometries/3_recumbent_fold.html#sphx-glr-examples-geometries-3-recumbent-fold-py">
-  <img alt="colormapped image plot thumbnail" src="docs/readme_images/model3_nodata.png" width="300" />
-  </a>
-  </td>
-
-</tr>
-<tr>
-
-  <td>
-  <a href="https://docs.gempy.org/examples/geometries/4_pinchout.html#sphx-glr-examples-geometries-4-pinchout-py">
-  <img alt="colormapped image plot thumbnail" src="docs/readme_images/model4_nodata.png" width="300" />
-  </a>
-  </td>
-  
-  <td>
-  <a href="https://docs.gempy.org/examples/geometries/5_fault.html#sphx-glr-examples-geometries-5-fault-py">
-  <img alt="colormapped image plot thumbnail" src="docs/readme_images/model5_nodata.png" width="300" />
-  </a>
-  </td>
-  
-  <td>
-  <a href="https://docs.gempy.org/examples/geometries/6_unconformity.html#sphx-glr-examples-geometries-6-unconformity-py">
-  <img alt="colormapped image plot thumbnail" src="docs/readme_images/model6_nodata.png" width="300" />
-  </a>
-  </td>
-
-</tr>
-</table>
-</p>
-
-### Features
-
-<p>
-<table>
-<tr>
-
-  <td>
-  <a href="https://docs.gempy.org/tutorials/ch1_fundamentals/ch1_3b_cross_sections.html#sphx-glr-tutorials-ch1-fundamentals-ch1-3b-cross-sections-py">
-  <img alt="colormapped image plot thumbnail" src="docs/readme_images/sectiontest.png" width="300" />
-  </a>
-  </td>
-  
-  <td>
-  <a href="https://docs.gempy.org/tutorials/ch1_fundamentals/ch1_7_3d_visualization.html#sphx-glr-tutorials-ch1-fundamentals-ch1-7-3d-visualization-py">
-  <img alt="colormapped image plot thumbnail" src="docs/readme_images/data_vis.png" width="300" />
-  </a>
-  </td>
-  
-   <td>
-  <a href="https://docs.gempy.org/examples/geometries/7_combination.html#sphx-glr-examples-geometries-7-combination-py">
-  <img alt="colormapped image plot thumbnail" src="docs/readme_images/scalarfield.png" width="300" />
-  </a>
-  </td>
-
-</tr>
-<tr>
-
-  <td>
-  <a href="https://docs.gempy.org/tutorials/ch1_fundamentals/ch1_3b_cross_sections.html#sphx-glr-tutorials-ch1-fundamentals-ch1-3b-cross-sections-py">
-  <img alt="colormapped image plot thumbnail" src="docs/readme_images/geomap.png" width="300" />
-  </a>
-  </td>
-  
-  <td>
-  <a href="https://docs.gempy.org/tutorials/ch4-Topology/ch4-1-Topology.html#sphx-glr-tutorials-ch4-topology-ch4-1-topology-py">
-  <img alt="colormapped image plot thumbnail" src="docs/readme_images/topology.png" width="300" />
-  </a>
-  </td>
-  
-  <td>
-  <a href="https://docs.gempy.org/tutorials/ch4-Topology/ch4-1-Topology.html#sphx-glr-tutorials-ch4-topology-ch4-1-topology-py">
-  <img alt="colormapped image plot thumbnail" src="docs/readme_images/topology_matrix.png" width="300" />
-  </a>
-  </td>
-
-</tr>
-</table>
-</p>
-
-
-### Case studies
-
-<p>
-<table>
-<tr>
-
-  <td>
-  <a href="https://docs.gempy.org/examples/real/Alesmodel.html#sphx-glr-examples-real-alesmodel-py">
-  <img alt="colormapped image plot thumbnail" src="docs/readme_images/alesmodel.png" width="300" />
-  </a>
-  </td>
-  
-  <td>
-  <a href="https://docs.gempy.org/examples/real/Perth_basin.html#sphx-glr-examples-real-perth-basin-py">
-  <img alt="colormapped image plot thumbnail" src="docs/readme_images/perthmodel.png" width="300" />
-  </a>
-  </td>
-  
-   <td>
-  <a href="https://docs.gempy.org/examples/real/Greenstone.html#sphx-glr-examples-real-greenstone-py">
-  <img alt="colormapped image plot thumbnail" src="docs/readme_images/greenstonemodel.png" width="300" />
-  </a>
-  </td>
-
-</tr>
-</table>
-</p>
+* de la Varga, M., Schaaf, A., and Wellmann, F. (2019). [GemPy 1.0: open-source stochastic geological modeling and inversion](https://gmd.copernicus.org/articles/12/1/2019/gmd-12-1-2019.pdf), Geosci. Model Dev., 12, 1-32.
+* Wellmann, F., & Caumon, G. (2018). [3-D Structural geological models: Concepts, methods, and uncertainties.](https://hal.univ-lorraine.fr/hal-01921494/file/structural_models_for_geophysicsHAL.pdf) In Advances in Geophysics (Vol. 59, pp. 1-121). Elsevier.
+* Calcagno, P., Chilès, J. P., Courrioux, G., & Guillen, A. (2008). [Geological modelling from field data and geological knowledge: Part I. Modelling method coupling 3D potential-field interpolation and geological rules](https://www.sciencedirect.com/science/article/abs/pii/S0031920108001258). Physics of the Earth and Planetary Interiors, 171(1-4), 147-157.
+* Lajaunie, C., Courrioux, G., & Manuel, L. (1997). [Foliation fields and 3D cartography in geology: principles of a method based on potential interpolation](https://link.springer.com/article/10.1007/BF02775087). Mathematical Geology, 29(4), 571-584.
