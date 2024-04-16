@@ -10,7 +10,7 @@
     .. note::
         :class: sphx-glr-download-link-note
 
-        Click :ref:`here <sphx_glr_download_tutorials_ch2-Geophysics_ch2_1_gravity.py>`
+        :ref:`Go to the end <sphx_glr_download_tutorials_ch2-Geophysics_ch2_1_gravity.py>`
         to download the full example code
 
 .. rst-class:: sphx-glr-example-title
@@ -25,12 +25,12 @@
 
 Importing gempy
 
-.. GENERATED FROM PYTHON SOURCE LINES 9-21
+.. GENERATED FROM PYTHON SOURCE LINES 9-22
 
-.. code-block:: python3
+.. code-block:: Python
 
     import gempy as gp
-    from gempy.assets.geophysics import GravityPreprocessing
+    import gempy_viewer as gpv
 
     # Aux imports
     import numpy as np
@@ -38,8 +38,9 @@ Importing gempy
     import os
     import matplotlib.pyplot as plt
 
+
     np.random.seed(1515)
-    pd.set_option('precision', 2)
+    pd.set_option('display.precision', 2)
 
 
 
@@ -48,17 +49,45 @@ Importing gempy
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 22-30
+.. GENERATED FROM PYTHON SOURCE LINES 23-39
 
-.. code-block:: python3
+.. code-block:: Python
 
-    cwd = os.getcwd()
-    if 'examples' not in cwd:
-        data_path = os.getcwd() + '/examples/'
-    else:
-        data_path = cwd + '/../../'
+    data_path = os.path.abspath('../../data/input_data/tut_SandStone')
 
-    geo_model = gp.load_model('Greenstone', path=data_path + 'data/gempy_models/Greenstone')
+    # Importing the data from csv
+
+    geo_model: gp.data.GeoModel = gp.create_geomodel(
+        project_name='Greenstone',
+        extent=[696000, 747000, 6863000, 6930000, -20000, 200],  # * Here we define the extent of the model
+        refinement=5,  # * Here we define the number of octree levels. If octree levels are defined, the resolution is ignored.
+        importer_helper=gp.data.ImporterHelper(
+            path_to_orientations=data_path + "/SandStone_Foliations.csv",
+            path_to_surface_points=data_path + "/SandStone_Points.csv",
+            hash_surface_points=None,
+            hash_orientations=None
+        )
+    )
+
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 40-49
+
+.. code-block:: Python
+
+    gp.map_stack_to_surfaces(
+        gempy_model=geo_model,
+        mapping_object={
+            "EarlyGranite_Series": 'EarlyGranite',
+            "BIF_Series": ('SimpleMafic2', 'SimpleBIF'),
+            "SimpleMafic_Series": 'SimpleMafic1', 'Basement': 'basement'
+        }
+    )
 
 
 
@@ -66,195 +95,112 @@ Importing gempy
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
-    Active grids: ['regular']
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 31-33
-
-.. code-block:: python3
-
-    geo_model.stack
-
-
-
-
+    Could not find element 'basement' in any group.
 
 
 .. raw:: html
 
     <div class="output_subarea output_html rendered_html output_result">
-    <table border="1" class="dataframe">
-      <thead>
-        <tr style="text-align: right;">
-          <th></th>
-          <th>order_series</th>
-          <th>BottomRelation</th>
-          <th>isActive</th>
-          <th>isFault</th>
-          <th>isFinite</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th>EarlyGranite_Series</th>
-          <td>1</td>
-          <td>Erosion</td>
-          <td>True</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>BIF_Series</th>
-          <td>2</td>
-          <td>Erosion</td>
-          <td>True</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>SimpleMafic_Series</th>
-          <td>3</td>
-          <td>Erosion</td>
-          <td>True</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-        <tr>
-          <th>Basement</th>
-          <td>4</td>
-          <td>Erosion</td>
-          <td>False</td>
-          <td>False</td>
-          <td>False</td>
-        </tr>
-      </tbody>
-    </table>
+
+            <table>
+              <tr><td>Structural Groups:</td><td>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>EarlyGranite_Series</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #015482;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>EarlyGranite</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>BIF_Series</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #728f02;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>SimpleMafic2</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #9f0052;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>SimpleBIF</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>SimpleMafic_Series</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #ffbe00;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>SimpleMafic1</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            </td></tr>
+              <tr><td>Fault Relations:</td><td><table style="border-collapse: collapse; table-layout: fixed;"><th></th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">EarlyGrani...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">BIF_Series</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">SimpleMafi...</th><tr><th>EarlyGranite_Series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>BIF_Series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>SimpleMafic_Series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr></table></td></tr>
+              <tr><td></td><td>
+            <table>
+              <tr>
+                <td><div style="display: inline-block; background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></div> True</td>
+                <td><div style="display: inline-block; background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></div> False</td>
+              </tr>
+            </table>
+            </td></tr>
+            </table>
+        
     </div>
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 34-36
+.. GENERATED FROM PYTHON SOURCE LINES 50-52
 
-.. code-block:: python3
+.. code-block:: Python
 
-    geo_model.surfaces
-
-
+    gpv.plot_2d(geo_model)
 
 
 
 
-.. raw:: html
-
-    <div class="output_subarea output_html rendered_html output_result">
-    <style  type="text/css" >
-    #T_3749e_row0_col3{
-                background-color:  #728f02;
-            }#T_3749e_row1_col3{
-                background-color:  #015482;
-            }#T_3749e_row2_col3{
-                background-color:  #9f0052;
-            }#T_3749e_row3_col3{
-                background-color:  #ffbe00;
-            }#T_3749e_row4_col3{
-                background-color:  #443988;
-            }</style><table id="T_3749e_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>        <th class="col_heading level0 col5" >value_0</th>    </tr></thead><tbody>
-                    <tr>
-                            <th id="T_3749e_level0_row0" class="row_heading level0 row0" >3</th>
-                            <td id="T_3749e_row0_col0" class="data row0 col0" >EarlyGranite</td>
-                            <td id="T_3749e_row0_col1" class="data row0 col1" >EarlyGranite_Series</td>
-                            <td id="T_3749e_row0_col2" class="data row0 col2" >1</td>
-                            <td id="T_3749e_row0_col3" class="data row0 col3" >#728f02</td>
-                            <td id="T_3749e_row0_col4" class="data row0 col4" >1</td>
-                            <td id="T_3749e_row0_col5" class="data row0 col5" >2.61</td>
-                </tr>
-                <tr>
-                            <th id="T_3749e_level0_row1" class="row_heading level0 row1" >0</th>
-                            <td id="T_3749e_row1_col0" class="data row1 col0" >SimpleMafic2</td>
-                            <td id="T_3749e_row1_col1" class="data row1 col1" >BIF_Series</td>
-                            <td id="T_3749e_row1_col2" class="data row1 col2" >1</td>
-                            <td id="T_3749e_row1_col3" class="data row1 col3" >#015482</td>
-                            <td id="T_3749e_row1_col4" class="data row1 col4" >2</td>
-                            <td id="T_3749e_row1_col5" class="data row1 col5" >2.92</td>
-                </tr>
-                <tr>
-                            <th id="T_3749e_level0_row2" class="row_heading level0 row2" >1</th>
-                            <td id="T_3749e_row2_col0" class="data row2 col0" >SimpleBIF</td>
-                            <td id="T_3749e_row2_col1" class="data row2 col1" >BIF_Series</td>
-                            <td id="T_3749e_row2_col2" class="data row2 col2" >2</td>
-                            <td id="T_3749e_row2_col3" class="data row2 col3" >#9f0052</td>
-                            <td id="T_3749e_row2_col4" class="data row2 col4" >3</td>
-                            <td id="T_3749e_row2_col5" class="data row2 col5" >3.10</td>
-                </tr>
-                <tr>
-                            <th id="T_3749e_level0_row3" class="row_heading level0 row3" >2</th>
-                            <td id="T_3749e_row3_col0" class="data row3 col0" >SimpleMafic1</td>
-                            <td id="T_3749e_row3_col1" class="data row3 col1" >SimpleMafic_Series</td>
-                            <td id="T_3749e_row3_col2" class="data row3 col2" >1</td>
-                            <td id="T_3749e_row3_col3" class="data row3 col3" >#ffbe00</td>
-                            <td id="T_3749e_row3_col4" class="data row3 col4" >4</td>
-                            <td id="T_3749e_row3_col5" class="data row3 col5" >2.92</td>
-                </tr>
-                <tr>
-                            <th id="T_3749e_level0_row4" class="row_heading level0 row4" >4</th>
-                            <td id="T_3749e_row4_col0" class="data row4 col0" >basement</td>
-                            <td id="T_3749e_row4_col1" class="data row4 col1" >Basement</td>
-                            <td id="T_3749e_row4_col2" class="data row4 col2" >1</td>
-                            <td id="T_3749e_row4_col3" class="data row4 col3" >#443988</td>
-                            <td id="T_3749e_row4_col4" class="data row4 col4" >5</td>
-                            <td id="T_3749e_row4_col5" class="data row4 col5" >2.61</td>
-                </tr>
-        </tbody></table>
-    </div>
-    <br />
-    <br />
-
-.. GENERATED FROM PYTHON SOURCE LINES 37-39
-
-.. code-block:: python3
-
-    gp.plot_2d(geo_model)
-
-
-
-
-.. image:: /tutorials/ch2-Geophysics/images/sphx_glr_ch2_1_gravity_001.png
-    :alt: Cell Number: mid Direction: y
-    :class: sphx-glr-single-img
+.. image-sg:: /tutorials/ch2-Geophysics/images/sphx_glr_ch2_1_gravity_001.png
+   :alt: Cell Number: mid Direction: y
+   :srcset: /tutorials/ch2-Geophysics/images/sphx_glr_ch2_1_gravity_001.png
+   :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
 
-    <gempy.plot.visualization_2d.Plot2D object at 0x7fcc4670beb0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f919f1713c0>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 42-45
+.. GENERATED FROM PYTHON SOURCE LINES 55-58
 
 Creating grid
 ~~~~~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 47-50
+.. GENERATED FROM PYTHON SOURCE LINES 60-63
 
 First we need to define the location of the devices. For this example we
 can make a map:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 52-60
+.. GENERATED FROM PYTHON SOURCE LINES 65-73
 
-.. code-block:: python3
+.. code-block:: Python
 
     grav_res = 20
     X = np.linspace(7.050000e+05, 747000, grav_res)
@@ -270,8 +216,6 @@ can make a map:
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
 
@@ -285,79 +229,103 @@ can make a map:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 61-63
+.. GENERATED FROM PYTHON SOURCE LINES 74-76
 
 We can see the location of the devices relative to the model data:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 65-70
+.. GENERATED FROM PYTHON SOURCE LINES 78-83
 
-.. code-block:: python3
+.. code-block:: Python
 
 
-    gp.plot_2d(geo_model, direction='z', show=False)
+    gpv.plot_2d(geo_model, direction='z', show=False)
     plt.scatter(xy_ravel[:, 0], xy_ravel[:, 1], s=1)
     plt.show()
 
 
 
 
-.. image:: /tutorials/ch2-Geophysics/images/sphx_glr_ch2_1_gravity_002.png
-    :alt: Cell Number: mid Direction: z
-    :class: sphx-glr-single-img
+.. image-sg:: /tutorials/ch2-Geophysics/images/sphx_glr_ch2_1_gravity_002.png
+   :alt: Cell Number: mid Direction: z
+   :srcset: /tutorials/ch2-Geophysics/images/sphx_glr_ch2_1_gravity_002.png
+   :class: sphx-glr-single-img
 
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 71-74
+.. GENERATED FROM PYTHON SOURCE LINES 84-87
 
 Now we need to create the grid centered on the devices (see:
 https://github.com/cgre-aachen/gempy/blob/master/notebooks/tutorials/ch1-3-Grids.ipynb)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 76-78
+.. GENERATED FROM PYTHON SOURCE LINES 89-90
 
-.. code-block:: python3
+geo_model.set_centered_grid(xy_ravel, resolution=[10, 10, 15], radius=5000)
 
-    geo_model.set_centered_grid(xy_ravel, resolution=[10, 10, 15], radius=5000)
+.. GENERATED FROM PYTHON SOURCE LINES 90-98
+
+.. code-block:: Python
+
+
+    gp.set_centered_grid(
+        grid=geo_model.grid,
+        centers=xy_ravel,
+        resolution=np.array([10, 10, 15]),
+        radius=np.array([5000, 5000, 5000])
+    )
 
 
 
 
 
 .. rst-class:: sphx-glr-script-out
-
- Out:
 
  .. code-block:: none
 
-    Active grids: ['regular' 'centered']
+    Active grids: ['centered']
 
-    Grid Object. Values: 
-    array([[ 6.96510000e+05,  6.86367000e+06, -1.97980000e+04],
-           [ 6.96510000e+05,  6.86367000e+06, -1.93940000e+04],
-           [ 6.96510000e+05,  6.86367000e+06, -1.89900000e+04],
+    CenteredGrid(centers=array([[7.05000000e+05, 6.86300000e+06, 3.00000000e+02],
+           [7.07210526e+05, 6.86300000e+06, 3.00000000e+02],
+           [7.09421053e+05, 6.86300000e+06, 3.00000000e+02],
            ...,
-           [ 7.52000000e+05,  6.93000000e+06, -3.10768481e+03],
-           [ 7.52000000e+05,  6.93000000e+06, -4.31811404e+03],
-           [ 7.52000000e+05,  6.93000000e+06, -6.00000000e+03]])
+           [7.42578947e+05, 6.92500000e+06, 3.00000000e+02],
+           [7.44789474e+05, 6.92500000e+06, 3.00000000e+02],
+           [7.47000000e+05, 6.92500000e+06, 3.00000000e+02]]), resolution=array([10, 10, 15]), radius=array([5000, 5000, 5000]), kernel_grid_centers=array([[-5000.        , -5000.        ,  -300.        ],
+           [-5000.        , -5000.        ,  -360.        ],
+           [-5000.        , -5000.        ,  -383.36972966],
+           ...,
+           [ 5000.        ,  5000.        , -3407.68480754],
+           [ 5000.        ,  5000.        , -4618.11403801],
+           [ 5000.        ,  5000.        , -6300.        ]]), left_voxel_edges=array([[1709.43058496, 1709.43058496,  -30.        ],
+           [1709.43058496, 1709.43058496,  -30.        ],
+           [1709.43058496, 1709.43058496,  -11.68486483],
+           ...,
+           [1709.43058496, 1709.43058496, -435.56428767],
+           [1709.43058496, 1709.43058496, -605.21461523],
+           [1709.43058496, 1709.43058496, -840.942981  ]]), right_voxel_edges=array([[1709.43058496, 1709.43058496,  -30.        ],
+           [1709.43058496, 1709.43058496,  -11.68486483],
+           [1709.43058496, 1709.43058496,  -16.23606704],
+           ...,
+           [1709.43058496, 1709.43058496, -605.21461523],
+           [1709.43058496, 1709.43058496, -840.942981  ],
+           [1709.43058496, 1709.43058496, -840.942981  ]]))
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 79-81
+.. GENERATED FROM PYTHON SOURCE LINES 99-101
 
-.. code-block:: python3
+.. code-block:: Python
 
-    geo_model.grid.centered_grid.kernel_centers
+    geo_model.grid.centered_grid.kernel_grid_centers
 
 
 
 
 
 .. rst-class:: sphx-glr-script-out
-
- Out:
 
  .. code-block:: none
 
@@ -372,51 +340,25 @@ https://github.com/cgre-aachen/gempy/blob/master/notebooks/tutorials/ch1-3-Grids
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 82-85
+.. GENERATED FROM PYTHON SOURCE LINES 102-105
 
 Now we need to compute the component tz (see
 https://github.com/cgre-achen/gempy/blob/master/notebooks/tutorials/ch2-2-Cell_selection.ipynb)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 87-89
+.. GENERATED FROM PYTHON SOURCE LINES 107-111
 
-.. code-block:: python3
-
-    g = GravityPreprocessing(geo_model.grid.centered_grid)
+.. code-block:: Python
 
 
-
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 90-92
-
-.. code-block:: python3
-
-    tz = g.set_tz_kernel()
-
-
-
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 93-95
-
-.. code-block:: python3
-
-    tz
+    gravity_gradient = gp.calculate_gravity_gradient(geo_model.grid.centered_grid)
+    gravity_gradient
 
 
 
 
 
 .. rst-class:: sphx-glr-script-out
-
- Out:
 
  .. code-block:: none
 
@@ -426,107 +368,44 @@ https://github.com/cgre-achen/gempy/blob/master/notebooks/tutorials/ch2-2-Cell_s
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 96-105
+.. GENERATED FROM PYTHON SOURCE LINES 112-118
 
-Compiling the gravity graph
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. code-block:: Python
 
-If geo_model has already a centered grid, the calculation of tz happens
-automatically.  This theano graph will return gravity
-as well as the lithologies. In addition we need either to pass the density
-block (see below). Or the position of density on the surface(in the
-future the name) to compute the density block at running time.
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 107-109
-
-.. code-block:: python3
-
-    geo_model.surfaces
+    geo_model.geophysics_input = gp.data.GeophysicsInput(
+        tz=gravity_gradient,
+        densities=np.array([2.61, 2.92, 3.1, 2.92, 2.61]),
+    )
 
 
 
 
 
 
-.. raw:: html
-
-    <div class="output_subarea output_html rendered_html output_result">
-    <style  type="text/css" >
-    #T_7c943_row0_col3{
-                background-color:  #728f02;
-            }#T_7c943_row1_col3{
-                background-color:  #015482;
-            }#T_7c943_row2_col3{
-                background-color:  #9f0052;
-            }#T_7c943_row3_col3{
-                background-color:  #ffbe00;
-            }#T_7c943_row4_col3{
-                background-color:  #443988;
-            }</style><table id="T_7c943_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>        <th class="col_heading level0 col5" >value_0</th>    </tr></thead><tbody>
-                    <tr>
-                            <th id="T_7c943_level0_row0" class="row_heading level0 row0" >3</th>
-                            <td id="T_7c943_row0_col0" class="data row0 col0" >EarlyGranite</td>
-                            <td id="T_7c943_row0_col1" class="data row0 col1" >EarlyGranite_Series</td>
-                            <td id="T_7c943_row0_col2" class="data row0 col2" >1</td>
-                            <td id="T_7c943_row0_col3" class="data row0 col3" >#728f02</td>
-                            <td id="T_7c943_row0_col4" class="data row0 col4" >1</td>
-                            <td id="T_7c943_row0_col5" class="data row0 col5" >2.61</td>
-                </tr>
-                <tr>
-                            <th id="T_7c943_level0_row1" class="row_heading level0 row1" >0</th>
-                            <td id="T_7c943_row1_col0" class="data row1 col0" >SimpleMafic2</td>
-                            <td id="T_7c943_row1_col1" class="data row1 col1" >BIF_Series</td>
-                            <td id="T_7c943_row1_col2" class="data row1 col2" >1</td>
-                            <td id="T_7c943_row1_col3" class="data row1 col3" >#015482</td>
-                            <td id="T_7c943_row1_col4" class="data row1 col4" >2</td>
-                            <td id="T_7c943_row1_col5" class="data row1 col5" >2.92</td>
-                </tr>
-                <tr>
-                            <th id="T_7c943_level0_row2" class="row_heading level0 row2" >1</th>
-                            <td id="T_7c943_row2_col0" class="data row2 col0" >SimpleBIF</td>
-                            <td id="T_7c943_row2_col1" class="data row2 col1" >BIF_Series</td>
-                            <td id="T_7c943_row2_col2" class="data row2 col2" >2</td>
-                            <td id="T_7c943_row2_col3" class="data row2 col3" >#9f0052</td>
-                            <td id="T_7c943_row2_col4" class="data row2 col4" >3</td>
-                            <td id="T_7c943_row2_col5" class="data row2 col5" >3.10</td>
-                </tr>
-                <tr>
-                            <th id="T_7c943_level0_row3" class="row_heading level0 row3" >2</th>
-                            <td id="T_7c943_row3_col0" class="data row3 col0" >SimpleMafic1</td>
-                            <td id="T_7c943_row3_col1" class="data row3 col1" >SimpleMafic_Series</td>
-                            <td id="T_7c943_row3_col2" class="data row3 col2" >1</td>
-                            <td id="T_7c943_row3_col3" class="data row3 col3" >#ffbe00</td>
-                            <td id="T_7c943_row3_col4" class="data row3 col4" >4</td>
-                            <td id="T_7c943_row3_col5" class="data row3 col5" >2.92</td>
-                </tr>
-                <tr>
-                            <th id="T_7c943_level0_row4" class="row_heading level0 row4" >4</th>
-                            <td id="T_7c943_row4_col0" class="data row4 col0" >basement</td>
-                            <td id="T_7c943_row4_col1" class="data row4 col1" >Basement</td>
-                            <td id="T_7c943_row4_col2" class="data row4 col2" >1</td>
-                            <td id="T_7c943_row4_col3" class="data row4 col3" >#443988</td>
-                            <td id="T_7c943_row4_col4" class="data row4 col4" >5</td>
-                            <td id="T_7c943_row4_col5" class="data row4 col5" >2.61</td>
-                </tr>
-        </tbody></table>
-    </div>
-    <br />
-    <br />
-
-.. GENERATED FROM PYTHON SOURCE LINES 110-112
-
-In this case the densities of each layer are at the loc 1 (0 is the id)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 112-117
 
-.. code-block:: python3
+.. GENERATED FROM PYTHON SOURCE LINES 119-122
+
+Once we have created a gravity interpolator we can call it from compute
+model as follows:
 
 
-    # New way
-    gp.set_interpolator(geo_model, output=['gravity'], pos_density=1, gradient=False,
-                        theano_optimizer='fast_run')
+.. GENERATED FROM PYTHON SOURCE LINES 124-136
+
+.. code-block:: Python
+
+    geo_model.interpolation_options.mesh_extraction = False
+    sol = gp.compute_model(
+        gempy_model=geo_model,
+        engine_config=gp.data.GemPyEngineConfig(
+            backend=gp.data.AvailableBackends.numpy,
+            dtype='float32'
+        )
+    )
+
+    grav = sol.gravity
+
 
 
 
@@ -534,57 +413,71 @@ In this case the densities of each layer are at the loc 1 (0 is the id)
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
+ .. code-block:: none
+
+    Setting Backend To: AvailableBackends.numpy
+    Chunking done: 16 chunks
+    Chunking done: 16 chunks
+    Chunking done: 16 chunks
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 137-139
+
+.. code-block:: Python
+
+    gpv.plot_2d(geo_model, cell_number=[-1], direction=['z'], show_data=False)
+
+
+
+
+.. image-sg:: /tutorials/ch2-Geophysics/images/sphx_glr_ch2_1_gravity_003.png
+   :alt: Cell Number: -1 Direction: z
+   :srcset: /tutorials/ch2-Geophysics/images/sphx_glr_ch2_1_gravity_003.png
+   :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
 
  .. code-block:: none
 
-    Setting kriging parameters to their default values.
-    Compiling theano function...
-    Level of Optimization:  fast_run
-    Device:  cpu
-    Precision:  float64
-    Number of faults:  0
-    Compilation Done!
-    Kriging values: 
-                            values
-    range                86591.22
-    $C_o$             178524761.9
-    drift equations  [3, 3, 3, 3]
-    nugget grad              0.01
-    nugget scalar             0.0
 
-    <gempy.core.interpolator.InterpolatorModel object at 0x7fcc46f045e0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f9191ce7250>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 118-121
+.. GENERATED FROM PYTHON SOURCE LINES 140-142
 
-Once we have created a gravity interpolator we can call it from compute
-model as follows:
+.. code-block:: Python
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 123-126
-
-.. code-block:: python3
-
-    sol = gp.compute_model(geo_model)
-    grav = sol.fw_gravity
+    gpv.plot_2d(geo_model, cell_number=['mid'], direction='x')
 
 
 
 
+.. image-sg:: /tutorials/ch2-Geophysics/images/sphx_glr_ch2_1_gravity_004.png
+   :alt: Cell Number: mid Direction: x
+   :srcset: /tutorials/ch2-Geophysics/images/sphx_glr_ch2_1_gravity_004.png
+   :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f918fbc49d0>
 
 
 
+.. GENERATED FROM PYTHON SOURCE LINES 143-153
 
-.. GENERATED FROM PYTHON SOURCE LINES 127-137
+.. code-block:: Python
 
-.. code-block:: python3
-
-    gp.plot_2d(geo_model, direction=['z'], height=7, show_results=False, show_data=True,
-               show=False)
+    gpv.plot_2d(geo_model, direction=['z'], height=7, show_results=False, show_data=True, show=False)
     plt.scatter(xy_ravel[:, 0], xy_ravel[:, 1], s=1)
-    plt.imshow(sol.fw_gravity.reshape(grav_res, grav_res),
+    plt.imshow(sol.gravity.reshape(grav_res, grav_res),
                extent=(xy_ravel[:, 0].min() + (xy_ravel[0, 0] - xy_ravel[1, 0]) / 2,
                        xy_ravel[:, 0].max() - (xy_ravel[0, 0] - xy_ravel[1, 0]) / 2,
                        xy_ravel[:, 1].min() + (xy_ravel[0, 1] - xy_ravel[30, 1]) / 2,
@@ -594,15 +487,17 @@ model as follows:
 
 
 
-.. image:: /tutorials/ch2-Geophysics/images/sphx_glr_ch2_1_gravity_003.png
-    :alt: Cell Number: mid Direction: z
-    :class: sphx-glr-single-img
+
+.. image-sg:: /tutorials/ch2-Geophysics/images/sphx_glr_ch2_1_gravity_005.png
+   :alt: Cell Number: mid Direction: z
+   :srcset: /tutorials/ch2-Geophysics/images/sphx_glr_ch2_1_gravity_005.png
+   :class: sphx-glr-single-img
 
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 138-144
+.. GENERATED FROM PYTHON SOURCE LINES 154-160
 
 Plotting lithologies
 ^^^^^^^^^^^^^^^^^^^^
@@ -611,22 +506,18 @@ If we want to compute the lithologies we will need to create a normal
 interpolator object as seen in the Chapter 1 of the tutorials
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 147-150
+.. GENERATED FROM PYTHON SOURCE LINES 163-166
 
 Now we can plot all together (change the alpha parameter to see the
 gravity overlying):
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 152-153
+.. GENERATED FROM PYTHON SOURCE LINES 168-183
 
-sphinx_gallery_thumbnail_number = 4
+.. code-block:: Python
 
-.. GENERATED FROM PYTHON SOURCE LINES 153-166
-
-.. code-block:: python3
-
-    gp.plot_2d(geo_model, cell_number=[-1], direction=['z'], show=False,
-               kwargs_regular_grid={'alpha': .5})
+    gpv.plot_2d(geo_model, cell_number=[-1], direction=['z'], show=False,
+                kwargs_regular_grid={'alpha': .5})
 
     plt.scatter(xy_ravel[:, 0], xy_ravel[:, 1], s=1)
     plt.imshow(grav.reshape(grav_res, grav_res),
@@ -639,11 +530,14 @@ sphinx_gallery_thumbnail_number = 4
     cbar.set_label(r'$\mu$gal')
     plt.show()
 
+    # sphinx_gallery_thumbnail_number = -2
 
 
-.. image:: /tutorials/ch2-Geophysics/images/sphx_glr_ch2_1_gravity_004.png
-    :alt: Cell Number: -1 Direction: z
-    :class: sphx-glr-single-img
+
+.. image-sg:: /tutorials/ch2-Geophysics/images/sphx_glr_ch2_1_gravity_006.png
+   :alt: Cell Number: -1 Direction: z
+   :srcset: /tutorials/ch2-Geophysics/images/sphx_glr_ch2_1_gravity_006.png
+   :class: sphx-glr-single-img
 
 
 
@@ -652,28 +546,22 @@ sphinx_gallery_thumbnail_number = 4
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  39.185 seconds)
+   **Total running time of the script:** (0 minutes 54.645 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch2-Geophysics_ch2_1_gravity.py:
 
+.. only:: html
 
-.. only :: html
+  .. container:: sphx-glr-footer sphx-glr-footer-example
 
- .. container:: sphx-glr-footer
-    :class: sphx-glr-footer-example
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
+      :download:`Download Jupyter notebook: ch2_1_gravity.ipynb <ch2_1_gravity.ipynb>`
 
+    .. container:: sphx-glr-download sphx-glr-download-python
 
-  .. container:: sphx-glr-download sphx-glr-download-python
-
-     :download:`Download Python source code: ch2_1_gravity.py <ch2_1_gravity.py>`
-
-
-
-  .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-     :download:`Download Jupyter notebook: ch2_1_gravity.ipynb <ch2_1_gravity.ipynb>`
+      :download:`Download Python source code: ch2_1_gravity.py <ch2_1_gravity.py>`
 
 
 .. only:: html

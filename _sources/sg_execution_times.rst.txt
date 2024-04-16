@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**00:05.610** total execution time for 24 files **from all galleries**:
+**00:54.645** total execution time for 26 files **from all galleries**:
 
 .. container::
 
@@ -32,8 +32,8 @@ Computation times
    * - Example
      - Time
      - Mem (MB)
-   * - :ref:`sphx_glr_tutorials_a_getting_started_get_started.py` (``../../examples/tutorials/a_getting_started/get_started.py``)
-     - 00:05.610
+   * - :ref:`sphx_glr_tutorials_ch2-Geophysics_ch2_1_gravity.py` (``../../examples/tutorials/ch2-Geophysics/ch2_1_gravity.py``)
+     - 00:54.645
      - 0.0
    * - :ref:`sphx_glr_examples_geometries_a01_horizontal_stratigraphic.py` (``../../examples/examples/geometries/a01_horizontal_stratigraphic.py``)
      - 00:00.000
@@ -77,6 +77,9 @@ Computation times
    * - :ref:`sphx_glr_examples_real_Perth_basin.py` (``../../examples/examples/real/Perth_basin.py``)
      - 00:00.000
      - 0.0
+   * - :ref:`sphx_glr_tutorials_a_getting_started_get_started.py` (``../../examples/tutorials/a_getting_started/get_started.py``)
+     - 00:00.000
+     - 0.0
    * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_1_basics.py` (``../../examples/tutorials/ch1_fundamentals/ch1_1_basics.py``)
      - 00:00.000
      - 0.0
@@ -96,6 +99,9 @@ Computation times
      - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_6_2d_visualization.py` (``../../examples/tutorials/ch1_fundamentals/ch1_6_2d_visualization.py``)
+     - 00:00.000
+     - 0.0
+   * - :ref:`sphx_glr_tutorials_ch2-Geophysics_ch2_2_cell_selection.py` (``../../examples/tutorials/ch2-Geophysics/ch2_2_cell_selection.py``)
      - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_tutorials_ch3-Interpolations_ch3_1_kriging_interpolation_and_simulation.py` (``../../examples/tutorials/ch3-Interpolations/ch3_1_kriging_interpolation_and_simulation.py``)

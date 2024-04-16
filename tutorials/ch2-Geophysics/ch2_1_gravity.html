@@ -1,27 +1,25 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="../../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>2.1 Forward Gravity: Simple example &#8212; GemPy 2.2.8 documentation</title>
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/gallery-rendered-html.css" />
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>2.1 Forward Gravity: Simple example &#8212; GemPy 2023.2.0b1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=270d38c7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=61a4c737" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <script src="../../_static/documentation_options.js?v=acace1bb"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="2.2: Centered Grid." href="ch2_2_cell_selection.html" />
-    <link rel="prev" title="1.7: 3-D Visualization" href="../ch1_fundamentals/ch1_7_3d_visualization.html" />
+    <link rel="prev" title="Chapter 2: Forward Geophysics" href="index.html" />
    
   <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
   
@@ -40,14 +38,14 @@
             
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
-<p>Click <a class="reference internal" href="#sphx-glr-download-tutorials-ch2-geophysics-ch2-1-gravity-py"><span class="std std-ref">here</span></a>
+<p><a class="reference internal" href="#sphx-glr-download-tutorials-ch2-geophysics-ch2-1-gravity-py"><span class="std std-ref">Go to the end</span></a>
 to download the full example code</p>
 </div>
-<div class="sphx-glr-example-title section" id="forward-gravity-simple-example">
-<span id="sphx-glr-tutorials-ch2-geophysics-ch2-1-gravity-py"></span><h1>2.1 Forward Gravity: Simple example<a class="headerlink" href="#forward-gravity-simple-example" title="Permalink to this headline">¶</a></h1>
+<section class="sphx-glr-example-title" id="forward-gravity-simple-example">
+<span id="sphx-glr-tutorials-ch2-geophysics-ch2-1-gravity-py"></span><h1>2.1 Forward Gravity: Simple example<a class="headerlink" href="#forward-gravity-simple-example" title="Link to this heading">¶</a></h1>
 <p>Importing gempy</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gempy</span> <span class="k">as</span> <span class="nn">gp</span>
-<span class="kn">from</span> <span class="nn">gempy.assets.geophysics</span> <span class="kn">import</span> <a href="../../Data/Grid/gempy.core.grid_modules.grid_types.CenteredGrid.html#gempy.core.grid_modules.grid_types.CenteredGrid" title="gempy.core.grid_modules.grid_types.CenteredGrid" class="sphx-glr-backref-module-gempy-core-grid_modules-grid_types sphx-glr-backref-type-py-class"><span class="n">GravityPreprocessing</span></a>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gempy</span> <span class="k">as</span> <span class="nn">gp</span>
+<span class="kn">import</span> <span class="nn">gempy_viewer</span> <span class="k">as</span> <span class="nn">gpv</span>
 
 <span class="c1"># Aux imports</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -55,161 +53,118 @@ to download the full example code</p>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 
-<a href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.seed.html#numpy.random.seed" title="numpy.random.seed" class="sphx-glr-backref-module-numpy-random sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span></a><span class="p">(</span><span class="mi">1515</span><span class="p">)</span>
-<a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.set_option.html#pandas.set_option" title="pandas.set_option" class="sphx-glr-backref-module-pandas sphx-glr-backref-type-py-data"><span class="n">pd</span><span class="o">.</span><span class="n">set_option</span></a><span class="p">(</span><span class="s1">&#39;precision&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cwd</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.html#os.getcwd" title="os.getcwd" class="sphx-glr-backref-module-os sphx-glr-backref-type-py-function"><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span></a><span class="p">()</span>
-<span class="k">if</span> <span class="s1">&#39;examples&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cwd</span></a><span class="p">:</span>
-    <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.html#os.getcwd" title="os.getcwd" class="sphx-glr-backref-module-os sphx-glr-backref-type-py-function"><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span></a><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;/examples/&#39;</span>
-<span class="k">else</span><span class="p">:</span>
-    <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cwd</span></a> <span class="o">+</span> <span class="s1">&#39;/../../&#39;</span>
 
-<a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">load_model</span><span class="p">(</span><span class="s1">&#39;Greenstone&#39;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a> <span class="o">+</span> <span class="s1">&#39;data/gempy_models/Greenstone&#39;</span><span class="p">)</span>
+<a href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.seed.html#numpy.random.seed" title="numpy.random.seed" class="sphx-glr-backref-module-numpy-random sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span></a><span class="p">(</span><span class="mi">1515</span><span class="p">)</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s1">&#39;display.precision&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Active grids: [&#39;regular&#39;]
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">data_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s1">&#39;../../data/input_data/tut_SandStone&#39;</span><span class="p">)</span>
+
+<span class="c1"># Importing the data from csv</span>
+
+<a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">:</span> <a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class"><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GeoModel</span></a> <span class="o">=</span> <a href="../../GemPy API/gempy.create_geomodel.html#gempy.create_geomodel" title="gempy.create_geomodel" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">create_geomodel</span></a><span class="p">(</span>
+    <span class="n">project_name</span><span class="o">=</span><span class="s1">&#39;Greenstone&#39;</span><span class="p">,</span>
+    <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="mi">696000</span><span class="p">,</span> <span class="mi">747000</span><span class="p">,</span> <span class="mi">6863000</span><span class="p">,</span> <span class="mi">6930000</span><span class="p">,</span> <span class="o">-</span><span class="mi">20000</span><span class="p">,</span> <span class="mi">200</span><span class="p">],</span>  <span class="c1"># * Here we define the extent of the model</span>
+    <span class="n">refinement</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>  <span class="c1"># * Here we define the number of octree levels. If octree levels are defined, the resolution is ignored.</span>
+    <span class="n">importer_helper</span><span class="o">=</span><a href="../../Helper Classes/gempy.core.data.ImporterHelper.html#gempy.core.data.ImporterHelper" title="gempy.core.data.ImporterHelper" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class"><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">ImporterHelper</span></a><span class="p">(</span>
+        <span class="n">path_to_orientations</span><span class="o">=</span><span class="n">data_path</span> <span class="o">+</span> <span class="s2">&quot;/SandStone_Foliations.csv&quot;</span><span class="p">,</span>
+        <span class="n">path_to_surface_points</span><span class="o">=</span><span class="n">data_path</span> <span class="o">+</span> <span class="s2">&quot;/SandStone_Points.csv&quot;</span><span class="p">,</span>
+        <span class="n">hash_surface_points</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">hash_orientations</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">)</span>
+<span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Model/gempy.core.model.ImplicitCoKriging.html#gempy.core.model.ImplicitCoKriging.stack" title="gempy.core.model.ImplicitCoKriging.stack" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-method"><span class="n">geo_model</span><span class="o">.</span><span class="n">stack</span></a>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../GemPy API/gempy.map_stack_to_surfaces.html#gempy.map_stack_to_surfaces" title="gempy.map_stack_to_surfaces" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">map_stack_to_surfaces</span></a><span class="p">(</span>
+    <span class="n">gempy_model</span><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span>
+    <span class="n">mapping_object</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;EarlyGranite_Series&quot;</span><span class="p">:</span> <span class="s1">&#39;EarlyGranite&#39;</span><span class="p">,</span>
+        <span class="s2">&quot;BIF_Series&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;SimpleMafic2&#39;</span><span class="p">,</span> <span class="s1">&#39;SimpleBIF&#39;</span><span class="p">),</span>
+        <span class="s2">&quot;SimpleMafic_Series&quot;</span><span class="p">:</span> <span class="s1">&#39;SimpleMafic1&#39;</span><span class="p">,</span> <span class="s1">&#39;Basement&#39;</span><span class="p">:</span> <span class="s1">&#39;basement&#39;</span>
+    <span class="p">}</span>
+<span class="p">)</span>
 </pre></div>
 </div>
-<div class="output_subarea output_html rendered_html output_result">
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>order_series</th>
-      <th>BottomRelation</th>
-      <th>isActive</th>
-      <th>isFault</th>
-      <th>isFinite</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>EarlyGranite_Series</th>
-      <td>1</td>
-      <td>Erosion</td>
-      <td>True</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>BIF_Series</th>
-      <td>2</td>
-      <td>Erosion</td>
-      <td>True</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>SimpleMafic_Series</th>
-      <td>3</td>
-      <td>Erosion</td>
-      <td>True</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>Basement</th>
-      <td>4</td>
-      <td>Erosion</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-<br />
-<br /><div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Model/gempy.core.model.ImplicitCoKriging.html#gempy.core.model.ImplicitCoKriging.surfaces" title="gempy.core.model.ImplicitCoKriging.surfaces" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-method"><span class="n">geo_model</span><span class="o">.</span><span class="n">surfaces</span></a>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Could not find element &#39;basement&#39; in any group.
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
-<style  type="text/css" >
-#T_3749e_row0_col3{
-            background-color:  #728f02;
-        }#T_3749e_row1_col3{
-            background-color:  #015482;
-        }#T_3749e_row2_col3{
-            background-color:  #9f0052;
-        }#T_3749e_row3_col3{
-            background-color:  #ffbe00;
-        }#T_3749e_row4_col3{
-            background-color:  #443988;
-        }</style><table id="T_3749e_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>        <th class="col_heading level0 col5" >value_0</th>    </tr></thead><tbody>
-                <tr>
-                        <th id="T_3749e_level0_row0" class="row_heading level0 row0" >3</th>
-                        <td id="T_3749e_row0_col0" class="data row0 col0" >EarlyGranite</td>
-                        <td id="T_3749e_row0_col1" class="data row0 col1" >EarlyGranite_Series</td>
-                        <td id="T_3749e_row0_col2" class="data row0 col2" >1</td>
-                        <td id="T_3749e_row0_col3" class="data row0 col3" >#728f02</td>
-                        <td id="T_3749e_row0_col4" class="data row0 col4" >1</td>
-                        <td id="T_3749e_row0_col5" class="data row0 col5" >2.61</td>
-            </tr>
-            <tr>
-                        <th id="T_3749e_level0_row1" class="row_heading level0 row1" >0</th>
-                        <td id="T_3749e_row1_col0" class="data row1 col0" >SimpleMafic2</td>
-                        <td id="T_3749e_row1_col1" class="data row1 col1" >BIF_Series</td>
-                        <td id="T_3749e_row1_col2" class="data row1 col2" >1</td>
-                        <td id="T_3749e_row1_col3" class="data row1 col3" >#015482</td>
-                        <td id="T_3749e_row1_col4" class="data row1 col4" >2</td>
-                        <td id="T_3749e_row1_col5" class="data row1 col5" >2.92</td>
-            </tr>
-            <tr>
-                        <th id="T_3749e_level0_row2" class="row_heading level0 row2" >1</th>
-                        <td id="T_3749e_row2_col0" class="data row2 col0" >SimpleBIF</td>
-                        <td id="T_3749e_row2_col1" class="data row2 col1" >BIF_Series</td>
-                        <td id="T_3749e_row2_col2" class="data row2 col2" >2</td>
-                        <td id="T_3749e_row2_col3" class="data row2 col3" >#9f0052</td>
-                        <td id="T_3749e_row2_col4" class="data row2 col4" >3</td>
-                        <td id="T_3749e_row2_col5" class="data row2 col5" >3.10</td>
-            </tr>
-            <tr>
-                        <th id="T_3749e_level0_row3" class="row_heading level0 row3" >2</th>
-                        <td id="T_3749e_row3_col0" class="data row3 col0" >SimpleMafic1</td>
-                        <td id="T_3749e_row3_col1" class="data row3 col1" >SimpleMafic_Series</td>
-                        <td id="T_3749e_row3_col2" class="data row3 col2" >1</td>
-                        <td id="T_3749e_row3_col3" class="data row3 col3" >#ffbe00</td>
-                        <td id="T_3749e_row3_col4" class="data row3 col4" >4</td>
-                        <td id="T_3749e_row3_col5" class="data row3 col5" >2.92</td>
-            </tr>
-            <tr>
-                        <th id="T_3749e_level0_row4" class="row_heading level0 row4" >4</th>
-                        <td id="T_3749e_row4_col0" class="data row4 col0" >basement</td>
-                        <td id="T_3749e_row4_col1" class="data row4 col1" >Basement</td>
-                        <td id="T_3749e_row4_col2" class="data row4 col2" >1</td>
-                        <td id="T_3749e_row4_col3" class="data row4 col3" >#443988</td>
-                        <td id="T_3749e_row4_col4" class="data row4 col4" >5</td>
-                        <td id="T_3749e_row4_col5" class="data row4 col5" >2.61</td>
-            </tr>
-    </tbody></table>
+
+        <table>
+          <tr><td>Structural Groups:</td><td>
+    <table style="border-left:1.2px solid black;>
+      <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+      <tr><td>Name:</td><td>EarlyGranite_Series</td></tr>
+      <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+      <tr><td>Elements:</td><td>
+    <table width="50%" style="border-left:15px solid #015482;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>EarlyGranite</td></tr>
+    </table>
+        </td></tr>
+    </table>
+        <br>
+    <table style="border-left:1.2px solid black;>
+      <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+      <tr><td>Name:</td><td>BIF_Series</td></tr>
+      <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+      <tr><td>Elements:</td><td>
+    <table width="50%" style="border-left:15px solid #728f02;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>SimpleMafic2</td></tr>
+    </table>
+        <br>
+    <table width="50%" style="border-left:15px solid #9f0052;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>SimpleBIF</td></tr>
+    </table>
+        </td></tr>
+    </table>
+        <br>
+    <table style="border-left:1.2px solid black;>
+      <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+      <tr><td>Name:</td><td>SimpleMafic_Series</td></tr>
+      <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+      <tr><td>Elements:</td><td>
+    <table width="50%" style="border-left:15px solid #ffbe00;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>SimpleMafic1</td></tr>
+    </table>
+        </td></tr>
+    </table>
+        </td></tr>
+          <tr><td>Fault Relations:</td><td><table style="border-collapse: collapse; table-layout: fixed;"><th></th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">EarlyGrani...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">BIF_Series</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">SimpleMafi...</th><tr><th>EarlyGranite_Series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>BIF_Series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>SimpleMafic_Series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr></table></td></tr>
+          <tr><td></td><td>
+        <table>
+          <tr>
+            <td><div style="display: inline-block; background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></div> True</td>
+            <td><div style="display: inline-block; background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></div> False</td>
+          </tr>
+        </table>
+        </td></tr>
+        </table>
+
 </div>
 <br />
-<br /><div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Plot/gempy.plot_2d.html#gempy.plot_2d" title="gempy.plot_2d" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">plot_2d</span></a><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">)</span>
+<br /><div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<img alt="Cell Number: mid Direction: y" class="sphx-glr-single-img" src="../../_images/sphx_glr_ch2_1_gravity_001.png" />
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy.plot.visualization_2d.Plot2D object at 0x7fcc4670beb0&gt;
+<img src="../../_images/sphx_glr_ch2_1_gravity_001.png" srcset="../../_images/sphx_glr_ch2_1_gravity_001.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f919f1713c0&gt;
 </pre></div>
 </div>
-<div class="section" id="creating-grid">
-<h2>Creating grid<a class="headerlink" href="#creating-grid" title="Permalink to this headline">¶</a></h2>
+<section id="creating-grid">
+<h2>Creating grid<a class="headerlink" href="#creating-grid" title="Link to this heading">¶</a></h2>
 <p>First we need to define the location of the devices. For this example we
 can make a map:</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">grav_res</span></a> <span class="o">=</span> <span class="mi">20</span>
-<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.linspace.html#numpy.linspace" title="numpy.linspace" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">linspace</span></a><span class="p">(</span><span class="mf">7.050000e+05</span><span class="p">,</span> <span class="mi">747000</span><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">grav_res</span></a><span class="p">)</span>
-<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Y</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.linspace.html#numpy.linspace" title="numpy.linspace" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">linspace</span></a><span class="p">(</span><span class="mi">6863000</span><span class="p">,</span> <span class="mi">6925000</span><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">grav_res</span></a><span class="p">)</span>
-<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Z</span></a> <span class="o">=</span> <span class="mi">300</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">xyz</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.meshgrid.html#numpy.meshgrid" title="numpy.meshgrid" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Y</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Z</span></a><span class="p">)</span>
-<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">xy_ravel</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.vstack.html#numpy.vstack" title="numpy.vstack" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">vstack</span></a><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ravel.html#numpy.ravel" title="numpy.ravel" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">ravel</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">xyz</span></a><span class="p">)))</span><span class="o">.</span><span class="n">T</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">grav_res</span> <span class="o">=</span> <span class="mi">20</span>
+<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.linspace.html#numpy.linspace" title="numpy.linspace" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">linspace</span></a><span class="p">(</span><span class="mf">7.050000e+05</span><span class="p">,</span> <span class="mi">747000</span><span class="p">,</span> <span class="n">grav_res</span><span class="p">)</span>
+<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Y</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.linspace.html#numpy.linspace" title="numpy.linspace" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">linspace</span></a><span class="p">(</span><span class="mi">6863000</span><span class="p">,</span> <span class="mi">6925000</span><span class="p">,</span> <span class="n">grav_res</span><span class="p">)</span>
+<span class="n">Z</span> <span class="o">=</span> <span class="mi">300</span>
+<span class="n">xyz</span> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.meshgrid.html#numpy.meshgrid" title="numpy.meshgrid" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Y</span></a><span class="p">,</span> <span class="n">Z</span><span class="p">)</span>
+<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">xy_ravel</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.vstack.html#numpy.vstack" title="numpy.vstack" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">vstack</span></a><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ravel.html#numpy.ravel" title="numpy.ravel" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">ravel</span></a><span class="p">,</span> <span class="n">xyz</span><span class="p">)))</span><span class="o">.</span><span class="n">T</span>
 <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">xy_ravel</span></a>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>array([[7.05000000e+05, 6.86300000e+06, 3.00000000e+02],
        [7.07210526e+05, 6.86300000e+06, 3.00000000e+02],
        [7.09421053e+05, 6.86300000e+06, 3.00000000e+02],
@@ -220,34 +175,54 @@ can make a map:</p>
 </pre></div>
 </div>
 <p>We can see the location of the devices relative to the model data:</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Plot/gempy.plot_2d.html#gempy.plot_2d" title="gempy.plot_2d" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">plot_2d</span></a><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;z&#39;</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.scatter.html#matplotlib.pyplot.scatter" title="matplotlib.pyplot.scatter" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">xy_ravel</span></a><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">xy_ravel</span></a><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;z&#39;</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">xy_ravel</span></a><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">xy_ravel</span></a><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<img alt="Cell Number: mid Direction: z" class="sphx-glr-single-img" src="../../_images/sphx_glr_ch2_1_gravity_002.png" />
-<p>Now we need to create the grid centered on the devices (see:
+<img src="../../_images/sphx_glr_ch2_1_gravity_002.png" srcset="../../_images/sphx_glr_ch2_1_gravity_002.png" alt="Cell Number: mid Direction: z" class = "sphx-glr-single-img"/><p>Now we need to create the grid centered on the devices (see:
 <a class="reference external" href="https://github.com/cgre-aachen/gempy/blob/master/notebooks/tutorials/ch1-3-Grids.ipynb">https://github.com/cgre-aachen/gempy/blob/master/notebooks/tutorials/ch1-3-Grids.ipynb</a>)</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Model/gempy.core.model.ImplicitCoKriging.html#gempy.core.model.ImplicitCoKriging.set_centered_grid" title="gempy.core.model.ImplicitCoKriging.set_centered_grid" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-method"><span class="n">geo_model</span><span class="o">.</span><span class="n">set_centered_grid</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">xy_ravel</span></a><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">],</span> <span class="n">radius</span><span class="o">=</span><span class="mi">5000</span><span class="p">)</span>
+<p>geo_model.set_centered_grid(xy_ravel, resolution=[10, 10, 15], radius=5000)</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">set_centered_grid</span><span class="p">(</span>
+    <span class="n">grid</span><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span><span class="o">.</span><span class="n">grid</span></a><span class="p">,</span>
+    <span class="n">centers</span><span class="o">=</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">xy_ravel</span></a><span class="p">,</span>
+    <span class="n">resolution</span><span class="o">=</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">]),</span>
+    <span class="n">radius</span><span class="o">=</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><span class="mi">5000</span><span class="p">,</span> <span class="mi">5000</span><span class="p">,</span> <span class="mi">5000</span><span class="p">])</span>
+<span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Active grids: [&#39;regular&#39; &#39;centered&#39;]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Active grids: [&#39;centered&#39;]
 
-Grid Object. Values:
-array([[ 6.96510000e+05,  6.86367000e+06, -1.97980000e+04],
-       [ 6.96510000e+05,  6.86367000e+06, -1.93940000e+04],
-       [ 6.96510000e+05,  6.86367000e+06, -1.89900000e+04],
+CenteredGrid(centers=array([[7.05000000e+05, 6.86300000e+06, 3.00000000e+02],
+       [7.07210526e+05, 6.86300000e+06, 3.00000000e+02],
+       [7.09421053e+05, 6.86300000e+06, 3.00000000e+02],
        ...,
-       [ 7.52000000e+05,  6.93000000e+06, -3.10768481e+03],
-       [ 7.52000000e+05,  6.93000000e+06, -4.31811404e+03],
-       [ 7.52000000e+05,  6.93000000e+06, -6.00000000e+03]])
+       [7.42578947e+05, 6.92500000e+06, 3.00000000e+02],
+       [7.44789474e+05, 6.92500000e+06, 3.00000000e+02],
+       [7.47000000e+05, 6.92500000e+06, 3.00000000e+02]]), resolution=array([10, 10, 15]), radius=array([5000, 5000, 5000]), kernel_grid_centers=array([[-5000.        , -5000.        ,  -300.        ],
+       [-5000.        , -5000.        ,  -360.        ],
+       [-5000.        , -5000.        ,  -383.36972966],
+       ...,
+       [ 5000.        ,  5000.        , -3407.68480754],
+       [ 5000.        ,  5000.        , -4618.11403801],
+       [ 5000.        ,  5000.        , -6300.        ]]), left_voxel_edges=array([[1709.43058496, 1709.43058496,  -30.        ],
+       [1709.43058496, 1709.43058496,  -30.        ],
+       [1709.43058496, 1709.43058496,  -11.68486483],
+       ...,
+       [1709.43058496, 1709.43058496, -435.56428767],
+       [1709.43058496, 1709.43058496, -605.21461523],
+       [1709.43058496, 1709.43058496, -840.942981  ]]), right_voxel_edges=array([[1709.43058496, 1709.43058496,  -30.        ],
+       [1709.43058496, 1709.43058496,  -11.68486483],
+       [1709.43058496, 1709.43058496,  -16.23606704],
+       ...,
+       [1709.43058496, 1709.43058496, -605.21461523],
+       [1709.43058496, 1709.43058496, -840.942981  ],
+       [1709.43058496, 1709.43058496, -840.942981  ]]))
 </pre></div>
 </div>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Model/gempy.core.model.ImplicitCoKriging.html#gempy.core.model.ImplicitCoKriging.grid" title="gempy.core.model.ImplicitCoKriging.grid" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-method"><span class="n">geo_model</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">centered_grid</span><span class="o">.</span><span class="n">kernel_centers</span></a>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">centered_grid</span><span class="o">.</span><span class="n">kernel_grid_centers</span></a>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>array([[-5000.        , -5000.        ,  -300.        ],
        [-5000.        , -5000.        ,  -360.        ],
        [-5000.        , -5000.        ,  -383.36972966],
@@ -259,172 +234,99 @@ array([[ 6.96510000e+05,  6.86367000e+06, -1.97980000e+04],
 </div>
 <p>Now we need to compute the component tz (see
 <a class="reference external" href="https://github.com/cgre-achen/gempy/blob/master/notebooks/tutorials/ch2-2-Cell_selection.ipynb">https://github.com/cgre-achen/gempy/blob/master/notebooks/tutorials/ch2-2-Cell_selection.ipynb</a>)</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">g</span> <span class="o">=</span> <a href="../../Data/Grid/gempy.core.grid_modules.grid_types.CenteredGrid.html#gempy.core.grid_modules.grid_types.CenteredGrid" title="gempy.core.grid_modules.grid_types.CenteredGrid" class="sphx-glr-backref-module-gempy-core-grid_modules-grid_types sphx-glr-backref-type-py-class"><span class="n">GravityPreprocessing</span></a><span class="p">(</span><a href="../../Model/gempy.core.model.ImplicitCoKriging.html#gempy.core.model.ImplicitCoKriging.grid" title="gempy.core.model.ImplicitCoKriging.grid" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-method"><span class="n">geo_model</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">centered_grid</span></a><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">gravity_gradient</span></a> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">calculate_gravity_gradient</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span><span class="o">.</span><span class="n">grid</span></a><span class="o">.</span><span class="n">centered_grid</span><span class="p">)</span>
+<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">gravity_gradient</span></a>
 </pre></div>
 </div>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tz</span></a> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">set_tz_kernel</span><span class="p">()</span>
-</pre></div>
-</div>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tz</span></a>
-</pre></div>
-</div>
-<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>array([-0.00435884, -0.0035374 , -0.00260207, ..., -0.60455378,
        -0.888396  , -0.98280245])
 </pre></div>
 </div>
-</div>
-<div class="section" id="compiling-the-gravity-graph">
-<h2>Compiling the gravity graph<a class="headerlink" href="#compiling-the-gravity-graph" title="Permalink to this headline">¶</a></h2>
-<p>If geo_model has already a centered grid, the calculation of tz happens
-automatically.  This theano graph will return gravity
-as well as the lithologies. In addition we need either to pass the density
-block (see below). Or the position of density on the surface(in the
-future the name) to compute the density block at running time.</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Model/gempy.core.model.ImplicitCoKriging.html#gempy.core.model.ImplicitCoKriging.surfaces" title="gempy.core.model.ImplicitCoKriging.surfaces" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-method"><span class="n">geo_model</span><span class="o">.</span><span class="n">surfaces</span></a>
-</pre></div>
-</div>
-<div class="output_subarea output_html rendered_html output_result">
-<style  type="text/css" >
-#T_7c943_row0_col3{
-            background-color:  #728f02;
-        }#T_7c943_row1_col3{
-            background-color:  #015482;
-        }#T_7c943_row2_col3{
-            background-color:  #9f0052;
-        }#T_7c943_row3_col3{
-            background-color:  #ffbe00;
-        }#T_7c943_row4_col3{
-            background-color:  #443988;
-        }</style><table id="T_7c943_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >surface</th>        <th class="col_heading level0 col1" >series</th>        <th class="col_heading level0 col2" >order_surfaces</th>        <th class="col_heading level0 col3" >color</th>        <th class="col_heading level0 col4" >id</th>        <th class="col_heading level0 col5" >value_0</th>    </tr></thead><tbody>
-                <tr>
-                        <th id="T_7c943_level0_row0" class="row_heading level0 row0" >3</th>
-                        <td id="T_7c943_row0_col0" class="data row0 col0" >EarlyGranite</td>
-                        <td id="T_7c943_row0_col1" class="data row0 col1" >EarlyGranite_Series</td>
-                        <td id="T_7c943_row0_col2" class="data row0 col2" >1</td>
-                        <td id="T_7c943_row0_col3" class="data row0 col3" >#728f02</td>
-                        <td id="T_7c943_row0_col4" class="data row0 col4" >1</td>
-                        <td id="T_7c943_row0_col5" class="data row0 col5" >2.61</td>
-            </tr>
-            <tr>
-                        <th id="T_7c943_level0_row1" class="row_heading level0 row1" >0</th>
-                        <td id="T_7c943_row1_col0" class="data row1 col0" >SimpleMafic2</td>
-                        <td id="T_7c943_row1_col1" class="data row1 col1" >BIF_Series</td>
-                        <td id="T_7c943_row1_col2" class="data row1 col2" >1</td>
-                        <td id="T_7c943_row1_col3" class="data row1 col3" >#015482</td>
-                        <td id="T_7c943_row1_col4" class="data row1 col4" >2</td>
-                        <td id="T_7c943_row1_col5" class="data row1 col5" >2.92</td>
-            </tr>
-            <tr>
-                        <th id="T_7c943_level0_row2" class="row_heading level0 row2" >1</th>
-                        <td id="T_7c943_row2_col0" class="data row2 col0" >SimpleBIF</td>
-                        <td id="T_7c943_row2_col1" class="data row2 col1" >BIF_Series</td>
-                        <td id="T_7c943_row2_col2" class="data row2 col2" >2</td>
-                        <td id="T_7c943_row2_col3" class="data row2 col3" >#9f0052</td>
-                        <td id="T_7c943_row2_col4" class="data row2 col4" >3</td>
-                        <td id="T_7c943_row2_col5" class="data row2 col5" >3.10</td>
-            </tr>
-            <tr>
-                        <th id="T_7c943_level0_row3" class="row_heading level0 row3" >2</th>
-                        <td id="T_7c943_row3_col0" class="data row3 col0" >SimpleMafic1</td>
-                        <td id="T_7c943_row3_col1" class="data row3 col1" >SimpleMafic_Series</td>
-                        <td id="T_7c943_row3_col2" class="data row3 col2" >1</td>
-                        <td id="T_7c943_row3_col3" class="data row3 col3" >#ffbe00</td>
-                        <td id="T_7c943_row3_col4" class="data row3 col4" >4</td>
-                        <td id="T_7c943_row3_col5" class="data row3 col5" >2.92</td>
-            </tr>
-            <tr>
-                        <th id="T_7c943_level0_row4" class="row_heading level0 row4" >4</th>
-                        <td id="T_7c943_row4_col0" class="data row4 col0" >basement</td>
-                        <td id="T_7c943_row4_col1" class="data row4 col1" >Basement</td>
-                        <td id="T_7c943_row4_col2" class="data row4 col2" >1</td>
-                        <td id="T_7c943_row4_col3" class="data row4 col3" >#443988</td>
-                        <td id="T_7c943_row4_col4" class="data row4 col4" >5</td>
-                        <td id="T_7c943_row4_col5" class="data row4 col5" >2.61</td>
-            </tr>
-    </tbody></table>
-</div>
-<br />
-<br /><p>In this case the densities of each layer are at the loc 1 (0 is the id)</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># New way</span>
-<span class="n">gp</span><span class="o">.</span><span class="n">set_interpolator</span><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;gravity&#39;</span><span class="p">],</span> <span class="n">pos_density</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">gradient</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                    <span class="n">theano_optimizer</span><span class="o">=</span><span class="s1">&#39;fast_run&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting kriging parameters to their default values.
-Compiling theano function...
-Level of Optimization:  fast_run
-Device:  cpu
-Precision:  float64
-Number of faults:  0
-Compilation Done!
-Kriging values:
-                        values
-range                86591.22
-$C_o$             178524761.9
-drift equations  [3, 3, 3, 3]
-nugget grad              0.01
-nugget scalar             0.0
-
-&lt;gempy.core.interpolator.InterpolatorModel object at 0x7fcc46f045e0&gt;
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="o">.</span><span class="n">geophysics_input</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GeophysicsInput</span><span class="p">(</span>
+    <span class="n">tz</span><span class="o">=</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">gravity_gradient</span></a><span class="p">,</span>
+    <span class="n">densities</span><span class="o">=</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><span class="mf">2.61</span><span class="p">,</span> <span class="mf">2.92</span><span class="p">,</span> <span class="mf">3.1</span><span class="p">,</span> <span class="mf">2.92</span><span class="p">,</span> <span class="mf">2.61</span><span class="p">]),</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 <p>Once we have created a gravity interpolator we can call it from compute
 model as follows:</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Solution/gempy.core.solution.Solution.html#gempy.core.solution.Solution" title="gempy.core.solution.Solution" class="sphx-glr-backref-module-gempy-core-solution sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sol</span></a> <span class="o">=</span> <a href="../../GemPy API/gempy.compute_model.html#gempy.compute_model" title="gempy.compute_model" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span></a><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">)</span>
-<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">grav</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sol</span><span class="o">.</span><span class="n">fw_gravity</span></a>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="o">.</span><span class="n">interpolation_options</span><span class="o">.</span><span class="n">mesh_extraction</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">sol</span> <span class="o">=</span> <a href="../../GemPy API/gempy.compute_model.html#gempy.compute_model" title="gempy.compute_model" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span></a><span class="p">(</span>
+    <span class="n">gempy_model</span><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span>
+    <span class="n">engine_config</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GemPyEngineConfig</span><span class="p">(</span>
+        <span class="n">backend</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">AvailableBackends</span><span class="o">.</span><span class="n">numpy</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+
+<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">grav</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sol</span><span class="o">.</span><span class="n">gravity</span></a>
 </pre></div>
 </div>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Plot/gempy.plot_2d.html#gempy.plot_2d" title="gempy.plot_2d" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">plot_2d</span></a><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;z&#39;</span><span class="p">],</span> <span class="n">height</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">show_results</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-           <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.scatter.html#matplotlib.pyplot.scatter" title="matplotlib.pyplot.scatter" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">xy_ravel</span></a><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">xy_ravel</span></a><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.imshow.html#matplotlib.pyplot.imshow" title="matplotlib.pyplot.imshow" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">imshow</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sol</span><span class="o">.</span><span class="n">fw_gravity</span></a><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">grav_res</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">grav_res</span></a><span class="p">),</span>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting Backend To: AvailableBackends.numpy
+Chunking done: 16 chunks
+Chunking done: 16 chunks
+Chunking done: 16 chunks
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">direction</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;z&#39;</span><span class="p">],</span> <span class="n">show_data</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_ch2_1_gravity_003.png" srcset="../../_images/sphx_glr_ch2_1_gravity_003.png" alt="Cell Number: -1 Direction: z" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f9191ce7250&gt;
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;mid&#39;</span><span class="p">],</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_ch2_1_gravity_004.png" srcset="../../_images/sphx_glr_ch2_1_gravity_004.png" alt="Cell Number: mid Direction: x" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f918fbc49d0&gt;
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;z&#39;</span><span class="p">],</span> <span class="n">height</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">show_results</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">xy_ravel</span></a><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">xy_ravel</span></a><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sol</span><span class="o">.</span><span class="n">gravity</span></a><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">grav_res</span><span class="p">,</span> <span class="n">grav_res</span><span class="p">),</span>
            <span class="n">extent</span><span class="o">=</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">xy_ravel</span></a><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">+</span> <span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">xy_ravel</span></a><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">xy_ravel</span></a><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
                    <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">xy_ravel</span></a><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">-</span> <span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">xy_ravel</span></a><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">xy_ravel</span></a><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
                    <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">xy_ravel</span></a><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">+</span> <span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">xy_ravel</span></a><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">xy_ravel</span></a><span class="p">[</span><span class="mi">30</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
                    <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">xy_ravel</span></a><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">-</span> <span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">xy_ravel</span></a><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">xy_ravel</span></a><span class="p">[</span><span class="mi">30</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span>
            <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;viridis_r&#39;</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">)</span>
-<a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<img alt="Cell Number: mid Direction: z" class="sphx-glr-single-img" src="../../_images/sphx_glr_ch2_1_gravity_003.png" />
-</div>
-</div>
-<div class="section" id="plotting-lithologies">
-<h1>Plotting lithologies<a class="headerlink" href="#plotting-lithologies" title="Permalink to this headline">¶</a></h1>
+<img src="../../_images/sphx_glr_ch2_1_gravity_005.png" srcset="../../_images/sphx_glr_ch2_1_gravity_005.png" alt="Cell Number: mid Direction: z" class = "sphx-glr-single-img"/></section>
+</section>
+<section id="plotting-lithologies">
+<h1>Plotting lithologies<a class="headerlink" href="#plotting-lithologies" title="Link to this heading">¶</a></h1>
 <p>If we want to compute the lithologies we will need to create a normal
 interpolator object as seen in the Chapter 1 of the tutorials</p>
 <p>Now we can plot all together (change the alpha parameter to see the
 gravity overlying):</p>
-<p>sphinx_gallery_thumbnail_number = 4</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><a href="../../Plot/gempy.plot_2d.html#gempy.plot_2d" title="gempy.plot_2d" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">plot_2d</span></a><span class="p">(</span><a href="../../Model/gempy.core.model.Project.html#gempy.core.model.Project" title="gempy.core.model.Project" class="sphx-glr-backref-module-gempy-core-model sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">direction</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;z&#39;</span><span class="p">],</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-           <span class="n">kwargs_regular_grid</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;alpha&#39;</span><span class="p">:</span> <span class="o">.</span><span class="mi">5</span><span class="p">})</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">direction</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;z&#39;</span><span class="p">],</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">kwargs_regular_grid</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;alpha&#39;</span><span class="p">:</span> <span class="mf">.5</span><span class="p">})</span>
 
-<a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.scatter.html#matplotlib.pyplot.scatter" title="matplotlib.pyplot.scatter" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">xy_ravel</span></a><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">xy_ravel</span></a><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.imshow.html#matplotlib.pyplot.imshow" title="matplotlib.pyplot.imshow" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">imshow</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">grav</span></a><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">grav_res</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">grav_res</span></a><span class="p">),</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">xy_ravel</span></a><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">xy_ravel</span></a><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">grav</span></a><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">grav_res</span><span class="p">,</span> <span class="n">grav_res</span><span class="p">),</span>
            <span class="n">extent</span><span class="o">=</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">xy_ravel</span></a><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">+</span> <span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">xy_ravel</span></a><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">xy_ravel</span></a><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
                    <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">xy_ravel</span></a><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">-</span> <span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">xy_ravel</span></a><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">xy_ravel</span></a><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
                    <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">xy_ravel</span></a><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">+</span> <span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">xy_ravel</span></a><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">xy_ravel</span></a><span class="p">[</span><span class="mi">30</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
                    <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">xy_ravel</span></a><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">-</span> <span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">xy_ravel</span></a><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">xy_ravel</span></a><span class="p">[</span><span class="mi">30</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span>
-           <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;viridis_r&#39;</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=.</span><span class="mi">8</span><span class="p">)</span>
-<a href="https://matplotlib.org/api/colorbar_api.html#matplotlib.colorbar.Colorbar" title="matplotlib.colorbar.Colorbar" class="sphx-glr-backref-module-matplotlib-colorbar sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">cbar</span></a> <span class="o">=</span> <a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.colorbar.html#matplotlib.pyplot.colorbar" title="matplotlib.pyplot.colorbar" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span></a><span class="p">()</span>
-<a href="https://matplotlib.org/api/colorbar_api.html#matplotlib.colorbar.ColorbarBase.set_label" title="matplotlib.colorbar.ColorbarBase.set_label" class="sphx-glr-backref-module-matplotlib-colorbar sphx-glr-backref-type-py-method"><span class="n">cbar</span><span class="o">.</span><span class="n">set_label</span></a><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\mu$gal&#39;</span><span class="p">)</span>
-<a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
+           <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;viridis_r&#39;</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.8</span><span class="p">)</span>
+<span class="n">cbar</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
+<span class="n">cbar</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\mu$gal&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="c1"># sphinx_gallery_thumbnail_number = -2</span>
 </pre></div>
 </div>
-<img alt="Cell Number: -1 Direction: z" class="sphx-glr-single-img" src="../../_images/sphx_glr_ch2_1_gravity_004.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  39.185 seconds)</p>
-<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-tutorials-ch2-geophysics-ch2-1-gravity-py">
-<div class="sphx-glr-download sphx-glr-download-python docutils container">
-<p><a class="reference download internal" download="" href="../../_downloads/aa3cbba4d8ad9cca95badfcb2b8413d1/ch2_1_gravity.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">ch2_1_gravity.py</span></code></a></p>
-</div>
+<img src="../../_images/sphx_glr_ch2_1_gravity_006.png" srcset="../../_images/sphx_glr_ch2_1_gravity_006.png" alt="Cell Number: -1 Direction: z" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 54.645 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-tutorials-ch2-geophysics-ch2-1-gravity-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/fbc2e1af6ba22b01cb6ed9d6c91c1016/ch2_1_gravity.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">ch2_1_gravity.ipynb</span></code></a></p>
 </div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/aa3cbba4d8ad9cca95badfcb2b8413d1/ch2_1_gravity.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">ch2_1_gravity.py</span></code></a></p>
+</div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
-</div>
+</section>
 
 
           </div>
@@ -435,7 +337,7 @@ gravity overlying):</p>
         <div class="sphinxsidebarwrapper">
 <p class="logo">
   <a href="../../index.html">
-    <img class="logo" src="../../_static/./logos/gempy.png" alt="Logo"/>
+    <img class="logo" src="../../_static/logos/gempy.png" alt="Logo"/>
     
   </a>
 </p>
@@ -446,7 +348,7 @@ gravity overlying):</p>
 
 
 <p>
-<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
+<iframe src="https://ghbtns.com/github-btn.html?user=gempy-project&repo=gempy&type=star&count=true&size=large&v=2"
   allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
 </p>
 
@@ -454,40 +356,27 @@ gravity overlying):</p>
 
 
 
-    
-
-<p>
-<a class="badge" href="https://travis-ci.org/cgre-aachen/gempy">
-    <img
-        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
-        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
-    />
-</a>
-</p>
-
-
 <h3>Navigation</h3>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../index.html">About</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../projects.html">Additional projects</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Getting started</span></p>
+<p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">GemPy Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#getting-started">Getting Started</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#chapter-1-gempy-fundamentals">Chapter 1: GemPy fundamentals</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../index.html#chapter-2-gempy-geophysics">Chapter 2: GemPy Geophysics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#chapter-2-forward-geophysics">Chapter 2: Forward Geophysics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#chapter-3-domain-kriging">Chapter 3: Domain Kriging</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#chapter-4-topological-analysis">Chapter 4: Topological analysis</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#chapter-4-topological-analysis">Chapter 4: Topological analysis</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../examples/index.html">Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../integrations/index.html">Integrations</a></li>
 </ul>
-<p class="caption"><span class="caption-text">API Reference</span></p>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../code.html">Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_reference.html">Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_reference.html#data-classes">Data Classes</a></li>
 </ul>
 
 <div class="relations">
@@ -495,8 +384,10 @@ gravity overlying):</p>
 <ul>
   <li><a href="../../index.html">Documentation overview</a><ul>
   <li><a href="../index.html">GemPy Tutorials</a><ul>
-      <li>Previous: <a href="../ch1_fundamentals/ch1_7_3d_visualization.html" title="previous chapter">1.7: 3-D Visualization</a></li>
+  <li><a href="index.html">Chapter 2: Forward Geophysics</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Chapter 2: Forward Geophysics</a></li>
       <li>Next: <a href="ch2_2_cell_selection.html" title="next chapter">2.2: Centered Grid.</a></li>
+  </ul></li>
   </ul></li>
   </ul></li>
 </ul>
@@ -505,12 +396,12 @@ gravity overlying):</p>
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -524,11 +415,11 @@ gravity overlying):</p>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2017-2021, CGRE-Aachen Team.
+      &copy;2017-2024, Gempy Developers.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
       
       |
       <a href="../../_sources/tutorials/ch2-Geophysics/ch2_1_gravity.rst.txt"
