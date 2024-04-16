@@ -1,13 +1,6 @@
 ﻿
 ## What's New: GemPy v3 Pre-release!
 
-GemPy v3 is gearing up for its official launch. Our team is diligently working on refining the documentation and adding the final touches. Experience GemPy v3 firsthand by installing the pre-release version from PyPi:
-
-`$ pip install gempy --pre`
-
-In the meantime, you can explore the updated documentation [here](https://gempy-project.github.io/temp_gp3_docs/).
-
-
 **Introducing GemPy Version 3: A Leap Froward in Geomodeling Software**
 
 Welcome to the era of GemPy v3! We are thrilled to announce the release of the latest version, a product of meticulous planning, redesign, and rigorous testing. While the core essence remains intact, v3 brings significant enhancements and novelties that promise to revolutionize your geomodeling experience.
