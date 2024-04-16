@@ -165,7 +165,6 @@ plt.show()
 # 
 
 # %%
-# sphinx_gallery_thumbnail_number = 4
 gpv.plot_2d(geo_model, cell_number=[-1], direction=['z'], show=False,
             kwargs_regular_grid={'alpha': .5})
 
@@ -179,3 +178,5 @@ plt.imshow(grav.reshape(grav_res, grav_res),
 cbar = plt.colorbar()
 cbar.set_label(r'$\mu$gal')
 plt.show()
+
+# sphinx_gallery_thumbnail_number = -2
