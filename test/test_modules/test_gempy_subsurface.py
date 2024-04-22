@@ -7,7 +7,10 @@ from gempy.core.data.enumerators import ExampleModel
 
 import numpy as np
 
-pytestmark = pytest.mark.skipif(REQUIREMENT_LEVEL.value < Requirements.DEV.value, reason="This test needs higher requirements.")
+pytestmark = pytest.mark.skipif(
+    condition=REQUIREMENT_LEVEL.value < Requirements.DEV.value and False,
+    reason="This test needs higher requirements."
+)
 
 ss = pytest.importorskip("subsurface", reason="Subsurface is not installed")
 pd = pytest.importorskip("pandas", reason="Pandas is not installed")
@@ -26,22 +29,26 @@ def test_gempy_to_subsurface():
         simplex_array += idx_max
         idx_max = simplex_array.max() + 1
 
-    id_array = [np.full(v.shape[0], i + 1) for i, v in enumerate(vertex)]
+    vertex_id_array = [np.full(v.shape[0], i + 1) for i, v in enumerate(vertex)]
+    cell_id_array = [np.full(v.shape[0], i + 1) for i, v in enumerate(simplex_list)]
 
-    concatenated_id_array = np.concatenate(id_array)
+    concatenated_id_array = np.concatenate(vertex_id_array)
+    concatenated_cell_id_array = np.concatenate(cell_id_array)
+    
     meshes: ss.UnstructuredData = ss.UnstructuredData.from_array(
         vertex=np.concatenate(vertex),
         cells=np.concatenate(simplex_list),
-        vertex_attr=pd.DataFrame({'id': concatenated_id_array})
+        vertex_attr=pd.DataFrame({'id': concatenated_id_array}),
+        cells_attr=pd.DataFrame({'id': concatenated_cell_id_array})
     )
 
     trisurf = ss.TriSurf(meshes)
     pyvista_mesh = ss.visualization.to_pyvista_mesh(trisurf)
-    ss.visualization.pv_plot([pyvista_mesh], image_2d=True)
+    ss.visualization.pv_plot([pyvista_mesh], image_2d=False)
 
 
 def test_gempy_to_subsurface_II():
-    model: gp.data.GeoModel  = gp.generate_example_model(ExampleModel.ANTICLINE, compute_model=True)
+    model: gp.data.GeoModel = gp.generate_example_model(ExampleModel.ANTICLINE, compute_model=True)
     from gempy_engine.core.data.raw_arrays_solution import RawArraysSolution
     meshes: ss.UnstructuredData = model.solutions.raw_arrays.meshes_to_subsurface()
 
