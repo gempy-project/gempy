@@ -1,8 +1,12 @@
-﻿import numpy as np
+﻿import os
+
+import numpy as np
 
 import gempy as gp
 from gempy_engine.core.data.stack_relation_type import StackRelationType
 from gempy.core.data.enumerators import ExampleModel
+
+
 
 
 def generate_example_model(example_model: ExampleModel, compute_model: bool = True) -> gp.data.GeoModel:
@@ -19,6 +23,8 @@ def generate_example_model(example_model: ExampleModel, compute_model: bool = Tr
             return _generate_combination_model(compute_model)
         case ExampleModel.ONE_FAULT_GRAVITY:
             return _generate_one_fault_model_gravity(compute_model)
+        case ExampleModel.GRABEN:
+            return _generate_graben_model(compute_model)
         case _:
             raise NotImplementedError(f"Example model {example_model} not implemented.")
 
@@ -437,3 +443,42 @@ def _generate_one_fault_model_gravity(compute_model):
         grav[0].backward()
     
     return geo_model
+
+
+def _generate_graben_model(compute_model: bool) -> gp.data.GeoModel:
+    # Data path is in root/examples/data
+    # script_dir = os.path.dirname(os.path.abspath(__file__))
+    # data_path = os.path.join(script_dir, '.../examples/')
+    # n_model = 7
+    # https: // github.com / gempy - project / gempy / blob / 279
+    # bbe904283e16320c54d868fe74be873177cca / examples / data / input_data / lisa_models / interfaces7.csv
+    # csv_ = data_path + "/data/input_data/lisa_models/foliations" + n_model + ".csv"
+
+    data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
+    path_to_data = data_path + "/data/input_data/lisa_models/"
+    
+    geo_data: gp.data.GeoModel = gp.create_geomodel(
+        project_name="Graben",
+        extent=[0, 2000, 0, 2000, 0, 1600],
+        resolution=[50, 50, 50],
+        refinement=6,  # * For this model is better not to use octrees because we want to see what is happening in the scalar fields
+        importer_helper=gp.data.ImporterHelper(
+            path_to_orientations= path_to_data + "foliations7.csv",
+            path_to_surface_points= path_to_data + "interfaces7.csv"
+        )
+    )
+
+    gp.map_stack_to_surfaces(
+        gempy_model=geo_data,
+        mapping_object={
+                "Fault_1"     : 'Fault_1', "Fault_2": 'Fault_2',
+                "Strat_Series": ('Sandstone', 'Siltstone', 'Shale', 'Sandstone_2', 'Schist', 'Gneiss')
+        },
+    )
+
+    gp.set_is_fault(geo_data, ['Fault_1', 'Fault_2'])
+    if compute_model:
+        sol = gp.compute_model(gempy_model=geo_data)
+
+    return geo_data
+

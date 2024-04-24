@@ -8,3 +8,4 @@ class ExampleModel(Enum):
     ONE_FAULT = auto()
     COMBINATION = auto()
     ONE_FAULT_GRAVITY = auto()
+    GRABEN = auto()
