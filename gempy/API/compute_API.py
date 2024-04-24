@@ -27,10 +27,7 @@ def compute_model(gempy_model: GeoModel, engine_config: Optional[GemPyEngineConf
     Returns:
         Solutions: The computed geological model.
     """
-    engine_config = engine_config or GemPyEngineConfig(
-        backend=AvailableBackends.numpy,
-        use_gpu=False,
-    )
+    engine_config = engine_config or GemPyEngineConfig(use_gpu=False)
 
     match engine_config.backend:
         case AvailableBackends.numpy | AvailableBackends.PYTORCH:
@@ -43,7 +40,7 @@ def compute_model(gempy_model: GeoModel, engine_config: Optional[GemPyEngineConf
 
             # TODO: To decide what to do with this.
             interpolation_input = gempy_model.interpolation_input_copy
-            gempy_model.taped_interpolation_input = interpolation_input # * This is used for gradient tape
+            gempy_model.taped_interpolation_input = interpolation_input  # * This is used for gradient tape
 
             gempy_model.solutions = gempy_engine.compute_model(
                 interpolation_input=interpolation_input,
@@ -84,8 +81,7 @@ def compute_model_at(gempy_model: GeoModel, at: np.ndarray,
     return sol.raw_arrays.custom
 
 
-
-def optimize_and_compute(geo_model: GeoModel, engine_config: GemPyEngineConfig, max_epochs: int = 10, 
+def optimize_and_compute(geo_model: GeoModel, engine_config: GemPyEngineConfig, max_epochs: int = 10,
                          convergence_criteria: float = 1e5):
     if engine_config.backend != AvailableBackends.PYTORCH:
         raise ValueError(f'Only PyTorch backend is supported for optimization. Received {engine_config.backend}')
@@ -112,7 +108,7 @@ def optimize_and_compute(geo_model: GeoModel, engine_config: GemPyEngineConfig, 
 
     # Optimization loop
     geo_model.interpolation_options.kernel_options.optimizing_condition_number = True
-    
+
     def _check_convergence_criterion(conditional_number: float, condition_number_old: float, conditional_number_target: float = 1e5):
         reached_conditional_target = conditional_number < conditional_number_target
         if reached_conditional_target == False and epoch > 10:
@@ -120,7 +116,7 @@ def optimize_and_compute(geo_model: GeoModel, engine_config: GemPyEngineConfig, 
             if condition_number_change < 0.01:
                 reached_conditional_target = True
         return reached_conditional_target
-    
+
     previous_condition_number = 0
     for epoch in range(max_epochs):
         optimizer.zero_grad()
@@ -149,11 +145,11 @@ def optimize_and_compute(geo_model: GeoModel, engine_config: GemPyEngineConfig, 
             mask = torch.ones_like(nugget_effect_scalar.grad)
             mask[indices] = 0
             nugget_effect_scalar.grad *= mask
-            
+
             # Update the vector
             optimizer.step()
             nugget_effect_scalar.data = nugget_effect_scalar.data.clamp_(min=1e-7)  # Replace negative values with 0
-            
+
             # optimizer.zero_grad()
         # Monitor progress
         if epoch % 1 == 0:
