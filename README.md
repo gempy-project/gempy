@@ -16,6 +16,8 @@ Welcome to the era of GemPy v3! We are thrilled to announce the release of the l
 
  Delve into the exciting new features in the [What's New in GemPy v3](WhatsNewGemPy3.md). 
 
+The journey from GemPy v2 to v3 has been transformative. To ensure that our users don't lose out on any previous functionalities, we've shifted v2 to a package named [gempy_legacy](https://github.com/gempy-project/gempy_legacy). While the core team will not develop any new features for this version, we'll continue maintaining it based on community requests.
+
 ## Overview
 
 [GemPy](https://www.gempy.org/) is a Python-based, **open-source geomodeling library**. It is
