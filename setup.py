@@ -2,6 +2,7 @@ from os import path
 
 from setuptools import setup, find_packages
 
+
 def read_requirements(file_name):
     requirements = []
     with open(file_name, "r", encoding="utf-8") as f:
