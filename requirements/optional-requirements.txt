@@ -1,4 +1,4 @@
--r requirements/base-requirements.txt
+-r base-requirements.txt
 
 gempy_plugins
 
