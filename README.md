@@ -55,19 +55,19 @@ Follow these [guidelines](https://github.com/cgre-aachen/gempy/blob/WIP_readme-u
 
   <td>
   <a href="https://docs.gempy.org/examples/geometries/a01_horizontal_stratigraphic.html#sphx-glr-examples-geometries-a01-horizontal-stratigraphic-py">
-  <img alt="colormapped image plot thumbnail" src="https://docs.gempy.org/_images/sphx_glr_a01_horizontal_stratigraphic_003.png" width="300" />
+  <img alt="colormapped image plot thumbnail" src="docs/readme_images/model1_nodata.png" width="300" />
   </a>
   </td>
   
   <td>
   <a href="https://docs.gempy.org/examples/geometries/b02_fold.html#sphx-glr-examples-geometries-b02-fold-py">
-  <img alt="colormapped image plot thumbnail" src="https://docs.gempy.org/_images/sphx_glr_b02_fold_003.png" width="300" />
+  <img alt="colormapped image plot thumbnail" src="docs/readme_images/model2_nodata.png" width="300" />
   </a>
   </td>
   
    <td>
   <a href="https://docs.gempy.org/examples/geometries/c03_recumbent_fold.html#sphx-glr-examples-geometries-c03-recumbent-fold-py">
-  <img alt="colormapped image plot thumbnail" src="https://docs.gempy.org/_images/sphx_glr_c03_recumbent_fold_003.png" width="300" />
+  <img alt="colormapped image plot thumbnail" src="docs/readme_images/model3_nodata.png" width="300" />
   </a>
   </td>
 
@@ -76,19 +76,19 @@ Follow these [guidelines](https://github.com/cgre-aachen/gempy/blob/WIP_readme-u
 
   <td>
   <a href="https://docs.gempy.org/examples/geometries/d04_pinchout.html#sphx-glr-examples-geometries-d04-pinchout-py">
-  <img alt="colormapped image plot thumbnail" src="https://docs.gempy.org/_images/sphx_glr_d04_pinchout_003.png" width="300" />
+  <img alt="colormapped image plot thumbnail" src="docs/readme_images/model4_nodata.png" width="300" />
   </a>
   </td>
   
   <td>
   <a href="https://docs.gempy.org/examples/geometries/e05_fault.html#sphx-glr-examples-geometries-e05-fault-py">
-  <img alt="colormapped image plot thumbnail" src="https://docs.gempy.org/_images/sphx_glr_e05_fault_003.png" width="300" />
+  <img alt="colormapped image plot thumbnail" src="docs/readme_images/model5_nodata.png" width="300" />
   </a>
   </td>
   
   <td>
   <a href="https://docs.gempy.org/examples/geometries/f06_unconformity.html#sphx-glr-examples-geometries-f06-unconformity-py">
-  <img alt="colormapped image plot thumbnail" src="https://docs.gempy.org/_images/sphx_glr_f06_unconformity_002.png" width="300" />
+  <img alt="colormapped image plot thumbnail" src="docs/readme_images/model6_nodata.png" width="300" />
   </a>
   </td>
 
@@ -188,14 +188,20 @@ Follow these [guidelines](https://github.com/cgre-aachen/gempy/blob/WIP_readme-u
 
 * Jüstel, A., de la Varga, M., Chudalla, N., Wagner, J. D., Back, S., & Wellmann, F. (2023). [From Maps to Models-Tutorials for structural geological modeling using GemPy and GemGIS](https://jose.theoj.org/papers/10.21105/jose.00185). Journal of Open Source Education, 6(66), 185.
 
+* Thomas, A. T., von Harten, J., Jusri, T., Reiche, S., Wellmann, F. (2022). [An integrated modeling scheme for characterizing 3D hydrogeological heterogeneity of the New Jersey shelf](https://link.springer.com/article/10.1007/s11001-022-09475-z). Marine Geophysical Research, 43, 11. 
+
 * Sehsah, H., Eldosouky, A. M., & Pham, L. T. (2022). [Incremental Emplacement of the Sierra Nevada Batholith Constrained by U-Pb Ages and Potential Field Data](https://www.journals.uchicago.edu/doi/full/10.1086/722724?casa_token=pkl8XXrtyokAAAAA:YeIh1t-qwt6AT8yz_vTj4OQapaR1_nZUjS3Az_77VZXlpyfGu0cN5DSzrz6NNjoj4Qv5iud4rdc). The Journal of Geology, 130(5), 381-391.
 
+* von Harten, J., de la Varga, M., Hillier, M., Wellmann, F. (2021). [Informed Local Smoothing in 3D Implicit Geological Modeling](https://www.mdpi.com/2075-163X/11/11/1281). Minerals 2021, 11, 1281.
+
 * Schaaf, A., de la Varga, M., Wellmann, F., & Bond, C. E. (2021). [Constraining stochastic 3-D structural geological models with topology information using approximate Bayesian computation in GemPy 2.1](https://gmd.copernicus.org/articles/14/3899/2021/gmd-14-3899-2021.html). Geosci. Model Dev., 14(6), 3899-3913. doi:10.5194/gmd-14-3899-2021
-* Güdük, N., de la Varga, M. Kaukolinna, J. and Wellmann, F. (2021). [Model-Based Probabilistic Inversion Using Magnetic Data: A Case Study on the Kevitsa Deposit](https://www.mdpi.com/2076-3263/11/4/150), _Geosciences_, 11(4):150. https://doi.org/10.3390/geosciences11040150.
+  
+* Güdük, N., de la Varga, M. Kaukolinna, J. and Wellmann, F. (2021). [Model-Based Probabilistic Inversion Using Magnetic Data: A Case Study on the Kevitsa Deposit](https://www.mdpi.com/2076-3263/11/4/150), _Geosciences_, 11(4):150.
 
 * Wu, J., & Sun, B. (2021). [Discontinuous mechanical analysis of manifold element strain of rock slope based on open source Gempy](https://www.e3s-conferences.org/articles/e3sconf/abs/2021/24/e3sconf_caes2021_03084/e3sconf_caes2021_03084.html). In E3S Web of Conferences (Vol. 248, p. 03084). EDP Sciences.
 
 * Stamm, F. A., de la Varga, M., and Wellmann, F. (2019). [Actors, actions, and uncertainties: optimizing decision-making based on 3-D structural geological models](https://se.copernicus.org/articles/10/2015/2019/se-10-2015-2019.html), Solid Earth, 10, 2015–2043.
+  
 * Wellmann, F., Schaaf, A., de la Varga, M., & von Hagke, C. (2019). [From Google Earth to 3D Geology Problem 2: Seeing Below the Surface of the Digital Earth](
 https://www.sciencedirect.com/science/article/pii/B9780128140482000156).
 In Developments in Structural Geology and Tectonics (Vol. 5, pp. 189-204). Elsevier.
