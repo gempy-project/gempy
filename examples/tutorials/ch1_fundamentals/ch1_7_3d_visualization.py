@@ -64,5 +64,7 @@ link = gpv.plot_to_liquid_earth(
     grab_link=True
 )
 
-print(link)
-link
+print(f"Generated Link: {link}")
+
+# %%
+# Now we can use `this link <https://liquidearth.app.link/c47a2e42-7ffa-4f3b-b432-eb9f292e1538>`_ to visualize the model in Liquid Earth.
