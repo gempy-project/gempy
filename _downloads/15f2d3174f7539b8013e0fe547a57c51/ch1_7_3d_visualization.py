@@ -7,10 +7,10 @@
 # %% 
 # Importing GemPy
 import gempy as gp
-
-# Importing auxiliary libraries
-import numpy as np
-import matplotlib.pyplot as plt
+import gempy_viewer as gpv
+from gempy import generate_example_model
+from gempy.core.data.enumerators import ExampleModel
+# sphinx_gallery_thumbnail_number = 2
 
 # %%
 # Loading an example geomodel
@@ -19,28 +19,10 @@ import matplotlib.pyplot as plt
 
 # %%
 
-data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
 
-geo_model = gp.create_data('viz_3d',
-                           [0, 2000, 0, 2000, 0, 1600],
-                           [50, 50, 50],
-                           path_o=data_path + "data/input_data/lisa_models/foliations" + str(
-                               7) + ".csv",
-                           path_i=data_path + "data/input_data/lisa_models/interfaces" + str(
-                               7) + ".csv"
-                           )
+geo_model = generate_example_model(ExampleModel.GRABEN)
 
-gp.map_stack_to_surfaces(
-    geo_model,
-    {"Fault_1": 'Fault_1', "Fault_2": 'Fault_2',
-     "Strat_Series": ('Sandstone', 'Siltstone', 'Shale', 'Sandstone_2', 'Schist', 'Gneiss')}
-)
-
-geo_model.set_is_fault(['Fault_1', 'Fault_2'])
-geo_model.set_topography()
-
-gp.set_interpolator(geo_model)
-gp.compute_model(geo_model, compute_mesh=True)
+gp.compute_model(geo_model)
 
 # %%
 # Basic plotting API
@@ -54,7 +36,13 @@ gp.compute_model(geo_model, compute_mesh=True)
 # 
 
 # %% 
-gp.plot_3d(geo_model, show_surfaces=False, show_data=True, show_lith=False, image=False)
+gpv.plot_3d(
+    model=geo_model,
+    show_surfaces=False,
+    show_data=True,
+    show_lith=False,
+    image=False
+)
 
 # %%
 # Geomodel plot
@@ -62,16 +50,28 @@ gp.plot_3d(geo_model, show_surfaces=False, show_data=True, show_lith=False, imag
 # 
 
 # %% 
-gp.plot_3d(geo_model, image=False)
+gpv.plot_3d(geo_model, image=False)
 
 # %%
+# LiquidEarth Integration
+# ~~~~~~~~~~~~~~~~~~~~~~~
+# Beyond the classical plotting capabilities introduced in GemPy v3, users can now also upload models to LiquidEarth. 
+# `LiquidEarth <https://www.terranigma-solutions.com/liquidearth>`_ is a collaborative platform designed for 3D visualization,
+# developed by many of the main `gempy` maintainers,  with a strong focus on collaboration and sharing. 
+# This makes it an excellent tool for sharing your models with others and viewing them across different platforms.
+# To upload a model to LiquidEarth, you must have an account and a user token. Once your model is uploaded, 
+# you can easily share the link with anyone.
 
-# sphinx_gallery_thumbnail_number = 2
-gpv = gp.plot.plot_3d(geo_model,
-                      plotter_type='basic', off_screen=False,
-                      show_topography=True,
-                      show_scalar=False,
-                      show_lith=True,
-                      kwargs_plot_structured_grid={'opacity': .5})
+# %%
+link = gpv.plot_to_liquid_earth(
+    geo_model=geo_model,
+    space_name="ch1_7_3d_visualization",
+    file_name="gempy_model",
+    user_token=None,  # If None, it will try to grab it from the environment
+    grab_link=True,
+)
 
-gp.save_model(geo_model)
+print(f"Generated Link: {link}")
+
+# %%
+# Now we can use `this link <https://liquidearth.app.link/8TpmCHFGsYa>`_ to visualize the model in Liquid Earth.

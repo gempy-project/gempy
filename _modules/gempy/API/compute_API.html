@@ -65,10 +65,7 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        Solutions: The computed geological model.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">engine_config</span> <span class="o">=</span> <span class="n">engine_config</span> <span class="ow">or</span> <span class="n">GemPyEngineConfig</span><span class="p">(</span>
-        <span class="n">backend</span><span class="o">=</span><span class="n">AvailableBackends</span><span class="o">.</span><span class="n">numpy</span><span class="p">,</span>
-        <span class="n">use_gpu</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="p">)</span>
+    <span class="n">engine_config</span> <span class="o">=</span> <span class="n">engine_config</span> <span class="ow">or</span> <span class="n">GemPyEngineConfig</span><span class="p">(</span><span class="n">use_gpu</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="k">match</span> <span class="n">engine_config</span><span class="o">.</span><span class="n">backend</span><span class="p">:</span>
         <span class="k">case</span> <span class="n">AvailableBackends</span><span class="o">.</span><span class="n">numpy</span> <span class="o">|</span> <span class="n">AvailableBackends</span><span class="o">.</span><span class="n">PYTORCH</span><span class="p">:</span>
@@ -81,7 +78,7 @@
 
             <span class="c1"># TODO: To decide what to do with this.</span>
             <span class="n">interpolation_input</span> <span class="o">=</span> <span class="n">gempy_model</span><span class="o">.</span><span class="n">interpolation_input_copy</span>
-            <span class="n">gempy_model</span><span class="o">.</span><span class="n">taped_interpolation_input</span> <span class="o">=</span> <span class="n">interpolation_input</span> <span class="c1"># * This is used for gradient tape</span>
+            <span class="n">gempy_model</span><span class="o">.</span><span class="n">taped_interpolation_input</span> <span class="o">=</span> <span class="n">interpolation_input</span>  <span class="c1"># * This is used for gradient tape</span>
 
             <span class="n">gempy_model</span><span class="o">.</span><span class="n">solutions</span> <span class="o">=</span> <span class="n">gempy_engine</span><span class="o">.</span><span class="n">compute_model</span><span class="p">(</span>
                 <span class="n">interpolation_input</span><span class="o">=</span><span class="n">interpolation_input</span><span class="p">,</span>
@@ -123,8 +120,7 @@
     <span class="k">return</span> <span class="n">sol</span><span class="o">.</span><span class="n">raw_arrays</span><span class="o">.</span><span class="n">custom</span>
 
 
-
-<span class="k">def</span> <span class="nf">optimize_and_compute</span><span class="p">(</span><span class="n">geo_model</span><span class="p">:</span> <span class="n">GeoModel</span><span class="p">,</span> <span class="n">engine_config</span><span class="p">:</span> <span class="n">GemPyEngineConfig</span><span class="p">,</span> <span class="n">max_epochs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> 
+<span class="k">def</span> <span class="nf">optimize_and_compute</span><span class="p">(</span><span class="n">geo_model</span><span class="p">:</span> <span class="n">GeoModel</span><span class="p">,</span> <span class="n">engine_config</span><span class="p">:</span> <span class="n">GemPyEngineConfig</span><span class="p">,</span> <span class="n">max_epochs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
                          <span class="n">convergence_criteria</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e5</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">engine_config</span><span class="o">.</span><span class="n">backend</span> <span class="o">!=</span> <span class="n">AvailableBackends</span><span class="o">.</span><span class="n">PYTORCH</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Only PyTorch backend is supported for optimization. Received </span><span class="si">{</span><span class="n">engine_config</span><span class="o">.</span><span class="n">backend</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
@@ -151,7 +147,7 @@
 
     <span class="c1"># Optimization loop</span>
     <span class="n">geo_model</span><span class="o">.</span><span class="n">interpolation_options</span><span class="o">.</span><span class="n">kernel_options</span><span class="o">.</span><span class="n">optimizing_condition_number</span> <span class="o">=</span> <span class="kc">True</span>
-    
+
     <span class="k">def</span> <span class="nf">_check_convergence_criterion</span><span class="p">(</span><span class="n">conditional_number</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">condition_number_old</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">conditional_number_target</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e5</span><span class="p">):</span>
         <span class="n">reached_conditional_target</span> <span class="o">=</span> <span class="n">conditional_number</span> <span class="o">&lt;</span> <span class="n">conditional_number_target</span>
         <span class="k">if</span> <span class="n">reached_conditional_target</span> <span class="o">==</span> <span class="kc">False</span> <span class="ow">and</span> <span class="n">epoch</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="p">:</span>
@@ -159,7 +155,7 @@
             <span class="k">if</span> <span class="n">condition_number_change</span> <span class="o">&lt;</span> <span class="mf">0.01</span><span class="p">:</span>
                 <span class="n">reached_conditional_target</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">return</span> <span class="n">reached_conditional_target</span>
-    
+
     <span class="n">previous_condition_number</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_epochs</span><span class="p">):</span>
         <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
@@ -188,11 +184,11 @@
             <span class="n">mask</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">nugget_effect_scalar</span><span class="o">.</span><span class="n">grad</span><span class="p">)</span>
             <span class="n">mask</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="n">nugget_effect_scalar</span><span class="o">.</span><span class="n">grad</span> <span class="o">*=</span> <span class="n">mask</span>
-            
+
             <span class="c1"># Update the vector</span>
             <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
             <span class="n">nugget_effect_scalar</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">nugget_effect_scalar</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">clamp_</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mf">1e-7</span><span class="p">)</span>  <span class="c1"># Replace negative values with 0</span>
-            
+
             <span class="c1"># optimizer.zero_grad()</span>
         <span class="c1"># Monitor progress</span>
         <span class="k">if</span> <span class="n">epoch</span> <span class="o">%</span> <span class="mi">1</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -258,7 +254,6 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../index.html">About</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../projects.html">Additional projects</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>

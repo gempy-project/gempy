@@ -10,7 +10,7 @@
     .. note::
         :class: sphx-glr-download-link-note
 
-        Click :ref:`here <sphx_glr_download_tutorials_ch1_fundamentals_ch1_7_3d_visualization.py>`
+        :ref:`Go to the end <sphx_glr_download_tutorials_ch1_fundamentals_ch1_7_3d_visualization.py>`
         to download the full example code
 
 .. rst-class:: sphx-glr-example-title
@@ -27,13 +27,13 @@ Importing GemPy
 
 .. GENERATED FROM PYTHON SOURCE LINES 9-15
 
-.. code-block:: python3
+.. code-block:: Python
 
     import gempy as gp
-
-    # Importing auxiliary libraries
-    import numpy as np
-    import matplotlib.pyplot as plt
+    import gempy_viewer as gpv
+    from gempy import generate_example_model
+    from gempy.core.data.enumerators import ExampleModel
+    # sphinx_gallery_thumbnail_number = 2
 
 
 
@@ -48,33 +48,15 @@ Loading an example geomodel
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 21-45
+.. GENERATED FROM PYTHON SOURCE LINES 21-27
 
-.. code-block:: python3
+.. code-block:: Python
 
 
-    data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
 
-    geo_model = gp.create_data('viz_3d',
-                               [0, 2000, 0, 2000, 0, 1600],
-                               [50, 50, 50],
-                               path_o=data_path + "data/input_data/lisa_models/foliations" + str(
-                                   7) + ".csv",
-                               path_i=data_path + "data/input_data/lisa_models/interfaces" + str(
-                                   7) + ".csv"
-                               )
+    geo_model = generate_example_model(ExampleModel.GRABEN)
 
-    gp.map_stack_to_surfaces(
-        geo_model,
-        {"Fault_1": 'Fault_1', "Fault_2": 'Fault_2',
-         "Strat_Series": ('Sandstone', 'Siltstone', 'Shale', 'Sandstone_2', 'Schist', 'Gneiss')}
-    )
-
-    geo_model.set_is_fault(['Fault_1', 'Fault_2'])
-    geo_model.set_topography()
-
-    gp.set_interpolator(geo_model)
-    gp.compute_model(geo_model, compute_mesh=True)
+    gp.compute_model(geo_model)
 
 
 
@@ -82,166 +64,159 @@ Loading an example geomodel
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
-    Active grids: ['regular']
-    /home/miguel/miniconda3/envs/gempy/lib/python3.8/site-packages/pandas/core/arraylike.py:358: RuntimeWarning: invalid value encountered in arccos
-      result = getattr(ufunc, method)(*inputs, **kwargs)
-    /WorkSSD/PythonProjects/gempy/gempy/core/data_modules/geometric_data.py:537: UserWarning: If pole_vector and orientation are passed pole_vector is used/
-      warnings.warn('If pole_vector and orientation are passed pole_vector is used/')
-    Fault colors changed. If you do not like this behavior, set change_color to False.
-    [1280. 1600.]
-    Active grids: ['regular' 'topography']
-    Setting kriging parameters to their default values.
-    Compiling theano function...
-    Level of Optimization:  fast_compile
-    Device:  cpu
-    Precision:  float64
-    Number of faults:  2
-    Compilation Done!
-    Kriging values: 
-                            values
-    range                 3249.62
-    $C_o$               251428.57
-    drift equations  [3, 3, 3, 3]
-    /WorkSSD/PythonProjects/gempy/gempy/core/solution.py:173: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify 'dtype=object' when creating the ndarray.
-      self.geological_map = np.array(
+    Surface points hash:  8c72af50fc56389b620c6458a6af23915b121b5e655b3ce179a790636dc529a5
+    Orientations hash:  87cf30b08b5be03b38c5e6d288fa7bb8855263704efb62c7c3cd77673eaae96d
+    Setting Backend To: AvailableBackends.PYTORCH
+    /home/leguark/gempy/gempy/core/data/geo_model.py:115: UserWarning: Both octree levels and resolution are set. The default grid for the `raw_array_solution`and plots will be the dense regular grid. To use octrees instead, set resolution to None in the regular grid.
+      warnings.warn("Both octree levels and resolution are set. The default grid for the `raw_array_solution`"
+    Setting Backend To: AvailableBackends.PYTORCH
+    /home/leguark/gempy/gempy/core/data/geo_model.py:115: UserWarning: Both octree levels and resolution are set. The default grid for the `raw_array_solution`and plots will be the dense regular grid. To use octrees instead, set resolution to None in the regular grid.
+      warnings.warn("Both octree levels and resolution are set. The default grid for the `raw_array_solution`"
 
 
-    Lithology ids 
-      [9. 9. 9. ... 3. 3. 3.] 
+.. raw:: html
 
+    <div class="output_subarea output_html rendered_html output_result">
+    <b>Solutions:</b> 6 Octree Levels, 8 DualContouringMeshes
+    </div>
+    <br />
+    <br />
 
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 46-49
+.. GENERATED FROM PYTHON SOURCE LINES 28-31
 
 Basic plotting API
 ------------------
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 52-55
+.. GENERATED FROM PYTHON SOURCE LINES 34-37
 
 Data plot
 ~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 57-59
+.. GENERATED FROM PYTHON SOURCE LINES 39-47
 
-.. code-block:: python3
+.. code-block:: Python
 
-    gp.plot_3d(geo_model, show_surfaces=False, show_data=True, show_lith=False, image=False)
+    gpv.plot_3d(
+        model=geo_model,
+        show_surfaces=False,
+        show_data=True,
+        show_lith=False,
+        image=False
+    )
 
 
 
 
-.. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_7_3d_visualization_001.png
-    :alt: ch1 7 3d visualization
-    :class: sphx-glr-single-img
+.. image-sg:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_7_3d_visualization_001.png
+   :alt: ch1 7 3d visualization
+   :srcset: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_7_3d_visualization_001.png
+   :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
 
-    <gempy.plot.vista.GemPyToVista object at 0x7fcb8bad0850>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f8b9a886380>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 60-63
+.. GENERATED FROM PYTHON SOURCE LINES 48-51
 
 Geomodel plot
 ~~~~~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 65-67
+.. GENERATED FROM PYTHON SOURCE LINES 53-55
 
-.. code-block:: python3
+.. code-block:: Python
 
-    gp.plot_3d(geo_model, image=False)
-
-
-
-
-.. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_7_3d_visualization_002.png
-    :alt: ch1 7 3d visualization
-    :class: sphx-glr-single-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-
-    <gempy.plot.vista.GemPyToVista object at 0x7fcc6b916430>
+    gpv.plot_3d(geo_model, image=False)
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 68-78
 
-.. code-block:: python3
-
-
-    # sphinx_gallery_thumbnail_number = 2
-    gpv = gp.plot.plot_3d(geo_model,
-                          plotter_type='basic', off_screen=False,
-                          show_topography=True,
-                          show_scalar=False,
-                          show_lith=True,
-                          kwargs_plot_structured_grid={'opacity': .5})
-
-    gp.save_model(geo_model)
-
-
-
-.. image:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_7_3d_visualization_003.png
-    :alt: ch1 7 3d visualization
-    :class: sphx-glr-single-img
+.. image-sg:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_7_3d_visualization_002.png
+   :alt: ch1 7 3d visualization
+   :srcset: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_7_3d_visualization_002.png
+   :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
 
- Out:
-
  .. code-block:: none
 
 
-    True
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f8b9a8854e0>
 
 
+
+.. GENERATED FROM PYTHON SOURCE LINES 56-64
+
+LiquidEarth Integration
+~~~~~~~~~~~~~~~~~~~~~~~
+Beyond the classical plotting capabilities introduced in GemPy v3, users can now also upload models to LiquidEarth. 
+`LiquidEarth <https://www.terranigma-solutions.com/liquidearth>`_ is a collaborative platform designed for 3D visualization,
+developed by many of the main `gempy` maintainers,  with a strong focus on collaboration and sharing. 
+This makes it an excellent tool for sharing your models with others and viewing them across different platforms.
+To upload a model to LiquidEarth, you must have an account and a user token. Once your model is uploaded, 
+you can easily share the link with anyone.
+
+.. GENERATED FROM PYTHON SOURCE LINES 66-76
+
+.. code-block:: Python
+
+    link = gpv.plot_to_liquid_earth(
+        geo_model=geo_model,
+        space_name="ch1_7_3d_visualization",
+        file_name="gempy_model",
+        user_token=None,  # If None, it will try to grab it from the environment
+        grab_link=True,
+    )
+
+    print(f"Generated Link: {link}")
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+    Generated Link: https://liquidearth.app.link/1caa2e99-80fd-4f79-ba3f-a5a26de6013e
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 77-78
+
+Now we can use `this link <https://liquidearth.app.link/8TpmCHFGsYa>`_ to visualize the model in Liquid Earth.
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  7.775 seconds)
+   **Total running time of the script:** (0 minutes 32.195 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_7_3d_visualization.py:
 
+.. only:: html
 
-.. only :: html
+  .. container:: sphx-glr-footer sphx-glr-footer-example
 
- .. container:: sphx-glr-footer
-    :class: sphx-glr-footer-example
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
+      :download:`Download Jupyter notebook: ch1_7_3d_visualization.ipynb <ch1_7_3d_visualization.ipynb>`
 
+    .. container:: sphx-glr-download sphx-glr-download-python
 
-  .. container:: sphx-glr-download sphx-glr-download-python
-
-     :download:`Download Python source code: ch1_7_3d_visualization.py <ch1_7_3d_visualization.py>`
-
-
-
-  .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-     :download:`Download Jupyter notebook: ch1_7_3d_visualization.ipynb <ch1_7_3d_visualization.ipynb>`
+      :download:`Download Python source code: ch1_7_3d_visualization.py <ch1_7_3d_visualization.py>`
 
 
 .. only:: html

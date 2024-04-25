@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**00:54.645** total execution time for 26 files **from all galleries**:
+**00:32.195** total execution time for 27 files **from all galleries**:
 
 .. container::
 
@@ -32,8 +32,8 @@ Computation times
    * - Example
      - Time
      - Mem (MB)
-   * - :ref:`sphx_glr_tutorials_ch2-Geophysics_ch2_1_gravity.py` (``../../examples/tutorials/ch2-Geophysics/ch2_1_gravity.py``)
-     - 00:54.645
+   * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_7_3d_visualization.py` (``../../examples/tutorials/ch1_fundamentals/ch1_7_3d_visualization.py``)
+     - 00:32.195
      - 0.0
    * - :ref:`sphx_glr_examples_geometries_a01_horizontal_stratigraphic.py` (``../../examples/examples/geometries/a01_horizontal_stratigraphic.py``)
      - 00:00.000
@@ -99,6 +99,9 @@ Computation times
      - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_6_2d_visualization.py` (``../../examples/tutorials/ch1_fundamentals/ch1_6_2d_visualization.py``)
+     - 00:00.000
+     - 0.0
+   * - :ref:`sphx_glr_tutorials_ch2-Geophysics_ch2_1_gravity.py` (``../../examples/tutorials/ch2-Geophysics/ch2_1_gravity.py``)
      - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_tutorials_ch2-Geophysics_ch2_2_cell_selection.py` (``../../examples/tutorials/ch2-Geophysics/ch2_2_cell_selection.py``)
