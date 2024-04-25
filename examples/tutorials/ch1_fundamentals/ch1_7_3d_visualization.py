@@ -52,19 +52,10 @@ gpv.plot_3d(
 gpv.plot_3d(geo_model, image=False)
 
 # %%
-
 # sphinx_gallery_thumbnail_number = 2
-plot_3d = gpv.plot_3d(
-    model=geo_model,
-    plotter_type='basic',
-    off_screen=False,
-    show_topography=True,
-    show_scalar=False,
-    show_lith=True,
-    kwargs_plot_structured_grid={'opacity': .5}
-)
 
 # %%
+# TODO Add explanation
 link = gpv.plot_to_liquid_earth(
     geo_model=geo_model,
     space_name="new_space_name",

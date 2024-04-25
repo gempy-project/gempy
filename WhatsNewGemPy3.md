@@ -34,7 +34,7 @@ We've overhauled the foundation of GemPy to ensure:
 
 **6. Dual Contouring for High-Quality Meshing**
 
-**7. External Implicit Interpolation Function**
+**7. First steps LiquidEarth Integration**
 
 **And Much More!**
 
