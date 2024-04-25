@@ -10,6 +10,7 @@ import gempy as gp
 import gempy_viewer as gpv
 from gempy import generate_example_model
 from gempy.core.data.enumerators import ExampleModel
+# sphinx_gallery_thumbnail_number = 2
 
 # %%
 # Loading an example geomodel
@@ -52,19 +53,25 @@ gpv.plot_3d(
 gpv.plot_3d(geo_model, image=False)
 
 # %%
-# sphinx_gallery_thumbnail_number = 2
+# LiquidEarth Integration
+# ~~~~~~~~~~~~~~~~~~~~~~~
+# Beyond the classical plotting capabilities introduced in GemPy v3, users can now also upload models to LiquidEarth. 
+# `LiquidEarth <https://www.terranigma-solutions.com/liquidearth>`_ is a collaborative platform designed for 3D visualization,
+# developed by many of the main `gempy` maintainers,  with a strong focus on collaboration and sharing. 
+# This makes it an excellent tool for sharing your models with others and viewing them across different platforms.
+# To upload a model to LiquidEarth, you must have an account and a user token. Once your model is uploaded, 
+# you can easily share the link with anyone.
 
 # %%
-# TODO Add explanation
 link = gpv.plot_to_liquid_earth(
     geo_model=geo_model,
-    space_name="new_space_name",
+    space_name="ch1_7_3d_visualization",
     file_name="gempy_model",
     user_token=None,  # If None, it will try to grab it from the environment
-    grab_link=True
+    grab_link=True,
 )
 
 print(f"Generated Link: {link}")
 
 # %%
-# Now we can use `this link <https://liquidearth.app.link/c47a2e42-7ffa-4f3b-b432-eb9f292e1538>`_ to visualize the model in Liquid Earth.
+# Now we can use `this link <https://liquidearth.app.link/8TpmCHFGsYa>`_ to visualize the model in Liquid Earth.
