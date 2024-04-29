@@ -2,6 +2,7 @@
 
 gempy_plugins
 
-pooch # for data download
+# for data download
+pooch 
 scipy
 scikit-image
