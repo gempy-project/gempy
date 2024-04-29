@@ -1,11 +1,14 @@
+import os
 from os import path
 
 from setuptools import setup, find_packages
 
 
-def read_requirements(file_name):
+def read_requirements(file_name, base_path=""):
+    # Construct the full path to the requirements file
+    full_path = os.path.join(base_path, file_name)
     requirements = []
-    with open(file_name, "r", encoding="utf-8") as f:
+    with open(full_path, "r", encoding="utf-8") as f:
         for line in f:
             # Strip whitespace and ignore comments
             line = line.strip()
@@ -15,11 +18,14 @@ def read_requirements(file_name):
             # Handle -r directive
             if line.startswith("-r "):
                 referenced_file = line.split()[1]  # Extract the file name
-                requirements.extend(read_requirements(referenced_file))  # Recursively read referenced file
+                # Recursively read the referenced file, making sure to include the base path
+                requirements.extend(read_requirements(referenced_file, base_path=base_path))
             else:
                 requirements.append(line)
 
     return requirements
+
+
 
 
 with open("README.md", "r") as fh:
@@ -28,10 +34,10 @@ with open("README.md", "r") as fh:
 setup(
     name='gempy',
     packages=find_packages(exclude=('test', 'docs', 'examples')),
-    install_requires=read_requirements("requirements/requirements.txt"),
+    install_requires=read_requirements("requirements.txt", "requirements"),
     extras_require={
-        "opt": read_requirements("requirements/optional-requirements.txt"),
-        "base": read_requirements("requirements/base-requirements.txt"),
+        "opt": read_requirements("optional-requirements.txt", "requirements"),
+        "base": read_requirements("base-requirements.txt", "requirements"),
     },
     url='https://github.com/cgre-aachen/gempy',
     license='EUPL-1.2',

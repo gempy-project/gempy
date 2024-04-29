@@ -1,1 +1,2 @@
-gempy_engine # This install also numpy
+# This install also numpy
+gempy_engine==2024.1.3

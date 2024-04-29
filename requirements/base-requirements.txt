@@ -1,4 +1,5 @@
 - r requirements.txt
 
-gempy_viewer # This install matplotlib
+# This install matplotlib
+gempy_viewer==2024.1.2
 pandas
