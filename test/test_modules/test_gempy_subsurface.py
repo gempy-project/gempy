@@ -2,6 +2,7 @@
 
 import gempy as gp
 import gempy_viewer as gpv
+import subsurface.core.structs.unstructured_elements.triangular_surface
 from conftest import Requirements, REQUIREMENT_LEVEL
 from gempy.core.data.enumerators import ExampleModel
 
@@ -42,7 +43,7 @@ def test_gempy_to_subsurface():
         cells_attr=pd.DataFrame({'id': concatenated_cell_id_array})
     )
 
-    trisurf = ss.TriSurf(meshes)
+    trisurf = subsurface.core.structs.unstructured_elements.triangular_surface.TriSurf(meshes)
     pyvista_mesh = ss.visualization.to_pyvista_mesh(trisurf)
     ss.visualization.pv_plot([pyvista_mesh], image_2d=False)
 
@@ -52,7 +53,7 @@ def test_gempy_to_subsurface_II():
     from gempy_engine.core.data.raw_arrays_solution import RawArraysSolution
     meshes: ss.UnstructuredData = model.solutions.raw_arrays.meshes_to_subsurface()
 
-    trisurf = ss.TriSurf(meshes)
+    trisurf = subsurface.core.structs.unstructured_elements.triangular_surface.TriSurf(meshes)
     pyvista_mesh = ss.visualization.to_pyvista_mesh(trisurf)
     ss.visualization.pv_plot([pyvista_mesh], image_2d=True)
 
@@ -61,6 +62,6 @@ def test_gempy_to_subsurface_III():
     model = gp.generate_example_model(ExampleModel.ANTICLINE, compute_model=True)
     meshes: ss.UnstructuredData = model.solutions.meshes_to_unstruct()
 
-    trisurf = ss.TriSurf(meshes)
+    trisurf = subsurface.core.structs.unstructured_elements.triangular_surface.TriSurf(meshes)
     pyvista_mesh = ss.visualization.to_pyvista_mesh(trisurf)
     ss.visualization.pv_plot([pyvista_mesh], image_2d=True)
