@@ -31,6 +31,7 @@
    
       ~InterpolationOptions.block_solutions_type
       ~InterpolationOptions.c_o
+      ~InterpolationOptions.cache_mode
       ~InterpolationOptions.compute_corners
       ~InterpolationOptions.compute_scalar_gradient
       ~InterpolationOptions.current_octree_level

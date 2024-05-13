@@ -95,7 +95,7 @@ Greenstone.
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f4953030340>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f008053ffd0>
 
 
 
@@ -199,7 +199,7 @@ Greenstone.
 
  .. code-block:: none
 
-    Setting Backend To: AvailableBackends.numpy
+    Setting Backend To: AvailableBackends.PYTORCH
 
 
 .. raw:: html
@@ -230,7 +230,7 @@ Greenstone.
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f49025c3640>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f00cd8deef0>
 
 
 
@@ -254,7 +254,7 @@ Greenstone.
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f49025c35b0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f00803efeb0>
 
 
 
@@ -281,14 +281,14 @@ sphinx_gallery_thumbnail_number = -1
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f4903f32c20>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00cd8dc6a0>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 8.289 seconds)
+   **Total running time of the script:** (0 minutes 1.930 seconds)
 
 
 .. _sphx_glr_download_examples_real_Greenstone.py:

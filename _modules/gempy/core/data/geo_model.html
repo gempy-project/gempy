@@ -238,12 +238,6 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">structural_frame</span><span class="o">.</span><span class="n">is_dirty</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_interpolationInput</span>
         
-
-            <span class="c1"># self.grid.regular_grid.set_regular_grid(</span>
-            <span class="c1">#     extent=self.grid.regular_grid.extent,</span>
-            <span class="c1">#     resolution=octree_leaf_resolution</span>
-            <span class="c1"># )</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">_interpolationInput</span> <span class="o">=</span> <span class="n">InterpolationInput</span><span class="o">.</span><span class="n">from_structural_frame</span><span class="p">(</span>
             <span class="n">structural_frame</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">structural_frame</span><span class="p">,</span>
             <span class="n">grid</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">,</span>
@@ -294,7 +288,6 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../index.html">About</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../projects.html">Additional projects</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>

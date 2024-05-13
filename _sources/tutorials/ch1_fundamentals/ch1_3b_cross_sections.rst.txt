@@ -262,7 +262,7 @@ Add topography
 
     Active grids: ['regular' 'topography' 'sections']
 
-    <gempy.core.data.grid_modules.topography.Topography object at 0x7f85611dc640>
+    <gempy.core.data.grid_modules.topography.Topography object at 0x7f00cb76c7f0>
 
 
 
@@ -310,7 +310,7 @@ Active grids:
  .. code-block:: none
 
 
-    <function plot_section_traces at 0x7f856d8f56c0>
+    <function plot_section_traces at 0x7f00d6cddbd0>
 
 
 
@@ -329,11 +329,9 @@ Active grids:
 
  .. code-block:: none
 
-    /home/leguark/gempy/gempy/core/data/geo_model.py:118: UserWarning: Both octree levels and resolution are set. The default grid for the `raw_array_solution`and plots will be the dense regular grid. To use octrees instead, set resolution to None in the regular grid.
+    /home/leguark/gempy/gempy/core/data/geo_model.py:115: UserWarning: Both octree levels and resolution are set. The default grid for the `raw_array_solution`and plots will be the dense regular grid. To use octrees instead, set resolution to None in the regular grid.
       warnings.warn("Both octree levels and resolution are set. The default grid for the `raw_array_solution`"
-    Setting Backend To: AvailableBackends.numpy
-    /home/leguark/gempy/gempy/core/data/geo_model.py:118: UserWarning: Both octree levels and resolution are set. The default grid for the `raw_array_solution`and plots will be the dense regular grid. To use octrees instead, set resolution to None in the regular grid.
-      warnings.warn("Both octree levels and resolution are set. The default grid for the `raw_array_solution`"
+    Setting Backend To: AvailableBackends.PYTORCH
 
 
 
@@ -357,10 +355,10 @@ Active grids:
 
  .. code-block:: none
 
-    /home/leguark/gempy_viewer/gempy_viewer/API/_plot_2d_sections_api.py:104: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
+    /home/leguark/gempy_viewer/gempy_viewer/API/_plot_2d_sections_api.py:105: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
       warnings.warn(
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f856165a290>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f00cb46d900>
 
 
 
@@ -383,10 +381,10 @@ Active grids:
 
  .. code-block:: none
 
-    /home/leguark/gempy_viewer/gempy_viewer/API/_plot_2d_sections_api.py:104: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
+    /home/leguark/gempy_viewer/gempy_viewer/API/_plot_2d_sections_api.py:105: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
       warnings.warn(
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f85614308e0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f00cb46f760>
 
 
 
@@ -415,17 +413,17 @@ Active grids:
 
  .. code-block:: none
 
-    /home/leguark/gempy_viewer/gempy_viewer/API/_plot_2d_sections_api.py:104: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
+    /home/leguark/gempy_viewer/gempy_viewer/API/_plot_2d_sections_api.py:105: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
       warnings.warn(
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f8561659f90>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f00cb46fa90>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 4.121 seconds)
+   **Total running time of the script:** (0 minutes 2.432 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_3b_cross_sections.py:

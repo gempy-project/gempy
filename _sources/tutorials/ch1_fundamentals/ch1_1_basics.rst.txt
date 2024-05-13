@@ -160,7 +160,7 @@ computational costs.
 .. raw:: html
 
     <div class="output_subarea output_html rendered_html output_result">
-    <table><tr><th>X</th><th>Y</th><th>Z</th><th>id</th><th>nugget</th></tr><tr><td>700.00</td><td>1000.00</td><td>300.00</td><td>26902782</td><td>0.00</td></tr><tr><td>600.00</td><td>1000.00</td><td>200.00</td><td>26902782</td><td>0.00</td></tr><tr><td>500.00</td><td>1000.00</td><td>100.00</td><td>26902782</td><td>0.00</td></tr><tr><td>1000.00</td><td>1000.00</td><td>600.00</td><td>26902782</td><td>0.00</td></tr><tr><td>1100.00</td><td>1000.00</td><td>700.00</td><td>26902782</td><td>0.00</td></tr><tr><td>1000.00</td><td>50.00</td><td>350.00</td><td>117180031</td><td>0.00</td></tr><tr><td>1000.00</td><td>150.00</td><td>333.33</td><td>117180031</td><td>0.00</td></tr><tr><td>1000.00</td><td>300.00</td><td>333.33</td><td>117180031</td><td>0.00</td></tr><tr><td>1000.00</td><td>500.00</td><td>366.67</td><td>117180031</td><td>0.00</td></tr><tr><td>1000.00</td><td>1000.00</td><td>433.33</td><td>117180031</td><td>0.00</td></tr><tr><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td></tr><tr><td>1100.00</td><td>1700.00</td><td>473.33</td><td>412346506</td><td>0.00</td></tr><tr><td>1100.00</td><td>1950.00</td><td>490.00</td><td>412346506</td><td>0.00</td></tr><tr><td>0.00</td><td>1000.00</td><td>433.33</td><td>412346506</td><td>0.00</td></tr><tr><td>300.00</td><td>1000.00</td><td>400.00</td><td>412346506</td><td>0.00</td></tr><tr><td>600.00</td><td>1000.00</td><td>366.67</td><td>412346506</td><td>0.00</td></tr><tr><td>1300.00</td><td>1000.00</td><td>566.67</td><td>412346506</td><td>0.00</td></tr><tr><td>1600.00</td><td>1000.00</td><td>550.00</td><td>412346506</td><td>0.00</td></tr><tr><td>1900.00</td><td>1000.00</td><td>566.67</td><td>412346506</td><td>0.00</td></tr><tr><td>1700.00</td><td>500.00</td><td>533.33</td><td>412346506</td><td>0.00</td></tr><tr><td>1700.00</td><td>1500.00</td><td>516.67</td><td>412346506</td><td>0.00</td></tr></table>
+    <table><tr><th>X</th><th>Y</th><th>Z</th><th>id</th><th>nugget</th></tr><tr><td>700.00</td><td>1000.00</td><td>300.00</td><td>30154459</td><td>0.00</td></tr><tr><td>600.00</td><td>1000.00</td><td>200.00</td><td>30154459</td><td>0.00</td></tr><tr><td>500.00</td><td>1000.00</td><td>100.00</td><td>30154459</td><td>0.00</td></tr><tr><td>1000.00</td><td>1000.00</td><td>600.00</td><td>30154459</td><td>0.00</td></tr><tr><td>1100.00</td><td>1000.00</td><td>700.00</td><td>30154459</td><td>0.00</td></tr><tr><td>1000.00</td><td>50.00</td><td>350.00</td><td>143969244</td><td>0.00</td></tr><tr><td>1000.00</td><td>150.00</td><td>333.33</td><td>143969244</td><td>0.00</td></tr><tr><td>1000.00</td><td>300.00</td><td>333.33</td><td>143969244</td><td>0.00</td></tr><tr><td>1000.00</td><td>500.00</td><td>366.67</td><td>143969244</td><td>0.00</td></tr><tr><td>1000.00</td><td>1000.00</td><td>433.33</td><td>143969244</td><td>0.00</td></tr><tr><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td></tr><tr><td>1100.00</td><td>1700.00</td><td>473.33</td><td>401928178</td><td>0.00</td></tr><tr><td>1100.00</td><td>1950.00</td><td>490.00</td><td>401928178</td><td>0.00</td></tr><tr><td>0.00</td><td>1000.00</td><td>433.33</td><td>401928178</td><td>0.00</td></tr><tr><td>300.00</td><td>1000.00</td><td>400.00</td><td>401928178</td><td>0.00</td></tr><tr><td>600.00</td><td>1000.00</td><td>366.67</td><td>401928178</td><td>0.00</td></tr><tr><td>1300.00</td><td>1000.00</td><td>566.67</td><td>401928178</td><td>0.00</td></tr><tr><td>1600.00</td><td>1000.00</td><td>550.00</td><td>401928178</td><td>0.00</td></tr><tr><td>1900.00</td><td>1000.00</td><td>566.67</td><td>401928178</td><td>0.00</td></tr><tr><td>1700.00</td><td>500.00</td><td>533.33</td><td>401928178</td><td>0.00</td></tr><tr><td>1700.00</td><td>1500.00</td><td>516.67</td><td>401928178</td><td>0.00</td></tr></table>
     </div>
     <br />
     <br />
@@ -179,7 +179,7 @@ computational costs.
 .. raw:: html
 
     <div class="output_subarea output_html rendered_html output_result">
-    <table><tr><th>X</th><th>Y</th><th>Z</th><th>G_x</th><th>G_y</th><th>G_z</th><th>id</th><th>nugget</th></tr><tr><td>500.00</td><td>1000.00</td><td>300.00</td><td>-0.95</td><td>-0.00</td><td>0.32</td><td>26902782</td><td>0.01</td></tr><tr><td>400.00</td><td>1000.00</td><td>420.00</td><td>0.32</td><td>0.00</td><td>0.95</td><td>273386011</td><td>0.01</td></tr><tr><td>1000.00</td><td>1000.00</td><td>300.00</td><td>0.32</td><td>0.00</td><td>0.95</td><td>389724579</td><td>0.01</td></tr></table>
+    <table><tr><th>X</th><th>Y</th><th>Z</th><th>G_x</th><th>G_y</th><th>G_z</th><th>id</th><th>nugget</th></tr><tr><td>500.00</td><td>1000.00</td><td>300.00</td><td>-0.95</td><td>-0.00</td><td>0.32</td><td>30154459</td><td>0.01</td></tr><tr><td>400.00</td><td>1000.00</td><td>420.00</td><td>0.32</td><td>0.00</td><td>0.95</td><td>259422460</td><td>0.01</td></tr><tr><td>1000.00</td><td>1000.00</td><td>300.00</td><td>0.32</td><td>0.00</td><td>0.95</td><td>323189030</td><td>0.01</td></tr></table>
     </div>
     <br />
     <br />
@@ -472,7 +472,7 @@ For instance, you can retrieve the coordinates of our modeling grid as follows:
  .. code-block:: none
 
 
-    <gempy.core.data.grid.Grid object at 0x7f85176a01c0>
+    <gempy.core.data.grid.Grid object at 0x7f00d0857370>
 
 
 
@@ -533,7 +533,7 @@ Toolkit <https://www.vtk.org/>`__ (VTK) to be installed.
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f8564c51360>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00c41b5570>
 
 
 
@@ -581,7 +581,7 @@ Display the current interpolation options
 
                     <table>
                         <tr><td colspan='2' style='text-align:center'><b>InterpolationOptions</b></td></tr>
-                        <tr><td>kernel_options</td><td>{'range': 5, 'c_o': 10, 'uni_degree': 1, 'i_res': 4, 'gi_res': 2, 'number_dimensions': 3, 'kernel_function': <AvailableKernelFunctions.cubic: KernelFunction(base_function=<function cubic_function at 0x7f857a0a1b40>, derivative_div_r=<function cubic_function_p_div_r at 0x7f857a0a1bd0>, second_derivative=<function cubic_function_a at 0x7f857a0a1c60>, consume_sq_distance=False)>, 'kernel_solver': <Solvers.DEFAULT: 1>, 'compute_condition_number': False, 'optimizing_condition_number': False, 'condition_number': None}</td></tr><tr><td>_number_octree_levels</td><td>4</td></tr><tr><td>current_octree_level</td><td>0</td></tr><tr><td>block_solutions_type</td><td>BlockSolutionType.OCTREE</td></tr><tr><td>compute_scalar_gradient</td><td>False</td></tr><tr><td>mesh_extraction</td><td>True</td></tr><tr><td>mesh_extraction_masking_options</td><td>MeshExtractionMaskingOptions.INTERSECT</td></tr><tr><td>mesh_extraction_fancy</td><td>True</td></tr><tr><td>debug</td><td>True</td></tr><tr><td>debug_water_tight</td><td>False</td></tr><tr><td>sigmoid_slope</td><td>50000</td></tr><tr><td>evaluation_chunk_size</td><td>50000</td></tr><tr><td>_number_octree_levels_surface</td><td>4</td></tr><tr><td>_model_name</td><td>Tutorial_ch1_1_Basics</td></tr>
+                        <tr><td>kernel_options</td><td>{'range': 5, 'c_o': 10, 'uni_degree': 1, 'i_res': 4, 'gi_res': 2, 'number_dimensions': 3, 'kernel_function': <AvailableKernelFunctions.cubic: KernelFunction(base_function=<function cubic_function at 0x7f00e5cc09d0>, derivative_div_r=<function cubic_function_p_div_r at 0x7f00e5cc0a60>, second_derivative=<function cubic_function_a at 0x7f00e5cc0af0>, consume_sq_distance=False)>, 'kernel_solver': <Solvers.DEFAULT: 1>, 'compute_condition_number': False, 'optimizing_condition_number': False, 'condition_number': None}</td></tr><tr><td>_number_octree_levels</td><td>4</td></tr><tr><td>current_octree_level</td><td>0</td></tr><tr><td>block_solutions_type</td><td>BlockSolutionType.OCTREE</td></tr><tr><td>compute_scalar_gradient</td><td>False</td></tr><tr><td>mesh_extraction</td><td>True</td></tr><tr><td>mesh_extraction_masking_options</td><td>MeshExtractionMaskingOptions.INTERSECT</td></tr><tr><td>mesh_extraction_fancy</td><td>True</td></tr><tr><td>cache_mode</td><td>CacheMode.CACHE</td></tr><tr><td>debug</td><td>True</td></tr><tr><td>debug_water_tight</td><td>False</td></tr><tr><td>sigmoid_slope</td><td>50000</td></tr><tr><td>evaluation_chunk_size</td><td>50000</td></tr><tr><td>_number_octree_levels_surface</td><td>4</td></tr><tr><td>_model_name</td><td>Tutorial_ch1_1_Basics</td></tr>
                     </table>
                 
     </div>
@@ -614,7 +614,7 @@ Compute the geological model and get the solutions
 
  .. code-block:: none
 
-    Setting Backend To: AvailableBackends.numpy
+    Setting Backend To: AvailableBackends.PYTORCH
 
 
 .. raw:: html
@@ -677,7 +677,7 @@ directly. Let's take a look at our lithology block:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f85612530a0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f00cb486dd0>
 
 
 
@@ -720,7 +720,7 @@ We can do the same with the underlying scalar-field solution:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f8564c529b0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f00cb4a66b0>
 
 
 
@@ -750,7 +750,7 @@ We can do the same with the underlying scalar-field solution:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f8561250520>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f00c41b7ac0>
 
 
 
@@ -792,7 +792,7 @@ using dual contouring in the :obj:`gempy_engine`.
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f85613fde10>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00cb4873d0>
 
 
 
@@ -846,9 +846,9 @@ surfaces as well as compute a high resolution geological mal.
  .. code-block:: none
 
     Active grids: ['topography']
-    Setting Backend To: AvailableBackends.numpy
+    Setting Backend To: AvailableBackends.PYTORCH
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f8561364730>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00cd2924a0>
 
 
 
@@ -880,9 +880,9 @@ This is done by modifying the grid to a custom grid and recomputing.
  .. code-block:: none
 
     Active grids: ['custom' 'topography']
-    Setting Backend To: AvailableBackends.numpy
+    Setting Backend To: AvailableBackends.PYTORCH
 
-    array([5.])
+    array([2.], dtype=float32)
 
 
 
@@ -905,7 +905,7 @@ Therefore if we just want the value at **x\_i**:
  .. code-block:: none
 
 
-    array([5.])
+    array([2.], dtype=float32)
 
 
 
@@ -922,7 +922,7 @@ sphinx_gallery_thumbnail_number = -2
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 6.424 seconds)
+   **Total running time of the script:** (0 minutes 2.354 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_1_basics.py:

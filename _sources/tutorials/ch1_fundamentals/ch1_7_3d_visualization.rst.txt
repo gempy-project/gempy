@@ -122,7 +122,7 @@ Data plot
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f8b9a886380>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00cd898490>
 
 
 
@@ -152,7 +152,7 @@ Geomodel plot
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f8b9a8854e0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00cd89a260>
 
 
 
@@ -189,19 +189,19 @@ you can easily share the link with anyone.
 
  .. code-block:: none
 
-    Generated Link: https://liquidearth.app.link/1caa2e99-80fd-4f79-ba3f-a5a26de6013e
+    Generated Link: https://liquidearth.app.link/ff0ceedb-0734-4c1d-a27f-cbab86e21aed
 
 
 
 
 .. GENERATED FROM PYTHON SOURCE LINES 77-78
 
-Now we can use `this link <https://liquidearth.app.link/8TpmCHFGsYa>`_ to visualize the model in Liquid Earth.
+Now we can use `this link <https://liquidearth.app.link/gempy-promo>`_ to visualize the model in Liquid Earth.
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 32.195 seconds)
+   **Total running time of the script:** (0 minutes 38.257 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_7_3d_visualization.py:

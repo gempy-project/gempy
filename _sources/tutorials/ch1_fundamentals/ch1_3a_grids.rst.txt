@@ -309,7 +309,7 @@ activate them.
  .. code-block:: none
 
 
-    <gempy.core.data.grid_modules.grid_types.RegularGrid object at 0x7f49496d0b20>
+    <gempy.core.data.grid_modules.grid_types.RegularGrid object at 0x7f00cb46f970>
 
 
 
@@ -440,7 +440,7 @@ Completely free XYZ values.
 
     Active grids: ['custom']
 
-    <gempy.core.data.grid_modules.grid_types.CustomGrid object at 0x7f49496d0df0>
+    <gempy.core.data.grid_modules.grid_types.CustomGrid object at 0x7f00cb46e140>
 
 
 
@@ -605,7 +605,7 @@ dealing with raster data. By default we will create a random topography:
     [-20.   0.]
     Active grids: ['custom' 'topography']
 
-    <gempy.core.data.grid_modules.topography.Topography object at 0x7f4949769690>
+    <gempy.core.data.grid_modules.topography.Topography object at 0x7f00cb46d7e0>
 
 
 
@@ -990,7 +990,7 @@ This grid type has its own tutorial. See :doc: `ch1_3b_cross_sections`
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 0.193 seconds)
+   **Total running time of the script:** (0 minutes 0.086 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_3a_grids.py:

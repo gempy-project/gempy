@@ -143,7 +143,7 @@ to generate a random topography based on a fractal grid:</p>
 <img src="../../_images/sphx_glr_ch1_3c_topography_001.png" srcset="../../_images/sphx_glr_ch1_3c_topography_001.png" alt="Geological map" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[200. 500.]
 Active grids: [&#39;regular&#39; &#39;topography&#39; &#39;sections&#39;]
 
-&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f85176a0250&gt;
+&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f00ce608070&gt;
 </pre></div>
 </div>
 <p>It has additional keywords to play around with:</p>
@@ -184,7 +184,7 @@ much nicer geological maps!</p>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Active grids: [&#39;regular&#39; &#39;topography&#39; &#39;sections&#39;]
 
-&lt;gempy.core.data.grid_modules.topography.Topography object at 0x7f85176a2e30&gt;
+&lt;gempy.core.data.grid_modules.topography.Topography object at 0x7f00d0710850&gt;
 </pre></div>
 </div>
 </section>
@@ -194,8 +194,8 @@ much nicer geological maps!</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../GemPy API/gempy.compute_model.html#gempy.compute_model" title="gempy.compute_model" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span></a><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting Backend To: AvailableBackends.numpy
-/home/leguark/gempy/gempy/core/data/geo_model.py:118: UserWarning: Both octree levels and resolution are set. The default grid for the `raw_array_solution`and plots will be the dense regular grid. To use octrees instead, set resolution to None in the regular grid.
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting Backend To: AvailableBackends.PYTORCH
+/home/leguark/gempy/gempy/core/data/geo_model.py:115: UserWarning: Both octree levels and resolution are set. The default grid for the `raw_array_solution`and plots will be the dense regular grid. To use octrees instead, set resolution to None in the regular grid.
   warnings.warn(&quot;Both octree levels and resolution are set. The default grid for the `raw_array_solution`&quot;
 </pre></div>
 </div>
@@ -210,16 +210,16 @@ It can be visualized using the 2D and 3D plotting functionality:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">show_topography</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">section_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;topography&#39;</span><span class="p">],</span> <span class="n">show_boundaries</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_ch1_3c_topography_002.png" srcset="../../_images/sphx_glr_ch1_3c_topography_002.png" alt="Geological map" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f85611bb190&gt;
+<img src="../../_images/sphx_glr_ch1_3c_topography_002.png" srcset="../../_images/sphx_glr_ch1_3c_topography_002.png" alt="Geological map" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f00ce6aff70&gt;
 </pre></div>
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">show_topography</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">section_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;section1&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_ch1_3c_topography_003.png" srcset="../../_images/sphx_glr_ch1_3c_topography_003.png" alt="section1" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/leguark/gempy_viewer/gempy_viewer/API/_plot_2d_sections_api.py:104: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
+<img src="../../_images/sphx_glr_ch1_3c_topography_003.png" srcset="../../_images/sphx_glr_ch1_3c_topography_003.png" alt="section1" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/leguark/gempy_viewer/gempy_viewer/API/_plot_2d_sections_api.py:105: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
   warnings.warn(
 
-&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f85611bb340&gt;
+&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f00ce60b5e0&gt;
 </pre></div>
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">g3d</span> <span class="o">=</span> <span class="n">gpv</span><span class="o">.</span><span class="n">plot_3d</span><span class="p">(</span>
@@ -242,7 +242,7 @@ It can be visualized using the 2D and 3D plotting functionality:</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_ch1_3c_topography_005.png" srcset="../../_images/sphx_glr_ch1_3c_topography_005.png" alt="ch1 3c topography" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 6.617 seconds)</p>
+<img src="../../_images/sphx_glr_ch1_3c_topography_005.png" srcset="../../_images/sphx_glr_ch1_3c_topography_005.png" alt="ch1 3c topography" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 5.969 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-tutorials-ch1-fundamentals-ch1-3c-topography-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/5f79061946362a29ca439db5f144cba8/ch1_3c_topography.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">ch1_3c_topography.ipynb</span></code></a></p>

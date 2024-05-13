@@ -90,7 +90,7 @@ Define the path to data
 
     Surface points hash:  7f8130574e9fd3deb75ffcbfcafff5b6b832d233ee95246f4be17e5cb8575712
     Orientations hash:  580fd4be0d29ee09c4018f629b4a1b3545faeae127e6532e66f730e7f0203e69
-    Setting Backend To: AvailableBackends.numpy
+    Setting Backend To: AvailableBackends.PYTORCH
 
 
 
@@ -119,7 +119,7 @@ Plot the initial geological model in the y direction
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f8564d04400>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f0080743cd0>
 
 
 
@@ -160,14 +160,14 @@ Plot the result of the model in the y and x directions with data
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f856129da20>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f00a021f880>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.550 seconds)
+   **Total running time of the script:** (0 minutes 0.879 seconds)
 
 
 .. _sphx_glr_download_examples_geometries_f06_unconformity.py:

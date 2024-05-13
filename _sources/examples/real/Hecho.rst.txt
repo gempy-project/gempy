@@ -134,45 +134,45 @@ we can directly tidy the data in gempy style:
         <tr>
           <th>761</th>
           <td>6</td>
-          <td>11.143734</td>
-          <td>-0.172893</td>
-          <td>1.53226</td>
+          <td>11.14</td>
+          <td>-0.17</td>
+          <td>1.53</td>
           <td>NaN</td>
           <td>f3</td>
         </tr>
         <tr>
           <th>762</th>
           <td>7</td>
-          <td>11.171513</td>
-          <td>0.284198</td>
-          <td>1.68442</td>
+          <td>11.17</td>
+          <td>0.28</td>
+          <td>1.68</td>
           <td>NaN</td>
           <td>f3</td>
         </tr>
         <tr>
           <th>763</th>
           <td>8</td>
-          <td>11.159113</td>
-          <td>0.399711</td>
-          <td>1.81939</td>
+          <td>11.16</td>
+          <td>0.40</td>
+          <td>1.82</td>
           <td>NaN</td>
           <td>f3</td>
         </tr>
         <tr>
           <th>764</th>
           <td>9</td>
-          <td>11.069008</td>
-          <td>0.032232</td>
-          <td>1.92030</td>
+          <td>11.07</td>
+          <td>0.03</td>
+          <td>1.92</td>
           <td>NaN</td>
           <td>f3</td>
         </tr>
         <tr>
           <th>765</th>
           <td>10</td>
-          <td>10.885192</td>
-          <td>-0.428004</td>
-          <td>2.10412</td>
+          <td>10.89</td>
+          <td>-0.43</td>
+          <td>2.10</td>
           <td>NaN</td>
           <td>f3</td>
         </tr>
@@ -373,7 +373,7 @@ Now we can see how the data looks so far:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f850ccd8520>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f0080239ab0>
 
 
 
@@ -776,7 +776,7 @@ that value:
 
  .. code-block:: none
 
-    Setting Backend To: AvailableBackends.numpy
+    Setting Backend To: AvailableBackends.PYTORCH
     Chunking done: 13 chunks
     Chunking done: 13 chunks
     Chunking done: 13 chunks
@@ -820,7 +820,7 @@ Time
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f850cd9ab30>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f00c41eebf0>
 
 
 
@@ -844,7 +844,7 @@ Time
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f850cd78460>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f00a02d4490>
 
 
 
@@ -868,7 +868,7 @@ Time
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f850c2297b0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f00805e3400>
 
 
 
@@ -895,14 +895,14 @@ sphinx_gallery_thumbnail_number = 3
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f850c246440>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00a0243d90>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (5 minutes 41.156 seconds)
+   **Total running time of the script:** (2 minutes 16.801 seconds)
 
 
 .. _sphx_glr_download_examples_real_Hecho.py:

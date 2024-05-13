@@ -71,8 +71,8 @@ to download the full example code</p>
 <span class="nb">print</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;_interpolation_options&#39;: InterpolationOptions(kernel_options={&#39;range&#39;: 5, &#39;c_o&#39;: 10, &#39;uni_degree&#39;: 1, &#39;i_res&#39;: 4, &#39;gi_res&#39;: 2, &#39;number_dimensions&#39;: 3, &#39;kernel_function&#39;: &lt;AvailableKernelFunctions.cubic: KernelFunction(base_function=&lt;function cubic_function at 0x7f857a0a1b40&gt;, derivative_div_r=&lt;function cubic_function_p_div_r at 0x7f857a0a1bd0&gt;, second_derivative=&lt;function cubic_function_a at 0x7f857a0a1c60&gt;, consume_sq_distance=False)&gt;, &#39;kernel_solver&#39;: &lt;Solvers.DEFAULT: 1&gt;, &#39;compute_condition_number&#39;: False, &#39;optimizing_condition_number&#39;: False, &#39;condition_number&#39;: None}, _number_octree_levels=6, current_octree_level=0, block_solutions_type=BlockSolutionType.OCTREE, compute_scalar_gradient=False, mesh_extraction=True, mesh_extraction_masking_options=MeshExtractionMaskingOptions.INTERSECT, mesh_extraction_fancy=True, debug=True, debug_water_tight=False, sigmoid_slope=50000, evaluation_chunk_size=50000, _number_octree_levels_surface=4, _model_name=None),
- &#39;grid&#39;: &lt;gempy.core.data.grid.Grid object at 0x7f851715ef50&gt;,
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;_interpolation_options&#39;: InterpolationOptions(kernel_options={&#39;range&#39;: 5, &#39;c_o&#39;: 10, &#39;uni_degree&#39;: 1, &#39;i_res&#39;: 4, &#39;gi_res&#39;: 2, &#39;number_dimensions&#39;: 3, &#39;kernel_function&#39;: &lt;AvailableKernelFunctions.cubic: KernelFunction(base_function=&lt;function cubic_function at 0x7f00e5cc09d0&gt;, derivative_div_r=&lt;function cubic_function_p_div_r at 0x7f00e5cc0a60&gt;, second_derivative=&lt;function cubic_function_a at 0x7f00e5cc0af0&gt;, consume_sq_distance=False)&gt;, &#39;kernel_solver&#39;: &lt;Solvers.DEFAULT: 1&gt;, &#39;compute_condition_number&#39;: False, &#39;optimizing_condition_number&#39;: False, &#39;condition_number&#39;: None}, _number_octree_levels=6, current_octree_level=0, block_solutions_type=BlockSolutionType.OCTREE, compute_scalar_gradient=False, mesh_extraction=True, mesh_extraction_masking_options=MeshExtractionMaskingOptions.INTERSECT, mesh_extraction_fancy=True, cache_mode=CacheMode.CACHE, debug=True, debug_water_tight=False, sigmoid_slope=50000, evaluation_chunk_size=50000, _number_octree_levels_surface=4, _model_name=None),
+ &#39;grid&#39;: &lt;gempy.core.data.grid.Grid object at 0x7f00cb4d4e50&gt;,
  &#39;meta&#39;: GeoModelMeta(name=&#39;Faults_relations&#39;,
                       creation_date=None,
                       last_modification_date=None,
@@ -284,17 +284,14 @@ Element(
  [False, False,  True],
  [False, False, False]],
 
-/home/leguark/gempy/gempy/core/data/geo_model.py:118: UserWarning: Both octree levels and resolution are set. The default grid for the `raw_array_solution`and plots will be the dense regular grid. To use octrees instead, set resolution to None in the regular grid.
+/home/leguark/gempy/gempy/core/data/geo_model.py:115: UserWarning: Both octree levels and resolution are set. The default grid for the `raw_array_solution`and plots will be the dense regular grid. To use octrees instead, set resolution to None in the regular grid.
   warnings.warn(&quot;Both octree levels and resolution are set. The default grid for the `raw_array_solution`&quot;
-Setting Backend To: AvailableBackends.numpy
-/home/leguark/gempy/gempy/core/data/geo_model.py:118: UserWarning: Both octree levels and resolution are set. The default grid for the `raw_array_solution`and plots will be the dense regular grid. To use octrees instead, set resolution to None in the regular grid.
-  warnings.warn(&quot;Both octree levels and resolution are set. The default grid for the `raw_array_solution`&quot;
-A size: (14, 14)
-CG iterations: 13
-A size: (15, 15)
-CG iterations: 10
-A size: (85, 85)
-CG iterations: 69
+Setting Backend To: AvailableBackends.PYTORCH
+Condition number: 18675.84765625.
+Condition number: 264929521172480.0.
+Condition number: 511605.15625.
+Condition number: 511605.15625.
+Condition number: 511605.15625.
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
@@ -305,7 +302,7 @@ CG iterations: 69
 <span class="n">gpv</span><span class="o">.</span><span class="n">plot_3d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">show_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kwargs_plot_structured_grid</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;opacity&#39;</span><span class="p">:</span> <span class="mf">.2</span><span class="p">})</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_ch1_5_fault_relations_001.png" srcset="../../_images/sphx_glr_ch1_5_fault_relations_001.png" alt="ch1 5 fault relations" class = "sphx-glr-single-img"/><img src="../../_images/sphx_glr_ch1_5_fault_relations_002.png" srcset="../../_images/sphx_glr_ch1_5_fault_relations_002.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f8517279d80&gt;
+<img src="../../_images/sphx_glr_ch1_5_fault_relations_001.png" srcset="../../_images/sphx_glr_ch1_5_fault_relations_001.png" alt="ch1 5 fault relations" class = "sphx-glr-single-img"/><img src="../../_images/sphx_glr_ch1_5_fault_relations_002.png" srcset="../../_images/sphx_glr_ch1_5_fault_relations_002.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00cb72b130&gt;
 </pre></div>
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">show_scalar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show_lith</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">series_n</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
@@ -318,7 +315,7 @@ CG iterations: 69
 <li><img src="../../_images/sphx_glr_ch1_5_fault_relations_004.png" srcset="../../_images/sphx_glr_ch1_5_fault_relations_004.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-multi-img"/></li>
 <li><img src="../../_images/sphx_glr_ch1_5_fault_relations_005.png" srcset="../../_images/sphx_glr_ch1_5_fault_relations_005.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-multi-img"/></li>
 </ul>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f85173512d0&gt;
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f00cb4e8100&gt;
 </pre></div>
 </div>
 </section>
@@ -422,13 +419,11 @@ Element(
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../GemPy API/gempy.compute_model.html#gempy.compute_model" title="gempy.compute_model" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span></a><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting Backend To: AvailableBackends.numpy
-/home/leguark/gempy/gempy/core/data/geo_model.py:118: UserWarning: Both octree levels and resolution are set. The default grid for the `raw_array_solution`and plots will be the dense regular grid. To use octrees instead, set resolution to None in the regular grid.
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting Backend To: AvailableBackends.PYTORCH
+/home/leguark/gempy/gempy/core/data/geo_model.py:115: UserWarning: Both octree levels and resolution are set. The default grid for the `raw_array_solution`and plots will be the dense regular grid. To use octrees instead, set resolution to None in the regular grid.
   warnings.warn(&quot;Both octree levels and resolution are set. The default grid for the `raw_array_solution`&quot;
-A size: (50, 50)
-CG iterations: 100
-A size: (38, 38)
-CG iterations: 35
+Condition number: 210167.4375.
+Condition number: 199390.28125.
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
@@ -439,10 +434,10 @@ CG iterations: 35
 <span class="n">gpv</span><span class="o">.</span><span class="n">plot_3d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">show_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">kwargs_plot_structured_grid</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;opacity&#39;</span><span class="p">:</span> <span class="mf">.2</span><span class="p">})</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_ch1_5_fault_relations_006.png" srcset="../../_images/sphx_glr_ch1_5_fault_relations_006.png" alt="ch1 5 fault relations" class = "sphx-glr-single-img"/><img src="../../_images/sphx_glr_ch1_5_fault_relations_007.png" srcset="../../_images/sphx_glr_ch1_5_fault_relations_007.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f85615225f0&gt;
+<img src="../../_images/sphx_glr_ch1_5_fault_relations_006.png" srcset="../../_images/sphx_glr_ch1_5_fault_relations_006.png" alt="ch1 5 fault relations" class = "sphx-glr-single-img"/><img src="../../_images/sphx_glr_ch1_5_fault_relations_007.png" srcset="../../_images/sphx_glr_ch1_5_fault_relations_007.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00c41ec040&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 22.731 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.970 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-tutorials-ch1-fundamentals-ch1-5-fault-relations-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/eb7933b506badaa023fc381051b0a53f/ch1_5_fault_relations.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">ch1_5_fault_relations.ipynb</span></code></a></p>

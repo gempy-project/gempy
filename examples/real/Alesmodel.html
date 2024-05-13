@@ -226,7 +226,7 @@ to download the full example code</p>
 <img src="../../_images/sphx_glr_Alesmodel_001.png" srcset="../../_images/sphx_glr_Alesmodel_001.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_section_traces</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_Alesmodel_002.png" srcset="../../_images/sphx_glr_Alesmodel_002.png" alt="Cell Number: -1 Direction: z" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;function plot_section_traces at 0x7f49524f1bd0&gt;
+<img src="../../_images/sphx_glr_Alesmodel_002.png" srcset="../../_images/sphx_glr_Alesmodel_002.png" alt="Cell Number: -1 Direction: z" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;function plot_section_traces at 0x7fb950f55f30&gt;
 </pre></div>
 </div>
 <section id="faults">
@@ -338,7 +338,7 @@ to download the full example code</p>
 </div>
 <img src="../../_images/sphx_glr_Alesmodel_003.png" srcset="../../_images/sphx_glr_Alesmodel_003.png" alt="Alesmodel" class = "sphx-glr-single-img"/><img src="../../_images/sphx_glr_Alesmodel_004.png" srcset="../../_images/sphx_glr_Alesmodel_004.png" alt="Alesmodel" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Active grids: [&#39;topography&#39; &#39;sections&#39;]
 
-&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f4904317df0&gt;
+&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fb904fb6a40&gt;
 </pre></div>
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../Modeling Classes/gempy.core.data.StructuralGroup.html#gempy.core.data.StructuralGroup" title="gempy.core.data.StructuralGroup" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">carbo</span></a> <span class="o">=</span> <a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span></a><span class="o">.</span><span class="n">get_group_by_name</span><span class="p">(</span><span class="s2">&quot;Carbon_Series&quot;</span><span class="p">)</span>
@@ -606,8 +606,10 @@ Element(
 </pre></div>
 </div>
 <img src="../../_images/sphx_glr_Alesmodel_005.png" srcset="../../_images/sphx_glr_Alesmodel_005.png" alt="Geological map" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting Backend To: AvailableBackends.PYTORCH
+/home/leguark/gempy_viewer/gempy_viewer/API/_plot_2d_sections_api.py:105: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
+  warnings.warn(
 
-&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f4909f04a60&gt;
+&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fb90574cca0&gt;
 </pre></div>
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">direction</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">],</span> <span class="n">show_topography</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -618,17 +620,17 @@ Element(
 <li><img src="../../_images/sphx_glr_Alesmodel_006.png" srcset="../../_images/sphx_glr_Alesmodel_006.png" alt="Cell Number: 4 Direction: y" class = "sphx-glr-multi-img"/></li>
 <li><img src="../../_images/sphx_glr_Alesmodel_007.png" srcset="../../_images/sphx_glr_Alesmodel_007.png" alt="Cell Number: -4 Direction: y" class = "sphx-glr-multi-img"/></li>
 </ul>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f490265be20&gt;
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fb90b32ab30&gt;
 </pre></div>
 </div>
 <p>sphinx_gallery_thumbnail_number = -1</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_3d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">show_lith</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show_topography</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kwargs_plot_structured_grid</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;opacity&#39;</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">})</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_Alesmodel_008.png" srcset="../../_images/sphx_glr_Alesmodel_008.png" alt="Alesmodel" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f49024e0b20&gt;
+<img src="../../_images/sphx_glr_Alesmodel_008.png" srcset="../../_images/sphx_glr_Alesmodel_008.png" alt="Alesmodel" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fb904fb4af0&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 31.237 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 28.588 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-examples-real-alesmodel-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/3c3dba831e64790e5048f3455451e5b3/Alesmodel.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">Alesmodel.ipynb</span></code></a></p>

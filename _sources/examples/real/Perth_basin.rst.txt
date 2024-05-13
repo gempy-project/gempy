@@ -719,7 +719,7 @@ gp.set_fault_relation(geo_model, fr)
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f850c2814e0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f008053d990>
 
 
 
@@ -740,7 +740,7 @@ gp.set_fault_relation(geo_model, fr)
     [-2800.  1000.]
     Active grids: ['regular' 'topography']
 
-    <gempy.core.data.grid_modules.topography.Topography object at 0x7f850c280b20>
+    <gempy.core.data.grid_modules.topography.Topography object at 0x7f00803ee230>
 
 
 
@@ -764,7 +764,7 @@ gp.set_fault_relation(geo_model, fr)
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f850c2814e0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00a0070e80>
 
 
 
@@ -828,7 +828,7 @@ gp.set_fault_relation(geo_model, fr)
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f851715ffa0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f00cb5eb640>
 
 
 
@@ -852,7 +852,7 @@ gp.set_fault_relation(geo_model, fr)
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f851715cb80>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f00a0070a00>
 
 
 
@@ -876,7 +876,7 @@ gp.set_fault_relation(geo_model, fr)
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f850cffd690>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f00807d9000>
 
 
 
@@ -902,14 +902,14 @@ sphinx_gallery_thumbnail_number = 6
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f850c3a5cf0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00cd804ac0>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 38.530 seconds)
+   **Total running time of the script:** (0 minutes 42.508 seconds)
 
 
 .. _sphx_glr_download_examples_real_Perth_basin.py:

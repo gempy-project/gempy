@@ -76,8 +76,8 @@ We import a model from an existing folder.
 
  .. code-block:: none
 
-    {'_interpolation_options': InterpolationOptions(kernel_options={'range': 5, 'c_o': 10, 'uni_degree': 1, 'i_res': 4, 'gi_res': 2, 'number_dimensions': 3, 'kernel_function': <AvailableKernelFunctions.cubic: KernelFunction(base_function=<function cubic_function at 0x7f857a0a1b40>, derivative_div_r=<function cubic_function_p_div_r at 0x7f857a0a1bd0>, second_derivative=<function cubic_function_a at 0x7f857a0a1c60>, consume_sq_distance=False)>, 'kernel_solver': <Solvers.DEFAULT: 1>, 'compute_condition_number': False, 'optimizing_condition_number': False, 'condition_number': None}, _number_octree_levels=6, current_octree_level=0, block_solutions_type=BlockSolutionType.OCTREE, compute_scalar_gradient=False, mesh_extraction=True, mesh_extraction_masking_options=MeshExtractionMaskingOptions.INTERSECT, mesh_extraction_fancy=True, debug=True, debug_water_tight=False, sigmoid_slope=50000, evaluation_chunk_size=50000, _number_octree_levels_surface=4, _model_name=None),
-     'grid': <gempy.core.data.grid.Grid object at 0x7f851715ef50>,
+    {'_interpolation_options': InterpolationOptions(kernel_options={'range': 5, 'c_o': 10, 'uni_degree': 1, 'i_res': 4, 'gi_res': 2, 'number_dimensions': 3, 'kernel_function': <AvailableKernelFunctions.cubic: KernelFunction(base_function=<function cubic_function at 0x7f00e5cc09d0>, derivative_div_r=<function cubic_function_p_div_r at 0x7f00e5cc0a60>, second_derivative=<function cubic_function_a at 0x7f00e5cc0af0>, consume_sq_distance=False)>, 'kernel_solver': <Solvers.DEFAULT: 1>, 'compute_condition_number': False, 'optimizing_condition_number': False, 'condition_number': None}, _number_octree_levels=6, current_octree_level=0, block_solutions_type=BlockSolutionType.OCTREE, compute_scalar_gradient=False, mesh_extraction=True, mesh_extraction_masking_options=MeshExtractionMaskingOptions.INTERSECT, mesh_extraction_fancy=True, cache_mode=CacheMode.CACHE, debug=True, debug_water_tight=False, sigmoid_slope=50000, evaluation_chunk_size=50000, _number_octree_levels_surface=4, _model_name=None),
+     'grid': <gempy.core.data.grid.Grid object at 0x7f00cb4d4e50>,
      'meta': GeoModelMeta(name='Faults_relations',
                           creation_date=None,
                           last_modification_date=None,
@@ -334,17 +334,14 @@ Setting the structural frame
      [False, False,  True],
      [False, False, False]],
 
-    /home/leguark/gempy/gempy/core/data/geo_model.py:118: UserWarning: Both octree levels and resolution are set. The default grid for the `raw_array_solution`and plots will be the dense regular grid. To use octrees instead, set resolution to None in the regular grid.
+    /home/leguark/gempy/gempy/core/data/geo_model.py:115: UserWarning: Both octree levels and resolution are set. The default grid for the `raw_array_solution`and plots will be the dense regular grid. To use octrees instead, set resolution to None in the regular grid.
       warnings.warn("Both octree levels and resolution are set. The default grid for the `raw_array_solution`"
-    Setting Backend To: AvailableBackends.numpy
-    /home/leguark/gempy/gempy/core/data/geo_model.py:118: UserWarning: Both octree levels and resolution are set. The default grid for the `raw_array_solution`and plots will be the dense regular grid. To use octrees instead, set resolution to None in the regular grid.
-      warnings.warn("Both octree levels and resolution are set. The default grid for the `raw_array_solution`"
-    A size: (14, 14)
-    CG iterations: 13
-    A size: (15, 15)
-    CG iterations: 10
-    A size: (85, 85)
-    CG iterations: 69
+    Setting Backend To: AvailableBackends.PYTORCH
+    Condition number: 18675.84765625.
+    Condition number: 264929521172480.0.
+    Condition number: 511605.15625.
+    Condition number: 511605.15625.
+    Condition number: 511605.15625.
 
 
 .. raw:: html
@@ -381,7 +378,7 @@ Setting the structural frame
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f8517279d80>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00cb72b130>
 
 
 
@@ -426,7 +423,7 @@ Setting the structural frame
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f85173512d0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f00cb4e8100>
 
 
 
@@ -564,13 +561,11 @@ Let's split the formations in two groups
 
  .. code-block:: none
 
-    Setting Backend To: AvailableBackends.numpy
-    /home/leguark/gempy/gempy/core/data/geo_model.py:118: UserWarning: Both octree levels and resolution are set. The default grid for the `raw_array_solution`and plots will be the dense regular grid. To use octrees instead, set resolution to None in the regular grid.
+    Setting Backend To: AvailableBackends.PYTORCH
+    /home/leguark/gempy/gempy/core/data/geo_model.py:115: UserWarning: Both octree levels and resolution are set. The default grid for the `raw_array_solution`and plots will be the dense regular grid. To use octrees instead, set resolution to None in the regular grid.
       warnings.warn("Both octree levels and resolution are set. The default grid for the `raw_array_solution`"
-    A size: (50, 50)
-    CG iterations: 100
-    A size: (38, 38)
-    CG iterations: 35
+    Condition number: 210167.4375.
+    Condition number: 199390.28125.
 
 
 .. raw:: html
@@ -606,14 +601,14 @@ Let's split the formations in two groups
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f85615225f0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00c41ec040>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 22.731 seconds)
+   **Total running time of the script:** (0 minutes 3.970 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_5_fault_relations.py:

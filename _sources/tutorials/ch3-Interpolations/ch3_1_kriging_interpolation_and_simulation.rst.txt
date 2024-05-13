@@ -175,15 +175,7 @@ no mesh computed as basically 2D model
 
  .. code-block:: none
 
-    Setting Backend To: AvailableBackends.numpy
-    /home/leguark/gempy_engine/gempy_engine/modules/dual_contouring/dual_contouring_interface.py:38: RuntimeWarning: divide by zero encountered in divide
-      weight_x = ((scalar_at_sp - scalar_8[:, :, 4:]) / scalar_dx).reshape(-1, 4, 1)
-    /home/leguark/gempy_engine/gempy_engine/modules/dual_contouring/dual_contouring_interface.py:39: RuntimeWarning: divide by zero encountered in divide
-      weight_y = ((scalar_at_sp - scalar_8[:, :, [2, 3, 6, 7]]) / scalar_d_y).reshape(-1, 4, 1)
-    /home/leguark/gempy_engine/gempy_engine/modules/dual_contouring/dual_contouring_interface.py:48: RuntimeWarning: invalid value encountered in multiply
-      intersect_dx = d_x[:, :, :] * weight_x[:, :, :]
-    /home/leguark/gempy_engine/gempy_engine/modules/dual_contouring/dual_contouring_interface.py:49: RuntimeWarning: invalid value encountered in multiply
-      intersect_dy = d_y[:, :, :] * weight_y[:, :, :]
+    Setting Backend To: AvailableBackends.PYTORCH
 
 
 
@@ -213,7 +205,7 @@ So here is the very simple, basically 2D model that we created:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f490cb745e0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f00a0264610>
 
 
 
@@ -387,43 +379,43 @@ the grid:
       <tbody>
         <tr>
           <th>0</th>
-          <td>10.0016</td>
-          <td>2.5016</td>
-          <td>410.0016</td>
-          <td>2.241542</td>
-          <td>2.103698</td>
+          <td>10.0</td>
+          <td>2.5</td>
+          <td>410.0</td>
+          <td>2.24</td>
+          <td>2.10</td>
         </tr>
         <tr>
           <th>1</th>
-          <td>10.0016</td>
-          <td>2.5016</td>
-          <td>430.0016</td>
-          <td>2.193555</td>
-          <td>1.979810</td>
+          <td>10.0</td>
+          <td>2.5</td>
+          <td>430.0</td>
+          <td>2.19</td>
+          <td>1.98</td>
         </tr>
         <tr>
           <th>2</th>
-          <td>10.0016</td>
-          <td>2.5016</td>
-          <td>450.0016</td>
-          <td>2.144345</td>
-          <td>1.865440</td>
+          <td>10.0</td>
+          <td>2.5</td>
+          <td>450.0</td>
+          <td>2.14</td>
+          <td>1.87</td>
         </tr>
         <tr>
           <th>3</th>
-          <td>10.0016</td>
-          <td>2.5016</td>
-          <td>470.0016</td>
-          <td>2.097883</td>
-          <td>1.774970</td>
+          <td>10.0</td>
+          <td>2.5</td>
+          <td>470.0</td>
+          <td>2.10</td>
+          <td>1.77</td>
         </tr>
         <tr>
           <th>4</th>
-          <td>10.0016</td>
-          <td>2.5016</td>
-          <td>490.0016</td>
-          <td>2.058535</td>
-          <td>1.724997</td>
+          <td>10.0</td>
+          <td>2.5</td>
+          <td>490.0</td>
+          <td>2.06</td>
+          <td>1.72</td>
         </tr>
       </tbody>
     </table>
@@ -568,43 +560,43 @@ Gaussian Simulation approach is applied in this module:
       <tbody>
         <tr>
           <th>1774</th>
-          <td>10.0016</td>
-          <td>2.5016</td>
-          <td>410.0016</td>
-          <td>4.420467</td>
-          <td>0.122209</td>
+          <td>10.0</td>
+          <td>2.5</td>
+          <td>410.0</td>
+          <td>4.42</td>
+          <td>0.12</td>
         </tr>
         <tr>
           <th>4701</th>
-          <td>10.0016</td>
-          <td>2.5016</td>
-          <td>430.0016</td>
-          <td>4.893653</td>
-          <td>0.108040</td>
+          <td>10.0</td>
+          <td>2.5</td>
+          <td>430.0</td>
+          <td>4.89</td>
+          <td>0.11</td>
         </tr>
         <tr>
           <th>3463</th>
-          <td>10.0016</td>
-          <td>2.5016</td>
-          <td>450.0016</td>
-          <td>4.874381</td>
-          <td>0.177325</td>
+          <td>10.0</td>
+          <td>2.5</td>
+          <td>450.0</td>
+          <td>4.87</td>
+          <td>0.18</td>
         </tr>
         <tr>
           <th>3227</th>
-          <td>10.0016</td>
-          <td>2.5016</td>
-          <td>470.0016</td>
-          <td>4.983143</td>
-          <td>0.220953</td>
+          <td>10.0</td>
+          <td>2.5</td>
+          <td>470.0</td>
+          <td>4.98</td>
+          <td>0.22</td>
         </tr>
         <tr>
           <th>4528</th>
-          <td>10.0016</td>
-          <td>2.5016</td>
-          <td>490.0016</td>
-          <td>3.747620</td>
-          <td>0.108041</td>
+          <td>10.0</td>
+          <td>2.5</td>
+          <td>490.0</td>
+          <td>3.75</td>
+          <td>0.11</td>
         </tr>
       </tbody>
     </table>
@@ -628,17 +620,17 @@ Gaussian Simulation approach is applied in this module:
  .. code-block:: none
 
 
-    1774    4.420467
-    4701    4.893653
-    3463    4.874381
-    3227    4.983143
-    4528    3.747620
-              ...   
-    1712    3.540901
-    390     3.863402
-    1039    4.134937
-    3379    3.144726
-    4090    2.446597
+    1774    4.42
+    4701    4.89
+    3463    4.87
+    3227    4.98
+    4528    3.75
+            ... 
+    1712    3.54
+    390     3.86
+    1039    4.13
+    3379    3.14
+    4090    2.45
     Name: estimated value, Length: 5000, dtype: float64
 
 
@@ -709,7 +701,7 @@ Gaussian Simulation approach is applied in this module:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (15 minutes 23.937 seconds)
+   **Total running time of the script:** (14 minutes 59.978 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch3-Interpolations_ch3_1_kriging_interpolation_and_simulation.py:

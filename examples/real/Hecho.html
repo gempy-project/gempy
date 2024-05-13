@@ -121,45 +121,45 @@ we can directly tidy the data in gempy style:</p>
     <tr>
       <th>761</th>
       <td>6</td>
-      <td>11.143734</td>
-      <td>-0.172893</td>
-      <td>1.53226</td>
+      <td>11.14</td>
+      <td>-0.17</td>
+      <td>1.53</td>
       <td>NaN</td>
       <td>f3</td>
     </tr>
     <tr>
       <th>762</th>
       <td>7</td>
-      <td>11.171513</td>
-      <td>0.284198</td>
-      <td>1.68442</td>
+      <td>11.17</td>
+      <td>0.28</td>
+      <td>1.68</td>
       <td>NaN</td>
       <td>f3</td>
     </tr>
     <tr>
       <th>763</th>
       <td>8</td>
-      <td>11.159113</td>
-      <td>0.399711</td>
-      <td>1.81939</td>
+      <td>11.16</td>
+      <td>0.40</td>
+      <td>1.82</td>
       <td>NaN</td>
       <td>f3</td>
     </tr>
     <tr>
       <th>764</th>
       <td>9</td>
-      <td>11.069008</td>
-      <td>0.032232</td>
-      <td>1.92030</td>
+      <td>11.07</td>
+      <td>0.03</td>
+      <td>1.92</td>
       <td>NaN</td>
       <td>f3</td>
     </tr>
     <tr>
       <th>765</th>
       <td>10</td>
-      <td>10.885192</td>
-      <td>-0.428004</td>
-      <td>2.10412</td>
+      <td>10.89</td>
+      <td>-0.43</td>
+      <td>2.10</td>
       <td>NaN</td>
       <td>f3</td>
     </tr>
@@ -287,7 +287,7 @@ points availablle:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_Hecho_001.png" srcset="../../_images/sphx_glr_Hecho_001.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f850ccd8520&gt;
+<img src="../../_images/sphx_glr_Hecho_001.png" srcset="../../_images/sphx_glr_Hecho_001.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f0080239ab0&gt;
 </pre></div>
 </div>
 <p>By default all surfaces belong to one unique series.</p>
@@ -613,7 +613,7 @@ that value:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../GemPy API/gempy.compute_model.html#gempy.compute_model" title="gempy.compute_model" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span></a><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GemPyEngineConfig</span><span class="p">(</span><span class="n">use_gpu</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float64&#39;</span><span class="p">))</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting Backend To: AvailableBackends.numpy
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting Backend To: AvailableBackends.PYTORCH
 Chunking done: 13 chunks
 Chunking done: 13 chunks
 Chunking done: 13 chunks
@@ -634,29 +634,29 @@ loop each)</p></li>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">],</span> <span class="n">series_n</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">show_scalar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_Hecho_002.png" srcset="../../_images/sphx_glr_Hecho_002.png" alt="Cell Number: 10 Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f850cd9ab30&gt;
+<img src="../../_images/sphx_glr_Hecho_002.png" srcset="../../_images/sphx_glr_Hecho_002.png" alt="Cell Number: 10 Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f00c41eebf0&gt;
 </pre></div>
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">],</span> <span class="n">show_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_Hecho_003.png" srcset="../../_images/sphx_glr_Hecho_003.png" alt="Cell Number: 10 Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f850cd78460&gt;
+<img src="../../_images/sphx_glr_Hecho_003.png" srcset="../../_images/sphx_glr_Hecho_003.png" alt="Cell Number: 10 Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f00a02d4490&gt;
 </pre></div>
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">section_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;section&#39;</span><span class="p">],</span> <span class="n">show_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_Hecho_004.png" srcset="../../_images/sphx_glr_Hecho_004.png" alt="section" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f850c2297b0&gt;
+<img src="../../_images/sphx_glr_Hecho_004.png" srcset="../../_images/sphx_glr_Hecho_004.png" alt="section" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f00805e3400&gt;
 </pre></div>
 </div>
 <p>sphinx_gallery_thumbnail_number = 3</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_3d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">kwargs_plot_structured_grid</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;opacity&#39;</span><span class="p">:</span> <span class="mf">.2</span><span class="p">})</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_Hecho_005.png" srcset="../../_images/sphx_glr_Hecho_005.png" alt="Hecho" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f850c246440&gt;
+<img src="../../_images/sphx_glr_Hecho_005.png" srcset="../../_images/sphx_glr_Hecho_005.png" alt="Hecho" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00a0243d90&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (5 minutes 41.156 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (2 minutes 16.801 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-examples-real-hecho-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/0c198b4ddb49e2a808610518a878cf6d/Hecho.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">Hecho.ipynb</span></code></a></p>

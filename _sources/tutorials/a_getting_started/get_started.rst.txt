@@ -75,8 +75,8 @@ appropriate.
  .. code-block:: none
 
 
-    {'_interpolation_options': InterpolationOptions(kernel_options={'range': 5, 'c_o': 10, 'uni_degree': 1, 'i_res': 4, 'gi_res': 2, 'number_dimensions': 3, 'kernel_function': <AvailableKernelFunctions.cubic: KernelFunction(base_function=<function cubic_function at 0x7f2dfa8a1b40>, derivative_div_r=<function cubic_function_p_div_r at 0x7f2dfa8a1bd0>, second_derivative=<function cubic_function_a at 0x7f2dfa8a1c60>, consume_sq_distance=False)>, 'kernel_solver': <Solvers.DEFAULT: 1>, 'compute_condition_number': False, 'optimizing_condition_number': False, 'condition_number': None}, _number_octree_levels=4, current_octree_level=0, block_solutions_type=BlockSolutionType.OCTREE, compute_scalar_gradient=False, mesh_extraction=True, mesh_extraction_masking_options=MeshExtractionMaskingOptions.INTERSECT, mesh_extraction_fancy=True, debug=True, debug_water_tight=False, sigmoid_slope=50000, evaluation_chunk_size=50000, _number_octree_levels_surface=4, _model_name=None),
-     'grid': <gempy.core.data.grid.Grid object at 0x7f2de43f4580>,
+    {'_interpolation_options': InterpolationOptions(kernel_options={'range': 5, 'c_o': 10, 'uni_degree': 1, 'i_res': 4, 'gi_res': 2, 'number_dimensions': 3, 'kernel_function': <AvailableKernelFunctions.cubic: KernelFunction(base_function=<function cubic_function at 0x7f00e5cc09d0>, derivative_div_r=<function cubic_function_p_div_r at 0x7f00e5cc0a60>, second_derivative=<function cubic_function_a at 0x7f00e5cc0af0>, consume_sq_distance=False)>, 'kernel_solver': <Solvers.DEFAULT: 1>, 'compute_condition_number': False, 'optimizing_condition_number': False, 'condition_number': None}, _number_octree_levels=4, current_octree_level=0, block_solutions_type=BlockSolutionType.OCTREE, compute_scalar_gradient=False, mesh_extraction=True, mesh_extraction_masking_options=MeshExtractionMaskingOptions.INTERSECT, mesh_extraction_fancy=True, cache_mode=CacheMode.CACHE, debug=True, debug_water_tight=False, sigmoid_slope=50000, evaluation_chunk_size=50000, _number_octree_levels_surface=4, _model_name=None),
+     'grid': <gempy.core.data.grid.Grid object at 0x7f00d07105e0>,
      'meta': GeoModelMeta(name='Model1',
                           creation_date=None,
                           last_modification_date=None,
@@ -277,7 +277,7 @@ coordinates on mouse hover (in qt5 backend). We can add a surface point like thi
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f2de23ee4d0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00cd3409d0>
 
 
 
@@ -319,7 +319,7 @@ We can now add other points for the layer:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f2de11cd6f0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00cd340610>
 
 
 
@@ -370,7 +370,7 @@ Let's add an orientation:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f2de123f250>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00cd08a0b0>
 
 
 
@@ -414,7 +414,7 @@ With the provided data, we can now interpolate the 3D surface.
 
  .. code-block:: none
 
-    Setting Backend To: AvailableBackends.numpy
+    Setting Backend To: AvailableBackends.PYTORCH
 
 
 .. raw:: html
@@ -489,7 +489,7 @@ Interpolated 3D surface can be visualized both in 2D and 3D.
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f2de123f7c0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00cd340610>
 
 
 
@@ -593,11 +593,11 @@ Adding points and properties for the next layer.
 
  .. code-block:: none
 
-    Setting Backend To: AvailableBackends.numpy
+    Setting Backend To: AvailableBackends.PYTORCH
     /home/leguark/gempy/gempy/core/data/structural_frame.py:190: UserWarning: The basement color was already used in the structural elements.Changing the basement color to #ffbe00.
       warnings.warn(f"The basement color was already used in the structural elements."
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f2de11c2c80>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00cb609c60>
 
 
 
@@ -650,11 +650,11 @@ Adding points and properties for another layer.
 
  .. code-block:: none
 
-    Setting Backend To: AvailableBackends.numpy
+    Setting Backend To: AvailableBackends.PYTORCH
     /home/leguark/gempy/gempy/core/data/structural_frame.py:190: UserWarning: The basement color was already used in the structural elements.Changing the basement color to #728f02.
       warnings.warn(f"The basement color was already used in the structural elements."
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f2de11c2770>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00cb4ea770>
 
 
 
@@ -725,7 +725,7 @@ Add the fault's input data:
     /home/leguark/gempy/gempy/core/data/structural_frame.py:190: UserWarning: The basement color was already used in the structural elements.Changing the basement color to #443988.
       warnings.warn(f"The basement color was already used in the structural elements."
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f2de1289ea0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f00cb572230>
 
 
 
@@ -759,9 +759,9 @@ Compute and visualize the updated model:
 
  .. code-block:: none
 
-    Setting Backend To: AvailableBackends.numpy
+    Setting Backend To: AvailableBackends.PYTORCH
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f2de0eb9a20>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00d95e5540>
 
 
 
@@ -827,9 +827,9 @@ Here, we'll showcase a few of them.
  .. code-block:: none
 
     Active grids: ['topography']
-    Setting Backend To: AvailableBackends.numpy
+    Setting Backend To: AvailableBackends.PYTORCH
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f2de118f5e0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00cd0bbdc0>
 
 
 
@@ -862,7 +862,7 @@ sphinx_gallery_thumbnail_number = -2
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 5.610 seconds)
+   **Total running time of the script:** (0 minutes 5.365 seconds)
 
 
 .. _sphx_glr_download_tutorials_a_getting_started_get_started.py:

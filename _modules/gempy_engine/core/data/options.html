@@ -137,6 +137,15 @@
 <a class="viewcode-back" href="../../../../Modeling%20Classes/gempy.core.data.InterpolationOptions.html#gempy.core.data.InterpolationOptions">[docs]</a>
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">InterpolationOptions</span><span class="p">:</span>
+<div class="viewcode-block" id="InterpolationOptions.CacheMode">
+<a class="viewcode-back" href="../../../../Modeling%20Classes/gempy.core.data.InterpolationOptions.html#gempy.core.data.InterpolationOptions.CacheMode">[docs]</a>
+    <span class="k">class</span> <span class="nc">CacheMode</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+        <span class="n">NO_CACHE</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+        <span class="n">CACHE</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+        <span class="n">CLEAR_CACHE</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span></div>
+
+        
+        
     <span class="c1"># @off</span>
     <span class="n">kernel_options</span>                 <span class="p">:</span> <span class="n">KernelOptions</span>                <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># * This is the compression of the fields above and the way to go in the future</span>
 
@@ -149,6 +158,8 @@
     <span class="n">mesh_extraction</span>                <span class="p">:</span> <span class="nb">bool</span>                         <span class="o">=</span> <span class="kc">True</span>
     <span class="n">mesh_extraction_masking_options</span><span class="p">:</span> <span class="n">MeshExtractionMaskingOptions</span> <span class="o">=</span> <span class="n">MeshExtractionMaskingOptions</span><span class="o">.</span><span class="n">INTERSECT</span>
     <span class="n">mesh_extraction_fancy</span>          <span class="p">:</span> <span class="nb">bool</span>                         <span class="o">=</span> <span class="kc">True</span>
+    
+    <span class="n">cache_mode</span>                     <span class="p">:</span> <span class="n">CacheMode</span>                    <span class="o">=</span> <span class="n">CacheMode</span><span class="o">.</span><span class="n">CACHE</span>
 
     <span class="n">debug</span>                          <span class="p">:</span> <span class="nb">bool</span>                         <span class="o">=</span> <span class="n">gempy_engine</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">DEBUG_MODE</span>
     <span class="n">debug_water_tight</span>              <span class="p">:</span> <span class="nb">bool</span>                         <span class="o">=</span> <span class="kc">False</span>
@@ -371,7 +382,6 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../index.html">About</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../projects.html">Additional projects</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>

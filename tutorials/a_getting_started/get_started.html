@@ -70,8 +70,8 @@ appropriate.</p>
 <a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;_interpolation_options&#39;: InterpolationOptions(kernel_options={&#39;range&#39;: 5, &#39;c_o&#39;: 10, &#39;uni_degree&#39;: 1, &#39;i_res&#39;: 4, &#39;gi_res&#39;: 2, &#39;number_dimensions&#39;: 3, &#39;kernel_function&#39;: &lt;AvailableKernelFunctions.cubic: KernelFunction(base_function=&lt;function cubic_function at 0x7f2dfa8a1b40&gt;, derivative_div_r=&lt;function cubic_function_p_div_r at 0x7f2dfa8a1bd0&gt;, second_derivative=&lt;function cubic_function_a at 0x7f2dfa8a1c60&gt;, consume_sq_distance=False)&gt;, &#39;kernel_solver&#39;: &lt;Solvers.DEFAULT: 1&gt;, &#39;compute_condition_number&#39;: False, &#39;optimizing_condition_number&#39;: False, &#39;condition_number&#39;: None}, _number_octree_levels=4, current_octree_level=0, block_solutions_type=BlockSolutionType.OCTREE, compute_scalar_gradient=False, mesh_extraction=True, mesh_extraction_masking_options=MeshExtractionMaskingOptions.INTERSECT, mesh_extraction_fancy=True, debug=True, debug_water_tight=False, sigmoid_slope=50000, evaluation_chunk_size=50000, _number_octree_levels_surface=4, _model_name=None),
- &#39;grid&#39;: &lt;gempy.core.data.grid.Grid object at 0x7f2de43f4580&gt;,
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;_interpolation_options&#39;: InterpolationOptions(kernel_options={&#39;range&#39;: 5, &#39;c_o&#39;: 10, &#39;uni_degree&#39;: 1, &#39;i_res&#39;: 4, &#39;gi_res&#39;: 2, &#39;number_dimensions&#39;: 3, &#39;kernel_function&#39;: &lt;AvailableKernelFunctions.cubic: KernelFunction(base_function=&lt;function cubic_function at 0x7f00e5cc09d0&gt;, derivative_div_r=&lt;function cubic_function_p_div_r at 0x7f00e5cc0a60&gt;, second_derivative=&lt;function cubic_function_a at 0x7f00e5cc0af0&gt;, consume_sq_distance=False)&gt;, &#39;kernel_solver&#39;: &lt;Solvers.DEFAULT: 1&gt;, &#39;compute_condition_number&#39;: False, &#39;optimizing_condition_number&#39;: False, &#39;condition_number&#39;: None}, _number_octree_levels=4, current_octree_level=0, block_solutions_type=BlockSolutionType.OCTREE, compute_scalar_gradient=False, mesh_extraction=True, mesh_extraction_masking_options=MeshExtractionMaskingOptions.INTERSECT, mesh_extraction_fancy=True, cache_mode=CacheMode.CACHE, debug=True, debug_water_tight=False, sigmoid_slope=50000, evaluation_chunk_size=50000, _number_octree_levels_surface=4, _model_name=None),
+ &#39;grid&#39;: &lt;gempy.core.data.grid.Grid object at 0x7f00d07105e0&gt;,
  &#39;meta&#39;: GeoModelMeta(name=&#39;Model1&#39;,
                       creation_date=None,
                       last_modification_date=None,
@@ -167,7 +167,7 @@ coordinates on mouse hover (in qt5 backend). We can add a surface point like thi
 <span class="n">gpv</span><span class="o">.</span><span class="n">plot_3d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_get_started_005.png" srcset="../../_images/sphx_glr_get_started_005.png" alt="get started" class = "sphx-glr-single-img"/><img src="../../_images/sphx_glr_get_started_006.png" srcset="../../_images/sphx_glr_get_started_006.png" alt="Cell Number: 11 Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f2de23ee4d0&gt;
+<img src="../../_images/sphx_glr_get_started_005.png" srcset="../../_images/sphx_glr_get_started_005.png" alt="get started" class = "sphx-glr-single-img"/><img src="../../_images/sphx_glr_get_started_006.png" srcset="../../_images/sphx_glr_get_started_006.png" alt="Cell Number: 11 Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00cd3409d0&gt;
 </pre></div>
 </div>
 <p>We can now add other points for the layer:</p>
@@ -183,7 +183,7 @@ coordinates on mouse hover (in qt5 backend). We can add a surface point like thi
 <span class="n">gpv</span><span class="o">.</span><span class="n">plot_3d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_get_started_007.png" srcset="../../_images/sphx_glr_get_started_007.png" alt="get started" class = "sphx-glr-single-img"/><img src="../../_images/sphx_glr_get_started_008.png" srcset="../../_images/sphx_glr_get_started_008.png" alt="Cell Number: 11 Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f2de11cd6f0&gt;
+<img src="../../_images/sphx_glr_get_started_007.png" srcset="../../_images/sphx_glr_get_started_007.png" alt="get started" class = "sphx-glr-single-img"/><img src="../../_images/sphx_glr_get_started_008.png" srcset="../../_images/sphx_glr_get_started_008.png" alt="Cell Number: 11 Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00cd340610&gt;
 </pre></div>
 </div>
 <p>To interpolate in gempy, the minimum data needed is:</p>
@@ -207,7 +207,7 @@ coordinates on mouse hover (in qt5 backend). We can add a surface point like thi
 <span class="n">gpv</span><span class="o">.</span><span class="n">plot_3d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_get_started_009.png" srcset="../../_images/sphx_glr_get_started_009.png" alt="get started" class = "sphx-glr-single-img"/><img src="../../_images/sphx_glr_get_started_010.png" srcset="../../_images/sphx_glr_get_started_010.png" alt="Cell Number: 5 Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f2de123f250&gt;
+<img src="../../_images/sphx_glr_get_started_009.png" srcset="../../_images/sphx_glr_get_started_009.png" alt="get started" class = "sphx-glr-single-img"/><img src="../../_images/sphx_glr_get_started_010.png" srcset="../../_images/sphx_glr_get_started_010.png" alt="Cell Number: 5 Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00cd08a0b0&gt;
 </pre></div>
 </div>
 </section>
@@ -224,7 +224,7 @@ coordinates on mouse hover (in qt5 backend). We can add a surface point like thi
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../GemPy API/gempy.compute_model.html#gempy.compute_model" title="gempy.compute_model" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span></a><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">engine_config</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GemPyEngineConfig</span><span class="p">())</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting Backend To: AvailableBackends.numpy
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting Backend To: AvailableBackends.PYTORCH
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
@@ -255,7 +255,7 @@ coordinates on mouse hover (in qt5 backend). We can add a surface point like thi
 <span class="n">gpv</span><span class="o">.</span><span class="n">plot_3d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">show_surfaces</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_get_started_011.png" srcset="../../_images/sphx_glr_get_started_011.png" alt="get started" class = "sphx-glr-single-img"/><img src="../../_images/sphx_glr_get_started_012.png" srcset="../../_images/sphx_glr_get_started_012.png" alt="Cell Number: 5 Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f2de123f7c0&gt;
+<img src="../../_images/sphx_glr_get_started_011.png" srcset="../../_images/sphx_glr_get_started_011.png" alt="get started" class = "sphx-glr-single-img"/><img src="../../_images/sphx_glr_get_started_012.png" srcset="../../_images/sphx_glr_get_started_012.png" alt="Cell Number: 5 Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00cd340610&gt;
 </pre></div>
 </div>
 </section>
@@ -319,11 +319,11 @@ coordinates on mouse hover (in qt5 backend). We can add a surface point like thi
 <span class="n">gpv</span><span class="o">.</span><span class="n">plot_3d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">show_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show_surfaces</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_get_started_013.png" srcset="../../_images/sphx_glr_get_started_013.png" alt="get started" class = "sphx-glr-single-img"/><img src="../../_images/sphx_glr_get_started_014.png" srcset="../../_images/sphx_glr_get_started_014.png" alt="Cell Number: 5 Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting Backend To: AvailableBackends.numpy
+<img src="../../_images/sphx_glr_get_started_013.png" srcset="../../_images/sphx_glr_get_started_013.png" alt="get started" class = "sphx-glr-single-img"/><img src="../../_images/sphx_glr_get_started_014.png" srcset="../../_images/sphx_glr_get_started_014.png" alt="Cell Number: 5 Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting Backend To: AvailableBackends.PYTORCH
 /home/leguark/gempy/gempy/core/data/structural_frame.py:190: UserWarning: The basement color was already used in the structural elements.Changing the basement color to #ffbe00.
   warnings.warn(f&quot;The basement color was already used in the structural elements.&quot;
 
-&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f2de11c2c80&gt;
+&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00cb609c60&gt;
 </pre></div>
 </div>
 </section>
@@ -350,11 +350,11 @@ coordinates on mouse hover (in qt5 backend). We can add a surface point like thi
 <span class="n">gpv</span><span class="o">.</span><span class="n">plot_3d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">kwargs_plot_structured_grid</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;opacity&#39;</span><span class="p">:</span> <span class="mf">.2</span><span class="p">},</span> <span class="n">image</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_get_started_015.png" srcset="../../_images/sphx_glr_get_started_015.png" alt="get started" class = "sphx-glr-single-img"/><img src="../../_images/sphx_glr_get_started_016.png" srcset="../../_images/sphx_glr_get_started_016.png" alt="Cell Number: 5 Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting Backend To: AvailableBackends.numpy
+<img src="../../_images/sphx_glr_get_started_015.png" srcset="../../_images/sphx_glr_get_started_015.png" alt="get started" class = "sphx-glr-single-img"/><img src="../../_images/sphx_glr_get_started_016.png" srcset="../../_images/sphx_glr_get_started_016.png" alt="Cell Number: 5 Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting Backend To: AvailableBackends.PYTORCH
 /home/leguark/gempy/gempy/core/data/structural_frame.py:190: UserWarning: The basement color was already used in the structural elements.Changing the basement color to #728f02.
   warnings.warn(f&quot;The basement color was already used in the structural elements.&quot;
 
-&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f2de11c2770&gt;
+&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00cb4ea770&gt;
 </pre></div>
 </div>
 </section>
@@ -403,7 +403,7 @@ Here, we’ll add a fault as a demonstration.</p>
 <img src="../../_images/sphx_glr_get_started_017.png" srcset="../../_images/sphx_glr_get_started_017.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/leguark/gempy/gempy/core/data/structural_frame.py:190: UserWarning: The basement color was already used in the structural elements.Changing the basement color to #443988.
   warnings.warn(f&quot;The basement color was already used in the structural elements.&quot;
 
-&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f2de1289ea0&gt;
+&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f00cb572230&gt;
 </pre></div>
 </div>
 <p>Compute and visualize the updated model:</p>
@@ -412,9 +412,9 @@ Here, we’ll add a fault as a demonstration.</p>
 <span class="n">gpv</span><span class="o">.</span><span class="n">plot_3d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">kwargs_plot_structured_grid</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;opacity&#39;</span><span class="p">:</span> <span class="mf">.2</span><span class="p">})</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_get_started_018.png" srcset="../../_images/sphx_glr_get_started_018.png" alt="get started" class = "sphx-glr-single-img"/><img src="../../_images/sphx_glr_get_started_019.png" srcset="../../_images/sphx_glr_get_started_019.png" alt="Cell Number: 5 Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting Backend To: AvailableBackends.numpy
+<img src="../../_images/sphx_glr_get_started_018.png" srcset="../../_images/sphx_glr_get_started_018.png" alt="get started" class = "sphx-glr-single-img"/><img src="../../_images/sphx_glr_get_started_019.png" srcset="../../_images/sphx_glr_get_started_019.png" alt="Cell Number: 5 Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting Backend To: AvailableBackends.PYTORCH
 
-&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f2de0eb9a20&gt;
+&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00d95e5540&gt;
 </pre></div>
 </div>
 </section>
@@ -447,9 +447,9 @@ Here, we’ll showcase a few of them.</p>
 <li><img src="../../_images/sphx_glr_get_started_021.png" srcset="../../_images/sphx_glr_get_started_021.png" alt="get started" class = "sphx-glr-multi-img"/></li>
 </ul>
 <img src="../../_images/sphx_glr_get_started_022.png" srcset="../../_images/sphx_glr_get_started_022.png" alt="Cell Number: 5 Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Active grids: [&#39;topography&#39;]
-Setting Backend To: AvailableBackends.numpy
+Setting Backend To: AvailableBackends.PYTORCH
 
-&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f2de118f5e0&gt;
+&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00cd0bbdc0&gt;
 </pre></div>
 </div>
 <div class="admonition-coming-soon-gravity-inversion admonition">
@@ -466,7 +466,7 @@ gp.set_interpolator(geo_model, output=[‘gravity’], aesara_optimizer=’fast_
 gp.compute_model(geo_model)
 geo_model.solutions.fw_gravity</p>
 <p>sphinx_gallery_thumbnail_number = -2</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 5.610 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 5.365 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-tutorials-a-getting-started-get-started-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/1004f5279881ef3aed31a49ac149f5ed/get_started.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">get_started.ipynb</span></code></a></p>

@@ -38,7 +38,7 @@
 
 Importing gempy
 
-.. GENERATED FROM PYTHON SOURCE LINES 10-19
+.. GENERATED FROM PYTHON SOURCE LINES 10-21
 
 .. code-block:: Python
 
@@ -49,6 +49,8 @@ Importing gempy
     import numpy as np
     import os
 
+    from gempy_engine.config import AvailableBackends
+
     np.random.seed(1515)
 
 
@@ -58,12 +60,12 @@ Importing gempy
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 20-22
+.. GENERATED FROM PYTHON SOURCE LINES 22-24
 
 We import a model from an existing folder, representing a subduction
 zone with onlap relationships.
 
-.. GENERATED FROM PYTHON SOURCE LINES 22-38
+.. GENERATED FROM PYTHON SOURCE LINES 24-40
 
 .. code-block:: Python
 
@@ -93,11 +95,11 @@ zone with onlap relationships.
 
     Active grids: ['regular' 'topography']
 
-    <gempy.core.data.grid_modules.topography.Topography object at 0x7f856496c760>
+    <gempy.core.data.grid_modules.topography.Topography object at 0x7fb94a65d330>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 39-41
+.. GENERATED FROM PYTHON SOURCE LINES 41-43
 
 .. code-block:: Python
 
@@ -117,15 +119,15 @@ zone with onlap relationships.
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f8561068640>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fb94a77da20>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 44-45
+.. GENERATED FROM PYTHON SOURCE LINES 46-47
 
 Raw structural frame
 
-.. GENERATED FROM PYTHON SOURCE LINES 45-47
+.. GENERATED FROM PYTHON SOURCE LINES 47-49
 
 .. code-block:: Python
 
@@ -189,7 +191,7 @@ Raw structural frame
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 48-89
+.. GENERATED FROM PYTHON SOURCE LINES 50-91
 
 .. code-block:: Python
 
@@ -313,11 +315,16 @@ Raw structural frame
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 90-92
+.. GENERATED FROM PYTHON SOURCE LINES 92-99
 
 .. code-block:: Python
 
-    s = gp.compute_model(geo_model)
+    s = gp.compute_model(
+        gempy_model=geo_model,
+        engine_config=gp.data.GemPyEngineConfig(
+            backend=AvailableBackends.PYTORCH
+        )
+    )
 
 
 
@@ -327,30 +334,14 @@ Raw structural frame
 
  .. code-block:: none
 
-    Setting Backend To: AvailableBackends.numpy
-    /home/leguark/gempy/gempy/core/data/geo_model.py:118: UserWarning: Both octree levels and resolution are set. The default grid for the `raw_array_solution`and plots will be the dense regular grid. To use octrees instead, set resolution to None in the regular grid.
+    Setting Backend To: AvailableBackends.PYTORCH
+    /home/leguark/gempy/gempy/core/data/geo_model.py:115: UserWarning: Both octree levels and resolution are set. The default grid for the `raw_array_solution`and plots will be the dense regular grid. To use octrees instead, set resolution to None in the regular grid.
       warnings.warn("Both octree levels and resolution are set. The default grid for the `raw_array_solution`"
-    /home/leguark/gempy_engine/gempy_engine/modules/dual_contouring/dual_contouring_interface.py:38: RuntimeWarning: divide by zero encountered in divide
-      weight_x = ((scalar_at_sp - scalar_8[:, :, 4:]) / scalar_dx).reshape(-1, 4, 1)
-    /home/leguark/gempy_engine/gempy_engine/modules/dual_contouring/dual_contouring_interface.py:39: RuntimeWarning: divide by zero encountered in divide
-      weight_y = ((scalar_at_sp - scalar_8[:, :, [2, 3, 6, 7]]) / scalar_d_y).reshape(-1, 4, 1)
-    /home/leguark/gempy_engine/gempy_engine/modules/dual_contouring/dual_contouring_interface.py:48: RuntimeWarning: invalid value encountered in multiply
-      intersect_dx = d_x[:, :, :] * weight_x[:, :, :]
-    /home/leguark/gempy_engine/gempy_engine/modules/dual_contouring/dual_contouring_interface.py:49: RuntimeWarning: invalid value encountered in multiply
-      intersect_dy = d_y[:, :, :] * weight_y[:, :, :]
-    /home/leguark/gempy_engine/gempy_engine/modules/dual_contouring/dual_contouring_interface.py:38: RuntimeWarning: divide by zero encountered in divide
-      weight_x = ((scalar_at_sp - scalar_8[:, :, 4:]) / scalar_dx).reshape(-1, 4, 1)
-    /home/leguark/gempy_engine/gempy_engine/modules/dual_contouring/dual_contouring_interface.py:39: RuntimeWarning: divide by zero encountered in divide
-      weight_y = ((scalar_at_sp - scalar_8[:, :, [2, 3, 6, 7]]) / scalar_d_y).reshape(-1, 4, 1)
-    /home/leguark/gempy_engine/gempy_engine/modules/dual_contouring/dual_contouring_interface.py:48: RuntimeWarning: invalid value encountered in multiply
-      intersect_dx = d_x[:, :, :] * weight_x[:, :, :]
-    /home/leguark/gempy_engine/gempy_engine/modules/dual_contouring/dual_contouring_interface.py:49: RuntimeWarning: invalid value encountered in multiply
-      intersect_dy = d_y[:, :, :] * weight_y[:, :, :]
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 93-103
+.. GENERATED FROM PYTHON SOURCE LINES 100-110
 
 .. code-block:: Python
 
@@ -383,11 +374,11 @@ Raw structural frame
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f8564aef460>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fb90b80c370>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 104-132
+.. GENERATED FROM PYTHON SOURCE LINES 111-139
 
 .. code-block:: Python
 
@@ -459,11 +450,11 @@ Raw structural frame
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f8561522350>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fb905034730>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 133-160
+.. GENERATED FROM PYTHON SOURCE LINES 140-167
 
 .. code-block:: Python
 
@@ -534,14 +525,14 @@ Raw structural frame
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f856190f580>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fb904befc70>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 9.933 seconds)
+   **Total running time of the script:** (0 minutes 3.294 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_4_onlap_relations.py:

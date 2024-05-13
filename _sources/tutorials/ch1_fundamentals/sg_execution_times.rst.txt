@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**00:32.195** total execution time for 8 files **from tutorials/ch1_fundamentals**:
+**00:03.294** total execution time for 8 files **from tutorials/ch1_fundamentals**:
 
 .. container::
 
@@ -32,8 +32,8 @@ Computation times
    * - Example
      - Time
      - Mem (MB)
-   * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_7_3d_visualization.py` (``ch1_7_3d_visualization.py``)
-     - 00:32.195
+   * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_4_onlap_relations.py` (``ch1_4_onlap_relations.py``)
+     - 00:03.294
      - 0.0
    * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_1_basics.py` (``ch1_1_basics.py``)
      - 00:00.000
@@ -47,12 +47,12 @@ Computation times
    * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_3c_topography.py` (``ch1_3c_topography.py``)
      - 00:00.000
      - 0.0
-   * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_4_onlap_relations.py` (``ch1_4_onlap_relations.py``)
-     - 00:00.000
-     - 0.0
    * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_5_fault_relations.py` (``ch1_5_fault_relations.py``)
      - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_6_2d_visualization.py` (``ch1_6_2d_visualization.py``)
+     - 00:00.000
+     - 0.0
+   * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_7_3d_visualization.py` (``ch1_7_3d_visualization.py``)
      - 00:00.000
      - 0.0
