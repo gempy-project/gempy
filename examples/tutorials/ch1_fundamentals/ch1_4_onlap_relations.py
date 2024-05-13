@@ -14,6 +14,8 @@ import gempy_viewer as gpv
 import numpy as np
 import os
 
+from gempy_engine.config import AvailableBackends
+
 np.random.seed(1515)
 
 # %%
@@ -87,7 +89,12 @@ gp.remove_structural_group_by_name(model=geo_model, group_name="default_formatio
 geo_model.structural_frame
 
 # %%
-s = gp.compute_model(geo_model)
+s = gp.compute_model(
+    gempy_model=geo_model,
+    engine_config=gp.data.GemPyEngineConfig(
+        backend=AvailableBackends.PYTORCH
+    )
+)
 
 # %% 
 gpv.plot_2d(geo_model, show_data=True)
