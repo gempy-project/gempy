@@ -197,12 +197,6 @@ class GeoModel:
         if self.structural_frame.is_dirty is False:
             return self._interpolationInput
         
-
-            # self.grid.regular_grid.set_regular_grid(
-            #     extent=self.grid.regular_grid.extent,
-            #     resolution=octree_leaf_resolution
-            # )
-
         self._interpolationInput = InterpolationInput.from_structural_frame(
             structural_frame=self.structural_frame,
             grid=self.grid,
