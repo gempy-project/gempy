@@ -10,6 +10,8 @@ from subsurface.core.reader_helpers.readers_data import GenericReaderFilesHelper
 from subsurface.modules.reader.wells.read_borehole_interface import read_lith, read_survey, read_collar
 from subsurface.modules.visualization import to_pyvista_line, pv_plot
 
+import gempy as gp
+
 
 class TestStratigraphicPile:
     @pytest.fixture(autouse=True)
@@ -61,10 +63,64 @@ class TestStratigraphicPile:
         return borehole_set
 
     def test_structural_elements(self, borehole_set: BoreholeSet):
-        if PLOT := True:
+        if PLOT := False:
             s = to_pyvista_line(
                 line_set=borehole_set.combined_trajectory,
                 radius=10,
-                active_scalar="lith"
+                active_scalar="lith_ids"
             )
             pv_plot([s], image_2d=False, cmap="tab20c")
+
+        vertex_attributes: pd.DataFrame = borehole_set.combined_trajectory.data.points_attributes
+        unique_lith_codes = vertex_attributes['component lith'].unique()
+        
+        pleistozen = gp.data.StructuralElement(
+            name= "Pleistozen",
+            id=10_000,
+            color="#f9f97f",
+            surface_points=gp.data.SurfacePointsTable(),
+            orientations=gp.data.OrientationsTable()
+        )
+        
+        kreide = gp.data.StructuralElement(
+            name= "Kreide",
+            id=30_000,
+            color="#a6d84a",
+            surface_points=gp.data.SurfacePointsTable(),
+            orientations=gp.data.OrientationsTable()
+        )
+        
+        trias = gp.data.StructuralElement(
+            name= "Trias",
+            id=50_000,
+            color="#a4469f",
+            surface_points=gp.data.SurfacePointsTable(),
+            orientations=gp.data.OrientationsTable()
+        )
+        
+        perm = gp.data.StructuralElement(
+            name= "Perm",
+            id=60_000,
+            color="#f4a142",
+            surface_points=gp.data.SurfacePointsTable(),
+            orientations=gp.data.OrientationsTable()
+        )
+        
+        rotliegend = gp.data.StructuralElement(
+            name= "Rotliegend",
+            id=62_000,
+            color="#bb825b",
+            surface_points=gp.data.SurfacePointsTable(),
+            orientations=gp.data.OrientationsTable()
+        )
+        
+        devon = gp.data.StructuralElement(
+            name= "Devon",
+            id=80_000,
+            color="#969594",
+            surface_points=gp.data.SurfacePointsTable(),
+            orientations=gp.data.OrientationsTable()
+        )
+        
+
+        pass
