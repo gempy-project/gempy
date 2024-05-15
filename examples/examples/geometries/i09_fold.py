@@ -17,8 +17,7 @@ path_to_data = data_path + "/data/input_data/jan_models/"
 geo_model = gp.create_geomodel(
     project_name='tutorial_model',
     extent=[0, 2500, 0, 1000, 0, 1110],
-    refinement=3,
-    # resolution=[40, 40, 40],
+    refinement=4,
     importer_helper=gp.data.ImporterHelper(
         path_to_orientations=path_to_data + "tutorial_model_orientations.csv",
         path_to_surface_points=path_to_data + "tutorial_model_surface_points.csv"
@@ -26,7 +25,8 @@ geo_model = gp.create_geomodel(
 )
 # %%
 # Displaying simple data cross section
-# gpv.plot_2d(geo_model)
+gpv.plot_2d(geo_model)
+
 # %%
 # Map geological series to surfaces
 gp.map_stack_to_surfaces(
@@ -36,11 +36,6 @@ gp.map_stack_to_surfaces(
             "Strat_Series2": ('rock2', 'rock1'),
     }
 )
-# %%
-# geo_model.interpolation_options._number_octree_levels_surface=4
-# %%
-
-# %%
 
 # %%
 geo_model.update_transform(auto_anisotropy=gp.data.GlobalAnisotropy.CUBE)
@@ -54,7 +49,7 @@ interpolation_options.mesh_extraction = True
 interpolation_options.compute_scalar_gradient = True
 
 interpolation_options.kernel_options.range = 1
-interpolation_options.evaluation_options.number_octree_levels_surface = 5
+interpolation_options.evaluation_options.number_octree_levels_surface = 4
 interpolation_options.evaluation_options.curvature_threshold = 0.8
 
 gp.compute_model(
