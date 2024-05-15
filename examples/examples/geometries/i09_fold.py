@@ -17,7 +17,7 @@ path_to_data = data_path + "/data/input_data/jan_models/"
 geo_model = gp.create_geomodel(
     project_name='tutorial_model',
     extent=[0, 2500, 0, 1000, 0, 1110],
-    refinement=4,
+    refinement=3,
     # resolution=[40, 40, 40],
     importer_helper=gp.data.ImporterHelper(
         path_to_orientations=path_to_data + "tutorial_model_orientations.csv",
@@ -48,11 +48,15 @@ geo_model.update_transform(auto_anisotropy=gp.data.GlobalAnisotropy.CUBE)
 import numpy as np
 
 # refinement = 3
-geo_model.interpolation_options.kernel_options.range = 1
-geo_model.interpolation_options.mesh_extraction = True
-geo_model.interpolation_options.compute_scalar_gradient = True
-# geo_model.interpolation_options.number_octree_levels_surface = 5
-# geo_model.grid.regular_grid.resolution = np.array([2 ** refinement] * 3)
+interpolation_options: gp.data.InterpolationOptions = geo_model.interpolation_options
+
+interpolation_options.mesh_extraction = True
+interpolation_options.compute_scalar_gradient = True
+
+interpolation_options.kernel_options.range = 1
+interpolation_options.evaluation_options.number_octree_levels_surface = 5
+interpolation_options.evaluation_options.curvature_threshold = 0.8
+
 gp.compute_model(
     gempy_model=geo_model,
     engine_config=gp.data.GemPyEngineConfig(backend=gp.data.AvailableBackends.numpy)
