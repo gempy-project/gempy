@@ -17,7 +17,7 @@ path_to_data = data_path + "/data/input_data/jan_models/"
 geo_model = gp.create_geomodel(
     project_name='tutorial_model',
     extent=[0, 2500, 0, 1000, 0, 1110],
-    refinement=5,
+    refinement=4,
     # resolution=[40, 40, 40],
     importer_helper=gp.data.ImporterHelper(
         path_to_orientations=path_to_data + "tutorial_model_orientations.csv",
@@ -49,13 +49,13 @@ import numpy as np
 
 # refinement = 3
 geo_model.interpolation_options.kernel_options.range = 1
-geo_model.interpolation_options.mesh_extraction = False
+geo_model.interpolation_options.mesh_extraction = True
 geo_model.interpolation_options.compute_scalar_gradient = True
 # geo_model.interpolation_options.number_octree_levels_surface = 5
 # geo_model.grid.regular_grid.resolution = np.array([2 ** refinement] * 3)
 gp.compute_model(
     gempy_model=geo_model,
-    engine_config=gp.data.GemPyEngineConfig(backend=gp.data.AvailableBackends.PYTORCH)
+    engine_config=gp.data.GemPyEngineConfig(backend=gp.data.AvailableBackends.numpy)
 )
 
 gpv.plot_2d(geo_model, show_scalar=False, series_n=1)
@@ -65,7 +65,7 @@ gpv.plot_2d(geo_model, show_scalar=False, series_n=1)
 gpv.plot_2d(geo_model, show_scalar=True, series_n=1)
 
 # %%
-# gpv.plot_3d(geo_model, show_lith=False)
+gpv.plot_3d(geo_model, show_lith=False)
 # %%
 # some ways for manually adding data
 '''

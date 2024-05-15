@@ -102,7 +102,7 @@ class GeoModel:
 
     @property
     def interpolation_options(self) -> InterpolationOptions:
-        n_octree_lvl = self._interpolation_options._number_octree_levels # * we access the private one because we do not care abot the extract mesh octree level
+        n_octree_lvl = self._interpolation_options.number_octree_levels  # * we access the private one because we do not care abot the extract mesh octree level
 
         octrees_set: bool = n_octree_lvl > 1
         resolution_set = bool(self.grid.active_grids_bool[0])  # 0 corresponds
