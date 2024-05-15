@@ -14,7 +14,7 @@ DEFAULT_SP_NUGGET = 0.00002
 
 
 # ! ids are not used apparently
-@dataclass(init=False)
+@dataclass(init=True)
 class SurfacePointsTable:
     """
     A dataclass to represent a table of surface points in a geological model.

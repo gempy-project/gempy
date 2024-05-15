@@ -12,7 +12,7 @@ DEFAULT_ORI_NUGGET = 0.01
 # ? Maybe we should merge this with the SurfacePoints class from gempy_engine
 
 
-@dataclass(init=False)
+@dataclass(init=True)
 class OrientationsTable:
     """
     A dataclass to represent a table of orientations in a geological model.
