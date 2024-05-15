@@ -40,9 +40,6 @@ gp.map_stack_to_surfaces(
 # %%
 geo_model.update_transform(auto_anisotropy=gp.data.GlobalAnisotropy.CUBE)
 
-import numpy as np
-
-# refinement = 3
 interpolation_options: gp.data.InterpolationOptions = geo_model.interpolation_options
 
 interpolation_options.mesh_extraction = True
@@ -54,7 +51,7 @@ interpolation_options.evaluation_options.curvature_threshold = 0.8
 
 gp.compute_model(
     gempy_model=geo_model,
-    engine_config=gp.data.GemPyEngineConfig(backend=gp.data.AvailableBackends.numpy)
+    engine_config=gp.data.GemPyEngineConfig(backend=gp.data.AvailableBackends.PYTORCH)
 )
 
 gpv.plot_2d(geo_model, show_scalar=False, series_n=1)
