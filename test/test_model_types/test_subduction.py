@@ -5,7 +5,7 @@ import gempy_viewer as gpv
 
 
 def test_subduction():
-    data_path = os.path.abspath('../../examples')
+    data_path = os.path.abspath('../examples')
 
     geo_model: gp.data.GeoModel = gp.create_geomodel(
         project_name='Onlap_relations',
@@ -58,7 +58,7 @@ def test_subduction():
    
     # %%
     from gempy_engine.core.data.options import MeshExtractionMaskingOptions
-    geo_model.interpolation_options.mesh_extraction_masking_options = MeshExtractionMaskingOptions.INTERSECT
+    geo_model.interpolation_options.evaluation_options.mesh_extraction_masking_options = MeshExtractionMaskingOptions.INTERSECT
     s = gp.compute_model(geo_model)
 
     gpv.plot_2d(geo_model)
@@ -68,14 +68,14 @@ def test_subduction():
         model=geo_model,
         show_surfaces=True,
         show_data=True,
-        image=True,
+        image=False,
         show_topography=True,
         kwargs_plot_structured_grid={'opacity': 0.1}
     )
 
     # %%
     # ! White are True, black are False
-    if False:
+    if True:
         p = gpv.plot_2d(
             model=geo_model,
             cell_number=2,
