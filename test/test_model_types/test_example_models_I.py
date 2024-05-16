@@ -43,7 +43,7 @@ def test_generate_fold_model():
 
     if PLOT:
         gpv = require_gempy_viewer()
-        gpv.plot_3d(model, image=False)
+        gpv.plot_3d(model, image=True)
 
     _verify_scalar_field(
         model=model,
