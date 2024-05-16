@@ -45,7 +45,7 @@ def test_gempy_to_subsurface():
 
     trisurf = subsurface.core.structs.unstructured_elements.triangular_surface.TriSurf(meshes)
     pyvista_mesh = ss.visualization.to_pyvista_mesh(trisurf)
-    ss.visualization.pv_plot([pyvista_mesh], image_2d=False)
+    ss.visualization.pv_plot([pyvista_mesh], image_2d=True)
 
 
 def test_gempy_to_subsurface_II():

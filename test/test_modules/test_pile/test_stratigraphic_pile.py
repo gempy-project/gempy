@@ -13,7 +13,7 @@ from subsurface.modules.visualization import to_pyvista_line, pv_plot
 import gempy as gp
 
 
-@pytest.skip(reason="Not implemented yet")
+@pytest.mark.skip(reason="Not implemented yet")
 class TestStratigraphicPile:
     @pytest.fixture(autouse=True)
     def borehole_set(self):
