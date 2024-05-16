@@ -56,14 +56,14 @@ def test_gravity():
         project_name="2-layers",
         extent=[0, 12, -2, 2, 0, 4],
         resolution=[500, 1, 500],
-        refinement=4,
+        refinement=1,
         structural_frame=frame,
     )
 
     gp.compute_model(geo_model)
 
     import gempy_viewer as gpv
-    gpv.plot_2d(geo_model, cell_number=5)
+    gpv.plot_2d(geo_model, cell_number=0)
 
     gp.set_centered_grid(
         grid=geo_model.grid,
