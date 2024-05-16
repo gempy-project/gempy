@@ -20,7 +20,7 @@ np.random.seed(1515)
 
 # %%
 # We import a model from an existing folder, representing a subduction
-# zone with onlap relationships.
+# zone with onlap relationships. 
 
 data_path = os.path.abspath('../../')
 

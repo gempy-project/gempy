@@ -11,7 +11,7 @@ import gempy_viewer as gpv
 from gempy import generate_example_model
 from gempy.core.data.enumerators import ExampleModel
 
-# sphinx_gallery_thumbnail_number = 2
+# sphinx_gallery_thumbnail_number = -1
 
 # %%
 # Loading an example geomodel
@@ -78,4 +78,4 @@ print(f"Generated Link: {link}")
 # Now we can use `this link <https://liquidearth.app.link/gempy-promo>`_ to visualize the model in Liquid Earth.
 
 # %%
-# .. image:: /_static/gp-model-in-le.png
+# .. image:: /_static/gp_model_in_le.png
