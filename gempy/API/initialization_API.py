@@ -42,10 +42,8 @@ def create_geomodel(
     """
     # init resolutions well
     if resolution is None:
-        grid: Grid = Grid(
-            extent=extent,
-            resolution=np.array([2 ** refinement] * 3),
-        )
+        grid: Grid = Grid(extent=extent)
+        grid.octree_levels = refinement
         grid.set_inactive("regular")
     else:
         grid = Grid(

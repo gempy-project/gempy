@@ -1,3 +1,5 @@
+import dataclasses
+
 import enum
 import warnings
 from typing import Union, Optional
@@ -6,6 +8,7 @@ import numpy as np
 
 from gempy.core.data.grid_modules import topography, grid_types
 from gempy.core.data.grid_modules.topography import Topography
+from gempy_engine.core.data.centered_grid import CenteredGrid
 
 
 class GridTypes(enum.Enum):
@@ -16,7 +19,7 @@ class GridTypes(enum.Enum):
     CENTERED = 4
 
 
-
+@dataclasses.dataclass
 class Grid(object):
     """ Class to generate grids.
 
@@ -51,17 +54,27 @@ class Grid(object):
         gravity_grid (:class:`gempy.core.grid_modules.grid_types.Gravity`)
     """
 
+    dense_grid: Optional[grid_types.RegularGrid]
+    octree_grid: Optional[grid_types.RegularGrid]
+    custom_grid: Optional[grid_types.CustomGrid]
+    topography: Optional[Topography]
+    sections: Optional[grid_types.Sections]
+    centered_grid: Optional[CenteredGrid]
+
+    extent: Optional[np.ndarray]  # * Model extent should be cross grid
+
     def __init__(self, extent=None, resolution=None):
         self.values = np.empty((0, 3))
         self.values_r = np.empty((0, 3))
         self.length = np.empty(0)
         self._octree_levels = -1
-        self.grid_types = np.array(['regular', 'custom', 'topography', 'sections', 'centered', 'octree']) # TODO: Make a enumerator!
+        self.grid_types = np.array(['regular', 'custom', 'topography', 'sections', 'centered', 'octree'])  # TODO: Make a enumerator!
         self.active_grids_bool = np.zeros(6, dtype=bool)
         # All grid types must have values
 
         # Init optional grids
-        self.regular_grid = None
+        self.dense_grid = None
+        self.octree_grid = None
         self.custom_grid = None
         self.custom_grid_grid_active = False
         self.topography: Optional[Topography] = None
@@ -69,6 +82,8 @@ class Grid(object):
         self.sections_grid_active = False
         self.centered_grid = None
         self.centered_grid_active = False
+
+        self.extent = extent
 
         # Init basic grid empty
         if extent is not None and resolution is not None:
@@ -80,6 +95,38 @@ class Grid(object):
 
         self.update_grid_values()
 
+    # ? Do we need a active_regular grid property for backwards compatibility?
+    @property
+    def regular_grid(self):
+        warnings.warn('This property is deprecated. Use the dense_grid or octree_grid instead', DeprecationWarning)
+        if self.dense_grid is not None and self.octree_grid is not None:
+            raise AttributeError('Both dense_grid and octree_grid are active. This is not possible.')
+        elif self.dense_grid is not None:
+            return self.dense_grid
+        elif self.octree_grid is not None:
+            return self.octree_grid
+        else:
+            return None
+
+    @regular_grid.setter
+    def regular_grid(self, value):
+        warnings.warn('This property is deprecated. Use the dense_grid property instead', DeprecationWarning)
+        self.dense_grid = value
+
+    @property
+    def octree_levels(self):
+        return self._octree_levels
+
+    @octree_levels.setter
+    def octree_levels(self, value):
+        self._octree_levels = value
+        self.octree_grid = grid_types.RegularGrid(
+            extent=self.extent,
+            resolution=np.array([2 ** value] * 3),
+        )
+        self.active_grids_bool[5] = True
+        self.update_grid_values()
+
     def __str__(self):
         grid_summary = [f"{g_type} (active: {getattr(self, g_type + '_grid_active')}): {len(getattr(self, g_type + '_grid').values)} points"
                         for g_type in self.grid_types]
@@ -89,7 +136,7 @@ class Grid(object):
     @property
     def active_grids(self) -> np.ndarray:
         return self.grid_types[self.active_grids_bool]
-        
+
     def create_regular_grid(self, extent=None, resolution=None, set_active=True, *args, **kwargs):
         """
         Set a new regular grid and activate it.
@@ -177,7 +224,7 @@ class Grid(object):
     # ? DEP?
     def create_centered_grid(self, centers, radius, resolution=None):
         """Initialize gravity grid. Deactivate the rest of the grids"""
-        self.centered_grid = grid_types.CenteredGrid(centers, radius, resolution)
+        self.centered_grid = CenteredGrid(centers, radius, resolution)
         # self.active_grids = np.zeros(4, dtype=bool)
         self.set_active('centered')
 
@@ -198,7 +245,7 @@ class Grid(object):
 
         """
         warnings.warn('This function is deprecated. Use gempy.set_active_grid instead', DeprecationWarning)
-        
+
         where = self.grid_types == grid_name
         self.active_grids_bool[where] = True
         self.update_grid_values()
@@ -223,7 +270,7 @@ class Grid(object):
         lengths = [0]
         all_grids = [self.regular_grid, self.custom_grid, self.topography, self.sections, self.centered_grid]
         try:
-            for e, grid_types in enumerate( all_grids):
+            for e, grid_types in enumerate(all_grids):
                 if self.active_grids_bool[e]:
                     self.values = np.vstack((self.values, grid_types.values))
                     lengths.append(grid_types.values.shape[0])
