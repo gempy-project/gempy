@@ -122,7 +122,7 @@ class GeoModel:
                 raise ValueError("The resolution of the grid is not set. Please set the resolution of the grid or "
                                  "the number of octree levels in InterpolationOptions.number_octree_levels.")
 
-        self._interpolation_options._model_name = self.meta.name
+        self._interpolation_options.cache_model_name = self.meta.name
         return self._interpolation_options
 
     @interpolation_options.setter
