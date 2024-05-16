@@ -70,7 +70,7 @@ def test_subduction():
         model=geo_model,
         show_surfaces=True,
         show_data=True,
-        image=False,
+        image=True,
         show_topography=True,
         kwargs_plot_structured_grid={'opacity': 0.1}
     )
