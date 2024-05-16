@@ -58,7 +58,9 @@ def test_subduction():
    
     # %%
     from gempy_engine.core.data.options import MeshExtractionMaskingOptions
-    geo_model.interpolation_options.evaluation_options.mesh_extraction_masking_options = MeshExtractionMaskingOptions.INTERSECT
+    from gempy_engine.core.data.options import EvaluationOptions
+    evaluation_options: EvaluationOptions = geo_model.interpolation_options.evaluation_options
+    evaluation_options.mesh_extraction_masking_options = MeshExtractionMaskingOptions.INTERSECT
     s = gp.compute_model(geo_model)
 
     gpv.plot_2d(geo_model)
