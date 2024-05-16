@@ -77,7 +77,7 @@ def test_subduction():
 
     # %%
     # ! White are True, black are False
-    if True:
+    if False:
         p = gpv.plot_2d(
             model=geo_model,
             cell_number=2,
