@@ -18,7 +18,7 @@ from .API import implicit_functions
 # * Assert at least pyton 3.10
 assert sys.version_info[0] >= 3 and sys.version_info[1] >= 10, "GemPy requires Python 3.10 or higher"
 
-__version__ = '2023.2.0b1'
+from ._version import __version__
 
 if __name__ == '__main__':
     pass
