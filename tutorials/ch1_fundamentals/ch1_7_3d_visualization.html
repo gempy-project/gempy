@@ -5,14 +5,14 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>1.7: 3-D Visualization &#8212; GemPy 2023.2.0b1 documentation</title>
+    <title>1.7: 3-D Visualization &#8212; GemPy 2024.1.2 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=270d38c7" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=61a4c737" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <script src="../../_static/documentation_options.js?v=acace1bb"></script>
+    <script src="../../_static/documentation_options.js?v=0b07e6f1"></script>
     <script src="../../_static/doctools.js?v=888ff710"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="icon" href="../../_static/favicon.ico"/>
@@ -48,7 +48,8 @@ to download the full example code</p>
 <span class="kn">import</span> <span class="nn">gempy_viewer</span> <span class="k">as</span> <span class="nn">gpv</span>
 <span class="kn">from</span> <span class="nn">gempy</span> <span class="kn">import</span> <span class="n">generate_example_model</span>
 <span class="kn">from</span> <span class="nn">gempy.core.data.enumerators</span> <span class="kn">import</span> <span class="n">ExampleModel</span>
-<span class="c1"># sphinx_gallery_thumbnail_number = 2</span>
+
+<span class="c1"># sphinx_gallery_thumbnail_number = -1</span>
 </pre></div>
 </div>
 <section id="loading-an-example-geomodel">
@@ -63,9 +64,19 @@ Orientations hash:  87cf30b08b5be03b38c5e6d288fa7bb8855263704efb62c7c3cd77673eaa
 Setting Backend To: AvailableBackends.PYTORCH
 /home/leguark/gempy/gempy/core/data/geo_model.py:115: UserWarning: Both octree levels and resolution are set. The default grid for the `raw_array_solution`and plots will be the dense regular grid. To use octrees instead, set resolution to None in the regular grid.
   warnings.warn(&quot;Both octree levels and resolution are set. The default grid for the `raw_array_solution`&quot;
+Number of voxels marked as high curvature: 4 of 8
+Number of voxels marked as high curvature: 4 of 64
+Number of voxels marked as high curvature: 8 of 448
+Number of voxels marked as high curvature: 10 of 3032
+Number of voxels marked as high curvature: 13 of 15320
 Setting Backend To: AvailableBackends.PYTORCH
 /home/leguark/gempy/gempy/core/data/geo_model.py:115: UserWarning: Both octree levels and resolution are set. The default grid for the `raw_array_solution`and plots will be the dense regular grid. To use octrees instead, set resolution to None in the regular grid.
   warnings.warn(&quot;Both octree levels and resolution are set. The default grid for the `raw_array_solution`&quot;
+Number of voxels marked as high curvature: 4 of 8
+Number of voxels marked as high curvature: 4 of 64
+Number of voxels marked as high curvature: 8 of 448
+Number of voxels marked as high curvature: 10 of 3032
+Number of voxels marked as high curvature: 13 of 15320
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
@@ -87,7 +98,7 @@ Setting Backend To: AvailableBackends.PYTORCH
 <span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_ch1_7_3d_visualization_001.png" srcset="../../_images/sphx_glr_ch1_7_3d_visualization_001.png" alt="ch1 7 3d visualization" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00cd898490&gt;
+<img src="../../_images/sphx_glr_ch1_7_3d_visualization_001.png" srcset="../../_images/sphx_glr_ch1_7_3d_visualization_001.png" alt="ch1 7 3d visualization" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f91dd2b3310&gt;
 </pre></div>
 </div>
 </section>
@@ -96,7 +107,7 @@ Setting Backend To: AvailableBackends.PYTORCH
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_3d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_ch1_7_3d_visualization_002.png" srcset="../../_images/sphx_glr_ch1_7_3d_visualization_002.png" alt="ch1 7 3d visualization" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00cd89a260&gt;
+<img src="../../_images/sphx_glr_ch1_7_3d_visualization_002.png" srcset="../../_images/sphx_glr_ch1_7_3d_visualization_002.png" alt="ch1 7 3d visualization" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f91dd198c40&gt;
 </pre></div>
 </div>
 </section>
@@ -119,11 +130,12 @@ you can easily share the link with anyone.</p>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Generated Link: </span><span class="si">{</span><span class="n">link</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Generated Link: https://liquidearth.app.link/ff0ceedb-0734-4c1d-a27f-cbab86e21aed
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Generated Link: https://liquidearth.app.link/a33d69ac-82d5-470d-a6fb-eb6cf045f4d5
 </pre></div>
 </div>
 <p>Now we can use <a class="reference external" href="https://liquidearth.app.link/gempy-promo">this link</a> to visualize the model in Liquid Earth.</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 38.257 seconds)</p>
+<img alt="../../_images/gp_model_in_le.png" src="../../_images/gp_model_in_le.png" />
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 16.107 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-tutorials-ch1-fundamentals-ch1-7-3d-visualization-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/86436bd56e7c286070a7cef3a90c285e/ch1_7_3d_visualization.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">ch1_7_3d_visualization.ipynb</span></code></a></p>
@@ -176,7 +188,8 @@ you can easily share the link with anyone.</p>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#chapter-1-gempy-fundamentals">Chapter 1: GemPy fundamentals</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#chapter-2-forward-geophysics">Chapter 2: Forward Geophysics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#chapter-3-domain-kriging">Chapter 3: Domain Kriging</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../index.html#chapter-4-topological-analysis">Chapter 4: Topological analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#chapter-4-topological-analysis">Chapter 4: Topological analysis</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#other-tutorials">Other tutorials</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../examples/index.html">Examples</a></li>

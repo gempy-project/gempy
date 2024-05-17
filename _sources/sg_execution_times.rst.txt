@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**00:31.881** total execution time for 27 files **from all galleries**:
+**00:16.107** total execution time for 28 files **from all galleries**:
 
 .. container::
 
@@ -32,11 +32,8 @@ Computation times
    * - Example
      - Time
      - Mem (MB)
-   * - :ref:`sphx_glr_examples_real_Alesmodel.py` (``../../examples/examples/real/Alesmodel.py``)
-     - 00:28.588
-     - 0.0
-   * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_4_onlap_relations.py` (``../../examples/tutorials/ch1_fundamentals/ch1_4_onlap_relations.py``)
-     - 00:03.294
+   * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_7_3d_visualization.py` (``../../examples/tutorials/ch1_fundamentals/ch1_7_3d_visualization.py``)
+     - 00:16.107
      - 0.0
    * - :ref:`sphx_glr_examples_geometries_a01_horizontal_stratigraphic.py` (``../../examples/examples/geometries/a01_horizontal_stratigraphic.py``)
      - 00:00.000
@@ -60,6 +57,9 @@ Computation times
      - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_examples_geometries_h08_more_examples.py` (``../../examples/examples/geometries/h08_more_examples.py``)
+     - 00:00.000
+     - 0.0
+   * - :ref:`sphx_glr_examples_real_Alesmodel.py` (``../../examples/examples/real/Alesmodel.py``)
      - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_examples_real_Claudius.py` (``../../examples/examples/real/Claudius.py``)
@@ -92,13 +92,13 @@ Computation times
    * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_3c_topography.py` (``../../examples/tutorials/ch1_fundamentals/ch1_3c_topography.py``)
      - 00:00.000
      - 0.0
+   * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_4_onlap_relations.py` (``../../examples/tutorials/ch1_fundamentals/ch1_4_onlap_relations.py``)
+     - 00:00.000
+     - 0.0
    * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_5_fault_relations.py` (``../../examples/tutorials/ch1_fundamentals/ch1_5_fault_relations.py``)
      - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_6_2d_visualization.py` (``../../examples/tutorials/ch1_fundamentals/ch1_6_2d_visualization.py``)
-     - 00:00.000
-     - 0.0
-   * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_7_3d_visualization.py` (``../../examples/tutorials/ch1_fundamentals/ch1_7_3d_visualization.py``)
      - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_tutorials_ch2-Geophysics_ch2_1_gravity.py` (``../../examples/tutorials/ch2-Geophysics/ch2_1_gravity.py``)
@@ -111,5 +111,8 @@ Computation times
      - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_tutorials_ch4-Topology_ch4-1-Topology.py` (``../../examples/tutorials/ch4-Topology/ch4-1-Topology.py``)
+     - 00:00.000
+     - 0.0
+   * - :ref:`sphx_glr_tutorials_z_other_tutorials_a1_fold.py` (``../../examples/tutorials/z_other_tutorials/a1_fold.py``)
      - 00:00.000
      - 0.0

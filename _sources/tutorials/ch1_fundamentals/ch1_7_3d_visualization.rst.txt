@@ -25,7 +25,7 @@
 
 Importing GemPy
 
-.. GENERATED FROM PYTHON SOURCE LINES 9-15
+.. GENERATED FROM PYTHON SOURCE LINES 9-16
 
 .. code-block:: Python
 
@@ -33,7 +33,8 @@ Importing GemPy
     import gempy_viewer as gpv
     from gempy import generate_example_model
     from gempy.core.data.enumerators import ExampleModel
-    # sphinx_gallery_thumbnail_number = 2
+
+    # sphinx_gallery_thumbnail_number = -1
 
 
 
@@ -42,13 +43,13 @@ Importing GemPy
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 16-19
+.. GENERATED FROM PYTHON SOURCE LINES 17-20
 
 Loading an example geomodel
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 21-27
+.. GENERATED FROM PYTHON SOURCE LINES 22-28
 
 .. code-block:: Python
 
@@ -71,9 +72,19 @@ Loading an example geomodel
     Setting Backend To: AvailableBackends.PYTORCH
     /home/leguark/gempy/gempy/core/data/geo_model.py:115: UserWarning: Both octree levels and resolution are set. The default grid for the `raw_array_solution`and plots will be the dense regular grid. To use octrees instead, set resolution to None in the regular grid.
       warnings.warn("Both octree levels and resolution are set. The default grid for the `raw_array_solution`"
+    Number of voxels marked as high curvature: 4 of 8
+    Number of voxels marked as high curvature: 4 of 64
+    Number of voxels marked as high curvature: 8 of 448
+    Number of voxels marked as high curvature: 10 of 3032
+    Number of voxels marked as high curvature: 13 of 15320
     Setting Backend To: AvailableBackends.PYTORCH
     /home/leguark/gempy/gempy/core/data/geo_model.py:115: UserWarning: Both octree levels and resolution are set. The default grid for the `raw_array_solution`and plots will be the dense regular grid. To use octrees instead, set resolution to None in the regular grid.
       warnings.warn("Both octree levels and resolution are set. The default grid for the `raw_array_solution`"
+    Number of voxels marked as high curvature: 4 of 8
+    Number of voxels marked as high curvature: 4 of 64
+    Number of voxels marked as high curvature: 8 of 448
+    Number of voxels marked as high curvature: 10 of 3032
+    Number of voxels marked as high curvature: 13 of 15320
 
 
 .. raw:: html
@@ -84,19 +95,19 @@ Loading an example geomodel
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 28-31
+.. GENERATED FROM PYTHON SOURCE LINES 29-32
 
 Basic plotting API
 ------------------
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 34-37
+.. GENERATED FROM PYTHON SOURCE LINES 35-38
 
 Data plot
 ~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 39-47
+.. GENERATED FROM PYTHON SOURCE LINES 40-48
 
 .. code-block:: Python
 
@@ -122,17 +133,17 @@ Data plot
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00cd898490>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f91dd2b3310>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 48-51
+.. GENERATED FROM PYTHON SOURCE LINES 49-52
 
 Geomodel plot
 ~~~~~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 53-55
+.. GENERATED FROM PYTHON SOURCE LINES 54-56
 
 .. code-block:: Python
 
@@ -152,11 +163,11 @@ Geomodel plot
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00cd89a260>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f91dd198c40>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 56-64
+.. GENERATED FROM PYTHON SOURCE LINES 57-65
 
 LiquidEarth Integration
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -167,7 +178,7 @@ This makes it an excellent tool for sharing your models with others and viewing 
 To upload a model to LiquidEarth, you must have an account and a user token. Once your model is uploaded, 
 you can easily share the link with anyone.
 
-.. GENERATED FROM PYTHON SOURCE LINES 66-76
+.. GENERATED FROM PYTHON SOURCE LINES 67-77
 
 .. code-block:: Python
 
@@ -189,19 +200,23 @@ you can easily share the link with anyone.
 
  .. code-block:: none
 
-    Generated Link: https://liquidearth.app.link/ff0ceedb-0734-4c1d-a27f-cbab86e21aed
+    Generated Link: https://liquidearth.app.link/a33d69ac-82d5-470d-a6fb-eb6cf045f4d5
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 77-78
+.. GENERATED FROM PYTHON SOURCE LINES 78-79
 
 Now we can use `this link <https://liquidearth.app.link/gempy-promo>`_ to visualize the model in Liquid Earth.
+
+.. GENERATED FROM PYTHON SOURCE LINES 81-82
+
+.. image:: /_static/gp_model_in_le.png
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 38.257 seconds)
+   **Total running time of the script:** (0 minutes 16.107 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_7_3d_visualization.py:

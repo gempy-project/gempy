@@ -40,15 +40,15 @@
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">gempy_engine.core.backend_tensor</span> <span class="kn">import</span> <span class="n">BackendTensor</span>
-<span class="kn">from</span> <span class="nn">gempy_engine.core.data.interp_output</span> <span class="kn">import</span> <span class="n">InterpOutput</span>
-<span class="kn">from</span> <span class="nn">gempy_engine.core.data.dual_contouring_mesh</span> <span class="kn">import</span> <span class="n">DualContouringMesh</span>
-<span class="kn">from</span> <span class="nn">gempy_engine.core.data.octree_level</span> <span class="kn">import</span> <span class="n">OctreeLevel</span>
+<span class="kn">from</span> <span class="nn">..backend_tensor</span> <span class="kn">import</span> <span class="n">BackendTensor</span>
+<span class="kn">from</span> <span class="nn">.interp_output</span> <span class="kn">import</span> <span class="n">InterpOutput</span>
+<span class="kn">from</span> <span class="nn">.dual_contouring_mesh</span> <span class="kn">import</span> <span class="n">DualContouringMesh</span>
+<span class="kn">from</span> <span class="nn">.octree_level</span> <span class="kn">import</span> <span class="n">OctreeLevel</span>
 
 <span class="c1"># ? These two imports are suggesting that this class should be splatted and move one half into a gempy.module</span>
-<span class="kn">from</span> <span class="nn">gempy_engine.modules.octrees_topology.octrees_topology_interface</span> <span class="kn">import</span> <span class="n">get_regular_grid_value_for_level</span>
-<span class="kn">from</span> <span class="nn">gempy_engine.core.data.output.blocks_value_type</span> <span class="kn">import</span> <span class="n">ValueType</span>
-<span class="kn">from</span> <span class="nn">gempy_engine.optional_dependencies</span> <span class="kn">import</span> <span class="n">require_pandas</span><span class="p">,</span> <span class="n">require_subsurface</span>
+<span class="kn">from</span> <span class="nn">...modules.octrees_topology.octrees_topology_interface</span> <span class="kn">import</span> <span class="n">get_regular_grid_value_for_level</span>
+<span class="kn">from</span> <span class="nn">.output.blocks_value_type</span> <span class="kn">import</span> <span class="n">ValueType</span>
+<span class="kn">from</span> <span class="nn">...optional_dependencies</span> <span class="kn">import</span> <span class="n">require_pandas</span><span class="p">,</span> <span class="n">require_subsurface</span>
 
 
 

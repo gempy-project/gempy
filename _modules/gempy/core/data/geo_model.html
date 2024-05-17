@@ -143,7 +143,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">interpolation_options</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">InterpolationOptions</span><span class="p">:</span>
-        <span class="n">n_octree_lvl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_interpolation_options</span><span class="o">.</span><span class="n">_number_octree_levels</span> <span class="c1"># * we access the private one because we do not care abot the extract mesh octree level</span>
+        <span class="n">n_octree_lvl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_interpolation_options</span><span class="o">.</span><span class="n">number_octree_levels</span>  <span class="c1"># * we access the private one because we do not care abot the extract mesh octree level</span>
 
         <span class="n">octrees_set</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">n_octree_lvl</span> <span class="o">&gt;</span> <span class="mi">1</span>
         <span class="n">resolution_set</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">active_grids_bool</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>  <span class="c1"># 0 corresponds</span>
@@ -163,7 +163,7 @@
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The resolution of the grid is not set. Please set the resolution of the grid or &quot;</span>
                                  <span class="s2">&quot;the number of octree levels in InterpolationOptions.number_octree_levels.&quot;</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_interpolation_options</span><span class="o">.</span><span class="n">_model_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_interpolation_options</span><span class="o">.</span><span class="n">cache_model_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">name</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_interpolation_options</span>
 
     <span class="nd">@interpolation_options</span><span class="o">.</span><span class="n">setter</span>

@@ -41,6 +41,15 @@
    .. autosummary::
    
       ~Grid.active_grids
+      ~Grid.octree_levels
+      ~Grid.regular_grid
+      ~Grid.dense_grid
+      ~Grid.octree_grid
+      ~Grid.custom_grid
+      ~Grid.topography
+      ~Grid.sections
+      ~Grid.centered_grid
+      ~Grid.extent
    
    
 

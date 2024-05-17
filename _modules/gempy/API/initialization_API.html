@@ -80,10 +80,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># init resolutions well</span>
     <span class="k">if</span> <span class="n">resolution</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">grid</span><span class="p">:</span> <span class="n">Grid</span> <span class="o">=</span> <span class="n">Grid</span><span class="p">(</span>
-            <span class="n">extent</span><span class="o">=</span><span class="n">extent</span><span class="p">,</span>
-            <span class="n">resolution</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">2</span> <span class="o">**</span> <span class="n">refinement</span><span class="p">]</span> <span class="o">*</span> <span class="mi">3</span><span class="p">),</span>
-        <span class="p">)</span>
+        <span class="n">grid</span><span class="p">:</span> <span class="n">Grid</span> <span class="o">=</span> <span class="n">Grid</span><span class="p">(</span><span class="n">extent</span><span class="o">=</span><span class="n">extent</span><span class="p">)</span>
+        <span class="n">grid</span><span class="o">.</span><span class="n">octree_levels</span> <span class="o">=</span> <span class="n">refinement</span>
         <span class="n">grid</span><span class="o">.</span><span class="n">set_inactive</span><span class="p">(</span><span class="s2">&quot;regular&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">grid</span> <span class="o">=</span> <span class="n">Grid</span><span class="p">(</span>
