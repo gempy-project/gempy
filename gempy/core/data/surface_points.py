@@ -25,6 +25,11 @@ class SurfacePointsTable:
 
     dt = np.dtype([('X', 'f8'), ('Y', 'f8'), ('Z', 'f8'), ('id', 'i4'), ('nugget', 'f8')])  #: The custom data type for the data array.
     _model_transform: Optional[Transform] = None
+    
+    def __post_init__(self):
+        # Check if the data array has the correct data type
+        if self.data.dtype != SurfacePointsTable.dt:
+            raise ValueError(f"Data array must have the following data type: {SurfacePointsTable.dt}")
 
     def __str__(self):
         return "\n" + np.array2string(self.data, precision=2, separator=',', suppress_small=True)

@@ -25,6 +25,11 @@ class OrientationsTable:
     
     _model_transform: Optional[Transform] = None
     
+    def __post_init__(self):
+        # Check if the data array has the correct data type
+        if self.data.dtype != OrientationsTable.dt:
+            raise ValueError(f"Data array must have the following data type: {OrientationsTable.dt}")
+    
     @classmethod
     def from_arrays(cls, x: np.ndarray, y: np.ndarray, z: np.ndarray,
                     G_x: np.ndarray, G_y: np.ndarray, G_z: np.ndarray,
