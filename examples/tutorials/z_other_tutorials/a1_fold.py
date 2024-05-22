@@ -62,12 +62,10 @@ geo_model.update_transform(auto_anisotropy=gp.data.GlobalAnisotropy.CUBE)
 
 interpolation_options: gp.data.InterpolationOptions = geo_model.interpolation_options
 
-interpolation_options.mesh_extraction = True
-interpolation_options.evaluation_options.compute_scalar_gradient = True
 
-interpolation_options.kernel_options.range = 1
-interpolation_options.evaluation_options.number_octree_levels_surface = 6
-interpolation_options.evaluation_options.curvature_threshold = 0.6
+interpolation_options.kernel_options.range = 1.7
+interpolation_options.evaluation_options.number_octree_levels_surface = 4
+interpolation_options.evaluation_options.curvature_threshold = 0.1
 
 # %%
 # Compute the geological model
