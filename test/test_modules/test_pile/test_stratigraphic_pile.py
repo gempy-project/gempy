@@ -75,74 +75,22 @@ class TestStratigraphicPile:
             )
             pv_plot([s], image_2d=False, cmap="tab20c")
 
-        vertex_attributes: pd.DataFrame = borehole_trajectory.data.points_attributes
-        unique_lith_codes = vertex_attributes['component lith'].unique()
-
-        component_lith = borehole_set.compute_tops()
-
-        pleistozen = gp.data.StructuralElement(
-            name="Pleistozen",
-            id=10_000,
-            color="#f9f97f",
-            surface_points=gp.data.SurfacePointsTable(np.empty(0, dtype=gp.data.SurfacePointsTable.dt)),
-            orientations=gp.data.OrientationsTable(np.zeros(0, dtype=gp.data.OrientationsTable.dt))
+        elements = gp.structural_elements_from_borehole_set(
+            borehole_set=borehole_set,
+            elements_dict={
+                # "Pleistozen": {"id": 10_000, "color": "#f9f97f", "top_lith": 10_000},
+                # "Kreide": {"id": 30_000, "color": "#a6d84a", "top_lith": 30_000},
+                # "Trias": {"id": 50_000, "color": "#a4469f", "top_lith": 50_000},
+                # "Perm": {"id": 60_000, "color": "#f4a142", "top_lith": 60_000},
+                "Rotliegend": {"id": 62_000, "color": "#bb825b", "top_lith": 62_000},
+                # "Devon": {"id": 80_000, "color": "#969594", "top_lith": 80_000}
+            }
         )
-
-        kreide = gp.data.StructuralElement(
-            name="Kreide",
-            id=30_000,
-            color="#a6d84a",
-            surface_points=gp.data.SurfacePointsTable(np.empty(0, dtype=gp.data.SurfacePointsTable.dt)),
-            orientations=gp.data.OrientationsTable(np.zeros(0, dtype=gp.data.OrientationsTable.dt))
-        )
-
-        trias = gp.data.StructuralElement(
-            name="Trias",
-            id=50_000,
-            color="#a4469f",
-            surface_points=gp.data.SurfacePointsTable(np.empty(0, dtype=gp.data.SurfacePointsTable.dt)),
-            orientations=gp.data.OrientationsTable(np.zeros(0, dtype=gp.data.OrientationsTable.dt))
-        )
-
-        perm = gp.data.StructuralElement(
-            name="Perm",
-            id=60_000,
-            color="#f4a142",
-            surface_points=gp.data.SurfacePointsTable(np.empty(0, dtype=gp.data.SurfacePointsTable.dt)),
-            orientations=gp.data.OrientationsTable(np.zeros(0, dtype=gp.data.OrientationsTable.dt))
-        )
-
-        rotliegend_id = 62_000
-        rotliegend_xyz = component_lith[rotliegend_id]
-
-        # Add the id 
-        rotliegend_surface_points = gp.data.SurfacePointsTable.from_arrays(
-            x=rotliegend_xyz[:, 0],
-            y=rotliegend_xyz[:, 1],
-            z=rotliegend_xyz[:, 2],
-            names=["Rotliegend"],
-            name_id_map={"Rotliegend": rotliegend_id}
-        )
-
-        rotliegend = gp.data.StructuralElement(
-            name="Rotliegend",
-            id=rotliegend_id,
-            color="#bb825b",
-            surface_points=rotliegend_surface_points,
-            orientations=gp.data.OrientationsTable(np.zeros(0, dtype=gp.data.OrientationsTable.dt))
-        )
-
-        devon = gp.data.StructuralElement(
-            name="Devon",
-            id=80_000,
-            color="#969594",
-            surface_points=gp.data.SurfacePointsTable(np.empty(0, dtype=gp.data.SurfacePointsTable.dt)),
-            orientations=gp.data.OrientationsTable(np.zeros(0, dtype=gp.data.OrientationsTable.dt))
-        )
-
+        
+        
         group = gp.data.StructuralGroup(
             name="Stratigraphic Pile",
-            elements=[rotliegend],
+            elements=elements,
             structural_relation=gp.data.StackRelationType.ERODE
         )
         structural_frame = gp.data.StructuralFrame(
@@ -151,6 +99,9 @@ class TestStratigraphicPile:
         )
         print(group)
 
+
+        component_lith = borehole_set.get_top_coords_for_each_lith()
+        rotliegend_xyz = component_lith[62_000]
         extent_from_data = rotliegend_xyz.min(axis=0), rotliegend_xyz.max(axis=0)
 
         geo_model = gp.data.GeoModel(

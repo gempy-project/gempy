@@ -1,11 +1,13 @@
 ﻿import warnings
-from typing import Union
+from typing import Union, Hashable
 
 import numpy as np
 from numpy import ndarray
 
 from gempy.API.io_API import read_surface_points, read_orientations
 from gempy_engine.core.data import InterpolationOptions
+from ..optional_dependencies import require_subsurface
+from ..core.data import StructuralElement
 from ..core.data.geo_model import GeoModel
 from ..core.data.grid import Grid
 from ..core.data.importer_helper import ImporterHelper
@@ -76,6 +78,48 @@ def create_geomodel(
     )
 
     return geo_model
+
+
+def structural_elements_from_borehole_set(
+        borehole_set: "subsurface.core.geological_formats.BoreholeSet",
+        elements_dict: dict) -> list[StructuralElement]:
+    """
+    Creates a list of StructuralElement instances from a borehole set and a dictionary of elements.
+    
+    Args:
+        borehole_set (subsurface.core.geological_formats.boreholes.boreholes): The borehole set.
+        elements_dict (dict): A dictionary of elements.
+        
+    Returns:
+        list[StructuralElement]: A list of StructuralElement instances.
+    """
+    
+    ss = require_subsurface()
+    borehole_set: ss.core.geological_formats.BoreholeSet
+    
+    elements = []
+    component_lith: dict[Hashable, np.ndarray] = borehole_set.get_top_coords_for_each_lith()
+    
+    for name, properties in elements_dict.items():
+        top_coordinates = component_lith.get(properties['top_lith'])
+        if top_coordinates is None:
+            raise ValueError(f"Top lithology {properties['top_lith']} not found in borehole set.")
+        
+        element = StructuralElement(
+            name=name,
+            id=properties['id'],
+            color=properties['color'],
+            surface_points=SurfacePointsTable.from_arrays(
+                x=top_coordinates[:, 0],
+                y=top_coordinates[:, 1],
+                z=top_coordinates[:, 2],
+                names=[name],
+                name_id_map={name: properties['id']}
+            ),
+            orientations=OrientationsTable(np.zeros(0, dtype=OrientationsTable.dt))
+        )
+        elements.append(element)
+    return elements
 
 
 def create_data_legacy(
