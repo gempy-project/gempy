@@ -9,9 +9,10 @@ from subsurface.core.geological_formats.boreholes.collars import Collars
 from subsurface.core.geological_formats.boreholes.survey import Survey
 from subsurface.core.reader_helpers.readers_data import GenericReaderFilesHelper
 from subsurface.modules.reader.wells.read_borehole_interface import read_lith, read_survey, read_collar
-from subsurface.modules.visualization import to_pyvista_line, pv_plot
+from subsurface.modules.visualization import to_pyvista_line, pv_plot, to_pyvista_points
 
 import gempy as gp
+import gempy_viewer as gpv
 
 
 # @pytest.mark.skip(reason="Not implemented yet")
@@ -64,7 +65,8 @@ class TestStratigraphicPile:
 
         return borehole_set
 
-    def test_structural_elements(self, borehole_set: BoreholeSet):
+    # TODO: Rename this to test structural elements from borehole set
+    def test_structural_elements_from_borehole_set(self, borehole_set: BoreholeSet):
         from subsurface import LineSet
         borehole_trajectory: LineSet = borehole_set.combined_trajectory
         if PLOT := False:
@@ -78,16 +80,29 @@ class TestStratigraphicPile:
         elements = gp.structural_elements_from_borehole_set(
             borehole_set=borehole_set,
             elements_dict={
-                # "Pleistozen": {"id": 10_000, "color": "#f9f97f", "top_lith": 10_000},
-                # "Kreide": {"id": 30_000, "color": "#a6d84a", "top_lith": 30_000},
-                # "Trias": {"id": 50_000, "color": "#a4469f", "top_lith": 50_000},
-                # "Perm": {"id": 60_000, "color": "#f4a142", "top_lith": 60_000},
-                "Rotliegend": {"id": 62_000, "color": "#bb825b", "top_lith": 62_000},
-                # "Devon": {"id": 80_000, "color": "#969594", "top_lith": 80_000}
+                    "Buntsandstein"       : {
+                            "id"   : 53_300,
+                            "color": "#983999"
+                    },
+                    "Werra-Anhydrit"      : {
+                            "id"   : 61_730,
+                            "color": "#00923f"
+                    },
+                    "Kupfershiefer"       : {
+                            "id"   : 61_760,
+                            "color": "#da251d"
+                    },
+                    "Zechsteinkonglomerat": {
+                            "id"   : 61_770,
+                            "color": "#f8c300"
+                    },
+                    "Rotliegend"          : {
+                            "id"   : 62_000,
+                            "color": "#bb825b"
+                    }
             }
         )
-        
-        
+
         group = gp.data.StructuralGroup(
             name="Stratigraphic Pile",
             elements=elements,
@@ -99,11 +114,9 @@ class TestStratigraphicPile:
         )
         print(group)
 
-
-        component_lith = borehole_set.get_top_coords_for_each_lith()
-        rotliegend_xyz = component_lith[62_000]
-        extent_from_data = rotliegend_xyz.min(axis=0), rotliegend_xyz.max(axis=0)
-
+        all_surface_points_coords: gp.data.SurfacePointsTable = structural_frame.surface_points_copy
+        extent_from_data = all_surface_points_coords.xyz.min(axis=0), all_surface_points_coords.xyz.max(axis=0)
+        
         geo_model = gp.data.GeoModel(
             name="Stratigraphic Pile",
             structural_frame=structural_frame,
@@ -117,9 +130,16 @@ class TestStratigraphicPile:
                 mesh_extraction=True,
                 number_octree_levels=3,
             ),
-
+        )
+        gempy_plot = gpv.plot_3d(
+            model=geo_model,
+            # ve=10,
+            kwargs_pyvista_bounds={
+                    'show_xlabels': False,
+                    'show_ylabels': False,
+                    # 'show_zlabels': True,
+            },
+            show=True,
+            image=True
         )
         
-        import gempy_viewer as gpv
-        gpv.plot_3d(geo_model)
-        pass

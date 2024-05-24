@@ -101,9 +101,9 @@ def structural_elements_from_borehole_set(
     component_lith: dict[Hashable, np.ndarray] = borehole_set.get_top_coords_for_each_lith()
     
     for name, properties in elements_dict.items():
-        top_coordinates = component_lith.get(properties['top_lith'])
+        top_coordinates = component_lith.get(properties['id'])
         if top_coordinates is None:
-            raise ValueError(f"Top lithology {properties['top_lith']} not found in borehole set.")
+            raise ValueError(f"Top lithology {properties['id']} not found in borehole set.")
         
         element = StructuralElement(
             name=name,
@@ -119,6 +119,9 @@ def structural_elements_from_borehole_set(
             orientations=OrientationsTable(np.zeros(0, dtype=OrientationsTable.dt))
         )
         elements.append(element)
+    # Reverse the list to have the oldest rocks at the bottom
+    elements.reverse()
+    
     return elements
 
 

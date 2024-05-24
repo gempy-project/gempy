@@ -329,10 +329,15 @@ class StructuralFrame:
         return np.arange(len(self.structural_elements)) + 1
 
     @property
-    def surface_points(self) -> SurfacePointsTable:
+    def surface_points_copy(self) -> SurfacePointsTable:
         """Returns a SurfacePointsTable for all surface points across the structural elements. This is a copy!"""
         all_data: np.ndarray = np.concatenate([element.surface_points.data for element in self.structural_elements])
         return SurfacePointsTable(data=all_data, name_id_map=self.element_name_id_map)
+
+    @property
+    def surface_points(self):
+        raise AttributeError("This property can only be set, not read. You can access the copy with `surface_points_copy` or"
+                             "the original on the individual structural elements.")
 
     @surface_points.setter
     def surface_points(self, modified_surface_points: SurfacePointsTable) -> None:
@@ -344,11 +349,16 @@ class StructuralFrame:
             start += length
 
     @property
-    def orientations(self) -> OrientationsTable:
+    def orientations_copy(self) -> OrientationsTable:
         """Returns an OrientationsTable for all orientations across the structural elements."""
         all_data: np.ndarray = np.concatenate([element.orientations.data for element in self.structural_elements])
         return OrientationsTable(data=all_data)
 
+    @property
+    def orientations(self) -> OrientationsTable:
+        raise AttributeError("This property can only be set, not read. You can access the copy with `orientations_copy` or"
+                             "the original on the individual structural elements.")
+    
     @orientations.setter
     def orientations(self, modified_orientations: OrientationsTable) -> None:
         """Distributes the modified orientations back to the structural elements."""

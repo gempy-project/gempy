@@ -161,7 +161,7 @@ class GeoModel:
     @property
     def surface_points_copy(self):
         """This is a copy! Returns a SurfacePointsTable for all surface points across the structural elements"""
-        surface_points_table = self.structural_frame.surface_points
+        surface_points_table = self.structural_frame.surface_points_copy
         if self.transform is not None:
             surface_points_table.model_transform = self.transform
         return surface_points_table
@@ -178,7 +178,7 @@ class GeoModel:
     @property
     def orientations_copy(self) -> OrientationsTable:
         """This is a copy! Returns a OrientationsTable for all orientations across the structural elements"""
-        orientations_table = self.structural_frame.orientations
+        orientations_table = self.structural_frame.orientations_copy
         if self.transform is not None:
             orientations_table.model_transform = self.transform
         return orientations_table
