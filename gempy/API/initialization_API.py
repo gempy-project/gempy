@@ -98,7 +98,7 @@ def structural_elements_from_borehole_set(
     borehole_set: ss.core.geological_formats.BoreholeSet
     
     elements = []
-    component_lith: dict[Hashable, np.ndarray] = borehole_set.get_top_coords_for_each_lith()
+    component_lith: dict[Hashable, np.ndarray] = borehole_set.get_bottom_coords_for_each_lith()
     
     for name, properties in elements_dict.items():
         top_coordinates = component_lith.get(properties['id'])
