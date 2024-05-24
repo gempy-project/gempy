@@ -120,7 +120,6 @@ def structural_elements_from_borehole_set(
         )
         elements.append(element)
     # Reverse the list to have the oldest rocks at the bottom
-    elements.reverse()
     
     return elements
 
