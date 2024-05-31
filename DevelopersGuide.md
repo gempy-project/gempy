@@ -27,15 +27,6 @@ New
     twine upload dist/*
 ```
 
-Old
-```
-    #  First create the dist
-    python3 setup.py sdist bdist_wheel
-
-    # Second upload the distributions
-    twine upload dist/*
-
-
 ### Type of commits:
 
 - ENH: Enhancement, new functionality
