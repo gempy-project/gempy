@@ -6,7 +6,7 @@ import numpy as np
 
 from ..core_utils import calculate_line_coordinates_2points
 from ....optional_dependencies import require_pandas
-from gempy_engine.core.data.transforms import Transform
+from gempy_engine.core.data.transforms import Transform, TransformOpsOrder
 
 
 @dataclasses.dataclass
@@ -22,61 +22,115 @@ class RegularGrid:
     x: Optional[np.ndarray]
     y: Optional[np.ndarray]
     z: Optional[np.ndarray]
-    dx: float
-    dy: float
-    dz: float
     _transform: Transform  #: If a transform exists, it will be applied to the grid
 
-    def __init__(self, extent=None, resolution=None, transform=None):
+    def __init__(self, extent: np.ndarray, resolution: np.ndarray, transform: Optional[Transform]=None):
         self.resolution = np.ones((0, 3), dtype='int64')
         self.extent = np.zeros(6, dtype='float64')
         self.values = np.zeros((0, 3))
         self.mask_topo = np.zeros((0, 3), dtype=bool)
 
-        self.transform = transform
+        self.set_regular_grid(extent, resolution, transform)
 
-        if extent is not None and len(resolution) > 0:
-            self.set_regular_grid(extent, resolution)
-            
+    def _create_regular_grid_3d(self):
+        coords = self.x_coord, self.y_coord, self.z_coord
+
+        g = np.meshgrid(*coords, indexing="ij")
+        values = np.vstack(tuple(map(np.ravel, g))).T.astype("float64")
+
+        # Transform the values
+        self.values = self.transform.apply_with_pivot(
+            points=values, 
+            pivot=np.array([self.extent[0], self.extent[2], self.extent[4]])
+        )
+
+
+    def set_regular_grid(self, extent: Sequence[float], resolution: Sequence[int], transform: Optional[Transform] = None):
+        """
+        Set a regular grid into the values parameters for further computations
+        Args:
+            extent (list, np.ndarry):  [x_min, x_max, y_min, y_max, z_min, z_max]
+            resolution (list, np.ndarray): [nx, ny, nz]
+        """
+        # * Check extent and resolution are not the same
+        extent_equal = np.array_equal(extent, self.extent)
+        resolution_equal = np.array_equal(resolution, self.resolution)
+
+        if extent_equal and resolution_equal:
+            return self.values
+
+        self.extent = np.asarray(extent, dtype='float64')
+        self.resolution = np.asarray(resolution)
+        self.transform = transform
+        self._create_regular_grid_3d()
+        
     @property
     def transform(self) -> Transform:
         return self._transform
     
     @transform.setter
-    def transform(self, transform: Transform):
-        if transform is None:
-            self._transform = Transform.init_default()
-        self._transform = transform
+    def transform(self, value: Transform):
+        if value is None:
+            self._transform = Transform.init_neutral()
+        self._transform = value
 
     @classmethod
-    def from_corners_box(cls, x1y1: tuple, x2y2: tuple, zmin: float, zmax: float, resolution: np.ndarray):
-        # Define the coordinates of the two points
-        x1, y1 = x1y1
-        x2, y2 = x2y2
+    def from_corners_box(cls, pivot: tuple, point2: tuple, point3: tuple, zmin, zmax, resolution: np.ndarray):
+        # Define the coordinates of the three points
+        x1, y1 = pivot
+        x2, y2 = point2
+        x3, y3 = point3
 
-        # Calculate the angle of rotation
-        delta_x = x2 - x1
-        delta_y = y2 - y1
-        theta = np.arctan2(delta_y, delta_x)
+        # Calculate the vectors along the sides of the rectangle
+        v1 = np.array([x2 - x1, y2 - y1, 0])
+        v2 = np.array([x3 - x1, y3 - y1, 0])
+
+        # Check if the points are collinear
+        cross = np.cross(v1[:2], v2[:2])
+        if np.isclose(cross, 0):
+            raise ValueError("The points are collinear")
+
+        # Check if v1 and v2 are perpendicular
+        if not np.isclose(np.dot(v1, v2), 0):
+            # Compute the closest valid p3
+            v1_norm = v1 / np.linalg.norm(v1)
+            v2_projected = v2 - np.dot(v2, v1_norm) * v1_norm
+            p3_corrected = np.array([x1, y1, 0]) + v2_projected
+            x3, y3 = p3_corrected[:2]
+            raise ValueError(f"The provided points are not perpendicular. Suggested corrected point3: ({x3}, {y3})")
+        
+        # Calculate the orthonormal basis
+        v1_norm = v1 / np.linalg.norm(v1)
+        v2_norm = v2 / np.linalg.norm(v2)
+        v3_norm = np.cross(v1_norm, v2_norm)
 
         # Create the rotation matrix
-        rotation_matrix = np.array([[np.cos(theta), -np.sin(theta), 0, 0],
-                                    [np.sin(theta), np.cos(theta), 0, 0],
-                                    [0, 0, 1, 0],
-                                    [0, 0, 0, 1]])
+        rotation_matrix = np.array([
+                [v1_norm[0], v2_norm[0], v3_norm[0], 0],
+                [v1_norm[1], v2_norm[1], v3_norm[1], 0],
+                [v1_norm[2], v2_norm[2], v3_norm[2], 0],
+                [0, 0, 0, 1]
+        ])
 
+        # rotation_matrix_degrees = np.degrees(rotation_matrix)
         transform = Transform.from_matrix(rotation_matrix)
 
-        # Calculate the extents
-        xmin, xmax = min(x1, x2), max(x1, x2)
-        ymin, ymax = min(y1, y2), max(y1, y2)
+        # Calculate the extents in the new coordinate system
+        extent_x = np.linalg.norm(v1)
+        extent_y = np.linalg.norm(v2)
+
+        # We transform the origin point1 to the new coordinates
+        vector = np.array([[x1, y1, zmin]])
+        origin_transformed = transform.apply_with_pivot(vector, pivot=vector[0])[0]
+
+        xmin, ymin, zmin = origin_transformed
+        xmax, ymax, zmax = xmin + extent_x, ymin + extent_y, zmin + zmax - zmin
+
         extent = np.array([xmin, xmax, ymin, ymax, zmin, zmax], dtype='float64')
 
-        # Transform the extent
-        transformed_extent = transform.apply(extent)
-
-        grid = cls(extent=transformed_extent, resolution=resolution, transform=transform)
+        grid = cls(extent=extent, resolution=resolution, transform=transform)
         return grid
+    
 
     @property
     def bounding_box(self) -> np.ndarray:
@@ -103,34 +157,6 @@ class RegularGrid:
     @property
     def z_coord(self):
         return np.linspace(self.extent[4] + self.dz / 2, self.extent[5] - self.dz / 2, self.resolution[2], dtype="float64")
-
-    def _create_regular_grid_3d(self):
-        coords = self.x_coord, self.y_coord, self.z_coord
-
-        g = np.meshgrid(*coords, indexing="ij")
-        values = np.vstack(tuple(map(np.ravel, g))).T.astype("float64")
-
-        # Transform the values
-        values = self.transform.apply_inverse(values)
-
-    def set_regular_grid(self, extent: Sequence[float], resolution: Sequence[int], transform: Optional[Transform] = None):
-        """
-        Set a regular grid into the values parameters for further computations
-        Args:
-            extent (list, np.ndarry):  [x_min, x_max, y_min, y_max, z_min, z_max]
-            resolution (list, np.ndarray): [nx, ny, nz]
-        """
-        # * Check extent and resolution are not the same
-        extent_equal = np.array_equal(extent, self.extent)
-        resolution_equal = np.array_equal(resolution, self.resolution)
-
-        if extent_equal and resolution_equal:
-            return self.values
-
-        self.extent = np.asarray(extent, dtype='float64')
-        self.resolution = np.asarray(resolution)
-        self.transform = transform
-        self._create_regular_grid_3d()
 
     @property
     def dx_dy_dz(self):
