@@ -65,7 +65,6 @@ class Grid(object):
 
     def __init__(self, extent=None, resolution=None):
         self.values = np.empty((0, 3))
-        self.values_r = np.empty((0, 3))
         self.length = np.empty(0)
         self._octree_levels = -1
         self.grid_types = np.array(['regular', 'custom', 'topography', 'sections', 'centered', 'octree'])  # TODO: Make a enumerator!
@@ -147,7 +146,7 @@ class Grid(object):
 
         RegularGrid Docs
         """
-        self.regular_grid = grid_types.RegularGrid(extent, resolution, **kwargs)
+        self.regular_grid = grid_types.RegularGrid(extent, resolution)
         return self.regular_grid
 
     # ? DEP?

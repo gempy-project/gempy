@@ -1,34 +1,23 @@
-from typing import Optional
+import dataclasses
+
+from typing import Optional, Sequence
 
 import numpy as np
 
-from gempy.core.data.core_utils import calculate_line_coordinates_2points
-from gempy.optional_dependencies import require_pandas
+from ..core_utils import calculate_line_coordinates_2points
+from ....optional_dependencies import require_pandas
+from gempy_engine.core.data.transforms import Transform
 
 
+@dataclasses.dataclass
 class RegularGrid:
     """
     Class with the methods and properties to manage 3D regular grids where the model will be interpolated.
 
-    Args:
-        extent (np.ndarray):  [x_min, x_max, y_min, y_max, z_min, z_max]
-        resolution (np.ndarray): [nx, ny, nz]
-
-    Attributes:
-        extent (np.ndarray):  [x_min, x_max, y_min, y_max, z_min, z_max]
-        resolution (np.ndarray): [nx, ny, nz]
-        values (np.ndarray): XYZ coordinates
-        mask_topo (np.ndarray, dtype=bool): same shape as values. Values above the topography are False
-        dx (float): size of the cells on x
-        dy (float): size of the cells on y
-        dz (float): size of the cells on z
-
     """
     resolution: np.ndarray
-    extent: np.ndarray
-    extent_r: np.ndarray
+    extent: np.ndarray #: this is the orthogonal extent. If the grid is rotated, the extent will be different
     values: np.ndarray
-    values_r: np.ndarray
     mask_topo: np.ndarray
     x: Optional[np.ndarray]
     y: Optional[np.ndarray]
@@ -36,26 +25,58 @@ class RegularGrid:
     dx: float
     dy: float
     dz: float
-    
-    _cached_topography: "Topography" = None
+    _transform: Transform  #: If a transform exists, it will be applied to the grid
 
-    def __init__(self, extent=None, resolution=None, **kwargs):
-        # @ formatter:off
+    def __init__(self, extent=None, resolution=None, transform=None):
         self.resolution = np.ones((0, 3), dtype='int64')
         self.extent = np.zeros(6, dtype='float64')
-        self.extent_r = np.zeros(6, dtype='float64')
         self.values = np.zeros((0, 3))
-        self.values_r = np.zeros((0, 3))
         self.mask_topo = np.zeros((0, 3), dtype=bool)
-        self.x = None
-        self.y = None
-        self.z = None
+
+        self.transform = transform
 
         if extent is not None and len(resolution) > 0:
             self.set_regular_grid(extent, resolution)
-            self.dx, self.dy, self.dz = self.get_dx_dy_dz()
+            
+    @property
+    def transform(self) -> Transform:
+        return self._transform
+    
+    @transform.setter
+    def transform(self, transform: Transform):
+        if transform is None:
+            self._transform = Transform.init_default()
+        self._transform = transform
 
-        # @ formatter:on
+    @classmethod
+    def from_corners_box(cls, x1y1: tuple, x2y2: tuple, zmin: float, zmax: float, resolution: np.ndarray):
+        # Define the coordinates of the two points
+        x1, y1 = x1y1
+        x2, y2 = x2y2
+
+        # Calculate the angle of rotation
+        delta_x = x2 - x1
+        delta_y = y2 - y1
+        theta = np.arctan2(delta_y, delta_x)
+
+        # Create the rotation matrix
+        rotation_matrix = np.array([[np.cos(theta), -np.sin(theta), 0, 0],
+                                    [np.sin(theta), np.cos(theta), 0, 0],
+                                    [0, 0, 1, 0],
+                                    [0, 0, 0, 1]])
+
+        transform = Transform.from_matrix(rotation_matrix)
+
+        # Calculate the extents
+        xmin, xmax = min(x1, x2), max(x1, x2)
+        ymin, ymax = min(y1, y2), max(y1, y2)
+        extent = np.array([xmin, xmax, ymin, ymax, zmin, zmax], dtype='float64')
+
+        # Transform the extent
+        transformed_extent = transform.apply(extent)
+
+        grid = cls(extent=transformed_extent, resolution=resolution, transform=transform)
+        return grid
 
     @property
     def bounding_box(self) -> np.ndarray:
@@ -71,51 +92,32 @@ class RegularGrid:
                                         [extents[1], extents[3], extents[5]]])  # max x, max y, max z
         return bounding_box_points
 
-    def set_coord(self, extent, resolution):
-        dx = (extent[1] - extent[0]) / resolution[0]
-        dy = (extent[3] - extent[2]) / resolution[1]
-        dz = (extent[5] - extent[4]) / resolution[2]
+    @property
+    def x_coord(self):
+        return np.linspace(self.extent[0] + self.dx / 2, self.extent[1] - self.dx / 2, self.resolution[0], dtype="float64")
 
-        self.x = np.linspace(extent[0] + dx / 2, extent[1] - dx / 2, resolution[0], dtype="float64")
-        self.y = np.linspace(extent[2] + dy / 2, extent[3] - dy / 2, resolution[1], dtype="float64")
-        self.z = np.linspace(extent[4] + dz / 2, extent[5] - dz / 2, resolution[2], dtype="float64")
+    @property
+    def y_coord(self):
+        return np.linspace(self.extent[2] + self.dy / 2, self.extent[3] - self.dy / 2, self.resolution[1], dtype="float64")
 
-        return self.x, self.y, self.z
+    @property
+    def z_coord(self):
+        return np.linspace(self.extent[4] + self.dz / 2, self.extent[5] - self.dz / 2, self.resolution[2], dtype="float64")
 
-    def create_regular_grid_3d(self, extent, resolution):
-        """
-        Method to create a 3D regular grid where is interpolated
+    def _create_regular_grid_3d(self):
+        coords = self.x_coord, self.y_coord, self.z_coord
 
-        Args:
-            extent (list):  [x_min, x_max, y_min, y_max, z_min, z_max]
-            resolution (list): [nx, ny, nz].
-
-        Returns:
-            numpy.ndarray: Unraveled 3D numpy array where every row correspond to the xyz coordinates of a regular grid
-
-        """
-
-        coords = self.set_coord(extent, resolution)
         g = np.meshgrid(*coords, indexing="ij")
         values = np.vstack(tuple(map(np.ravel, g))).T.astype("float64")
-        return values
 
-    def get_dx_dy_dz(self, rescale=False):
-        if rescale is True:
-            dx = (self.extent_r[1] - self.extent_r[0]) / self.resolution[0]
-            dy = (self.extent_r[3] - self.extent_r[2]) / self.resolution[1]
-            dz = (self.extent_r[5] - self.extent_r[4]) / self.resolution[2]
-        else:
-            dx = (self.extent[1] - self.extent[0]) / self.resolution[0]
-            dy = (self.extent[3] - self.extent[2]) / self.resolution[1]
-            dz = (self.extent[5] - self.extent[4]) / self.resolution[2]
-        return dx, dy, dz
+        # Transform the values
+        values = self.transform.apply_inverse(values)
 
-    def set_regular_grid(self, extent, resolution):
+    def set_regular_grid(self, extent: Sequence[float], resolution: Sequence[int], transform: Optional[Transform] = None):
         """
         Set a regular grid into the values parameters for further computations
         Args:
-             extent (list, np.ndarry):  [x_min, x_max, y_min, y_max, z_min, z_max]
+            extent (list, np.ndarry):  [x_min, x_max, y_min, y_max, z_min, z_max]
             resolution (list, np.ndarray): [nx, ny, nz]
         """
         # * Check extent and resolution are not the same
@@ -127,10 +129,27 @@ class RegularGrid:
 
         self.extent = np.asarray(extent, dtype='float64')
         self.resolution = np.asarray(resolution)
-        self.values = self.create_regular_grid_3d(extent, resolution)
-        self.length = self.values.shape[0]
-        self.dx, self.dy, self.dz = self.get_dx_dy_dz()
-        return self.values
+        self.transform = transform
+        self._create_regular_grid_3d()
+
+    @property
+    def dx_dy_dz(self):
+        dx = (self.extent[1] - self.extent[0]) / self.resolution[0]
+        dy = (self.extent[3] - self.extent[2]) / self.resolution[1]
+        dz = (self.extent[5] - self.extent[4]) / self.resolution[2]
+        return dx, dy, dz
+
+    @property
+    def dx(self):
+        return (self.extent[1] - self.extent[0]) / self.resolution[0]
+
+    @property
+    def dy(self):
+        return (self.extent[3] - self.extent[2]) / self.resolution[1]
+
+    @property
+    def dz(self):
+        return (self.extent[5] - self.extent[4]) / self.resolution[2]
 
     @property
     def values_vtk_format(self):
@@ -225,8 +244,8 @@ class Sections:
     def compute_section_coordinates(self):
         for i in range(len(self.names)):
             xy = calculate_line_coordinates_2points(self.coordinates[i, :2],
-                                                         self.coordinates[i, 2:],
-                                                         self.resolution[i][0])
+                                                    self.coordinates[i, 2:],
+                                                    self.resolution[i][0])
             zaxis = np.linspace(self.z_ext[0], self.z_ext[1], self.resolution[i][1],
                                 dtype="float64")
             X, Z = np.meshgrid(xy[:, 0], zaxis, indexing='ij')
@@ -246,7 +265,6 @@ class Sections:
             )
             yield name, xy
 
-    
     def get_section_args(self, section_name: str):
         where = np.where(self.names == section_name)[0][0]
         return self.length[where], self.length[where + 1]
@@ -255,7 +273,6 @@ class Sections:
         l0, l1 = self.get_section_args(section_name)
         return self.values[l0:l1]
 
-    
 
 class CustomGrid:
     """Object that contains arbitrary XYZ coordinates.
@@ -290,4 +307,3 @@ class CustomGrid:
         self.values = custom_grid
         self.length = self.values.shape[0]
         return self.values
-

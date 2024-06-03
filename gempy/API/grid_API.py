@@ -2,12 +2,12 @@
 
 import numpy as np
 
-from gempy.core.data import Grid
-from gempy.core.data.grid import GridTypes
-from gempy.core.data.grid_modules import CustomGrid
-from gempy.core.data.grid_modules.topography import Topography
-from gempy.modules.grids.create_topography import create_random_topography
-from gempy.optional_dependencies import require_subsurface
+from ..core.data import Grid
+from ..core.data.grid import GridTypes
+from ..core.data.grid_modules import CustomGrid
+from ..core.data.grid_modules.topography import Topography
+from ..modules.grids.create_topography import create_random_topography
+from ..optional_dependencies import require_subsurface
 
 
 def set_section_grid(grid: Grid, section_dict: dict):
