@@ -1,3 +1,5 @@
+import numpy as np
+
 import gempy as gp
 from gempy.core.data.enumerators import ExampleModel
 from gempy.optional_dependencies import require_gempy_viewer
@@ -5,7 +7,7 @@ from gempy.optional_dependencies import require_gempy_viewer
 PLOT = True
 
 
-def test_plot_transformed_data():
+def test_plot_transformed_data_only_transform_input():
     model = gp.generate_example_model(ExampleModel.ANTICLINE, compute_model=True)
     print(model.structural_frame)
 
@@ -23,6 +25,41 @@ def test_plot_transformed_data():
             }
         )
         
+        gpv.plot_3d(
+            model,
+            image=False,
+            transformed_data=True,
+            show_boundaries=True,
+            show_lith=True,
+            kwargs_plot_data={
+                    'arrow_size': .01
+            }
+        )
+        
+        
+def test_plot_transformed_data_including_grid_transform():
+    model = gp.generate_example_model(ExampleModel.ANTICLINE, compute_model=False)
+
+    # Calculate point_y_axis
+    regular_grid = gp.data.grid.RegularGrid.from_corners_box(
+        pivot=(200, 200),
+        point_x_axis=(800,800),
+        distance_point3=1000,
+        zmin=model.extent[4],
+        zmax=model.extent[5],
+        resolution=np.array([50, 50, 50]),
+        plot=True
+    )
+
+    model.grid = gp.data.grid.Grid()
+    model.grid.dense_grid = regular_grid
+    
+    gp.compute_model(model)
+    
+
+    if PLOT:
+        gpv = require_gempy_viewer()
+    
         gpv.plot_3d(
             model,
             image=False,

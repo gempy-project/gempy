@@ -176,8 +176,11 @@ class GeoModel:
     @property
     def surface_points_copy_transformed(self) -> SurfacePointsTable:
         og_sp = self.surface_points_copy
-        total_transform: Transform = self.input_transform + self.grid.transform
-        og_sp.xyz_view = total_transform.apply(og_sp.xyz)
+        og_sp.xyz_view = self.grid.transform.apply_with_pivot(
+            points=og_sp.xyz,
+            pivot=self.grid.corner_min
+        )
+        og_sp.xyz_view = self.input_transform.apply(og_sp.xyz)
         return og_sp
 
     @property
