@@ -38,11 +38,13 @@ class RegularGrid:
         g = np.meshgrid(*coords, indexing="ij")
         values = np.vstack(tuple(map(np.ravel, g))).T.astype("float64")
 
+
         # Transform the values
-        self.values = self.transform.apply_with_pivot(
-            points=values, 
-            pivot=np.array([self.extent[0], self.extent[2], self.extent[4]])
-        )
+        if self.transform is not None:
+            self.values = self.transform.apply_with_pivot(
+                points=values, 
+                pivot=np.array([self.extent[0], self.extent[2], self.extent[4]])
+            )
 
 
     def set_regular_grid(self, extent: Sequence[float], resolution: Sequence[int], transform: Optional[Transform] = None):
