@@ -11,30 +11,33 @@ from gempy_engine.core.data.interpolation_input import InterpolationInput
 from gempy_engine.core.data.transforms import Transform
 
 
-def interpolation_input_from_structural_frame(structural_frame: StructuralFrame, grid: Grid,
-                                              input_transform: Transform) -> InterpolationInput:
+def interpolation_input_from_structural_frame(geo_model: "GeoModel") -> InterpolationInput:
     _legacy_factor = 0
-
-    if LEGACY_COORDS := False:
-        _legacy_factor = 0.5
+    
+    structural_frame: StructuralFrame = geo_model.structural_frame
+    input_transform: Transform = geo_model.input_transform
+    grid: Grid = geo_model.grid
 
     total_transform: Transform = input_transform + grid.transform
 
-    surface_points_copy = structural_frame.surface_points_copy
+    surface_points_copy_transformed = geo_model.surface_points_copy_transformed
     surface_points: SurfacePoints = SurfacePoints(
-        sp_coords=total_transform.apply(surface_points_copy.xyz) + _legacy_factor,
-        nugget_effect_scalar=surface_points_copy.nugget
+        sp_coords=geo_model.surface_points_copy_transformed.xyz,
+        nugget_effect_scalar=surface_points_copy_transformed.nugget
     )
 
-    orientations_copy = structural_frame.orientations_copy
+    orientations_copy_transformed = geo_model.orientations_copy_transformed
     orientations: Orientations = Orientations(
-        dip_positions=total_transform.apply(orientations_copy.xyz) + _legacy_factor,
-        dip_gradients=total_transform.transform_gradient(orientations_copy.grads),
-        nugget_effect_grad=orientations_copy.nugget
+        dip_positions=orientations_copy_transformed.xyz,
+        dip_gradients=orientations_copy_transformed.grads,
+        nugget_effect_grad=orientations_copy_transformed.nugget
     )
 
-    grid: engine_grid.EngineGrid = _apply_input_transform_to_grids(grid, input_transform)
-
+    grid: engine_grid.EngineGrid = _apply_input_transform_to_grids(
+        grid=grid,
+        input_transform=input_transform,
+        extent_transformed=geo_model.extent_transformed
+    )
 
     interpolation_input: InterpolationInput = InterpolationInput(
         surface_points=surface_points,
@@ -46,12 +49,8 @@ def interpolation_input_from_structural_frame(structural_frame: StructuralFrame,
     return interpolation_input
 
 
-def _apply_input_transform_to_grids(grid: Grid, input_transform: Transform) -> engine_grid.EngineGrid:
-    transformed = input_transform.apply(grid.bounding_box)  # ! grid already has the grid transform applied
-    new_extents = np.array([transformed[:, 0].min(), transformed[:, 0].max(),
-                            transformed[:, 1].min(), transformed[:, 1].max(),
-                            transformed[:, 2].min(), transformed[:, 2].max()])
-
+def _apply_input_transform_to_grids(grid: Grid, input_transform: Transform, extent_transformed: np.ndarray) -> engine_grid.EngineGrid:
+    new_extents = extent_transformed
     # Initialize all variables to None
     octree_grid: Optional[engine_grid.RegularGrid] = None
     regular_grid: Optional[engine_grid.RegularGrid] = None

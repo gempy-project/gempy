@@ -15,6 +15,7 @@ from gempy_engine.core.data.interpolation_input import InterpolationInput
 from gempy_engine.core.data.transforms import Transform, GlobalAnisotropy
 
 from .orientations import OrientationsTable
+from .surface_points import SurfacePointsTable
 from .structural_frame import StructuralFrame
 from .grid import Grid
 from ...modules.data_manipulation.engine_factory import interpolation_input_from_structural_frame
@@ -153,10 +154,10 @@ class GeoModel:
             dc_mesh = self._solutions.dc_meshes[e]
             if dc_mesh is None:
                 continue
-                
+
             # TODO: These meshes are in the order of the scalar field 
             world_coord_vertices = self.input_transform.apply_inverse(dc_mesh.vertices)
-            
+
             element.vertices = world_coord_vertices
             element.edges = (dc_mesh.edges if dc_mesh is not None else None)
 
@@ -171,14 +172,14 @@ class GeoModel:
         """This is a copy! Returns a SurfacePointsTable for all surface points across the structural elements"""
         surface_points_table = self.structural_frame.surface_points_copy
         return surface_points_table
-    
+
     @property
-    def surface_points_copy_transformed(self):
+    def surface_points_copy_transformed(self) -> SurfacePointsTable:
         og_sp = self.surface_points_copy
         total_transform: Transform = self.input_transform + self.grid.transform
         og_sp.xyz_view = total_transform.apply(og_sp.xyz)
         return og_sp
-        
+
     @property
     def surface_points(self):
         raise AttributeError("This property can only be set, not read. You can access the copy with `surface_points_copy` or"
@@ -192,17 +193,15 @@ class GeoModel:
     def orientations_copy(self) -> OrientationsTable:
         """This is a copy! Returns a OrientationsTable for all orientations across the structural elements"""
         orientations_table = self.structural_frame.orientations_copy
-        if self.input_transform is not None:
-            transform = self.input_transform + self.grid.transform
-            orientations_table.model_transform = transform
         return orientations_table
-    
+
     @property
-    def orientations_copy_transformed(self):
+    def orientations_copy_transformed(self) -> OrientationsTable:
         # ! This is not done
         og_or = self.orientations_copy
         total_transform: Transform = self.input_transform + self.grid.transform
         og_or.xyz_view = total_transform.apply(og_or.xyz)
+        og_or.grads_view = total_transform.transform_gradient(og_or.grads)
         return og_or
 
     @property
@@ -217,7 +216,7 @@ class GeoModel:
     @property
     def project_bounds(self) -> np.ndarray:
         return self.grid.bounding_box
-    
+
     @property
     def extent_transformed(self) -> np.ndarray:
         transformed = self.input_transform.apply(self.project_bounds)  # ! grid already has the grid transform applied
@@ -225,20 +224,21 @@ class GeoModel:
                                 transformed[:, 1].min(), transformed[:, 1].max(),
                                 transformed[:, 2].min(), transformed[:, 2].max()])
         return new_extents
-    
+
     @property
     def extent(self) -> np.ndarray:
         return self.grid.extent
 
     @property
     def interpolation_input_copy(self):
+        warnings.warn("This property is deprecated. Use directly "
+                      "`interpolation_input_from_structural_frame` instead.", DeprecationWarning)
+        
         if self.structural_frame.is_dirty is False:
             return self._interpolationInput
 
         self._interpolationInput = interpolation_input_from_structural_frame(
-            structural_frame=self.structural_frame,
-            grid=self.grid,
-            input_transform=self.input_transform
+            geo_model=self
         )
 
         return self._interpolationInput
