@@ -3,7 +3,6 @@
 import numpy as np
 
 from ..core.data import Grid
-from ..core.data.grid import GridTypes
 from ..core.data.grid_modules import CustomGrid, Sections
 from ..core.data.grid_modules.topography import Topography
 from ..modules.grids.create_topography import create_random_topography

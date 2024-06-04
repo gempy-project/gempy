@@ -20,7 +20,7 @@ class Grid:
         NONE = 2**10
 
     # ? What should we do with the extent?
-    extent: Optional[np.ndarray]  # * Model extent should be cross grid
+    _extent: Optional[np.ndarray]  # * Model extent should be cross grid
 
     _octree_grid: Optional[RegularGrid] = None
     _dense_grid: Optional[RegularGrid] = None
@@ -50,6 +50,24 @@ class Grid:
         grid_summary_str = "\n".join(grid_summary)
         return f"Grid Object:\n{grid_summary_str}"
 
+    @property
+    def extent(self):
+        if self._extent is None:
+            # Try to get the extent from the dense or octree grid if those are also none raise an error
+            if self.dense_grid is not None:
+                return self.dense_grid.extent
+            elif self.octree_grid is not None:
+                return self.octree_grid.extent
+            else:
+                raise AttributeError('Extent is not defined')
+        else:
+            return self._extent
+        
+    @extent.setter
+    def extent(self, value):
+        self._extent = value
+        
+    
     @property
     def active_grids(self):
         return self._active_grids
