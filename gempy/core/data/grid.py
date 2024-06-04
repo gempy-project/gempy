@@ -68,6 +68,14 @@ class Grid:
     @extent.setter
     def extent(self, value):
         self._extent = value
+        
+    @property
+    def corner_min(self):
+        return self.extent[::2]
+    
+    @property
+    def corner_max(self):
+        return self.extent[1::2]
 
     @property
     def bounding_box(self):

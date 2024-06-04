@@ -48,10 +48,11 @@ def interpolation_input_from_structural_frame(structural_frame: StructuralFrame,
 
 def _apply_input_transform_to_grids(grid: Grid, input_transform: Transform) -> engine_grid.EngineGrid:
     transformed = input_transform.apply(grid.bounding_box)  # ! grid already has the grid transform applied
+    grid.regular_grid.input_transform = input_transform
     new_extents = np.array([transformed[:, 0].min(), transformed[:, 0].max(),
                             transformed[:, 1].min(), transformed[:, 1].max(),
                             transformed[:, 2].min(), transformed[:, 2].max()])
-    
+
     # Initialize all variables to None
     octree_grid: Optional[engine_grid.RegularGrid] = None
     regular_grid: Optional[engine_grid.RegularGrid] = None
@@ -59,7 +60,7 @@ def _apply_input_transform_to_grids(grid: Grid, input_transform: Transform) -> e
     topography_values: Optional[engine_grid.GenericGrid] = None
     section_values: Optional[engine_grid.GenericGrid] = None
     centered_grid: Optional[engine_grid.CenteredGrid] = None
-    
+
     if grid.GridTypes.DENSE in grid.active_grids:
         regular_grid = engine_grid.RegularGrid(
             orthogonal_extent=new_extents,

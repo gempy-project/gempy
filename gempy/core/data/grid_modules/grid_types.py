@@ -41,7 +41,7 @@ class RegularGrid:
 
         # Transform the values
         if self.transform is not None:
-            self.values = self.transform.apply_with_pivot(
+            self.values = self.transform.apply_inverse_with_pivot(
                 points=values,
                 pivot=np.array([self.extent[0], self.extent[2], self.extent[4]])
             )
@@ -126,7 +126,8 @@ class RegularGrid:
                 [0, 0, 0, 1]
         ])
 
-        transform = Transform.from_matrix(rotation_matrix)
+        inverted_rotation_matrix = np.linalg.inv(rotation_matrix)
+        transform = Transform.from_matrix(inverted_rotation_matrix)
 
         # Calculate the extents in the new coordinate system
         extent_x = np.linalg.norm(v1)
@@ -134,10 +135,9 @@ class RegularGrid:
 
         # We transform the origin point1 to the new coordinates
         # [[ 5.47925650e+06  5.70152895e+06 -2.39200000e+02]]
-        vector = np.array([[x1, y1, zmin]])
-        origin_transformed = transform.apply_with_pivot(vector, pivot=vector[0])[0]
+        origin_ = [x1, y1, zmin]
 
-        xmin, ymin, zmin = origin_transformed
+        xmin, ymin, zmin = origin_
         xmax, ymax, zmax = xmin + extent_x, ymin + extent_y, zmin + zmax - zmin
 
         extent = np.array([xmin, xmax, ymin, ymax, zmin, zmax], dtype='float64')
