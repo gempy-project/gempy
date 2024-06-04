@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 
 import gempy as gp
 from gempy.core.data import Grid
+from gempy.core.data.grid_modules import RegularGrid
 
 np.random.seed(55500)
 
@@ -103,11 +104,15 @@ grid.get_grid_args('topography')
 # activate them.
 # 
 
-# %% 
-help(grid.create_regular_grid)
 
 # %% 
-grid.create_regular_grid(extent=[0, 100, 0, 100, -100, 0], resolution=[20, 20, 20])
+help(RegularGrid)
+
+# %% 
+extent = np.array([0, 100, 0, 100, -100, 0])
+resolution = np.array([20, 20, 20])
+grid.regular_grid = RegularGrid(extent, resolution)
+grid.regular_grid
 
 # %%
 # Now the regular grid object composed on ``Grid`` has been filled:

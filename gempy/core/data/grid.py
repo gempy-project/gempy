@@ -6,7 +6,7 @@ from typing import Union, Optional
 
 import numpy as np
 
-from .grid_modules import topography, RegularGrid, CustomGrid, Sections
+from .grid_modules import RegularGrid, CustomGrid, Sections
 from .grid_modules.topography import Topography
 from gempy_engine.core.data.centered_grid import CenteredGrid
 
@@ -67,11 +67,11 @@ class Grid:
 
     active_grids_bool: np.ndarray
 
-    dense_grid: Optional[RegularGrid] = None
-    octree_grid: Optional[RegularGrid] = None
-    custom_grid: Optional[CustomGrid] = None
-    topography: Optional[Topography] = None
-    sections: Optional[Sections] = None
+    _dense_grid: Optional[RegularGrid] = None
+    _octree_grid: Optional[RegularGrid] = None
+    _custom_grid: Optional[CustomGrid] = None
+    _topography: Optional[Topography] = None
+    _sections: Optional[Sections] = None
     centered_grid: Optional[CenteredGrid] = None
 
     values: np.ndarray = np.empty((0, 3))
@@ -84,31 +84,80 @@ class Grid:
         self.active_grids_bool = np.zeros(6, dtype=bool)
         # Init basic grid empty
         if extent is not None and resolution is not None:
-            self.regular_grid = RegularGrid(extent, resolution)
-            self.active_grids_bool[0] = True
+            self.dense_grid = RegularGrid(extent, resolution)
 
         # Init optional sections
         self.sections = None
 
-        self.update_grid_values()
 
-    # ? Do we need a active_regular grid property for backwards compatibility?
     @property
-    def regular_grid(self):
-        warnings.warn('This property is deprecated. Use the dense_grid or octree_grid instead', DeprecationWarning)
-        if self.dense_grid is not None and self.octree_grid is not None:
-            raise AttributeError('Both dense_grid and octree_grid are active. This is not possible.')
-        elif self.dense_grid is not None:
-            return self.dense_grid
-        elif self.octree_grid is not None:
-            return self.octree_grid
-        else:
-            return None
-
-    @regular_grid.setter
-    def regular_grid(self, value):
-        warnings.warn('This property is deprecated. Use the dense_grid property instead', DeprecationWarning)
-        self.dense_grid = value
+    def dense_grid(self):
+        return self._dense_grid
+    
+    @dense_grid.setter
+    def dense_grid(self, value):
+        self._dense_grid = value
+        self.active_grids_bool[0] = True
+        self._update_values()
+    
+    @property
+    def octree_grid(self):
+        return self._octree_grid
+    
+    @octree_grid.setter
+    def octree_grid(self, value):
+        self._octree_grid = value
+        self.active_grids_bool[1] = True
+        self._update_values()
+        
+    @property
+    def custom_grid(self):
+        return self._custom_grid
+    
+    @custom_grid.setter
+    def custom_grid(self, value):
+        self._custom_grid = value
+        self.active_grids_bool[2] = True
+        self._update_values()
+        
+    @property
+    def topography(self):
+        return self._topography
+    
+    @topography.setter
+    def topography(self, value):
+        self._topography = value
+        self.active_grids_bool[3] = True
+        self._update_values()
+        
+    @property
+    def sections(self):
+        return self._sections
+    
+    @sections.setter
+    def sections(self, value):
+        self._sections = value
+        self.active_grids_bool[4] = True
+        self._update_values()
+        
+    
+    # ? Do we need a active_regular grid property for backwards compatibility?
+    # @property
+    # def regular_grid(self):
+    #     warnings.warn('This property is deprecated. Use the dense_grid or octree_grid instead', DeprecationWarning)
+    #     if self.dense_grid is not None and self.octree_grid is not None:
+    #         raise AttributeError('Both dense_grid and octree_grid are active. This is not possible.')
+    #     elif self.dense_grid is not None:
+    #         return self.dense_grid
+    #     elif self.octree_grid is not None:
+    #         return self.octree_grid
+    #     else:
+    #         return None
+    # 
+    # @regular_grid.setter
+    # def regular_grid(self, value):
+    #     warnings.warn('This property is deprecated. Use the dense_grid property instead', DeprecationWarning)
+    #     self.dense_grid = value
 
     @property
     def octree_levels(self):
@@ -122,7 +171,7 @@ class Grid:
             resolution=np.array([2 ** value] * 3),
         )
         self.active_grids_bool[5] = True
-        self.update_grid_values()
+        self._update_values()
 
     def __str__(self):
         grid_summary = [f"{g_type} (active: {getattr(self, g_type + '_grid_active')}): {len(getattr(self, g_type + '_grid').values)} points"
@@ -132,98 +181,9 @@ class Grid:
 
     @property
     def active_grids(self) -> np.ndarray:
+        # TODO: I think we need to update this
         return self.grid_types[self.active_grids_bool]
 
-    def create_regular_grid(self, extent=None, resolution=None, set_active=True, *args, **kwargs):
-        """
-        Set a new regular grid and activate it.
-
-        Args:
-            extent (np.ndarray): [x_min, x_max, y_min, y_max, z_min, z_max]
-            resolution (np.ndarray): [nx, ny, nz]
-
-        RegularGrid Docs
-        """
-        self.regular_grid = RegularGrid(extent, resolution)
-        return self.regular_grid
-
-    # ? DEP?
-    def create_custom_grid_(self, custom_grid: np.ndarray):
-        """
-        Set a new regular grid and activate it.
-
-        Args:
-            custom_grid (np.array): [s0]
-
-        """
-        self.custom_grid = CustomGrid(custom_grid)
-        self.set_active('custom')
-
-    # ! (miguel, Sep 2023) This has to change a lot
-    # ? DEP? 
-    def create_topography_(self, source='random', **kwargs):
-        """Create a topography grid and activate it.
-
-        Args:
-            source:
-                * 'gdal':  Load topography from a raster file.
-                * 'random': Generate random topography (based on a fractal grid).
-                * 'saved': Load topography that was saved with the topography.save() function.
-                  This is useful after loading and saving a heavy raster file with gdal once or after saving a
-                  random topography with the save() function. This .npy file can then be set as topography.
-
-        Keyword Args:
-            source = 'gdal':
-                * filepath:   path to raster file, e.g. '.tif', (for all file formats see
-                  https://gdal.org/drivers/raster/index.html)
-
-            source = 'random':
-                * fd:         fractal dimension, defaults to 2.0
-                * d_z:        maximum height difference. If none, last 20% of the model in z direction
-                * extent:     extent in xy direction. If none, geo_model.grid.extent
-                * resolution: desired resolution of the topography array. If none, geo_model.grid.resoution
-
-            source = 'saved':
-                * filepath:   path to the .npy file that was created using the topography.save() function
-
-        Returns:
-             :class:gempy.core.data.Topography
-        """
-        self.topography = topography.Topography(self.regular_grid)
-
-        if source == 'random':
-            self.topography.load_random_hills(**kwargs)
-        elif source == 'gdal':
-            filepath = kwargs.get('filepath', None)
-            if filepath is not None:
-                self.topography.load_from_gdal(filepath)
-            else:
-                print('to load a raster file, a path to the file must be provided')
-        elif source == 'saved':
-            filepath = kwargs.get('filepath', None)
-            if filepath is not None:
-                self.topography.load_from_saved(filepath)
-            else:
-                print('path to .npy file must be provided')
-        elif source == 'numpy':
-            array = kwargs.get('array', None)
-            self.topography.set_values(array)
-        else:
-            raise AttributeError('source must be random, gdal or saved')
-
-        self.set_active('topography')
-
-    def create_section_grid(self, section_dict):
-        self.sections = Sections(regular_grid=self.regular_grid, section_dict=section_dict)
-        self.set_active('sections')
-        return self.sections
-
-    # ? DEP?
-    def create_centered_grid(self, centers, radius, resolution=None):
-        """Initialize gravity grid. Deactivate the rest of the grids"""
-        self.centered_grid = CenteredGrid(centers, radius, resolution)
-        # self.active_grids = np.zeros(4, dtype=bool)
-        self.set_active('centered')
 
     def deactivate_all_grids(self):
         """
@@ -231,7 +191,7 @@ class Grid:
         :return:
         """
         self.active_grids_bool = np.zeros(5, dtype=bool)
-        self.update_grid_values()
+        self._update_values()
         return self.active_grids_bool
 
     def set_active(self, grid_name: Union[str, np.ndarray]):
@@ -245,16 +205,16 @@ class Grid:
 
         where = self.grid_types == grid_name
         self.active_grids_bool[where] = True
-        self.update_grid_values()
+        self._update_values()
         return self.active_grids_bool
 
     def set_inactive(self, grid_name: str):
         where = self.grid_types == grid_name
         self.active_grids_bool *= ~where
-        self.update_grid_values()
+        self._update_values()
         return self.active_grids_bool
 
-    def update_grid_values(self):
+    def _update_values(self):
         """
         Copy XYZ coordinates from each specific grid to Grid.values for those which are active.
 
