@@ -101,16 +101,15 @@ class GeoModel:
 
         self.transform.apply_anisotropy(anisotropy_type=auto_anisotropy, anisotropy_limit=anisotropy_limit)
 
-
     @property
     def interpolation_options(self) -> InterpolationOptions:
         n_octree_lvl = self._interpolation_options.number_octree_levels  # * we access the private one because we do not care abot the extract mesh octree level
 
-        octrees_set: bool = n_octree_lvl > 1
-        resolution_set = bool(self.grid.active_grids_bool[0])  # 0 corresponds
+        octrees_set: bool = Grid.GridTypes.OCTREE in self.grid.active_grids
+        dense_set: bool = Grid.GridTypes.DENSE in self.grid.active_grids
 
         # Create a tuple representing the conditions
-        match (octrees_set, resolution_set):
+        match (octrees_set, dense_set):
             case (True, False):
                 self._interpolation_options.block_solutions_type = RawArraysSolution.BlockSolutionType.OCTREE
             case (True, True):
@@ -134,7 +133,7 @@ class GeoModel:
     @property
     def solutions(self) -> Solutions:
         return self._solutions
-    
+
     @solutions.setter
     def solutions(self, value):
         self._solutions = value
@@ -198,7 +197,7 @@ class GeoModel:
     def interpolation_input_copy(self):
         if self.structural_frame.is_dirty is False:
             return self._interpolationInput
-        
+
         self._interpolationInput = interpolation_input_from_structural_frame(
             structural_frame=self.structural_frame,
             grid=self.grid,
