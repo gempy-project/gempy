@@ -49,7 +49,8 @@ def interpolation_input_from_structural_frame(structural_frame: StructuralFrame,
     if grid.GridTypes.DENSE in grid.active_grids:
         regular_grid = engine_grid.RegularGrid(
             extent=new_extents,
-            regular_grid_shape=grid.dense_grid.resolution
+            regular_grid_shape=grid.dense_grid.resolution,
+            transform=grid.dense_grid.transform
         )
 
     if grid.GridTypes.CUSTOM in grid.active_grids and grid.custom_grid is not None:
@@ -70,7 +71,8 @@ def interpolation_input_from_structural_frame(structural_frame: StructuralFrame,
 
     octree_grid = engine_grid.RegularGrid(
         extent=new_extents,
-        regular_grid_shape=np.array([2, 2, 2])
+        regular_grid_shape=np.array([2, 2, 2]),
+        transform=grid.dense_grid.transform # ! That here we need to grab the dense grid smells
     )
 
     grid: engine_grid.EngineGrid = engine_grid.EngineGrid(  # * Here we convert the GemPy grid to the

@@ -1,3 +1,5 @@
+import warnings
+
 import dataclasses
 import enum
 import numpy as np
@@ -11,13 +13,13 @@ from .grid_modules.topography import Topography
 @dataclasses.dataclass
 class Grid:
     class GridTypes(enum.Flag):
-        OCTREE = 2**0
-        DENSE = 2**1
-        CUSTOM = 2**2
-        TOPOGRAPHY = 2**3
-        SECTIONS = 2**4
-        CENTERED = 2**5
-        NONE = 2**10
+        OCTREE = 2 ** 0
+        DENSE = 2 ** 1
+        CUSTOM = 2 ** 2
+        TOPOGRAPHY = 2 ** 3
+        SECTIONS = 2 ** 4
+        CENTERED = 2 ** 5
+        NONE = 2 ** 10
 
     # ? What should we do with the extent?
     _extent: Optional[np.ndarray]  # * Model extent should be cross grid
@@ -31,11 +33,11 @@ class Grid:
 
     values: np.ndarray = np.empty((0, 3))
     length: np.ndarray = np.empty(0)
-    
+
     _active_grids = GridTypes.NONE
-    
+
     _octree_levels: int = -1
-    
+
     def __init__(self, extent=None, resolution=None):
         self.extent = extent
         # Init basic grid empty
@@ -62,11 +64,11 @@ class Grid:
                 raise AttributeError('Extent is not defined')
         else:
             return self._extent
-        
+
     @extent.setter
     def extent(self, value):
         self._extent = value
-        
+
     @property
     def bounding_box(self):
         extents = self.extent
@@ -80,85 +82,95 @@ class Grid:
                                         [extents[1], extents[3], extents[4]],  # max x, max y, min z
                                         [extents[1], extents[3], extents[5]]])  # max x, max y, max z
         return bounding_box_points
-        
-    
+
     @property
     def active_grids(self):
         return self._active_grids
-    
+
     @active_grids.setter
     def active_grids(self, value):
         self._active_grids = value
         self._update_values()
 
     @property
-    def dense_grid(self):
+    def dense_grid(self) -> RegularGrid:
         return self._dense_grid
-    
+
     @dense_grid.setter
     def dense_grid(self, value):
         self._dense_grid = value
         self.active_grids |= self.GridTypes.DENSE
         self._update_values()
-    
+
     @property
     def octree_grid(self):
         return self._octree_grid
-    
+
     @octree_grid.setter
     def octree_grid(self, value):
         self._octree_grid = value
         self.active_grids |= self.GridTypes.OCTREE
         self._update_values()
-        
+
     @property
     def custom_grid(self):
         return self._custom_grid
-    
+
     @custom_grid.setter
     def custom_grid(self, value):
         self._custom_grid = value
         self.active_grids |= self.GridTypes.CUSTOM
         self._update_values()
-        
+
     @property
     def topography(self):
         return self._topography
-    
+
     @topography.setter
     def topography(self, value):
         self._topography = value
         self.active_grids |= self.GridTypes.TOPOGRAPHY
         self._update_values()
-        
+
     @property
     def sections(self):
         return self._sections
-    
+
     @sections.setter
     def sections(self, value):
         self._sections = value
         self.active_grids |= self.GridTypes.SECTIONS
         self._update_values()
-        
+
     @property
     def centered_grid(self):
         return self._centered_grid
-    
+
     @centered_grid.setter
     def centered_grid(self, value):
         self._centered_grid = value
         self.active_grids |= self.GridTypes.CENTERED
         self._update_values()
-    
-    
+
     @property
     def regular_grid(self):
-        raise AttributeError('This property is deprecated. Use the dense_grid or octree_grid instead')
+        warnings.warn('This property is deprecated. Use the dense_grid or octree_grid instead', DeprecationWarning)
+        if self.dense_grid is not None and self.octree_grid is not None:
+            raise AttributeError('Both dense_grid and octree_grid are active. This is not possible.')
+        elif self.dense_grid is not None:
+            return self.dense_grid
+        elif self.octree_grid is not None:
+            return self.octree_grid
+        else:
+            return None
 
     @regular_grid.setter
     def regular_grid(self, value):
         raise AttributeError('This property is deprecated. Use the dense_grid or octree_grid instead')
+
+    @property
+    def octree_levels(self):
+        return self._octree_levels
 
     @property
     def octree_levels(self):
@@ -175,7 +187,7 @@ class Grid:
 
     def _update_values(self):
         values = []
-        
+
         if self.GridTypes.OCTREE in self.active_grids:
             values.append(self.octree_grid.values)
         if self.GridTypes.DENSE in self.active_grids:
@@ -188,12 +200,11 @@ class Grid:
             values.append(self.sections.values)
         if self.GridTypes.CENTERED in self.active_grids:
             values.append(self.centered_grid.values)
-        
+
         self.values = np.concatenate(values)
 
         return self.values
 
-  
     def get_section_args(self, section_name: str):
         # TODO: This method should be part of the sections
         # assert type(section_name) is str, 'Only one section type can be retrieved'

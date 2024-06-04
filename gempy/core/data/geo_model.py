@@ -148,9 +148,16 @@ class GeoModel:
 
         # * Set solutions per element
         for e, element in enumerate(self.structural_frame.structural_elements[:-1]):  # * Ignore basement
-            dc_mesh = self._solutions.dc_meshes[e] if self._solutions.dc_meshes is not None else None
-            # TODO: These meshes are in the order of the scalar field
-            element.vertices = (self.transform.apply_inverse(dc_mesh.vertices) if dc_mesh is not None else None)
+            if self._solutions.dc_meshes is None:
+                continue
+            dc_mesh = self._solutions.dc_meshes[e]
+            if dc_mesh is None:
+                continue
+                
+            # TODO: These meshes are in the order of the scalar field 
+            world_coord_vertices = self.transform.apply_inverse(dc_mesh.vertices)
+            
+            element.vertices = world_coord_vertices
             element.edges = (dc_mesh.edges if dc_mesh is not None else None)
 
         # * Reordering the elements according to the scalar field

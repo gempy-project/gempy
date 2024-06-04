@@ -17,7 +17,7 @@ class RegularGrid:
 
     """
     resolution: np.ndarray
-    extent: np.ndarray  #: this is the orthogonal extent. If the grid is rotated, the extent will be different
+    extent: np.ndarray  #: this is the ORTHOGONAL extent. If the grid is rotated, the extent will be different
     values: np.ndarray
     mask_topo: np.ndarray
     x: Optional[np.ndarray]
