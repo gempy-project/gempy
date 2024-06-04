@@ -67,6 +67,20 @@ class Grid:
     def extent(self, value):
         self._extent = value
         
+    @property
+    def bounding_box(self):
+        extents = self.extent
+        # Define 3D points of the bounding box corners based on extents
+        bounding_box_points = np.array([[extents[0], extents[2], extents[4]],  # min x, min y, min z
+                                        [extents[0], extents[2], extents[5]],  # min x, min y, max z
+                                        [extents[0], extents[3], extents[4]],  # min x, max y, min z
+                                        [extents[0], extents[3], extents[5]],  # min x, max y, max z
+                                        [extents[1], extents[2], extents[4]],  # max x, min y, min z
+                                        [extents[1], extents[2], extents[5]],  # max x, min y, max z
+                                        [extents[1], extents[3], extents[4]],  # max x, max y, min z
+                                        [extents[1], extents[3], extents[5]]])  # max x, max y, max z
+        return bounding_box_points
+        
     
     @property
     def active_grids(self):

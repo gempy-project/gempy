@@ -5,17 +5,19 @@ from typing import Sequence, Optional
 
 import numpy as np
 
-import gempy_engine.core.data.engine_grid
 from gempy_engine.core.data import Solutions
+from gempy_engine.core.data.engine_grid import EngineGrid
 from gempy_engine.core.data.geophysics_input import GeophysicsInput
 from gempy_engine.core.data.raw_arrays_solution import RawArraysSolution
 from gempy_engine.core.data import InterpolationOptions
 from gempy_engine.core.data.input_data_descriptor import InputDataDescriptor
 from gempy_engine.core.data.interpolation_input import InterpolationInput
+from gempy_engine.core.data.transforms import Transform, GlobalAnisotropy
+
 from .orientations import OrientationsTable
 from .structural_frame import StructuralFrame
-from gempy_engine.core.data.transforms import Transform, GlobalAnisotropy
 from .grid import Grid
+from ...modules.data_manipulation.engine_factory import interpolation_input_from_structural_frame
 
 """
 TODO:
@@ -60,12 +62,12 @@ class GeoModel:
 
     transform: Transform = None  #: The transformation used in the geological model for input points.
 
-    interpolation_grid: gempy_engine.core.data.engine_grid.EngineGrid = None  #: Optional grid used for interpolation. Can be seen as a cache field.
+    interpolation_grid: EngineGrid = None  #: Optional grid used for interpolation. Can be seen as a cache field.
     _interpolationInput: InterpolationInput = None  #: Input data for interpolation. Fed by the structural frame and can be seen as a cache field.
     _input_data_descriptor: InputDataDescriptor = None  #: Descriptor of the input data. Fed by the structural frame and can be seen as a cache field.
 
     # endregion
-    _solutions: gempy_engine.core.data.solutions.Solutions = field(init=False, default=None)  #: The computed solutions of the geological model. 
+    _solutions: Solutions = field(init=False, default=None)  #: The computed solutions of the geological model. 
 
     legacy_model: "gpl.Project" = None  #: Legacy model (if available). Allows for backward compatibility.
 
@@ -197,7 +199,7 @@ class GeoModel:
         if self.structural_frame.is_dirty is False:
             return self._interpolationInput
         
-        self._interpolationInput = InterpolationInput.from_structural_frame(
+        self._interpolationInput = interpolation_input_from_structural_frame(
             structural_frame=self.structural_frame,
             grid=self.grid,
             transform=self.transform
