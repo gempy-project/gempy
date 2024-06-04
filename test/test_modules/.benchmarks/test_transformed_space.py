@@ -16,7 +16,10 @@ def test_plot_transformed_data():
         gpv.plot_3d(
             model,
             image=False,
-            transformed_data=True
+            transformed_data=True,
+            kwargs_plot_data={
+                    'arrow_size': .01
+            }
         )
 
 
