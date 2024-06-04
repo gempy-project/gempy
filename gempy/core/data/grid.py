@@ -6,8 +6,8 @@ from typing import Union, Optional
 
 import numpy as np
 
-from gempy.core.data.grid_modules import topography, grid_types
-from gempy.core.data.grid_modules.topography import Topography
+from .grid_modules import topography, RegularGrid, CustomGrid, Sections
+from .grid_modules.topography import Topography
 from gempy_engine.core.data.centered_grid import CenteredGrid
 
 
@@ -20,7 +20,7 @@ class GridTypes(enum.Enum):
 
 
 @dataclasses.dataclass
-class Grid(object):
+class Grid:
     """ Class to generate grids.
 
     This class is used to create points to evaluate the geological model. 
@@ -54,39 +54,37 @@ class Grid(object):
         gravity_grid (:class:`gempy.core.grid_modules.grid_types.Gravity`)
     """
 
-    dense_grid: Optional[grid_types.RegularGrid]
-    octree_grid: Optional[grid_types.RegularGrid]
-    custom_grid: Optional[grid_types.CustomGrid]
-    topography: Optional[Topography]
-    sections: Optional[grid_types.Sections]
-    centered_grid: Optional[CenteredGrid]
+    class GridTypes(enum.Flag):
+        REGULAR = 2**1
+        CUSTOM = 2**2
+        TOPOGRAPHY = 2**3
+        SECTIONS = 2**4
+        CENTERED = 2**5
 
+
+    # ? What should we do with the extent?
     extent: Optional[np.ndarray]  # * Model extent should be cross grid
 
+    active_grids_bool: np.ndarray
+
+    dense_grid: Optional[RegularGrid] = None
+    octree_grid: Optional[RegularGrid] = None
+    custom_grid: Optional[CustomGrid] = None
+    topography: Optional[Topography] = None
+    sections: Optional[Sections] = None
+    centered_grid: Optional[CenteredGrid] = None
+
+    values: np.ndarray = np.empty((0, 3))
+    length: np.ndarray = np.empty(0)
+    
+    _octree_levels: int = -1
+    
     def __init__(self, extent=None, resolution=None):
-        self.values = np.empty((0, 3))
-        self.length = np.empty(0)
-        self._octree_levels = -1
-        self.grid_types = np.array(['regular', 'custom', 'topography', 'sections', 'centered', 'octree'])  # TODO: Make a enumerator!
-        self.active_grids_bool = np.zeros(6, dtype=bool)
-        # All grid types must have values
-
-        # Init optional grids
-        self.dense_grid = None
-        self.octree_grid = None
-        self.custom_grid = None
-        self.custom_grid_grid_active = False
-        self.topography: Optional[Topography] = None
-        self.topography_grid_active = False
-        self.sections_grid_active = False
-        self.centered_grid = None
-        self.centered_grid_active = False
-
         self.extent = extent
-
+        self.active_grids_bool = np.zeros(6, dtype=bool)
         # Init basic grid empty
         if extent is not None and resolution is not None:
-            self.regular_grid = grid_types.RegularGrid(extent, resolution)
+            self.regular_grid = RegularGrid(extent, resolution)
             self.active_grids_bool[0] = True
 
         # Init optional sections
@@ -119,7 +117,7 @@ class Grid(object):
     @octree_levels.setter
     def octree_levels(self, value):
         self._octree_levels = value
-        self.octree_grid = grid_types.RegularGrid(
+        self.octree_grid = RegularGrid(
             extent=self.extent,
             resolution=np.array([2 ** value] * 3),
         )
@@ -146,7 +144,7 @@ class Grid(object):
 
         RegularGrid Docs
         """
-        self.regular_grid = grid_types.RegularGrid(extent, resolution)
+        self.regular_grid = RegularGrid(extent, resolution)
         return self.regular_grid
 
     # ? DEP?
@@ -158,7 +156,7 @@ class Grid(object):
             custom_grid (np.array): [s0]
 
         """
-        self.custom_grid = grid_types.CustomGrid(custom_grid)
+        self.custom_grid = CustomGrid(custom_grid)
         self.set_active('custom')
 
     # ! (miguel, Sep 2023) This has to change a lot
@@ -216,7 +214,7 @@ class Grid(object):
         self.set_active('topography')
 
     def create_section_grid(self, section_dict):
-        self.sections = grid_types.Sections(regular_grid=self.regular_grid, section_dict=section_dict)
+        self.sections = Sections(regular_grid=self.regular_grid, section_dict=section_dict)
         self.set_active('sections')
         return self.sections
 

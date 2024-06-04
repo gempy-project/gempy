@@ -37,8 +37,7 @@ class RegularGrid:
 
         g = np.meshgrid(*coords, indexing="ij")
         values = np.vstack(tuple(map(np.ravel, g))).T.astype("float64")
-
-
+        
         # Transform the values
         if self.transform is not None:
             self.values = self.transform.apply_with_pivot(
@@ -78,6 +77,27 @@ class RegularGrid:
 
     @classmethod
     def from_corners_box(cls, pivot: tuple, point2: tuple, point3: tuple, zmin, zmax, resolution: np.ndarray):
+        def _calculate_rotated_box_val(v1, v2):
+            # Check if the points are collinear
+            # noinspection PyUnreachableCode
+            cross = np.cross(v1[:2], v2[:2])
+            if np.isclose(cross, 0):
+                raise ValueError("The points are collinear")
+            # Check if v1 and v2 are perpendicular
+            if not np.isclose(np.dot(v1, v2), 0, atol=1e-4):
+                # Compute the closest valid p3
+                v1_norm = v1 / np.linalg.norm(v1)
+                v2_projected = v2 - np.dot(v2, v1_norm) * v1_norm
+                p3_corrected = np.array([x1, y1, 0]) + v2_projected
+                x3, y3 = p3_corrected[:2]
+                raise ValueError(f"The provided points are not perpendicular. Suggested corrected point3: ({x3}, {y3})")
+            # Calculate the orthonormal basis
+            v1_norm = v1 / np.linalg.norm(v1)
+            v2_norm = v2 / np.linalg.norm(v2)
+            # noinspection PyUnreachableCode
+            v3_norm = np.cross(v1_norm, v2_norm)
+            return v1_norm, v2_norm, v3_norm
+
         # Define the coordinates of the three points
         x1, y1 = pivot
         x2, y2 = point2
@@ -87,24 +107,7 @@ class RegularGrid:
         v1 = np.array([x2 - x1, y2 - y1, 0])
         v2 = np.array([x3 - x1, y3 - y1, 0])
 
-        # Check if the points are collinear
-        cross = np.cross(v1[:2], v2[:2])
-        if np.isclose(cross, 0):
-            raise ValueError("The points are collinear")
-
-        # Check if v1 and v2 are perpendicular
-        if not np.isclose(np.dot(v1, v2), 0):
-            # Compute the closest valid p3
-            v1_norm = v1 / np.linalg.norm(v1)
-            v2_projected = v2 - np.dot(v2, v1_norm) * v1_norm
-            p3_corrected = np.array([x1, y1, 0]) + v2_projected
-            x3, y3 = p3_corrected[:2]
-            raise ValueError(f"The provided points are not perpendicular. Suggested corrected point3: ({x3}, {y3})")
-        
-        # Calculate the orthonormal basis
-        v1_norm = v1 / np.linalg.norm(v1)
-        v2_norm = v2 / np.linalg.norm(v2)
-        v3_norm = np.cross(v1_norm, v2_norm)
+        v1_norm, v2_norm, v3_norm = _calculate_rotated_box_val(v1, v2)
 
         # Create the rotation matrix
         rotation_matrix = np.array([
@@ -114,7 +117,6 @@ class RegularGrid:
                 [0, 0, 0, 1]
         ])
 
-        # rotation_matrix_degrees = np.degrees(rotation_matrix)
         transform = Transform.from_matrix(rotation_matrix)
 
         # Calculate the extents in the new coordinate system
@@ -132,7 +134,7 @@ class RegularGrid:
 
         grid = cls(extent=extent, resolution=resolution, transform=transform)
         return grid
-    
+
 
     @property
     def bounding_box(self) -> np.ndarray:
