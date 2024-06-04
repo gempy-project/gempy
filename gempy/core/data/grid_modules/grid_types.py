@@ -69,12 +69,12 @@ class RegularGrid:
 
     @property
     def transform(self) -> Transform:
+        if self._transform is None:
+            return Transform.init_neutral()
         return self._transform
 
     @transform.setter
     def transform(self, value: Transform):
-        if value is None:
-            self._transform = Transform.init_neutral()
         self._transform = value
 
     @classmethod

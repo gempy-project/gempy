@@ -6,6 +6,7 @@ import numpy as np
 from typing import Optional
 
 from gempy_engine.core.data.centered_grid import CenteredGrid
+from gempy_engine.core.data.transforms import Transform
 from .grid_modules import RegularGrid, CustomGrid, Sections
 from .grid_modules.topography import Topography
 
@@ -35,6 +36,7 @@ class Grid:
     length: np.ndarray = np.empty(0)
 
     _active_grids = GridTypes.NONE
+    _transform: Optional[Transform] = None
 
     _octree_levels: int = -1
 
@@ -52,6 +54,23 @@ class Grid:
         grid_summary_str = "\n".join(grid_summary)
         return f"Grid Object:\n{grid_summary_str}"
 
+
+
+    @property
+    def transform(self) -> Transform:
+        if self._transform is None:
+            if self.dense_grid is not None:
+                return self.dense_grid.transform
+            elif self.octree_grid is not None:
+                return self.octree_grid.transform
+            else:
+                return Transform.init_neutral()
+        return self._transform
+
+    @transform.setter
+    def transform(self, value: Transform):
+        self._transform = value
+        
     @property
     def extent(self):
         if self._extent is None:

@@ -46,7 +46,6 @@ def create_geomodel(
     if resolution is None:
         grid: Grid = Grid(extent=extent)
         grid.octree_levels = refinement
-        grid.set_inactive("regular")
     else:
         grid = Grid(
             extent=extent,

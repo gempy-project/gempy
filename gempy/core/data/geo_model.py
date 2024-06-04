@@ -171,7 +171,7 @@ class GeoModel:
         """This is a copy! Returns a SurfacePointsTable for all surface points across the structural elements"""
         surface_points_table = self.structural_frame.surface_points_copy
         if self.input_transform is not None:
-            transform = self.input_transform + self.grid.dense_grid.transform
+            transform = self.input_transform + self.grid.transform
             surface_points_table.model_transform = transform
         return surface_points_table
 
@@ -189,7 +189,7 @@ class GeoModel:
         """This is a copy! Returns a OrientationsTable for all orientations across the structural elements"""
         orientations_table = self.structural_frame.orientations_copy
         if self.input_transform is not None:
-            transform = self.input_transform + self.grid.dense_grid.transform
+            transform = self.input_transform + self.grid.transform
             orientations_table.model_transform = transform
         return orientations_table
 

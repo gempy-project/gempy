@@ -18,7 +18,7 @@ def interpolation_input_from_structural_frame(structural_frame: StructuralFrame,
     if LEGACY_COORDS := False:
         _legacy_factor = 0.5
 
-    total_transform: Transform = input_transform + grid.dense_grid.transform
+    total_transform: Transform = input_transform + grid.transform
 
     surface_points_copy = structural_frame.surface_points_copy
     surface_points: SurfacePoints = SurfacePoints(
