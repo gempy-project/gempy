@@ -5,6 +5,7 @@ from typing import Optional, Sequence
 import numpy as np
 
 from ..core_utils import calculate_line_coordinates_2points
+from .... import optional_dependencies
 from ....optional_dependencies import require_pandas
 from gempy_engine.core.data.transforms import Transform, TransformOpsOrder
 
@@ -16,7 +17,7 @@ class RegularGrid:
 
     """
     resolution: np.ndarray
-    extent: np.ndarray #: this is the orthogonal extent. If the grid is rotated, the extent will be different
+    extent: np.ndarray  #: this is the orthogonal extent. If the grid is rotated, the extent will be different
     values: np.ndarray
     mask_topo: np.ndarray
     x: Optional[np.ndarray]
@@ -24,7 +25,7 @@ class RegularGrid:
     z: Optional[np.ndarray]
     _transform: Transform  #: If a transform exists, it will be applied to the grid
 
-    def __init__(self, extent: np.ndarray, resolution: np.ndarray, transform: Optional[Transform]=None):
+    def __init__(self, extent: np.ndarray, resolution: np.ndarray, transform: Optional[Transform] = None):
         self.resolution = np.ones((0, 3), dtype='int64')
         self.extent = np.zeros(6, dtype='float64')
         self.values = np.zeros((0, 3))
@@ -37,14 +38,15 @@ class RegularGrid:
 
         g = np.meshgrid(*coords, indexing="ij")
         values = np.vstack(tuple(map(np.ravel, g))).T.astype("float64")
-        
+
         # Transform the values
         if self.transform is not None:
             self.values = self.transform.apply_with_pivot(
-                points=values, 
+                points=values,
                 pivot=np.array([self.extent[0], self.extent[2], self.extent[4]])
             )
-
+        else:
+            self.values = values
 
     def set_regular_grid(self, extent: Sequence[float], resolution: Sequence[int], transform: Optional[Transform] = None):
         """
@@ -64,11 +66,11 @@ class RegularGrid:
         self.resolution = np.asarray(resolution)
         self.transform = transform
         self._create_regular_grid_3d()
-        
+
     @property
     def transform(self) -> Transform:
         return self._transform
-    
+
     @transform.setter
     def transform(self, value: Transform):
         if value is None:
@@ -76,7 +78,11 @@ class RegularGrid:
         self._transform = value
 
     @classmethod
-    def from_corners_box(cls, pivot: tuple, point2: tuple, point3: tuple, zmin, zmax, resolution: np.ndarray):
+    def from_corners_box(cls, pivot: tuple, point_x_axis: tuple, distance_point3: float,
+                         zmin: float, zmax: float, resolution: np.ndarray, plot: bool = True):
+        """Always rotate around the z axis towards the positive x axis. 
+         The distance_point3 is the distance from the pivot to the point3."""
+
         def _calculate_rotated_box_val(v1, v2):
             # Check if the points are collinear
             # noinspection PyUnreachableCode
@@ -95,13 +101,16 @@ class RegularGrid:
             v1_norm = v1 / np.linalg.norm(v1)
             v2_norm = v2 / np.linalg.norm(v2)
             # noinspection PyUnreachableCode
-            v3_norm = np.cross(v1_norm, v2_norm)
+            # v3_norm = np.cross(v1_norm, v2_norm)
+            v3_norm = np.array([0, 0, 1])  # ! We assume rotation is always around z axis
             return v1_norm, v2_norm, v3_norm
 
         # Define the coordinates of the three points
         x1, y1 = pivot
-        x2, y2 = point2
-        x3, y3 = point3
+        x2, y2 = point_x_axis
+
+        dx, dy = point_x_axis[0] - pivot[0], point_x_axis[1] - pivot[1]
+        x3, y3 = (pivot[0] - dy * distance_point3 / np.hypot(dx, dy), pivot[1] + dx * distance_point3 / np.hypot(dx, dy))
 
         # Calculate the vectors along the sides of the rectangle
         v1 = np.array([x2 - x1, y2 - y1, 0])
@@ -124,6 +133,7 @@ class RegularGrid:
         extent_y = np.linalg.norm(v2)
 
         # We transform the origin point1 to the new coordinates
+        # [[ 5.47925650e+06  5.70152895e+06 -2.39200000e+02]]
         vector = np.array([[x1, y1, zmin]])
         origin_transformed = transform.apply_with_pivot(vector, pivot=vector[0])[0]
 
@@ -133,8 +143,15 @@ class RegularGrid:
         extent = np.array([xmin, xmax, ymin, ymax, zmin, zmax], dtype='float64')
 
         grid = cls(extent=extent, resolution=resolution, transform=transform)
-        return grid
 
+        if plot:
+            cls.plot_rotation(
+                regular_grid=grid,
+                pivot=pivot,
+                point_x_axis=point_x_axis,
+                point_y_axis=(x3, y3)
+            )
+        return grid
 
     @property
     def bounding_box(self) -> np.ndarray:
@@ -193,6 +210,34 @@ class RegularGrid:
         g = np.vstack((xv.ravel(), yv.ravel(), zv.ravel())).T
 
         return g
+
+    @staticmethod
+    def plot_rotation(regular_grid, pivot, point_x_axis, point_y_axis):
+        plt = optional_dependencies.require_matplotlib()
+        x1, y1 = pivot
+        x2, y2 = point_x_axis
+        x3, y3 = point_y_axis
+
+        # Plot the original corners
+        plt.scatter([x1, x2, x3], [y1, y2, y3], c='r')
+        # Plot lines with distance labels
+        plt.plot([x1, x2], [y1, y2], 'r')
+        plt.text((x1 + x2) / 2, (y1 + y2) / 2, f'{np.linalg.norm([x1 - x2, y1 - y2]):.2f}', color='r')
+        plt.plot([x1, x3], [y1, y3], 'r')
+        plt.text((x1 + x3) / 2, (y1 + y3) / 2, f'{np.linalg.norm([x1 - x3, y1 - y3]):.2f}', color='r')
+        # Plot the transformed corners
+        transformed_extent = regular_grid.extent
+        bounding_box = regular_grid.bounding_box
+        plt.scatter(bounding_box[:, 0], bounding_box[:, 1], c='b')
+        # Plot lines with distance labels
+        plt.plot([bounding_box[2, 0], bounding_box[0, 0]], [bounding_box[2, 1], bounding_box[0, 1]], 'b')
+        plt.text((bounding_box[2, 0] + bounding_box[0, 0]) / 2, (bounding_box[2, 1] + bounding_box[0, 1]) / 2, f'{np.linalg.norm(bounding_box[2] - bounding_box[0]):.2f}', color='b')
+        plt.plot([bounding_box[0, 0], bounding_box[4, 0]], [bounding_box[0, 1], bounding_box[4, 1]], 'b')
+        plt.text((bounding_box[0, 0] + bounding_box[4, 0]) / 2, (bounding_box[0, 1] + bounding_box[4, 1]) / 2, f'{np.linalg.norm(bounding_box[0] - bounding_box[4]):.2f}', color='b')
+        # Plot the values of the grid
+        values = regular_grid.values
+        plt.scatter(values[:, 0], values[:, 1], c='g')
+        plt.show()
 
 
 class Sections:
