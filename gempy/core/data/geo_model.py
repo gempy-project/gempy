@@ -60,7 +60,7 @@ class GeoModel:
     _interpolation_options: InterpolationOptions  #: The interpolation options provided by the user.
     geophysics_input: GeophysicsInput = None  #: The geophysics input of the geological model.
 
-    transform: Transform = None  #: The transformation used in the geological model for input points.
+    input_transform: Transform = None  #: The transformation used in the geological model for input points.
 
     interpolation_grid: EngineGrid = None  #: Optional grid used for interpolation. Can be seen as a cache field.
     _interpolationInput: InterpolationInput = None  #: Input data for interpolation. Fed by the structural frame and can be seen as a cache field.
@@ -84,7 +84,7 @@ class GeoModel:
 
         self.grid = grid
         self._interpolation_options = interpolation_options
-        self.transform = Transform.from_input_points(
+        self.input_transform = Transform.from_input_points(
             surface_points=self.surface_points_copy,
             orientations=self.orientations_copy
         )
@@ -94,12 +94,12 @@ class GeoModel:
         return pprint.pformat(self.__dict__)
 
     def update_transform(self, auto_anisotropy: GlobalAnisotropy = GlobalAnisotropy.NONE, anisotropy_limit: Optional[np.ndarray] = None):
-        self.transform = Transform.from_input_points(
+        self.input_transform = Transform.from_input_points(
             surface_points=self.surface_points_copy,
             orientations=self.orientations_copy
         )
 
-        self.transform.apply_anisotropy(anisotropy_type=auto_anisotropy, anisotropy_limit=anisotropy_limit)
+        self.input_transform.apply_anisotropy(anisotropy_type=auto_anisotropy, anisotropy_limit=anisotropy_limit)
 
     @property
     def interpolation_options(self) -> InterpolationOptions:
@@ -155,7 +155,7 @@ class GeoModel:
                 continue
                 
             # TODO: These meshes are in the order of the scalar field 
-            world_coord_vertices = self.transform.apply_inverse(dc_mesh.vertices)
+            world_coord_vertices = self.input_transform.apply_inverse(dc_mesh.vertices)
             
             element.vertices = world_coord_vertices
             element.edges = (dc_mesh.edges if dc_mesh is not None else None)
@@ -170,8 +170,8 @@ class GeoModel:
     def surface_points_copy(self):
         """This is a copy! Returns a SurfacePointsTable for all surface points across the structural elements"""
         surface_points_table = self.structural_frame.surface_points_copy
-        if self.transform is not None:
-            surface_points_table.model_transform = self.transform
+        if self.input_transform is not None:
+            surface_points_table.model_transform = self.input_transform
         return surface_points_table
 
     @property
@@ -187,8 +187,8 @@ class GeoModel:
     def orientations_copy(self) -> OrientationsTable:
         """This is a copy! Returns a OrientationsTable for all orientations across the structural elements"""
         orientations_table = self.structural_frame.orientations_copy
-        if self.transform is not None:
-            orientations_table.model_transform = self.transform
+        if self.input_transform is not None:
+            orientations_table.model_transform = self.input_transform
         return orientations_table
 
     @property
@@ -208,7 +208,7 @@ class GeoModel:
         self._interpolationInput = interpolation_input_from_structural_frame(
             structural_frame=self.structural_frame,
             grid=self.grid,
-            transform=self.transform
+            input_transform=self.input_transform
         )
 
         return self._interpolationInput

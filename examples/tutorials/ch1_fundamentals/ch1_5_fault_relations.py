@@ -63,7 +63,7 @@ print(geo_model.structural_frame)
 
 # %% 
 
-geo_model.transform.apply_anisotropy(gp.data.GlobalAnisotropy.NONE)
+geo_model.input_transform.apply_anisotropy(gp.data.GlobalAnisotropy.NONE)
 if False:
     gp.compute_model(geo_model)
     # %%

@@ -47,7 +47,7 @@ gpv.plot_2d(geo_model)
 geo_model.structural_frame
 
 # %%
-geo_model.transform.apply_anisotropy(gp.data.GlobalAnisotropy.NONE)
+geo_model.input_transform.apply_anisotropy(gp.data.GlobalAnisotropy.NONE)
 gp.add_structural_group(
     model=geo_model,
     group_index=0,
