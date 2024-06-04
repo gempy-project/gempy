@@ -1,17 +1,23 @@
 import gempy as gp
+from gempy import optional_dependencies
 from gempy.core.data.enumerators import ExampleModel
+from gempy.modules.data_manipulation.engine_factory import interpolation_input_from_structural_frame
 from gempy.optional_dependencies import require_gempy_viewer
 
 PLOT = True
 
 
 def test_plot_transformed_data():
-    model = gp.generate_example_model(ExampleModel.ANTICLINE, compute_model=True)
+    model = gp.generate_example_model(ExampleModel.ANTICLINE, compute_model=False)
     print(model.structural_frame)
 
     if PLOT:
         gpv = require_gempy_viewer()
-        gpv.plot_3d(model, image=True)
+        gpv.plot_3d(
+            model,
+            image=False,
+            transformed_data=True
+        )
 
 
 def test_transformed_data():

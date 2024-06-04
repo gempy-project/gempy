@@ -170,11 +170,15 @@ class GeoModel:
     def surface_points_copy(self):
         """This is a copy! Returns a SurfacePointsTable for all surface points across the structural elements"""
         surface_points_table = self.structural_frame.surface_points_copy
-        if self.input_transform is not None:
-            transform = self.input_transform + self.grid.transform
-            surface_points_table.model_transform = transform
         return surface_points_table
-
+    
+    @property
+    def surface_points_copy_transformed(self):
+        og_sp = self.surface_points_copy
+        total_transform: Transform = self.input_transform + self.grid.transform
+        og_sp.xyz_view = total_transform.apply(og_sp.xyz)
+        return og_sp
+        
     @property
     def surface_points(self):
         raise AttributeError("This property can only be set, not read. You can access the copy with `surface_points_copy` or"
@@ -192,6 +196,14 @@ class GeoModel:
             transform = self.input_transform + self.grid.transform
             orientations_table.model_transform = transform
         return orientations_table
+    
+    @property
+    def orientations_copy_transformed(self):
+        # ! This is not done
+        og_or = self.orientations_copy
+        total_transform: Transform = self.input_transform + self.grid.transform
+        og_or.xyz_view = total_transform.apply(og_or.xyz)
+        return og_or
 
     @property
     def orientations(self) -> OrientationsTable:

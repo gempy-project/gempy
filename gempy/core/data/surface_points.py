@@ -88,6 +88,14 @@ class SurfacePointsTable:
     @property
     def xyz(self) -> np.ndarray:
         return np.array([self.data['X'], self.data['Y'], self.data['Z']]).T
+    
+    @property
+    def xyz_view(self) -> np.ndarray:
+        return self.data[['X', 'Y', 'Z']]
+    
+    @xyz_view.setter
+    def xyz_view(self, value: np.ndarray):
+        self.data['X'], self.data['Y'], self.data['Z'] = value.T
 
     @property
     def nugget(self) -> np.ndarray:
