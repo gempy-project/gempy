@@ -215,6 +215,22 @@ class GeoModel:
         self.structural_frame.orientations = value
 
     @property
+    def project_bounds(self) -> np.ndarray:
+        return self.grid.bounding_box
+    
+    @property
+    def extent_transformed(self) -> np.ndarray:
+        transformed = self.input_transform.apply(self.project_bounds)  # ! grid already has the grid transform applied
+        new_extents = np.array([transformed[:, 0].min(), transformed[:, 0].max(),
+                                transformed[:, 1].min(), transformed[:, 1].max(),
+                                transformed[:, 2].min(), transformed[:, 2].max()])
+        return new_extents
+    
+    @property
+    def extent(self) -> np.ndarray:
+        return self.grid.extent
+
+    @property
     def interpolation_input_copy(self):
         if self.structural_frame.is_dirty is False:
             return self._interpolationInput

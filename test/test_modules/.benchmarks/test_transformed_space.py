@@ -8,15 +8,29 @@ PLOT = True
 
 
 def test_plot_transformed_data():
-    model = gp.generate_example_model(ExampleModel.ANTICLINE, compute_model=False)
+    model = gp.generate_example_model(ExampleModel.ANTICLINE, compute_model=True)
     print(model.structural_frame)
 
     if PLOT:
         gpv = require_gempy_viewer()
+
+        gpv.plot_3d(
+            model,
+            image=True,
+            transformed_data=False,
+            show_boundaries=False,
+            show_lith=True,
+            kwargs_plot_data={
+                    'arrow_size': 10
+            }
+        )
+        
         gpv.plot_3d(
             model,
             image=False,
             transformed_data=True,
+            show_boundaries=False,
+            show_lith=True,
             kwargs_plot_data={
                     'arrow_size': .01
             }
