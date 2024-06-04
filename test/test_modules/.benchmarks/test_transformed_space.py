@@ -1,7 +1,5 @@
 import gempy as gp
-from gempy import optional_dependencies
 from gempy.core.data.enumerators import ExampleModel
-from gempy.modules.data_manipulation.engine_factory import interpolation_input_from_structural_frame
 from gempy.optional_dependencies import require_gempy_viewer
 
 PLOT = True
@@ -18,7 +16,7 @@ def test_plot_transformed_data():
             model,
             image=True,
             transformed_data=False,
-            show_boundaries=False,
+            show_boundaries=True,
             show_lith=True,
             kwargs_plot_data={
                     'arrow_size': 10
@@ -29,7 +27,7 @@ def test_plot_transformed_data():
             model,
             image=False,
             transformed_data=True,
-            show_boundaries=False,
+            show_boundaries=True,
             show_lith=True,
             kwargs_plot_data={
                     'arrow_size': .01
