@@ -208,6 +208,16 @@ class GeoModel:
         
         og_or.grads_view = total_transform.transform_gradient(og_or.grads)
         return og_or
+    
+    @property
+    def regular_grid_coordinates(self) -> np.ndarray:
+        return self.grid.regular_grid.get_values_vtk_format(orthogonal=False)
+    
+    @property
+    def regular_grid_coordinates_transformed(self) -> np.ndarray:
+        values_transformed = self.grid.regular_grid.get_values_vtk_format(orthogonal=True)
+        values_transformed = self.input_transform.apply(values_transformed)
+        return values_transformed
 
     @property
     def orientations(self) -> OrientationsTable:
@@ -229,10 +239,6 @@ class GeoModel:
                                 transformed[:, 1].min(), transformed[:, 1].max(),
                                 transformed[:, 2].min(), transformed[:, 2].max()])
         return new_extents
-
-    @property
-    def extent(self) -> np.ndarray:
-        return self.grid.extent
 
     @property
     def interpolation_input_copy(self):

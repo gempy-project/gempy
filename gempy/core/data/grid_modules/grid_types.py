@@ -199,7 +199,10 @@ class RegularGrid:
         return (self.extent[5] - self.extent[4]) / self.resolution[2]
 
     @property
-    def values_vtk_format(self):
+    def values_vtk_format(self) -> np.ndarray:
+        return self.get_values_vtk_format()
+    
+    def get_values_vtk_format(self, orthogonal: bool = False) -> np.ndarray:
         extent = self.extent
         resolution = self.resolution + 1
 
@@ -208,6 +211,14 @@ class RegularGrid:
         z = np.linspace(extent[4], extent[5], resolution[2], dtype="float64")
         xv, yv, zv = np.meshgrid(x, y, z, indexing="ij")
         g = np.vstack((xv.ravel(), yv.ravel(), zv.ravel())).T
+
+
+        # Transform the values
+        if self.transform is not None and orthogonal is False:
+            g = self.transform.apply_inverse_with_pivot(
+                points=g,
+                pivot=np.array([self.extent[0], self.extent[2], self.extent[4]])
+            )
 
         return g
 
