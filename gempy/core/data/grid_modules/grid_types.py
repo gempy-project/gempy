@@ -127,14 +127,11 @@ class RegularGrid:
         ])
 
         inverted_rotation_matrix = np.linalg.inv(rotation_matrix)
-        transform = Transform.from_matrix(inverted_rotation_matrix)
-
         # Calculate the extents in the new coordinate system
         extent_x = np.linalg.norm(v1)
         extent_y = np.linalg.norm(v2)
 
         # We transform the origin point1 to the new coordinates
-        # [[ 5.47925650e+06  5.70152895e+06 -2.39200000e+02]]
         origin_ = [x1, y1, zmin]
 
         xmin, ymin, zmin = origin_
@@ -142,6 +139,9 @@ class RegularGrid:
 
         extent = np.array([xmin, xmax, ymin, ymax, zmin, zmax], dtype='float64')
 
+
+        transform = Transform.from_matrix(inverted_rotation_matrix)
+        transform.cached_pivot = origin_
         grid = cls(extent=extent, resolution=resolution, transform=transform)
 
         if plot:

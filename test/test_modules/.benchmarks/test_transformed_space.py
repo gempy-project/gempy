@@ -47,7 +47,7 @@ def test_plot_transformed_data_including_grid_transform():
         distance_point3=1000,
         zmin=model.extent[4],
         zmax=model.extent[5],
-        resolution=np.array([50, 50, 50]),
+        resolution=np.array([20, 20, 20]),
         plot=True
     )
 
@@ -60,12 +60,25 @@ def test_plot_transformed_data_including_grid_transform():
     if PLOT:
         gpv = require_gempy_viewer()
     
+        
         gpv.plot_3d(
             model,
             image=False,
             transformed_data=True,
             show_boundaries=True,
-            show_lith=True,
+            show_lith=False,
+            kwargs_plot_data={
+                    'arrow_size': .01
+            }
+        )
+
+
+        gpv.plot_3d(
+            model,
+            image=False,
+            transformed_data=False,
+            show_boundaries=True,
+            show_lith=False,
             kwargs_plot_data={
                     'arrow_size': .01
             }

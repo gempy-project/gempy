@@ -157,6 +157,7 @@ class GeoModel:
 
             # TODO: These meshes are in the order of the scalar field 
             world_coord_vertices = self.input_transform.apply_inverse(dc_mesh.vertices)
+            world_coord_vertices = self.grid.transform.apply_inverse_with_cached_pivot(world_coord_vertices)
 
             element.vertices = world_coord_vertices
             element.edges = (dc_mesh.edges if dc_mesh is not None else None)
@@ -176,11 +177,8 @@ class GeoModel:
     @property
     def surface_points_copy_transformed(self) -> SurfacePointsTable:
         og_sp = self.surface_points_copy
-        og_sp.xyz_view = self.grid.transform.apply_with_pivot(
-            points=og_sp.xyz,
-            pivot=self.grid.corner_min
-        )
-
+        
+        og_sp.xyz_view = self.grid.transform.apply_with_cached_pivot(og_sp.xyz)
         og_sp.xyz_view = self.input_transform.apply(og_sp.xyz)
         return og_sp
 
@@ -205,13 +203,9 @@ class GeoModel:
         og_or = self.orientations_copy
         total_transform: Transform = self.input_transform + self.grid.transform
 
-        og_or.xyz_view = self.grid.transform.apply_with_pivot(
-            points=og_or.xyz,
-            pivot=self.grid.corner_min
-        )
-
+        og_or.xyz_view = self.grid.transform.apply_with_cached_pivot(og_or.xyz)
         og_or.xyz_view = self.input_transform.apply(og_or.xyz)
-        # og_or.xyz_view = total_transform.apply(og_or.xyz)
+        
         og_or.grads_view = total_transform.transform_gradient(og_or.grads)
         return og_or
 
@@ -244,7 +238,7 @@ class GeoModel:
     def interpolation_input_copy(self):
         warnings.warn("This property is deprecated. Use directly "
                       "`interpolation_input_from_structural_frame` instead.", DeprecationWarning)
-        
+
         if self.structural_frame.is_dirty is False:
             return self._interpolationInput
 
