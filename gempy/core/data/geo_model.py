@@ -180,6 +180,7 @@ class GeoModel:
             points=og_sp.xyz,
             pivot=self.grid.corner_min
         )
+
         og_sp.xyz_view = self.input_transform.apply(og_sp.xyz)
         return og_sp
 
@@ -203,7 +204,14 @@ class GeoModel:
         # ! This is not done
         og_or = self.orientations_copy
         total_transform: Transform = self.input_transform + self.grid.transform
-        og_or.xyz_view = total_transform.apply(og_or.xyz)
+
+        og_or.xyz_view = self.grid.transform.apply_with_pivot(
+            points=og_or.xyz,
+            pivot=self.grid.corner_min
+        )
+
+        og_or.xyz_view = self.input_transform.apply(og_or.xyz)
+        # og_or.xyz_view = total_transform.apply(og_or.xyz)
         og_or.grads_view = total_transform.transform_gradient(og_or.grads)
         return og_or
 
