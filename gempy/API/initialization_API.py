@@ -6,6 +6,7 @@ from numpy import ndarray
 
 from gempy.API.io_API import read_surface_points, read_orientations
 from gempy_engine.core.data import InterpolationOptions
+from ..core.data.grid_modules import RegularGrid
 from ..optional_dependencies import require_subsurface
 from ..core.data import StructuralElement
 from ..core.data.geo_model import GeoModel
@@ -44,10 +45,12 @@ def create_geomodel(
     """
     # init resolutions well
     if resolution is None:
-        grid: Grid = Grid(extent=extent)
-        grid.octree_levels = refinement
+        grid: Grid = Grid.init_octree_grid(
+            extent=extent,
+            octree_levels=refinement
+        )
     else:
-        grid = Grid(
+        grid: Grid = Grid.init_dense_grid(
             extent=extent,
             resolution=resolution
         )
@@ -92,18 +95,18 @@ def structural_elements_from_borehole_set(
     Returns:
         list[StructuralElement]: A list of StructuralElement instances.
     """
-    
+
     ss = require_subsurface()
     borehole_set: ss.core.geological_formats.BoreholeSet
-    
+
     elements = []
     component_lith: dict[Hashable, np.ndarray] = borehole_set.get_bottom_coords_for_each_lith()
-    
+
     for name, properties in elements_dict.items():
         top_coordinates = component_lith.get(properties['id'])
         if top_coordinates is None:
             raise ValueError(f"Top lithology {properties['id']} not found in borehole set.")
-        
+
         element = StructuralElement(
             name=name,
             id=properties['id'],
@@ -119,7 +122,7 @@ def structural_elements_from_borehole_set(
         )
         elements.append(element)
     # Reverse the list to have the oldest rocks at the bottom
-    
+
     return elements
 
 
