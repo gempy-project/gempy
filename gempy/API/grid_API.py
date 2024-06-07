@@ -12,12 +12,11 @@ from ..optional_dependencies import require_subsurface
 def set_section_grid(grid: Grid, section_dict: dict):
     if grid.sections is None:
         grid.sections = Sections(regular_grid=grid.regular_grid, section_dict=section_dict)
-        grid.sections
     else:
         grid.sections.set_sections(section_dict,
                                    regular_grid=grid.regular_grid)
 
-    set_active_grid(grid, [GridTypes.SECTIONS])
+    set_active_grid(grid, [Grid.GridTypes.SECTIONS])
     return grid.sections
 
 
