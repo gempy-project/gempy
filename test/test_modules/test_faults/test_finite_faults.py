@@ -25,8 +25,8 @@ def test_finite_fault_scalar_field_on_fault():
     regular_grid = geo_model.grid.regular_grid
 
     # TODO: Extract grid from the model
-    scaled_center = geo_model.transform.apply(center.reshape(1, -1))[0]
-    scaled_radius = geo_model.transform.scale_points(radius.reshape(1, -1))[0]
+    scaled_center = geo_model.input_transform.apply(center.reshape(1, -1))[0]
+    scaled_radius = geo_model.input_transform.scale_points(radius.reshape(1, -1))[0]
     scalar_funtion: callable = gp.implicit_functions.ellipsoid_3d_factory(  # * This paints the 3d regular grid
         center=scaled_center,
         radius=scaled_radius,

@@ -2,17 +2,17 @@
 
 import numpy as np
 
-from gempy.core.data import Grid
-from gempy.core.data.grid import GridTypes
-from gempy.core.data.grid_modules import CustomGrid
-from gempy.core.data.grid_modules.topography import Topography
-from gempy.modules.grids.create_topography import create_random_topography
-from gempy.optional_dependencies import require_subsurface
+from ..core.data import Grid
+from ..core.data.grid_modules import CustomGrid, Sections
+from ..core.data.grid_modules.topography import Topography
+from ..modules.grids.create_topography import create_random_topography
+from ..optional_dependencies import require_subsurface
 
 
 def set_section_grid(grid: Grid, section_dict: dict):
     if grid.sections is None:
-        grid.create_section_grid(section_dict=section_dict)
+        grid.sections = Sections(regular_grid=grid.regular_grid, section_dict=section_dict)
+        grid.sections
     else:
         grid.sections.set_sections(section_dict,
                                    regular_grid=grid.regular_grid)
@@ -91,12 +91,12 @@ def set_topography_from_array():
     raise NotImplementedError("This is not implemented yet")
 
 
-def set_active_grid(grid: Grid, grid_type: list[GridTypes], reset: bool = False):
+def set_active_grid(grid: Grid, grid_type: list[Grid.GridTypes], reset: bool = False):
     if reset is True:
-        grid.deactivate_all_grids()
+        grid.active_grids = GridTypes.NONE
     for grid_type in grid_type:
-        grid.active_grids_bool[grid_type.value] = True
+        grid.active_grids |= grid_type
 
-    print(f'Active grids: {grid.grid_types[grid.active_grids_bool]}')
+    print(f'Active grids: {grid.active_grids}')
 
     return grid

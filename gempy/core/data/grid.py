@@ -1,101 +1,184 @@
-import dataclasses
-
-import enum
 import warnings
-from typing import Union, Optional
 
+import dataclasses
+import enum
 import numpy as np
+from typing import Optional
 
-from gempy.core.data.grid_modules import topography, grid_types
-from gempy.core.data.grid_modules.topography import Topography
 from gempy_engine.core.data.centered_grid import CenteredGrid
-
-
-class GridTypes(enum.Enum):
-    REGULAR = 0
-    CUSTOM = 1
-    TOPOGRAPHY = 2
-    SECTIONS = 3
-    CENTERED = 4
+from gempy_engine.core.data.transforms import Transform
+from .grid_modules import RegularGrid, CustomGrid, Sections
+from .grid_modules.topography import Topography
 
 
 @dataclasses.dataclass
-class Grid(object):
-    """ Class to generate grids.
+class Grid:
+    class GridTypes(enum.Flag):
+        OCTREE = 2 ** 0
+        DENSE = 2 ** 1
+        CUSTOM = 2 ** 2
+        TOPOGRAPHY = 2 ** 3
+        SECTIONS = 2 ** 4
+        CENTERED = 2 ** 5
+        NONE = 2 ** 10
 
-    This class is used to create points to evaluate the geological model. 
-    This class serves a container which transmits the XYZ coordinates to the
-    interpolator. There are several type of grid objects feeding into the Grid class
+    # ? What should we do with the extent?
+    _extent: Optional[np.ndarray]  # * Model extent should be cross grid
 
-    Args:
-         **kwargs: See below
+    _octree_grid: Optional[RegularGrid] = None
+    _dense_grid: Optional[RegularGrid] = None
+    _custom_grid: Optional[CustomGrid] = None
+    _topography: Optional[Topography] = None
+    _sections: Optional[Sections] = None
+    _centered_grid: Optional[CenteredGrid] = None
 
-    Keyword Args:
-         regular (:class:`gempy.core.grid_modules.grid_types.RegularGrid`): [s0]
-         custom (:class:`gempy.core.grid_modules.grid_types.CustomGrid`): [s1]
-         topography (:class:`gempy.core.grid_modules.grid_types.Topography`): [s2]
-         sections (:class:`gempy.core.grid_modules.grid_types.Sections`): [s3]
-         gravity (:class:`gempy.core.grid_modules.grid_types.Gravity`):
+    values: np.ndarray = np.empty((0, 3))
+    length: np.ndarray = np.empty(0)
 
-    Attributes:
-        values (np.ndarray): coordinates where the model is going to be evaluated. This is the coordinates
-         concatenation of all active grids.
-        values_r (np.ndarray): rescaled coordinates where the model is going to be evaluated
-        length (np.ndarray):I a array which contain the slicing index for each grid type in order. The first element will
-         be 0, the second the length of the regular grid; the third custom and so on. This can be used to slice the
-         solutions correspondent to each of the grids
-        grid_types(np.ndarray[str]): names of the current grids of GemPy
-        active_grids_bool(np.ndarray[bool]): boolean array which controls which type of grid is going to be computed and
-         hence on the property `values`.
-        regular_grid (:class:`gempy.core.grid_modules.grid_types.RegularGrid`)
-        custom_grid (:class:`gempy.core.grid_modules.grid_types.CustomGrid`)
-        topography (:class:`gempy.core.grid_modules.grid_types.Topography`)
-        sections (:class:`gempy.core.grid_modules.grid_types.Sections`)
-        gravity_grid (:class:`gempy.core.grid_modules.grid_types.Gravity`)
-    """
+    _active_grids = GridTypes.NONE
+    _transform: Optional[Transform] = None
 
-    dense_grid: Optional[grid_types.RegularGrid]
-    octree_grid: Optional[grid_types.RegularGrid]
-    custom_grid: Optional[grid_types.CustomGrid]
-    topography: Optional[Topography]
-    sections: Optional[grid_types.Sections]
-    centered_grid: Optional[CenteredGrid]
-
-    extent: Optional[np.ndarray]  # * Model extent should be cross grid
+    _octree_levels: int = -1
 
     def __init__(self, extent=None, resolution=None):
-        self.values = np.empty((0, 3))
-        self.values_r = np.empty((0, 3))
-        self.length = np.empty(0)
-        self._octree_levels = -1
-        self.grid_types = np.array(['regular', 'custom', 'topography', 'sections', 'centered', 'octree'])  # TODO: Make a enumerator!
-        self.active_grids_bool = np.zeros(6, dtype=bool)
-        # All grid types must have values
-
-        # Init optional grids
-        self.dense_grid = None
-        self.octree_grid = None
-        self.custom_grid = None
-        self.custom_grid_grid_active = False
-        self.topography: Optional[Topography] = None
-        self.topography_grid_active = False
-        self.sections_grid_active = False
-        self.centered_grid = None
-        self.centered_grid_active = False
-
         self.extent = extent
-
         # Init basic grid empty
         if extent is not None and resolution is not None:
-            self.regular_grid = grid_types.RegularGrid(extent, resolution)
-            self.active_grids_bool[0] = True
+            self.dense_grid = RegularGrid(extent, resolution)
 
-        # Init optional sections
-        self.sections = None
+    def __str__(self):
+        active_grid_types_str = [g_type for g_type in self.GridTypes if self.active_grids & g_type]
 
-        self.update_grid_values()
+        grid_summary = [f"{g_type} (active: {getattr(self, g_type + '_grid_active')}): {len(getattr(self, g_type + '_grid').values)} points"
+                        for g_type in active_grid_types_str]
+        grid_summary_str = "\n".join(grid_summary)
+        return f"Grid Object:\n{grid_summary_str}"
 
-    # ? Do we need a active_regular grid property for backwards compatibility?
+
+
+    @property
+    def transform(self) -> Transform:
+        if self._transform is None:
+            if self.dense_grid is not None:
+                return self.dense_grid.transform
+            elif self.octree_grid is not None:
+                return self.octree_grid.transform
+            else:
+                return Transform.init_neutral()
+        return self._transform
+
+    @transform.setter
+    def transform(self, value: Transform):
+        self._transform = value
+        
+    @property
+    def extent(self):
+        if self._extent is None:
+            # Try to get the extent from the dense or octree grid if those are also none raise an error
+            if self.dense_grid is not None:
+                return self.dense_grid.extent
+            elif self.octree_grid is not None:
+                return self.octree_grid.extent
+            else:
+                raise AttributeError('Extent is not defined')
+        else:
+            return self._extent
+
+    @extent.setter
+    def extent(self, value):
+        self._extent = value
+        
+    @property
+    def corner_min(self):
+        return self.extent[::2]
+    
+    @property
+    def corner_max(self):
+        return self.extent[1::2]
+
+    @property
+    def bounding_box(self):
+        extents = self.extent
+        # Define 3D points of the bounding box corners based on extents
+        bounding_box_points = np.array([[extents[0], extents[2], extents[4]],  # min x, min y, min z
+                                        [extents[0], extents[2], extents[5]],  # min x, min y, max z
+                                        [extents[0], extents[3], extents[4]],  # min x, max y, min z
+                                        [extents[0], extents[3], extents[5]],  # min x, max y, max z
+                                        [extents[1], extents[2], extents[4]],  # max x, min y, min z
+                                        [extents[1], extents[2], extents[5]],  # max x, min y, max z
+                                        [extents[1], extents[3], extents[4]],  # max x, max y, min z
+                                        [extents[1], extents[3], extents[5]]])  # max x, max y, max z
+        return bounding_box_points
+
+    @property
+    def active_grids(self):
+        return self._active_grids
+
+    @active_grids.setter
+    def active_grids(self, value):
+        self._active_grids = value
+        self._update_values()
+
+    @property
+    def dense_grid(self) -> RegularGrid:
+        return self._dense_grid
+
+    @dense_grid.setter
+    def dense_grid(self, value):
+        self._dense_grid = value
+        self.active_grids |= self.GridTypes.DENSE
+        self._update_values()
+
+    @property
+    def octree_grid(self):
+        return self._octree_grid
+
+    @octree_grid.setter
+    def octree_grid(self, value):
+        self._octree_grid = value
+        self.active_grids |= self.GridTypes.OCTREE
+        self._update_values()
+
+    @property
+    def custom_grid(self):
+        return self._custom_grid
+
+    @custom_grid.setter
+    def custom_grid(self, value):
+        self._custom_grid = value
+        self.active_grids |= self.GridTypes.CUSTOM
+        self._update_values()
+
+    @property
+    def topography(self):
+        return self._topography
+
+    @topography.setter
+    def topography(self, value):
+        self._topography = value
+        self.active_grids |= self.GridTypes.TOPOGRAPHY
+        self._update_values()
+
+    @property
+    def sections(self):
+        return self._sections
+
+    @sections.setter
+    def sections(self, value):
+        self._sections = value
+        self.active_grids |= self.GridTypes.SECTIONS
+        self._update_values()
+
+    @property
+    def centered_grid(self):
+        return self._centered_grid
+
+    @centered_grid.setter
+    def centered_grid(self, value):
+        self._centered_grid = value
+        self.active_grids |= self.GridTypes.CENTERED
+        self._update_values()
+
     @property
     def regular_grid(self):
         warnings.warn('This property is deprecated. Use the dense_grid or octree_grid instead', DeprecationWarning)
@@ -110,8 +193,11 @@ class Grid(object):
 
     @regular_grid.setter
     def regular_grid(self, value):
-        warnings.warn('This property is deprecated. Use the dense_grid property instead', DeprecationWarning)
-        self.dense_grid = value
+        raise AttributeError('This property is deprecated. Use the dense_grid or octree_grid instead')
+
+    @property
+    def octree_levels(self):
+        return self._octree_levels
 
     @property
     def octree_levels(self):
@@ -120,181 +206,34 @@ class Grid(object):
     @octree_levels.setter
     def octree_levels(self, value):
         self._octree_levels = value
-        self.octree_grid = grid_types.RegularGrid(
+        self.octree_grid = RegularGrid(
             extent=self.extent,
             resolution=np.array([2 ** value] * 3),
         )
-        self.active_grids_bool[5] = True
-        self.update_grid_values()
+        self.active_grids |= self.GridTypes.OCTREE
 
-    def __str__(self):
-        grid_summary = [f"{g_type} (active: {getattr(self, g_type + '_grid_active')}): {len(getattr(self, g_type + '_grid').values)} points"
-                        for g_type in self.grid_types]
-        grid_summary_str = "\n".join(grid_summary)
-        return f"Grid Object:\n{grid_summary_str}"
+    def _update_values(self):
+        values = []
 
-    @property
-    def active_grids(self) -> np.ndarray:
-        return self.grid_types[self.active_grids_bool]
+        if self.GridTypes.OCTREE in self.active_grids:
+            values.append(self.octree_grid.values)
+        if self.GridTypes.DENSE in self.active_grids:
+            values.append(self.dense_grid.values)
+        if self.GridTypes.CUSTOM in self.active_grids:
+            values.append(self.custom_grid.values)
+        if self.GridTypes.TOPOGRAPHY in self.active_grids:
+            values.append(self.topography.values)
+        if self.GridTypes.SECTIONS in self.active_grids:
+            values.append(self.sections.values)
+        if self.GridTypes.CENTERED in self.active_grids:
+            values.append(self.centered_grid.values)
 
-    def create_regular_grid(self, extent=None, resolution=None, set_active=True, *args, **kwargs):
-        """
-        Set a new regular grid and activate it.
+        self.values = np.concatenate(values)
 
-        Args:
-            extent (np.ndarray): [x_min, x_max, y_min, y_max, z_min, z_max]
-            resolution (np.ndarray): [nx, ny, nz]
-
-        RegularGrid Docs
-        """
-        self.regular_grid = grid_types.RegularGrid(extent, resolution, **kwargs)
-        return self.regular_grid
-
-    # ? DEP?
-    def create_custom_grid_(self, custom_grid: np.ndarray):
-        """
-        Set a new regular grid and activate it.
-
-        Args:
-            custom_grid (np.array): [s0]
-
-        """
-        self.custom_grid = grid_types.CustomGrid(custom_grid)
-        self.set_active('custom')
-
-    # ! (miguel, Sep 2023) This has to change a lot
-    # ? DEP? 
-    def create_topography_(self, source='random', **kwargs):
-        """Create a topography grid and activate it.
-
-        Args:
-            source:
-                * 'gdal':  Load topography from a raster file.
-                * 'random': Generate random topography (based on a fractal grid).
-                * 'saved': Load topography that was saved with the topography.save() function.
-                  This is useful after loading and saving a heavy raster file with gdal once or after saving a
-                  random topography with the save() function. This .npy file can then be set as topography.
-
-        Keyword Args:
-            source = 'gdal':
-                * filepath:   path to raster file, e.g. '.tif', (for all file formats see
-                  https://gdal.org/drivers/raster/index.html)
-
-            source = 'random':
-                * fd:         fractal dimension, defaults to 2.0
-                * d_z:        maximum height difference. If none, last 20% of the model in z direction
-                * extent:     extent in xy direction. If none, geo_model.grid.extent
-                * resolution: desired resolution of the topography array. If none, geo_model.grid.resoution
-
-            source = 'saved':
-                * filepath:   path to the .npy file that was created using the topography.save() function
-
-        Returns:
-             :class:gempy.core.data.Topography
-        """
-        self.topography = topography.Topography(self.regular_grid)
-
-        if source == 'random':
-            self.topography.load_random_hills(**kwargs)
-        elif source == 'gdal':
-            filepath = kwargs.get('filepath', None)
-            if filepath is not None:
-                self.topography.load_from_gdal(filepath)
-            else:
-                print('to load a raster file, a path to the file must be provided')
-        elif source == 'saved':
-            filepath = kwargs.get('filepath', None)
-            if filepath is not None:
-                self.topography.load_from_saved(filepath)
-            else:
-                print('path to .npy file must be provided')
-        elif source == 'numpy':
-            array = kwargs.get('array', None)
-            self.topography.set_values(array)
-        else:
-            raise AttributeError('source must be random, gdal or saved')
-
-        self.set_active('topography')
-
-    def create_section_grid(self, section_dict):
-        self.sections = grid_types.Sections(regular_grid=self.regular_grid, section_dict=section_dict)
-        self.set_active('sections')
-        return self.sections
-
-    # ? DEP?
-    def create_centered_grid(self, centers, radius, resolution=None):
-        """Initialize gravity grid. Deactivate the rest of the grids"""
-        self.centered_grid = CenteredGrid(centers, radius, resolution)
-        # self.active_grids = np.zeros(4, dtype=bool)
-        self.set_active('centered')
-
-    def deactivate_all_grids(self):
-        """
-        Deactivates the active grids array
-        :return:
-        """
-        self.active_grids_bool = np.zeros(5, dtype=bool)
-        self.update_grid_values()
-        return self.active_grids_bool
-
-    def set_active(self, grid_name: Union[str, np.ndarray]):
-        """
-        Set active a given or several grids
-        Args:
-            grid_name (str, list):
-
-        """
-        warnings.warn('This function is deprecated. Use gempy.set_active_grid instead', DeprecationWarning)
-
-        where = self.grid_types == grid_name
-        self.active_grids_bool[where] = True
-        self.update_grid_values()
-        return self.active_grids_bool
-
-    def set_inactive(self, grid_name: str):
-        where = self.grid_types == grid_name
-        self.active_grids_bool *= ~where
-        self.update_grid_values()
-        return self.active_grids_bool
-
-    def update_grid_values(self):
-        """
-        Copy XYZ coordinates from each specific grid to Grid.values for those which are active.
-
-        Returns:
-            values
-
-        """
-        self.length = np.empty(0)
-        self.values = np.empty((0, 3))
-        lengths = [0]
-        all_grids = [self.regular_grid, self.custom_grid, self.topography, self.sections, self.centered_grid]
-        try:
-            for e, grid_types in enumerate(all_grids):
-                if self.active_grids_bool[e]:
-                    self.values = np.vstack((self.values, grid_types.values))
-                    lengths.append(grid_types.values.shape[0])
-                else:
-                    lengths.append(0)
-        except AttributeError:
-            raise AttributeError('Grid type does not exist yet. Set the grid before activating it.')
-
-        self.length = np.array(lengths).cumsum()
         return self.values
 
-    def get_grid_args(self, grid_name: str):
-        assert type(grid_name) is str, 'Only one grid type can be retrieved'
-        assert grid_name in self.grid_types, 'possible grid types are ' + str(self.grid_types)
-        where = np.where(self.grid_types == grid_name)[0][0]
-        return self.length[where], self.length[where + 1]
-
-    def get_grid(self, grid_name: str):
-        assert type(grid_name) is str, 'Only one grid type can be retrieved'
-
-        l_0, l_1 = self.get_grid_args(grid_name)
-        return self.values[l_0:l_1]
-
     def get_section_args(self, section_name: str):
+        # TODO: This method should be part of the sections
         # assert type(section_name) is str, 'Only one section type can be retrieved'
         l0, l1 = self.get_grid_args('sections')
         where = np.where(self.sections.names == section_name)[0][0]

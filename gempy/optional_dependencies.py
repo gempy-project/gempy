@@ -29,6 +29,13 @@ def require_gempy_viewer():
         raise ImportError("The gempy_viewer package is required to run this function.")
     return gempy_viewer
 
+def require_matplotlib():
+    try:
+        import matplotlib.pyplot as plt
+    except ImportError:
+        raise ImportError("The matplotlib package is required to run this function.")
+    return plt
+
 
 def require_skimage():
     try:

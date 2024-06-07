@@ -7,8 +7,8 @@ import matplotlib.pyplot as plt
 
 def test_transform_1():
     geo_data: GeoModel = _create_data()
-    print(geo_data.transform)
-    transformed_xyz = geo_data.transform.apply(geo_data.surface_points_copy.xyz)
+    print(geo_data.input_transform)
+    transformed_xyz = geo_data.input_transform.apply(geo_data.surface_points_copy.xyz)
     print(transformed_xyz)
     return
 
@@ -86,3 +86,5 @@ def test_transform_operations_rotate():
     plt.show()
 
     assert np.allclose(original_points, inv_transformed_points)
+
+

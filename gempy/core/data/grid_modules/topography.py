@@ -3,10 +3,10 @@ from typing import Optional
 
 import numpy as np
 
-from gempy.core.data.grid_modules.grid_types import RegularGrid
-from gempy.modules.grids.create_topography import _LoadDEMArtificial
+from .grid_types import RegularGrid
+from ....modules.grids.create_topography import _LoadDEMArtificial
 
-from gempy.optional_dependencies import require_skimage
+from ....optional_dependencies import require_skimage
 
 
 class Topography:

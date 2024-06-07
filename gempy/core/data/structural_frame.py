@@ -1,12 +1,10 @@
-﻿import warnings
+﻿import numpy as np
+import warnings
+from dataclasses import dataclass
+from typing import Generator
 
-from dataclasses import dataclass, field
-from typing import Optional, Generator
-
-import numpy as np
-
-from gempy_engine.core.data.kernel_classes.faults import FaultsData
 from gempy_engine.core.data.input_data_descriptor import InputDataDescriptor
+from gempy_engine.core.data.kernel_classes.faults import FaultsData
 from gempy_engine.core.data.stack_relation_type import StackRelationType
 from .orientations import OrientationsTable
 from .structural_element import StructuralElement
