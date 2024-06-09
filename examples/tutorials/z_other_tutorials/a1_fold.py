@@ -31,7 +31,7 @@ path_to_data = data_path + "/data/input_data/jan_models/"
 geo_model = gp.create_geomodel(
     project_name='tutorial_model',
     extent=[0, 2500, 0, 1000, 0, 1110],
-    refinement=6,
+    refinement=4,
     importer_helper=gp.data.ImporterHelper(
         path_to_orientations=path_to_data + "tutorial_model_orientations.csv",
         path_to_surface_points=path_to_data + "tutorial_model_surface_points.csv"
@@ -65,14 +65,19 @@ interpolation_options: gp.data.InterpolationOptions = geo_model.interpolation_op
 
 interpolation_options.kernel_options.range = 1.7
 interpolation_options.evaluation_options.number_octree_levels_surface = 4
-interpolation_options.evaluation_options.curvature_threshold = 0.1
+interpolation_options.evaluation_options.compute_scalar_gradient = False
+interpolation_options.evaluation_options.curvature_threshold = 1
+interpolation_options.evaluation_options.min_octree_level = 2
 
 # %%
 # Compute the geological model
 # We use the specified backend (in this case, PyTorch) to compute the model.
 gp.compute_model(
     gempy_model=geo_model,
-    engine_config=gp.data.GemPyEngineConfig(backend=gp.data.AvailableBackends.PYTORCH)
+    engine_config=gp.data.GemPyEngineConfig(
+        backend=gp.data.AvailableBackends.numpy,
+        dtype="float64"
+    )
 )
 
 # %%
