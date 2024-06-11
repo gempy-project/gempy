@@ -20,9 +20,6 @@ class RegularGrid:
     extent: np.ndarray  #: this is the ORTHOGONAL extent. If the grid is rotated, the extent will be different
     values: np.ndarray
     mask_topo: np.ndarray
-    x: Optional[np.ndarray]
-    y: Optional[np.ndarray]
-    z: Optional[np.ndarray]
     _transform: Transform  #: If a transform exists, it will be applied to the grid
 
     def __init__(self, extent: np.ndarray, resolution: np.ndarray, transform: Optional[Transform] = None):

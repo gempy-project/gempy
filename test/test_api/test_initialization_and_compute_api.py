@@ -9,8 +9,9 @@ from gempy_engine.core.data.solutions import Solutions
 
 def test_api_create_data():
     geo_data = _create_data()
-
+    
     pprint(geo_data)
+    
     return geo_data
 
 
