@@ -27,7 +27,7 @@ def test_plot_transformed_data_only_transform_input():
 
         gpv.plot_3d(
             model,
-            image=False,
+            image=True,
             transformed_data=True,
             show_boundaries=True,
             show_lith=True,
@@ -122,7 +122,7 @@ def test_plot_transformed_data_including_grid_transform_octree():
 
         gpv.plot_3d(
             model,
-            image=False,
+            image=True,
             transformed_data=False,
             show_boundaries=True,
             show_lith=True,

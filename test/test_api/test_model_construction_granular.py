@@ -115,7 +115,7 @@ def test_create_geomodel() -> GeoModel:
 
 def test_structural_frame_surface_points():
     structural_frame: StructuralFrame = test_create_structural_frame()
-    print(structural_frame.surface_points)
+    print(structural_frame.surface_points_copy)
     pass
 
 
