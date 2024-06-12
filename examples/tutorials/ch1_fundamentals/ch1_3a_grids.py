@@ -1,3 +1,4 @@
+
 """
 1.3a: Grids.
 ============
@@ -16,7 +17,7 @@ np.random.seed(55500)
 # The Grid Class
 # --------------
 # 
-# The grid class will interact with the rest of data classes and grid
+# The Grid class interacts with the rest of the data classes and grid
 # subclasses. Its main purpose is to feed coordinates XYZ to the
 # interpolator.
 # 
@@ -27,26 +28,26 @@ grid = Grid()
 # %%
 # The most important attribute of Grid is ``values`` (and ``values_r``
 # which are the values rescaled) which are the 3D points in space that
-# kriging will be evaluated on. This array will be feed by "grid types" on
+# kriging will be evaluated on. This array will be fed by "grid types" on
 # a **composition** relation with Grid:
 # 
-
 
 # %%
 # .. image:: /_static/grids.jpg
 # 
 
 # %% 
-grid.values, grid.values_r
+print(grid.values)
 
 # %%
-# At the moment of writing this tutorial, there is 5 grid types. The
-# number of grid types is scalable and down the road we aim to connect
-# other grid packages (like `Discretize <https://pypi.org/project/discretize/>`_) as an extra Grid type
+# At the moment of writing this tutorial, there are 5 grid types. The
+# number of grid types is scalable, and down the road we aim to connect
+# other grid packages (like `Discretize <https://pypi.org/project/discretize/>`_) as an extra Grid type.
 # 
 
 # %% 
-grid.grid_types
+# This is an enum now
+print(grid.GridTypes)
 
 # %%
 # Each grid contains its own ``values`` attribute as well as other
@@ -54,56 +55,54 @@ grid.grid_types
 # 
 
 # %% 
-grid.values
+print(grid.values)
 
 # %%
-# We can see what grids are activated (i.e. they are going to be
+# We can see which grids are activated (i.e. they are going to be
 # interpolated and therefore will live on ``Grid().values``) by:
 # 
 
 # %% 
-grid.active_grids_bool
+print(grid.active_grids)
 
 # %%
-# By default only the *regular grid* (``grid.regular_grid``\ ) is active. However, since the regular
-# grid is still empty ``Grid().values`` is empty too.
+# By default, only the *regular grid* (``grid.regular_grid``) is active. However, since the regular
+# grid is still empty, ``Grid().values`` is empty too.
 # 
 
 # %% 
-grid.values
+print(grid.values)
 
 # %%
 # The last important attribute of Grid is the length:
 # 
 
 # %% 
-grid.length
+print(grid.length)
 
 # %%
 # Length gives back the interface indices between grids on the
 # ``Grid().values`` attribute. This can be used after interpolation to
 # know which interpolated values and coordinates correspond to each grid
-# type. You can use the method get\_grid\_args to return the indices by
+# type. You can use the method ``get_grid_args`` to return the indices by
 # name:
 # 
 
 # %% 
-grid.get_grid_args('topography')
+print(grid.topography)
 
 # %%
-# By now all is a bit confusing because we have no values. Lets start
+# By now all is a bit confusing because we have no values. Let's start
 # adding values to the different grids:
 # 
 
-
 # %%
-# Regular grid
+# Regular Grid
 # ~~~~~~~~~~~~
 # 
 # The ``Grid`` class has a bunch of methods to set each grid type and
 # activate them.
 # 
-
 
 # %% 
 help(RegularGrid)
@@ -111,15 +110,15 @@ help(RegularGrid)
 # %% 
 extent = np.array([0, 100, 0, 100, -100, 0])
 resolution = np.array([20, 20, 20])
-grid.regular_grid = RegularGrid(extent, resolution)
-grid.regular_grid
+grid.dense_grid = RegularGrid(extent, resolution)
+print(grid.regular_grid)  # RegularGrid will return either dense grid or octree grid depending on what is set
 
 # %%
-# Now the regular grid object composed on ``Grid`` has been filled:
+# Now the regular grid object composed in ``Grid`` has been filled:
 # 
 
 # %% 
-grid.regular_grid.values
+print(grid.regular_grid.values)
 
 # %%
 # And the regular grid has been set active (it was already active in any
@@ -127,24 +126,24 @@ grid.regular_grid.values
 # 
 
 # %% 
-grid.active_grids_bool
+print(grid.active_grids)
 
 # %%
-# Therefore the grid values will be equal to the regular grid:
+# Therefore, the grid values will be equal to the regular grid:
 # 
 
 # %% 
-grid.values
+print(grid.values)
 
 # %%
 # And the indices to extract the different arrays:
 # 
 
 # %% 
-grid.length
+print(grid.length)
 
 # %%
-# Custom grid
+# Custom Grid
 # ~~~~~~~~~~~
 # 
 # Completely free XYZ values.
@@ -154,22 +153,22 @@ grid.length
 gp.set_custom_grid(grid, np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]]))
 
 # %%
-# Again ``set_any_grid`` will create a grid and activate it. So now the
-# compose object will contain values:
+# Again, ``set_any_grid`` will create a grid and activate it. So now the
+# composed object will contain values:
 # 
 
 # %% 
-grid.custom_grid.values
+print(grid.custom_grid.values)
 
 # %%
-# and since it is active, will be added to the grid.values stack:
+# And since it is active, it will be added to the grid.values stack:
 # 
 
 # %% 
-grid.active_grids_bool
+print(grid.active_grids)
 
 # %% 
-grid.values.shape
+print(grid.values.shape)
 
 # %%
 # We can still recover those values with ``get_grid`` or by getting the
@@ -177,86 +176,70 @@ grid.values.shape
 # 
 
 # %% 
-grid.get_grid('custom')
+print(grid.custom_grid)
 
 # %% 
-l0, l1 = grid.get_grid_args('custom')
-l0, l1
-
-# %% 
-grid.values[l0:l1]
+print(grid.custom_grid.values)
 
 # %%
 # Topography
 # ~~~~~~~~~~
 # 
 # Now we can set the topography. :class:`Topography <gempy.core.grid_modules.topography.Topography>`
-# contains methods to create manual topographies as well as gdal for
-# dealing with raster data. By default we will create a random topography:
+# contains methods to create manual topographies as well as using gdal for
+# dealing with raster data. By default, we will create a random topography:
 # 
 
 # %%
 gp.set_topography_from_random(grid)
 
 # %% 
-grid.active_grids_bool
+print(grid.active_grids)
 
 # %%
 # Now the grid values will contain both the regular grid and topography:
 # 
 
 # %% 
-grid.values, grid.length
-
-# %%
-# The topography args are got as follows:
-# 
+print(grid.values, grid.length)
 
 # %% 
-l0, l1 = grid.get_grid_args('topography')
-l0, l1
-
-# %%
-# And we can slice the values array as any other numpy array:
-# 
-
-# %% 
-grid.values[l0: l1]
+print(grid.topography.values)
 
 # %%
 # We can compare it to the topography.values:
 # 
 
 # %% 
-grid.topography.values
+print(grid.topography.values)
 
 # %%
-# Now that we have more than one grid we can activate and deactivate any
+# Now that we have more than one grid, we can activate and deactivate any
 # of them in real time:
 # 
 
 # %% 
-grid.set_inactive('topography')
-grid.set_inactive('regular')
+grid.active_grids ^= grid.GridTypes.TOPOGRAPHY
+grid.active_grids ^= grid.GridTypes.DENSE
 
 # %%
-# Since now all grids are deactivated the values will be empty:
+# Since now all grids are deactivated, the values will be empty:
 # 
 
 # %% 
-grid.values
+print(grid.values)
 
 # %% 
-grid.set_active('topography')
+grid.active_grids |= grid.GridTypes.TOPOGRAPHY
 
 # %% 
-grid.values, grid.values.shape
+print(grid.values, grid.values.shape)
 
 # %% 
-grid.set_active('regular')
+grid.active_grids |= grid.GridTypes.DENSE
 
 # %% 
-grid.values
+print(grid.values)
 
 # %%
 # Centered Grid
@@ -278,8 +261,8 @@ gp.set_centered_grid(
 )
 
 # %%
-# Resolution and radius create a geometric spaced kernel (blue dots) which
-# will be use to create a grid around each of the center points (red
+# Resolution and radius create a geometrically spaced kernel (blue dots) which
+# will be used to create a grid around each of the center points (red
 # dots):
 # 
 
@@ -317,5 +300,5 @@ plt.show()
 # Section Grid
 # ~~~~~~~~~~~~
 # 
-# This grid type has its own tutorial. See :doc: `ch1_3b_cross_sections`
+# This grid type has its own tutorial. See :doc:`ch1_3b_cross_sections`
 #
