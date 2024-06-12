@@ -10,6 +10,7 @@ from gempy_engine.core.data import Solutions
 from .grid_API import set_custom_grid
 from ..core.data.gempy_engine_config import GemPyEngineConfig
 from ..core.data.geo_model import GeoModel
+from ..modules.data_manipulation.engine_factory import interpolation_input_from_structural_frame
 from ..optional_dependencies import require_gempy_legacy
 
 
@@ -39,7 +40,7 @@ def compute_model(gempy_model: GeoModel, engine_config: Optional[GemPyEngineConf
             )
 
             # TODO: To decide what to do with this.
-            interpolation_input = gempy_model.interpolation_input_copy
+            interpolation_input = interpolation_input_from_structural_frame(gempy_model)
             gempy_model.taped_interpolation_input = interpolation_input  # * This is used for gradient tape
 
             gempy_model.solutions = gempy_engine.compute_model(

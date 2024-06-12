@@ -11,9 +11,12 @@ from gempy_engine.core.data.interpolation_input import InterpolationInput
 from gempy_engine.core.data.transforms import Transform
 
 
-def interpolation_input_from_structural_frame(geo_model: "GeoModel") -> InterpolationInput:
+def interpolation_input_from_structural_frame(geo_model: "gempy.data.GeoModel") -> InterpolationInput:
+    import gempy # ! This is important for type safety
+    geo_model: gempy.data.GeoModel = geo_model
+
     _legacy_factor = 0
-    
+
     structural_frame: StructuralFrame = geo_model.structural_frame
     input_transform: Transform = geo_model.input_transform
     grid: Grid = geo_model.grid
@@ -36,7 +39,7 @@ def interpolation_input_from_structural_frame(geo_model: "GeoModel") -> Interpol
     grid: engine_grid.EngineGrid = _apply_input_transform_to_grids(
         grid=grid,
         input_transform=input_transform,
-        extent_transformed=geo_model.extent_transformed
+        extent_transformed=geo_model.extent_transformed_transformed_by_input
     )
 
     interpolation_input: InterpolationInput = InterpolationInput(

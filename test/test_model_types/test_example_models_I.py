@@ -41,7 +41,7 @@ def test_generate_fold_model():
     model = gp.generate_example_model(ExampleModel.ANTICLINE, compute_model=True)
     print(model.structural_frame)
 
-    if PLOT:
+    if PLOT or False:
         gpv = require_gempy_viewer()
         gpv.plot_3d(model, image=True)
 

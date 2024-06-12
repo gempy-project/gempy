@@ -233,7 +233,7 @@ class GeoModel:
         return self.grid.bounding_box
 
     @property
-    def extent_transformed(self) -> np.ndarray:
+    def extent_transformed_transformed_by_input(self) -> np.ndarray:
         transformed = self.input_transform.apply(self.project_bounds)  # ! grid already has the grid transform applied
         new_extents = np.array([transformed[:, 0].min(), transformed[:, 0].max(),
                                 transformed[:, 1].min(), transformed[:, 1].max(),

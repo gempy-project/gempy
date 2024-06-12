@@ -12,12 +12,11 @@ from ..optional_dependencies import require_subsurface
 def set_section_grid(grid: Grid, section_dict: dict):
     if grid.sections is None:
         grid.sections = Sections(regular_grid=grid.regular_grid, section_dict=section_dict)
-        grid.sections
     else:
         grid.sections.set_sections(section_dict,
                                    regular_grid=grid.regular_grid)
 
-    set_active_grid(grid, [GridTypes.SECTIONS])
+    set_active_grid(grid, [Grid.GridTypes.SECTIONS])
     return grid.sections
 
 
@@ -38,19 +37,19 @@ def set_topography_from_random(grid: Grid, fractal_dimension: float = 2.0, d_z: 
         values_2d=random_topography
     )
 
-    set_active_grid(grid, [GridTypes.TOPOGRAPHY])
+    set_active_grid(grid, [Grid.GridTypes.TOPOGRAPHY])
     return grid.topography
 
 
 def set_topography_from_subsurface_structured_grid(grid: Grid, struct: "subsurface.StructuredData"):
     grid.topography = Topography.from_subsurface_structured_data(struct, grid.regular_grid)
-    set_active_grid(grid, [GridTypes.TOPOGRAPHY])
+    set_active_grid(grid, [Grid.GridTypes.TOPOGRAPHY])
     return grid.topography
 
 
 def set_topography_from_arrays(grid: Grid,  xyz_vertices: np.ndarray):
     grid.topography = Topography.from_unstructured_mesh(grid.regular_grid, xyz_vertices)
-    set_active_grid(grid, [GridTypes.TOPOGRAPHY])
+    set_active_grid(grid, [Grid.GridTypes.TOPOGRAPHY])
     return grid.topography
 
 
@@ -67,7 +66,7 @@ def set_custom_grid(grid: Grid, xyz_coord: np.ndarray):
     custom_grid = CustomGrid(xyx_coords=xyz_coord)
     grid.custom_grid = custom_grid
     
-    set_active_grid(grid, [GridTypes.CUSTOM])
+    set_active_grid(grid, [Grid.GridTypes.CUSTOM])
     return grid.custom_grid
 
 
@@ -79,7 +78,7 @@ def set_centered_grid(grid: Grid, centers: np.ndarray, resolution: Sequence[floa
         radius=radius
     )
     grid.centered_grid = centered_grid
-    set_active_grid(grid, [GridTypes.CENTERED])
+    set_active_grid(grid, [Grid.GridTypes.CENTERED])
     return grid.centered_grid
 
 
@@ -93,7 +92,7 @@ def set_topography_from_array():
 
 def set_active_grid(grid: Grid, grid_type: list[Grid.GridTypes], reset: bool = False):
     if reset is True:
-        grid.active_grids = GridTypes.NONE
+        grid.active_grids = Grid.GridTypes.NONE
     for grid_type in grid_type:
         grid.active_grids |= grid_type
 

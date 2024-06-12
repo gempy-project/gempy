@@ -12,7 +12,7 @@ from test.conftest import TEST_SPEED, TestSpeed
 class TestBackends:
     @pytest.fixture(scope='class')
     def geo_model(self):
-        geo_model: gp.GeoModel = gp.generate_example_model(
+        geo_model: gp.data.GeoModel = gp.generate_example_model(
             example_model=ExampleModel.ONE_FAULT,
             compute_model=False
         )

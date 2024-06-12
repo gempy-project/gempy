@@ -229,7 +229,7 @@ def modify_surface_points(geo_model: GeoModel,
     if elements_names is not None and slice is not None:
         raise ValueError("Cannot provide both elements_names and slice.")
     
-    surface_points = geo_model.structural_frame.surface_points
+    surface_points = geo_model.structural_frame.surface_points_copy
     
     if elements_names is not None:
         ids = [surface_points.name_id_map[element] for element in elements_names] 

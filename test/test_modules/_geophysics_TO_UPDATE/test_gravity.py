@@ -1,6 +1,3 @@
-# These two lines are necessary only if GemPy is not installed
-# sys.path.append("../..")
-
 # Importing GemPy
 import gempy as gp
 

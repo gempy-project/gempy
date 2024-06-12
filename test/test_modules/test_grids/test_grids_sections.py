@@ -14,8 +14,11 @@ def test_section_grids():
         example_model=ExampleModel.ANTICLINE,
         compute_model=False
     )
-    geo_model.grid.octree_levels = 2
-    geo_model.interpolation_options.number_octree_levels = 2
+
+    geo_model.grid.set_octree_grid_by_levels(
+        octree_levels=2,
+        evaluation_options=geo_model.interpolation_options.evaluation_options
+    )
 
     gp.set_section_grid(
         grid=geo_model.grid,

@@ -6,6 +6,7 @@ import numpy as np
 from typing import Optional
 
 from gempy_engine.core.data.centered_grid import CenteredGrid
+from gempy_engine.core.data.options import EvaluationOptions
 from gempy_engine.core.data.transforms import Transform
 from .grid_modules import RegularGrid, CustomGrid, Sections
 from .grid_modules.topography import Topography
@@ -23,7 +24,6 @@ class Grid:
         NONE = 2 ** 10
 
     # ? What should we do with the extent?
-    _extent: Optional[np.ndarray]  # * Model extent should be cross grid
 
     _octree_grid: Optional[RegularGrid] = None
     _dense_grid: Optional[RegularGrid] = None
@@ -41,10 +41,24 @@ class Grid:
     _octree_levels: int = -1
 
     def __init__(self, extent=None, resolution=None):
-        self.extent = extent
         # Init basic grid empty
         if extent is not None and resolution is not None:
             self.dense_grid = RegularGrid(extent, resolution)
+
+    @classmethod
+    def init_octree_grid(cls, extent, octree_levels):
+        grid = cls()
+        grid._octree_grid = RegularGrid(
+            extent=extent,
+            resolution=np.array([2 ** octree_levels] * 3),
+        )
+        grid.active_grids |= grid.GridTypes.OCTREE
+        grid._update_values()
+        return grid
+
+    @classmethod
+    def init_dense_grid(cls, extent, resolution):
+        return cls(extent, resolution)
 
     def __str__(self):
         active_grid_types_str = [g_type for g_type in self.GridTypes if self.active_grids & g_type]
@@ -54,44 +68,32 @@ class Grid:
         grid_summary_str = "\n".join(grid_summary)
         return f"Grid Object:\n{grid_summary_str}"
 
-
-
     @property
     def transform(self) -> Transform:
-        if self._transform is None:
-            if self.dense_grid is not None:
-                return self.dense_grid.transform
-            elif self.octree_grid is not None:
-                return self.octree_grid.transform
-            else:
-                return Transform.init_neutral()
-        return self._transform
+        if self.dense_grid is not None:
+            return self.dense_grid.transform
+        elif self.octree_grid is not None:
+            return self.octree_grid.transform
+        else:
+            return Transform.init_neutral()
 
     @transform.setter
     def transform(self, value: Transform):
         self._transform = value
-        
+
     @property
     def extent(self):
-        if self._extent is None:
-            # Try to get the extent from the dense or octree grid if those are also none raise an error
-            if self.dense_grid is not None:
-                return self.dense_grid.extent
-            elif self.octree_grid is not None:
-                return self.octree_grid.extent
-            else:
-                raise AttributeError('Extent is not defined')
+        if self.dense_grid is not None:
+            return self.dense_grid.extent
+        elif self.octree_grid is not None:
+            return self.octree_grid.extent
         else:
-            return self._extent
+            raise AttributeError('Extent is not defined')
 
-    @extent.setter
-    def extent(self, value):
-        self._extent = value
-        
     @property
     def corner_min(self):
         return self.extent[::2]
-    
+
     @property
     def corner_max(self):
         return self.extent[1::2]
@@ -135,9 +137,41 @@ class Grid:
 
     @octree_grid.setter
     def octree_grid(self, value):
-        self._octree_grid = value
+        raise AttributeError('Octree grid is not allowed to be set directly. Use init_octree_grid instead')
+
+    def set_octree_grid(self, regular_grid: RegularGrid, evaluation_options: EvaluationOptions):
+        regular_grid_resolution = regular_grid.resolution
+        # Check all directions has the same res
+        if not np.all(regular_grid_resolution == regular_grid_resolution[0]):
+            raise AttributeError('Octree resolution must be isotropic')
+        octree_levels = int(np.log2(regular_grid_resolution[0]))
+        # Check if octrree levels are the same
+        if octree_levels != evaluation_options.number_octree_levels:
+            raise AttributeError('Regular grid resolution does not match octree levels. Resolution must be 2^n')
+
+        self._octree_grid = regular_grid
         self.active_grids |= self.GridTypes.OCTREE
         self._update_values()
+    
+    def set_octree_grid_by_levels(self, octree_levels: int, evaluation_options: EvaluationOptions, extent: Optional[np.ndarray] = None):
+        if extent is None:
+            extent = self.extent
+        
+        self._octree_grid = RegularGrid(
+            extent=extent,
+            resolution=np.array([2 ** octree_levels] * 3),
+        )
+        evaluation_options.number_octree_levels = octree_levels
+        self.active_grids |= self.GridTypes.OCTREE
+        self._update_values()
+    
+    @property
+    def octree_levels(self):
+        return self._octree_levels
+    
+    @octree_levels.setter
+    def octree_levels(self, value):
+        raise AttributeError('Octree levels are not allowed to be set directly. Use set_octree_grid instead')
 
     @property
     def custom_grid(self):
@@ -181,8 +215,10 @@ class Grid:
 
     @property
     def regular_grid(self):
-        warnings.warn('This property is deprecated. Use the dense_grid or octree_grid instead', DeprecationWarning)
-        if self.dense_grid is not None and self.octree_grid is not None:
+        dense_grid_exists_and_active = self.dense_grid is not None and self.GridTypes.DENSE in self.active_grids
+        octree_grid_exists_and_active = self.octree_grid is not None and self.GridTypes.OCTREE in self.active_grids
+
+        if dense_grid_exists_and_active and octree_grid_exists_and_active:
             raise AttributeError('Both dense_grid and octree_grid are active. This is not possible.')
         elif self.dense_grid is not None:
             return self.dense_grid
@@ -191,41 +227,27 @@ class Grid:
         else:
             return None
 
-    @regular_grid.setter
-    def regular_grid(self, value):
-        raise AttributeError('This property is deprecated. Use the dense_grid or octree_grid instead')
-
-    @property
-    def octree_levels(self):
-        return self._octree_levels
-
-    @property
-    def octree_levels(self):
-        return self._octree_levels
-
-    @octree_levels.setter
-    def octree_levels(self, value):
-        self._octree_levels = value
-        self.octree_grid = RegularGrid(
-            extent=self.extent,
-            resolution=np.array([2 ** value] * 3),
-        )
-        self.active_grids |= self.GridTypes.OCTREE
-
+    # noinspection t
     def _update_values(self):
         values = []
 
         if self.GridTypes.OCTREE in self.active_grids:
+            if self.octree_grid is None: raise AttributeError('Octree grid is active but not defined')
             values.append(self.octree_grid.values)
         if self.GridTypes.DENSE in self.active_grids:
+            if self.dense_grid is None: raise AttributeError('Dense grid is active but not defined')
             values.append(self.dense_grid.values)
         if self.GridTypes.CUSTOM in self.active_grids:
+            if self.custom_grid is None: raise AttributeError('Custom grid is active but not defined')
             values.append(self.custom_grid.values)
         if self.GridTypes.TOPOGRAPHY in self.active_grids:
+            if self.topography is None: raise AttributeError('Topography grid is active but not defined')
             values.append(self.topography.values)
         if self.GridTypes.SECTIONS in self.active_grids:
+            if self.sections is None: raise AttributeError('Sections grid is active but not defined')
             values.append(self.sections.values)
         if self.GridTypes.CENTERED in self.active_grids:
+            if self.centered_grid is None: raise AttributeError('Centered grid is active but not defined')
             values.append(self.centered_grid.values)
 
         self.values = np.concatenate(values)
