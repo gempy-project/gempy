@@ -139,8 +139,8 @@ class Grid:
     def octree_grid(self, value):
         raise AttributeError('Octree grid is not allowed to be set directly. Use init_octree_grid instead')
 
-    def set_octree_grid(self, value: RegularGrid, evaluation_options: EvaluationOptions):
-        regular_grid_resolution = value.resolution
+    def set_octree_grid(self, regular_grid: RegularGrid, evaluation_options: EvaluationOptions):
+        regular_grid_resolution = regular_grid.resolution
         # Check all directions has the same res
         if not np.all(regular_grid_resolution == regular_grid_resolution[0]):
             raise AttributeError('Octree resolution must be isotropic')
@@ -149,9 +149,29 @@ class Grid:
         if octree_levels != evaluation_options.number_octree_levels:
             raise AttributeError('Regular grid resolution does not match octree levels. Resolution must be 2^n')
 
-        self._octree_grid = value
+        self._octree_grid = regular_grid
         self.active_grids |= self.GridTypes.OCTREE
         self._update_values()
+    
+    def set_octree_grid_by_levels(self, octree_levels: int, evaluation_options: EvaluationOptions, extent: Optional[np.ndarray] = None):
+        if extent is None:
+            extent = self.extent
+        
+        self._octree_grid = RegularGrid(
+            extent=extent,
+            resolution=np.array([2 ** octree_levels] * 3),
+        )
+        evaluation_options.number_octree_levels = octree_levels
+        self.active_grids |= self.GridTypes.OCTREE
+        self._update_values()
+    
+    @property
+    def octree_levels(self):
+        return self._octree_levels
+    
+    @octree_levels.setter
+    def octree_levels(self, value):
+        raise AttributeError('Octree levels are not allowed to be set directly. Use set_octree_grid instead')
 
     @property
     def custom_grid(self):
