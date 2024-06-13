@@ -132,9 +132,7 @@ class GeoModel:
             case (False, True):
                 self._interpolation_options.block_solutions_type = RawArraysSolution.BlockSolutionType.DENSE_GRID
             case (False, False):
-                pass
-                # raise ValueError("The resolution of the grid is not set. Please set the resolution of the grid or "
-                                 # "the number of octree levels in InterpolationOptions.number_octree_levels.")
+                self._interpolation_options.block_solutions_type = RawArraysSolution.BlockSolutionType.NONE
 
         self._interpolation_options.cache_model_name = self.meta.name
         return self._interpolation_options
