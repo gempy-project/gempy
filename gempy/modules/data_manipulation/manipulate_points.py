@@ -154,7 +154,7 @@ def modify_orientations(geo_model: GeoModel, slice: Optional[Union[int, slice]] 
         StructuralFrame: The modified structural frame.
     """
 
-    orientations = geo_model.structural_frame.orientations
+    orientations = geo_model.structural_frame.orientations_copy
 
     # If no slice is provided, target all rows; else, target specified slice
     target_rows = slice if slice is not None else np.s_[:]

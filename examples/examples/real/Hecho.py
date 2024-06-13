@@ -80,7 +80,6 @@ orientations.drop(columns=['_'], inplace=True)
 # Remove rows containing NaN
 orientations.dropna(inplace=True)
 
-
 # %%
 # Data initialization:
 # ~~~~~~~~~~~~~~~~~~~~
@@ -119,14 +118,13 @@ geo_model: gp.data.GeoModel = gp.create_geomodel(
     project_name='Moureze',
     extent=[0, 16, -0.5, 0.5, 0, 4.5],
     resolution=[321, 21, 91],
-    refinement=4,
     structural_frame=structural_frame
 )
 
 gp.set_section_grid(
     grid=geo_model.grid,
     section_dict={
-        'section': ([0, 0], [16, 0], [321, 91])
+            'section': ([0, 0], [16, 0], [321, 91])
     },
 )
 
@@ -201,16 +199,35 @@ gp.set_is_fault(
 
 # %%
 geo_model.interpolation_options.kernel_options.range *= 0.2
-# %% 
-gp.compute_model(geo_model, gp.data.GemPyEngineConfig(use_gpu=True, dtype='float64'))
 
 # %%
-# Time
-# ~~~~
-# 
-# -  GTX 2080 164 ms ± 2.03 ms per loop (mean ± std. dev. of 7 runs, 1
-#    loop each)
-# 
+# Explanation of model characteristics and adjustments
+# This model has characteristics that make it difficult to get the right default values:
+# - It is large, and we want high resolution
+# - Some series have a large conditional number (i.e., the model input is not very stable)
+# To address these issues:
+# - Reduce the chunk size during evaluation to trade speed for memory
+# - Reduce the std of the error parameter in octree refinement, which evaluates fewer voxels but may leave some without refinement
+# Enable debugging options to help tune these parameters.
+
+# %%
+# Setting verbose and condition number options for debugging
+geo_model.interpolation_options.kernel_options.compute_condition_number = True
+# %%
+# Observations and parameter adjustments
+# The octree refinement is making the octree grid almost dense, and smaller chunks are needed to avoid running out of memory.
+# Adjusting parameters accordingly:
+
+geo_model.interpolation_options.evaluation_options.evaluation_chunk_size = 50_000
+
+# %% 
+gp.compute_model(
+    gempy_model=geo_model,
+    engine_config=gp.data.GemPyEngineConfig(
+        backend=gp.data.AvailableBackends.PYTORCH,
+        dtype='float64'
+    )
+)
 
 # %% 
 gpv.plot_2d(geo_model, cell_number=[10], series_n=3, show_scalar=True)
