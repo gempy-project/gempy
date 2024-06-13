@@ -22,11 +22,16 @@ import os
 import sys
 import warnings
 
-import sphinx_gallery
-from sphinx_gallery.sorting import FileNameSortKey
-import gempy
 import pyvista
-import numpy as np
+from sphinx_gallery.sorting import FileNameSortKey
+
+import gempy
+
+# External examples:
+sys.path.insert(0, os.path.abspath('.'))
+import make_external_gallery
+make_external_gallery.make_example_gallery()
+
 
 # region PyVista Configuration
 pyvista.set_error_output_file('errors.txt')
