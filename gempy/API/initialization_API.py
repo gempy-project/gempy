@@ -28,21 +28,23 @@ def create_geomodel(
         importer_helper: ImporterHelper = None,
 ) -> GeoModel:  # ? Do I need to pass pandas read kwargs?
     """
-    Creates a GeoModel instance.
-
-    This function initializes a GeoModel object, including its grid and interpolation options.
+    Initializes and returns a GeoModel instance with specified parameters.
 
     Args:
         project_name (str, optional): The name of the project. Defaults to 'default_project'.
-        extent (Union[list, ndarray], optional): The 3D extent of the grid. Defaults to None.
-        resolution (Union[list, ndarray], optional): The resolution of the grid. Defaults to None.
-        refinement (int, optional): Defaults to 1.
-        structural_frame (StructuralFrame, optional): The structural frame of the GeoModel. Defaults to None.
-        importer_helper (ImporterHelper, optional): Helper object to import structural elements. Defaults to None.
+        extent (Union[List, np.ndarray], optional): The 3D extent of the grid. Must be provided if resolution is specified. Defaults to None.
+        resolution (Union[List, np.ndarray], optional): The resolution of the grid. If None, an octree grid will be initialized. Defaults to None.
+        refinement (int, optional): The level of refinement for the octree grid. Defaults to 1.
+        structural_frame (StructuralFrame, optional): The structural frame of the GeoModel. Either this or importer_helper must be provided. Defaults to None.
+        importer_helper (ImporterHelper, optional): Helper object for importing structural elements. Either this or structural_frame must be provided. Defaults to None.
 
     Returns:
         GeoModel: The initialized GeoModel object.
+
+    Raises:
+        ValueError: If neither structural_frame nor importer_helper is provided.
     """
+    
     # init resolutions well
     if resolution is None:
         grid: Grid = Grid.init_octree_grid(
@@ -85,15 +87,18 @@ def create_geomodel(
 def structural_elements_from_borehole_set(
         borehole_set: "subsurface.core.geological_formats.BoreholeSet",
         elements_dict: dict) -> list[StructuralElement]:
-    """
-    Creates a list of StructuralElement instances from a borehole set and a dictionary of elements.
-    
+    """Creates a list of StructuralElements from a BoreholeSet.
+
     Args:
-        borehole_set (subsurface.core.geological_formats.boreholes.boreholes): The borehole set.
-        elements_dict (dict): A dictionary of elements.
-        
+        borehole_set (subsurface.core.geological_formats.BoreholeSet): The BoreholeSet object containing the boreholes.
+        elements_dict (dict): A dictionary containing the properties of the structural elements to be created.
+
     Returns:
-        list[StructuralElement]: A list of StructuralElement instances.
+        list[StructuralElement]: A list of StructuralElement objects created from the borehole set.
+
+    Raises:
+        ValueError: If a top lithology ID specified in `elements_dict` is not found in the borehole set.
+
     """
 
     ss = require_subsurface()

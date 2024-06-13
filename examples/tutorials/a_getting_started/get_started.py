@@ -224,7 +224,7 @@ element3 = gp.data.StructuralElement(
 
 geo_model.structural_frame.structural_groups[0].append_element(element3)
 
-# Compute and visualize with adjusted parameters:
+# Compute and visualize with adjusted parameters: 
 gp.compute_model(geo_model)
 gpv.plot_2d(geo_model, cell_number=5, legend='force')
 gpv.plot_3d(geo_model, kwargs_plot_structured_grid={'opacity': .2}, image=True)

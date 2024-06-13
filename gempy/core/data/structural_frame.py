@@ -16,8 +16,12 @@ from ..color_generator import ColorsGenerator
 @dataclass
 class StructuralFrame:
     """
-    A data class that represents the structural framework of a geological model. 
-    
+    Represents a structural frame, which is a collection of structural groups that constitute a geological model.
+
+    Attributes:
+        structural_groups (list[StructuralGroup]): List of structural groups that constitute the geological model.
+        color_generator (ColorsGenerator): Instance of ColorsGenerator used for assigning distinct colors to different structural elements.
+        is_dirty (bool): Boolean flag indicating if the structural frame has been modified.
     """
 
     structural_groups: list[StructuralGroup]  #: List of structural groups that constitute the geological model.
@@ -94,7 +98,21 @@ class StructuralFrame:
         return structural_frame
 
     @classmethod
-    def initialize_default_structure(cls):
+    def initialize_default_structure(cls) -> 'StructuralFrame':
+        """
+        Initialize the default structure.
+
+        This method is used to initialize the default structure for a `StructuralFrame` object.
+
+        Args:
+            None
+
+        Returns:
+            'StructuralFrame': A `StructuralFrame` object representing the default structure.
+
+        Example:
+            structural_frame = initialize_default_structure()
+        """
         color_gen = ColorsGenerator()
 
         structural_group = StructuralGroup(

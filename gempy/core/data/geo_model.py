@@ -95,6 +95,17 @@ class GeoModel:
         return pprint.pformat(self.__dict__)
 
     def update_transform(self, auto_anisotropy: GlobalAnisotropy = GlobalAnisotropy.NONE, anisotropy_limit: Optional[np.ndarray] = None):
+        """Update the transformation of the geological model.
+
+            This function updates the transformation of the geological model using the provided surface points and orientations.
+            It also applies anisotropy based on the specified type and limit.
+
+            Args:
+                auto_anisotropy (GlobalAnisotropy): The type of anisotropy to apply. Defaults to GlobalAnisotropy.NONE.
+                anisotropy_limit (Optional[np.ndarray]): Anisotropy limit values. If None, no limit is applied.
+
+        """
+
         self.input_transform = Transform.from_input_points(
             surface_points=self.surface_points_copy,
             orientations=self.orientations_copy
@@ -177,7 +188,7 @@ class GeoModel:
     @property
     def surface_points_copy_transformed(self) -> SurfacePointsTable:
         og_sp = self.surface_points_copy
-        
+
         og_sp.xyz_view = self.grid.transform.apply_with_cached_pivot(og_sp.xyz)
         og_sp.xyz_view = self.input_transform.apply(og_sp.xyz)
         return og_sp
@@ -205,14 +216,14 @@ class GeoModel:
 
         og_or.xyz_view = self.grid.transform.apply_with_cached_pivot(og_or.xyz)
         og_or.xyz_view = self.input_transform.apply(og_or.xyz)
-        
+
         og_or.grads_view = total_transform.transform_gradient(og_or.grads)
         return og_or
-    
+
     @property
     def regular_grid_coordinates(self) -> np.ndarray:
         return self.grid.regular_grid.get_values_vtk_format(orthogonal=False)
-    
+
     @property
     def regular_grid_coordinates_transformed(self) -> np.ndarray:
         values_transformed = self.grid.regular_grid.get_values_vtk_format(orthogonal=True)

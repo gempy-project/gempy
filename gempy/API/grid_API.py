@@ -22,6 +22,29 @@ def set_section_grid(grid: Grid, section_dict: dict):
 
 def set_topography_from_random(grid: Grid, fractal_dimension: float = 2.0, d_z: Union[Sequence, None] = None,
                                topography_resolution: Union[Sequence, None] = None):
+    """
+    Sets the topography of the grid using a randomly generated topography.
+
+    Args:
+        grid (Grid): The grid object on which to set the topography.
+        fractal_dimension (float, optional): The fractal dimension of the random topography. Defaults to 2.0.
+        d_z (Union[Sequence, None], optional): The sequence of elevation increments for the random topography.
+            If None, a default sequence will be used. Defaults to None.
+        topography_resolution (Union[Sequence, None], optional): The resolution of the random topography.
+            If None, the resolution of the grid's regular grid will be used. Defaults to None.
+
+    Returns:
+        The topography object that was set on the grid.
+
+    Example:
+        >>> grid = Grid()
+        >>> set_topography_from_random(grid, fractal_dimension=1.5, d_z=[0.1, 0.2, 0.3], topography_resolution=[10, 10])
+
+    Note:
+        If topography_resolution is None, the resolution of the grid's regular grid will be used.
+        If d_z is None, a default sequence of elevation increments will be used.
+    """
+
     if topography_resolution is None:
         topography_resolution = grid.regular_grid.resolution
 

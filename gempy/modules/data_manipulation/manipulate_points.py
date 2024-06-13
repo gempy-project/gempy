@@ -7,8 +7,35 @@ from gempy.core.data.orientations import DEFAULT_ORI_NUGGET
 from gempy.core.data.surface_points import DEFAULT_SP_NUGGET
 
 
-def add_surface_points(geo_model: GeoModel, x: Sequence[float], y: Sequence[float], z: Sequence[float],
-                       elements_names: Sequence[str], nugget: Optional[Sequence[float]] = None) -> StructuralFrame:
+def add_surface_points(
+        geo_model: GeoModel,
+        x: Sequence[float],
+        y: Sequence[float],
+        z: Sequence[float],
+        elements_names: Sequence[str],
+        nugget: Optional[Sequence[float]] = None
+) -> StructuralFrame:
+    """Add surface points to the geological model.
+
+    This function adds surface points to the specified geological elements in the model.
+    The points are grouped by element names, and optional nugget values can be specified
+    for each point.
+
+    Args:
+        geo_model (GeoModel): The geological model to which the surface points will be added.
+        x (Sequence[float]): Sequence of x-coordinates for the surface points.
+        y (Sequence[float]): Sequence of y-coordinates for the surface points.
+        z (Sequence[float]): Sequence of z-coordinates for the surface points.
+        elements_names (Sequence[str]): Sequence of element names corresponding to each surface point.
+        nugget (Optional[Sequence[float]]): Sequence of nugget values for each surface point. If not provided,
+            a default value will be used for all points.
+
+    Returns:
+        StructuralFrame: The updated structural frame of the geological model.
+
+    Raises:
+        ValueError: If the length of the nugget sequence does not match the lengths of the other input sequences.
+    """
     elements_names = _validate_args(elements_names, x, y, z)
 
     # If nugget is not provided, create a Sequence filled with the default value
@@ -32,10 +59,10 @@ def add_surface_points(geo_model: GeoModel, x: Sequence[float], y: Sequence[floa
     for name in unique_names:
         mask = (elements_names == name)
         grouped_data[name] = {
-            'x'     : x[mask],
-            'y'     : y[mask],
-            'z'     : z[mask],
-            'nugget': nugget[mask]
+                'x'     : x[mask],
+                'y'     : y[mask],
+                'z'     : z[mask],
+                'nugget': nugget[mask]
         }
 
     # * Loop per element_name
@@ -51,8 +78,8 @@ def add_surface_points(geo_model: GeoModel, x: Sequence[float], y: Sequence[floa
 
         element: StructuralElement = geo_model.structural_frame.get_element_by_name(element_name)
         element.surface_points.data = np.concatenate([
-            element.surface_points.data,
-            formatted_data
+                element.surface_points.data,
+                formatted_data
         ])
 
     return geo_model.structural_frame
@@ -62,10 +89,39 @@ def delete_surface_points():
     raise NotImplementedError
 
 
-def add_orientations(geo_model: GeoModel, x: Sequence[float], y: Sequence[float], z: Sequence[float],
-                     elements_names: Sequence[str], pole_vector: Optional[Sequence[np.ndarray]] = None,
-                     orientation: Optional[Sequence[np.ndarray]] = None,
-                     nugget: Optional[Sequence[float]] = None) -> StructuralFrame:
+def add_orientations(geo_model: GeoModel,
+        x: Sequence[float],
+        y: Sequence[float],
+        z: Sequence[float],
+        elements_names: Sequence[str],
+        pole_vector: Optional[Sequence[np.ndarray]] = None,
+        orientation: Optional[Sequence[np.ndarray]] = None,
+        nugget: Optional[Sequence[float]] = None
+) -> StructuralFrame:
+    """Add orientation data to the geological model.
+
+    This function adds orientation data to the specified geological elements in the model.
+    The orientation can be provided directly as pole vectors or as orientation angles (azimuth, dip, polarity).
+    Optional nugget values can also be specified for each orientation point.
+
+    Args:
+        geo_model (GeoModel): The geological model to which the orientations will be added.
+        x (Sequence[float]): Sequence of x-coordinates for the orientation points.
+        y (Sequence[float]): Sequence of y-coordinates for the orientation points.
+        z (Sequence[float]): Sequence of z-coordinates for the orientation points.
+        elements_names (Sequence[str]): Sequence of element names corresponding to each orientation point.
+        pole_vector (Optional[Sequence[np.ndarray]]): Sequence of pole vectors for the orientation points.
+        orientation (Optional[Sequence[np.ndarray]]): Sequence of orientation angles (azimuth, dip, polarity) for the orientation points.
+        nugget (Optional[Sequence[float]]): Sequence of nugget values for each orientation point. If not provided,
+            a default value will be used for all points.
+
+    Returns:
+        StructuralFrame: The updated structural frame of the geological model.
+
+    Raises:
+        ValueError: If neither pole_vector nor orientation is provided, or if the length of the nugget sequence
+            does not match the lengths of the other input sequences.
+    """
     if pole_vector is None and orientation is None:
         raise ValueError("Either pole_vector or orientation must be provided.")
 
@@ -99,11 +155,11 @@ def add_orientations(geo_model: GeoModel, x: Sequence[float], y: Sequence[float]
     for name in unique_names:
         mask = (elements_names == name)
         grouped_data[name] = {
-            'x'          : x[mask],
-            'y'          : y[mask],
-            'z'          : z[mask],
-            'pole_vector': pole_vector[mask],
-            'nugget'     : nugget[mask]
+                'x'          : x[mask],
+                'y'          : y[mask],
+                'z'          : z[mask],
+                'pole_vector': pole_vector[mask],
+                'nugget'     : nugget[mask]
         }
 
     # * Loop per element_name
@@ -121,8 +177,8 @@ def add_orientations(geo_model: GeoModel, x: Sequence[float], y: Sequence[float]
 
         element: StructuralElement = geo_model.structural_frame.get_element_by_name(element_name)
         element.orientations.data = np.concatenate([
-            element.orientations.data,
-            formatted_data
+                element.orientations.data,
+                formatted_data
         ])
 
     return geo_model.structural_frame
@@ -228,13 +284,12 @@ def modify_surface_points(geo_model: GeoModel,
     """
     if elements_names is not None and slice is not None:
         raise ValueError("Cannot provide both elements_names and slice.")
-    
+
     surface_points = geo_model.structural_frame.surface_points_copy
-    
+
     if elements_names is not None:
-        ids = [surface_points.name_id_map[element] for element in elements_names] 
+        ids = [surface_points.name_id_map[element] for element in elements_names]
         slice = np.s_[np.isin(surface_points.data['id'], ids)]
-    
 
     # If no slice is provided, target all rows; else, target specified slice
     target_rows = slice if slice is not None else np.s_[:]
