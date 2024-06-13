@@ -57,13 +57,15 @@ def make_example_gallery():
 
     with StringIO() as new_fid:
         new_fid.write(
-            """.. _external_examples:
+            """
+.. _external_examples:
 
 External Examples
 ==================
 
-Here you will find a collection of examples that demonstrate the basics of Bayesian inference theory and how to apply it to geology 
-using Pyro. 
+Vector Examples
+---------------
+These are examples from the Vector project.
 
 .. grid:: 3
    :gutter: 1

@@ -30,8 +30,8 @@ import gempy
 # External examples:
 sys.path.insert(0, os.path.abspath('.'))
 import make_external_gallery
-make_external_gallery.make_example_gallery()
 
+make_external_gallery.make_example_gallery()
 
 # region PyVista Configuration
 pyvista.set_error_output_file('errors.txt')
@@ -66,6 +66,10 @@ extensions = [
         'sphinx.ext.githubpages',
         'sphinx.ext.napoleon',
         'sphinx_gallery.gen_gallery',
+        "pyvista.ext.plot_directive",
+        "sphinx_design",
+        'sphinx_automodapi.automodapi',
+        'sphinx_automodapi.smart_resolver',
 ]
 
 if run_intersphinx := False:  # Example configuration for intersphinx: refer to the Python standard library.
