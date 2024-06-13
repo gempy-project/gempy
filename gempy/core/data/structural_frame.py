@@ -24,10 +24,10 @@ class StructuralFrame:
         is_dirty (bool): Boolean flag indicating if the structural frame has been modified.
     """
 
-    structural_groups: list[StructuralGroup]  #: List of structural groups that constitute the geological model.
-    color_generator: ColorsGenerator  #: Instance of ColorsGenerator used for assigning distinct colors to different structural elements.
+    structural_groups: list[StructuralGroup] 
+    color_generator: ColorsGenerator 
     # ? Should I create some sort of structural options class? For example, the masking descriptor and faults relations pointer
-    is_dirty: bool = True  #: Boolean flag indicating if the structural frame has been modified.
+    is_dirty: bool = True 
 
     def __init__(self, structural_groups: list[StructuralGroup], color_gen: ColorsGenerator):
         self.structural_groups = structural_groups  # ? This maybe could be optional

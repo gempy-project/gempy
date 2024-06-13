@@ -198,7 +198,7 @@ element2 = gp.data.StructuralElement(
     orientations=gp.data.OrientationsTable.initialize_empty()
 )
 
-geo_model.structural_frame.structural_groups[0].append_element(element2)
+geo_model.structural_frame.structural_groups[0].append_element(element2) 
 
 # Compute and visualize the updated model: 
 gp.compute_model(geo_model)
