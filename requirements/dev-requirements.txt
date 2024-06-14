@@ -1,7 +1,7 @@
 -r optional-requirements.txt
 
 pytest
-subsurface
+subsurface~=2024.2.0
 
 # Testing
 pytest-approvaltests

@@ -1,2 +1,2 @@
 # This install also numpy
-gempy_engine~=2024.1.4
+gempy_engine~=2024.2.0
