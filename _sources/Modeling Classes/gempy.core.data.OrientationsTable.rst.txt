@@ -38,12 +38,14 @@
       ~OrientationsTable.df
       ~OrientationsTable.dt
       ~OrientationsTable.grads
+      ~OrientationsTable.grads_view
       ~OrientationsTable.id
       ~OrientationsTable.ids
       ~OrientationsTable.model_transform
       ~OrientationsTable.name_id_map
       ~OrientationsTable.nugget
       ~OrientationsTable.xyz
+      ~OrientationsTable.xyz_view
       ~OrientationsTable.data
    
    

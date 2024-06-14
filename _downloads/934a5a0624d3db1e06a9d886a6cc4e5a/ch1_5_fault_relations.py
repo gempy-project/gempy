@@ -63,17 +63,15 @@ print(geo_model.structural_frame)
 
 # %% 
 
-geo_model.transform.apply_anisotropy(gp.data.GlobalAnisotropy.NONE)
-if False:
-    gp.compute_model(geo_model)
-    # %%
-    print(geo_model.solutions.raw_arrays.block_matrix[0])  # This contains the block values for the fault1
-    print(geo_model.solutions.raw_arrays.block_matrix[1])  # This contains the block values for the formations
-    # %%
-    gpv.plot_2d(geo_model, show_data=True)
-    gpv.plot_3d(geo_model, show_data=True, kwargs_plot_structured_grid={'opacity': .2})
+geo_model.input_transform.apply_anisotropy(gp.data.GlobalAnisotropy.NONE)
+gp.compute_model(geo_model)
+# %%
+print(geo_model.solutions.raw_arrays.block_matrix[0])  # This contains the block values for the fault1
+print(geo_model.solutions.raw_arrays.block_matrix[1])  # This contains the block values for the formations
+# %%
+gpv.plot_2d(geo_model, show_data=True)
+gpv.plot_3d(geo_model, show_data=True, kwargs_plot_structured_grid={'opacity': .2})
 
-# TODO: Add example of offsetting just one fault
 
 # %5
 # Graben example
@@ -90,10 +88,6 @@ gp.add_structural_group(
 )
 print(geo_model.structural_frame)
 
-from gempy_engine.core.data.kernel_classes.solvers import Solvers
-
-geo_model.interpolation_options.kernel_options.kernel_solver = Solvers.SCIPY_CG
-geo_model.interpolation_options.kernel_options.compute_condition_number = True
 gp.compute_model(geo_model)
 
 # %%

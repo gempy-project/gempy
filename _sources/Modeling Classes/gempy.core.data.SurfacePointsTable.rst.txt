@@ -42,6 +42,7 @@
       ~SurfacePointsTable.name_id_map
       ~SurfacePointsTable.nugget
       ~SurfacePointsTable.xyz
+      ~SurfacePointsTable.xyz_view
       ~SurfacePointsTable.data
    
    

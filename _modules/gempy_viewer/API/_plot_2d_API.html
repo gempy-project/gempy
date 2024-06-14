@@ -4,14 +4,14 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>gempy_viewer.API._plot_2d_API &#8212; GemPy 2023.2.0b1 documentation</title>
+    <title>gempy_viewer.API._plot_2d_API &#8212; GemPy 2024.1.2.dev59+gc19c50fa.d20240531 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=270d38c7" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=61a4c737" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <script src="../../../_static/documentation_options.js?v=acace1bb"></script>
+    <script src="../../../_static/documentation_options.js?v=2a6b7f2f"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="icon" href="../../../_static/favicon.ico"/>
@@ -64,46 +64,47 @@
             <span class="n">kwargs_topography</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">kwargs_lithology</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">kwargs_scalar_field</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot 2-D sections of geomodel.</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Plot2D</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot 2-D sections of the geomodel.</span>
 
-<span class="sd">    Plot cross sections either based on custom section traces or cell number in xyz direction.</span>
-<span class="sd">    Options to plot lithology block, scalar field or rendered surface lines.</span>
-<span class="sd">    Input data and topography can be included.</span>
+<span class="sd">    This function plots cross-sections either based on custom section traces or cell numbers</span>
+<span class="sd">    in the xyz directions. Options are provided to plot lithology blocks, scalar fields, or</span>
+<span class="sd">    rendered surface lines. Input data and topography can be included.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        show_block (bool): If True and model has been computed, plot cross section</span>
-<span class="sd">         of the final model.</span>
-<span class="sd">        show_values (bool): If True and model has been computed, plot cross section</span>
-<span class="sd">         of the value... TODO need to add attribute to choose which value to be plot</span>
-<span class="sd">        model: Geomodel object with solutions.</span>
-<span class="sd">        n_axis (int): Subplot axis for multiple sections</span>
-<span class="sd">        section_names (list): Names of predefined custom section traces</span>
-<span class="sd">        cell_number (list): Position of the array to plot</span>
-<span class="sd">        direction (str): Cartesian direction to be plotted (xyz)</span>
-<span class="sd">        series_n (int): number of the scalar field.</span>
-<span class="sd">        ve (float): vertical exageration</span>
-<span class="sd">        override_regular_grid (numpy.ndarray): Numpy array of the size of model.grid.regular_grid. If provided, the regular grid will be overriden by this array.</span>
-<span class="sd">        kwargs_topography (dict):</span>
-<span class="sd">            * fill_contour</span>
-<span class="sd">            * hillshade (bool): Calculate and add hillshading using elevation data</span>
-<span class="sd">            * azdeg (float): azimuth of sun for hillshade</span>
-<span class="sd">            * altdeg (float): altitude in degrees of sun for hillshade</span>
+<span class="sd">        model (GeoModel): Geomodel object with solutions.</span>
+<span class="sd">        n_axis (Optional[int]): Subplot axis for multiple sections.</span>
+<span class="sd">        section_names (Optional[List[str]]): Names of predefined custom section traces.</span>
+<span class="sd">        cell_number (Optional[Union[int, List[int], str, List[str]]]): Position of the array to plot.</span>
+<span class="sd">        direction (Optional[Union[str, List[str]]]): Cartesian direction to be plotted (xyz).</span>
+<span class="sd">        series_n (Union[int, List[int]]): Number of the scalar field.</span>
+<span class="sd">        legend (bool): If True, plot legend. Defaults to True.</span>
+<span class="sd">        ve (float): Vertical exaggeration. Defaults to 1.</span>
+<span class="sd">        block (Optional[np.ndarray]): Deprecated. Use regular grid instead.</span>
+<span class="sd">        override_regular_grid (Optional[np.ndarray]): Numpy array of the size of model.grid.regular_grid.</span>
+<span class="sd">            If provided, the regular grid will be overridden by this array.</span>
+<span class="sd">        kwargs_topography (Optional[dict]): Additional keyword arguments for topography.</span>
+<span class="sd">            * fill_contour: Fill contour flag.</span>
+<span class="sd">            * hillshade (bool): Calculate and add hillshading using elevation data.</span>
+<span class="sd">            * azdeg (float): Azimuth of sun for hillshade.</span>
+<span class="sd">            - altdeg (float): Altitude in degrees of sun for hillshade.</span>
+<span class="sd">        kwargs_lithology (Optional[dict]): Additional keyword arguments for lithology.</span>
+<span class="sd">        kwargs_scalar_field (Optional[dict]): Additional keyword arguments for scalar field.</span>
 
 <span class="sd">    Keyword Args:</span>
-<span class="sd">        legend (bool): If True plot legend. Default True</span>
-<span class="sd">        show (bool): Call matplotlib show</span>
+<span class="sd">        show_block (bool): If True and the model has been computed, plot cross section of the final model.</span>
+<span class="sd">        show_values (bool): If True and the model has been computed, plot cross section of the value.</span>
+<span class="sd">        show (bool): Call matplotlib show. Defaults to True.</span>
 <span class="sd">        show_data (bool): Show original input data. Defaults to True.</span>
-<span class="sd">        show_results (bool): If False, override show lith, show_calar, show_values</span>
+<span class="sd">        show_results (bool): If False, override show lithology, scalar field, and values. Defaults to True.</span>
 <span class="sd">        show_lith (bool): Show lithological block volumes. Defaults to True.</span>
 <span class="sd">        show_scalar (bool): Show scalar field isolines. Defaults to False.</span>
 <span class="sd">        show_boundaries (bool): Show surface boundaries as lines. Defaults to True.</span>
-<span class="sd">        show_topography (bool): Show topography on plot. Defaults to False. (Note Sep 2023) If True this is showing</span>
-<span class="sd">         the height map instead of the geological map.</span>
+<span class="sd">        show_topography (bool): Show topography on plot. Defaults to False.</span>
+<span class="sd">        show_section_traces (bool): Show section traces. Defaults to True.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        :class:`gempy.plot.visualization_2d.Plot2D`: Plot2D object</span>
-
+<span class="sd">        gempy.plot.visualization_2d.Plot2D: Plot2D object.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="n">kwargs_lithology</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -177,7 +178,7 @@
         <span class="n">n_axis</span><span class="o">=</span><span class="n">n_axis</span><span class="p">,</span>
         <span class="n">n_columns</span><span class="o">=</span><span class="n">n_columns</span><span class="p">,</span>
         <span class="n">ve</span><span class="o">=</span><span class="n">ve</span><span class="p">,</span>
-        <span class="n">projection_distance</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;projection_distance&#39;</span><span class="p">,</span> <span class="mf">0.2</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">isometric_scale</span><span class="p">)</span>
+        <span class="n">projection_distance</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;projection_distance&#39;</span><span class="p">,</span> <span class="mf">0.2</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">input_transform</span><span class="o">.</span><span class="n">isometric_scale</span><span class="p">)</span>
     <span class="p">)</span>
 
     <span class="n">orthogonal_section_data_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">SectionData2D</span><span class="p">]</span> <span class="o">=</span> <span class="n">orthogonal_sections_iterator</span><span class="p">(</span>
@@ -189,7 +190,7 @@
         <span class="n">n_axis</span><span class="o">=</span><span class="n">n_axis</span><span class="p">,</span>
         <span class="n">n_columns</span><span class="o">=</span><span class="n">n_columns</span><span class="p">,</span>
         <span class="n">ve</span><span class="o">=</span><span class="n">ve</span><span class="p">,</span>
-        <span class="n">projection_distance</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;projection_distance&#39;</span><span class="p">,</span> <span class="mf">0.2</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">isometric_scale</span><span class="p">)</span>
+        <span class="n">projection_distance</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;projection_distance&#39;</span><span class="p">,</span> <span class="mf">0.2</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">input_transform</span><span class="o">.</span><span class="n">isometric_scale</span><span class="p">)</span>
     <span class="p">)</span>
 
     <span class="n">section_data_list</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">orthogonal_section_data_list</span><span class="p">)</span>

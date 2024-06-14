@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>gempy.core.data.Topography &#8212; GemPy 2024.1.2.dev59+gc19c50fa.d20240531 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=270d38c7" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <script src="../_static/documentation_options.js?v=2a6b7f2f"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="gempy.core.data.Solutions" href="gempy.core.data.Solutions.html" />
+    <link rel="prev" title="gempy.core.data.Grid" href="gempy.core.data.Grid.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="gempy-core-data-topography">
+<h1>gempy.core.data.Topography<a class="headerlink" href="#gempy-core-data-topography" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="gempy.core.data.Topography">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gempy.core.data.</span></span><span class="sig-name descname"><span class="pre">Topography</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">regular_grid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">RegularGrid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values_2d</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data/grid_modules/topography.html#Topography"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gempy.core.data.Topography" title="Link to this definition">¶</a></dt>
+<dd><p>Object to include topography in the model.</p>
+<p class="rubric">Notes</p>
+<p>This always assumes that the topography we pass fits perfectly the extent</p>
+<div class="sphx-glr-clear"></div><p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.Topography.__init__" title="gempy.core.data.Topography.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(regular_grid[, values_2d])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_arrays</span></code>(regular_grid, x_coordinates, ...)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.Topography.from_subsurface_structured_data" title="gempy.core.data.Topography.from_subsurface_structured_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_subsurface_structured_data</span></code></a>(...)</p></td>
+<td><p>Creates a topography object from a subsurface structured data object</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data.Topography.from_unstructured_mesh" title="gempy.core.data.Topography.from_unstructured_mesh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_unstructured_mesh</span></code></a>(regular_grid, ...)</p></td>
+<td><p>Creates a topography object from an unstructured mesh of XYZ vertices.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code>(path)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_from_saved</span></code>(*args, **kwargs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_random_hills</span></code>(**kwargs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">resize_topo</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code>(path)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data.Topography.set_values" title="gempy.core.data.Topography.set_values"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_values</span></code></a>(values_2d)</p></td>
+<td><p>General method to set topography</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">extent</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">regular_grid_resolution</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.Topography.topography_mask" title="gempy.core.data.Topography.topography_mask"><code class="xref py py-obj docutils literal notranslate"><span class="pre">topography_mask</span></code></a></p></td>
+<td><p>This method takes a topography grid of the same extent as the regular grid and creates a mask of voxels</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">x</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">y</span></code></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="gempy.core.data.Topography.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">regular_grid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">RegularGrid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values_2d</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data/grid_modules/topography.html#Topography.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gempy.core.data.Topography.__init__" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gempy.core.data.Topography.from_subsurface_structured_data">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_subsurface_structured_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">structured_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">subsurface.StructuredData</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regular_grid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">RegularGrid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data/grid_modules/topography.html#Topography.from_subsurface_structured_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gempy.core.data.Topography.from_subsurface_structured_data" title="Link to this definition">¶</a></dt>
+<dd><p>Creates a topography object from a subsurface structured data object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>structured_data</strong> (<em>subsurface.StructuredData</em>) – Structured data object</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.grid_modules.topography.Topography</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gempy.core.data.Topography.from_unstructured_mesh">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_unstructured_mesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">regular_grid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xyz_vertices</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data/grid_modules/topography.html#Topography.from_unstructured_mesh"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gempy.core.data.Topography.from_unstructured_mesh" title="Link to this definition">¶</a></dt>
+<dd><p>Creates a topography object from an unstructured mesh of XYZ vertices.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>regular_grid</strong> (<em>RegularGrid</em>) – The regular grid object.</p></li>
+<li><p><strong>xyz_vertices</strong> (<em>numpy.ndarray</em>) – Array of XYZ vertices of the unstructured mesh.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.grid_modules.topography.Topography</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gempy.core.data.Topography.set_values">
+<span class="sig-name descname"><span class="pre">set_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values_2d</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data/grid_modules/topography.html#Topography.set_values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gempy.core.data.Topography.set_values" title="Link to this definition">¶</a></dt>
+<dd><p>General method to set topography</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>values_2d</strong> (<em>numpy.ndarray</em><em>[</em><em>float</em><em>,</em><em>float</em><em>, </em><em>3</em><em>]</em>) – array with the XYZ values
+in 2D</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">gempy.core.grid_modules.topography.Topography</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gempy.core.data.Topography.topography_mask">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">topography_mask</span></span><a class="headerlink" href="#gempy.core.data.Topography.topography_mask" title="Link to this definition">¶</a></dt>
+<dd><p>This method takes a topography grid of the same extent as the regular
+grid and creates a mask of voxels</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/logos/gempy.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=gempy-project&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">GemPy Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">External examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../external/external_examples.html">External Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../api_reference.html">Code</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api_reference.html#data-classes">Data Classes</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../api_reference.html#module-gempy.core.data">Modeling Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference.html#helper-classes">Helper Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api_reference.html#enumerators">Enumerators</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../api_reference.html">Code</a><ul>
+      <li>Previous: <a href="gempy.core.data.Grid.html" title="previous chapter">gempy.core.data.Grid</a></li>
+      <li>Next: <a href="gempy.core.data.Solutions.html" title="next chapter">gempy.core.data.Solutions</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017-2024, Gempy Developers.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+      |
+      <a href="../_sources/Modeling Classes/gempy.core.data.Topography.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

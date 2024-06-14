@@ -4,14 +4,14 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>gempy.API.initialization_API &#8212; GemPy 2023.2.0b1 documentation</title>
+    <title>gempy.API.initialization_API &#8212; GemPy 2024.1.2.dev59+gc19c50fa.d20240531 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=270d38c7" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=61a4c737" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <script src="../../../_static/documentation_options.js?v=acace1bb"></script>
+    <script src="../../../_static/documentation_options.js?v=2a6b7f2f"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="icon" href="../../../_static/favicon.ico"/>
@@ -35,13 +35,16 @@
             
   <h1>Source code for gempy.API.initialization_API</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Hashable</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">ndarray</span>
 
 <span class="kn">from</span> <span class="nn">gempy.API.io_API</span> <span class="kn">import</span> <span class="n">read_surface_points</span><span class="p">,</span> <span class="n">read_orientations</span>
 <span class="kn">from</span> <span class="nn">gempy_engine.core.data</span> <span class="kn">import</span> <span class="n">InterpolationOptions</span>
+<span class="kn">from</span> <span class="nn">..core.data.grid_modules</span> <span class="kn">import</span> <span class="n">RegularGrid</span>
+<span class="kn">from</span> <span class="nn">..optional_dependencies</span> <span class="kn">import</span> <span class="n">require_subsurface</span>
+<span class="kn">from</span> <span class="nn">..core.data</span> <span class="kn">import</span> <span class="n">StructuralElement</span>
 <span class="kn">from</span> <span class="nn">..core.data.geo_model</span> <span class="kn">import</span> <span class="n">GeoModel</span>
 <span class="kn">from</span> <span class="nn">..core.data.grid</span> <span class="kn">import</span> <span class="n">Grid</span>
 <span class="kn">from</span> <span class="nn">..core.data.importer_helper</span> <span class="kn">import</span> <span class="n">ImporterHelper</span>
@@ -63,28 +66,31 @@
         <span class="n">importer_helper</span><span class="p">:</span> <span class="n">ImporterHelper</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GeoModel</span><span class="p">:</span>  <span class="c1"># ? Do I need to pass pandas read kwargs?</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Creates a GeoModel instance.</span>
-
-<span class="sd">    This function initializes a GeoModel object, including its grid and interpolation options.</span>
+<span class="sd">    Initializes and returns a GeoModel instance with specified parameters.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        project_name (str, optional): The name of the project. Defaults to &#39;default_project&#39;.</span>
-<span class="sd">        extent (Union[list, ndarray], optional): The 3D extent of the grid. Defaults to None.</span>
-<span class="sd">        resolution (Union[list, ndarray], optional): The resolution of the grid. Defaults to None.</span>
-<span class="sd">        refinement (int, optional): Defaults to 1.</span>
-<span class="sd">        structural_frame (StructuralFrame, optional): The structural frame of the GeoModel. Defaults to None.</span>
-<span class="sd">        importer_helper (ImporterHelper, optional): Helper object to import structural elements. Defaults to None.</span>
+<span class="sd">        extent (Union[List, np.ndarray], optional): The 3D extent of the grid. Must be provided if resolution is specified. Defaults to None.</span>
+<span class="sd">        resolution (Union[List, np.ndarray], optional): The resolution of the grid. If None, an octree grid will be initialized. Defaults to None.</span>
+<span class="sd">        refinement (int, optional): The level of refinement for the octree grid. Defaults to 1.</span>
+<span class="sd">        structural_frame (StructuralFrame, optional): The structural frame of the GeoModel. Either this or importer_helper must be provided. Defaults to None.</span>
+<span class="sd">        importer_helper (ImporterHelper, optional): Helper object for importing structural elements. Either this or structural_frame must be provided. Defaults to None.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        GeoModel: The initialized GeoModel object.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: If neither structural_frame nor importer_helper is provided.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    
     <span class="c1"># init resolutions well</span>
     <span class="k">if</span> <span class="n">resolution</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">grid</span><span class="p">:</span> <span class="n">Grid</span> <span class="o">=</span> <span class="n">Grid</span><span class="p">(</span><span class="n">extent</span><span class="o">=</span><span class="n">extent</span><span class="p">)</span>
-        <span class="n">grid</span><span class="o">.</span><span class="n">octree_levels</span> <span class="o">=</span> <span class="n">refinement</span>
-        <span class="n">grid</span><span class="o">.</span><span class="n">set_inactive</span><span class="p">(</span><span class="s2">&quot;regular&quot;</span><span class="p">)</span>
+        <span class="n">grid</span><span class="p">:</span> <span class="n">Grid</span> <span class="o">=</span> <span class="n">Grid</span><span class="o">.</span><span class="n">init_octree_grid</span><span class="p">(</span>
+            <span class="n">extent</span><span class="o">=</span><span class="n">extent</span><span class="p">,</span>
+            <span class="n">octree_levels</span><span class="o">=</span><span class="n">refinement</span>
+        <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">grid</span> <span class="o">=</span> <span class="n">Grid</span><span class="p">(</span>
+        <span class="n">grid</span><span class="p">:</span> <span class="n">Grid</span> <span class="o">=</span> <span class="n">Grid</span><span class="o">.</span><span class="n">init_dense_grid</span><span class="p">(</span>
             <span class="n">extent</span><span class="o">=</span><span class="n">extent</span><span class="p">,</span>
             <span class="n">resolution</span><span class="o">=</span><span class="n">resolution</span>
         <span class="p">)</span>
@@ -114,6 +120,56 @@
     <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">geo_model</span></div>
+
+
+
+<div class="viewcode-block" id="structural_elements_from_borehole_set">
+<a class="viewcode-back" href="../../../GemPy%20API/gempy.structural_elements_from_borehole_set.html#gempy.structural_elements_from_borehole_set">[docs]</a>
+<span class="k">def</span> <span class="nf">structural_elements_from_borehole_set</span><span class="p">(</span>
+        <span class="n">borehole_set</span><span class="p">:</span> <span class="s2">&quot;subsurface.core.geological_formats.BoreholeSet&quot;</span><span class="p">,</span>
+        <span class="n">elements_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">StructuralElement</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates a list of StructuralElements from a BoreholeSet.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        borehole_set (subsurface.core.geological_formats.BoreholeSet): The BoreholeSet object containing the boreholes.</span>
+<span class="sd">        elements_dict (dict): A dictionary containing the properties of the structural elements to be created.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list[StructuralElement]: A list of StructuralElement objects created from the borehole set.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: If a top lithology ID specified in `elements_dict` is not found in the borehole set.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">ss</span> <span class="o">=</span> <span class="n">require_subsurface</span><span class="p">()</span>
+    <span class="n">borehole_set</span><span class="p">:</span> <span class="n">ss</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">geological_formats</span><span class="o">.</span><span class="n">BoreholeSet</span>
+
+    <span class="n">elements</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">component_lith</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Hashable</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="n">borehole_set</span><span class="o">.</span><span class="n">get_bottom_coords_for_each_lith</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">properties</span> <span class="ow">in</span> <span class="n">elements_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">top_coordinates</span> <span class="o">=</span> <span class="n">component_lith</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">top_coordinates</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Top lithology </span><span class="si">{</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> not found in borehole set.&quot;</span><span class="p">)</span>
+
+        <span class="n">element</span> <span class="o">=</span> <span class="n">StructuralElement</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+            <span class="nb">id</span><span class="o">=</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span>
+            <span class="n">color</span><span class="o">=</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;color&#39;</span><span class="p">],</span>
+            <span class="n">surface_points</span><span class="o">=</span><span class="n">SurfacePointsTable</span><span class="o">.</span><span class="n">from_arrays</span><span class="p">(</span>
+                <span class="n">x</span><span class="o">=</span><span class="n">top_coordinates</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span>
+                <span class="n">y</span><span class="o">=</span><span class="n">top_coordinates</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
+                <span class="n">z</span><span class="o">=</span><span class="n">top_coordinates</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="n">name</span><span class="p">],</span>
+                <span class="n">name_id_map</span><span class="o">=</span><span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">properties</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]}</span>
+            <span class="p">),</span>
+            <span class="n">orientations</span><span class="o">=</span><span class="n">OrientationsTable</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">OrientationsTable</span><span class="o">.</span><span class="n">dt</span><span class="p">))</span>
+        <span class="p">)</span>
+        <span class="n">elements</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+    <span class="c1"># Reverse the list to have the oldest rocks at the bottom</span>
+
+    <span class="k">return</span> <span class="n">elements</span></div>
 
 
 

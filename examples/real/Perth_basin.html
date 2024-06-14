@@ -5,20 +5,23 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Perth basin. &#8212; GemPy 2024.1.2 documentation</title>
+    <title>Perth basin. &#8212; GemPy 2024.1.2.dev59+gc19c50fa.d20240531 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=270d38c7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=eafc0fe6" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=61a4c737" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <script src="../../_static/documentation_options.js?v=0b07e6f1"></script>
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <script src="../../_static/documentation_options.js?v=2a6b7f2f"></script>
     <script src="../../_static/doctools.js?v=888ff710"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/design-tabs.js?v=36754332"></script>
     <link rel="icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Code" href="../../api_reference.html" />
+    <link rel="next" title="External Examples" href="../../external/external_examples.html" />
     <link rel="prev" title="Moureze" href="Moureze.html" />
    
   <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -184,7 +187,7 @@ to download the full example code</p>
 <br />
 <br /><div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">del_surfaces</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Cadda&#39;</span><span class="p">,</span> <span class="s1">&#39;Woodada_Kockatea&#39;</span><span class="p">,</span> <span class="s1">&#39;Cattamarra&#39;</span><span class="p">]</span>
 <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">del_surfaces</span><span class="p">:</span>
-    <span class="n">gp</span><span class="o">.</span><span class="n">remove_element_by_name</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+    <a href="../../GemPy API/gempy.remove_element_by_name.html#gempy.remove_element_by_name" title="gempy.remove_element_by_name" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">remove_element_by_name</span></a><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
 
 <a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span></a>
 </pre></div>
@@ -441,7 +444,7 @@ to download the full example code</p>
 <br />
 <br /><section id="select-which-series-are-faults">
 <h2>Select which series are faults<a class="headerlink" href="#select-which-series-are-faults" title="Link to this heading">¶</a></h2>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">set_is_fault</span><span class="p">(</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../GemPy API/gempy.set_is_fault.html#gempy.set_is_fault" title="gempy.set_is_fault" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">set_is_fault</span></a><span class="p">(</span>
     <a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span>
     <span class="n">fault_groups</span><span class="o">=</span><span class="p">[</span>
         <span class="s2">&quot;fault_Abrolhos_Transfer&quot;</span><span class="p">,</span>
@@ -620,27 +623,27 @@ to download the full example code</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;z&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_Perth_basin_001.png" srcset="../../_images/sphx_glr_Perth_basin_001.png" alt="Cell Number: mid Direction: z" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f008053d990&gt;
+<img src="../../_images/sphx_glr_Perth_basin_001.png" srcset="../../_images/sphx_glr_Perth_basin_001.png" alt="Cell Number: mid Direction: z" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f33372d9270&gt;
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">set_topography_from_random</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span><span class="o">.</span><span class="n">grid</span></a><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../GemPy API/gempy.set_topography_from_random.html#gempy.set_topography_from_random" title="gempy.set_topography_from_random" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">set_topography_from_random</span></a><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span><span class="o">.</span><span class="n">grid</span></a><span class="p">)</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[-2800.  1000.]
-Active grids: [&#39;regular&#39; &#39;topography&#39;]
+Active grids: GridTypes.NONE|TOPOGRAPHY|DENSE
 
-&lt;gempy.core.data.grid_modules.topography.Topography object at 0x7f00803ee230&gt;
+&lt;gempy.core.data.grid_modules.topography.Topography object at 0x7f323ecd1690&gt;
 </pre></div>
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_3d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_Perth_basin_002.png" srcset="../../_images/sphx_glr_Perth_basin_002.png" alt="Perth basin" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00a0070e80&gt;
+<img src="../../_images/sphx_glr_Perth_basin_002.png" srcset="../../_images/sphx_glr_Perth_basin_002.png" alt="Perth basin" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f323ecd1a50&gt;
 </pre></div>
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../GemPy API/gempy.compute_model.html#gempy.compute_model" title="gempy.compute_model" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span></a><span class="p">(</span>
     <span class="n">gempy_model</span><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span>
-    <span class="n">engine_config</span><span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GemPyEngineConfig</span><span class="p">(</span>
+    <span class="n">engine_config</span><span class="o">=</span> <a href="../../Helper Classes/gempy.core.data.GemPyEngineConfig.html#gempy.core.data.GemPyEngineConfig" title="gempy.core.data.GemPyEngineConfig" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class"><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GemPyEngineConfig</span></a><span class="p">(</span>
         <span class="n">backend</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">AvailableBackends</span><span class="o">.</span><span class="n">PYTORCH</span><span class="p">,</span>
         <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float64&quot;</span><span class="p">,</span>
     <span class="p">)</span>
@@ -648,15 +651,16 @@ Active grids: [&#39;regular&#39; &#39;topography&#39;]
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting Backend To: AvailableBackends.PYTORCH
-Chunking done: 21 chunks
-Chunking done: 21 chunks
-Chunking done: 21 chunks
-Chunking done: 21 chunks
-Chunking done: 21 chunks
-Chunking done: 21 chunks
-Chunking done: 21 chunks
-Chunking done: 21 chunks
-Chunking done: 21 chunks
+Chunking done: 23 chunks
+Chunking done: 31 chunks
+Chunking done: 29 chunks
+Chunking done: 23 chunks
+Chunking done: 23 chunks
+Chunking done: 23 chunks
+Chunking done: 27 chunks
+Chunking done: 23 chunks
+Chunking done: 201 chunks
+Chunking done: 7 chunks
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
@@ -666,29 +670,29 @@ Chunking done: 21 chunks
 <br /><div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="s2">&quot;mid&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_Perth_basin_003.png" srcset="../../_images/sphx_glr_Perth_basin_003.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f00cb5eb640&gt;
+<img src="../../_images/sphx_glr_Perth_basin_003.png" srcset="../../_images/sphx_glr_Perth_basin_003.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f333713f940&gt;
 </pre></div>
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="s2">&quot;mid&quot;</span><span class="p">,</span> <span class="n">series_n</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">show_scalar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_Perth_basin_004.png" srcset="../../_images/sphx_glr_Perth_basin_004.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f00a0070a00&gt;
+<img src="../../_images/sphx_glr_Perth_basin_004.png" srcset="../../_images/sphx_glr_Perth_basin_004.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f323eb99240&gt;
 </pre></div>
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="p">[</span><span class="mi">12</span><span class="p">],</span> <span class="n">direction</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">],</span> <span class="n">show_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show_topography</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_Perth_basin_005.png" srcset="../../_images/sphx_glr_Perth_basin_005.png" alt="Cell Number: 12 Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f00807d9000&gt;
+<img src="../../_images/sphx_glr_Perth_basin_005.png" srcset="../../_images/sphx_glr_Perth_basin_005.png" alt="Cell Number: 12 Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f322ba74640&gt;
 </pre></div>
 </div>
 <p>sphinx_gallery_thumbnail_number = 6</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_3d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">show_topography</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_Perth_basin_006.png" srcset="../../_images/sphx_glr_Perth_basin_006.png" alt="Perth basin" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00cd804ac0&gt;
+<img src="../../_images/sphx_glr_Perth_basin_006.png" srcset="../../_images/sphx_glr_Perth_basin_006.png" alt="Perth basin" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f322b8c0d90&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 42.508 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 55.676 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-examples-real-perth-basin-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/efebcc512a2cf32b32c9f73b9822f2a9/Perth_basin.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">Perth_basin.ipynb</span></code></a></p>
@@ -743,6 +747,10 @@ Chunking done: 21 chunks
 </ul>
 </li>
 </ul>
+<p class="caption" role="heading"><span class="caption-text">External examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../external/external_examples.html">External Examples</a></li>
+</ul>
 <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../api_reference.html">Code</a></li>
@@ -756,7 +764,7 @@ Chunking done: 21 chunks
   <li><a href="../index.html">Examples</a><ul>
   <li><a href="index.html">Real case studies</a><ul>
       <li>Previous: <a href="Moureze.html" title="previous chapter">Moureze</a></li>
-      <li>Next: <a href="../../api_reference.html" title="next chapter">Code</a></li>
+      <li>Next: <a href="../../external/external_examples.html" title="next chapter">External Examples</a></li>
   </ul></li>
   </ul></li>
   </ul></li>

@@ -81,7 +81,7 @@ The ImporterHelper class is used to specify the paths to the orientation and sur
     geo_model = gp.create_geomodel(
         project_name='tutorial_model',
         extent=[0, 2500, 0, 1000, 0, 1110],
-        refinement=6,
+        refinement=4,
         importer_helper=gp.data.ImporterHelper(
             path_to_orientations=path_to_data + "tutorial_model_orientations.csv",
             path_to_surface_points=path_to_data + "tutorial_model_surface_points.csv"
@@ -120,7 +120,7 @@ We use the `gempy_viewer` to visualize the initial cross-section of our geologic
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc9660308e0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87cc6df8b0>
 
 
 
@@ -201,7 +201,7 @@ Here, we map the geological series to specific surfaces. This step is crucial fo
 Update transformation and interpolation options
 We update the model with anisotropy settings and specify various interpolation options to refine the model's accuracy.
 
-.. GENERATED FROM PYTHON SOURCE LINES 60-72
+.. GENERATED FROM PYTHON SOURCE LINES 60-73
 
 .. code-block:: Python
 
@@ -210,73 +210,110 @@ We update the model with anisotropy settings and specify various interpolation o
 
     interpolation_options: gp.data.InterpolationOptions = geo_model.interpolation_options
 
-    interpolation_options.mesh_extraction = True
-    interpolation_options.evaluation_options.compute_scalar_gradient = True
+    interpolation_options.kernel_options.range = 1.7
+    interpolation_options.evaluation_options.number_octree_levels_surface = 4
+    interpolation_options.evaluation_options.compute_scalar_gradient = False
+    interpolation_options.evaluation_options.curvature_threshold = 1
+    interpolation_options.evaluation_options.min_octree_level = 1
 
-    interpolation_options.kernel_options.range = 1
-    interpolation_options.evaluation_options.number_octree_levels_surface = 6
-    interpolation_options.evaluation_options.curvature_threshold = 0.6
-
-
-
-
-
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-    /home/leguark/gempy_engine/gempy_engine/core/data/transforms.py:87: RuntimeWarning: Interpolation is being done with the default transform. If you do not know what you are doing you should probably call GeoModel.update_transform() first.
-      warnings.warn(
+    interpolation_options.evaluation_options.verbose = True
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 73-75
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 74-76
 
 Compute the geological model
 We use the specified backend (in this case, PyTorch) to compute the model.
 
-.. GENERATED FROM PYTHON SOURCE LINES 75-80
+.. GENERATED FROM PYTHON SOURCE LINES 76-84
 
 .. code-block:: Python
 
     gp.compute_model(
         gempy_model=geo_model,
-        engine_config=gp.data.GemPyEngineConfig(backend=gp.data.AvailableBackends.PYTORCH)
+        engine_config=gp.data.GemPyEngineConfig(
+            backend=gp.data.AvailableBackends.numpy,
+            dtype="float64"
+        )
     )
 
 
 
+
+.. rst-class:: sphx-glr-horizontal
+
+
+    *
+
+      .. image-sg:: /tutorials/z_other_tutorials/images/sphx_glr_a1_fold_002.png
+         :alt: Voxel Scalar Values with Refinement Status
+         :srcset: /tutorials/z_other_tutorials/images/sphx_glr_a1_fold_002.png
+         :class: sphx-glr-multi-img
+
+    *
+
+      .. image-sg:: /tutorials/z_other_tutorials/images/sphx_glr_a1_fold_003.png
+         :alt: Voxel Scalar Values with Refinement Status
+         :srcset: /tutorials/z_other_tutorials/images/sphx_glr_a1_fold_003.png
+         :class: sphx-glr-multi-img
+
+    *
+
+      .. image-sg:: /tutorials/z_other_tutorials/images/sphx_glr_a1_fold_004.png
+         :alt: Voxel Scalar Values with Refinement Status
+         :srcset: /tutorials/z_other_tutorials/images/sphx_glr_a1_fold_004.png
+         :class: sphx-glr-multi-img
+
+    *
+
+      .. image-sg:: /tutorials/z_other_tutorials/images/sphx_glr_a1_fold_005.png
+         :alt: Voxel Scalar Values with Refinement Status
+         :srcset: /tutorials/z_other_tutorials/images/sphx_glr_a1_fold_005.png
+         :class: sphx-glr-multi-img
 
 
 .. rst-class:: sphx-glr-script-out
 
  .. code-block:: none
 
-    Setting Backend To: AvailableBackends.PYTORCH
-    Number of voxels marked as high curvature: 4 of 8
-    Number of voxels marked as high curvature: 29 of 64
-    Number of voxels marked as high curvature: 90 of 416
-    Number of voxels marked as high curvature: 236 of 2112
-    Number of voxels marked as high curvature: 598 of 11080
-    Chunking done: 9 chunks
-    Chunking done: 9 chunks
+    Setting Backend To: AvailableBackends.numpy
+    Number of voxels marked by stats: 16 of (64,).
+     Number of voxels marked by corners : 40
+    Total voxels: 16
+    Dense Grid would be 64 voxels
+    Number of voxels marked by stats: 40 of (64,).
+     Number of voxels marked by corners : 40
+    Total voxels: 44
+    Dense Grid would be 64 voxels
+    Number of voxels marked by stats: 128 of (384,).
+     Number of voxels marked by corners : 232
+    Total voxels: 128
+    Dense Grid would be 512 voxels
+    Number of voxels marked by stats: 216 of (384,).
+     Number of voxels marked by corners : 232
+    Total voxels: 240
+    Dense Grid would be 512 voxels
 
 
 .. raw:: html
 
     <div class="output_subarea output_html rendered_html output_result">
-    <b>Solutions:</b> 6 Octree Levels, 3 DualContouringMeshes
+    <b>Solutions:</b> 4 Octree Levels, 3 DualContouringMeshes
     </div>
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 81-83
+.. GENERATED FROM PYTHON SOURCE LINES 85-87
 
 Visualize the model: 2D cross-section without scalar field
 After computing the model, we visualize it again in 2D without the scalar field.
 
-.. GENERATED FROM PYTHON SOURCE LINES 83-85
+.. GENERATED FROM PYTHON SOURCE LINES 87-89
 
 .. code-block:: Python
 
@@ -285,9 +322,9 @@ After computing the model, we visualize it again in 2D without the scalar field.
 
 
 
-.. image-sg:: /tutorials/z_other_tutorials/images/sphx_glr_a1_fold_002.png
+.. image-sg:: /tutorials/z_other_tutorials/images/sphx_glr_a1_fold_006.png
    :alt: Cell Number: mid Direction: y
-   :srcset: /tutorials/z_other_tutorials/images/sphx_glr_a1_fold_002.png
+   :srcset: /tutorials/z_other_tutorials/images/sphx_glr_a1_fold_006.png
    :class: sphx-glr-single-img
 
 
@@ -296,17 +333,17 @@ After computing the model, we visualize it again in 2D without the scalar field.
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc920808820>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87dbafbb80>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 86-89
+.. GENERATED FROM PYTHON SOURCE LINES 90-93
 
 Visualize the model: 2D cross-section with scalar field
 In this cell, we visualize the 2D cross-section with the scalar field enabled.
 %%
 
-.. GENERATED FROM PYTHON SOURCE LINES 89-91
+.. GENERATED FROM PYTHON SOURCE LINES 93-95
 
 .. code-block:: Python
 
@@ -315,9 +352,9 @@ In this cell, we visualize the 2D cross-section with the scalar field enabled.
 
 
 
-.. image-sg:: /tutorials/z_other_tutorials/images/sphx_glr_a1_fold_003.png
+.. image-sg:: /tutorials/z_other_tutorials/images/sphx_glr_a1_fold_007.png
    :alt: Cell Number: mid Direction: y
-   :srcset: /tutorials/z_other_tutorials/images/sphx_glr_a1_fold_003.png
+   :srcset: /tutorials/z_other_tutorials/images/sphx_glr_a1_fold_007.png
    :class: sphx-glr-single-img
 
 
@@ -326,16 +363,16 @@ In this cell, we visualize the 2D cross-section with the scalar field enabled.
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc92083a440>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87cc542860>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 92-94
+.. GENERATED FROM PYTHON SOURCE LINES 96-98
 
 Visualize the model in 3D
 Finally, we create a 3D visualization of the geological model without lithological coloring and image.
 
-.. GENERATED FROM PYTHON SOURCE LINES 94-97
+.. GENERATED FROM PYTHON SOURCE LINES 98-101
 
 .. code-block:: Python
 
@@ -345,9 +382,9 @@ Finally, we create a 3D visualization of the geological model without lithologic
 
 
 
-.. image-sg:: /tutorials/z_other_tutorials/images/sphx_glr_a1_fold_004.png
+.. image-sg:: /tutorials/z_other_tutorials/images/sphx_glr_a1_fold_008.png
    :alt: a1 fold
-   :srcset: /tutorials/z_other_tutorials/images/sphx_glr_a1_fold_004.png
+   :srcset: /tutorials/z_other_tutorials/images/sphx_glr_a1_fold_008.png
    :class: sphx-glr-single-img
 
 
@@ -356,17 +393,17 @@ Finally, we create a 3D visualization of the geological model without lithologic
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fc9206e2e60>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f87cc7ce6b0>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 98-101
+.. GENERATED FROM PYTHON SOURCE LINES 102-105
 
 ### Coming up next
 Additional: Manually adding data (optional)
 Here is an example of how you can manually add surface points to the model. Uncomment and modify the code as needed.
 
-.. GENERATED FROM PYTHON SOURCE LINES 101-112
+.. GENERATED FROM PYTHON SOURCE LINES 105-116
 
 .. code-block:: Python
 
@@ -394,7 +431,7 @@ Here is an example of how you can manually add surface points to the model. Unco
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 113-117
+.. GENERATED FROM PYTHON SOURCE LINES 117-121
 
 Displaying data cross section (optional)
 You can re-plot the 2D cross-section if needed.
@@ -404,7 +441,7 @@ gpv.plot_2d(geo_model)
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 22.077 seconds)
+   **Total running time of the script:** (0 minutes 2.999 seconds)
 
 
 .. _sphx_glr_download_tutorials_z_other_tutorials_a1_fold.py:

@@ -66,7 +66,7 @@ gpv.plot_3d(geo_model, image=False)
 # %%
 link = gpv.plot_to_liquid_earth(
     geo_model=geo_model,
-    space_name="ch1_7_3d_visualization",
+    space_name="[PUBLIC] GemPy Tutorial 1.7: 3-D Visualization",
     file_name="gempy_model",
     user_token=None,  # If None, it will try to grab it from the environment
     grab_link=True,

@@ -188,7 +188,7 @@ we can directly tidy the data in gempy style:
 Now we do the same with the orientations:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 61-84
+.. GENERATED FROM PYTHON SOURCE LINES 61-83
 
 .. code-block:: Python
 
@@ -221,8 +221,7 @@ Now we do the same with the orientations:
 
 
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 85-94
+.. GENERATED FROM PYTHON SOURCE LINES 84-93
 
 Data initialization:
 ~~~~~~~~~~~~~~~~~~~~
@@ -234,7 +233,7 @@ Suggested resolution: 0.05m (grid size 321 x 21 x 91)
 
 %%
 
-.. GENERATED FROM PYTHON SOURCE LINES 94-133
+.. GENERATED FROM PYTHON SOURCE LINES 93-131
 
 .. code-block:: Python
 
@@ -266,14 +265,13 @@ Suggested resolution: 0.05m (grid size 321 x 21 x 91)
         project_name='Moureze',
         extent=[0, 16, -0.5, 0.5, 0, 4.5],
         resolution=[321, 21, 91],
-        refinement=4,
         structural_frame=structural_frame
     )
 
     gp.set_section_grid(
         grid=geo_model.grid,
         section_dict={
-            'section': ([0, 0], [16, 0], [321, 91])
+                'section': ([0, 0], [16, 0], [321, 91])
         },
     )
 
@@ -285,7 +283,7 @@ Suggested resolution: 0.05m (grid size 321 x 21 x 91)
 
  .. code-block:: none
 
-    Active grids: ['regular' 'sections']
+    Active grids: GridTypes.NONE|SECTIONS|DENSE
 
 
 .. raw:: html
@@ -315,14 +313,14 @@ Suggested resolution: 0.05m (grid size 321 x 21 x 91)
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 134-138
+.. GENERATED FROM PYTHON SOURCE LINES 132-136
 
 We need an orientation per series/fault. The faults does not have
 orientation so the easiest is to create an orientation from the surface
 points availablle:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 140-155
+.. GENERATED FROM PYTHON SOURCE LINES 138-153
 
 .. code-block:: Python
 
@@ -348,12 +346,12 @@ points availablle:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 156-158
+.. GENERATED FROM PYTHON SOURCE LINES 154-156
 
 Now we can see how the data looks so far:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 160-162
+.. GENERATED FROM PYTHON SOURCE LINES 158-160
 
 .. code-block:: Python
 
@@ -373,16 +371,16 @@ Now we can see how the data looks so far:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f0080239ab0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87c7f2eda0>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 163-165
+.. GENERATED FROM PYTHON SOURCE LINES 161-163
 
 By default all surfaces belong to one unique series.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 167-169
+.. GENERATED FROM PYTHON SOURCE LINES 165-167
 
 .. code-block:: Python
 
@@ -481,12 +479,12 @@ By default all surfaces belong to one unique series.
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 170-172
+.. GENERATED FROM PYTHON SOURCE LINES 168-170
 
 We will need to separate with surface belong to each series:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 174-179
+.. GENERATED FROM PYTHON SOURCE LINES 172-177
 
 .. code-block:: Python
 
@@ -609,18 +607,18 @@ We will need to separate with surface belong to each series:
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 180-183
+.. GENERATED FROM PYTHON SOURCE LINES 178-181
 
 However if we want the faults to offset the “Default series”, they will
 need to be more recent (higher on the pile). We can modify the order by:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 187-189
+.. GENERATED FROM PYTHON SOURCE LINES 185-187
 
 Lastly, so far we did not specify which series/faults are actula faults:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 191-196
+.. GENERATED FROM PYTHON SOURCE LINES 189-194
 
 .. code-block:: Python
 
@@ -743,14 +741,14 @@ Lastly, so far we did not specify which series/faults are actula faults:
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 197-201
+.. GENERATED FROM PYTHON SOURCE LINES 195-199
 
 The default range is always the diagonal of the extent. Since in this
 model data is very close we will need to reduce the range to 5-10% of
 that value:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 203-204
+.. GENERATED FROM PYTHON SOURCE LINES 201-203
 
 .. code-block:: Python
 
@@ -762,11 +760,65 @@ that value:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 205-207
+
+.. GENERATED FROM PYTHON SOURCE LINES 204-212
+
+Explanation of model characteristics and adjustments
+This model has characteristics that make it difficult to get the right default values:
+- It is large, and we want high resolution
+- Some series have a large conditional number (i.e., the model input is not very stable)
+To address these issues:
+- Reduce the chunk size during evaluation to trade speed for memory
+- Reduce the std of the error parameter in octree refinement, which evaluates fewer voxels but may leave some without refinement
+Enable debugging options to help tune these parameters.
+
+.. GENERATED FROM PYTHON SOURCE LINES 214-215
+
+Setting verbose and condition number options for debugging
+
+.. GENERATED FROM PYTHON SOURCE LINES 215-216
 
 .. code-block:: Python
 
-    gp.compute_model(geo_model, gp.data.GemPyEngineConfig(use_gpu=True, dtype='float64'))
+    geo_model.interpolation_options.kernel_options.compute_condition_number = True
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 217-220
+
+Observations and parameter adjustments
+The octree refinement is making the octree grid almost dense, and smaller chunks are needed to avoid running out of memory.
+Adjusting parameters accordingly:
+
+.. GENERATED FROM PYTHON SOURCE LINES 220-223
+
+.. code-block:: Python
+
+
+    geo_model.interpolation_options.evaluation_options.evaluation_chunk_size = 50_000
+
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 224-232
+
+.. code-block:: Python
+
+    gp.compute_model(
+        gempy_model=geo_model,
+        engine_config=gp.data.GemPyEngineConfig(
+            backend=gp.data.AvailableBackends.PYTORCH,
+            dtype='float64'
+        )
+    )
 
 
 
@@ -777,10 +829,33 @@ that value:
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.PYTORCH
-    Chunking done: 13 chunks
-    Chunking done: 13 chunks
-    Chunking done: 13 chunks
-    Chunking done: 13 chunks
+    Condition number: 263879.392299568.
+    Chunking done: 206 chunks
+    Condition number: 597671.5533391963.
+    Chunking done: 258 chunks
+    Condition number: 112458.69653965058.
+    Chunking done: 206 chunks
+    Condition number: 20512698.067502074.
+    Chunking done: 10501 chunks
+    Condition number: 20512698.06753521.
+    Chunking done: 14 chunks
+    Chunking done: 14 chunks
+    Chunking done: 21 chunks
+    Chunking done: 21 chunks
+    Chunking done: 80 chunks
+    Condition number: 20512698.06753521.
+    Chunking done: 80 chunks
+    Chunking done: 11 chunks
+    Chunking done: 14 chunks
+    Chunking done: 11 chunks
+    Chunking done: 548 chunks
+    Condition number: 20512698.067502074.
+    Chunking done: 36 chunks
+    Condition number: 20512698.06753521.
+    Chunking done: 34 chunks
+    Chunking done: 33 chunks
+    Chunking done: 7 chunks
+    Chunking done: 246 chunks
 
 
 .. raw:: html
@@ -791,16 +866,7 @@ that value:
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 208-214
-
-Time
-~~~~
-
--  GTX 2080 164 ms ± 2.03 ms per loop (mean ± std. dev. of 7 runs, 1
-   loop each)
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 216-218
+.. GENERATED FROM PYTHON SOURCE LINES 233-235
 
 .. code-block:: Python
 
@@ -820,11 +886,11 @@ Time
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f00c41eebf0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87cc833be0>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 219-221
+.. GENERATED FROM PYTHON SOURCE LINES 236-238
 
 .. code-block:: Python
 
@@ -844,11 +910,11 @@ Time
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f00a02d4490>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87cc8d2470>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 222-224
+.. GENERATED FROM PYTHON SOURCE LINES 239-241
 
 .. code-block:: Python
 
@@ -868,15 +934,15 @@ Time
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f00805e3400>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87cc832200>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 225-226
+.. GENERATED FROM PYTHON SOURCE LINES 242-243
 
 sphinx_gallery_thumbnail_number = 3
 
-.. GENERATED FROM PYTHON SOURCE LINES 226-227
+.. GENERATED FROM PYTHON SOURCE LINES 243-244
 
 .. code-block:: Python
 
@@ -895,14 +961,14 @@ sphinx_gallery_thumbnail_number = 3
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00a0243d90>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f87c412f250>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (2 minutes 16.801 seconds)
+   **Total running time of the script:** (1 minutes 50.980 seconds)
 
 
 .. _sphx_glr_download_examples_real_Hecho.py:

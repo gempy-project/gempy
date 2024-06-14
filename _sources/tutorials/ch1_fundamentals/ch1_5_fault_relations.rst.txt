@@ -76,8 +76,38 @@ We import a model from an existing folder.
 
  .. code-block:: none
 
-    {'_interpolation_options': InterpolationOptions(kernel_options={'range': 5, 'c_o': 10, 'uni_degree': 1, 'i_res': 4, 'gi_res': 2, 'number_dimensions': 3, 'kernel_function': <AvailableKernelFunctions.cubic: KernelFunction(base_function=<function cubic_function at 0x7f00e5cc09d0>, derivative_div_r=<function cubic_function_p_div_r at 0x7f00e5cc0a60>, second_derivative=<function cubic_function_a at 0x7f00e5cc0af0>, consume_sq_distance=False)>, 'kernel_solver': <Solvers.DEFAULT: 1>, 'compute_condition_number': False, 'optimizing_condition_number': False, 'condition_number': None}, _number_octree_levels=6, current_octree_level=0, block_solutions_type=BlockSolutionType.OCTREE, compute_scalar_gradient=False, mesh_extraction=True, mesh_extraction_masking_options=MeshExtractionMaskingOptions.INTERSECT, mesh_extraction_fancy=True, cache_mode=CacheMode.CACHE, debug=True, debug_water_tight=False, sigmoid_slope=50000, evaluation_chunk_size=50000, _number_octree_levels_surface=4, _model_name=None),
-     'grid': <gempy.core.data.grid.Grid object at 0x7f00cb4d4e50>,
+    {'_interpolation_options': InterpolationOptions(kernel_options={'range': 5, 'c_o': 10, 'uni_degree': 1, 'i_res': 4, 'gi_res': 2, 'number_dimensions': 3, 'kernel_function': <AvailableKernelFunctions.cubic: KernelFunction(base_function=<function cubic_function at 0x7f8833a9d3f0>, derivative_div_r=<function cubic_function_p_div_r at 0x7f8833a9d480>, second_derivative=<function cubic_function_a at 0x7f8833a9d510>, consume_sq_distance=False)>, 'kernel_solver': <Solvers.DEFAULT: 1>, 'compute_condition_number': False, 'optimizing_condition_number': False, 'condition_number': None}, evaluation_options={'_number_octree_levels': 6, '_number_octree_levels_surface': 4, 'curvature_threshold': -1, 'error_threshold': 1.0, 'min_octree_level': 2, 'mesh_extraction': True, 'mesh_extraction_masking_options': <MeshExtractionMaskingOptions.INTERSECT: 3>, 'mesh_extraction_fancy': True, 'evaluation_chunk_size': 500000, 'compute_scalar_gradient': False, 'verbose': False}, temp_interpolation_values=<gempy_engine.core.data.options.temp_interpolation_values.TempInterpolationValues object at 0x7f87d3e93730>, debug=True, cache_mode=CacheMode.IN_MEMORY_CACHE, cache_model_name=, block_solutions_type=BlockSolutionType.OCTREE, sigmoid_slope=50000, debug_water_tight=False),
+     'grid': Grid(_octree_grid=None,
+                  _dense_grid=RegularGrid(resolution=array([20, 20, 20]),
+                                          extent=array([    0.,  1000.,     0.,  1000., -1000.,  -400.]),
+                                          values=array([[  25.,   25., -985.],
+           [  25.,   25., -955.],
+           [  25.,   25., -925.],
+           ...,
+           [ 975.,  975., -475.],
+           [ 975.,  975., -445.],
+           [ 975.,  975., -415.]]),
+                                          mask_topo=array([], shape=(0, 3), dtype=bool),
+                                          _transform=None),
+                  _custom_grid=None,
+                  _topography=None,
+                  _sections=None,
+                  _centered_grid=None,
+                  values=array([[  25.,   25., -985.],
+           [  25.,   25., -955.],
+           [  25.,   25., -925.],
+           ...,
+           [ 975.,  975., -475.],
+           [ 975.,  975., -445.],
+           [ 975.,  975., -415.]]),
+                  length=array([], dtype=float64),
+                  _transform=None,
+                  _octree_levels=-1),
+     'input_transform': {'_cached_pivot': None,
+     '_is_default_transform': False,
+     'position': array([-500., -500.,  650.]),
+     'rotation': array([0., 0., 0.]),
+     'scale': array([0.000625, 0.000625, 0.000625])},
      'meta': GeoModelMeta(name='Faults_relations',
                           creation_date=None,
                           last_modification_date=None,
@@ -123,11 +153,7 @@ We import a model from an existing folder.
     ],
             fault_relations=
     [[False]],
-    ,
-     'transform': {'_is_default_transform': False,
-     'position': array([-500., -500.,  650.]),
-     'rotation': array([0., 0., 0.]),
-     'scale': array([0.000625, 0.000625, 0.000625])}}
+    }
 
 
 
@@ -222,22 +248,63 @@ Setting the structural frame
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 65-82
+.. GENERATED FROM PYTHON SOURCE LINES 65-68
 
 .. code-block:: Python
 
 
-    geo_model.transform.apply_anisotropy(gp.data.GlobalAnisotropy.NONE)
-    if False:
-        gp.compute_model(geo_model)
-        # %%
-        print(geo_model.solutions.raw_arrays.block_matrix[0])  # This contains the block values for the fault1
-        print(geo_model.solutions.raw_arrays.block_matrix[1])  # This contains the block values for the formations
-        # %%
-        gpv.plot_2d(geo_model, show_data=True)
-        gpv.plot_3d(geo_model, show_data=True, kwargs_plot_structured_grid={'opacity': .2})
+    geo_model.input_transform.apply_anisotropy(gp.data.GlobalAnisotropy.NONE)
+    gp.compute_model(geo_model)
 
-    # TODO: Add example of offsetting just one fault
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+    Setting Backend To: AvailableBackends.numpy
+    Chunking done: 6 chunks
+    Chunking done: 31 chunks
+    Chunking done: 6 chunks
+    Chunking done: 31 chunks
+
+
+.. raw:: html
+
+    <div class="output_subarea output_html rendered_html output_result">
+    <b>Solutions:</b> 6 Octree Levels, 5 DualContouringMeshes
+    </div>
+    <br />
+    <br />
+
+.. GENERATED FROM PYTHON SOURCE LINES 69-71
+
+.. code-block:: Python
+
+    print(geo_model.solutions.raw_arrays.block_matrix[0])  # This contains the block values for the fault1
+    print(geo_model.solutions.raw_arrays.block_matrix[1])  # This contains the block values for the formations
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+    [2. 2. 2. ... 1. 1. 1.]
+    [6. 6. 6. ... 2. 2. 2.]
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 72-80
+
+.. code-block:: Python
+
+    gpv.plot_2d(geo_model, show_data=True)
+    gpv.plot_3d(geo_model, show_data=True, kwargs_plot_structured_grid={'opacity': .2})
+
 
     # %5
     # Graben example
@@ -246,11 +313,27 @@ Setting the structural frame
 
 
 
+.. image-sg:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_001.png
+   :alt: ch1 5 fault relations
+   :srcset: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_001.png
+   :class: sphx-glr-single-img
+
+.. image-sg:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_002.png
+   :alt: Cell Number: mid Direction: y
+   :srcset: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_002.png
+   :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f87daf85210>
 
 
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 83-99
+.. GENERATED FROM PYTHON SOURCE LINES 81-93
 
 .. code-block:: Python
 
@@ -264,10 +347,6 @@ Setting the structural frame
     )
     print(geo_model.structural_frame)
 
-    from gempy_engine.core.data.kernel_classes.solvers import Solvers
-
-    geo_model.interpolation_options.kernel_options.kernel_solver = Solvers.SCIPY_CG
-    geo_model.interpolation_options.kernel_options.compute_condition_number = True
     gp.compute_model(geo_model)
 
 
@@ -307,13 +386,8 @@ Setting the structural frame
             structural_relation=StackRelationType.ERODE,
             elements=[
     Element(
-            name=rock1,
-            color=#ffbe00,
-            is_active=True
-    ),
-    Element(
-            name=rock2,
-            color=#728f02,
+            name=rock4,
+            color=#ff3f20,
             is_active=True
     ),
     Element(
@@ -322,8 +396,13 @@ Setting the structural frame
             is_active=True
     ),
     Element(
-            name=rock4,
-            color=#ff3f20,
+            name=rock2,
+            color=#728f02,
+            is_active=True
+    ),
+    Element(
+            name=rock1,
+            color=#ffbe00,
             is_active=True
     )
     ]
@@ -334,14 +413,13 @@ Setting the structural frame
      [False, False,  True],
      [False, False, False]],
 
-    /home/leguark/gempy/gempy/core/data/geo_model.py:115: UserWarning: Both octree levels and resolution are set. The default grid for the `raw_array_solution`and plots will be the dense regular grid. To use octrees instead, set resolution to None in the regular grid.
-      warnings.warn("Both octree levels and resolution are set. The default grid for the `raw_array_solution`"
-    Setting Backend To: AvailableBackends.PYTORCH
-    Condition number: 18675.84765625.
-    Condition number: 264929521172480.0.
-    Condition number: 511605.15625.
-    Condition number: 511605.15625.
-    Condition number: 511605.15625.
+    Setting Backend To: AvailableBackends.numpy
+    Chunking done: 7 chunks
+    Chunking done: 7 chunks
+    Chunking done: 38 chunks
+    Chunking done: 7 chunks
+    Chunking done: 7 chunks
+    Chunking done: 38 chunks
 
 
 .. raw:: html
@@ -352,7 +430,7 @@ Setting the structural frame
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 100-103
+.. GENERATED FROM PYTHON SOURCE LINES 94-97
 
 .. code-block:: Python
 
@@ -362,14 +440,14 @@ Setting the structural frame
 
 
 
-.. image-sg:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_001.png
+.. image-sg:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_003.png
    :alt: ch1 5 fault relations
-   :srcset: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_001.png
+   :srcset: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_003.png
    :class: sphx-glr-single-img
 
-.. image-sg:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_002.png
+.. image-sg:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_004.png
    :alt: Cell Number: mid Direction: y
-   :srcset: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_002.png
+   :srcset: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_004.png
    :class: sphx-glr-single-img
 
 
@@ -378,11 +456,11 @@ Setting the structural frame
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00cb72b130>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f87d3ec5690>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 104-108
+.. GENERATED FROM PYTHON SOURCE LINES 98-102
 
 .. code-block:: Python
 
@@ -398,23 +476,23 @@ Setting the structural frame
 
     *
 
-      .. image-sg:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_003.png
-         :alt: Cell Number: mid Direction: y
-         :srcset: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_003.png
-         :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_004.png
-         :alt: Cell Number: mid Direction: y
-         :srcset: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_004.png
-         :class: sphx-glr-multi-img
-
-    *
-
       .. image-sg:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_005.png
          :alt: Cell Number: mid Direction: y
          :srcset: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_005.png
+         :class: sphx-glr-multi-img
+
+    *
+
+      .. image-sg:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_006.png
+         :alt: Cell Number: mid Direction: y
+         :srcset: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_006.png
+         :class: sphx-glr-multi-img
+
+    *
+
+      .. image-sg:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_007.png
+         :alt: Cell Number: mid Direction: y
+         :srcset: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_007.png
          :class: sphx-glr-multi-img
 
 
@@ -423,25 +501,25 @@ Setting the structural frame
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f00cb4e8100>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87dbd8e140>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 109-111
+.. GENERATED FROM PYTHON SOURCE LINES 103-105
 
 Finite Faults
 -------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 115-117
+.. GENERATED FROM PYTHON SOURCE LINES 109-111
 
 Faults relations
 ----------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 119-120
+.. GENERATED FROM PYTHON SOURCE LINES 113-114
 
 Let's split the formations in two groups
 
-.. GENERATED FROM PYTHON SOURCE LINES 120-147
+.. GENERATED FROM PYTHON SOURCE LINES 114-141
 
 .. code-block:: Python
 
@@ -547,7 +625,7 @@ Let's split the formations in two groups
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 148-150
+.. GENERATED FROM PYTHON SOURCE LINES 142-144
 
 .. code-block:: Python
 
@@ -561,11 +639,15 @@ Let's split the formations in two groups
 
  .. code-block:: none
 
-    Setting Backend To: AvailableBackends.PYTORCH
-    /home/leguark/gempy/gempy/core/data/geo_model.py:115: UserWarning: Both octree levels and resolution are set. The default grid for the `raw_array_solution`and plots will be the dense regular grid. To use octrees instead, set resolution to None in the regular grid.
-      warnings.warn("Both octree levels and resolution are set. The default grid for the `raw_array_solution`"
-    Condition number: 210167.4375.
-    Condition number: 199390.28125.
+    Setting Backend To: AvailableBackends.numpy
+    Chunking done: 7 chunks
+    Chunking done: 7 chunks
+    Chunking done: 23 chunks
+    Chunking done: 17 chunks
+    Chunking done: 7 chunks
+    Chunking done: 7 chunks
+    Chunking done: 22 chunks
+    Chunking done: 17 chunks
 
 
 .. raw:: html
@@ -576,7 +658,7 @@ Let's split the formations in two groups
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 151-153
+.. GENERATED FROM PYTHON SOURCE LINES 145-147
 
 .. code-block:: Python
 
@@ -585,14 +667,14 @@ Let's split the formations in two groups
 
 
 
-.. image-sg:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_006.png
+.. image-sg:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_008.png
    :alt: ch1 5 fault relations
-   :srcset: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_006.png
+   :srcset: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_008.png
    :class: sphx-glr-single-img
 
-.. image-sg:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_007.png
+.. image-sg:: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_009.png
    :alt: Cell Number: mid Direction: y
-   :srcset: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_007.png
+   :srcset: /tutorials/ch1_fundamentals/images/sphx_glr_ch1_5_fault_relations_009.png
    :class: sphx-glr-single-img
 
 
@@ -601,14 +683,14 @@ Let's split the formations in two groups
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00c41ec040>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f87dbca7430>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.970 seconds)
+   **Total running time of the script:** (3 minutes 26.504 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_5_fault_relations.py:

@@ -83,7 +83,13 @@ an open-source, Python-based library for building implicit geological models.
 
     Surface points hash:  dd7b2f714c1c20cb7ce615c5c47ecc4cf3ca2ee3419e4090b2f11fbf633d459f
     Orientations hash:  4043b59bbfa7012abd818f04f74e2b0667ba970dd71c781512289bc073f5a6d5
-    Setting Backend To: AvailableBackends.PYTORCH
+    Setting Backend To: AvailableBackends.numpy
+    Chunking done: 6 chunks
+    Chunking done: 6 chunks
+    Chunking done: 9 chunks
+    Chunking done: 43 chunks
+    Chunking done: 9 chunks
+    Chunking done: 42 chunks
 
 
 .. raw:: html
@@ -172,7 +178,7 @@ Plot the initial geological model in the y direction
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f00c41ee320>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87cc6ca560>
 
 
 
@@ -227,7 +233,7 @@ Plot the result of the model in the y and x directions with data and boundaries
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f0080502200>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87cc3268f0>
 
 
 
@@ -254,14 +260,14 @@ The 3D plot is commented out due to a bug.
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00c41ecd30>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f87cc56d4e0>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.594 seconds)
+   **Total running time of the script:** (0 minutes 37.094 seconds)
 
 
 .. _sphx_glr_download_examples_geometries_g07_combination.py:

@@ -93,9 +93,9 @@ zone with onlap relationships.
 
  .. code-block:: none
 
-    Active grids: ['regular' 'topography']
+    Active grids: GridTypes.NONE|TOPOGRAPHY|DENSE
 
-    <gempy.core.data.grid_modules.topography.Topography object at 0x7fc965cf6b30>
+    <gempy.core.data.grid_modules.topography.Topography object at 0x7f87dbec9ed0>
 
 
 
@@ -119,7 +119,7 @@ zone with onlap relationships.
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc9733b53f0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f881e5dbf40>
 
 
 
@@ -195,7 +195,7 @@ Raw structural frame
 
 .. code-block:: Python
 
-    geo_model.transform.apply_anisotropy(gp.data.GlobalAnisotropy.NONE)
+    geo_model.input_transform.apply_anisotropy(gp.data.GlobalAnisotropy.NONE)
     gp.add_structural_group(
         model=geo_model,
         group_index=0,
@@ -335,13 +335,15 @@ Raw structural frame
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.PYTORCH
-    /home/leguark/gempy/gempy/core/data/geo_model.py:115: UserWarning: Both octree levels and resolution are set. The default grid for the `raw_array_solution`and plots will be the dense regular grid. To use octrees instead, set resolution to None in the regular grid.
-      warnings.warn("Both octree levels and resolution are set. The default grid for the `raw_array_solution`"
-    Number of voxels marked as high curvature: 2 of 8
-    Number of voxels marked as high curvature: 4 of 64
-    Number of voxels marked as high curvature: 7 of 432
-    Number of voxels marked as high curvature: 25 of 2072
-    Number of voxels marked as high curvature: 164 of 8344
+    Chunking done: 6 chunks
+    Chunking done: 7 chunks
+    Chunking done: 9 chunks
+    Chunking done: 7 chunks
+    Chunking done: 7 chunks
+    Chunking done: 7 chunks
+    Chunking done: 8 chunks
+    Chunking done: 7 chunks
+    Chunking done: 7 chunks
 
 
 
@@ -379,7 +381,7 @@ Raw structural frame
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fc926e75990>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f881e5dbac0>
 
 
 
@@ -455,7 +457,7 @@ Raw structural frame
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc9268e5540>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f8774705ae0>
 
 
 
@@ -530,14 +532,14 @@ Raw structural frame
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc920967970>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87d3e6a3b0>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 5.089 seconds)
+   **Total running time of the script:** (0 minutes 8.282 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_4_onlap_relations.py:

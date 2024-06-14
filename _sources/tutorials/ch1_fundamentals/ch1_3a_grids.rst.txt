@@ -21,7 +21,7 @@
 1.3a: Grids.
 ============
 
-.. GENERATED FROM PYTHON SOURCE LINES 5-14
+.. GENERATED FROM PYTHON SOURCE LINES 6-16
 
 .. code-block:: Python
 
@@ -31,6 +31,7 @@
 
     import gempy as gp
     from gempy.core.data import Grid
+    from gempy.core.data.grid_modules import RegularGrid
 
     np.random.seed(55500)
 
@@ -41,17 +42,17 @@
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 15-22
+.. GENERATED FROM PYTHON SOURCE LINES 17-24
 
 The Grid Class
 --------------
 
-The grid class will interact with the rest of data classes and grid
+The Grid class interacts with the rest of the data classes and grid
 subclasses. Its main purpose is to feed coordinates XYZ to the
 interpolator.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 24-26
+.. GENERATED FROM PYTHON SOURCE LINES 26-28
 
 .. code-block:: Python
 
@@ -64,24 +65,24 @@ interpolator.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 27-32
+.. GENERATED FROM PYTHON SOURCE LINES 29-34
 
 The most important attribute of Grid is ``values`` (and ``values_r``
 which are the values rescaled) which are the 3D points in space that
-kriging will be evaluated on. This array will be feed by "grid types" on
+kriging will be evaluated on. This array will be fed by "grid types" on
 a **composition** relation with Grid:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 35-37
+.. GENERATED FROM PYTHON SOURCE LINES 36-38
 
 .. image:: /_static/grids.jpg
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 39-41
+.. GENERATED FROM PYTHON SOURCE LINES 40-42
 
 .. code-block:: Python
 
-    grid.values, grid.values_r
+    print(grid.values)
 
 
 
@@ -91,23 +92,27 @@ a **composition** relation with Grid:
 
  .. code-block:: none
 
-
-    (array([], shape=(0, 3), dtype=float64), array([], shape=(0, 3), dtype=float64))
-
+    []
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 42-46
-
-At the moment of writing this tutorial, there is 5 grid types. The
-number of grid types is scalable and down the road we aim to connect
-other grid packages (like `Discretize <https://pypi.org/project/discretize/>`_) as an extra Grid type
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 48-50
+.. GENERATED FROM PYTHON SOURCE LINES 43-47
+
+At the moment of writing this tutorial, there are 5 grid types. The
+number of grid types is scalable, and down the road we aim to connect
+other grid packages (like `Discretize <https://pypi.org/project/discretize/>`_) as an extra Grid type.
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 49-50
+
+This is an enum now
+
+.. GENERATED FROM PYTHON SOURCE LINES 50-52
 
 .. code-block:: Python
 
-    grid.grid_types
+    print(grid.GridTypes)
 
 
 
@@ -117,23 +122,22 @@ other grid packages (like `Discretize <https://pypi.org/project/discretize/>`_) 
 
  .. code-block:: none
 
-
-    array(['regular', 'custom', 'topography', 'sections', 'centered',
-           'octree'], dtype='<U10')
+    <enum 'GridTypes'>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 51-54
+
+.. GENERATED FROM PYTHON SOURCE LINES 53-56
 
 Each grid contains its own ``values`` attribute as well as other
 methods to manipulate them depending on the type of grid.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 56-58
+.. GENERATED FROM PYTHON SOURCE LINES 58-60
 
 .. code-block:: Python
 
-    grid.values
+    print(grid.values)
 
 
 
@@ -143,22 +147,22 @@ methods to manipulate them depending on the type of grid.
 
  .. code-block:: none
 
-
-    array([], shape=(0, 3), dtype=float64)
-
+    []
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 59-62
 
-We can see what grids are activated (i.e. they are going to be
+
+.. GENERATED FROM PYTHON SOURCE LINES 61-64
+
+We can see which grids are activated (i.e. they are going to be
 interpolated and therefore will live on ``Grid().values``) by:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 64-66
+.. GENERATED FROM PYTHON SOURCE LINES 66-68
 
 .. code-block:: Python
 
-    grid.active_grids_bool
+    print(grid.active_grids)
 
 
 
@@ -168,22 +172,22 @@ interpolated and therefore will live on ``Grid().values``) by:
 
  .. code-block:: none
 
-
-    array([False, False, False, False, False, False])
-
+    GridTypes.NONE
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 67-70
-
-By default only the *regular grid* (``grid.regular_grid``\ ) is active. However, since the regular
-grid is still empty ``Grid().values`` is empty too.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 72-74
+.. GENERATED FROM PYTHON SOURCE LINES 69-72
+
+By default, only the *regular grid* (``grid.regular_grid``) is active. However, since the regular
+grid is still empty, ``Grid().values`` is empty too.
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 74-76
 
 .. code-block:: Python
 
-    grid.values
+    print(grid.values)
 
 
 
@@ -193,21 +197,21 @@ grid is still empty ``Grid().values`` is empty too.
 
  .. code-block:: none
 
-
-    array([], shape=(0, 3), dtype=float64)
-
+    []
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 75-77
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 77-79
 
 The last important attribute of Grid is the length:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 79-81
+.. GENERATED FROM PYTHON SOURCE LINES 81-83
 
 .. code-block:: Python
 
-    grid.length
+    print(grid.length)
 
 
 
@@ -217,25 +221,25 @@ The last important attribute of Grid is the length:
 
  .. code-block:: none
 
-
-    array([0, 0, 0, 0, 0, 0])
-
+    []
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 82-88
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 84-90
 
 Length gives back the interface indices between grids on the
 ``Grid().values`` attribute. This can be used after interpolation to
 know which interpolated values and coordinates correspond to each grid
-type. You can use the method get\_grid\_args to return the indices by
+type. You can use the method ``get_grid_args`` to return the indices by
 name:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 90-92
+.. GENERATED FROM PYTHON SOURCE LINES 92-94
 
 .. code-block:: Python
 
-    grid.get_grid_args('topography')
+    print(grid.topography)
 
 
 
@@ -245,31 +249,31 @@ name:
 
  .. code-block:: none
 
-
-    (0, 0)
-
+    None
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 93-96
 
-By now all is a bit confusing because we have no values. Lets start
+
+.. GENERATED FROM PYTHON SOURCE LINES 95-98
+
+By now all is a bit confusing because we have no values. Let's start
 adding values to the different grids:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 99-105
+.. GENERATED FROM PYTHON SOURCE LINES 100-106
 
-Regular grid
+Regular Grid
 ~~~~~~~~~~~~
 
 The ``Grid`` class has a bunch of methods to set each grid type and
 activate them.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 107-109
+.. GENERATED FROM PYTHON SOURCE LINES 108-110
 
 .. code-block:: Python
 
-    help(grid.create_regular_grid)
+    help(RegularGrid)
 
 
 
@@ -279,26 +283,101 @@ activate them.
 
  .. code-block:: none
 
-    Help on method create_regular_grid in module gempy.core.data.grid:
+    Help on class RegularGrid in module gempy.core.data.grid_modules.grid_types:
 
-    create_regular_grid(extent=None, resolution=None, set_active=True, *args, **kwargs) method of gempy.core.data.grid.Grid instance
-        Set a new regular grid and activate it.
-    
-        Args:
-            extent (np.ndarray): [x_min, x_max, y_min, y_max, z_min, z_max]
-            resolution (np.ndarray): [nx, ny, nz]
-    
-        RegularGrid Docs
+    class RegularGrid(builtins.object)
+     |  RegularGrid(extent: numpy.ndarray, resolution: numpy.ndarray, transform: Optional[gempy_engine.core.data.transforms.Transform] = None)
+     |  
+     |  Class with the methods and properties to manage 3D regular grids where the model will be interpolated.
+     |  
+     |  Methods defined here:
+     |  
+     |  __eq__(self, other)
+     |      Return self==value.
+     |  
+     |  __init__(self, extent: numpy.ndarray, resolution: numpy.ndarray, transform: Optional[gempy_engine.core.data.transforms.Transform] = None)
+     |      Initialize self.  See help(type(self)) for accurate signature.
+     |  
+     |  __repr__(self)
+     |      Return repr(self).
+     |  
+     |  get_values_vtk_format(self, orthogonal: bool = False) -> numpy.ndarray
+     |  
+     |  set_regular_grid(self, extent: Sequence[float], resolution: Sequence[int], transform: Optional[gempy_engine.core.data.transforms.Transform] = None)
+     |      Set a regular grid into the values parameters for further computations
+     |      Args:
+     |          extent (list, np.ndarry):  [x_min, x_max, y_min, y_max, z_min, z_max]
+     |          resolution (list, np.ndarray): [nx, ny, nz]
+     |  
+     |  ----------------------------------------------------------------------
+     |  Class methods defined here:
+     |  
+     |  from_corners_box(pivot: tuple, point_x_axis: tuple, distance_point3: float, zmin: float, zmax: float, resolution: numpy.ndarray, plot: bool = True) from builtins.type
+     |      Always rotate around the z axis towards the positive x axis. 
+     |      The distance_point3 is the distance from the pivot to the point3.
+     |  
+     |  ----------------------------------------------------------------------
+     |  Static methods defined here:
+     |  
+     |  plot_rotation(regular_grid, pivot, point_x_axis, point_y_axis)
+     |  
+     |  ----------------------------------------------------------------------
+     |  Readonly properties defined here:
+     |  
+     |  bounding_box
+     |  
+     |  dx
+     |  
+     |  dx_dy_dz
+     |  
+     |  dy
+     |  
+     |  dz
+     |  
+     |  values_vtk_format
+     |  
+     |  x_coord
+     |  
+     |  y_coord
+     |  
+     |  z_coord
+     |  
+     |  ----------------------------------------------------------------------
+     |  Data descriptors defined here:
+     |  
+     |  __dict__
+     |      dictionary for instance variables (if defined)
+     |  
+     |  __weakref__
+     |      list of weak references to the object (if defined)
+     |  
+     |  transform
+     |  
+     |  ----------------------------------------------------------------------
+     |  Data and other attributes defined here:
+     |  
+     |  __annotations__ = {'_transform': <class 'gempy_engine.core.data.transf...
+     |  
+     |  __dataclass_fields__ = {'_transform': Field(name='_transform',type=<cl...
+     |  
+     |  __dataclass_params__ = _DataclassParams(init=True,repr=True,eq=True,or...
+     |  
+     |  __hash__ = None
+     |  
+     |  __match_args__ = ('resolution', 'extent', 'values', 'mask_topo', '_tra...
 
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 110-112
+.. GENERATED FROM PYTHON SOURCE LINES 111-116
 
 .. code-block:: Python
 
-    grid.create_regular_grid(extent=[0, 100, 0, 100, -100, 0], resolution=[20, 20, 20])
+    extent = np.array([0, 100, 0, 100, -100, 0])
+    resolution = np.array([20, 20, 20])
+    grid.dense_grid = RegularGrid(extent, resolution)
+    print(grid.regular_grid)  # RegularGrid will return either dense grid or octree grid depending on what is set
 
 
 
@@ -308,52 +387,58 @@ activate them.
 
  .. code-block:: none
 
-
-    <gempy.core.data.grid_modules.grid_types.RegularGrid object at 0x7f00cb46f970>
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 113-115
-
-Now the regular grid object composed on ``Grid`` has been filled:
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 117-119
-
-.. code-block:: Python
-
-    grid.regular_grid.values
-
-
-
-
-
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-
-    array([[  2.5,   2.5, -97.5],
+    RegularGrid(resolution=array([20, 20, 20]), extent=array([   0.,  100.,    0.,  100., -100.,    0.]), values=array([[  2.5,   2.5, -97.5],
            [  2.5,   2.5, -92.5],
            [  2.5,   2.5, -87.5],
            ...,
            [ 97.5,  97.5, -12.5],
            [ 97.5,  97.5,  -7.5],
-           [ 97.5,  97.5,  -2.5]])
+           [ 97.5,  97.5,  -2.5]]), mask_topo=array([], shape=(0, 3), dtype=bool), _transform=None)
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 120-123
+
+.. GENERATED FROM PYTHON SOURCE LINES 117-119
+
+Now the regular grid object composed in ``Grid`` has been filled:
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 121-123
+
+.. code-block:: Python
+
+    print(grid.regular_grid.values)
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+    [[  2.5   2.5 -97.5]
+     [  2.5   2.5 -92.5]
+     [  2.5   2.5 -87.5]
+     ...
+     [ 97.5  97.5 -12.5]
+     [ 97.5  97.5  -7.5]
+     [ 97.5  97.5  -2.5]]
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 124-127
 
 And the regular grid has been set active (it was already active in any
 case):
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 125-127
+.. GENERATED FROM PYTHON SOURCE LINES 129-131
 
 .. code-block:: Python
 
-    grid.active_grids_bool
+    print(grid.active_grids)
 
 
 
@@ -363,21 +448,21 @@ case):
 
  .. code-block:: none
 
-
-    array([False, False, False, False, False, False])
-
+    GridTypes.NONE|DENSE
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 128-130
-
-Therefore the grid values will be equal to the regular grid:
 
 
 .. GENERATED FROM PYTHON SOURCE LINES 132-134
 
+Therefore, the grid values will be equal to the regular grid:
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 136-138
+
 .. code-block:: Python
 
-    grid.values
+    print(grid.values)
 
 
 
@@ -387,21 +472,27 @@ Therefore the grid values will be equal to the regular grid:
 
  .. code-block:: none
 
+    [[  2.5   2.5 -97.5]
+     [  2.5   2.5 -92.5]
+     [  2.5   2.5 -87.5]
+     ...
+     [ 97.5  97.5 -12.5]
+     [ 97.5  97.5  -7.5]
+     [ 97.5  97.5  -2.5]]
 
-    array([], shape=(0, 3), dtype=float64)
 
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 135-137
-
-And the indices to extract the different arrays:
 
 
 .. GENERATED FROM PYTHON SOURCE LINES 139-141
 
+And the indices to extract the different arrays:
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 143-145
+
 .. code-block:: Python
 
-    grid.length
+    print(grid.length)
 
 
 
@@ -411,20 +502,20 @@ And the indices to extract the different arrays:
 
  .. code-block:: none
 
-
-    array([0, 0, 0, 0, 0, 0])
-
+    []
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 142-147
 
-Custom grid
+
+.. GENERATED FROM PYTHON SOURCE LINES 146-151
+
+Custom Grid
 ~~~~~~~~~~~
 
 Completely free XYZ values.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 149-151
+.. GENERATED FROM PYTHON SOURCE LINES 153-155
 
 .. code-block:: Python
 
@@ -438,23 +529,23 @@ Completely free XYZ values.
 
  .. code-block:: none
 
-    Active grids: ['custom']
+    Active grids: GridTypes.NONE|CUSTOM|DENSE
 
-    <gempy.core.data.grid_modules.grid_types.CustomGrid object at 0x7f00cb46e140>
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 152-155
-
-Again ``set_any_grid`` will create a grid and activate it. So now the
-compose object will contain values:
+    <gempy.core.data.grid_modules.grid_types.CustomGrid object at 0x7f87dbcac040>
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 157-159
+
+.. GENERATED FROM PYTHON SOURCE LINES 156-159
+
+Again, ``set_any_grid`` will create a grid and activate it. So now the
+composed object will contain values:
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 161-163
 
 .. code-block:: Python
 
-    grid.custom_grid.values
+    print(grid.custom_grid.values)
 
 
 
@@ -464,23 +555,23 @@ compose object will contain values:
 
  .. code-block:: none
 
-
-    array([[1, 2, 3],
-           [4, 5, 6],
-           [7, 8, 9]])
-
+    [[1 2 3]
+     [4 5 6]
+     [7 8 9]]
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 160-162
-
-and since it is active, will be added to the grid.values stack:
 
 
 .. GENERATED FROM PYTHON SOURCE LINES 164-166
 
+And since it is active, it will be added to the grid.values stack:
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 168-170
+
 .. code-block:: Python
 
-    grid.active_grids_bool
+    print(grid.active_grids)
 
 
 
@@ -490,16 +581,16 @@ and since it is active, will be added to the grid.values stack:
 
  .. code-block:: none
 
-
-    array([False,  True, False, False, False, False])
-
+    GridTypes.NONE|CUSTOM|DENSE
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 167-169
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 171-173
 
 .. code-block:: Python
 
-    grid.values.shape
+    print(grid.values.shape)
 
 
 
@@ -509,22 +600,22 @@ and since it is active, will be added to the grid.values stack:
 
  .. code-block:: none
 
-
-    (0, 3)
-
+    (8003, 3)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 170-173
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 174-177
 
 We can still recover those values with ``get_grid`` or by getting the
 slicing args:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 175-177
+.. GENERATED FROM PYTHON SOURCE LINES 179-181
 
 .. code-block:: Python
 
-    grid.get_grid('custom')
+    print(grid.custom_grid)
 
 
 
@@ -534,28 +625,8 @@ slicing args:
 
  .. code-block:: none
 
+    <gempy.core.data.grid_modules.grid_types.CustomGrid object at 0x7f87dbcac040>
 
-    array([], shape=(0, 3), dtype=float64)
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 178-181
-
-.. code-block:: Python
-
-    l0, l1 = grid.get_grid_args('custom')
-    l0, l1
-
-
-
-
-
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-
-    (0, 0)
 
 
 
@@ -563,7 +634,7 @@ slicing args:
 
 .. code-block:: Python
 
-    grid.values[l0:l1]
+    print(grid.custom_grid.values)
 
 
 
@@ -573,8 +644,10 @@ slicing args:
 
  .. code-block:: none
 
+    [[1 2 3]
+     [4 5 6]
+     [7 8 9]]
 
-    array([], shape=(0, 3), dtype=float64)
 
 
 
@@ -584,8 +657,8 @@ Topography
 ~~~~~~~~~~
 
 Now we can set the topography. :class:`Topography <gempy.core.grid_modules.topography.Topography>`
-contains methods to create manual topographies as well as gdal for
-dealing with raster data. By default we will create a random topography:
+contains methods to create manual topographies as well as using gdal for
+dealing with raster data. By default, we will create a random topography:
 
 
 .. GENERATED FROM PYTHON SOURCE LINES 194-196
@@ -603,9 +676,9 @@ dealing with raster data. By default we will create a random topography:
  .. code-block:: none
 
     [-20.   0.]
-    Active grids: ['custom' 'topography']
+    Active grids: GridTypes.NONE|TOPOGRAPHY|CUSTOM|DENSE
 
-    <gempy.core.data.grid_modules.topography.Topography object at 0x7f00cb46d7e0>
+    <gempy.core.data.grid_modules.topography.Topography object at 0x7f881e5cc8b0>
 
 
 
@@ -613,7 +686,7 @@ dealing with raster data. By default we will create a random topography:
 
 .. code-block:: Python
 
-    grid.active_grids_bool
+    print(grid.active_grids)
 
 
 
@@ -623,8 +696,8 @@ dealing with raster data. By default we will create a random topography:
 
  .. code-block:: none
 
+    GridTypes.NONE|TOPOGRAPHY|CUSTOM|DENSE
 
-    array([False,  True,  True, False, False, False])
 
 
 
@@ -637,7 +710,7 @@ Now the grid values will contain both the regular grid and topography:
 
 .. code-block:: Python
 
-    grid.values, grid.length
+    print(grid.values, grid.length)
 
 
 
@@ -647,22 +720,22 @@ Now the grid values will contain both the regular grid and topography:
 
  .. code-block:: none
 
+    [[  2.5          2.5        -97.5       ]
+     [  2.5          2.5        -92.5       ]
+     [  2.5          2.5        -87.5       ]
+     ...
+     [100.          89.47368421 -14.13839552]
+     [100.          94.73684211 -16.12793911]
+     [100.         100.         -16.21462612]] []
 
-    (array([], shape=(0, 3), dtype=float64), array([0, 0, 0, 0, 0, 0]))
 
 
 
 .. GENERATED FROM PYTHON SOURCE LINES 207-209
 
-The topography args are got as follows:
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 211-214
-
 .. code-block:: Python
 
-    l0, l1 = grid.get_grid_args('topography')
-    l0, l1
+    print(grid.topography.values)
 
 
 
@@ -672,45 +745,27 @@ The topography args are got as follows:
 
  .. code-block:: none
 
-
-    (0, 0)
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 215-217
-
-And we can slice the values array as any other numpy array:
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 219-221
-
-.. code-block:: Python
-
-    grid.values[l0: l1]
+    [[  0.           0.         -14.23224119]
+     [  0.           5.26315789 -14.18893341]
+     [  0.          10.52631579 -13.54018217]
+     ...
+     [100.          89.47368421 -14.13839552]
+     [100.          94.73684211 -16.12793911]
+     [100.         100.         -16.21462612]]
 
 
 
 
-
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-
-    array([], shape=(0, 3), dtype=float64)
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 222-224
+.. GENERATED FROM PYTHON SOURCE LINES 210-212
 
 We can compare it to the topography.values:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 226-228
+.. GENERATED FROM PYTHON SOURCE LINES 214-216
 
 .. code-block:: Python
 
-    grid.topography.values
+    print(grid.topography.values)
 
 
 
@@ -720,29 +775,47 @@ We can compare it to the topography.values:
 
  .. code-block:: none
 
-
-    array([[  0.        ,   0.        , -14.23224119],
-           [  0.        ,   5.26315789, -14.18893341],
-           [  0.        ,  10.52631579, -13.54018217],
-           ...,
-           [100.        ,  89.47368421, -14.13839552],
-           [100.        ,  94.73684211, -16.12793911],
-           [100.        , 100.        , -16.21462612]])
-
+    [[  0.           0.         -14.23224119]
+     [  0.           5.26315789 -14.18893341]
+     [  0.          10.52631579 -13.54018217]
+     ...
+     [100.          89.47368421 -14.13839552]
+     [100.          94.73684211 -16.12793911]
+     [100.         100.         -16.21462612]]
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 229-232
 
-Now that we have more than one grid we can activate and deactivate any
+
+.. GENERATED FROM PYTHON SOURCE LINES 217-220
+
+Now that we have more than one grid, we can activate and deactivate any
 of them in real time:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 234-237
+.. GENERATED FROM PYTHON SOURCE LINES 222-225
 
 .. code-block:: Python
 
-    grid.set_inactive('topography')
-    grid.set_inactive('regular')
+    grid.active_grids ^= grid.GridTypes.TOPOGRAPHY
+    grid.active_grids ^= grid.GridTypes.DENSE
+
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 226-228
+
+Since now all grids are deactivated, the values will be empty:
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 230-232
+
+.. code-block:: Python
+
+    print(grid.values)
 
 
 
@@ -752,21 +825,69 @@ of them in real time:
 
  .. code-block:: none
 
+    [[1 2 3]
+     [4 5 6]
+     [7 8 9]]
 
-    array([False,  True, False, False, False, False])
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 238-240
+.. GENERATED FROM PYTHON SOURCE LINES 233-235
 
-Since now all grids are deactivated the values will be empty:
+.. code-block:: Python
+
+    grid.active_grids |= grid.GridTypes.TOPOGRAPHY
+
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 236-238
+
+.. code-block:: Python
+
+    print(grid.values, grid.values.shape)
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+    [[  1.           2.           3.        ]
+     [  4.           5.           6.        ]
+     [  7.           8.           9.        ]
+     ...
+     [100.          89.47368421 -14.13839552]
+     [100.          94.73684211 -16.12793911]
+     [100.         100.         -16.21462612]] (403, 3)
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 239-241
+
+.. code-block:: Python
+
+    grid.active_grids |= grid.GridTypes.DENSE
+
+
+
+
+
+
 
 
 .. GENERATED FROM PYTHON SOURCE LINES 242-244
 
 .. code-block:: Python
 
-    grid.values
+    print(grid.values)
 
 
 
@@ -776,102 +897,18 @@ Since now all grids are deactivated the values will be empty:
 
  .. code-block:: none
 
-
-    array([[1., 2., 3.],
-           [4., 5., 6.],
-           [7., 8., 9.]])
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 245-247
-
-.. code-block:: Python
-
-    grid.set_active('topography')
+    [[  2.5          2.5        -97.5       ]
+     [  2.5          2.5        -92.5       ]
+     [  2.5          2.5        -87.5       ]
+     ...
+     [100.          89.47368421 -14.13839552]
+     [100.          94.73684211 -16.12793911]
+     [100.         100.         -16.21462612]]
 
 
 
 
-
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-
-    array([False,  True,  True, False, False, False])
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 248-250
-
-.. code-block:: Python
-
-    grid.values, grid.values.shape
-
-
-
-
-
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-
-    (array([[  1.        ,   2.        ,   3.        ],
-           [  4.        ,   5.        ,   6.        ],
-           [  7.        ,   8.        ,   9.        ],
-           ...,
-           [100.        ,  89.47368421, -14.13839552],
-           [100.        ,  94.73684211, -16.12793911],
-           [100.        , 100.        , -16.21462612]]), (403, 3))
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 251-253
-
-.. code-block:: Python
-
-    grid.set_active('regular')
-
-
-
-
-
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-
-    array([ True,  True,  True, False, False, False])
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 254-256
-
-.. code-block:: Python
-
-    grid.values
-
-
-
-
-
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-
-    array([[  2.5       ,   2.5       , -97.5       ],
-           [  2.5       ,   2.5       , -92.5       ],
-           [  2.5       ,   2.5       , -87.5       ],
-           ...,
-           [100.        ,  89.47368421, -14.13839552],
-           [100.        ,  94.73684211, -16.12793911],
-           [100.        , 100.        , -16.21462612]])
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 257-266
+.. GENERATED FROM PYTHON SOURCE LINES 245-254
 
 Centered Grid
 ~~~~~~~~~~~~~
@@ -883,7 +920,7 @@ decreases with distance (e.g. gravity: Check `tutorial 2.2-Cell-selection <https
 )
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 268-275
+.. GENERATED FROM PYTHON SOURCE LINES 256-263
 
 .. code-block:: Python
 
@@ -902,7 +939,7 @@ decreases with distance (e.g. gravity: Check `tutorial 2.2-Cell-selection <https
 
  .. code-block:: none
 
-    Active grids: ['regular' 'custom' 'topography' 'centered']
+    Active grids: GridTypes.NONE|CENTERED|TOPOGRAPHY|CUSTOM|DENSE
 
     CenteredGrid(centers=array([[300,   0,   0],
            [  0,   0,   0]]), resolution=[10, 10, 20], radius=array([100, 100, 100]), kernel_grid_centers=array([[-100.        , -100.        ,   -6.        ],
@@ -927,14 +964,14 @@ decreases with distance (e.g. gravity: Check `tutorial 2.2-Cell-selection <https
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 276-280
+.. GENERATED FROM PYTHON SOURCE LINES 264-268
 
-Resolution and radius create a geometric spaced kernel (blue dots) which
-will be use to create a grid around each of the center points (red
+Resolution and radius create a geometrically spaced kernel (blue dots) which
+will be used to create a grid around each of the center points (red
 dots):
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 282-311
+.. GENERATED FROM PYTHON SOURCE LINES 270-299
 
 .. code-block:: Python
 
@@ -979,18 +1016,18 @@ dots):
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 312-317
+.. GENERATED FROM PYTHON SOURCE LINES 300-305
 
 Section Grid
 ~~~~~~~~~~~~
 
-This grid type has its own tutorial. See :doc: `ch1_3b_cross_sections`
+This grid type has its own tutorial. See :doc:`ch1_3b_cross_sections`
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 0.086 seconds)
+   **Total running time of the script:** (0 minutes 0.083 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_3a_grids.py:

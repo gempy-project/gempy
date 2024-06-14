@@ -5,16 +5,19 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>gempy.core.data.StructuralFrame &#8212; GemPy 2024.1.2 documentation</title>
+    <title>gempy.core.data.StructuralFrame &#8212; GemPy 2024.1.2.dev59+gc19c50fa.d20240531 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=270d38c7" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=eafc0fe6" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <script src="../_static/documentation_options.js?v=0b07e6f1"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <script src="../_static/documentation_options.js?v=2a6b7f2f"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
     <link rel="icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -40,13 +43,46 @@
 <h1>gempy.core.data.StructuralFrame<a class="headerlink" href="#gempy-core-data-structuralframe" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="gempy.core.data.StructuralFrame">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gempy.core.data.</span></span><span class="sig-name descname"><span class="pre">StructuralFrame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">structural_groups</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="gempy.core.data.StructuralGroup.html#gempy.core.data.StructuralGroup" title="gempy.core.data.structural_group.StructuralGroup"><span class="pre">StructuralGroup</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_gen</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ColorsGenerator</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data/structural_frame.html#StructuralFrame"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gempy.core.data.StructuralFrame" title="Link to this definition">¶</a></dt>
-<dd><p>A data class that represents the structural framework of a geological model.</p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gempy.core.data.</span></span><span class="sig-name descname"><span class="pre">StructuralFrame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">structural_groups</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="gempy.core.data.StructuralGroup.html#gempy.core.data.StructuralGroup" title="gempy.core.data.structural_group.StructuralGroup"><span class="pre">StructuralGroup</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_gen</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../Helper%20Classes/gempy.core.data.ColorsGenerator.html#gempy.core.data.ColorsGenerator" title="gempy.core.color_generator.ColorsGenerator"><span class="pre">ColorsGenerator</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data/structural_frame.html#StructuralFrame"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gempy.core.data.StructuralFrame" title="Link to this definition">¶</a></dt>
+<dd><p>Represents a structural frame, which is a collection of structural groups that constitute a geological model.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gempy.core.data.StructuralFrame.structural_groups">
+<span class="sig-name descname"><span class="pre">structural_groups</span></span><a class="headerlink" href="#gempy.core.data.StructuralFrame.structural_groups" title="Link to this definition">¶</a></dt>
+<dd><p>List of structural groups that constitute the geological model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[<a class="reference internal" href="gempy.core.data.StructuralGroup.html#gempy.core.data.StructuralGroup" title="gempy.core.data.StructuralGroup">StructuralGroup</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gempy.core.data.StructuralFrame.color_generator">
+<span class="sig-name descname"><span class="pre">color_generator</span></span><a class="headerlink" href="#gempy.core.data.StructuralFrame.color_generator" title="Link to this definition">¶</a></dt>
+<dd><p>Instance of ColorsGenerator used for assigning distinct colors to different structural elements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../Helper%20Classes/gempy.core.data.ColorsGenerator.html#gempy.core.data.ColorsGenerator" title="gempy.core.data.ColorsGenerator">ColorsGenerator</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gempy.core.data.StructuralFrame.is_dirty">
+<span class="sig-name descname"><span class="pre">is_dirty</span></span><a class="headerlink" href="#gempy.core.data.StructuralFrame.is_dirty" title="Link to this definition">¶</a></dt>
+<dd><p>Boolean flag indicating if the structural frame has been modified.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
 <section id="examples-using-gempy-core-data-structuralframe">
 <h2>Examples using <code class="docutils literal notranslate"><span class="pre">gempy.core.data.StructuralFrame</span></code><a class="headerlink" href="#examples-using-gempy-core-data-structuralframe" title="Link to this heading">¶</a></h2>
-<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="1.4: Unconformity relationships"><img alt="" src="../_images/sphx_glr_ch1_4_onlap_relations_thumb.png" />
-<p><a class="reference internal" href="../tutorials/ch1_fundamentals/ch1_4_onlap_relations.html#sphx-glr-tutorials-ch1-fundamentals-ch1-4-onlap-relations-py"><span class="std std-ref">1.4: Unconformity relationships</span></a></p>
-  <div class="sphx-glr-thumbnail-title">1.4: Unconformity relationships</div>
+<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="Perth basin."><img alt="" src="../_images/sphx_glr_Perth_basin_thumb.png" />
+<p><a class="reference internal" href="../examples/real/Perth_basin.html#sphx-glr-examples-real-perth-basin-py"><span class="std std-ref">Perth basin.</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Perth basin.</div>
 </div></div><div class="sphx-glr-clear"></div><p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -68,8 +104,8 @@
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_group_by_name</span></code>(group_name)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">initialize_default_structure</span></code>()</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.StructuralFrame.initialize_default_structure" title="gempy.core.data.StructuralFrame.initialize_default_structure"><code class="xref py py-obj docutils literal notranslate"><span class="pre">initialize_default_structure</span></code></a>()</p></td>
+<td><p>Initialize the default structure.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">insert_group</span></code>(index, group)</p></td>
 <td><p></p></td>
@@ -128,7 +164,7 @@
 <td><p>Returns a descriptor for the input data, detailing the relations and faults between groups.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.StructuralFrame.is_dirty" title="gempy.core.data.StructuralFrame.is_dirty"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_dirty</span></code></a></p></td>
-<td><p>Boolean flag indicating if the structural frame has been modified.</p></td>
+<td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data.StructuralFrame.n_elements" title="gempy.core.data.StructuralFrame.n_elements"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_elements</span></code></a></p></td>
 <td><p>Returns the total number of elements in the structural frame.</p></td>
@@ -148,20 +184,26 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.StructuralFrame.number_of_points_per_group" title="gempy.core.data.StructuralFrame.number_of_points_per_group"><code class="xref py py-obj docutils literal notranslate"><span class="pre">number_of_points_per_group</span></code></a></p></td>
 <td><p>Returns an array with the number of points for each structural group.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data.StructuralFrame.orientations" title="gempy.core.data.StructuralFrame.orientations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">orientations</span></code></a></p></td>
-<td><p>Returns an OrientationsTable for all orientations across the structural elements.</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">orientations</span></code></p></td>
+<td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.StructuralFrame.orientations_colors_per_item" title="gempy.core.data.StructuralFrame.orientations_colors_per_item"><code class="xref py py-obj docutils literal notranslate"><span class="pre">orientations_colors_per_item</span></code></a></p></td>
 <td><p>Returns a list of colors assigned to each orientation across structural elements.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data.StructuralFrame.structural_elements" title="gempy.core.data.StructuralFrame.structural_elements"><code class="xref py py-obj docutils literal notranslate"><span class="pre">structural_elements</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data.StructuralFrame.orientations_copy" title="gempy.core.data.StructuralFrame.orientations_copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">orientations_copy</span></code></a></p></td>
+<td><p>Returns an OrientationsTable for all orientations across the structural elements.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.StructuralFrame.structural_elements" title="gempy.core.data.StructuralFrame.structural_elements"><code class="xref py py-obj docutils literal notranslate"><span class="pre">structural_elements</span></code></a></p></td>
 <td><p>Returns a list of all structural elements across the structural groups.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.StructuralFrame.surface_points" title="gempy.core.data.StructuralFrame.surface_points"><code class="xref py py-obj docutils literal notranslate"><span class="pre">surface_points</span></code></a></p></td>
-<td><p>Returns a SurfacePointsTable for all surface points across the structural elements.</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">surface_points</span></code></p></td>
+<td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data.StructuralFrame.surface_points_colors_per_item" title="gempy.core.data.StructuralFrame.surface_points_colors_per_item"><code class="xref py py-obj docutils literal notranslate"><span class="pre">surface_points_colors_per_item</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.StructuralFrame.surface_points_colors_per_item" title="gempy.core.data.StructuralFrame.surface_points_colors_per_item"><code class="xref py py-obj docutils literal notranslate"><span class="pre">surface_points_colors_per_item</span></code></a></p></td>
 <td><p>Returns a list of colors assigned to each surface point across structural elements.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data.StructuralFrame.surface_points_copy" title="gempy.core.data.StructuralFrame.surface_points_copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">surface_points_copy</span></code></a></p></td>
+<td><p>Returns a SurfacePointsTable for all surface points across the structural elements.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.StructuralFrame.surfaces" title="gempy.core.data.StructuralFrame.surfaces"><code class="xref py py-obj docutils literal notranslate"><span class="pre">surfaces</span></code></a></p></td>
 <td><p>Returns a list of all surfaces in the structural elements.</p></td>
@@ -170,34 +212,36 @@
 <td><p>Returns a DataFrame representation of all surfaces across structural elements.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.StructuralFrame.structural_groups" title="gempy.core.data.StructuralFrame.structural_groups"><code class="xref py py-obj docutils literal notranslate"><span class="pre">structural_groups</span></code></a></p></td>
-<td><p>List of structural groups that constitute the geological model.</p></td>
+<td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data.StructuralFrame.color_generator" title="gempy.core.data.StructuralFrame.color_generator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">color_generator</span></code></a></p></td>
-<td><p>Instance of ColorsGenerator used for assigning distinct colors to different structural elements.</p></td>
+<td><p></p></td>
 </tr>
 </tbody>
 </table>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gempy.core.data.StructuralFrame.is_dirty">
-<span class="sig-name descname"><span class="pre">is_dirty</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#gempy.core.data.StructuralFrame.is_dirty" title="Link to this definition">¶</a></dt>
-<dd><p>Boolean flag indicating if the structural frame has been modified.</p>
-</dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="gempy.core.data.StructuralFrame.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">structural_groups</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="gempy.core.data.StructuralGroup.html#gempy.core.data.StructuralGroup" title="gempy.core.data.structural_group.StructuralGroup"><span class="pre">StructuralGroup</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_gen</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ColorsGenerator</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data/structural_frame.html#StructuralFrame.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gempy.core.data.StructuralFrame.__init__" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">structural_groups</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="gempy.core.data.StructuralGroup.html#gempy.core.data.StructuralGroup" title="gempy.core.data.structural_group.StructuralGroup"><span class="pre">StructuralGroup</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_gen</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../Helper%20Classes/gempy.core.data.ColorsGenerator.html#gempy.core.data.ColorsGenerator" title="gempy.core.color_generator.ColorsGenerator"><span class="pre">ColorsGenerator</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data/structural_frame.html#StructuralFrame.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gempy.core.data.StructuralFrame.__init__" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gempy.core.data.StructuralFrame.structural_groups">
-<span class="sig-name descname"><span class="pre">structural_groups</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="gempy.core.data.StructuralGroup.html#gempy.core.data.StructuralGroup" title="gempy.core.data.structural_group.StructuralGroup"><span class="pre">StructuralGroup</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#gempy.core.data.StructuralFrame.structural_groups" title="Link to this definition">¶</a></dt>
-<dd><p>List of structural groups that constitute the geological model.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="gempy.core.data.StructuralFrame.color_generator">
-<span class="sig-name descname"><span class="pre">color_generator</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ColorsGenerator</span></em><a class="headerlink" href="#gempy.core.data.StructuralFrame.color_generator" title="Link to this definition">¶</a></dt>
-<dd><p>Instance of ColorsGenerator used for assigning distinct colors to different structural elements.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gempy.core.data.StructuralFrame.initialize_default_structure">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">initialize_default_structure</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gempy.core.data.StructuralFrame" title="gempy.core.data.structural_frame.StructuralFrame"><span class="pre">StructuralFrame</span></a></span></span><a class="reference internal" href="../_modules/gempy/core/data/structural_frame.html#StructuralFrame.initialize_default_structure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gempy.core.data.StructuralFrame.initialize_default_structure" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize the default structure.</p>
+<p>This method is used to initialize the default structure for a <cite>StructuralFrame</cite> object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>None</strong> – </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A <cite>StructuralFrame</cite> object representing the default structure.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>‘StructuralFrame’</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p>structural_frame = initialize_default_structure()</p>
 </dd></dl>
 
 <dl class="py property">
@@ -297,14 +341,14 @@
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="gempy.core.data.StructuralFrame.surface_points">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">surface_points</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="gempy.core.data.SurfacePointsTable.html#gempy.core.data.SurfacePointsTable" title="gempy.core.data.surface_points.SurfacePointsTable"><span class="pre">SurfacePointsTable</span></a></em><a class="headerlink" href="#gempy.core.data.StructuralFrame.surface_points" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="gempy.core.data.StructuralFrame.surface_points_copy">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">surface_points_copy</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="gempy.core.data.SurfacePointsTable.html#gempy.core.data.SurfacePointsTable" title="gempy.core.data.surface_points.SurfacePointsTable"><span class="pre">SurfacePointsTable</span></a></em><a class="headerlink" href="#gempy.core.data.StructuralFrame.surface_points_copy" title="Link to this definition">¶</a></dt>
 <dd><p>Returns a SurfacePointsTable for all surface points across the structural elements. This is a copy!</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="gempy.core.data.StructuralFrame.orientations">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">orientations</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="gempy.core.data.OrientationsTable.html#gempy.core.data.OrientationsTable" title="gempy.core.data.orientations.OrientationsTable"><span class="pre">OrientationsTable</span></a></em><a class="headerlink" href="#gempy.core.data.StructuralFrame.orientations" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="gempy.core.data.StructuralFrame.orientations_copy">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">orientations_copy</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="gempy.core.data.OrientationsTable.html#gempy.core.data.OrientationsTable" title="gempy.core.data.orientations.OrientationsTable"><span class="pre">OrientationsTable</span></a></em><a class="headerlink" href="#gempy.core.data.StructuralFrame.orientations_copy" title="Link to this definition">¶</a></dt>
 <dd><p>Returns an OrientationsTable for all orientations across the structural elements.</p>
 </dd></dl>
 
@@ -411,6 +455,10 @@ orientations in pyvista</p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">GemPy Tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">External examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../external/external_examples.html">External Examples</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul class="current">

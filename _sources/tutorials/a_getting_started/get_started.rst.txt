@@ -75,8 +75,38 @@ appropriate.
  .. code-block:: none
 
 
-    {'_interpolation_options': InterpolationOptions(kernel_options={'range': 5, 'c_o': 10, 'uni_degree': 1, 'i_res': 4, 'gi_res': 2, 'number_dimensions': 3, 'kernel_function': <AvailableKernelFunctions.cubic: KernelFunction(base_function=<function cubic_function at 0x7f00e5cc09d0>, derivative_div_r=<function cubic_function_p_div_r at 0x7f00e5cc0a60>, second_derivative=<function cubic_function_a at 0x7f00e5cc0af0>, consume_sq_distance=False)>, 'kernel_solver': <Solvers.DEFAULT: 1>, 'compute_condition_number': False, 'optimizing_condition_number': False, 'condition_number': None}, _number_octree_levels=4, current_octree_level=0, block_solutions_type=BlockSolutionType.OCTREE, compute_scalar_gradient=False, mesh_extraction=True, mesh_extraction_masking_options=MeshExtractionMaskingOptions.INTERSECT, mesh_extraction_fancy=True, cache_mode=CacheMode.CACHE, debug=True, debug_water_tight=False, sigmoid_slope=50000, evaluation_chunk_size=50000, _number_octree_levels_surface=4, _model_name=None),
-     'grid': <gempy.core.data.grid.Grid object at 0x7f00d07105e0>,
+    {'_interpolation_options': InterpolationOptions(kernel_options={'range': 5, 'c_o': 10, 'uni_degree': 1, 'i_res': 4, 'gi_res': 2, 'number_dimensions': 3, 'kernel_function': <AvailableKernelFunctions.cubic: KernelFunction(base_function=<function cubic_function at 0x7f8833a9d3f0>, derivative_div_r=<function cubic_function_p_div_r at 0x7f8833a9d480>, second_derivative=<function cubic_function_a at 0x7f8833a9d510>, consume_sq_distance=False)>, 'kernel_solver': <Solvers.DEFAULT: 1>, 'compute_condition_number': False, 'optimizing_condition_number': False, 'condition_number': None}, evaluation_options={'_number_octree_levels': 4, '_number_octree_levels_surface': 4, 'curvature_threshold': -1, 'error_threshold': 1.0, 'min_octree_level': 2, 'mesh_extraction': True, 'mesh_extraction_masking_options': <MeshExtractionMaskingOptions.INTERSECT: 3>, 'mesh_extraction_fancy': True, 'evaluation_chunk_size': 500000, 'compute_scalar_gradient': False, 'verbose': False}, temp_interpolation_values=<gempy_engine.core.data.options.temp_interpolation_values.TempInterpolationValues object at 0x7f87e00179a0>, debug=True, cache_mode=CacheMode.IN_MEMORY_CACHE, cache_model_name=, block_solutions_type=BlockSolutionType.OCTREE, sigmoid_slope=50000, debug_water_tight=False),
+     'grid': Grid(_octree_grid=RegularGrid(resolution=array([16, 16, 16]),
+                                           extent=array([   0.,  791., -200.,  200., -582.,    0.]),
+                                           values=array([[  24.71875, -187.5    , -563.8125 ],
+           [  24.71875, -187.5    , -527.4375 ],
+           [  24.71875, -187.5    , -491.0625 ],
+           ...,
+           [ 766.28125,  187.5    ,  -90.9375 ],
+           [ 766.28125,  187.5    ,  -54.5625 ],
+           [ 766.28125,  187.5    ,  -18.1875 ]]),
+                                           mask_topo=array([], shape=(0, 3), dtype=bool),
+                                           _transform=None),
+                  _dense_grid=None,
+                  _custom_grid=None,
+                  _topography=None,
+                  _sections=None,
+                  _centered_grid=None,
+                  values=array([[  24.71875, -187.5    , -563.8125 ],
+           [  24.71875, -187.5    , -527.4375 ],
+           [  24.71875, -187.5    , -491.0625 ],
+           ...,
+           [ 766.28125,  187.5    ,  -90.9375 ],
+           [ 766.28125,  187.5    ,  -54.5625 ],
+           [ 766.28125,  187.5    ,  -18.1875 ]]),
+                  length=array([], dtype=float64),
+                  _transform=None,
+                  _octree_levels=-1),
+     'input_transform': {'_cached_pivot': None,
+     '_is_default_transform': True,
+     'position': array([0., 0., 0.]),
+     'rotation': array([0., 0., 0.]),
+     'scale': array([1., 1., 1.])},
      'meta': GeoModelMeta(name='Model1',
                           creation_date=None,
                           last_modification_date=None,
@@ -97,11 +127,7 @@ appropriate.
     ],
     	fault_relations=
     [[False]],
-    ,
-     'transform': {'_is_default_transform': True,
-     'position': array([0., 0., 0.]),
-     'rotation': array([0., 0., 0.]),
-     'scale': array([1., 1., 1.])}}
+    }
 
 
 
@@ -277,7 +303,7 @@ coordinates on mouse hover (in qt5 backend). We can add a surface point like thi
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00cd3409d0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f8774720c10>
 
 
 
@@ -319,7 +345,7 @@ We can now add other points for the layer:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00cd340610>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f8774746020>
 
 
 
@@ -370,7 +396,7 @@ Let's add an orientation:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00cd08a0b0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f8774745d50>
 
 
 
@@ -414,7 +440,7 @@ With the provided data, we can now interpolate the 3D surface.
 
  .. code-block:: none
 
-    Setting Backend To: AvailableBackends.PYTORCH
+    Setting Backend To: AvailableBackends.numpy
 
 
 .. raw:: html
@@ -489,7 +515,7 @@ Interpolated 3D surface can be visualized both in 2D and 3D.
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00cd340610>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f87dc01e6e0>
 
 
 
@@ -568,7 +594,7 @@ Adding points and properties for the next layer.
         orientations=gp.data.OrientationsTable.initialize_empty()
     )
 
-    geo_model.structural_frame.structural_groups[0].append_element(element2)
+    geo_model.structural_frame.structural_groups[0].append_element(element2) 
 
     # Compute and visualize the updated model: 
     gp.compute_model(geo_model)
@@ -593,11 +619,11 @@ Adding points and properties for the next layer.
 
  .. code-block:: none
 
-    Setting Backend To: AvailableBackends.PYTORCH
-    /home/leguark/gempy/gempy/core/data/structural_frame.py:190: UserWarning: The basement color was already used in the structural elements.Changing the basement color to #ffbe00.
+    Setting Backend To: AvailableBackends.numpy
+    /home/leguark/gempy/gempy/core/data/structural_frame.py:206: UserWarning: The basement color was already used in the structural elements.Changing the basement color to #ffbe00.
       warnings.warn(f"The basement color was already used in the structural elements."
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00cb609c60>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f87dbeca500>
 
 
 
@@ -626,7 +652,7 @@ Adding points and properties for another layer.
 
     geo_model.structural_frame.structural_groups[0].append_element(element3)
 
-    # Compute and visualize with adjusted parameters:
+    # Compute and visualize with adjusted parameters: 
     gp.compute_model(geo_model)
     gpv.plot_2d(geo_model, cell_number=5, legend='force')
     gpv.plot_3d(geo_model, kwargs_plot_structured_grid={'opacity': .2}, image=True)
@@ -650,11 +676,11 @@ Adding points and properties for another layer.
 
  .. code-block:: none
 
-    Setting Backend To: AvailableBackends.PYTORCH
-    /home/leguark/gempy/gempy/core/data/structural_frame.py:190: UserWarning: The basement color was already used in the structural elements.Changing the basement color to #728f02.
+    Setting Backend To: AvailableBackends.numpy
+    /home/leguark/gempy/gempy/core/data/structural_frame.py:206: UserWarning: The basement color was already used in the structural elements.Changing the basement color to #728f02.
       warnings.warn(f"The basement color was already used in the structural elements."
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00cb4ea770>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f87dbdaa350>
 
 
 
@@ -722,10 +748,10 @@ Add the fault's input data:
 
  .. code-block:: none
 
-    /home/leguark/gempy/gempy/core/data/structural_frame.py:190: UserWarning: The basement color was already used in the structural elements.Changing the basement color to #443988.
+    /home/leguark/gempy/gempy/core/data/structural_frame.py:206: UserWarning: The basement color was already used in the structural elements.Changing the basement color to #443988.
       warnings.warn(f"The basement color was already used in the structural elements."
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f00cb572230>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87dbd2bee0>
 
 
 
@@ -759,9 +785,9 @@ Compute and visualize the updated model:
 
  .. code-block:: none
 
-    Setting Backend To: AvailableBackends.PYTORCH
+    Setting Backend To: AvailableBackends.numpy
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00d95e5540>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f87dbd282e0>
 
 
 
@@ -826,10 +852,10 @@ Here, we'll showcase a few of them.
 
  .. code-block:: none
 
-    Active grids: ['topography']
-    Setting Backend To: AvailableBackends.PYTORCH
+    Active grids: GridTypes.NONE|TOPOGRAPHY|OCTREE
+    Setting Backend To: AvailableBackends.numpy
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00cd0bbdc0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f87dbd8d210>
 
 
 
@@ -862,7 +888,7 @@ sphinx_gallery_thumbnail_number = -2
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 5.365 seconds)
+   **Total running time of the script:** (0 minutes 8.887 seconds)
 
 
 .. _sphx_glr_download_tutorials_a_getting_started_get_started.py:

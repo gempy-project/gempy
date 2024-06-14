@@ -5,16 +5,19 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Modeling step by step &#8212; GemPy 2024.1.2 documentation</title>
+    <title>Modeling step by step &#8212; GemPy 2024.1.2.dev59+gc19c50fa.d20240531 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=270d38c7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=eafc0fe6" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=61a4c737" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <script src="../../_static/documentation_options.js?v=0b07e6f1"></script>
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <script src="../../_static/documentation_options.js?v=2a6b7f2f"></script>
     <script src="../../_static/doctools.js?v=888ff710"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/design-tabs.js?v=36754332"></script>
     <link rel="icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -67,7 +70,7 @@ The ImporterHelper class is used to specify the paths to the orientation and sur
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a> <span class="o">=</span> <a href="../../GemPy API/gempy.create_geomodel.html#gempy.create_geomodel" title="gempy.create_geomodel" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">create_geomodel</span></a><span class="p">(</span>
     <span class="n">project_name</span><span class="o">=</span><span class="s1">&#39;tutorial_model&#39;</span><span class="p">,</span>
     <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2500</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1110</span><span class="p">],</span>
-    <span class="n">refinement</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+    <span class="n">refinement</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
     <span class="n">importer_helper</span><span class="o">=</span><a href="../../Helper Classes/gempy.core.data.ImporterHelper.html#gempy.core.data.ImporterHelper" title="gempy.core.data.ImporterHelper" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class"><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">ImporterHelper</span></a><span class="p">(</span>
         <span class="n">path_to_orientations</span><span class="o">=</span><span class="n">path_to_data</span> <span class="o">+</span> <span class="s2">&quot;tutorial_model_orientations.csv&quot;</span><span class="p">,</span>
         <span class="n">path_to_surface_points</span><span class="o">=</span><span class="n">path_to_data</span> <span class="o">+</span> <span class="s2">&quot;tutorial_model_surface_points.csv&quot;</span>
@@ -80,7 +83,7 @@ We use the <cite>gempy_viewer</cite> to visualize the initial cross-section of o
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_a1_fold_001.png" srcset="../../_images/sphx_glr_a1_fold_001.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc9660308e0&gt;
+<img src="../../_images/sphx_glr_a1_fold_001.png" srcset="../../_images/sphx_glr_a1_fold_001.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87cc6df8b0&gt;
 </pre></div>
 </div>
 <p>Map geological series to surfaces
@@ -142,42 +145,57 @@ Here, we map the geological series to specific surfaces. This step is crucial fo
 <br />
 <br /><p>Update transformation and interpolation options
 We update the model with anisotropy settings and specify various interpolation options to refine the model’s accuracy.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="o">.</span><span class="n">update_transform</span><span class="p">(</span><span class="n">auto_anisotropy</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GlobalAnisotropy</span><span class="o">.</span><span class="n">CUBE</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel.update_transform" title="gempy.core.data.GeoModel.update_transform" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-method"><span class="n">geo_model</span><span class="o">.</span><span class="n">update_transform</span></a><span class="p">(</span><span class="n">auto_anisotropy</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GlobalAnisotropy</span><span class="o">.</span><span class="n">CUBE</span><span class="p">)</span>
 
 <span class="n">interpolation_options</span><span class="p">:</span> <span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">InterpolationOptions</span> <span class="o">=</span> <a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="o">.</span><span class="n">interpolation_options</span>
 
-<span class="n">interpolation_options</span><span class="o">.</span><span class="n">mesh_extraction</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="n">interpolation_options</span><span class="o">.</span><span class="n">evaluation_options</span><span class="o">.</span><span class="n">compute_scalar_gradient</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">interpolation_options</span><span class="o">.</span><span class="n">kernel_options</span><span class="o">.</span><span class="n">range</span> <span class="o">=</span> <span class="mf">1.7</span>
+<span class="n">interpolation_options</span><span class="o">.</span><span class="n">evaluation_options</span><span class="o">.</span><span class="n">number_octree_levels_surface</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">interpolation_options</span><span class="o">.</span><span class="n">evaluation_options</span><span class="o">.</span><span class="n">compute_scalar_gradient</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">interpolation_options</span><span class="o">.</span><span class="n">evaluation_options</span><span class="o">.</span><span class="n">curvature_threshold</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">interpolation_options</span><span class="o">.</span><span class="n">evaluation_options</span><span class="o">.</span><span class="n">min_octree_level</span> <span class="o">=</span> <span class="mi">1</span>
 
-<span class="n">interpolation_options</span><span class="o">.</span><span class="n">kernel_options</span><span class="o">.</span><span class="n">range</span> <span class="o">=</span> <span class="mi">1</span>
-<span class="n">interpolation_options</span><span class="o">.</span><span class="n">evaluation_options</span><span class="o">.</span><span class="n">number_octree_levels_surface</span> <span class="o">=</span> <span class="mi">6</span>
-<span class="n">interpolation_options</span><span class="o">.</span><span class="n">evaluation_options</span><span class="o">.</span><span class="n">curvature_threshold</span> <span class="o">=</span> <span class="mf">0.6</span>
-</pre></div>
-</div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/leguark/gempy_engine/gempy_engine/core/data/transforms.py:87: RuntimeWarning: Interpolation is being done with the default transform. If you do not know what you are doing you should probably call GeoModel.update_transform() first.
-  warnings.warn(
+<span class="n">interpolation_options</span><span class="o">.</span><span class="n">evaluation_options</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="kc">True</span>
 </pre></div>
 </div>
 <p>Compute the geological model
 We use the specified backend (in this case, PyTorch) to compute the model.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../GemPy API/gempy.compute_model.html#gempy.compute_model" title="gempy.compute_model" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span></a><span class="p">(</span>
     <span class="n">gempy_model</span><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span>
-    <span class="n">engine_config</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GemPyEngineConfig</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">AvailableBackends</span><span class="o">.</span><span class="n">PYTORCH</span><span class="p">)</span>
+    <span class="n">engine_config</span><span class="o">=</span><a href="../../Helper Classes/gempy.core.data.GemPyEngineConfig.html#gempy.core.data.GemPyEngineConfig" title="gempy.core.data.GemPyEngineConfig" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class"><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GemPyEngineConfig</span></a><span class="p">(</span>
+        <span class="n">backend</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">AvailableBackends</span><span class="o">.</span><span class="n">numpy</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float64&quot;</span>
+    <span class="p">)</span>
 <span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting Backend To: AvailableBackends.PYTORCH
-Number of voxels marked as high curvature: 4 of 8
-Number of voxels marked as high curvature: 29 of 64
-Number of voxels marked as high curvature: 90 of 416
-Number of voxels marked as high curvature: 236 of 2112
-Number of voxels marked as high curvature: 598 of 11080
-Chunking done: 9 chunks
-Chunking done: 9 chunks
+<ul class="sphx-glr-horizontal">
+<li><img src="../../_images/sphx_glr_a1_fold_002.png" srcset="../../_images/sphx_glr_a1_fold_002.png" alt="Voxel Scalar Values with Refinement Status" class = "sphx-glr-multi-img"/></li>
+<li><img src="../../_images/sphx_glr_a1_fold_003.png" srcset="../../_images/sphx_glr_a1_fold_003.png" alt="Voxel Scalar Values with Refinement Status" class = "sphx-glr-multi-img"/></li>
+<li><img src="../../_images/sphx_glr_a1_fold_004.png" srcset="../../_images/sphx_glr_a1_fold_004.png" alt="Voxel Scalar Values with Refinement Status" class = "sphx-glr-multi-img"/></li>
+<li><img src="../../_images/sphx_glr_a1_fold_005.png" srcset="../../_images/sphx_glr_a1_fold_005.png" alt="Voxel Scalar Values with Refinement Status" class = "sphx-glr-multi-img"/></li>
+</ul>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting Backend To: AvailableBackends.numpy
+Number of voxels marked by stats: 16 of (64,).
+ Number of voxels marked by corners : 40
+Total voxels: 16
+Dense Grid would be 64 voxels
+Number of voxels marked by stats: 40 of (64,).
+ Number of voxels marked by corners : 40
+Total voxels: 44
+Dense Grid would be 64 voxels
+Number of voxels marked by stats: 128 of (384,).
+ Number of voxels marked by corners : 232
+Total voxels: 128
+Dense Grid would be 512 voxels
+Number of voxels marked by stats: 216 of (384,).
+ Number of voxels marked by corners : 232
+Total voxels: 240
+Dense Grid would be 512 voxels
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
-<b>Solutions:</b> 6 Octree Levels, 3 DualContouringMeshes
+<b>Solutions:</b> 4 Octree Levels, 3 DualContouringMeshes
 </div>
 <br />
 <br /><p>Visualize the model: 2D cross-section without scalar field
@@ -185,7 +203,7 @@ After computing the model, we visualize it again in 2D without the scalar field.
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">show_scalar</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">series_n</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_a1_fold_002.png" srcset="../../_images/sphx_glr_a1_fold_002.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc920808820&gt;
+<img src="../../_images/sphx_glr_a1_fold_006.png" srcset="../../_images/sphx_glr_a1_fold_006.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87dbafbb80&gt;
 </pre></div>
 </div>
 <p>Visualize the model: 2D cross-section with scalar field
@@ -194,7 +212,7 @@ In this cell, we visualize the 2D cross-section with the scalar field enabled.
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">show_scalar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">series_n</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_a1_fold_003.png" srcset="../../_images/sphx_glr_a1_fold_003.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc92083a440&gt;
+<img src="../../_images/sphx_glr_a1_fold_007.png" srcset="../../_images/sphx_glr_a1_fold_007.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87cc542860&gt;
 </pre></div>
 </div>
 <p>Visualize the model in 3D
@@ -203,7 +221,7 @@ Finally, we create a 3D visualization of the geological model without lithologic
 <span class="c1"># sphinx_gallery_thumbnail_number = -1</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_a1_fold_004.png" srcset="../../_images/sphx_glr_a1_fold_004.png" alt="a1 fold" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fc9206e2e60&gt;
+<img src="../../_images/sphx_glr_a1_fold_008.png" srcset="../../_images/sphx_glr_a1_fold_008.png" alt="a1 fold" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f87cc7ce6b0&gt;
 </pre></div>
 </div>
 <p>### Coming up next
@@ -227,7 +245,7 @@ Here is an example of how you can manually add surface points to the model. Unco
 You can re-plot the 2D cross-section if needed.
 gpv.plot_2d(geo_model)
 %%</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 22.077 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.999 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-tutorials-z-other-tutorials-a1-fold-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/95cb03aa10b3b473bbabd52a4ed1a5e8/a1_fold.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">a1_fold.ipynb</span></code></a></p>
@@ -284,6 +302,10 @@ gpv.plot_2d(geo_model)
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../examples/index.html">Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">External examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../external/external_examples.html">External Examples</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul>

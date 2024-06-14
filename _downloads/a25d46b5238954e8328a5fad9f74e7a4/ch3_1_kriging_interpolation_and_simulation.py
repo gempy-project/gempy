@@ -93,7 +93,7 @@ cond_data = np.array([[100, .5, 500, 2], [900, .5, 500, 1],
 # creating a domain object from the gempy solution, a defined domain conditioning data
 domain = kriging.Domain(
     model_solutions=sol,
-    transform=geo_data.transform,
+    transform=geo_data.input_transform,
     domain=[2],
     data=cond_data
 )

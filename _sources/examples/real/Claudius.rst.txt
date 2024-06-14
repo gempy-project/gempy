@@ -538,8 +538,38 @@ Number of voxels:
 
  .. code-block:: none
 
-    {'_interpolation_options': InterpolationOptions(kernel_options={'range': 5, 'c_o': 10, 'uni_degree': 1, 'i_res': 4, 'gi_res': 2, 'number_dimensions': 3, 'kernel_function': <AvailableKernelFunctions.cubic: KernelFunction(base_function=<function cubic_function at 0x7f00e5cc09d0>, derivative_div_r=<function cubic_function_p_div_r at 0x7f00e5cc0a60>, second_derivative=<function cubic_function_a at 0x7f00e5cc0af0>, consume_sq_distance=False)>, 'kernel_solver': <Solvers.DEFAULT: 1>, 'compute_condition_number': False, 'optimizing_condition_number': False, 'condition_number': None}, _number_octree_levels=5, current_octree_level=0, block_solutions_type=BlockSolutionType.OCTREE, compute_scalar_gradient=False, mesh_extraction=True, mesh_extraction_masking_options=MeshExtractionMaskingOptions.INTERSECT, mesh_extraction_fancy=True, cache_mode=CacheMode.CACHE, debug=True, debug_water_tight=False, sigmoid_slope=50000, evaluation_chunk_size=50000, _number_octree_levels_surface=4, _model_name=None),
-     'grid': <gempy.core.data.grid.Grid object at 0x7f00a0240280>,
+    {'_interpolation_options': InterpolationOptions(kernel_options={'range': 5, 'c_o': 10, 'uni_degree': 1, 'i_res': 4, 'gi_res': 2, 'number_dimensions': 3, 'kernel_function': <AvailableKernelFunctions.cubic: KernelFunction(base_function=<function cubic_function at 0x7f8833a9d3f0>, derivative_div_r=<function cubic_function_p_div_r at 0x7f8833a9d480>, second_derivative=<function cubic_function_a at 0x7f8833a9d510>, consume_sq_distance=False)>, 'kernel_solver': <Solvers.DEFAULT: 1>, 'compute_condition_number': False, 'optimizing_condition_number': False, 'condition_number': None}, evaluation_options={'_number_octree_levels': 5, '_number_octree_levels_surface': 4, 'curvature_threshold': -1, 'error_threshold': 1.0, 'min_octree_level': 2, 'mesh_extraction': True, 'mesh_extraction_masking_options': <MeshExtractionMaskingOptions.INTERSECT: 3>, 'mesh_extraction_fancy': True, 'evaluation_chunk_size': 500000, 'compute_scalar_gradient': False, 'verbose': False}, temp_interpolation_values=<gempy_engine.core.data.options.temp_interpolation_values.TempInterpolationValues object at 0x7f87c40eebf0>, debug=True, cache_mode=CacheMode.IN_MEMORY_CACHE, cache_model_name=, block_solutions_type=BlockSolutionType.OCTREE, sigmoid_slope=50000, debug_water_tight=False),
+     'grid': Grid(_octree_grid=None,
+                  _dense_grid=RegularGrid(resolution=array([38, 55, 30]),
+                                          extent=array([ 548800.,  552500., 7816600., 7822000.,  -11010.,   -8400.]),
+                                          values=array([[ 548848.68421053, 7816649.09090909,  -10966.5       ],
+           [ 548848.68421053, 7816649.09090909,  -10879.5       ],
+           [ 548848.68421053, 7816649.09090909,  -10792.5       ],
+           ...,
+           [ 552451.31578947, 7821950.90909091,   -8617.5       ],
+           [ 552451.31578947, 7821950.90909091,   -8530.5       ],
+           [ 552451.31578947, 7821950.90909091,   -8443.5       ]]),
+                                          mask_topo=array([], shape=(0, 3), dtype=bool),
+                                          _transform=None),
+                  _custom_grid=None,
+                  _topography=None,
+                  _sections=None,
+                  _centered_grid=None,
+                  values=array([[ 548848.68421053, 7816649.09090909,  -10966.5       ],
+           [ 548848.68421053, 7816649.09090909,  -10879.5       ],
+           [ 548848.68421053, 7816649.09090909,  -10792.5       ],
+           ...,
+           [ 552451.31578947, 7821950.90909091,   -8617.5       ],
+           [ 552451.31578947, 7821950.90909091,   -8530.5       ],
+           [ 552451.31578947, 7821950.90909091,   -8443.5       ]]),
+                  length=array([], dtype=float64),
+                  _transform=None,
+                  _octree_levels=-1),
+     'input_transform': {'_cached_pivot': None,
+     '_is_default_transform': False,
+     'position': array([ -550658.0605    , -7819213.97425586,     9824.6748045 ]),
+     'rotation': array([0., 0., 0.]),
+     'scale': array([9.56397917e-05, 9.56397917e-05, 9.56397917e-05])},
      'meta': GeoModelMeta(name='Claudius',
                           creation_date=None,
                           last_modification_date=None,
@@ -587,11 +617,7 @@ Number of voxels:
             fault_relations=
     [[False,  True],
      [False, False]],
-    ,
-     'transform': {'_is_default_transform': False,
-     'position': array([ -550658.0605    , -7819213.97425586,     9824.6748045 ]),
-     'rotation': array([0., 0., 0.]),
-     'scale': array([9.56397917e-05, 9.56397917e-05, 9.56397917e-05])}}
+    }
 
 
 
@@ -860,7 +886,7 @@ points availablle:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f00a02410c0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87746db790>
 
 
 
@@ -1065,6 +1091,18 @@ So far we did not specify which series/faults are actula faults:
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.numpy
+    Chunking done: 73 chunks
+    Chunking done: 13 chunks
+    Chunking done: 31 chunks
+    Chunking done: 6 chunks
+    Chunking done: 6 chunks
+    Chunking done: 36 chunks
+    Chunking done: 7 chunks
+    Chunking done: 15 chunks
+    Chunking done: 35 chunks
+    Chunking done: 6 chunks
+    Chunking done: 15 chunks
+    Chunking done: 6 chunks
 
 
 .. raw:: html
@@ -1097,7 +1135,7 @@ So far we did not specify which series/faults are actula faults:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f00a0466350>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87c42a1ba0>
 
 
 
@@ -1121,7 +1159,7 @@ So far we did not specify which series/faults are actula faults:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f00a0465990>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87c42a1ae0>
 
 
 
@@ -1166,7 +1204,7 @@ So far we did not specify which series/faults are actula faults:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f00804621d0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87cc87fe20>
 
 
 
@@ -1190,7 +1228,7 @@ So far we did not specify which series/faults are actula faults:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f00cd7a6980>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87bff09e70>
 
 
 
@@ -1215,14 +1253,14 @@ So far we did not specify which series/faults are actula faults:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00804621d0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f87c43b8970>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (1 minutes 7.897 seconds)
+   **Total running time of the script:** (1 minutes 13.740 seconds)
 
 
 .. _sphx_glr_download_examples_real_Claudius.py:

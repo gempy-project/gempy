@@ -60,9 +60,11 @@
       ~StructuralFrame.number_of_points_per_group
       ~StructuralFrame.orientations
       ~StructuralFrame.orientations_colors_per_item
+      ~StructuralFrame.orientations_copy
       ~StructuralFrame.structural_elements
       ~StructuralFrame.surface_points
       ~StructuralFrame.surface_points_colors_per_item
+      ~StructuralFrame.surface_points_copy
       ~StructuralFrame.surfaces
       ~StructuralFrame.surfaces_df
       ~StructuralFrame.structural_groups

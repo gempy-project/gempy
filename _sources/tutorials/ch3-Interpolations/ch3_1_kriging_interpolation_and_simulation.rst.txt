@@ -175,7 +175,7 @@ no mesh computed as basically 2D model
 
  .. code-block:: none
 
-    Setting Backend To: AvailableBackends.PYTORCH
+    Setting Backend To: AvailableBackends.numpy
 
 
 
@@ -205,7 +205,7 @@ So here is the very simple, basically 2D model that we created:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f00a0264610>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87cc7cd270>
 
 
 
@@ -250,7 +250,7 @@ creating a domain object from the gempy solution, a defined domain conditioning 
 
     domain = kriging.Domain(
         model_solutions=sol,
-        transform=geo_data.transform,
+        transform=geo_data.input_transform,
         domain=[2],
         data=cond_data
     )
@@ -701,7 +701,7 @@ Gaussian Simulation approach is applied in this module:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (14 minutes 59.978 seconds)
+   **Total running time of the script:** (13 minutes 1.928 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch3-Interpolations_ch3_1_kriging_interpolation_and_simulation.py:

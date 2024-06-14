@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**00:22.077** total execution time for 1 file **from tutorials/z_other_tutorials**:
+**00:02.999** total execution time for 1 file **from tutorials/z_other_tutorials**:
 
 .. container::
 
@@ -33,5 +33,5 @@ Computation times
      - Time
      - Mem (MB)
    * - :ref:`sphx_glr_tutorials_z_other_tutorials_a1_fold.py` (``a1_fold.py``)
-     - 00:22.077
+     - 00:02.999
      - 0.0

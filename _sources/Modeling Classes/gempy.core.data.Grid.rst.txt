@@ -19,18 +19,11 @@
    .. autosummary::
    
       ~Grid.__init__
-      ~Grid.create_centered_grid
-      ~Grid.create_custom_grid_
-      ~Grid.create_regular_grid
-      ~Grid.create_section_grid
-      ~Grid.create_topography_
-      ~Grid.deactivate_all_grids
-      ~Grid.get_grid
-      ~Grid.get_grid_args
       ~Grid.get_section_args
-      ~Grid.set_active
-      ~Grid.set_inactive
-      ~Grid.update_grid_values
+      ~Grid.init_dense_grid
+      ~Grid.init_octree_grid
+      ~Grid.set_octree_grid
+      ~Grid.set_octree_grid_by_levels
    
    
 
@@ -41,15 +34,21 @@
    .. autosummary::
    
       ~Grid.active_grids
+      ~Grid.bounding_box
+      ~Grid.centered_grid
+      ~Grid.corner_max
+      ~Grid.corner_min
+      ~Grid.custom_grid
+      ~Grid.dense_grid
+      ~Grid.extent
+      ~Grid.length
+      ~Grid.octree_grid
       ~Grid.octree_levels
       ~Grid.regular_grid
-      ~Grid.dense_grid
-      ~Grid.octree_grid
-      ~Grid.custom_grid
-      ~Grid.topography
       ~Grid.sections
-      ~Grid.centered_grid
-      ~Grid.extent
+      ~Grid.topography
+      ~Grid.transform
+      ~Grid.values
    
    
 

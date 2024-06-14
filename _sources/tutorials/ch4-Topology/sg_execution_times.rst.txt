@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**00:00.464** total execution time for 1 file **from tutorials/ch4-Topology**:
+**00:00.727** total execution time for 1 file **from tutorials/ch4-Topology**:
 
 .. container::
 
@@ -33,5 +33,5 @@ Computation times
      - Time
      - Mem (MB)
    * - :ref:`sphx_glr_tutorials_ch4-Topology_ch4-1-Topology.py` (``ch4-1-Topology.py``)
-     - 00:00.464
+     - 00:00.727
      - 0.0

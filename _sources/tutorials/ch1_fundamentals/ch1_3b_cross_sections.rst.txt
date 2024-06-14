@@ -25,14 +25,13 @@
 
 Importing
 
-.. GENERATED FROM PYTHON SOURCE LINES 9-16
+.. GENERATED FROM PYTHON SOURCE LINES 9-15
 
 .. code-block:: Python
 
     import gempy as gp
     import gempy_viewer as gpv
     import numpy as np
-    import matplotlib.pyplot as plt
 
     np.random.seed(1234)
 
@@ -43,17 +42,17 @@ Importing
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 17-20
+.. GENERATED FROM PYTHON SOURCE LINES 16-19
 
 Setup the model
 ---------------
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 22-23
+.. GENERATED FROM PYTHON SOURCE LINES 21-22
 
 Importing the data from CSV-files and setting extent and resolution
 
-.. GENERATED FROM PYTHON SOURCE LINES 23-52
+.. GENERATED FROM PYTHON SOURCE LINES 22-51
 
 .. code-block:: Python
 
@@ -158,19 +157,19 @@ Importing the data from CSV-files and setting extent and resolution
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 53-56
+.. GENERATED FROM PYTHON SOURCE LINES 52-55
 
 Add sections
 ~~~~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 59-62
+.. GENERATED FROM PYTHON SOURCE LINES 58-61
 
 pass section dictionary with startpoint, endpoint and resolution for
 every section:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 64-73
+.. GENERATED FROM PYTHON SOURCE LINES 63-72
 
 .. code-block:: Python
 
@@ -191,7 +190,7 @@ every section:
 
  .. code-block:: none
 
-    Active grids: ['regular' 'sections']
+    Active grids: GridTypes.NONE|SECTIONS|DENSE
 
 
 .. raw:: html
@@ -235,13 +234,13 @@ every section:
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 74-77
+.. GENERATED FROM PYTHON SOURCE LINES 73-76
 
 Add topography
 ~~~~~~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 79-86
+.. GENERATED FROM PYTHON SOURCE LINES 78-85
 
 .. code-block:: Python
 
@@ -260,22 +259,22 @@ Add topography
 
  .. code-block:: none
 
-    Active grids: ['regular' 'topography' 'sections']
+    Active grids: GridTypes.NONE|SECTIONS|TOPOGRAPHY|DENSE
 
-    <gempy.core.data.grid_modules.topography.Topography object at 0x7f00cb76c7f0>
+    <gempy.core.data.grid_modules.topography.Topography object at 0x7f87dbffca60>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 87-89
+.. GENERATED FROM PYTHON SOURCE LINES 86-88
 
 Active grids:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 91-93
+.. GENERATED FROM PYTHON SOURCE LINES 90-92
 
 .. code-block:: Python
 
-    geo_model.grid.active_grids_bool
+    geo_model.grid.active_grids
 
 
 
@@ -286,11 +285,11 @@ Active grids:
  .. code-block:: none
 
 
-    array([ True, False,  True,  True, False, False])
+    <GridTypes.NONE|SECTIONS|TOPOGRAPHY|DENSE: 1050>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 94-96
+.. GENERATED FROM PYTHON SOURCE LINES 93-95
 
 .. code-block:: Python
 
@@ -310,11 +309,11 @@ Active grids:
  .. code-block:: none
 
 
-    <function plot_section_traces at 0x7f00d6cddbd0>
+    <function plot_section_traces at 0x7f8824fca170>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 99-102
+.. GENERATED FROM PYTHON SOURCE LINES 98-101
 
 .. code-block:: Python
 
@@ -329,14 +328,13 @@ Active grids:
 
  .. code-block:: none
 
-    /home/leguark/gempy/gempy/core/data/geo_model.py:115: UserWarning: Both octree levels and resolution are set. The default grid for the `raw_array_solution`and plots will be the dense regular grid. To use octrees instead, set resolution to None in the regular grid.
-      warnings.warn("Both octree levels and resolution are set. The default grid for the `raw_array_solution`"
-    Setting Backend To: AvailableBackends.PYTORCH
+    Setting Backend To: AvailableBackends.numpy
+    Chunking done: 8 chunks
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 103-105
+.. GENERATED FROM PYTHON SOURCE LINES 102-104
 
 .. code-block:: Python
 
@@ -358,11 +356,11 @@ Active grids:
     /home/leguark/gempy_viewer/gempy_viewer/API/_plot_2d_sections_api.py:105: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
       warnings.warn(
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f00cb46d900>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87dfea1180>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 106-108
+.. GENERATED FROM PYTHON SOURCE LINES 105-107
 
 .. code-block:: Python
 
@@ -384,11 +382,11 @@ Active grids:
     /home/leguark/gempy_viewer/gempy_viewer/API/_plot_2d_sections_api.py:105: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
       warnings.warn(
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f00cb46f760>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87dfea2da0>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 109-117
+.. GENERATED FROM PYTHON SOURCE LINES 108-116
 
 .. code-block:: Python
 
@@ -416,14 +414,14 @@ Active grids:
     /home/leguark/gempy_viewer/gempy_viewer/API/_plot_2d_sections_api.py:105: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
       warnings.warn(
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f00cb46fa90>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87dfea2ec0>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.432 seconds)
+   **Total running time of the script:** (0 minutes 4.242 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_3b_cross_sections.py:

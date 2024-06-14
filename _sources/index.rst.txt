@@ -43,6 +43,12 @@ Contents:
    examples/index
 
 .. toctree::
+    :maxdepth: 2
+    :caption: External examples
+    
+    external/external_examples
+
+.. toctree::
    :maxdepth: 2
    :caption: API Reference
 

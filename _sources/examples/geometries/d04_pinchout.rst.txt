@@ -85,7 +85,9 @@ Define the path to data
 
     Surface points hash:  76e41015e8bc57232f56f90ff5f9fc56d0f5d55b67a5030f9bc5c95edfed0674
     Orientations hash:  575806bb62944f0604e8fecccdc9d53bfabd758bee293b1ad8f3575f173429f1
-    Setting Backend To: AvailableBackends.PYTORCH
+    Setting Backend To: AvailableBackends.numpy
+    Chunking done: 8 chunks
+    Chunking done: 6 chunks
 
 
 
@@ -137,7 +139,7 @@ Plot the initial geological model in the y direction
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f00cb4856f0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87cc6a3340>
 
 
 
@@ -160,14 +162,14 @@ Plot the initial geological model in the y direction
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00cb60bd90>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f882aa61030>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 1.003 seconds)
+   **Total running time of the script:** (0 minutes 4.956 seconds)
 
 
 .. _sphx_glr_download_examples_geometries_d04_pinchout.py:

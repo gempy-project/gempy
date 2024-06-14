@@ -5,16 +5,19 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>gempy.create_geomodel &#8212; GemPy 2024.1.2 documentation</title>
+    <title>gempy.create_geomodel &#8212; GemPy 2024.1.2.dev59+gc19c50fa.d20240531 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=270d38c7" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=eafc0fe6" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <script src="../_static/documentation_options.js?v=0b07e6f1"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <script src="../_static/documentation_options.js?v=2a6b7f2f"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
     <link rel="icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -41,17 +44,16 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="gempy.create_geomodel">
 <span class="sig-prename descclassname"><span class="pre">gempy.</span></span><span class="sig-name descname"><span class="pre">create_geomodel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'default_project'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refinement</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">structural_frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../Modeling%20Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.structural_frame.StructuralFrame"><span class="pre">StructuralFrame</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">importer_helper</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../Helper%20Classes/gempy.core.data.ImporterHelper.html#gempy.core.data.ImporterHelper" title="gempy.core.data.importer_helper.ImporterHelper"><span class="pre">ImporterHelper</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../Modeling%20Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.geo_model.GeoModel"><span class="pre">GeoModel</span></a></span></span><a class="reference internal" href="../_modules/gempy/API/initialization_API.html#create_geomodel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gempy.create_geomodel" title="Link to this definition">¶</a></dt>
-<dd><p>Creates a GeoModel instance.</p>
-<p>This function initializes a GeoModel object, including its grid and interpolation options.</p>
+<dd><p>Initializes and returns a GeoModel instance with specified parameters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>project_name</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the project. Defaults to ‘default_project’.</p></li>
-<li><p><strong>extent</strong> (<em>Union</em><em>[</em><em>list</em><em>, </em><em>ndarray</em><em>]</em><em>, </em><em>optional</em>) – The 3D extent of the grid. Defaults to None.</p></li>
-<li><p><strong>resolution</strong> (<em>Union</em><em>[</em><em>list</em><em>, </em><em>ndarray</em><em>]</em><em>, </em><em>optional</em>) – The resolution of the grid. Defaults to None.</p></li>
-<li><p><strong>refinement</strong> (<em>int</em><em>, </em><em>optional</em>) – Defaults to 1.</p></li>
-<li><p><strong>structural_frame</strong> (<a class="reference internal" href="../Modeling%20Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame"><em>StructuralFrame</em></a><em>, </em><em>optional</em>) – The structural frame of the GeoModel. Defaults to None.</p></li>
-<li><p><strong>importer_helper</strong> (<a class="reference internal" href="../Helper%20Classes/gempy.core.data.ImporterHelper.html#gempy.core.data.ImporterHelper" title="gempy.core.data.ImporterHelper"><em>ImporterHelper</em></a><em>, </em><em>optional</em>) – Helper object to import structural elements. Defaults to None.</p></li>
+<li><p><strong>extent</strong> (<em>Union</em><em>[</em><em>List</em><em>, </em><em>np.ndarray</em><em>]</em><em>, </em><em>optional</em>) – The 3D extent of the grid. Must be provided if resolution is specified. Defaults to None.</p></li>
+<li><p><strong>resolution</strong> (<em>Union</em><em>[</em><em>List</em><em>, </em><em>np.ndarray</em><em>]</em><em>, </em><em>optional</em>) – The resolution of the grid. If None, an octree grid will be initialized. Defaults to None.</p></li>
+<li><p><strong>refinement</strong> (<em>int</em><em>, </em><em>optional</em>) – The level of refinement for the octree grid. Defaults to 1.</p></li>
+<li><p><strong>structural_frame</strong> (<a class="reference internal" href="../Modeling%20Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame"><em>StructuralFrame</em></a><em>, </em><em>optional</em>) – The structural frame of the GeoModel. Either this or importer_helper must be provided. Defaults to None.</p></li>
+<li><p><strong>importer_helper</strong> (<a class="reference internal" href="../Helper%20Classes/gempy.core.data.ImporterHelper.html#gempy.core.data.ImporterHelper" title="gempy.core.data.ImporterHelper"><em>ImporterHelper</em></a><em>, </em><em>optional</em>) – Helper object for importing structural elements. Either this or structural_frame must be provided. Defaults to None.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -60,17 +62,17 @@
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="../Modeling%20Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel">GeoModel</a></p>
 </dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If neither structural_frame nor importer_helper is provided.</p>
+</dd>
 </dl>
 </dd></dl>
 
 <section id="examples-using-gempy-create-geomodel">
 <h2>Examples using <code class="docutils literal notranslate"><span class="pre">gempy.create_geomodel</span></code><a class="headerlink" href="#examples-using-gempy-create-geomodel" title="Link to this heading">¶</a></h2>
-<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="1.4: Unconformity relationships"><img alt="" src="../_images/sphx_glr_ch1_4_onlap_relations_thumb.png" />
-<p><a class="reference internal" href="../tutorials/ch1_fundamentals/ch1_4_onlap_relations.html#sphx-glr-tutorials-ch1-fundamentals-ch1-4-onlap-relations-py"><span class="std std-ref">1.4: Unconformity relationships</span></a></p>
-  <div class="sphx-glr-thumbnail-title">1.4: Unconformity relationships</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="This tutorial demonstrates step-by-step geological modeling using the gempy and gempy_viewer li..."><img alt="" src="../_images/sphx_glr_a1_fold_thumb.png" />
-<p><a class="reference internal" href="../tutorials/z_other_tutorials/a1_fold.html#sphx-glr-tutorials-z-other-tutorials-a1-fold-py"><span class="std std-ref">Modeling step by step</span></a></p>
-  <div class="sphx-glr-thumbnail-title">Modeling step by step</div>
+<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="Perth basin."><img alt="" src="../_images/sphx_glr_Perth_basin_thumb.png" />
+<p><a class="reference internal" href="../examples/real/Perth_basin.html#sphx-glr-examples-real-perth-basin-py"><span class="std std-ref">Perth basin.</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Perth basin.</div>
 </div></div><div class="sphx-glr-clear"></div></section>
 </section>
 
@@ -111,6 +113,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">GemPy Tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">External examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../external/external_examples.html">External Examples</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul class="current">

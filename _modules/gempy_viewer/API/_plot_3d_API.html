@@ -4,14 +4,14 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>gempy_viewer.API._plot_3d_API &#8212; GemPy 2023.2.0b1 documentation</title>
+    <title>gempy_viewer.API._plot_3d_API &#8212; GemPy 2024.1.2.dev59+gc19c50fa.d20240531 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=270d38c7" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=61a4c737" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <script src="../../../_static/documentation_options.js?v=acace1bb"></script>
+    <script src="../../../_static/documentation_options.js?v=2a6b7f2f"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="icon" href="../../../_static/favicon.ico"/>
@@ -34,7 +34,9 @@
           <div class="body" role="main">
             
   <h1>Source code for gempy_viewer.API._plot_3d_API</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="kn">from</span> <span class="nn">gempy.core.data</span> <span class="kn">import</span> <span class="n">GeoModel</span>
@@ -64,22 +66,43 @@
 <a class="viewcode-back" href="../../../Plot/gempy_viewer.plot_3d.html#gempy_viewer.plot_3d">[docs]</a>
 <span class="k">def</span> <span class="nf">plot_3d</span><span class="p">(</span>
         <span class="n">model</span><span class="p">:</span> <span class="n">GeoModel</span><span class="p">,</span>
-        <span class="n">plotter_type</span><span class="o">=</span><span class="s1">&#39;basic&#39;</span><span class="p">,</span>
-        <span class="n">active_scalar_field</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">ve</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">plotter_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;basic&#39;</span><span class="p">,</span>
+        <span class="n">active_scalar_field</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">ve</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">topography_scalar_type</span><span class="p">:</span> <span class="n">TopographyDataType</span> <span class="o">=</span> <span class="n">TopographyDataType</span><span class="o">.</span><span class="n">GEOMAP</span><span class="p">,</span>
-        <span class="n">kwargs_pyvista_bounds</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">kwargs_plot_structured_grid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">kwargs_plot_topography</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">kwargs_plot_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">kwargs_plotter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">kwargs_plot_surfaces</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">image</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">kwargs_pyvista_bounds</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">kwargs_plot_structured_grid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">kwargs_plot_topography</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">kwargs_plot_data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">kwargs_plotter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">kwargs_plot_surfaces</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">image</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">show</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">transformed_data</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GemPyToVista</span><span class="p">:</span>
-<span class="w">    </span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot 3-D geomodel.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot 3-D geomodel.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        model (GeoModel): Geomodel object with solutions.</span>
+<span class="sd">        plotter_type (str): Type of plotter to use. Defaults to &#39;basic&#39;.</span>
+<span class="sd">        active_scalar_field (Optional[str]): Active scalar field for the plot.</span>
+<span class="sd">        ve (Optional[float]): Vertical exaggeration.</span>
+<span class="sd">        topography_scalar_type (TopographyDataType): Type of topography scalar data. Defaults to TopographyDataType.GEOMAP.</span>
+<span class="sd">        kwargs_pyvista_bounds (Optional[dict]): Additional keyword arguments for PyVista bounds.</span>
+<span class="sd">        kwargs_plot_structured_grid (Optional[dict]): Additional keyword arguments for plotting the structured grid.</span>
+<span class="sd">        kwargs_plot_topography (Optional[dict]): Additional keyword arguments for plotting the topography.</span>
+<span class="sd">        kwargs_plot_data (Optional[dict]): Additional keyword arguments for plotting data.</span>
+<span class="sd">        kwargs_plotter (Optional[dict]): Additional keyword arguments for the plotter.</span>
+<span class="sd">        kwargs_plot_surfaces (Optional[dict]): Additional keyword arguments for plotting surfaces.</span>
+<span class="sd">        image (bool): If True, saves the plot as an image. Defaults to False.</span>
+<span class="sd">        show (bool): If True, displays the plot. Defaults to True.</span>
+<span class="sd">        transformed_data (bool): If True, uses transformed data for plotting. Defaults to False.</span>
+<span class="sd">        **kwargs: Additional keyword arguments.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        GemPyToVista: Object for 3D plotting in GemPy.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="kn">from</span> <span class="nn">gempy_viewer.modules.plot_3d.drawer_input_3d</span> <span class="kn">import</span> <span class="n">plot_data</span>
     <span class="kn">from</span> <span class="nn">gempy_viewer.modules.plot_3d.drawer_structured_grid_3d</span> <span class="kn">import</span> <span class="n">plot_structured_grid</span>
@@ -120,7 +143,7 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">solutions_raw_arrays</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">solutions</span><span class="o">.</span><span class="n">raw_arrays</span>
 
-    <span class="n">extent</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">regular_grid</span><span class="o">.</span><span class="n">extent</span>
+    <span class="n">extent</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">extent</span>
 
     <span class="n">gempy_vista</span> <span class="o">=</span> <span class="n">GemPyToVista</span><span class="p">(</span>
         <span class="n">extent</span><span class="o">=</span><span class="n">extent</span><span class="p">,</span>
@@ -141,9 +164,18 @@
         <span class="p">)</span>
         
     <span class="k">if</span> <span class="n">data_to_show</span><span class="o">.</span><span class="n">show_boundaries</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">solutions_raw_arrays</span><span class="o">.</span><span class="n">vertices</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">transformed_data</span><span class="p">:</span>
+            <span class="n">surfaces_transform</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">input_transform</span>
+            <span class="n">grid_transform</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">transform</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">surfaces_transform</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">grid_transform</span> <span class="o">=</span> <span class="kc">None</span>
+            
         <span class="n">plot_surfaces</span><span class="p">(</span>
             <span class="n">gempy_vista</span><span class="o">=</span><span class="n">gempy_vista</span><span class="p">,</span>
             <span class="n">structural_elements_with_solution</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">structural_frame</span><span class="o">.</span><span class="n">structural_elements</span><span class="p">,</span>
+            <span class="n">input_transform</span><span class="o">=</span><span class="n">surfaces_transform</span><span class="p">,</span>
+            <span class="n">grid_transform</span><span class="o">=</span><span class="n">grid_transform</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs_plot_surfaces</span>
         <span class="p">)</span>
 
@@ -155,13 +187,20 @@
             <span class="n">gempy_vista</span><span class="o">=</span><span class="n">gempy_vista</span><span class="p">,</span>
             <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
             <span class="n">arrows_factor</span><span class="o">=</span><span class="n">arrow_size</span> <span class="o">/</span> <span class="p">(</span><span class="mi">100</span> <span class="o">/</span> <span class="n">min_axes</span><span class="p">),</span>
+            <span class="n">transformed_data</span><span class="o">=</span><span class="n">transformed_data</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs_plot_data</span>
         <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">transformed_data</span><span class="p">:</span>
+        <span class="n">vtk_formated_regular_mesh</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">regular_grid_coordinates_transformed</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">vtk_formated_regular_mesh</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">regular_grid_coordinates</span>
 
     <span class="k">if</span> <span class="n">data_to_show</span><span class="o">.</span><span class="n">show_lith</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
         <span class="n">plot_structured_grid</span><span class="p">(</span>
             <span class="n">gempy_vista</span><span class="o">=</span><span class="n">gempy_vista</span><span class="p">,</span>
-            <span class="n">regular_grid</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">regular_grid</span><span class="p">,</span>
+            <span class="n">vtk_formated_regular_mesh</span><span class="o">=</span><span class="n">vtk_formated_regular_mesh</span><span class="p">,</span>
+            <span class="n">resolution</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">regular_grid</span><span class="o">.</span><span class="n">resolution</span><span class="p">,</span>
             <span class="n">scalar_data_type</span><span class="o">=</span><span class="n">ScalarDataType</span><span class="o">.</span><span class="n">LITHOLOGY</span><span class="p">,</span>
             <span class="n">active_scalar_field</span><span class="o">=</span><span class="s2">&quot;lith&quot;</span><span class="p">,</span>
             <span class="n">solution</span><span class="o">=</span><span class="n">solutions_raw_arrays</span><span class="p">,</span>
@@ -172,7 +211,8 @@
     <span class="k">if</span> <span class="n">data_to_show</span><span class="o">.</span><span class="n">show_scalar</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
         <span class="n">plot_structured_grid</span><span class="p">(</span>
             <span class="n">gempy_vista</span><span class="o">=</span><span class="n">gempy_vista</span><span class="p">,</span>
-            <span class="n">regular_grid</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">regular_grid</span><span class="p">,</span>
+            <span class="n">vtk_formated_regular_mesh</span><span class="o">=</span><span class="n">vtk_formated_regular_mesh</span><span class="p">,</span>
+            <span class="n">resolution</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">regular_grid</span><span class="o">.</span><span class="n">resolution</span><span class="p">,</span>
             <span class="n">scalar_data_type</span><span class="o">=</span><span class="n">ScalarDataType</span><span class="o">.</span><span class="n">SCALAR_FIELD</span><span class="p">,</span>
             <span class="n">active_scalar_field</span><span class="o">=</span><span class="n">active_scalar_field</span><span class="p">,</span>
             <span class="n">solution</span><span class="o">=</span><span class="n">solutions_raw_arrays</span><span class="p">,</span>

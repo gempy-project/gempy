@@ -4,14 +4,14 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>gempy.core.data.surface_points &#8212; GemPy 2023.2.0b1 documentation</title>
+    <title>gempy.core.data.surface_points &#8212; GemPy 2024.1.2.dev59+gc19c50fa.d20240531 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/alabaster.css?v=270d38c7" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery.css?v=61a4c737" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <script src="../../../../_static/documentation_options.js?v=acace1bb"></script>
+    <script src="../../../../_static/documentation_options.js?v=2a6b7f2f"></script>
     <script src="../../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="icon" href="../../../../_static/favicon.ico"/>
@@ -64,6 +64,11 @@
     <span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">([(</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;f8&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;f8&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Z&#39;</span><span class="p">,</span> <span class="s1">&#39;f8&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;i4&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;nugget&#39;</span><span class="p">,</span> <span class="s1">&#39;f8&#39;</span><span class="p">)])</span>  <span class="c1">#: The custom data type for the data array.</span>
     <span class="n">_model_transform</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Transform</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Check if the data array has the correct data type</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">SurfacePointsTable</span><span class="o">.</span><span class="n">dt</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Data array must have the following data type: </span><span class="si">{</span><span class="n">SurfacePointsTable</span><span class="o">.</span><span class="n">dt</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array2string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="n">suppress_small</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
@@ -86,18 +91,34 @@
         <span class="n">html</span> <span class="o">+=</span> <span class="s2">&quot;&lt;/table&gt;&quot;</span>
         <span class="k">return</span> <span class="n">html</span>
 
+<div class="viewcode-block" id="SurfacePointsTable.from_arrays">
+<a class="viewcode-back" href="../../../../Modeling%20Classes/gempy.core.data.SurfacePointsTable.html#gempy.core.data.SurfacePointsTable.from_arrays">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_arrays</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">z</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
                     <span class="n">names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span> <span class="o">|</span> <span class="nb">str</span><span class="p">],</span> <span class="n">nugget</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                     <span class="n">name_id_map</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
                     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;SurfacePointsTable&#39;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a SurfacePointsTable from arrays of coordinates and names.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            x (np.ndarray): Array of x-coordinates.</span>
+<span class="sd">            y (np.ndarray): Array of y-coordinates.</span>
+<span class="sd">            z (np.ndarray): Array of z-coordinates.</span>
+<span class="sd">            names (Union[Sequence, str]): Names of the surface points.</span>
+<span class="sd">            nugget (Optional[np.ndarray]): Nugget values for the surface points.</span>
+<span class="sd">            name_id_map (Optional[dict[str, int]]): Mapping between surface point names and ids.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            SurfacePointsTable: A new instance of SurfacePointsTable.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">data</span><span class="p">,</span> <span class="n">name_id_map</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_data_from_arrays</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">nugget</span><span class="p">,</span> <span class="n">name_id_map</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">name_id_map</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">name_id_map</span><span class="p">)</span></div>
+
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_data_from_arrays</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">z</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-                         <span class="n">names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span> <span class="o">|</span> <span class="nb">str</span><span class="p">],</span> <span class="n">nugget</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                         <span class="n">name_id_map</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+                          <span class="n">names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span> <span class="o">|</span> <span class="nb">str</span><span class="p">],</span> <span class="n">nugget</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                          <span class="n">name_id_map</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
         <span class="k">if</span> <span class="n">nugget</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">nugget</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="n">DEFAULT_SP_NUGGET</span>
 
@@ -105,22 +126,48 @@
             <span class="n">ids</span><span class="p">,</span> <span class="n">name_id_map</span> <span class="o">=</span> <span class="n">generate_ids_from_names</span><span class="p">(</span><span class="n">name_id_map</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">name_id_map</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">])</span>
-            
+
         <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">SurfacePointsTable</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
         <span class="n">data</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;nugget&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">ids</span><span class="p">,</span> <span class="n">nugget</span>
         <span class="k">return</span> <span class="n">data</span><span class="p">,</span> <span class="n">name_id_map</span>
 
-
+<div class="viewcode-block" id="SurfacePointsTable.initialize_empty">
+<a class="viewcode-back" href="../../../../Modeling%20Classes/gempy.core.data.SurfacePointsTable.html#gempy.core.data.SurfacePointsTable.initialize_empty">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">initialize_empty</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;SurfacePointsTable&#39;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">SurfacePointsTable</span><span class="o">.</span><span class="n">dt</span><span class="p">),</span> <span class="p">{})</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize an empty SurfacePointsTable.</span>
 
+<span class="sd">        Returns:</span>
+<span class="sd">            SurfacePointsTable: An empty instance of SurfacePointsTable.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">SurfacePointsTable</span><span class="o">.</span><span class="n">dt</span><span class="p">),</span> <span class="p">{})</span></div>
+
+
+<div class="viewcode-block" id="SurfacePointsTable.id_to_name">
+<a class="viewcode-back" href="../../../../Modeling%20Classes/gempy.core.data.SurfacePointsTable.html#gempy.core.data.SurfacePointsTable.id_to_name">[docs]</a>
     <span class="k">def</span> <span class="nf">id_to_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name_id_map</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="nb">id</span><span class="p">]</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the name corresponding to a given id.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            id (int): The id of the surface point.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: The name of the surface point.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name_id_map</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="nb">id</span><span class="p">]</span></div>
+
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">xyz</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">]])</span><span class="o">.</span><span class="n">T</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">xyz_view</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">]]</span>
+
+    <span class="nd">@xyz_view</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">xyz_view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">T</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">nugget</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
@@ -129,13 +176,13 @@
     <span class="nd">@nugget</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">nugget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;nugget&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
-        
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">model_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Transform</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_transform</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Model transform is not set. If you want to use this property use GeoModel.surface_points to get the SurfaceTable with transform attached.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_transform</span>
-    
+
     <span class="nd">@model_transform</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">model_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Transform</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_model_transform</span> <span class="o">=</span> <span class="n">value</span>
@@ -143,15 +190,45 @@
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
 
+<div class="viewcode-block" id="SurfacePointsTable.get_surface_points_by_name">
+<a class="viewcode-back" href="../../../../Modeling%20Classes/gempy.core.data.SurfacePointsTable.html#gempy.core.data.SurfacePointsTable.get_surface_points_by_name">[docs]</a>
     <span class="k">def</span> <span class="nf">get_surface_points_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;SurfacePointsTable&#39;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_surface_points_by_id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name_id_map</span><span class="p">[</span><span class="n">name</span><span class="p">])</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a SurfacePointsTable containing points with the specified name.</span>
 
+<span class="sd">        Args:</span>
+<span class="sd">            name (str): The name of the surface points.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            SurfacePointsTable: A new instance containing the specified surface points.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_surface_points_by_id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name_id_map</span><span class="p">[</span><span class="n">name</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="SurfacePointsTable.get_surface_points_by_id">
+<a class="viewcode-back" href="../../../../Modeling%20Classes/gempy.core.data.SurfacePointsTable.html#gempy.core.data.SurfacePointsTable.get_surface_points_by_id">[docs]</a>
     <span class="k">def</span> <span class="nf">get_surface_points_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;SurfacePointsTable&#39;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">SurfacePointsTable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="nb">id</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">name_id_map</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a SurfacePointsTable containing points with the specified id.</span>
 
+<span class="sd">        Args:</span>
+<span class="sd">            id (int): The id of the surface points.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            SurfacePointsTable: A new instance containing the specified surface points.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">SurfacePointsTable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="nb">id</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">name_id_map</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SurfacePointsTable.get_surface_points_by_id_groups">
+<a class="viewcode-back" href="../../../../Modeling%20Classes/gempy.core.data.SurfacePointsTable.html#gempy.core.data.SurfacePointsTable.get_surface_points_by_id_groups">[docs]</a>
     <span class="k">def</span> <span class="nf">get_surface_points_by_id_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="s1">&#39;SurfacePointsTable&#39;</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a list of SurfacePointsTable objects, each containing points with a unique id.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list[SurfacePointsTable]: A list of SurfacePointsTable objects.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])</span>
-        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get_surface_points_by_id</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get_surface_points_by_id</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">]</span></div>
+
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">ids</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>

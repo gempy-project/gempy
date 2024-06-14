@@ -5,16 +5,19 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>gempy.core.data.GeoModel &#8212; GemPy 2024.1.2 documentation</title>
+    <title>gempy.core.data.GeoModel &#8212; GemPy 2024.1.2.dev59+gc19c50fa.d20240531 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=270d38c7" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=eafc0fe6" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <script src="../_static/documentation_options.js?v=0b07e6f1"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <script src="../_static/documentation_options.js?v=2a6b7f2f"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
     <link rel="icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -44,9 +47,9 @@
 <dd><p>Class representing a geological model.</p>
 <section id="examples-using-gempy-core-data-geomodel">
 <h2>Examples using <code class="docutils literal notranslate"><span class="pre">gempy.core.data.GeoModel</span></code><a class="headerlink" href="#examples-using-gempy-core-data-geomodel" title="Link to this heading">¶</a></h2>
-<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="1.7: 3-D Visualization"><img alt="" src="../_images/sphx_glr_ch1_7_3d_visualization_thumb.png" />
-<p><a class="reference internal" href="../tutorials/ch1_fundamentals/ch1_7_3d_visualization.html#sphx-glr-tutorials-ch1-fundamentals-ch1-7-3d-visualization-py"><span class="std std-ref">1.7: 3-D Visualization</span></a></p>
-  <div class="sphx-glr-thumbnail-title">1.7: 3-D Visualization</div>
+<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="Perth basin."><img alt="" src="../_images/sphx_glr_Perth_basin_thumb.png" />
+<p><a class="reference internal" href="../examples/real/Perth_basin.html#sphx-glr-examples-real-perth-basin-py"><span class="std std-ref">Perth basin.</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Perth basin.</div>
 </div></div><div class="sphx-glr-clear"></div><p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -56,19 +59,25 @@
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_surface_points</span></code>(X, Y, Z, surface[, nugget])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_transform</span></code>([auto_anisotropy, ...])</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.GeoModel.update_transform" title="gempy.core.data.GeoModel.update_transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_transform</span></code></a>([auto_anisotropy, ...])</p></td>
+<td><p>Update the transformation of the geological model.</p></td>
 </tr>
 </tbody>
 </table>
 <p class="rubric">Attributes</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.GeoModel.geophysics_input" title="gempy.core.data.GeoModel.geophysics_input"><code class="xref py py-obj docutils literal notranslate"><span class="pre">geophysics_input</span></code></a></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">extent_transformed_transformed_by_input</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data.GeoModel.geophysics_input" title="gempy.core.data.GeoModel.geophysics_input"><code class="xref py py-obj docutils literal notranslate"><span class="pre">geophysics_input</span></code></a></p></td>
 <td><p>The geophysics input of the geological model.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">input_data_descriptor</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">input_data_descriptor</span></code></p></td>
 <td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data.GeoModel.input_transform" title="gempy.core.data.GeoModel.input_transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">input_transform</span></code></a></p></td>
+<td><p>The transformation used in the geological model for input points.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.GeoModel.interpolation_grid" title="gempy.core.data.GeoModel.interpolation_grid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">interpolation_grid</span></code></a></p></td>
 <td><p>Optional grid used for interpolation.</p></td>
@@ -88,6 +97,18 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data.GeoModel.orientations_copy" title="gempy.core.data.GeoModel.orientations_copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">orientations_copy</span></code></a></p></td>
 <td><p>This is a copy! Returns a OrientationsTable for all orientations across the structural elements</p></td>
 </tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">orientations_copy_transformed</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">project_bounds</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">regular_grid_coordinates</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">regular_grid_coordinates_transformed</span></code></p></td>
+<td><p></p></td>
+</tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">solutions</span></code></p></td>
 <td><p></p></td>
 </tr>
@@ -97,8 +118,8 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.GeoModel.surface_points_copy" title="gempy.core.data.GeoModel.surface_points_copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">surface_points_copy</span></code></a></p></td>
 <td><p>This is a copy! Returns a SurfacePointsTable for all surface points across the structural elements</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data.GeoModel.transform" title="gempy.core.data.GeoModel.transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transform</span></code></a></p></td>
-<td><p>The transformation used in the geological model for input points.</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">surface_points_copy_transformed</span></code></p></td>
+<td><p></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.GeoModel.meta" title="gempy.core.data.GeoModel.meta"><code class="xref py py-obj docutils literal notranslate"><span class="pre">meta</span></code></a></p></td>
 <td><p>Meta-information about the geological model, like its name, creation and modification dates, and owner.</p></td>
@@ -113,7 +134,7 @@
 </table>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="gempy.core.data.GeoModel.geophysics_input">
-<span class="sig-name descname"><span class="pre">geophysics_input</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">GeophysicsInput</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#gempy.core.data.GeoModel.geophysics_input" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">geophysics_input</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="gempy.core.data.GeophysicsInput.html#gempy.core.data.GeophysicsInput" title="gempy_engine.core.data.geophysics_input.GeophysicsInput"><span class="pre">GeophysicsInput</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#gempy.core.data.GeoModel.geophysics_input" title="Link to this definition">¶</a></dt>
 <dd><p>The geophysics input of the geological model.</p>
 </dd></dl>
 
@@ -153,9 +174,25 @@
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="gempy.core.data.GeoModel.transform">
-<span class="sig-name descname"><span class="pre">transform</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Transform</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#gempy.core.data.GeoModel.transform" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="gempy.core.data.GeoModel.input_transform">
+<span class="sig-name descname"><span class="pre">input_transform</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="gempy.core.data.Transform.html#gempy.core.data.Transform" title="gempy_engine.core.data.transforms.Transform"><span class="pre">Transform</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#gempy.core.data.GeoModel.input_transform" title="Link to this definition">¶</a></dt>
 <dd><p>The transformation used in the geological model for input points.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gempy.core.data.GeoModel.update_transform">
+<span class="sig-name descname"><span class="pre">update_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">auto_anisotropy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gempy.core.data.GlobalAnisotropy.html#gempy.core.data.GlobalAnisotropy" title="gempy_engine.core.data.transforms.GlobalAnisotropy"><span class="pre">GlobalAnisotropy</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">GlobalAnisotropy.NONE</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anisotropy_limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data/geo_model.html#GeoModel.update_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gempy.core.data.GeoModel.update_transform" title="Link to this definition">¶</a></dt>
+<dd><p>Update the transformation of the geological model.</p>
+<p>This function updates the transformation of the geological model using the provided surface points and orientations.
+It also applies anisotropy based on the specified type and limit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>auto_anisotropy</strong> (<a class="reference internal" href="gempy.core.data.GlobalAnisotropy.html#gempy.core.data.GlobalAnisotropy" title="gempy.core.data.GlobalAnisotropy"><em>GlobalAnisotropy</em></a>) – The type of anisotropy to apply. Defaults to GlobalAnisotropy.NONE.</p></li>
+<li><p><strong>anisotropy_limit</strong> (<em>Optional</em><em>[</em><em>np.ndarray</em><em>]</em>) – Anisotropy limit values. If None, no limit is applied.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py property">
@@ -212,6 +249,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">GemPy Tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">External examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../external/external_examples.html">External Examples</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul class="current">

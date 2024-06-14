@@ -4,14 +4,14 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>gempy.core.data.grid &#8212; GemPy 2023.2.0b1 documentation</title>
+    <title>gempy.core.data.grid &#8212; GemPy 2024.1.2.dev59+gc19c50fa.d20240531 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/alabaster.css?v=270d38c7" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery.css?v=61a4c737" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <script src="../../../../_static/documentation_options.js?v=acace1bb"></script>
+    <script src="../../../../_static/documentation_options.js?v=2a6b7f2f"></script>
     <script src="../../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="icon" href="../../../../_static/favicon.ico"/>
@@ -34,113 +34,235 @@
           <div class="body" role="main">
             
   <h1>Source code for gempy.core.data.grid</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">dataclasses</span>
+<span></span><span class="kn">import</span> <span class="nn">warnings</span>
 
+<span class="kn">import</span> <span class="nn">dataclasses</span>
 <span class="kn">import</span> <span class="nn">enum</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span>
-
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
 
-<span class="kn">from</span> <span class="nn">gempy.core.data.grid_modules</span> <span class="kn">import</span> <span class="n">topography</span><span class="p">,</span> <span class="n">grid_types</span>
-<span class="kn">from</span> <span class="nn">gempy.core.data.grid_modules.topography</span> <span class="kn">import</span> <span class="n">Topography</span>
 <span class="kn">from</span> <span class="nn">gempy_engine.core.data.centered_grid</span> <span class="kn">import</span> <span class="n">CenteredGrid</span>
-
-
-<span class="k">class</span> <span class="nc">GridTypes</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
-    <span class="n">REGULAR</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">CUSTOM</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="n">TOPOGRAPHY</span> <span class="o">=</span> <span class="mi">2</span>
-    <span class="n">SECTIONS</span> <span class="o">=</span> <span class="mi">3</span>
-    <span class="n">CENTERED</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="kn">from</span> <span class="nn">gempy_engine.core.data.options</span> <span class="kn">import</span> <span class="n">EvaluationOptions</span>
+<span class="kn">from</span> <span class="nn">gempy_engine.core.data.transforms</span> <span class="kn">import</span> <span class="n">Transform</span>
+<span class="kn">from</span> <span class="nn">.grid_modules</span> <span class="kn">import</span> <span class="n">RegularGrid</span><span class="p">,</span> <span class="n">CustomGrid</span><span class="p">,</span> <span class="n">Sections</span>
+<span class="kn">from</span> <span class="nn">.grid_modules.topography</span> <span class="kn">import</span> <span class="n">Topography</span>
 
 
 <div class="viewcode-block" id="Grid">
 <a class="viewcode-back" href="../../../../Modeling%20Classes/gempy.core.data.Grid.html#gempy.core.data.Grid">[docs]</a>
 <span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
-<span class="k">class</span> <span class="nc">Grid</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Class to generate grids.</span>
+<span class="k">class</span> <span class="nc">Grid</span><span class="p">:</span>
+<div class="viewcode-block" id="Grid.GridTypes">
+<a class="viewcode-back" href="../../../../Modeling%20Classes/gempy.core.data.Grid.html#gempy.core.data.Grid.GridTypes">[docs]</a>
+    <span class="k">class</span> <span class="nc">GridTypes</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Flag</span><span class="p">):</span>
+        <span class="n">OCTREE</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">0</span>
+        <span class="n">DENSE</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">1</span>
+        <span class="n">CUSTOM</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="n">TOPOGRAPHY</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">3</span>
+        <span class="n">SECTIONS</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">4</span>
+        <span class="n">CENTERED</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">5</span>
+        <span class="n">NONE</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">10</span></div>
 
-<span class="sd">    This class is used to create points to evaluate the geological model. </span>
-<span class="sd">    This class serves a container which transmits the XYZ coordinates to the</span>
-<span class="sd">    interpolator. There are several type of grid objects feeding into the Grid class</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">         **kwargs: See below</span>
+    <span class="c1"># ? What should we do with the extent?</span>
 
-<span class="sd">    Keyword Args:</span>
-<span class="sd">         regular (:class:`gempy.core.grid_modules.grid_types.RegularGrid`): [s0]</span>
-<span class="sd">         custom (:class:`gempy.core.grid_modules.grid_types.CustomGrid`): [s1]</span>
-<span class="sd">         topography (:class:`gempy.core.grid_modules.grid_types.Topography`): [s2]</span>
-<span class="sd">         sections (:class:`gempy.core.grid_modules.grid_types.Sections`): [s3]</span>
-<span class="sd">         gravity (:class:`gempy.core.grid_modules.grid_types.Gravity`):</span>
+    <span class="n">_octree_grid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">RegularGrid</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_dense_grid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">RegularGrid</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_custom_grid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">CustomGrid</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_topography</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Topography</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_sections</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sections</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_centered_grid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">CenteredGrid</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
-<span class="sd">    Attributes:</span>
-<span class="sd">        values (np.ndarray): coordinates where the model is going to be evaluated. This is the coordinates</span>
-<span class="sd">         concatenation of all active grids.</span>
-<span class="sd">        values_r (np.ndarray): rescaled coordinates where the model is going to be evaluated</span>
-<span class="sd">        length (np.ndarray):I a array which contain the slicing index for each grid type in order. The first element will</span>
-<span class="sd">         be 0, the second the length of the regular grid; the third custom and so on. This can be used to slice the</span>
-<span class="sd">         solutions correspondent to each of the grids</span>
-<span class="sd">        grid_types(np.ndarray[str]): names of the current grids of GemPy</span>
-<span class="sd">        active_grids_bool(np.ndarray[bool]): boolean array which controls which type of grid is going to be computed and</span>
-<span class="sd">         hence on the property `values`.</span>
-<span class="sd">        regular_grid (:class:`gempy.core.grid_modules.grid_types.RegularGrid`)</span>
-<span class="sd">        custom_grid (:class:`gempy.core.grid_modules.grid_types.CustomGrid`)</span>
-<span class="sd">        topography (:class:`gempy.core.grid_modules.grid_types.Topography`)</span>
-<span class="sd">        sections (:class:`gempy.core.grid_modules.grid_types.Sections`)</span>
-<span class="sd">        gravity_grid (:class:`gempy.core.grid_modules.grid_types.Gravity`)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">values</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+    <span class="n">length</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
-    <span class="n">dense_grid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">grid_types</span><span class="o">.</span><span class="n">RegularGrid</span><span class="p">]</span>
-    <span class="n">octree_grid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">grid_types</span><span class="o">.</span><span class="n">RegularGrid</span><span class="p">]</span>
-    <span class="n">custom_grid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">grid_types</span><span class="o">.</span><span class="n">CustomGrid</span><span class="p">]</span>
-    <span class="n">topography</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Topography</span><span class="p">]</span>
-    <span class="n">sections</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">grid_types</span><span class="o">.</span><span class="n">Sections</span><span class="p">]</span>
-    <span class="n">centered_grid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">CenteredGrid</span><span class="p">]</span>
+    <span class="n">_active_grids</span> <span class="o">=</span> <span class="n">GridTypes</span><span class="o">.</span><span class="n">NONE</span>
+    <span class="n">_transform</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Transform</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="n">extent</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span>  <span class="c1"># * Model extent should be cross grid</span>
+    <span class="n">_octree_levels</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
 
 <div class="viewcode-block" id="Grid.__init__">
 <a class="viewcode-back" href="../../../../Modeling%20Classes/gempy.core.data.Grid.html#gempy.core.data.Grid.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">values_r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">length</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_octree_levels</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">grid_types</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;regular&#39;</span><span class="p">,</span> <span class="s1">&#39;custom&#39;</span><span class="p">,</span> <span class="s1">&#39;topography&#39;</span><span class="p">,</span> <span class="s1">&#39;sections&#39;</span><span class="p">,</span> <span class="s1">&#39;centered&#39;</span><span class="p">,</span> <span class="s1">&#39;octree&#39;</span><span class="p">])</span>  <span class="c1"># TODO: Make a enumerator!</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">active_grids_bool</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
-        <span class="c1"># All grid types must have values</span>
-
-        <span class="c1"># Init optional grids</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dense_grid</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">octree_grid</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">custom_grid</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">custom_grid_grid_active</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">topography</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Topography</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">topography_grid_active</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sections_grid_active</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">centered_grid</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">centered_grid_active</span> <span class="o">=</span> <span class="kc">False</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">extent</span> <span class="o">=</span> <span class="n">extent</span>
-
         <span class="c1"># Init basic grid empty</span>
         <span class="k">if</span> <span class="n">extent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">resolution</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">regular_grid</span> <span class="o">=</span> <span class="n">grid_types</span><span class="o">.</span><span class="n">RegularGrid</span><span class="p">(</span><span class="n">extent</span><span class="p">,</span> <span class="n">resolution</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">active_grids_bool</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-
-        <span class="c1"># Init optional sections</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sections</span> <span class="o">=</span> <span class="kc">None</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">update_grid_values</span><span class="p">()</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dense_grid</span> <span class="o">=</span> <span class="n">RegularGrid</span><span class="p">(</span><span class="n">extent</span><span class="p">,</span> <span class="n">resolution</span><span class="p">)</span></div>
 
 
-    <span class="c1"># ? Do we need a active_regular grid property for backwards compatibility?</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">init_octree_grid</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">extent</span><span class="p">,</span> <span class="n">octree_levels</span><span class="p">):</span>
+        <span class="n">grid</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+        <span class="n">grid</span><span class="o">.</span><span class="n">_octree_grid</span> <span class="o">=</span> <span class="n">RegularGrid</span><span class="p">(</span>
+            <span class="n">extent</span><span class="o">=</span><span class="n">extent</span><span class="p">,</span>
+            <span class="n">resolution</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">2</span> <span class="o">**</span> <span class="n">octree_levels</span><span class="p">]</span> <span class="o">*</span> <span class="mi">3</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="n">grid</span><span class="o">.</span><span class="n">active_grids</span> <span class="o">|=</span> <span class="n">grid</span><span class="o">.</span><span class="n">GridTypes</span><span class="o">.</span><span class="n">OCTREE</span>
+        <span class="n">grid</span><span class="o">.</span><span class="n">_update_values</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">grid</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">init_dense_grid</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">extent</span><span class="p">,</span> <span class="n">resolution</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">extent</span><span class="p">,</span> <span class="n">resolution</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">active_grid_types_str</span> <span class="o">=</span> <span class="p">[</span><span class="n">g_type</span> <span class="k">for</span> <span class="n">g_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">GridTypes</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_grids</span> <span class="o">&amp;</span> <span class="n">g_type</span><span class="p">]</span>
+
+        <span class="n">grid_summary</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">g_type</span><span class="si">}</span><span class="s2"> (active: </span><span class="si">{</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="n">g_type</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;_grid_active&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">): </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="n">g_type</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;_grid&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="si">}</span><span class="s2"> points&quot;</span>
+                        <span class="k">for</span> <span class="n">g_type</span> <span class="ow">in</span> <span class="n">active_grid_types_str</span><span class="p">]</span>
+        <span class="n">grid_summary_str</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">grid_summary</span><span class="p">)</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Grid Object:</span><span class="se">\n</span><span class="si">{</span><span class="n">grid_summary_str</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Transform</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dense_grid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dense_grid</span><span class="o">.</span><span class="n">transform</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">octree_grid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">octree_grid</span><span class="o">.</span><span class="n">transform</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Transform</span><span class="o">.</span><span class="n">init_neutral</span><span class="p">()</span>
+
+    <span class="nd">@transform</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Transform</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_transform</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">extent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dense_grid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dense_grid</span><span class="o">.</span><span class="n">extent</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">octree_grid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">octree_grid</span><span class="o">.</span><span class="n">extent</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;Extent is not defined&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">corner_min</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">extent</span><span class="p">[::</span><span class="mi">2</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">corner_max</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">bounding_box</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">extents</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extent</span>
+        <span class="c1"># Define 3D points of the bounding box corners based on extents</span>
+        <span class="n">bounding_box_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">extents</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">extents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">extents</span><span class="p">[</span><span class="mi">4</span><span class="p">]],</span>  <span class="c1"># min x, min y, min z</span>
+                                        <span class="p">[</span><span class="n">extents</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">extents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">extents</span><span class="p">[</span><span class="mi">5</span><span class="p">]],</span>  <span class="c1"># min x, min y, max z</span>
+                                        <span class="p">[</span><span class="n">extents</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">extents</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">extents</span><span class="p">[</span><span class="mi">4</span><span class="p">]],</span>  <span class="c1"># min x, max y, min z</span>
+                                        <span class="p">[</span><span class="n">extents</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">extents</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">extents</span><span class="p">[</span><span class="mi">5</span><span class="p">]],</span>  <span class="c1"># min x, max y, max z</span>
+                                        <span class="p">[</span><span class="n">extents</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">extents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">extents</span><span class="p">[</span><span class="mi">4</span><span class="p">]],</span>  <span class="c1"># max x, min y, min z</span>
+                                        <span class="p">[</span><span class="n">extents</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">extents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">extents</span><span class="p">[</span><span class="mi">5</span><span class="p">]],</span>  <span class="c1"># max x, min y, max z</span>
+                                        <span class="p">[</span><span class="n">extents</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">extents</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">extents</span><span class="p">[</span><span class="mi">4</span><span class="p">]],</span>  <span class="c1"># max x, max y, min z</span>
+                                        <span class="p">[</span><span class="n">extents</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">extents</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">extents</span><span class="p">[</span><span class="mi">5</span><span class="p">]]])</span>  <span class="c1"># max x, max y, max z</span>
+        <span class="k">return</span> <span class="n">bounding_box_points</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">active_grids</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_active_grids</span>
+
+    <span class="nd">@active_grids</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">active_grids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_active_grids</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_values</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">dense_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RegularGrid</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dense_grid</span>
+
+    <span class="nd">@dense_grid</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">dense_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dense_grid</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">active_grids</span> <span class="o">|=</span> <span class="bp">self</span><span class="o">.</span><span class="n">GridTypes</span><span class="o">.</span><span class="n">DENSE</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_values</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">octree_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_octree_grid</span>
+
+    <span class="nd">@octree_grid</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">octree_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;Octree grid is not allowed to be set directly. Use init_octree_grid instead&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">set_octree_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">regular_grid</span><span class="p">:</span> <span class="n">RegularGrid</span><span class="p">,</span> <span class="n">evaluation_options</span><span class="p">:</span> <span class="n">EvaluationOptions</span><span class="p">):</span>
+        <span class="n">regular_grid_resolution</span> <span class="o">=</span> <span class="n">regular_grid</span><span class="o">.</span><span class="n">resolution</span>
+        <span class="c1"># Check all directions has the same res</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">regular_grid_resolution</span> <span class="o">==</span> <span class="n">regular_grid_resolution</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;Octree resolution must be isotropic&#39;</span><span class="p">)</span>
+        <span class="n">octree_levels</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="n">regular_grid_resolution</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="c1"># Check if octrree levels are the same</span>
+        <span class="k">if</span> <span class="n">octree_levels</span> <span class="o">!=</span> <span class="n">evaluation_options</span><span class="o">.</span><span class="n">number_octree_levels</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;Regular grid resolution does not match octree levels. Resolution must be 2^n&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_octree_grid</span> <span class="o">=</span> <span class="n">regular_grid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">active_grids</span> <span class="o">|=</span> <span class="bp">self</span><span class="o">.</span><span class="n">GridTypes</span><span class="o">.</span><span class="n">OCTREE</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_values</span><span class="p">()</span>
+    
+    <span class="k">def</span> <span class="nf">set_octree_grid_by_levels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">octree_levels</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">evaluation_options</span><span class="p">:</span> <span class="n">EvaluationOptions</span><span class="p">,</span> <span class="n">extent</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">extent</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">extent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extent</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_octree_grid</span> <span class="o">=</span> <span class="n">RegularGrid</span><span class="p">(</span>
+            <span class="n">extent</span><span class="o">=</span><span class="n">extent</span><span class="p">,</span>
+            <span class="n">resolution</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">2</span> <span class="o">**</span> <span class="n">octree_levels</span><span class="p">]</span> <span class="o">*</span> <span class="mi">3</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="n">evaluation_options</span><span class="o">.</span><span class="n">number_octree_levels</span> <span class="o">=</span> <span class="n">octree_levels</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">active_grids</span> <span class="o">|=</span> <span class="bp">self</span><span class="o">.</span><span class="n">GridTypes</span><span class="o">.</span><span class="n">OCTREE</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_values</span><span class="p">()</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">octree_levels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_octree_levels</span>
+    
+    <span class="nd">@octree_levels</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">octree_levels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;Octree levels are not allowed to be set directly. Use set_octree_grid instead&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">custom_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_custom_grid</span>
+
+    <span class="nd">@custom_grid</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">custom_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_custom_grid</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">active_grids</span> <span class="o">|=</span> <span class="bp">self</span><span class="o">.</span><span class="n">GridTypes</span><span class="o">.</span><span class="n">CUSTOM</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_values</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">topography</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_topography</span>
+
+    <span class="nd">@topography</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">topography</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_topography</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">active_grids</span> <span class="o">|=</span> <span class="bp">self</span><span class="o">.</span><span class="n">GridTypes</span><span class="o">.</span><span class="n">TOPOGRAPHY</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_values</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">sections</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sections</span>
+
+    <span class="nd">@sections</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">sections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sections</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">active_grids</span> <span class="o">|=</span> <span class="bp">self</span><span class="o">.</span><span class="n">GridTypes</span><span class="o">.</span><span class="n">SECTIONS</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_values</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">centered_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_centered_grid</span>
+
+    <span class="nd">@centered_grid</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">centered_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_centered_grid</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">active_grids</span> <span class="o">|=</span> <span class="bp">self</span><span class="o">.</span><span class="n">GridTypes</span><span class="o">.</span><span class="n">CENTERED</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_values</span><span class="p">()</span>
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">regular_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;This property is deprecated. Use the dense_grid or octree_grid instead&#39;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dense_grid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">octree_grid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dense_grid_exists_and_active</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dense_grid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">GridTypes</span><span class="o">.</span><span class="n">DENSE</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_grids</span>
+        <span class="n">octree_grid_exists_and_active</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">octree_grid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">GridTypes</span><span class="o">.</span><span class="n">OCTREE</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_grids</span>
+
+        <span class="k">if</span> <span class="n">dense_grid_exists_and_active</span> <span class="ow">and</span> <span class="n">octree_grid_exists_and_active</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;Both dense_grid and octree_grid are active. This is not possible.&#39;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">dense_grid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dense_grid</span>
@@ -149,214 +271,35 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
 
-    <span class="nd">@regular_grid</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">regular_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;This property is deprecated. Use the dense_grid property instead&#39;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dense_grid</span> <span class="o">=</span> <span class="n">value</span>
+    <span class="c1"># noinspection t</span>
+    <span class="k">def</span> <span class="nf">_update_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="p">[]</span>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">octree_levels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_octree_levels</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">GridTypes</span><span class="o">.</span><span class="n">OCTREE</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_grids</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">octree_grid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;Octree grid is active but not defined&#39;</span><span class="p">)</span>
+            <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">octree_grid</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">GridTypes</span><span class="o">.</span><span class="n">DENSE</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_grids</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dense_grid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;Dense grid is active but not defined&#39;</span><span class="p">)</span>
+            <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dense_grid</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">GridTypes</span><span class="o">.</span><span class="n">CUSTOM</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_grids</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">custom_grid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;Custom grid is active but not defined&#39;</span><span class="p">)</span>
+            <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">custom_grid</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">GridTypes</span><span class="o">.</span><span class="n">TOPOGRAPHY</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_grids</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">topography</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;Topography grid is active but not defined&#39;</span><span class="p">)</span>
+            <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">topography</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">GridTypes</span><span class="o">.</span><span class="n">SECTIONS</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_grids</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sections</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;Sections grid is active but not defined&#39;</span><span class="p">)</span>
+            <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sections</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">GridTypes</span><span class="o">.</span><span class="n">CENTERED</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_grids</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">centered_grid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;Centered grid is active but not defined&#39;</span><span class="p">)</span>
+            <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">centered_grid</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
 
-    <span class="nd">@octree_levels</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">octree_levels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_octree_levels</span> <span class="o">=</span> <span class="n">value</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">octree_grid</span> <span class="o">=</span> <span class="n">grid_types</span><span class="o">.</span><span class="n">RegularGrid</span><span class="p">(</span>
-            <span class="n">extent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">extent</span><span class="p">,</span>
-            <span class="n">resolution</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">2</span> <span class="o">**</span> <span class="n">value</span><span class="p">]</span> <span class="o">*</span> <span class="mi">3</span><span class="p">),</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">active_grids_bool</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">update_grid_values</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">grid_summary</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">g_type</span><span class="si">}</span><span class="s2"> (active: </span><span class="si">{</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="n">g_type</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;_grid_active&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">): </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="n">g_type</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;_grid&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="si">}</span><span class="s2"> points&quot;</span>
-                        <span class="k">for</span> <span class="n">g_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_types</span><span class="p">]</span>
-        <span class="n">grid_summary_str</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">grid_summary</span><span class="p">)</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Grid Object:</span><span class="se">\n</span><span class="si">{</span><span class="n">grid_summary_str</span><span class="si">}</span><span class="s2">&quot;</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">active_grids</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_types</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">active_grids_bool</span><span class="p">]</span>
-
-<div class="viewcode-block" id="Grid.create_regular_grid">
-<a class="viewcode-back" href="../../../../Modeling%20Classes/gempy.core.data.Grid.html#gempy.core.data.Grid.create_regular_grid">[docs]</a>
-    <span class="k">def</span> <span class="nf">create_regular_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">set_active</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Set a new regular grid and activate it.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            extent (np.ndarray): [x_min, x_max, y_min, y_max, z_min, z_max]</span>
-<span class="sd">            resolution (np.ndarray): [nx, ny, nz]</span>
-
-<span class="sd">        RegularGrid Docs</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">regular_grid</span> <span class="o">=</span> <span class="n">grid_types</span><span class="o">.</span><span class="n">RegularGrid</span><span class="p">(</span><span class="n">extent</span><span class="p">,</span> <span class="n">resolution</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">regular_grid</span></div>
-
-
-    <span class="c1"># ? DEP?</span>
-<div class="viewcode-block" id="Grid.create_custom_grid_">
-<a class="viewcode-back" href="../../../../Modeling%20Classes/gempy.core.data.Grid.html#gempy.core.data.Grid.create_custom_grid_">[docs]</a>
-    <span class="k">def</span> <span class="nf">create_custom_grid_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">custom_grid</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Set a new regular grid and activate it.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            custom_grid (np.array): [s0]</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">custom_grid</span> <span class="o">=</span> <span class="n">grid_types</span><span class="o">.</span><span class="n">CustomGrid</span><span class="p">(</span><span class="n">custom_grid</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_active</span><span class="p">(</span><span class="s1">&#39;custom&#39;</span><span class="p">)</span></div>
-
-
-    <span class="c1"># ! (miguel, Sep 2023) This has to change a lot</span>
-    <span class="c1"># ? DEP? </span>
-<div class="viewcode-block" id="Grid.create_topography_">
-<a class="viewcode-back" href="../../../../Modeling%20Classes/gempy.core.data.Grid.html#gempy.core.data.Grid.create_topography_">[docs]</a>
-    <span class="k">def</span> <span class="nf">create_topography_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="s1">&#39;random&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a topography grid and activate it.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            source:</span>
-<span class="sd">                * &#39;gdal&#39;:  Load topography from a raster file.</span>
-<span class="sd">                * &#39;random&#39;: Generate random topography (based on a fractal grid).</span>
-<span class="sd">                * &#39;saved&#39;: Load topography that was saved with the topography.save() function.</span>
-<span class="sd">                  This is useful after loading and saving a heavy raster file with gdal once or after saving a</span>
-<span class="sd">                  random topography with the save() function. This .npy file can then be set as topography.</span>
-
-<span class="sd">        Keyword Args:</span>
-<span class="sd">            source = &#39;gdal&#39;:</span>
-<span class="sd">                * filepath:   path to raster file, e.g. &#39;.tif&#39;, (for all file formats see</span>
-<span class="sd">                  https://gdal.org/drivers/raster/index.html)</span>
-
-<span class="sd">            source = &#39;random&#39;:</span>
-<span class="sd">                * fd:         fractal dimension, defaults to 2.0</span>
-<span class="sd">                * d_z:        maximum height difference. If none, last 20% of the model in z direction</span>
-<span class="sd">                * extent:     extent in xy direction. If none, geo_model.grid.extent</span>
-<span class="sd">                * resolution: desired resolution of the topography array. If none, geo_model.grid.resoution</span>
-
-<span class="sd">            source = &#39;saved&#39;:</span>
-<span class="sd">                * filepath:   path to the .npy file that was created using the topography.save() function</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">             :class:gempy.core.data.Topography</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">topography</span> <span class="o">=</span> <span class="n">topography</span><span class="o">.</span><span class="n">Topography</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">regular_grid</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">source</span> <span class="o">==</span> <span class="s1">&#39;random&#39;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">topography</span><span class="o">.</span><span class="n">load_random_hills</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">source</span> <span class="o">==</span> <span class="s1">&#39;gdal&#39;</span><span class="p">:</span>
-            <span class="n">filepath</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;filepath&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">filepath</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">topography</span><span class="o">.</span><span class="n">load_from_gdal</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;to load a raster file, a path to the file must be provided&#39;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">source</span> <span class="o">==</span> <span class="s1">&#39;saved&#39;</span><span class="p">:</span>
-            <span class="n">filepath</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;filepath&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">filepath</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">topography</span><span class="o">.</span><span class="n">load_from_saved</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;path to .npy file must be provided&#39;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">source</span> <span class="o">==</span> <span class="s1">&#39;numpy&#39;</span><span class="p">:</span>
-            <span class="n">array</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;array&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">topography</span><span class="o">.</span><span class="n">set_values</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;source must be random, gdal or saved&#39;</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_active</span><span class="p">(</span><span class="s1">&#39;topography&#39;</span><span class="p">)</span></div>
-
-
-    <span class="k">def</span> <span class="nf">create_section_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section_dict</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sections</span> <span class="o">=</span> <span class="n">grid_types</span><span class="o">.</span><span class="n">Sections</span><span class="p">(</span><span class="n">regular_grid</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">regular_grid</span><span class="p">,</span> <span class="n">section_dict</span><span class="o">=</span><span class="n">section_dict</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_active</span><span class="p">(</span><span class="s1">&#39;sections&#39;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sections</span>
-
-    <span class="c1"># ? DEP?</span>
-<div class="viewcode-block" id="Grid.create_centered_grid">
-<a class="viewcode-back" href="../../../../Modeling%20Classes/gempy.core.data.Grid.html#gempy.core.data.Grid.create_centered_grid">[docs]</a>
-    <span class="k">def</span> <span class="nf">create_centered_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">centers</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize gravity grid. Deactivate the rest of the grids&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">centered_grid</span> <span class="o">=</span> <span class="n">CenteredGrid</span><span class="p">(</span><span class="n">centers</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">resolution</span><span class="p">)</span>
-        <span class="c1"># self.active_grids = np.zeros(4, dtype=bool)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_active</span><span class="p">(</span><span class="s1">&#39;centered&#39;</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="Grid.deactivate_all_grids">
-<a class="viewcode-back" href="../../../../Modeling%20Classes/gempy.core.data.Grid.html#gempy.core.data.Grid.deactivate_all_grids">[docs]</a>
-    <span class="k">def</span> <span class="nf">deactivate_all_grids</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Deactivates the active grids array</span>
-<span class="sd">        :return:</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">active_grids_bool</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">update_grid_values</span><span class="p">()</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_grids_bool</span></div>
-
-
-<div class="viewcode-block" id="Grid.set_active">
-<a class="viewcode-back" href="../../../../Modeling%20Classes/gempy.core.data.Grid.html#gempy.core.data.Grid.set_active">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_active</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Set active a given or several grids</span>
-<span class="sd">        Args:</span>
-<span class="sd">            grid_name (str, list):</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;This function is deprecated. Use gempy.set_active_grid instead&#39;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
-
-        <span class="n">where</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_types</span> <span class="o">==</span> <span class="n">grid_name</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">active_grids_bool</span><span class="p">[</span><span class="n">where</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">update_grid_values</span><span class="p">()</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_grids_bool</span></div>
-
-
-    <span class="k">def</span> <span class="nf">set_inactive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="n">where</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_types</span> <span class="o">==</span> <span class="n">grid_name</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">active_grids_bool</span> <span class="o">*=</span> <span class="o">~</span><span class="n">where</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">update_grid_values</span><span class="p">()</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_grids_bool</span>
-
-<div class="viewcode-block" id="Grid.update_grid_values">
-<a class="viewcode-back" href="../../../../Modeling%20Classes/gempy.core.data.Grid.html#gempy.core.data.Grid.update_grid_values">[docs]</a>
-    <span class="k">def</span> <span class="nf">update_grid_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Copy XYZ coordinates from each specific grid to Grid.values for those which are active.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            values</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">length</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
-        <span class="n">lengths</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">all_grids</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">regular_grid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">custom_grid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">topography</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sections</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">centered_grid</span><span class="p">]</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">grid_types</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">all_grids</span><span class="p">):</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">active_grids_bool</span><span class="p">[</span><span class="n">e</span><span class="p">]:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">grid_types</span><span class="o">.</span><span class="n">values</span><span class="p">))</span>
-                    <span class="n">lengths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">grid_types</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">lengths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;Grid type does not exist yet. Set the grid before activating it.&#39;</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">length</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">lengths</span><span class="p">)</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span></div>
-
-
-    <span class="k">def</span> <span class="nf">get_grid_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">grid_name</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;Only one grid type can be retrieved&#39;</span>
-        <span class="k">assert</span> <span class="n">grid_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_types</span><span class="p">,</span> <span class="s1">&#39;possible grid types are &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid_types</span><span class="p">)</span>
-        <span class="n">where</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid_types</span> <span class="o">==</span> <span class="n">grid_name</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">length</span><span class="p">[</span><span class="n">where</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">length</span><span class="p">[</span><span class="n">where</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
-
-    <span class="k">def</span> <span class="nf">get_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">grid_name</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;Only one grid type can be retrieved&#39;</span>
-
-        <span class="n">l_0</span><span class="p">,</span> <span class="n">l_1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_grid_args</span><span class="p">(</span><span class="n">grid_name</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">l_0</span><span class="p">:</span><span class="n">l_1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span>
 
     <span class="k">def</span> <span class="nf">get_section_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="c1"># TODO: This method should be part of the sections</span>
         <span class="c1"># assert type(section_name) is str, &#39;Only one section type can be retrieved&#39;</span>
         <span class="n">l0</span><span class="p">,</span> <span class="n">l1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_grid_args</span><span class="p">(</span><span class="s1">&#39;sections&#39;</span><span class="p">)</span>
         <span class="n">where</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sections</span><span class="o">.</span><span class="n">names</span> <span class="o">==</span> <span class="n">section_name</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>

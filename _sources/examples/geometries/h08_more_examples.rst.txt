@@ -217,6 +217,10 @@ Discordant layering 1
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.PYTORCH
+    Chunking done: 7 chunks
+    Chunking done: 7 chunks
+    Chunking done: 7 chunks
+    Chunking done: 7 chunks
 
 
 .. raw:: html
@@ -315,6 +319,9 @@ Discordant layering 2
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.PYTORCH
+    Chunking done: 6 chunks
+    Chunking done: 9 chunks
+    Chunking done: 8 chunks
 
 
 .. raw:: html
@@ -406,6 +413,8 @@ Discordant layering 3
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.PYTORCH
+    Chunking done: 6 chunks
+    Chunking done: 6 chunks
 
 
 .. raw:: html
@@ -497,6 +506,8 @@ One normal Fault 1
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.PYTORCH
+    Chunking done: 9 chunks
+    Chunking done: 9 chunks
 
 
 .. raw:: html
@@ -600,6 +611,9 @@ Fold
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.PYTORCH
+    Chunking done: 7 chunks
+    Chunking done: 9 chunks
+    Chunking done: 8 chunks
 
 
 .. raw:: html
@@ -691,6 +705,9 @@ Graben
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.PYTORCH
+    Chunking done: 19 chunks
+    Chunking done: 36 chunks
+    Chunking done: 34 chunks
 
 
 .. raw:: html
@@ -806,6 +823,9 @@ One normal Fault 2
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.PYTORCH
+    Chunking done: 11 chunks
+    Chunking done: 19 chunks
+    Chunking done: 18 chunks
 
 
 .. raw:: html
@@ -909,6 +929,8 @@ Horizontal tilted
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.PYTORCH
+    Chunking done: 6 chunks
+    Chunking done: 6 chunks
 
 
 .. raw:: html
@@ -987,7 +1009,7 @@ Horizontal tilted
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 10.935 seconds)
+   **Total running time of the script:** (0 minutes 30.963 seconds)
 
 
 .. _sphx_glr_download_examples_geometries_h08_more_examples.py:

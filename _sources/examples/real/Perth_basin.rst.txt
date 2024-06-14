@@ -719,7 +719,7 @@ gp.set_fault_relation(geo_model, fr)
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f008053d990>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f33372d9270>
 
 
 
@@ -738,9 +738,9 @@ gp.set_fault_relation(geo_model, fr)
  .. code-block:: none
 
     [-2800.  1000.]
-    Active grids: ['regular' 'topography']
+    Active grids: GridTypes.NONE|TOPOGRAPHY|DENSE
 
-    <gempy.core.data.grid_modules.topography.Topography object at 0x7f00803ee230>
+    <gempy.core.data.grid_modules.topography.Topography object at 0x7f323ecd1690>
 
 
 
@@ -764,7 +764,7 @@ gp.set_fault_relation(geo_model, fr)
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00a0070e80>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f323ecd1a50>
 
 
 
@@ -789,15 +789,16 @@ gp.set_fault_relation(geo_model, fr)
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.PYTORCH
-    Chunking done: 21 chunks
-    Chunking done: 21 chunks
-    Chunking done: 21 chunks
-    Chunking done: 21 chunks
-    Chunking done: 21 chunks
-    Chunking done: 21 chunks
-    Chunking done: 21 chunks
-    Chunking done: 21 chunks
-    Chunking done: 21 chunks
+    Chunking done: 23 chunks
+    Chunking done: 31 chunks
+    Chunking done: 29 chunks
+    Chunking done: 23 chunks
+    Chunking done: 23 chunks
+    Chunking done: 23 chunks
+    Chunking done: 27 chunks
+    Chunking done: 23 chunks
+    Chunking done: 201 chunks
+    Chunking done: 7 chunks
 
 
 .. raw:: html
@@ -828,7 +829,7 @@ gp.set_fault_relation(geo_model, fr)
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f00cb5eb640>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f333713f940>
 
 
 
@@ -852,7 +853,7 @@ gp.set_fault_relation(geo_model, fr)
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f00a0070a00>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f323eb99240>
 
 
 
@@ -876,7 +877,7 @@ gp.set_fault_relation(geo_model, fr)
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f00807d9000>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f322ba74640>
 
 
 
@@ -902,14 +903,14 @@ sphinx_gallery_thumbnail_number = 6
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00cd804ac0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f322b8c0d90>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 42.508 seconds)
+   **Total running time of the script:** (0 minutes 55.676 seconds)
 
 
 .. _sphx_glr_download_examples_real_Perth_basin.py:

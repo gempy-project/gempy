@@ -428,7 +428,7 @@ Number voxels
     geo_model: gp.data.GeoModel = gp.create_geomodel(
         project_name='Moureze',
         extent=[-5, 305, -5, 405, -200, -50],
-        resolution=resolution_low,
+        # resolution=resolution_low,
         refinement=5,
         structural_frame=structural_frame
     )
@@ -466,7 +466,7 @@ Now we can see how the data looks so far:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f0080461930>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87c40ee1d0>
 
 
 
@@ -477,11 +477,14 @@ model data is very close we will need to reduce the range to 5-10% of
 that value:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 149-150
+.. GENERATED FROM PYTHON SOURCE LINES 149-154
 
 .. code-block:: Python
 
     geo_model.interpolation_options.kernel_options.range *= 0.2
+    geo_model.interpolation_options.evaluation_options.verbose = True
+    geo_model.interpolation_options.evaluation_options.error_threshold = 1.5
+    geo_model.interpolation_options.evaluation_options.number_octree_levels_surface = 5
 
 
 
@@ -489,7 +492,8 @@ that value:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 151-161
+
+.. GENERATED FROM PYTHON SOURCE LINES 155-165
 
 .. code-block:: Python
 
@@ -506,12 +510,41 @@ that value:
 
 
 
+.. rst-class:: sphx-glr-horizontal
+
+
+    *
+
+      .. image-sg:: /examples/real/images/sphx_glr_Moureze_002.png
+         :alt: Voxel Scalar Values with Refinement Status
+         :srcset: /examples/real/images/sphx_glr_Moureze_002.png
+         :class: sphx-glr-multi-img
+
+    *
+
+      .. image-sg:: /examples/real/images/sphx_glr_Moureze_003.png
+         :alt: Voxel Scalar Values with Refinement Status
+         :srcset: /examples/real/images/sphx_glr_Moureze_003.png
+         :class: sphx-glr-multi-img
+
 
 .. rst-class:: sphx-glr-script-out
 
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.PYTORCH
+    Number of voxels marked by stats: 235 of torch.Size([512]).
+     Number of voxels marked by corners : 235
+    Total voxels: 235
+    Dense Grid would be 512 voxels
+    Chunking done: 17 chunks
+    Number of voxels marked by stats: 1310 of torch.Size([2112]).
+     Number of voxels marked by corners : 1161
+    Total voxels: 1310
+    Dense Grid would be 4096 voxels
+    Chunking done: 12 chunks
+    Chunking done: 90 chunks
+    Chunking done: 20 chunks
 
 
 .. raw:: html
@@ -522,7 +555,7 @@ that value:
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 162-187
+.. GENERATED FROM PYTHON SOURCE LINES 166-191
 
 Time
 ~~~~
@@ -550,7 +583,7 @@ Time
    loop each)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 189-191
+.. GENERATED FROM PYTHON SOURCE LINES 193-195
 
 .. code-block:: Python
 
@@ -559,59 +592,8 @@ Time
 
 
 
-.. image-sg:: /examples/real/images/sphx_glr_Moureze_002.png
-   :alt: Cell Number: mid Direction: y
-   :srcset: /examples/real/images/sphx_glr_Moureze_002.png
-   :class: sphx-glr-single-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f008053bcd0>
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 192-194
-
-.. code-block:: Python
-
-    gpv.plot_2d(geo_model, cell_number='mid', show_data=True, direction='y')
-
-
-
-
-.. image-sg:: /examples/real/images/sphx_glr_Moureze_003.png
-   :alt: Cell Number: mid Direction: y
-   :srcset: /examples/real/images/sphx_glr_Moureze_003.png
-   :class: sphx-glr-single-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f008053bfd0>
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 195-196
-
-sphinx_gallery_thumbnail_number = 4
-
-.. GENERATED FROM PYTHON SOURCE LINES 196-197
-
-.. code-block:: Python
-
-    gpv.plot_3d(geo_model)
-
-
-
 .. image-sg:: /examples/real/images/sphx_glr_Moureze_004.png
-   :alt: Moureze
+   :alt: Cell Number: mid Direction: y
    :srcset: /examples/real/images/sphx_glr_Moureze_004.png
    :class: sphx-glr-single-img
 
@@ -621,14 +603,65 @@ sphinx_gallery_thumbnail_number = 4
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f00a02589d0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87c40ed9c0>
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 196-198
+
+.. code-block:: Python
+
+    gpv.plot_2d(geo_model, cell_number='mid', show_data=True, direction='y')
+
+
+
+
+.. image-sg:: /examples/real/images/sphx_glr_Moureze_005.png
+   :alt: Cell Number: mid Direction: y
+   :srcset: /examples/real/images/sphx_glr_Moureze_005.png
+   :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87c40ed030>
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 199-200
+
+sphinx_gallery_thumbnail_number = 4
+
+.. GENERATED FROM PYTHON SOURCE LINES 200-201
+
+.. code-block:: Python
+
+    gpv.plot_3d(geo_model)
+
+
+
+.. image-sg:: /examples/real/images/sphx_glr_Moureze_006.png
+   :alt: Moureze
+   :srcset: /examples/real/images/sphx_glr_Moureze_006.png
+   :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f87cc87c220>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 5.950 seconds)
+   **Total running time of the script:** (0 minutes 9.007 seconds)
 
 
 .. _sphx_glr_download_examples_real_Moureze.py:

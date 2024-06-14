@@ -4,14 +4,14 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>gempy.API.compute_API &#8212; GemPy 2023.2.0b1 documentation</title>
+    <title>gempy.API.compute_API &#8212; GemPy 2024.1.2.dev59+gc19c50fa.d20240531 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=270d38c7" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=61a4c737" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <script src="../../../_static/documentation_options.js?v=acace1bb"></script>
+    <script src="../../../_static/documentation_options.js?v=2a6b7f2f"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="icon" href="../../../_static/favicon.ico"/>
@@ -43,9 +43,11 @@
 <span class="kn">from</span> <span class="nn">gempy.API.gp2_gp3_compatibility.gp3_to_gp2_input</span> <span class="kn">import</span> <span class="n">gempy3_to_gempy2</span>
 <span class="kn">from</span> <span class="nn">gempy_engine.config</span> <span class="kn">import</span> <span class="n">AvailableBackends</span>
 <span class="kn">from</span> <span class="nn">gempy_engine.core.data</span> <span class="kn">import</span> <span class="n">Solutions</span>
+<span class="kn">from</span> <span class="nn">gempy_engine.core.data.interpolation_input</span> <span class="kn">import</span> <span class="n">InterpolationInput</span>
 <span class="kn">from</span> <span class="nn">.grid_API</span> <span class="kn">import</span> <span class="n">set_custom_grid</span>
 <span class="kn">from</span> <span class="nn">..core.data.gempy_engine_config</span> <span class="kn">import</span> <span class="n">GemPyEngineConfig</span>
 <span class="kn">from</span> <span class="nn">..core.data.geo_model</span> <span class="kn">import</span> <span class="n">GeoModel</span>
+<span class="kn">from</span> <span class="nn">..modules.data_manipulation.engine_factory</span> <span class="kn">import</span> <span class="n">interpolation_input_from_structural_frame</span>
 <span class="kn">from</span> <span class="nn">..optional_dependencies</span> <span class="kn">import</span> <span class="n">require_gempy_legacy</span>
 
 
@@ -77,7 +79,7 @@
             <span class="p">)</span>
 
             <span class="c1"># TODO: To decide what to do with this.</span>
-            <span class="n">interpolation_input</span> <span class="o">=</span> <span class="n">gempy_model</span><span class="o">.</span><span class="n">interpolation_input_copy</span>
+            <span class="n">interpolation_input</span> <span class="o">=</span> <span class="n">interpolation_input_from_structural_frame</span><span class="p">(</span><span class="n">gempy_model</span><span class="p">)</span>
             <span class="n">gempy_model</span><span class="o">.</span><span class="n">taped_interpolation_input</span> <span class="o">=</span> <span class="n">interpolation_input</span>  <span class="c1"># * This is used for gradient tape</span>
 
             <span class="n">gempy_model</span><span class="o">.</span><span class="n">solutions</span> <span class="o">=</span> <span class="n">gempy_engine</span><span class="o">.</span><span class="n">compute_model</span><span class="p">(</span>
@@ -133,12 +135,11 @@
 
     <span class="kn">import</span> <span class="nn">torch</span>
     <span class="kn">from</span> <span class="nn">gempy_engine.core.data.continue_epoch</span> <span class="kn">import</span> <span class="n">ContinueEpoch</span>
-
-    <span class="n">interpolation_input</span> <span class="o">=</span> <span class="n">geo_model</span><span class="o">.</span><span class="n">interpolation_input_copy</span>
+    <span class="n">interpolation_input</span><span class="p">:</span> <span class="n">InterpolationInput</span> <span class="o">=</span> <span class="n">interpolation_input_from_structural_frame</span><span class="p">(</span><span class="n">geo_model</span><span class="p">)</span>
 
     <span class="n">geo_model</span><span class="o">.</span><span class="n">taped_interpolation_input</span> <span class="o">=</span> <span class="n">interpolation_input</span>
 
-    <span class="n">nugget_effect_scalar</span> <span class="o">=</span> <span class="n">geo_model</span><span class="o">.</span><span class="n">taped_interpolation_input</span><span class="o">.</span><span class="n">surface_points_copy</span><span class="o">.</span><span class="n">nugget_effect_scalar</span>
+    <span class="n">nugget_effect_scalar</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">=</span> <span class="n">geo_model</span><span class="o">.</span><span class="n">taped_interpolation_input</span><span class="o">.</span><span class="n">surface_points</span><span class="o">.</span><span class="n">nugget_effect_scalar</span>
 
     <span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span>
         <span class="n">params</span><span class="o">=</span><span class="p">[</span><span class="n">nugget_effect_scalar</span><span class="p">],</span>
@@ -160,7 +161,7 @@
     <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_epochs</span><span class="p">):</span>
         <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">geo_model</span><span class="o">.</span><span class="n">taped_interpolation_input</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">geo_model</span><span class="o">.</span><span class="n">interpolation_input_copy</span><span class="o">.</span><span class="n">grid</span>
+            <span class="c1"># geo_model.taped_interpolation_input.grid = geo_model.interpolation_input_copy.grid</span>
 
             <span class="n">gempy_engine</span><span class="o">.</span><span class="n">compute_model</span><span class="p">(</span>
                 <span class="n">interpolation_input</span><span class="o">=</span><span class="n">geo_model</span><span class="o">.</span><span class="n">taped_interpolation_input</span><span class="p">,</span>

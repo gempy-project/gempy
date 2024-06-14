@@ -4,14 +4,14 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>gempy.core.data.orientations &#8212; GemPy 2023.2.0b1 documentation</title>
+    <title>gempy.core.data.orientations &#8212; GemPy 2024.1.2.dev59+gc19c50fa.d20240531 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/alabaster.css?v=270d38c7" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery.css?v=61a4c737" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <script src="../../../../_static/documentation_options.js?v=acace1bb"></script>
+    <script src="../../../../_static/documentation_options.js?v=2a6b7f2f"></script>
     <script src="../../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="icon" href="../../../../_static/favicon.ico"/>
@@ -45,6 +45,7 @@
 
 <span class="n">DEFAULT_ORI_NUGGET</span> <span class="o">=</span> <span class="mf">0.01</span>
 
+
 <span class="c1"># ? Maybe we should merge this with the SurfacePoints class from gempy_engine</span>
 
 
@@ -55,28 +56,52 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A dataclass to represent a table of orientations in a geological model.</span>
 <span class="sd">    </span>
-<span class="sd">    &quot;&quot;&quot;</span> 
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>  <span class="c1">#: A structured NumPy array holding the X, Y, Z coordinates, gradients G_x, G_y, G_z, id, and nugget of each orientation.</span>
     <span class="n">name_id_map</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1">#: A mapping between orientation names and ids.</span>
-    
+
     <span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">([(</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;f8&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;f8&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Z&#39;</span><span class="p">,</span> <span class="s1">&#39;f8&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;G_x&#39;</span><span class="p">,</span> <span class="s1">&#39;f8&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;G_y&#39;</span><span class="p">,</span> <span class="s1">&#39;f8&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;G_z&#39;</span><span class="p">,</span> <span class="s1">&#39;f8&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;i4&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;nugget&#39;</span><span class="p">,</span> <span class="s1">&#39;f8&#39;</span><span class="p">)])</span>  <span class="c1">#: The custom data type for the data array.</span>
-    
+
     <span class="n">_model_transform</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Transform</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    
+
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Check if the data array has the correct data type</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">OrientationsTable</span><span class="o">.</span><span class="n">dt</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Data array must have the following data type: </span><span class="si">{</span><span class="n">OrientationsTable</span><span class="o">.</span><span class="n">dt</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="OrientationsTable.from_arrays">
+<a class="viewcode-back" href="../../../../Modeling%20Classes/gempy.core.data.OrientationsTable.html#gempy.core.data.OrientationsTable.from_arrays">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_arrays</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">z</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
                     <span class="n">G_x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">G_y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">G_z</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
                     <span class="n">names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span> <span class="o">|</span> <span class="nb">str</span><span class="p">],</span> <span class="n">nugget</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                     <span class="n">name_id_map</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;OrientationsTable&#39;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create an OrientationsTable from arrays.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            x (np.ndarray): Array of x-coordinates.</span>
+<span class="sd">            y (np.ndarray): Array of y-coordinates.</span>
+<span class="sd">            z (np.ndarray): Array of z-coordinates.</span>
+<span class="sd">            G_x (np.ndarray): Array of x-components of the gradients.</span>
+<span class="sd">            G_y (np.ndarray): Array of y-components of the gradients.</span>
+<span class="sd">            G_z (np.ndarray): Array of z-components of the gradients.</span>
+<span class="sd">            names (Union[Sequence[str], str]): Sequence of names corresponding to each orientation.</span>
+<span class="sd">            nugget (Optional[np.ndarray]): Array of nugget values. If None, defaults are used.</span>
+<span class="sd">            name_id_map (Optional[dict[str, int]]): Mapping between names and ids.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            OrientationsTable: The created OrientationsTable.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">data</span><span class="p">,</span> <span class="n">name_id_map</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_data_from_arrays</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">G_x</span><span class="p">,</span> <span class="n">G_y</span><span class="p">,</span> <span class="n">G_z</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">nugget</span><span class="p">,</span> <span class="n">name_id_map</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">name_id_map</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">name_id_map</span><span class="p">)</span></div>
+
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_data_from_arrays</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">G_x</span><span class="p">,</span> <span class="n">G_y</span><span class="p">,</span> <span class="n">G_z</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">nugget</span><span class="p">,</span> <span class="n">name_id_map</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
         <span class="k">if</span> <span class="n">nugget</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">nugget</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="n">DEFAULT_ORI_NUGGET</span>
-            
+
         <span class="k">if</span> <span class="n">name_id_map</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">ids</span><span class="p">,</span> <span class="n">name_id_map</span> <span class="o">=</span> <span class="n">generate_ids_from_names</span><span class="p">(</span><span class="n">name_id_map</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -88,37 +113,132 @@
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">initialize_empty</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;OrientationsTable&#39;</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">OrientationsTable</span><span class="o">.</span><span class="n">dt</span><span class="p">))</span>
-    
-    
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">xyz</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the XYZ coordinates.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            np.ndarray: The XYZ coordinates.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">]])</span><span class="o">.</span><span class="n">T</span>
-    
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">xyz_view</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a view of the XYZ coordinates.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            np.ndarray: A view of the XYZ coordinates.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">]]</span>
+
+    <span class="nd">@xyz_view</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">xyz_view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the XYZ coordinates.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value (np.ndarray): The new XYZ coordinates.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">T</span>
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">grads</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the gradient components.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            np.ndarray: The gradient components.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;G_x&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;G_y&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;G_z&#39;</span><span class="p">]])</span><span class="o">.</span><span class="n">T</span>
-    
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">grads_view</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a view of the gradient components.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            np.ndarray: A view of the gradient components.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[[</span><span class="s1">&#39;G_x&#39;</span><span class="p">,</span> <span class="s1">&#39;G_y&#39;</span><span class="p">,</span> <span class="s1">&#39;G_z&#39;</span><span class="p">]]</span>
+
+    <span class="nd">@grads_view</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">grads_view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the gradient components.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value (np.ndarray): The new gradient components.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;G_x&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;G_y&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;G_z&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">T</span>
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">nugget</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the nugget values.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            np.ndarray: The nugget values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;nugget&#39;</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">ids</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the IDs.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            np.ndarray: The IDs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
-    
+
+<div class="viewcode-block" id="OrientationsTable.get_orientations_by_name">
+<a class="viewcode-back" href="../../../../Modeling%20Classes/gempy.core.data.OrientationsTable.html#gempy.core.data.OrientationsTable.get_orientations_by_name">[docs]</a>
     <span class="k">def</span> <span class="nf">get_orientations_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;OrientationsTable&#39;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_orientations_by_id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name_id_map</span><span class="p">[</span><span class="n">name</span><span class="p">])</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get orientations by name.</span>
 
+<span class="sd">        Args:</span>
+<span class="sd">            name (str): The name of the orientations.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            OrientationsTable: The orientations corresponding to the given name.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_orientations_by_id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name_id_map</span><span class="p">[</span><span class="n">name</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="OrientationsTable.get_orientations_by_id">
+<a class="viewcode-back" href="../../../../Modeling%20Classes/gempy.core.data.OrientationsTable.html#gempy.core.data.OrientationsTable.get_orientations_by_id">[docs]</a>
     <span class="k">def</span> <span class="nf">get_orientations_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;OrientationsTable&#39;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">OrientationsTable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="nb">id</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">name_id_map</span><span class="p">)</span>
-    
-    <span class="k">def</span> <span class="nf">get_orientations_by_id_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="s1">&#39;OrientationsTable&#39;</span><span class="p">]:</span>
-        <span class="n">ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])</span>
-        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get_orientations_by_id</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">]</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get orientations by ID.</span>
 
+<span class="sd">        Args:</span>
+<span class="sd">            id (int): The ID of the orientations.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            OrientationsTable: The orientations corresponding to the given ID.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">OrientationsTable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="nb">id</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">name_id_map</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="OrientationsTable.get_orientations_by_id_groups">
+<a class="viewcode-back" href="../../../../Modeling%20Classes/gempy.core.data.OrientationsTable.html#gempy.core.data.OrientationsTable.get_orientations_by_id_groups">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_orientations_by_id_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="s1">&#39;OrientationsTable&#39;</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get orientations grouped by ID.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list[OrientationsTable]: A list of OrientationsTable objects, each corresponding to a unique ID.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get_orientations_by_id</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="OrientationsTable.fill_missing_orientations_groups">
+<a class="viewcode-back" href="../../../../Modeling%20Classes/gempy.core.data.OrientationsTable.html#gempy.core.data.OrientationsTable.fill_missing_orientations_groups">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">fill_missing_orientations_groups</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">orientations_groups</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="s1">&#39;OrientationsTable&#39;</span><span class="p">],</span>
                                          <span class="n">surface_points_groups</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="s1">&#39;SurfacePointsTable&#39;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="s1">&#39;OrientationsTable&#39;</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fill Missing Orientations Groups</span>
+
+<span class="sd">        Fills in missing orientations in a list of orientations groups based on a list of surface points.</span>
+
+<span class="sd">        Args:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># region Deal with elements without orientations</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">surface_points_groups</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">orientations_groups</span><span class="p">):</span>
             <span class="c1"># Check the ids of the surface points and find the missing ones</span>
@@ -127,20 +247,21 @@
 
             <span class="n">missing_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">surface_points_ids</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">orientations_ids</span><span class="p">))</span>
 
-            <span class="n">empty_orientations</span> <span class="o">=</span> <span class="p">[</span><span class="bp">cls</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="n">dt</span><span class="p">))</span> <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">missing_ids</span><span class="p">]</span> <span class="c1"># Create empty orientations</span>
+            <span class="n">empty_orientations</span> <span class="o">=</span> <span class="p">[</span><span class="bp">cls</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="n">dt</span><span class="p">))</span> <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">missing_ids</span><span class="p">]</span>  <span class="c1"># Create empty orientations</span>
 
-            <span class="k">for</span> <span class="n">empty_orientation</span><span class="p">,</span> <span class="nb">id</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">empty_orientations</span><span class="p">,</span> <span class="n">missing_ids</span><span class="p">):</span> <span class="c1"># Insert the empty orientations in the right position</span>
+            <span class="k">for</span> <span class="n">empty_orientation</span><span class="p">,</span> <span class="nb">id</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">empty_orientations</span><span class="p">,</span> <span class="n">missing_ids</span><span class="p">):</span>  <span class="c1"># Insert the empty orientations in the right position</span>
                 <span class="n">orientations_groups</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">empty_orientation</span><span class="p">)</span>
         <span class="c1"># endregion</span>
 
-        <span class="k">return</span> <span class="n">orientations_groups</span>
-    
+        <span class="k">return</span> <span class="n">orientations_groups</span></div>
+
+
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">empty_orientation</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;OrientationsTable&#39;</span><span class="p">:</span>
         <span class="n">zeros</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
         <span class="n">zeros</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">id</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">zeros</span><span class="p">,</span> <span class="n">name_id_map</span><span class="o">=</span><span class="p">{})</span>
-    
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="c1"># Check id is the same in the whole column and return it or throw an error</span>
@@ -190,7 +311,6 @@
 
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div>
-
 
 </pre></div>
 

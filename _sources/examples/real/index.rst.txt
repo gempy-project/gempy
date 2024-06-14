@@ -16,7 +16,7 @@ These models are built with real data
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="# %% # .. admonition:: Explanation # #       This model is quite unstable in general and requir...">
+    <div class="sphx-glr-thumbcontainer" tooltip="# %% # .. admonition:: Explanation # #       This model is generally quite unstable and require...">
 
 .. only:: html
 
@@ -27,7 +27,7 @@ These models are built with real data
 
 .. raw:: html
 
-      <div class="sphx-glr-thumbnail-title">Alesmodel: Plotting sections and maps.</div>
+      <div class="sphx-glr-thumbnail-title">Alesmodel: Plotting Sections and Maps</div>
     </div>
 
 

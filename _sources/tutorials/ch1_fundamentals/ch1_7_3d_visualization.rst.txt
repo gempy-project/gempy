@@ -69,22 +69,14 @@ Loading an example geomodel
 
     Surface points hash:  8c72af50fc56389b620c6458a6af23915b121b5e655b3ce179a790636dc529a5
     Orientations hash:  87cf30b08b5be03b38c5e6d288fa7bb8855263704efb62c7c3cd77673eaae96d
-    Setting Backend To: AvailableBackends.PYTORCH
-    /home/leguark/gempy/gempy/core/data/geo_model.py:115: UserWarning: Both octree levels and resolution are set. The default grid for the `raw_array_solution`and plots will be the dense regular grid. To use octrees instead, set resolution to None in the regular grid.
-      warnings.warn("Both octree levels and resolution are set. The default grid for the `raw_array_solution`"
-    Number of voxels marked as high curvature: 4 of 8
-    Number of voxels marked as high curvature: 4 of 64
-    Number of voxels marked as high curvature: 8 of 448
-    Number of voxels marked as high curvature: 10 of 3032
-    Number of voxels marked as high curvature: 13 of 15320
-    Setting Backend To: AvailableBackends.PYTORCH
-    /home/leguark/gempy/gempy/core/data/geo_model.py:115: UserWarning: Both octree levels and resolution are set. The default grid for the `raw_array_solution`and plots will be the dense regular grid. To use octrees instead, set resolution to None in the regular grid.
-      warnings.warn("Both octree levels and resolution are set. The default grid for the `raw_array_solution`"
-    Number of voxels marked as high curvature: 4 of 8
-    Number of voxels marked as high curvature: 4 of 64
-    Number of voxels marked as high curvature: 8 of 448
-    Number of voxels marked as high curvature: 10 of 3032
-    Number of voxels marked as high curvature: 13 of 15320
+    Setting Backend To: AvailableBackends.numpy
+    Chunking done: 19 chunks
+    Chunking done: 36 chunks
+    Chunking done: 34 chunks
+    Setting Backend To: AvailableBackends.numpy
+    Chunking done: 19 chunks
+    Chunking done: 36 chunks
+    Chunking done: 34 chunks
 
 
 .. raw:: html
@@ -133,7 +125,7 @@ Data plot
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f91dd2b3310>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f882ab893f0>
 
 
 
@@ -163,7 +155,7 @@ Geomodel plot
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f91dd198c40>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f881e5dc4f0>
 
 
 
@@ -184,7 +176,7 @@ you can easily share the link with anyone.
 
     link = gpv.plot_to_liquid_earth(
         geo_model=geo_model,
-        space_name="ch1_7_3d_visualization",
+        space_name="[PUBLIC] GemPy Tutorial 1.7: 3-D Visualization",
         file_name="gempy_model",
         user_token=None,  # If None, it will try to grab it from the environment
         grab_link=True,
@@ -200,7 +192,7 @@ you can easily share the link with anyone.
 
  .. code-block:: none
 
-    Generated Link: https://liquidearth.app.link/a33d69ac-82d5-470d-a6fb-eb6cf045f4d5
+    Generated Link: https://liquidearth.app.link/b98dce9d-f1a1-4d3d-be9a-62af79c909d0
 
 
 
@@ -216,7 +208,7 @@ Now we can use `this link <https://liquidearth.app.link/gempy-promo>`_ to visual
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 16.107 seconds)
+   **Total running time of the script:** (2 minutes 33.243 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_7_3d_visualization.py:
