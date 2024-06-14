@@ -148,7 +148,7 @@ gpv.plot_2d(geo_model, direction='y')
 # %% 
 geo_model.interpolation_options.kernel_options.range *= 0.2
 geo_model.interpolation_options.evaluation_options.verbose = True
-geo_model.interpolation_options.evaluation_options.error_threshold = 1.5
+geo_model.interpolation_options.evaluation_options.octree_error_threshold = 1.5
 geo_model.interpolation_options.evaluation_options.number_octree_levels_surface = 5
 
 # %%
