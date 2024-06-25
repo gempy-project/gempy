@@ -15,7 +15,12 @@ import gempy as gp
 import gempy_viewer as gpv
 
 
-# @pytest.mark.skip(reason="Not implemented yet")
+# Check if PATH_TO_SPREMBERG_STRATIGRAPHY is set if not skip the test
+@pytest.mark.skipif(
+    os.getenv("PATH_TO_SPREMBERG_STRATIGRAPHY") is None,
+    reason="PATH_TO_SPREMBERG_STRATIGRAPHY is not set"
+)
+
 class TestStratigraphicPile:
     @pytest.fixture(autouse=True)
     def borehole_set(self):
