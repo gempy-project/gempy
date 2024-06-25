@@ -3,10 +3,11 @@
 import gempy as gp
 import gempy_viewer as gpv
 import subsurface.core.structs.unstructured_elements.triangular_surface
-from conftest import Requirements, REQUIREMENT_LEVEL
 from gempy.core.data.enumerators import ExampleModel
 
 import numpy as np
+
+from ..conftest import REQUIREMENT_LEVEL, Requirements
 
 pytestmark = pytest.mark.skipif(
     condition=REQUIREMENT_LEVEL.value < Requirements.DEV.value and False,

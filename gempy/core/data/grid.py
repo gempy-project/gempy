@@ -12,7 +12,7 @@ from .grid_modules import RegularGrid, CustomGrid, Sections
 from .grid_modules.topography import Topography
 
 
-@dataclasses.dataclass
+@dataclasses.dataclass(init=True)
 class Grid:
     class GridTypes(enum.Flag):
         OCTREE = 2 ** 0
@@ -25,6 +25,9 @@ class Grid:
 
     # ? What should we do with the extent?
 
+    values: np.ndarray
+    length: np.ndarray
+    
     _octree_grid: Optional[RegularGrid] = None
     _dense_grid: Optional[RegularGrid] = None
     _custom_grid: Optional[CustomGrid] = None
@@ -32,18 +35,20 @@ class Grid:
     _sections: Optional[Sections] = None
     _centered_grid: Optional[CenteredGrid] = None
 
-    values: np.ndarray = dataclasses.field(default_factory=lambda: np.empty((0, 3)))
-    length: np.ndarray = dataclasses.field(default_factory=lambda: np.empty(0))
-
     _active_grids = GridTypes.NONE
     _transform: Optional[Transform] = None
 
     _octree_levels: int = -1
 
     def __init__(self, extent=None, resolution=None):
+        
+        self.values = np.empty((0, 3))
+        self.length = np.empty(0)
+        
         # Init basic grid empty
         if extent is not None and resolution is not None:
             self.dense_grid = RegularGrid(extent, resolution)
+    
 
     @classmethod
     def init_octree_grid(cls, extent, octree_levels):

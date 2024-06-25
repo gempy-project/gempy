@@ -1,6 +1,3 @@
-# import pytest
-# import gempy.gempy_api as gempy
-# import gempy as gp
 import enum
 import os
 
