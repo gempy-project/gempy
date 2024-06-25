@@ -32,8 +32,8 @@ class Grid:
     _sections: Optional[Sections] = None
     _centered_grid: Optional[CenteredGrid] = None
 
-    values: np.ndarray = np.empty((0, 3))
-    length: np.ndarray = np.empty(0)
+    values: np.ndarray = dataclasses.field(default_factory=lambda: np.empty((0, 3)))
+    length: np.ndarray = dataclasses.field(default_factory=lambda: np.empty(0))
 
     _active_grids = GridTypes.NONE
     _transform: Optional[Transform] = None
