@@ -1,5 +1,4 @@
 ﻿import numpy as np
-from scipy.interpolate import RegularGridInterpolator, RectBivariateSpline
 
 from gempy.optional_dependencies import require_scipy
 
@@ -32,11 +31,12 @@ def interpolate_zvals_at_xy(xy, topography, method='DEP'):
     Returns:
         np.ndarray: z values, i.e., topography along the profile.
     """
+    scipy = require_scipy()
     xj = topography.values_2d[:, 0, 0]
     yj = topography.values_2d[0, :, 1]
     zj = topography.values_2d[:, :, 2]
 
-    spline = RectBivariateSpline(xj, yj, zj)
+    spline = scipy.interpolate.RectBivariateSpline(xj, yj, zj)
     zi = spline.ev(xy[:, 0], xy[:, 1])
     
     return zi
