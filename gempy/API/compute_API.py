@@ -7,6 +7,7 @@ from gempy_engine.core.backend_tensor import BackendTensor
 from gempy.API.gp2_gp3_compatibility.gp3_to_gp2_input import gempy3_to_gempy2
 from gempy_engine.config import AvailableBackends
 from gempy_engine.core.data import Solutions
+from gempy_engine.core.data.interpolation_input import InterpolationInput
 from .grid_API import set_custom_grid
 from ..core.data.gempy_engine_config import GemPyEngineConfig
 from ..core.data.geo_model import GeoModel
@@ -95,12 +96,11 @@ def optimize_and_compute(geo_model: GeoModel, engine_config: GemPyEngineConfig, 
 
     import torch
     from gempy_engine.core.data.continue_epoch import ContinueEpoch
-
-    interpolation_input = geo_model.interpolation_input_copy
+    interpolation_input: InterpolationInput = interpolation_input_from_structural_frame(geo_model)
 
     geo_model.taped_interpolation_input = interpolation_input
 
-    nugget_effect_scalar = geo_model.taped_interpolation_input.surface_points_copy.nugget_effect_scalar
+    nugget_effect_scalar: torch.Tensor = geo_model.taped_interpolation_input.surface_points.nugget_effect_scalar
 
     optimizer = torch.optim.Adam(
         params=[nugget_effect_scalar],
@@ -122,7 +122,7 @@ def optimize_and_compute(geo_model: GeoModel, engine_config: GemPyEngineConfig, 
     for epoch in range(max_epochs):
         optimizer.zero_grad()
         try:
-            geo_model.taped_interpolation_input.grid = geo_model.interpolation_input_copy.grid
+            # geo_model.taped_interpolation_input.grid = geo_model.interpolation_input_copy.grid
 
             gempy_engine.compute_model(
                 interpolation_input=geo_model.taped_interpolation_input,

@@ -9,7 +9,6 @@
 import gempy as gp
 import gempy_viewer as gpv
 import numpy as np
-import matplotlib.pyplot as plt
 
 np.random.seed(1234)
 
@@ -88,7 +87,7 @@ gp.set_topography_from_random(
 # 
 
 # %% 
-geo_model.grid.active_grids_bool
+geo_model.grid.active_grids
 
 # %% 
 gpv.plot_section_traces(geo_model)

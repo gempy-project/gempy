@@ -126,7 +126,7 @@ structural_frame: gp.data.StructuralFrame = gp.data.StructuralFrame.from_data_ta
 geo_model: gp.data.GeoModel = gp.create_geomodel(
     project_name='Moureze',
     extent=[-5, 305, -5, 405, -200, -50],
-    resolution=resolution_low,
+    # resolution=resolution_low,
     refinement=5,
     structural_frame=structural_frame
 )
@@ -147,6 +147,10 @@ gpv.plot_2d(geo_model, direction='y')
 
 # %% 
 geo_model.interpolation_options.kernel_options.range *= 0.2
+geo_model.interpolation_options.evaluation_options.verbose = True
+geo_model.interpolation_options.evaluation_options.octree_error_threshold = 1.5
+geo_model.interpolation_options.evaluation_options.number_octree_levels_surface = 5
+
 # %%
 gp.compute_model(
     gempy_model=geo_model,

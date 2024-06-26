@@ -25,7 +25,7 @@ class SurfacePointsTable:
 
     dt = np.dtype([('X', 'f8'), ('Y', 'f8'), ('Z', 'f8'), ('id', 'i4'), ('nugget', 'f8')])  #: The custom data type for the data array.
     _model_transform: Optional[Transform] = None
-    
+
     def __post_init__(self):
         # Check if the data array has the correct data type
         if self.data.dtype != SurfacePointsTable.dt:
@@ -58,13 +58,26 @@ class SurfacePointsTable:
                     names: Union[Sequence | str], nugget: Optional[np.ndarray] = None,
                     name_id_map: Optional[dict[str, int]] = None
                     ) -> 'SurfacePointsTable':
+        """Create a SurfacePointsTable from arrays of coordinates and names.
+
+        Args:
+            x (np.ndarray): Array of x-coordinates.
+            y (np.ndarray): Array of y-coordinates.
+            z (np.ndarray): Array of z-coordinates.
+            names (Union[Sequence, str]): Names of the surface points.
+            nugget (Optional[np.ndarray]): Nugget values for the surface points.
+            name_id_map (Optional[dict[str, int]]): Mapping between surface point names and ids.
+
+        Returns:
+            SurfacePointsTable: A new instance of SurfacePointsTable.
+        """
         data, name_id_map = cls._data_from_arrays(x, y, z, names, nugget, name_id_map)
         return cls(data, name_id_map)
 
     @classmethod
     def _data_from_arrays(cls, x: np.ndarray, y: np.ndarray, z: np.ndarray,
-                         names: Union[Sequence | str], nugget: Optional[np.ndarray] = None,
-                         name_id_map: dict[str, int] = None) -> tuple[np.ndarray, dict[str, int]]:
+                          names: Union[Sequence | str], nugget: Optional[np.ndarray] = None,
+                          name_id_map: dict[str, int] = None) -> tuple[np.ndarray, dict[str, int]]:
         if nugget is None:
             nugget = np.zeros_like(x) + DEFAULT_SP_NUGGET
 
@@ -72,27 +85,39 @@ class SurfacePointsTable:
             ids, name_id_map = generate_ids_from_names(name_id_map, names, x)
         else:
             ids = np.array([name_id_map[name] for name in names])
-            
+
         data = np.zeros(len(x), dtype=SurfacePointsTable.dt)
         data['X'], data['Y'], data['Z'], data['id'], data['nugget'] = x, y, z, ids, nugget
         return data, name_id_map
 
-
     @classmethod
     def initialize_empty(cls) -> 'SurfacePointsTable':
+        """Initialize an empty SurfacePointsTable.
+
+        Returns:
+            SurfacePointsTable: An empty instance of SurfacePointsTable.
+        """
         return cls(np.zeros(0, dtype=SurfacePointsTable.dt), {})
 
     def id_to_name(self, id: int) -> str:
+        """Get the name corresponding to a given id.
+
+        Args:
+            id (int): The id of the surface point.
+
+        Returns:
+            str: The name of the surface point.
+        """
         return list(self.name_id_map.keys())[id]
 
     @property
     def xyz(self) -> np.ndarray:
         return np.array([self.data['X'], self.data['Y'], self.data['Z']]).T
-    
+
     @property
     def xyz_view(self) -> np.ndarray:
         return self.data[['X', 'Y', 'Z']]
-    
+
     @xyz_view.setter
     def xyz_view(self, value: np.ndarray):
         self.data['X'], self.data['Y'], self.data['Z'] = value.T
@@ -104,13 +129,13 @@ class SurfacePointsTable:
     @nugget.setter
     def nugget(self, value: np.ndarray):
         self.data['nugget'] = value
-        
+
     @property
     def model_transform(self) -> Transform:
         if self._model_transform is None:
             raise ValueError("Model transform is not set. If you want to use this property use GeoModel.surface_points to get the SurfaceTable with transform attached.")
         return self._model_transform
-    
+
     @model_transform.setter
     def model_transform(self, value: Transform):
         self._model_transform = value
@@ -119,12 +144,33 @@ class SurfacePointsTable:
         return len(self.data)
 
     def get_surface_points_by_name(self, name: str) -> 'SurfacePointsTable':
+        """Get a SurfacePointsTable containing points with the specified name.
+
+        Args:
+            name (str): The name of the surface points.
+
+        Returns:
+            SurfacePointsTable: A new instance containing the specified surface points.
+        """
         return self.get_surface_points_by_id(self.name_id_map[name])
 
     def get_surface_points_by_id(self, id: int) -> 'SurfacePointsTable':
+        """Get a SurfacePointsTable containing points with the specified id.
+
+        Args:
+            id (int): The id of the surface points.
+
+        Returns:
+            SurfacePointsTable: A new instance containing the specified surface points.
+        """
         return SurfacePointsTable(self.data[self.data['id'] == id], self.name_id_map)
 
     def get_surface_points_by_id_groups(self) -> list['SurfacePointsTable']:
+        """Get a list of SurfacePointsTable objects, each containing points with a unique id.
+
+        Returns:
+            list[SurfacePointsTable]: A list of SurfacePointsTable objects.
+        """
         ids = np.unique(self.data['id'])
         return [self.get_surface_points_by_id(id) for id in ids]
 
