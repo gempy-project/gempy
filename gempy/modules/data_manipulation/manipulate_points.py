@@ -94,8 +94,8 @@ def add_orientations(geo_model: GeoModel,
         y: Sequence[float],
         z: Sequence[float],
         elements_names: Sequence[str],
-        pole_vector: Optional[Sequence[np.ndarray]] = None,
-        orientation: Optional[Sequence[np.ndarray]] = None,
+        pole_vector: Optional[Union[Sequence[np.ndarray], np.ndarray]] = None,
+        orientation: Optional[Union[Sequence[np.ndarray], np.ndarray]] = None,
         nugget: Optional[Sequence[float]] = None
 ) -> StructuralFrame:
     """Add orientation data to the geological model.
@@ -110,8 +110,8 @@ def add_orientations(geo_model: GeoModel,
         y (Sequence[float]): Sequence of y-coordinates for the orientation points.
         z (Sequence[float]): Sequence of z-coordinates for the orientation points.
         elements_names (Sequence[str]): Sequence of element names corresponding to each orientation point.
-        pole_vector (Optional[Sequence[np.ndarray]]): Sequence of pole vectors for the orientation points.
-        orientation (Optional[Sequence[np.ndarray]]): Sequence of orientation angles (azimuth, dip, polarity) for the orientation points.
+        pole_vector (Optional[Union[Sequence[np.ndarray], np.ndarray]]): Sequence of pole vectors for each orientation point. If is np.ndarray, it should have shape (n, 3).
+        orientation (Optional[Union[Sequence[np.ndarray], np.ndarray]]): Sequence of orientation angles for each orientation point. If is np.ndarray, it should have shape (n, 3).
         nugget (Optional[Sequence[float]]): Sequence of nugget values for each orientation point. If not provided,
             a default value will be used for all points.
 
