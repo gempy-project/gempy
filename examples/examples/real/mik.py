@@ -5,7 +5,17 @@
 # 
 # %%
 # List of relative paths used during the workshop
+import numpy as np
+import pandas as pd
 import pooch
+
+from subsurface.core.geological_formats import Collars, Survey, BoreholeSet
+from subsurface.core.geological_formats.boreholes._combine_trajectories import MergeOptions
+from subsurface.core.reader_helpers.readers_data import GenericReaderFilesHelper
+from subsurface.core.structs.base_structures.base_structures_enum import SpecialCellCase
+from subsurface.modules.reader.wells.read_borehole_interface import read_collar, read_survey, read_lith
+import subsurface as ss
+from subsurface.modules.visualization import to_pyvista_points, pv_plot, to_pyvista_line, init_plotter
 
 path_to_well_png = '../../common/basics/data/wells.png'
 path_to_checkpoint_1 = '../../common/basics/checkpoints/checkpoint1.pickle'
@@ -29,73 +39,108 @@ raw_borehole_data_csv = pooch.retrieve(url, known_hash)
 # %% md
 # Now we can use `subsurface` function to help us reading csv files into pandas dataframes that the package can understand. Since the combination of styles data is provided can highly vary from project to project, `subsurface` provides some *helpers* functions to parse different combination of .csv
 # %%
-reading_collars = ReaderFilesHelper(
-    file_or_buffer=raw_borehole_data_csv,
-    index_col="name",
-    usecols=['x', 'y', 'altitude', "name"]
+
+collar_df: pd.DataFrame = read_collar(
+    GenericReaderFilesHelper(
+        file_or_buffer=raw_borehole_data_csv,
+        index_col="name",
+        usecols=['x', 'y', 'altitude', "name"],
+        columns_map={
+            "name": "id",  # ? Index name is not mapped
+            "X": "x",
+            "Y": "y",
+            "altitude": "z"
+        }
+    )
+)
+# TODO: df to unstruct
+unstruc: ss.UnstructuredData = ss.UnstructuredData.from_array(
+    vertex=collar_df[["x", "y", "z"]].values,
+    cells=SpecialCellCase.POINTS
+)
+points = ss.PointSet(data=unstruc)
+collars: Collars = Collars(
+    ids=collar_df.index.to_list(),
+    collar_loc=points
 )
 
-reading_collars
-# %%
-from dataclasses import asdict
+s = to_pyvista_points(collars.collar_loc)
+pv_plot([s], image_2d=True)
 
-asdict(reading_collars)
-# %%
-collar = read_collar(reading_collars)
-
-collar
 # %%
 # Your code here:
-survey = read_survey(
-    ReaderFilesHelper(
+survey_df: pd.DataFrame = read_survey(
+    GenericReaderFilesHelper(
         file_or_buffer=raw_borehole_data_csv,
         index_col="name",
         usecols=["name", "md"]
     )
 )
 
+survey: Survey = Survey.from_df(survey_df)
+
 survey
+
 # %%
 # Your code here:
 lith = read_lith(
-    ReaderFilesHelper(
+    GenericReaderFilesHelper(
         file_or_buffer=raw_borehole_data_csv,
         usecols=['name', 'top', 'base', 'formation'],
-        columns_map={'top'      : 'top',
-                     'base'     : 'base',
-                     'formation': 'component lith',
-                     }
+        columns_map={
+            'top': 'top',
+            'base': 'base',
+            'formation': 'component lith',
+        }
     )
 )
 
+survey.update_survey_with_lith(lith)
+
 lith
 
-# %% md
-# ### Welly
-# 
-# Welly is a family of classes to facilitate the loading, processing, and analysis of subsurface wells and well data, such as striplogs, formation tops, well log curves, and synthetic seismograms.
-# 
-# We are using welly to convert pandas data frames into classes to manipulate well data. The final goal is to extract 3D coordinates and properties for multiple wells.
-# 
-# The class `WellyToSubsurfaceHelper` contains the methods to create a `welly` project and export it to a `subsurface` data class.
+borehole_set = BoreholeSet(
+    collars=collars,
+    survey=survey,
+    merge_option=MergeOptions.INTERSECT
+)
+
 # %%
-wts = sb.reader.wells.WellyToSubsurfaceHelper(collar_df=collar, survey_df=survey, lith_df=lith)
-# %% md
-# In the field p is stored a welly project (https://github.com/agile-geoscience/welly/blob/master/tutorial/04_Project.ipynb)and we can use it to explore and visualize properties of each well.
-# %%
-wts.p
-# %%
-stripLog = wts.p[0].data['lith']
-stripLog
-# %%
-stripLog.plot()
-plt.gcf()
-# %%
-welly_well = wts.p[0].data["lith_log"]
-welly_well
-# %% md
-# ## Welly to Subsurface 
-# 
+
+s = to_pyvista_line(
+    line_set=borehole_set.combined_trajectory,
+    active_scalar="lith_ids",
+    radius=40
+)
+
+p = init_plotter()
+import matplotlib.pyplot as plt
+
+boring_cmap = plt.get_cmap(name="viridis", lut=14)
+p.add_mesh(s, cmap=boring_cmap)
+
+collar_mesh = to_pyvista_points(collars.collar_loc)
+p.add_mesh(collar_mesh, render_points_as_spheres=True)
+p.add_point_labels(
+    points=collars.collar_loc.points,
+    labels=collars.ids,
+    point_size=10,
+    shape_opacity=0.5,
+    font_size=12,
+    bold=True
+)
+
+if plot3D:=False:
+    p.show()
+else:
+    img = p.show(screenshot=True)
+    img = p.last_image
+    fig = plt.imshow(img)
+    plt.axis('off')
+    plt.show(block=False)
+    p.close()
+
+# %% m
 # Welly is a very powerful tool to inspect well data but it was not design for 3D. However they have a method to export XYZ coordinates of each of the well that we can take advanatage of to create a `subsurface.UnstructuredData` object. This object is one of the core data class of `subsurface` and we will use it from now on to keep working in 3D.
 # %%
 formations = ["topo", "etchegoin", "macoma", "chanac", "mclure",
@@ -104,20 +149,25 @@ formations = ["topo", "etchegoin", "macoma", "chanac", "mclure",
               "cretaceous",
               "basement", "null"]
 
-unstruct = sb.reader.wells.welly_to_subsurface(wts, table=[Component({'lith': l}) for l in formations])
+
+# %%
+
+borehole_set.get_bottom_coords_for_each_lith()
+foo = borehole_set._merge_vertex_data_arrays_to_dataframe()
+well_id_mapper: dict[str, int] = borehole_set.survey.id_to_well_id
+# mapp well_id column to well_name
+fos is greato["well_name"] = foo["well_id"].map(well_id_mapper)
+
+pass
+# %%
+# unstruct = sb.reader.wells.welly_to_subsurface(wts, table=[Component({'lith': l}) for l in formations])
+unstrc = w
 unstruct.data
 # %% md
 # At each core `UstructuredData` is a wrapper of a `xarray.Dataset`. Although slightly flexible, any `UnstructuredData` will contain 4 `xarray.DataArray` objects containing vertex, cells, cell attributes and vertex attibutes. This is the minimum amount of information necessary to work in 3D. 
 # %% md
 # From an `UnstructuredData` we can construct *elements*. *elements* are a higher level construct and includes the definion of type of geometric representation - e.g. points, lines, surfaces, etc. For the case of borehole we will use LineSets. *elements* have a very close relation to `vtk` data structures what enables easily to plot the data using `pyvista`
 # %%
-element = sb.LineSet(unstruct)
-pyvista_mesh = sb.visualization.to_pyvista_line(element, radius=50)
-
-# Plot default LITH
-interactive_plot = sb.visualization.pv_plot([pyvista_mesh], background_plotter=True)
-# %%
-plot_pyvista_to_notebook(interactive_plot)
 # %% md
 # ## Finding the boreholes bases
 # 
@@ -145,17 +195,30 @@ interface_points = vertex[vertex_args_prop_change]
 interface_points
 # %%
 # Creating a new UnstructuredData
-interf_us = sb.UnstructuredData.from_array(vertex=interface_points.values, cells="points",
+interf_us = ss.UnstructuredData.from_array(vertex=interface_points.values, cells="points",
                                            cells_attr=vals_prop_change.to_pandas())
 interf_us
 # %% md
 # This new `UnstructuredData` object instead containing data that represent lines, contain point data at the bottom of each unit. We can plot it very similar as before:
 # %%
-element = sb.PointSet(interf_us)
-pyvista_mesh = sb.visualization.to_pyvista_points(element)
-interactive_plot.add_mesh(pyvista_mesh)
-# %%
-plot_pyvista_to_notebook(interactive_plot)
+element = ss.PointSet(interf_us)
+pyvista_mesh = ss.visualization.to_pyvista_points(element)
+
+p = init_plotter()
+import matplotlib.pyplot as plt
+
+p.add_mesh(collar_mesh, render_points_as_spheres=True)
+p.add_point_labels(
+    points=collars.collar_loc.points,
+    labels=collars.ids,
+    point_size=10,
+    shape_opacity=0.5,
+    font_size=12,
+    bold=True
+)
+p.show()
+
+
 # %% md
 # ## GemPy: Initialize model
 # 
