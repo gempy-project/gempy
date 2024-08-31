@@ -130,7 +130,7 @@ p.add_point_labels(
     bold=True
 )
 
-if plot3D:=False:
+if plot3D := False:
     p.show()
 else:
     img = p.show(screenshot=True)
@@ -143,80 +143,63 @@ else:
 # %% m
 # Welly is a very powerful tool to inspect well data but it was not design for 3D. However they have a method to export XYZ coordinates of each of the well that we can take advanatage of to create a `subsurface.UnstructuredData` object. This object is one of the core data class of `subsurface` and we will use it from now on to keep working in 3D.
 # %%
-formations = ["topo", "etchegoin", "macoma", "chanac", "mclure",
-              "santa_margarita", "fruitvale",
-              "round_mountain", "olcese", "freeman_jewett", "vedder", "eocene",
-              "cretaceous",
-              "basement", "null"]
-
-
-# %%
-
-borehole_set.get_bottom_coords_for_each_lith()
-foo = borehole_set._merge_vertex_data_arrays_to_dataframe()
-well_id_mapper: dict[str, int] = borehole_set.survey.id_to_well_id
-# mapp well_id column to well_name
-fos is greato["well_name"] = foo["well_id"].map(well_id_mapper)
-
-pass
-# %%
-# unstruct = sb.reader.wells.welly_to_subsurface(wts, table=[Component({'lith': l}) for l in formations])
-unstrc = w
-unstruct.data
-# %% md
-# At each core `UstructuredData` is a wrapper of a `xarray.Dataset`. Although slightly flexible, any `UnstructuredData` will contain 4 `xarray.DataArray` objects containing vertex, cells, cell attributes and vertex attibutes. This is the minimum amount of information necessary to work in 3D. 
-# %% md
-# From an `UnstructuredData` we can construct *elements*. *elements* are a higher level construct and includes the definion of type of geometric representation - e.g. points, lines, surfaces, etc. For the case of borehole we will use LineSets. *elements* have a very close relation to `vtk` data structures what enables easily to plot the data using `pyvista`
-# %%
-# %% md
-# ## Finding the boreholes bases
-# 
-# `GemPy` interpolates the bottom of a unit, therefore we need to be able to extract those points to be able tointerpolate them. `xarray`, `pandas` and `numpy` are using the same type of memory representation what makes possible to use the same or at least similar methods to manipulate the data to our will. 
-# 
-# Lets find the base points of each well:
-# %%
-# Creating references to the xarray.DataArray
-cells_attr = unstruct.data.cell_attrs
-cells = unstruct.data.cells
-vertex = unstruct.data.vertex
-# %%
-# Find vertex points at the boundary of two units
-# Marking each vertex
-bool_prop_change = cells_attr.values[1:] != cells_attr.values[:-1]
-# Getting the index of the vertex
-args_prop_change = np.where(bool_prop_change)[0]
-# Getting the attr values at those points 
-vals_prop_change = cells_attr[args_prop_change]
-vals_prop_change.to_pandas()
-# %%
-# Getting the vertex values at those points
-vertex_args_prop_change = cells[args_prop_change, 1]
-interface_points = vertex[vertex_args_prop_change]
-interface_points
-# %%
-# Creating a new UnstructuredData
-interf_us = ss.UnstructuredData.from_array(vertex=interface_points.values, cells="points",
-                                           cells_attr=vals_prop_change.to_pandas())
-interf_us
-# %% md
-# This new `UnstructuredData` object instead containing data that represent lines, contain point data at the bottom of each unit. We can plot it very similar as before:
-# %%
-element = ss.PointSet(interf_us)
-pyvista_mesh = ss.visualization.to_pyvista_points(element)
-
-p = init_plotter()
-import matplotlib.pyplot as plt
-
-p.add_mesh(collar_mesh, render_points_as_spheres=True)
-p.add_point_labels(
-    points=collars.collar_loc.points,
-    labels=collars.ids,
-    point_size=10,
-    shape_opacity=0.5,
-    font_size=12,
-    bold=True
+elements = gp.structural_elements_from_borehole_set(
+    borehole_set=borehole_set,
+    elements_dict={
+        "null": {
+            "id": -1,
+            "color": "#983999"
+        },
+        "etchgoin": {
+            "id": 1,
+            "color": "#00923f"
+        },
+        "macoma": {
+            "id": 2,
+            "color": "#da251d"
+        },
+        "chanac": {
+            "id": 3,
+            "color": "#f8c300"
+        },
+        "mclure": {
+            "id": 4,
+            "color": "#bb825b"
+        },
+        "santa_margarita": {
+            "id": 5,
+            "color": "#983999"
+        },
+        "fruitvale": {
+            "id": 6,
+            "color": "#00923f"
+        },
+        "round_mountain": {
+            "id": 7,
+            "color": "#da251d"
+        },
+        "olcese": {
+            "id": 8,
+            "color": "#f8c300"
+        },
+        "freeman_jewett": {
+            "id": 9,
+            "color": "#bb825b"
+        },
+        "vedder": {
+            "id": 10,
+            "color": "#983999"
+        },
+        "eocene": {
+            "id": 11,
+            "color": "#00923f"
+        },
+        "cretaceous": {
+            "id": 12,
+            "color": "#da251d"
+        },
+    }
 )
-p.show()
 
 
 # %% md
