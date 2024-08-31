@@ -8,6 +8,7 @@
 import numpy as np
 import pandas as pd
 import pooch
+import pyvista
 
 from subsurface.core.geological_formats import Collars, Survey, BoreholeSet
 from subsurface.core.geological_formats.boreholes._combine_trajectories import MergeOptions
@@ -64,8 +65,8 @@ collars: Collars = Collars(
     collar_loc=points
 )
 
-s = to_pyvista_points(collars.collar_loc)
-pv_plot([s], image_2d=True)
+well_mesh = to_pyvista_points(collars.collar_loc)
+pv_plot([well_mesh], image_2d=True)
 
 # %%
 # Your code here:
@@ -107,7 +108,7 @@ borehole_set = BoreholeSet(
 
 # %%
 
-s = to_pyvista_line(
+well_mesh = to_pyvista_line(
     line_set=borehole_set.combined_trajectory,
     active_scalar="lith_ids",
     radius=40
@@ -117,7 +118,7 @@ p = init_plotter()
 import matplotlib.pyplot as plt
 
 boring_cmap = plt.get_cmap(name="viridis", lut=14)
-p.add_mesh(s, cmap=boring_cmap)
+p.add_mesh(well_mesh, cmap=boring_cmap)
 
 collar_mesh = to_pyvista_points(collars.collar_loc)
 p.add_mesh(collar_mesh, render_points_as_spheres=True)
@@ -143,60 +144,62 @@ else:
 # %% m
 # Welly is a very powerful tool to inspect well data but it was not design for 3D. However they have a method to export XYZ coordinates of each of the well that we can take advanatage of to create a `subsurface.UnstructuredData` object. This object is one of the core data class of `subsurface` and we will use it from now on to keep working in 3D.
 # %%
+
+colors_generator = gp.data.ColorsGenerator()
 elements = gp.structural_elements_from_borehole_set(
     borehole_set=borehole_set,
     elements_dict={
-        "null": {
+        "Basement": {
             "id": -1,
-            "color": "#983999"
+            "color": next(colors_generator)
         },
         "etchgoin": {
             "id": 1,
-            "color": "#00923f"
+            "color": next(colors_generator)
         },
         "macoma": {
             "id": 2,
-            "color": "#da251d"
+            "color": next(colors_generator)
         },
         "chanac": {
             "id": 3,
-            "color": "#f8c300"
+            "color": next(colors_generator)
         },
         "mclure": {
             "id": 4,
-            "color": "#bb825b"
+            "color": next(colors_generator)
         },
         "santa_margarita": {
             "id": 5,
-            "color": "#983999"
+            "color": next(colors_generator)
         },
         "fruitvale": {
             "id": 6,
-            "color": "#00923f"
+            "color": next(colors_generator)
         },
         "round_mountain": {
             "id": 7,
-            "color": "#da251d"
+            "color": next(colors_generator)
         },
         "olcese": {
             "id": 8,
-            "color": "#f8c300"
+            "color": next(colors_generator)
         },
         "freeman_jewett": {
             "id": 9,
-            "color": "#bb825b"
+            "color": next(colors_generator)
         },
         "vedder": {
             "id": 10,
-            "color": "#983999"
+            "color": next(colors_generator)
         },
         "eocene": {
             "id": 11,
-            "color": "#00923f"
+            "color": next(colors_generator)
         },
         "cretaceous": {
             "id": 12,
-            "color": "#da251d"
+            "color": next(colors_generator)
         },
     }
 )
@@ -223,23 +226,84 @@ elements = gp.structural_elements_from_borehole_set(
 # - **Center grids**: Half sphere grids around a given point at surface. This are specially tuned
 #   for geophysical forward computations
 # %%
-import gempy as gp
+import gempy_viewer as gpv
 
-extent = [275619, 323824, 3914125, 3961793, -3972.6, 313.922]
+group = gp.data.StructuralGroup(
+    name="Stratigraphic Pile",
+    elements=elements,
+    structural_relation=gp.data.StackRelationType.ERODE
+)
+structural_frame = gp.data.StructuralFrame(
+    structural_groups=[group],
+    color_gen=colors_generator
+)
 
-# Your code here:
-geo_model = gp.create_model("getting started")
-geo_model.set_regular_grid(extent=extent, resolution=[50, 50, 50])
-# %% md
-# GemPy core code is written in Python. However for efficiency and gradient based
-# machine learning most of heavy computations happen in optimize compile code,
-#  either C or CUDA for GPU.
-# 
-# To do so, GemPy rely on the library `Theano`. To guarantee maximum optimization
-# `Theano` requires to compile the code for every Python kernel. The compilation is
-# done by calling the following line at any point (before computing the model):
-# %%
-gp.set_interpolator(geo_model, theano_optimizer='fast_compile', verbose=[])
+
+# %% [markdown]
+# Determine the extent of the geological model from the surface points coordinates.
+all_surface_points_coords: gp.data.SurfacePointsTable = structural_frame.surface_points_copy
+extent_from_data = all_surface_points_coords.xyz.min(axis=0), all_surface_points_coords.xyz.max(axis=0)
+
+# %% [markdown]
+# Create a GeoModel with the specified extent, grid resolution, and interpolation options.
+geo_model = gp.data.GeoModel(
+    name="Stratigraphic Pile",
+    structural_frame=structural_frame,
+    grid=gp.data.Grid(
+        extent=[extent_from_data[0][0], extent_from_data[1][0], extent_from_data[0][1], extent_from_data[1][1], extent_from_data[0][2], extent_from_data[1][2]],
+        resolution=(50, 50, 50)
+    ),
+    interpolation_options=gp.data.InterpolationOptions(
+        range=5,
+        c_o=10,
+        mesh_extraction=True,
+        number_octree_levels=3,
+    ),
+)
+
+# %% [markdown]
+# Visualize the 3D geological model using GemPy's plot_3d function.
+gempy_plot = gpv.plot_3d(
+    model=geo_model,
+    kwargs_pyvista_bounds={
+            'show_xlabels': False,
+            'show_ylabels': False,
+    },
+    show=True,
+    image=False
+)
+
+# %% [markdown]
+# Combine all visual elements and display them together.
+sp_mesh: pyvista.PolyData = gempy_plot.surface_points_mesh
+
+pyvista_plotter = init_plotter()
+pyvista_plotter.show_bounds(all_edges=True)
+
+units_limit = [0, 13]
+pyvista_plotter.add_mesh(
+    well_mesh.threshold(units_limit),
+    cmap="tab20c",
+    clim=units_limit
+)
+
+pyvista_plotter.add_mesh(
+    collar_mesh,
+    point_size=10,
+    render_points_as_spheres=True
+)
+
+pyvista_plotter.add_point_labels(
+    points=collars.collar_loc.points,
+    labels=collars.ids,
+    point_size=10,
+    shape_opacity=0.5,
+    font_size=12,
+    bold=True
+)
+pyvista_plotter.add_actor(gempy_plot.surface_points_actor)
+
+pyvista_plotter.show()
 
 
 # %% md
@@ -280,23 +344,23 @@ def get_interface_coord_from_surfaces(surface_names: list, verbose=False):
 #  
 # This is a list with the formations names for this data set.
 # %%
-formations
+elements
 # %% md
 # Lets add the first two (remember we always need a basement defined).
 # %%
-geo_model.add_surfaces(formations[:2])
-# %% md
-# Using the function defined above we just extract the surface points for **topo**:
-# %%
-gempy_surface_points = get_interface_coord_from_surfaces(["topo"])
-gempy_surface_points
+group = gp.data.StructuralGroup(
+    name="Stratigraphic Pile Top",
+    elements=elements[:3],
+    structural_relation=gp.data.StackRelationType.ERODE
+)
+geo_model.structural_frame.structural_groups[0] = group
+
+
 # %% md
 # And we can set them into the `gempy` model:
 # %%
-geo_model.set_surface_points(gempy_surface_points, update_surfaces=False)
-geo_model.update_to_interpolator()
 # %%
-g2d = gp.plot_2d(geo_model)
+g2d = gpv.plot_2d(geo_model)
 # %%
 g2d.fig
 # %% md
@@ -308,7 +372,16 @@ g2d.fig
 # 
 # Lets add an orientation:
 # %%
-geo_model.add_orientations(X=300000, Y=3930000, Z=0, surface="topo", pole_vector=(0, 0, 1))
+# geo_model.add_orientations(X=300000, Y=3930000, Z=0, surface="topo", pole_vector=(0, 0, 1))
+gp.add_orientations(
+    x=[300000],
+    y=[3930000],
+    z=[0],
+    elements_names=elements[0].name,
+    pole_vector=np.array([0, 0, 1]),
+    geo_model=geo_model
+)
+
 # %% md
 # GemPy depends on multiple data objects to store all the data structures necessary
 # to construct an structural model. To keep all the necessary objects in sync the
@@ -328,89 +401,18 @@ geo_model.add_orientations(X=300000, Y=3930000, Z=0, surface="topo", pole_vector
 # Today we will look into details only some of these classes but what is important
 # to notice is that you can access these objects as follows:
 # %%
-geo_model.additional_data
-# %%
-gp.compute_model(geo_model)
-# %%
-g3d = gp.plot_3d(geo_model, plotter_type="background")
-# %%
-g3d.p.add_mesh(pyvista_mesh)
-# %%
-plot_pyvista_to_notebook(g3d.p)
-# %% md
-# ## Second layer
-# %%
-geo_model.add_surfaces(formations[2])
-# %%
-gempy_surface_points = get_interface_coord_from_surfaces(formations[:2])
-geo_model.set_surface_points(gempy_surface_points, update_surfaces=False)
-geo_model.update_to_interpolator()
-# %%
-gp.compute_model(geo_model)
-# %%
-live_plot = gp.plot_3d(geo_model, plotter_type="background", show_results=True)
-# %%
-plot_pyvista_to_notebook(live_plot.p)
-# %%
-live_plot.toggle_live_updating()
-# %% md
-# ### Trying to fix the model: Multiple Geo. Features/Series
-# %%
-geo_model.add_features("Formations")
-# %%
-geo_model.map_stack_to_surfaces({"Form1": ["etchegoin", "macoma"]}, set_series=False)
-# %%
-geo_model.add_orientations(X=300000, Y=3930000, Z=0, surface="etchegoin", pole_vector=(0, 0, 1), idx=1)
-# %%
-gp.compute_model(geo_model)
-# %%
-h3d = gp.plot_3d(geo_model, plotter_type="background", show_lith=False, ve=5)
-# %%
-plot_pyvista_to_notebook(h3d.p)
-# %% md
-# ## Last layers for today
-# %%
-geo_model.add_surfaces(formations[3:5])
-# %%
-f_last = formations[:4]
-f_last
-# %%
-gempy_surface_points = get_interface_coord_from_surfaces(f_last)
-geo_model.set_surface_points(gempy_surface_points, update_surfaces=False)
-geo_model.update_to_interpolator()
-# %%
-gp.compute_model(geo_model)
-# %%
-p3d_4 = gp.plot_3d(geo_model, plotter_type="background", show_lith=False, ve=5)
-# %%
-plot_pyvista_to_notebook(p3d_4.p)
-# %%
-geo_model.add_orientations(X=321687.059770, Y=3.945955e+06, Z=0, surface="etchegoin", pole_vector=(0, 0, 1), idx=1)
-gp.compute_model(geo_model)
-p3d_4.plot_surfaces()
-# %%
-geo_model.add_orientations(X=277278.652995, Y=3.929298e+06, Z=0, surface="etchegoin", pole_vector=(0, 0, 1), idx=2)
-gp.compute_model(geo_model)
-p3d_4.plot_surfaces()
-# %% md
-# ## Adding many more orientations
-# %%
-# find neighbours
-neighbours = gp.select_nearest_surfaces_points(geo_model, geo_model._surface_points.df, 2)
-
-# calculate all fault orientations
-new_ori = gp.set_orientation_from_neighbours_all(geo_model, neighbours)
-new_ori.df.head()
-# %%
-gp.compute_model(geo_model)
-# %%
-p3d_4.plot_orientations()
-p3d_4.plot_surfaces()
-# %%
-p3d_4.p.add_mesh(pyvista_mesh)
+geo_model.interpolation_options
 
 # %%
-plot_pyvista_to_notebook(p3d_4.p)
+gp.compute_model(geo_model)
+
+# %%
+g3d = gpv.plot_3d(geo_model,show_lith=False, show=False)
+# %%
+g3d.p.add_mesh(well_mesh)
+# %%
+g3d.p.show()
+
 # %% md
 # -----
 # 
