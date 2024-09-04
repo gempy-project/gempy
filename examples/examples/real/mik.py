@@ -1,8 +1,23 @@
 # %% md
 # <img src="https://docs.gempy.org/_static/logos/gempy.png" alt="drawing" width="400"/>
-# 
+#
 # # 2.2 From Drillhole Data to GemPy Model
-# 
+#
+# In this section, we will explore how to take borehole or drillhole data and convert it into a format compatible with GemPy, creating a 3D geological model. Borehole data is commonly collected in the mining, oil, and gas industries and contains information about subsurface geological formations, including lithologies, stratigraphy, and the geometry of layers or faults.
+#
+# For this, we will rely on several helper functions from the `subsurface` package to extract borehole data and translate it into a 3D structure that GemPy can use for modeling.
+# We will cover:
+#
+# - Downloading the borehole data
+# - Processing the data using `subsurface`
+# - Visualizing borehole locations and lithology data in 3D
+
+# %%
+# ### Downloading Borehole Data
+# The borehole data is hosted online, and we can use the `pooch` library to download it directly. `pooch` is a library for fetching datasets from the internet. We will download a CSV file that contains the borehole information, including collar positions, survey data, and lithology logs.
+#
+# Let's start by downloading the dataset and inspecting its content.
+
 # %%
 # List of relative paths used during the workshop
 import numpy as np
@@ -31,7 +46,6 @@ import gempy as gp
 # We use `pooch` to download the dataset into a temp file:
 # %%
 url = "https://raw.githubusercontent.com/softwareunderground/subsurface/main/tests/data/borehole/kim_ready.csv"
-# known_hash = "efa90898bb435daa15912ca6f3e08cd3285311923a36dbc697d2aafebbafa25f"
 known_hash = "a91445cb960526398e25d8c1d2ab3b3a32f7d35feaf33e18887629b242256ab6"
 
 # Your code here:
@@ -41,6 +55,7 @@ raw_borehole_data_csv = pooch.retrieve(url, known_hash)
 # Now we can use `subsurface` function to help us reading csv files into pandas dataframes that the package can understand. Since the combination of styles data is provided can highly vary from project to project, `subsurface` provides some *helpers* functions to parse different combination of .csv
 # %%
 
+# Read the collar data from the CSV
 collar_df: pd.DataFrame = read_collar(
     GenericReaderFilesHelper(
         file_or_buffer=raw_borehole_data_csv,
@@ -54,7 +69,7 @@ collar_df: pd.DataFrame = read_collar(
         }
     )
 )
-# TODO: df to unstruct
+# Convert to UnstructuredData
 unstruc: ss.UnstructuredData = ss.UnstructuredData.from_array(
     vertex=collar_df[["x", "y", "z"]].values,
     cells=SpecialCellCase.POINTS
@@ -65,11 +80,20 @@ collars: Collars = Collars(
     collar_loc=points
 )
 
+# %%
+# ### Visualizing the Borehole Collars
+# Once we have the borehole collars data, we can visualize them in 3D using the `pyvista` package. This gives us a good overview of where the boreholes are located in space. In this visualization, each borehole will be represented by a point, and we will label the boreholes using their IDs.
 well_mesh = to_pyvista_points(collars.collar_loc)
+
+# Plot the collar points
 pv_plot([well_mesh], image_2d=True)
 
 # %%
-# Your code here:
+# ### Reading Borehole Survey Data
+# Borehole surveys give us information about the trajectory of each borehole, including its depth (measured depth). The survey data allows us to compute the full 3D path of each wellbore. We will use the `read_survey` function from `subsurface` to read this data.
+# %%
+
+# Create the Survey object
 survey_df: pd.DataFrame = read_survey(
     GenericReaderFilesHelper(
         file_or_buffer=raw_borehole_data_csv,
@@ -81,6 +105,10 @@ survey_df: pd.DataFrame = read_survey(
 survey: Survey = Survey.from_df(survey_df)
 
 survey
+
+# %%
+# ### Reading Lithology Data
+# Next, we will read the lithology data. Lithology logs describe the rock type or geological unit encountered at different depths within each borehole. Using `read_lith`, we will extract the lithology data, which includes the top and base depths of each geological formation within the borehole, as well as the formation name.
 
 # %%
 # Your code here:
@@ -96,10 +124,17 @@ lith = read_lith(
     )
 )
 
+# Update survey data with lithology information
 survey.update_survey_with_lith(lith)
 
 lith
+# %%
+# ### Creating a Borehole Set and Visualizing in 3D
+# Now that we have both the collar data and the lithology logs, we can combine them into a `BoreholeSet` object. This object combines the collar, survey, and lithology data and allows us to create a 3D visualization of the borehole trajectories and their associated lithologies.
+#
+# We will use `pyvista` to plot the borehole trajectories as lines, and we will color them according to their lithologies. Additionally, we will label the collars for easy identification.
 
+# Combine collar and survey into a BoreholeSet
 borehole_set = BoreholeSet(
     collars=collars,
     survey=survey,
@@ -108,6 +143,7 @@ borehole_set = BoreholeSet(
 
 # %%
 
+# Visualize boreholes with pyvista
 well_mesh = to_pyvista_line(
     line_set=borehole_set.combined_trajectory,
     active_scalar="lith_ids",
@@ -117,10 +153,12 @@ well_mesh = to_pyvista_line(
 p = init_plotter()
 import matplotlib.pyplot as plt
 
+# Set colormap for lithologies
 boring_cmap = plt.get_cmap(name="viridis", lut=14)
 p.add_mesh(well_mesh, cmap=boring_cmap)
 
 collar_mesh = to_pyvista_points(collars.collar_loc)
+
 p.add_mesh(collar_mesh, render_points_as_spheres=True)
 p.add_point_labels(
     points=collars.collar_loc.points,
@@ -131,6 +169,7 @@ p.add_point_labels(
     bold=True
 )
 
+# Show 3D plot or save a 2D image depending on the flag
 if plot3D := False:
     p.show()
 else:
@@ -141,11 +180,18 @@ else:
     plt.show(block=False)
     p.close()
 
-# %% m
-# Welly is a very powerful tool to inspect well data but it was not design for 3D. However they have a method to export XYZ coordinates of each of the well that we can take advanatage of to create a `subsurface.UnstructuredData` object. This object is one of the core data class of `subsurface` and we will use it from now on to keep working in 3D.
+# %% md
+# ## Structural Elements from Borehole Set
+#
+# Now that we have successfully imported and visualized the borehole data, we can move on to creating the geological formations (or structural elements) based on the borehole data. Each lithological unit will be associated with a unique identifier and a color, allowing us to distinguish between different formations when we visualize the model.
+#
+# GemPy offers the function `gempy.structural_elements_from_borehole_set`, which extracts these structural elements from the borehole data and associates each one with a name, ID, and color.
 # %%
 
+# Initialize the color generator for formations
 colors_generator = gp.data.ColorsGenerator()
+
+# Define formations and colors
 elements = gp.structural_elements_from_borehole_set(
     borehole_set=borehole_set,
     elements_dict={
@@ -206,46 +252,37 @@ elements = gp.structural_elements_from_borehole_set(
 
 
 # %% md
-# ## GemPy: Initialize model
-# 
-# The first step to create a GemPy model is create a `gempy.Model` object that will
-# contain all the other data structures and necessary functionality. In addition
-#  for this example we will define a *regular grid* since the beginning.
-# This is the grid where we will interpolate the 3D geological model.
-# 
-# GemPy is based on a **meshless interpolator**. In practice this means that we can
-# interpolate any point in a 3D space. However, for convenience, we have built some
-# standard grids for different purposes. At the current day the standard grids are:
-# 
-# - **Regular grid**: default grid mainly for general visualization
-# - **Custom grid**: GemPy's wrapper to interpolate on a user grid
-# - **Topography**: Topographic data use to be of high density. Treating it as an independent
-#   grid allow for high resolution geological maps
-# - **Sections**: If we predefine the section 2D grid we can directly interpolate at those
-#   locations for perfect, high resolution estimations
-# - **Center grids**: Half sphere grids around a given point at surface. This are specially tuned
-#   for geophysical forward computations
+# ## Initializing the GemPy Model
+#
+# After defining the geological formations, we need to initialize the GemPy model. The first step in this process is to create a `GeoModel` object, which serves as the core container for all data related to the geological model.
+#
+# We will also define a **regular grid** to interpolate the geological layers. GemPy uses a meshless interpolator to create geological models in 3D space, but grids are convenient for visualization and computation.
+#
+# GemPy supports various grid types, such as regular grids for visualization, custom grids, topographic grids, and more. For this example, we will use a regular grid with a medium resolution.
+
 # %%
 import gempy_viewer as gpv
 
+# Create a structural group with the elements
 group = gp.data.StructuralGroup(
     name="Stratigraphic Pile",
     elements=elements,
     structural_relation=gp.data.StackRelationType.ERODE
 )
+# Define the structural frame
 structural_frame = gp.data.StructuralFrame(
     structural_groups=[group],
     color_gen=colors_generator
 )
 
+# %% md
+# ### Defining Model Extent and Grid Resolution
+#
+# We now determine the extent of our model based on the surface points provided. This ensures that the grid covers the entire area where the geological data points are located. Additionally, we set a grid resolution of 50x50x50 for a balance between performance and model detail.
 
-# %% [markdown]
-# Determine the extent of the geological model from the surface points coordinates.
 all_surface_points_coords: gp.data.SurfacePointsTable = structural_frame.surface_points_copy
 extent_from_data = all_surface_points_coords.xyz.min(axis=0), all_surface_points_coords.xyz.max(axis=0)
-
-# %% [markdown]
-# Create a GeoModel with the specified extent, grid resolution, and interpolation options.
+# Initialize GeoModel
 geo_model = gp.data.GeoModel(
     name="Stratigraphic Pile",
     structural_frame=structural_frame,
@@ -261,8 +298,11 @@ geo_model = gp.data.GeoModel(
     ),
 )
 
-# %% [markdown]
-# Visualize the 3D geological model using GemPy's plot_3d function.
+# %% md
+# ### 3D Visualization of the Model
+#
+# After initializing the GeoModel, we can proceed to visualize it in 3D using GemPy's `plot_3d` function. This function allows us to see the full 3D geological model with all the defined formations.
+
 gempy_plot = gpv.plot_3d(
     model=geo_model,
     kwargs_pyvista_bounds={
@@ -273,13 +313,17 @@ gempy_plot = gpv.plot_3d(
     image=False
 )
 
-# %% [markdown]
-# Combine all visual elements and display them together.
+# %% md
+# ### Adding Boreholes and Collars to the Visualization
+#
+# To enhance the 3D model, we can combine the geological formations with the borehole trajectories and collar points that we visualized earlier. This will give us a complete picture of the subsurface, showing both the lithological units and the borehole paths.
+
 sp_mesh: pyvista.PolyData = gempy_plot.surface_points_mesh
 
 pyvista_plotter = init_plotter()
 pyvista_plotter.show_bounds(all_edges=True)
 
+# Set limits for the units to visualize
 units_limit = [0, 13]
 pyvista_plotter.add_mesh(
     well_mesh.threshold(units_limit),
@@ -287,12 +331,14 @@ pyvista_plotter.add_mesh(
     clim=units_limit
 )
 
+# Add collar points
 pyvista_plotter.add_mesh(
     collar_mesh,
     point_size=10,
     render_points_as_spheres=True
 )
 
+# Label the collars with their names
 pyvista_plotter.add_point_labels(
     points=collars.collar_loc.points,
     labels=collars.ids,
@@ -301,52 +347,27 @@ pyvista_plotter.add_point_labels(
     font_size=12,
     bold=True
 )
+# Add surface points from the geological model
 pyvista_plotter.add_actor(gempy_plot.surface_points_actor)
 
+# Show the final 3D plot
 pyvista_plotter.show()
 
 
+
 # %% md
-# ## Making a model step by step.
-# 
-# The temptation at this point is to bring all the points into `gempy` and just interpolate. However, often that strategy results in ill posed problems due to noise or irregularities in the data. `gempy` has been design to being able to iterate rapidly and therefore a much better workflow use to be creating the model step by step.
-# 
-# To do that, lets define a function that we can pass the name of the formation and get the assotiated vertex. Grab from the `interf_us` the XYZ coordinates of the first layer:
-# %%
-def get_interface_coord_from_surfaces(surface_names: list, verbose=False):
-    df = pd.DataFrame(columns=["X", "Y", "Z", "surface"])
-
-    for e, surface_name in enumerate(surface_names):
-        # The properties in subsurface start at 1
-        val_property = formations.index(surface_name) + 1
-        # Find the cells with the surface id
-        args_from_first_surface = np.where(vals_prop_change == val_property)[0]
-        if verbose: print(args_from_first_surface)
-        # Find the vertex
-        points_from_first_surface = interface_points[args_from_first_surface]
-        if verbose: print(points_from_first_surface)
-
-        # xarray.DataArray to pandas.DataFrame
-        surface_pandas = points_from_first_surface.to_pandas()
-
-        # Add formation column
-        surface_pandas["surface"] = surface_name
-        df = df.append(surface_pandas)
-
-    return df.reset_index()
-
+# ## Step-by-Step Model Building
+#
+# When building a geological model, it's often better to proceed step by step, adding one surface at a time, rather than trying to interpolate all formations at once. This allows for better control over the model and helps avoid potential issues from noisy or irregular data.
+#
 
 # %% md
 # ### Surfaces
 # 
-# GemPy is a surface based interpolator. This means that all the input data we add has to be refereed to a surface. The
-#  surfaces always mark the **bottom** of a unit. 
-#  
-# This is a list with the formations names for this data set.
-# %%
-elements
-# %% md
-# Lets add the first two (remember we always need a basement defined).
+# ### Adding Surfaces and Formations
+#
+# In GemPy, surfaces mark the bottom of each geological unit. For our model, we will add the first two formations along with the basement, which always needs to be defined. After this, we can visualize the surfaces in 2D.
+
 # %%
 group = gp.data.StructuralGroup(
     name="Stratigraphic Pile Top",
@@ -356,23 +377,21 @@ group = gp.data.StructuralGroup(
 geo_model.structural_frame.structural_groups[0] = group
 
 
-# %% md
-# And we can set them into the `gempy` model:
-# %%
-# %%
+# Visualize the surfaces in 2D
+
 g2d = gpv.plot_2d(geo_model)
 # %%
 g2d.fig
 # %% md
-# The **minimum amount of input data** to interpolate anything in `gempy` is:
-# 
-# a) 2 surface points per surface
-# 
-# b) One orientation per series.
-# 
-# Lets add an orientation:
-# %%
-# geo_model.add_orientations(X=300000, Y=3930000, Z=0, surface="topo", pole_vector=(0, 0, 1))
+# ### Minimum Input Data for Interpolation
+#
+# To interpolate the geological layers, GemPy requires at least:
+#
+# - Two surface points per geological unit
+# - One orientation measurement per series
+#
+# Let's add an orientation for one of the units.
+
 gp.add_orientations(
     x=[300000],
     y=[3930000],
@@ -383,41 +402,35 @@ gp.add_orientations(
 )
 
 # %% md
-# GemPy depends on multiple data objects to store all the data structures necessary
-# to construct an structural model. To keep all the necessary objects in sync the
-# class `gempy.ImplicitCoKriging` (which `geo_model` is instance of) will provide the
-# necessary methods to update these data structures coherently.
-# 
-# At current state (gempy 2.2), the data classes are:
-# 
-# - `gempy.SurfacePoints`
-# - `gempy.Orientations`
-# - `gempy.Surfaces`
-# - `gempy.Stack` (combination of `gempy.Series` and `gempy.Faults`)
-# - `gempy.Grid`
-# - `gempy.AdditionalData`
-# - `gempy.Solutions`
-# 
-# Today we will look into details only some of these classes but what is important
-# to notice is that you can access these objects as follows:
-# %%
+# ## Model Computation
+#
+# Now that we have the necessary surface points and orientations, we can compute the final geological model. The `compute_model` function will take all the input data and perform the interpolation to generate the 3D subsurface structure.
+
 geo_model.interpolation_options
 
 # %%
 gp.compute_model(geo_model)
 
-# %%
-g3d = gpv.plot_3d(geo_model,show_lith=False, show=False)
-# %%
+# %% md
+# ### Final 3D Visualization
+#
+# Let's take a look at the final model, combining the borehole data and geological formations in 3D.
+
+g3d = gpv.plot_3d(geo_model, show_lith=False, show=False)
 g3d.p.add_mesh(well_mesh)
-# %%
 g3d.p.show()
+
 
 # %% md
 # -----
-# 
-# ## Thank you for your attention
-# 
+# ## Conclusion
+#
+# In this tutorial, we have demonstrated how to take borehole data and create a 3D geological model in GemPy. We explored how to extract structural elements from borehole data, set up a regular grid for interpolation, and visualize the resulting model in both 2D and 3D.
+#
+# GemPy's flexibility allows you to iteratively build models and refine your inputs for more accurate results, and it integrates seamlessly with borehole data for subsurface geological modeling.
+#
+# For further reading and resources, check out:
+
 # 
 # #### Extra Resources
 # 
