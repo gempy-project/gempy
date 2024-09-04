@@ -18,7 +18,7 @@ from subsurface.modules.reader.wells.read_borehole_interface import read_collar,
 import subsurface as ss
 from subsurface.modules.visualization import to_pyvista_points, pv_plot, to_pyvista_line, init_plotter
 
-path_to_well_png = '../../common/basics/data/wells.png'
+path_to_well_png = '../../common/basics/data/boreholes_concept.png'
 path_to_checkpoint_1 = '../../common/basics/checkpoints/checkpoint1.pickle'
 path_to_checkpoint_2 = '../../common/basics/checkpoints/checkpoint2.pickle'
 upgrade_pickles = False
