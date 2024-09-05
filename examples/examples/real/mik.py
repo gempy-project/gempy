@@ -1,3 +1,8 @@
+"""
+Alesmodel: Plotting Sections and Maps
+======================================
+"""
+
 # %% md
 # <img src="https://docs.gempy.org/_static/logos/gempy.png" alt="drawing" width="400"/>
 #
