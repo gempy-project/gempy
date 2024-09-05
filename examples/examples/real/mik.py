@@ -1,25 +1,26 @@
 """
-Alesmodel: Plotting Sections and Maps
-======================================
+Unknown Model: Importing Borehole Data and Building a 3D Geological Model with GemPy
+====================================================================================
 """
 
-# %% md
-# <img src="https://docs.gempy.org/_static/logos/gempy.png" alt="drawing" width="400"/>
+# %%
+# In this section, we will explore how to take borehole or drillhole data and convert it into a format compatible with GemPy,
+# creating a 3D geological model. Borehole data is commonly collected in the mining, oil, and gas industries and contains 
+# information about subsurface geological formations, including lithologies, stratigraphy, and the geometry of layers or faults.
 #
-# # 2.2 From Drillhole Data to GemPy Model
-#
-# In this section, we will explore how to take borehole or drillhole data and convert it into a format compatible with GemPy, creating a 3D geological model. Borehole data is commonly collected in the mining, oil, and gas industries and contains information about subsurface geological formations, including lithologies, stratigraphy, and the geometry of layers or faults.
-#
-# For this, we will rely on several helper functions from the `subsurface` package to extract borehole data and translate it into a 3D structure that GemPy can use for modeling.
+# For this, we will rely on several helper functions from the `subsurface` package to extract borehole data and translate it 
+# into a 3D structure that GemPy can use for modeling.
 # We will cover:
 #
 # - Downloading the borehole data
 # - Processing the data using `subsurface`
 # - Visualizing borehole locations and lithology data in 3D
-
-# %%
-# ### Downloading Borehole Data
-# The borehole data is hosted online, and we can use the `pooch` library to download it directly. `pooch` is a library for fetching datasets from the internet. We will download a CSV file that contains the borehole information, including collar positions, survey data, and lithology logs.
+#
+# Downloading Borehole Data
+# """""""""""""""""""""""""
+# The borehole data is hosted online, and we can use the `pooch` library to download it directly. `pooch` is a library for 
+# fetching datasets from the internet. We will download a CSV file that contains the borehole information, including collar
+# positions, survey data, and lithology logs.
 #
 # Let's start by downloading the dataset and inspecting its content.
 
@@ -46,7 +47,6 @@ upgrade_pickles = False
 # Importing GemPy
 import gempy as gp
 
-#
 # %% md
 # We use `pooch` to download the dataset into a temp file:
 # %%
@@ -57,9 +57,11 @@ known_hash = "a91445cb960526398e25d8c1d2ab3b3a32f7d35feaf33e18887629b242256ab6"
 raw_borehole_data_csv = pooch.retrieve(url, known_hash)
 
 # %% md
-# Now we can use `subsurface` function to help us reading csv files into pandas dataframes that the package can understand. Since the combination of styles data is provided can highly vary from project to project, `subsurface` provides some *helpers* functions to parse different combination of .csv
-# %%
+# Now we can use `subsurface` function to help us reading csv files into pandas dataframes that the package can understand. 
+# Since the combination of styles data is provided can highly vary from project to project, `subsurface` provides some *helpers* 
+# functions to parse different combination of .csv
 
+# %%
 # Read the collar data from the CSV
 collar_df: pd.DataFrame = read_collar(
     GenericReaderFilesHelper(
@@ -86,18 +88,24 @@ collars: Collars = Collars(
 )
 
 # %%
-# ### Visualizing the Borehole Collars
-# Once we have the borehole collars data, we can visualize them in 3D using the `pyvista` package. This gives us a good overview of where the boreholes are located in space. In this visualization, each borehole will be represented by a point, and we will label the boreholes using their IDs.
+# Visualizing the Borehole Collars
+# """"""""""""""""""""""""""""""""
+# Once we have the borehole collars data, we can visualize them in 3D using the `pyvista` package. This gives us a good 
+# overview of where the boreholes are located in space. In this visualization, each borehole will be represented by a point, 
+# and we will label the boreholes using their IDs.
 well_mesh = to_pyvista_points(collars.collar_loc)
 
 # Plot the collar points
 pv_plot([well_mesh], image_2d=True)
 
 # %%
-# ### Reading Borehole Survey Data
-# Borehole surveys give us information about the trajectory of each borehole, including its depth (measured depth). The survey data allows us to compute the full 3D path of each wellbore. We will use the `read_survey` function from `subsurface` to read this data.
-# %%
+# Reading Borehole Survey Data
+# """"""""""""""""""""""""""""
+# Borehole surveys give us information about the trajectory of each borehole, including its depth (measured depth). 
+# The survey data allows us to compute the full 3D path of each wellbore. We will use the `read_survey` function from 
+# `subsurface` to read this data.
 
+# %%
 # Create the Survey object
 survey_df: pd.DataFrame = read_survey(
     GenericReaderFilesHelper(
@@ -112,8 +120,11 @@ survey: Survey = Survey.from_df(survey_df)
 survey
 
 # %%
-# ### Reading Lithology Data
-# Next, we will read the lithology data. Lithology logs describe the rock type or geological unit encountered at different depths within each borehole. Using `read_lith`, we will extract the lithology data, which includes the top and base depths of each geological formation within the borehole, as well as the formation name.
+# Reading Lithology Data
+# """"""""""""""""""""""
+# Next, we will read the lithology data. Lithology logs describe the rock type or geological unit encountered at different 
+# depths within each borehole. Using `read_lith`, we will extract the lithology data, which includes the top and base depths
+# of each geological formation within the borehole, as well as the formation name.
 
 # %%
 # Your code here:
@@ -134,10 +145,14 @@ survey.update_survey_with_lith(lith)
 
 lith
 # %%
-# ### Creating a Borehole Set and Visualizing in 3D
-# Now that we have both the collar data and the lithology logs, we can combine them into a `BoreholeSet` object. This object combines the collar, survey, and lithology data and allows us to create a 3D visualization of the borehole trajectories and their associated lithologies.
+# Creating a Borehole Set and Visualizing in 3D
+# """""""""""""""""""""""""""""""""""""""""""""
+# Now that we have both the collar data and the lithology logs, we can combine them into a `BoreholeSet` object. This object 
+# combines the collar, survey, and lithology data and allows us to create a 3D visualization of the borehole trajectories and
+# their associated lithologies.
 #
-# We will use `pyvista` to plot the borehole trajectories as lines, and we will color them according to their lithologies. Additionally, we will label the collars for easy identification.
+# We will use `pyvista` to plot the borehole trajectories as lines, and we will color them according to their lithologies. 
+# Additionally, we will label the collars for easy identification.
 
 # Combine collar and survey into a BoreholeSet
 borehole_set = BoreholeSet(
@@ -147,8 +162,9 @@ borehole_set = BoreholeSet(
 )
 
 # %%
-
 # Visualize boreholes with pyvista
+import matplotlib.pyplot as plt
+
 well_mesh = to_pyvista_line(
     line_set=borehole_set.combined_trajectory,
     active_scalar="lith_ids",
@@ -156,7 +172,6 @@ well_mesh = to_pyvista_line(
 )
 
 p = init_plotter()
-import matplotlib.pyplot as plt
 
 # Set colormap for lithologies
 boring_cmap = plt.get_cmap(name="viridis", lut=14)
@@ -174,25 +189,21 @@ p.add_point_labels(
     bold=True
 )
 
-# Show 3D plot or save a 2D image depending on the flag
-if plot3D := False:
-    p.show()
-else:
-    img = p.show(screenshot=True)
-    img = p.last_image
-    fig = plt.imshow(img)
-    plt.axis('off')
-    plt.show(block=False)
-    p.close()
+
+p.show()
 
 # %% md
-# ## Structural Elements from Borehole Set
+# Structural Elements from Borehole Set
+# """""""""""""""""""""""""""""""""""""
 #
-# Now that we have successfully imported and visualized the borehole data, we can move on to creating the geological formations (or structural elements) based on the borehole data. Each lithological unit will be associated with a unique identifier and a color, allowing us to distinguish between different formations when we visualize the model.
+# Now that we have successfully imported and visualized the borehole data, we can move on to creating the geological 
+# formations (or structural elements) based on the borehole data. Each lithological unit will be associated with a unique 
+# identifier and a color, allowing us to distinguish between different formations when we visualize the model.
 #
-# GemPy offers the function `gempy.structural_elements_from_borehole_set`, which extracts these structural elements from the borehole data and associates each one with a name, ID, and color.
-# %%
+# GemPy offers the function `gempy.structural_elements_from_borehole_set`, which extracts these structural elements from 
+# the borehole data and associates each one with a name, ID, and color.
 
+# %%
 # Initialize the color generator for formations
 colors_generator = gp.data.ColorsGenerator()
 
@@ -257,13 +268,16 @@ elements = gp.structural_elements_from_borehole_set(
 
 
 # %% md
-# ## Initializing the GemPy Model
+# Initializing the GemPy Model
+# """"""""""""""""""""""""""""
+# After defining the geological formations, we need to initialize the GemPy model. The first step in this process is to 
+# create a `GeoModel` object, which serves as the core container for all data related to the geological model.
 #
-# After defining the geological formations, we need to initialize the GemPy model. The first step in this process is to create a `GeoModel` object, which serves as the core container for all data related to the geological model.
+# We will also define a **regular grid** to interpolate the geological layers. GemPy uses a meshless interpolator to 
+# create geological models in 3D space, but grids are convenient for visualization and computation.
 #
-# We will also define a **regular grid** to interpolate the geological layers. GemPy uses a meshless interpolator to create geological models in 3D space, but grids are convenient for visualization and computation.
-#
-# GemPy supports various grid types, such as regular grids for visualization, custom grids, topographic grids, and more. For this example, we will use a regular grid with a medium resolution.
+# GemPy supports various grid types, such as regular grids for visualization, custom grids, topographic grids, and more.
+# For this example, we will use a regular grid with a medium resolution.
 
 # %%
 import gempy_viewer as gpv
@@ -274,6 +288,7 @@ group = gp.data.StructuralGroup(
     elements=elements,
     structural_relation=gp.data.StackRelationType.ERODE
 )
+
 # Define the structural frame
 structural_frame = gp.data.StructuralFrame(
     structural_groups=[group],
@@ -281,9 +296,11 @@ structural_frame = gp.data.StructuralFrame(
 )
 
 # %% md
-# ### Defining Model Extent and Grid Resolution
-#
-# We now determine the extent of our model based on the surface points provided. This ensures that the grid covers the entire area where the geological data points are located. Additionally, we set a grid resolution of 50x50x50 for a balance between performance and model detail.
+# Defining Model Extent and Grid Resolution
+# """""""""""""""""""""""""""""""""""""""""
+# We now determine the extent of our model based on the surface points provided. This ensures that the grid covers the
+# entire area where the geological data points are located. Additionally, we set a grid resolution of 50x50x50 for a 
+# balance between performance and model detail.
 
 all_surface_points_coords: gp.data.SurfacePointsTable = structural_frame.surface_points_copy
 extent_from_data = all_surface_points_coords.xyz.min(axis=0), all_surface_points_coords.xyz.max(axis=0)
@@ -304,9 +321,10 @@ geo_model = gp.data.GeoModel(
 )
 
 # %% md
-# ### 3D Visualization of the Model
-#
-# After initializing the GeoModel, we can proceed to visualize it in 3D using GemPy's `plot_3d` function. This function allows us to see the full 3D geological model with all the defined formations.
+# 3D Visualization of the Model
+# """""""""""""""""""""""""""""
+# After initializing the GeoModel, we can proceed to visualize it in 3D using GemPy's `plot_3d` function. This function 
+# allows us to see the full 3D geological model with all the defined formations.
 
 gempy_plot = gpv.plot_3d(
     model=geo_model,
@@ -319,9 +337,10 @@ gempy_plot = gpv.plot_3d(
 )
 
 # %% md
-# ### Adding Boreholes and Collars to the Visualization
-#
-# To enhance the 3D model, we can combine the geological formations with the borehole trajectories and collar points that we visualized earlier. This will give us a complete picture of the subsurface, showing both the lithological units and the borehole paths.
+# Adding Boreholes and Collars to the Visualization
+# """""""""""""""""""""""""""""""""""""""""""""""""
+# To enhance the 3D model, we can combine the geological formations with the borehole trajectories and collar points that we
+# visualized earlier. This will give us a complete picture of the subsurface, showing both the lithological units and the borehole paths.
 
 sp_mesh: pyvista.PolyData = gempy_plot.surface_points_mesh
 
@@ -361,17 +380,20 @@ pyvista_plotter.show()
 
 
 # %% md
-# ## Step-by-Step Model Building
-#
-# When building a geological model, it's often better to proceed step by step, adding one surface at a time, rather than trying to interpolate all formations at once. This allows for better control over the model and helps avoid potential issues from noisy or irregular data.
+# Step-by-Step Model Building
+# """""""""""""""""""""""""""
+# When building a geological model, it's often better to proceed step by step, adding one surface at a time, rather
+# than trying to interpolate all formations at once. This allows for better control over the model and helps avoid 
+# potential issues from noisy or irregular data.
 #
 
 # %% md
-# ### Surfaces
-# 
-# ### Adding Surfaces and Formations
-#
-# In GemPy, surfaces mark the bottom of each geological unit. For our model, we will add the first two formations along with the basement, which always needs to be defined. After this, we can visualize the surfaces in 2D.
+# Surfaces
+# """"""""
+# Adding Surfaces and Formations
+# """""""""""""""""""""""""""""
+# In GemPy, surfaces mark the bottom of each geological unit. For our model, we will add the first two formations 
+# along with the basement, which always needs to be defined. After this, we can visualize the surfaces in 2D.
 
 # %%
 group = gp.data.StructuralGroup(
@@ -409,7 +431,8 @@ gp.add_orientations(
 # %% md
 # ## Model Computation
 #
-# Now that we have the necessary surface points and orientations, we can compute the final geological model. The `compute_model` function will take all the input data and perform the interpolation to generate the 3D subsurface structure.
+# Now that we have the necessary surface points and orientations, we can compute the final geological model. The 
+# `compute_model` function will take all the input data and perform the interpolation to generate the 3D subsurface structure.
 
 geo_model.interpolation_options
 
@@ -430,9 +453,12 @@ g3d.p.show()
 # -----
 # ## Conclusion
 #
-# In this tutorial, we have demonstrated how to take borehole data and create a 3D geological model in GemPy. We explored how to extract structural elements from borehole data, set up a regular grid for interpolation, and visualize the resulting model in both 2D and 3D.
+# In this tutorial, we have demonstrated how to take borehole data and create a 3D geological model in GemPy. We explored 
+# how to extract structural elements from borehole data, set up a regular grid for interpolation, and visualize the 
+# resulting model in both 2D and 3D.
 #
-# GemPy's flexibility allows you to iteratively build models and refine your inputs for more accurate results, and it integrates seamlessly with borehole data for subsurface geological modeling.
+# GemPy's flexibility allows you to iteratively build models and refine your inputs for more accurate results, and it
+# integrates seamlessly with borehole data for subsurface geological modeling.
 #
 # For further reading and resources, check out:
 

@@ -3,12 +3,13 @@ Getting Started
 ===============
 
 """
+
 # %%
 # Welcome to our introductory notebook on GemPy! Here, we will cover the essentials of GemPy, introducing you to the core concepts of
 # geomodeling and demonstrating how you can leverage these to create your own geological models. We will guide you through building a
 # model from scratch, based on a conceptual 2D cross-section with boreholes. This simple example will highlight key workflow steps 
 # and structural features that GemPy can model.
-
+#
 # Installation
 # """"""""""""
 # 
@@ -35,6 +36,8 @@ import gempy_viewer as gpv
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
+
+# sphinx_gallery_thumbnail_number = 11
 
 # %% md
 # Main Classes and Objects in GemPy
@@ -75,20 +78,25 @@ img.shape[:2]
 # This object will contain all other data structures and necessary functionality. Here’s what we will do:
 # 
 # 1. **Name the Model**: Assign a name to our model.
+#
 # 2. **Define Extent**: Specify the extent in x, y, and z. The extent should make sense depending on your use case and should enclose all 
-# relevant data in a representative space. For this example, we align the extent with the cross-section we imported:
+#    relevant data in a representative space. For this example, we align the extent with the cross-section we imported:
+#
 #     - **X** is parallel to the section.
-#     - **Y** is perpendicular. Since we have no data along y, a narrow extent makes sense. We choose an extent of 400, defining it as 
-#      -200 to 200, placing the cross-section at y=0 (in the middle).
-#     - **Z**, representing depth, takes a negative value since we are modeling the subsurface.
+#     - **Y** is perpendicular. Since we have no data along y, a narrow extent makes sense. We choose an extent of 400, defining it as -200 to 200, 
+#       placing the cross-section at y=0 (in the middle).
+#     - **Z** representing depth, takes a negative value since we are modeling the subsurface.
+#
 # 3. **Initialize Structural Framework**: Set up a default structural framework.
+#
 # 4. **Define either resolution or refinement**: In GemPy 3, you can use either regular grids or octrees.
 #     - **Regular grids**: Define a resolution (and refinement=None). A medium resolution of 50x50x50, for example, results in 125,000 voxels.
-#     Model voxels are prisms, not cubes, so resolution can differ from extent. Avoid exceeding 100 cells in each direction (1,000,000 voxels)
-#     to prevent high computational costs.
+#       Model voxels are prisms, not cubes, so resolution can differ from extent. Avoid exceeding 100 cells in each direction (1,000,000 voxels)
+#       to prevent high computational costs.
 #     - **Octrees**: Define a level of refinement (and resolution=None). Higher refinement levels increase computational costs.
-
+#
 # .. admonition:: Note on choice of modeling grids 
+#
 #    Which type of grid is used depends on the use case. Note that as of the current version of GemPy 3, 
 #    the rendering of surfaces uses dual-contouring, which is based on octrees. So even if you choose regular grids, octree-based computing will
 #    be executed additionally in order to render the surfaces in 3D.

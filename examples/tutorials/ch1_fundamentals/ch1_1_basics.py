@@ -70,8 +70,8 @@ geo_model: gp.data.GeoModel = gp.create_geomodel(
 #
 #
 #
-# ### Reviewing the Imported Data
-#
+# Reviewing the Imported Data
+# """""""""""""""""""""""""""
 # Now that the `geo_model` object is set up and the data imported from the CSV files, we review the data imported using the properties `surface_points_copy` and `orientations_copy`.
 #
 # Using `structural_frame.element_id_name_map`, we can see which ID corresponds to which structural element name in the data.
@@ -113,7 +113,8 @@ geo_model.orientations_copy
 # By default, we create a simple sequence inferred from the data:
 #
 #
-# ## Setting Up the Structural Framework
+# Setting Up the Structural Framework
+# """""""""""""""""""""""""""""""""""
 #
 # Each data entry includes an ID that corresponds to a formation name, which GemPy uses to create a base structural framework.
 # However, the sequence of these formations is still arbitrary, as they have all automatically been assigned to the default
@@ -133,9 +134,9 @@ geo_model.structural_frame
 # series, the formations however have to be referred to as named in the
 # input data. 
 # 
-
-# ### Declaring the Sequential Order of Structural Elements (Geological Formations)
 #
+# Declaring the Sequential Order of Structural Elements (Geological Formations)
+# """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 # In our model, we want the geological units to appear in the correct chronological order. This order could be determined by a sequence
 # of stratigraphic deposition, unconformities due to erosion, or other lithological genesis events like igneous intrusions. A similar
 # age-related order is declared for faults in our model. In GemPy, we use the function `gempy.map_stack_to_surfaces` to assign formations
@@ -207,7 +208,7 @@ geo_model.grid
 # 
 # Since we have already imported our input data, we can go ahead and visualize it in 2D and 3D. This can be useful to check if all points
 # and orientations are defined the way we want them to be. Using the function `gempy_viewer.plot2d`, we obtain a 2D projection of our
-# data points onto a plane of the chosen *direction* (we can choose this attribute to be either $x$, $y$ or $z$, with the default being $y$).
+# data points onto a plane of the chosen *direction* (we can choose this attribute to be either x, y or z, with the default being y).
 # Below, we can freely switch the direction and check out the projection from different sides to get a good idea.
 
 
@@ -215,7 +216,7 @@ geo_model.grid
 plot = gpv.plot_2d(geo_model, show_lith=False, show_boundaries=False)
 
 # %%
- #Beyond 2D, however, we can also visualize our input data in full 3D using `gempy_viewer.plot_3d`. Note that direct 3D visualization
+# Beyond 2D, however, we can also visualize our input data in full 3D using `gempy_viewer.plot_3d`. Note that direct 3D visualization
 # in GemPy requires [the Visualization Toolkit](https://www.vtk.org/) (VTK) to be installed.
 
 
