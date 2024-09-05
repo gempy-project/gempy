@@ -8,6 +8,7 @@ Getting Started
 # geomodeling and demonstrating how you can leverage these to create your own geological models. We will guide you through building a
 # model from scratch, based on a conceptual 2D cross-section with boreholes. This simple example will highlight key workflow steps 
 # and structural features that GemPy can model.
+
 # Installation
 # """"""""""""
 # 
@@ -78,7 +79,7 @@ img.shape[:2]
 # relevant data in a representative space. For this example, we align the extent with the cross-section we imported:
 #     - **X** is parallel to the section.
 #     - **Y** is perpendicular. Since we have no data along y, a narrow extent makes sense. We choose an extent of 400, defining it as 
-#     -200 to 200, placing the cross-section at y=0 (in the middle).
+#      -200 to 200, placing the cross-section at y=0 (in the middle).
 #     - **Z**, representing depth, takes a negative value since we are modeling the subsurface.
 # 3. **Initialize Structural Framework**: Set up a default structural framework.
 # 4. **Define either resolution or refinement**: In GemPy 3, you can use either regular grids or octrees.
@@ -86,10 +87,11 @@ img.shape[:2]
 #     Model voxels are prisms, not cubes, so resolution can differ from extent. Avoid exceeding 100 cells in each direction (1,000,000 voxels)
 #     to prevent high computational costs.
 #     - **Octrees**: Define a level of refinement (and resolution=None). Higher refinement levels increase computational costs.
-# 
-# > **Note on choice of modeling grids:** Which type of grid is used depends on the use case. Note that as of the current version of GemPy 3, 
-# the rendering of surfaces uses dual-contouring, which is based on octrees. So even if you choose regular grids, octree-based computing will
-# be executed additionally in order to render the surfaces in 3D.
+
+# .. admonition:: Note on choice of modeling grids 
+#    Which type of grid is used depends on the use case. Note that as of the current version of GemPy 3, 
+#    the rendering of surfaces uses dual-contouring, which is based on octrees. So even if you choose regular grids, octree-based computing will
+#    be executed additionally in order to render the surfaces in 3D.
 
 # %%
 geo_model = gp.create_geomodel(
@@ -106,8 +108,10 @@ geo_model = gp.create_geomodel(
 # such as the parameters defined above,
 # and the input data we will introduce further below. You can access different types of information by accessing the attributes. For instance, you
 # can retrieve the coordinates of our modeling grid as follows:
+
 # %%
 geo_model.grid
+
 # %% md
 # The `geo_model` object also contains the structural frame of our model, i.e., information about our main structural groups (also referred to as
 # series or stacks in our model), and their sequential and geological relationships with one another. Each group can contain several elements,
@@ -230,8 +234,9 @@ plt.show()
 # """"""""""""""""""""""""""""""""""
 # Ok, good! Now we have added the position of the bottom of this top layer for each borehole. But is this enough to compute our first layer? 
 # Well, no. GemPy's approach is based on an implicit interpolation method that requires the following minimum data:
-# - **Two surface points** for at least one surface in a structural group/series
-# - **One orientation** per structural group/series
+#
+#  - **Two surface points** for at least one surface in a structural group/series
+#  - **One orientation** per structural group/series
 # 
 # Thanks to GemPy's global interpolation approach, once you have one surface defined by two surface points and an orientation in a structural 
 # group, you can add more surfaces (in the same group) with the minimum of one surface point, as it will now take its orientation information
@@ -336,8 +341,8 @@ p2d = gpv.plot_2d(
 plt.show()
 
 # %% md
-# ## Adding a Second Lithological Unit
-# 
+# Adding a Second Lithological Unit
+# """""""""""""""""""""""""""""""""
 # To add another unit to our model, we can define it as another structural element and then append it to our `geo_model` object. We do this
 # for the second unit in the following steps. See how we can already give it a name (let's assume this is a siltstone now), a color corresponding 
 # to the dot colors in the cross-section, as well as define surface points and orientations. By appending it to `structural_groups[0]`, we are
@@ -527,6 +532,7 @@ plt.show()
 # defines how a younger (upper) structural group will relate to the older (lower) structural groups and possibly affect their scalar field.
 # 
 # The parameter `StackRelationType` can take the following values:
+#
 # - `BASEMENT`: Treats all lower groups as the basement.
 # - `ERODE`: Defines erosive contact/unconformity.
 # - `ONLAP`: Defines the younger group to be onlapping onto the older groups.
@@ -535,8 +541,8 @@ plt.show()
 # We will now take a look at each of these relation types except for the basement type.
 
 # %% md
-# ### Erosive Contact
-# 
+# Erosive Contact
+# """""""""""""""
 # For this, we don't have to change anything now, as we already set the `StackRelationType` to be `ERODE`. If we now plot it, we will see 
 # how this younger structural group erodes all older elements and basically "cuts them out" in our model.
 
@@ -562,8 +568,8 @@ gpv.plot_3d(geo_model, show_surfaces=True, image=False, show_lith=False)
 # We can see how all units of the depositional series stop at the contact with the new discontinuity group. However, this doesn't look 
 # quite right, and it in particular doesn't fit the surface point that was observed in the third borehole. So let's try another relation type.
 # 
-# ## Onlapping
-# 
+# Onlapping
+# """""""""
 # Let's change the relation type from `ERODE` to `ONLAP` to achieve a different type of discontinuity and then plot it.
 
 # %%
@@ -594,8 +600,8 @@ gpv.plot_3d(geo_model, show_surfaces=True, image=False, show_lith=False)
 # Now the unit defined as part of the discontinuity group is onlapping onto the uppermost surface of the default group and ends there. 
 # This also doesn't really make sense considering the data given, so let's try the last relation type.
 # 
-# ## Faults
-# 
+# Faults
+# """"""
 # Let's change the relation type to `FAULT` and plot the results. For a fault, we also need to make use of the function `set_is_fault`.
 
 # %%
@@ -652,8 +658,8 @@ p2d = gpv.plot_2d(
 plt.show()
 
 # %% md
-# ## Topography and Geological Maps
-# 
+# Topography and Geological Maps
+# """"""""""""""""""""""""""""""
 # In GemPy, we can add more grid types for different purposes, such as to add topography to our model. In this following section,
 # we will exemplify this by creating a random topography grid which allows us to intersect the surfaces as well as compute a high-resolution
 # geological map. GemPy has a built-in function to generate random topography. After executing it, a topography grid will be added to the 
@@ -697,8 +703,8 @@ gpv.plot_3d(geo_model, show_surfaces=True, image=False, show_topography=True)
 # `set_topography_from_file` and `set_topography_from_arrays`.
 
 # %% md
-# ## Extracting Model Solutions
-# 
+# Extracting Model Solutions
+# """"""""""""""""""""""""""
 # Once you have built a model, you might not only want to visualize it, but also further analyze it or export it for further utilization. 
 # For this, it is good to know that the solutions from modeling are stored in `geo_model.solutions` and can be returned from there. This
 # includes the following outputs in particular:
@@ -706,8 +712,8 @@ gpv.plot_3d(geo_model, show_surfaces=True, image=False, show_topography=True)
 # - `geo_model.solutions.raw_arrays`: An object containing numerous arrays that define various parts of the model. Of particular importance
 # are the lithology block (`lith_block`), the fault block (`fault_block`), and the scalar field matrix (`scalar_field_matrix`).
 # 
-# ### Mesh Solutions
-# 
+# Mesh Solutions
+# """"""""""""""
 # Let's take a quick look at how we can return some key information from `geo_model.solutions`. Starting with meshes, we can see that the list 
 # `dc_meshes` can be indexed to return specific meshes and their respective vertices or edges. Please note that the order will be the same as 
 # in our `structural_frame`, i.e., the index `[0]` will return the first and top surface, in our case, the discontinuity surface.
@@ -726,8 +732,8 @@ print(type(vertices_0), vertices_0, edges_0)
 geo_model.input_transform.apply_inverse(vertices_0)
 
 # %% md
-# ### Lithology Block
-# 
+# Lithology Block
+# """""""""""""""
 # The lithology block is an array that, for a given model realization/solution, returns the ID of the lithology for each voxel. Note below
 # that the `lith_block` first returns all values in the shape of one row. You might need to reshape it as shown below. For a regular grid,
 # you can reshape it using the resolution used in `geo_model`.
@@ -742,8 +748,8 @@ lith_block = lith_block.reshape(50, 50, 50)
 print(lith_block.shape, lith_block)
 
 # %% md
-# ### Grid Values
-# 
+# Grid Values
+# """""""""""
 # Apart from these solutions, you might also need to return grid values. You can access the values for each grid in your `geo_model` 
 # object via `geo_model.grid` as shown below.
 # %%
