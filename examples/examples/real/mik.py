@@ -389,7 +389,7 @@ pyvista_plotter.show()
 
 # %% md
 # Adding Surfaces and Formations
-# """""""""""""""""""""""""""""
+# """"""""""""""""""""""""""""""
 # In GemPy, surfaces mark the bottom of each geological unit. For our model, we will add the first two formations 
 # along with the basement, which always needs to be defined. After this, we can visualize the surfaces in 2D.
 
