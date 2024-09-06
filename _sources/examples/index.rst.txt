@@ -284,6 +284,23 @@ These models are built with real data
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="Unknown Model: Importing Borehole Data and Building a 3D Geological Model with GemPy">
+
+.. only:: html
+
+  .. image:: /examples/real/images/thumb/sphx_glr_mik_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_real_mik.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Unknown Model: Importing Borehole Data and Building a 3D Geological Model with GemPy</div>
+    </div>
+
+
+.. raw:: html
+
     </div>
 
 

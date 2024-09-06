@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**06:33.545** total execution time for 8 files **from tutorials/ch1_fundamentals**:
+**01:40.737** total execution time for 8 files **from tutorials/ch1_fundamentals**:
 
 .. container::
 
@@ -32,27 +32,27 @@ Computation times
    * - Example
      - Time
      - Mem (MB)
-   * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_5_fault_relations.py` (``ch1_5_fault_relations.py``)
-     - 03:26.504
-     - 0.0
-   * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_7_3d_visualization.py` (``ch1_7_3d_visualization.py``)
-     - 02:33.243
-     - 0.0
    * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_1_basics.py` (``ch1_1_basics.py``)
-     - 00:11.597
-     - 0.0
-   * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_4_onlap_relations.py` (``ch1_4_onlap_relations.py``)
-     - 00:08.282
-     - 0.0
-   * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_3c_topography.py` (``ch1_3c_topography.py``)
-     - 00:06.787
-     - 0.0
-   * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_3b_cross_sections.py` (``ch1_3b_cross_sections.py``)
-     - 00:04.242
-     - 0.0
-   * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_6_2d_visualization.py` (``ch1_6_2d_visualization.py``)
-     - 00:02.807
+     - 01:40.737
      - 0.0
    * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_3a_grids.py` (``ch1_3a_grids.py``)
-     - 00:00.083
+     - 00:00.000
+     - 0.0
+   * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_3b_cross_sections.py` (``ch1_3b_cross_sections.py``)
+     - 00:00.000
+     - 0.0
+   * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_3c_topography.py` (``ch1_3c_topography.py``)
+     - 00:00.000
+     - 0.0
+   * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_4_onlap_relations.py` (``ch1_4_onlap_relations.py``)
+     - 00:00.000
+     - 0.0
+   * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_5_fault_relations.py` (``ch1_5_fault_relations.py``)
+     - 00:00.000
+     - 0.0
+   * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_6_2d_visualization.py` (``ch1_6_2d_visualization.py``)
+     - 00:00.000
+     - 0.0
+   * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_7_3d_visualization.py` (``ch1_7_3d_visualization.py``)
+     - 00:00.000
      - 0.0

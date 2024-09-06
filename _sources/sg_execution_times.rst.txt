@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**00:55.676** total execution time for 28 files **from all galleries**:
+**00:11.808** total execution time for 29 files **from all galleries**:
 
 .. container::
 
@@ -32,8 +32,8 @@ Computation times
    * - Example
      - Time
      - Mem (MB)
-   * - :ref:`sphx_glr_examples_real_Perth_basin.py` (``../../examples/examples/real/Perth_basin.py``)
-     - 00:55.676
+   * - :ref:`sphx_glr_examples_real_mik.py` (``../../examples/examples/real/mik.py``)
+     - 00:11.808
      - 0.0
    * - :ref:`sphx_glr_examples_geometries_a01_horizontal_stratigraphic.py` (``../../examples/examples/geometries/a01_horizontal_stratigraphic.py``)
      - 00:00.000
@@ -72,6 +72,9 @@ Computation times
      - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_examples_real_Moureze.py` (``../../examples/examples/real/Moureze.py``)
+     - 00:00.000
+     - 0.0
+   * - :ref:`sphx_glr_examples_real_Perth_basin.py` (``../../examples/examples/real/Perth_basin.py``)
      - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_tutorials_a_getting_started_get_started.py` (``../../examples/tutorials/a_getting_started/get_started.py``)

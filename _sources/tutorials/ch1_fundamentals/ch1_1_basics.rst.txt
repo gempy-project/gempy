@@ -98,7 +98,7 @@ computational costs.
     geo_model: gp.data.GeoModel = gp.create_geomodel(
         project_name='Tutorial_ch1_1_Basics',
         extent=[0, 2000, 0, 2000, 0, 750],
-        refinement=4,  # * Here we define the number of octree levels. If octree levels are defined, the resolution is ignored.
+        refinement=6,  # * Here we define the number of octree levels. If octree levels are defined, the resolution is ignored.
         importer_helper=gp.data.ImporterHelper(
             path_to_orientations=data_path + "/data/input_data/getting_started/simple_fault_model_orientations.csv",
             path_to_surface_points=data_path + "/data/input_data/getting_started/simple_fault_model_points.csv",
@@ -121,7 +121,7 @@ computational costs.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 65-72
+.. GENERATED FROM PYTHON SOURCE LINES 65-78
 
 .. admonition:: New in GemPy 3! 
 
@@ -131,22 +131,13 @@ computational costs.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 72-76
+Reviewing the Imported Data
+"""""""""""""""""""""""""""
+Now that the `geo_model` object is set up and the data imported from the CSV files, we review the data imported using the properties `surface_points_copy` and `orientations_copy`.
 
-.. code-block:: Python
+Using `structural_frame.element_id_name_map`, we can see which ID corresponds to which structural element name in the data.
 
-
-    # The input data can be reviewed using the properties `surface_points` and `orientations`. However, note that at this point,
-    # the sequence of formations and their assignment to series are still arbitrary. We will rectify this in the subsequent steps.
-
-
-
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 77-79
+.. GENERATED FROM PYTHON SOURCE LINES 81-83
 
 .. code-block:: Python
 
@@ -160,12 +151,12 @@ computational costs.
 .. raw:: html
 
     <div class="output_subarea output_html rendered_html output_result">
-    <table><tr><th>X</th><th>Y</th><th>Z</th><th>id</th><th>nugget</th></tr><tr><td>700.00</td><td>1000.00</td><td>300.00</td><td>63233618</td><td>0.00</td></tr><tr><td>600.00</td><td>1000.00</td><td>200.00</td><td>63233618</td><td>0.00</td></tr><tr><td>500.00</td><td>1000.00</td><td>100.00</td><td>63233618</td><td>0.00</td></tr><tr><td>1000.00</td><td>1000.00</td><td>600.00</td><td>63233618</td><td>0.00</td></tr><tr><td>1100.00</td><td>1000.00</td><td>700.00</td><td>63233618</td><td>0.00</td></tr><tr><td>1000.00</td><td>50.00</td><td>350.00</td><td>157235212</td><td>0.00</td></tr><tr><td>1000.00</td><td>150.00</td><td>333.33</td><td>157235212</td><td>0.00</td></tr><tr><td>1000.00</td><td>300.00</td><td>333.33</td><td>157235212</td><td>0.00</td></tr><tr><td>1000.00</td><td>500.00</td><td>366.67</td><td>157235212</td><td>0.00</td></tr><tr><td>1000.00</td><td>1000.00</td><td>433.33</td><td>157235212</td><td>0.00</td></tr><tr><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td></tr><tr><td>1100.00</td><td>1700.00</td><td>473.33</td><td>420948554</td><td>0.00</td></tr><tr><td>1100.00</td><td>1950.00</td><td>490.00</td><td>420948554</td><td>0.00</td></tr><tr><td>0.00</td><td>1000.00</td><td>433.33</td><td>420948554</td><td>0.00</td></tr><tr><td>300.00</td><td>1000.00</td><td>400.00</td><td>420948554</td><td>0.00</td></tr><tr><td>600.00</td><td>1000.00</td><td>366.67</td><td>420948554</td><td>0.00</td></tr><tr><td>1300.00</td><td>1000.00</td><td>566.67</td><td>420948554</td><td>0.00</td></tr><tr><td>1600.00</td><td>1000.00</td><td>550.00</td><td>420948554</td><td>0.00</td></tr><tr><td>1900.00</td><td>1000.00</td><td>566.67</td><td>420948554</td><td>0.00</td></tr><tr><td>1700.00</td><td>500.00</td><td>533.33</td><td>420948554</td><td>0.00</td></tr><tr><td>1700.00</td><td>1500.00</td><td>516.67</td><td>420948554</td><td>0.00</td></tr></table>
+    <table><tr><th>X</th><th>Y</th><th>Z</th><th>id</th><th>nugget</th></tr><tr><td>700.00</td><td>1000.00</td><td>300.00</td><td>17548937</td><td>0.00</td></tr><tr><td>600.00</td><td>1000.00</td><td>200.00</td><td>17548937</td><td>0.00</td></tr><tr><td>500.00</td><td>1000.00</td><td>100.00</td><td>17548937</td><td>0.00</td></tr><tr><td>1000.00</td><td>1000.00</td><td>600.00</td><td>17548937</td><td>0.00</td></tr><tr><td>1100.00</td><td>1000.00</td><td>700.00</td><td>17548937</td><td>0.00</td></tr><tr><td>1000.00</td><td>50.00</td><td>350.00</td><td>190518574</td><td>0.00</td></tr><tr><td>1000.00</td><td>150.00</td><td>333.33</td><td>190518574</td><td>0.00</td></tr><tr><td>1000.00</td><td>300.00</td><td>333.33</td><td>190518574</td><td>0.00</td></tr><tr><td>1000.00</td><td>500.00</td><td>366.67</td><td>190518574</td><td>0.00</td></tr><tr><td>1000.00</td><td>1000.00</td><td>433.33</td><td>190518574</td><td>0.00</td></tr><tr><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td></tr><tr><td>1100.00</td><td>1700.00</td><td>473.33</td><td>496622659</td><td>0.00</td></tr><tr><td>1100.00</td><td>1950.00</td><td>490.00</td><td>496622659</td><td>0.00</td></tr><tr><td>0.00</td><td>1000.00</td><td>433.33</td><td>496622659</td><td>0.00</td></tr><tr><td>300.00</td><td>1000.00</td><td>400.00</td><td>496622659</td><td>0.00</td></tr><tr><td>600.00</td><td>1000.00</td><td>366.67</td><td>496622659</td><td>0.00</td></tr><tr><td>1300.00</td><td>1000.00</td><td>566.67</td><td>496622659</td><td>0.00</td></tr><tr><td>1600.00</td><td>1000.00</td><td>550.00</td><td>496622659</td><td>0.00</td></tr><tr><td>1900.00</td><td>1000.00</td><td>566.67</td><td>496622659</td><td>0.00</td></tr><tr><td>1700.00</td><td>500.00</td><td>533.33</td><td>496622659</td><td>0.00</td></tr><tr><td>1700.00</td><td>1500.00</td><td>516.67</td><td>496622659</td><td>0.00</td></tr></table>
     </div>
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 80-82
+.. GENERATED FROM PYTHON SOURCE LINES 84-86
 
 .. code-block:: Python
 
@@ -179,12 +170,12 @@ computational costs.
 .. raw:: html
 
     <div class="output_subarea output_html rendered_html output_result">
-    <table><tr><th>X</th><th>Y</th><th>Z</th><th>G_x</th><th>G_y</th><th>G_z</th><th>id</th><th>nugget</th></tr><tr><td>500.00</td><td>1000.00</td><td>300.00</td><td>-0.95</td><td>-0.00</td><td>0.32</td><td>63233618</td><td>0.01</td></tr><tr><td>400.00</td><td>1000.00</td><td>420.00</td><td>0.32</td><td>0.00</td><td>0.95</td><td>207102340</td><td>0.01</td></tr><tr><td>1000.00</td><td>1000.00</td><td>300.00</td><td>0.32</td><td>0.00</td><td>0.95</td><td>337096935</td><td>0.01</td></tr></table>
+    <table><tr><th>X</th><th>Y</th><th>Z</th><th>G_x</th><th>G_y</th><th>G_z</th><th>id</th><th>nugget</th></tr><tr><td>500.00</td><td>1000.00</td><td>300.00</td><td>-0.95</td><td>-0.00</td><td>0.32</td><td>17548937</td><td>0.01</td></tr><tr><td>400.00</td><td>1000.00</td><td>420.00</td><td>0.32</td><td>0.00</td><td>0.95</td><td>247354358</td><td>0.01</td></tr><tr><td>1000.00</td><td>1000.00</td><td>300.00</td><td>0.32</td><td>0.00</td><td>0.95</td><td>330637224</td><td>0.01</td></tr></table>
     </div>
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 83-111
+.. GENERATED FROM PYTHON SOURCE LINES 87-122
 
 Declaring the Sequential Order of Geological Formations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -215,7 +206,14 @@ unconformity or an intrusion that disrupts older stratigraphy would require decl
 By default, we create a simple sequence inferred from the data:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 113-115
+Setting Up the Structural Framework
+"""""""""""""""""""""""""""""""""""
+
+Each data entry includes an ID that corresponds to a formation name, which GemPy uses to create a base structural framework.
+However, the sequence of these formations is still arbitrary, as they have all automatically been assigned to the default
+structural group in our `geo_model` object. We will fix this in the subsequent steps.
+
+.. GENERATED FROM PYTHON SOURCE LINES 124-126
 
 .. code-block:: Python
 
@@ -279,7 +277,7 @@ By default, we create a simple sequence inferred from the data:
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 116-126
+.. GENERATED FROM PYTHON SOURCE LINES 127-144
 
 Our example model comprises four main layers (plus an underlying
 basement that is automatically generated by GemPy) and one main normal
@@ -292,7 +290,49 @@ series, the formations however have to be referred to as named in the
 input data. 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 129-140
+Declaring the Sequential Order of Structural Elements (Geological Formations)
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+In our model, we want the geological units to appear in the correct chronological order. This order could be determined by a sequence
+of stratigraphic deposition, unconformities due to erosion, or other lithological genesis events like igneous intrusions. A similar
+age-related order is declared for faults in our model. In GemPy, we use the function `gempy.map_stack_to_surfaces` to assign formations
+or faults to different sequential series by declaring them in a Python dictionary.
+
+.. GENERATED FROM PYTHON SOURCE LINES 144-168
+
+.. code-block:: Python
+
+
+    #
+    # The correct ordering of series is crucial for model construction! It's possible to assign several surfaces to one series. The order of
+    # units within a series only affects the color code, so we recommend maintaining consistency. The order can be defined by simply changing
+    # the order of the lists within the `gempy.core.data.StructuralFrame.structural_groups` and `gempy.core.data.StructuralGroups.elements` attributes.
+    #
+    # Faults are treated as independent groups and must be younger than the groups they affect. The relative order between different faults
+    # defines their tectonic relationship (the first entry is the youngest).
+    #
+    # For a model with simple sequential stratigraphy, all layer formations can be assigned to one series without an issue. All unit
+    # boundaries and their order would then be determined by interface points. However, to model more complex lithostratigraphical
+    # relations and interactions, separate series definitions become important. For example, modeling an unconformity or an intrusion
+    # that disrupts older stratigraphy would require declaring a younger series.
+    #
+    # By default, a simple sequence/group is created inferred from the data as shown above.
+    #
+    # Our example model comprises four main layers (plus an underlying basement that is automatically generated by GemPy) and one main
+    # normal fault displacing those layers. Assuming a simple stratigraphy where each younger unit was deposited onto the underlying
+    # older one, we can assign these layer formations to one structural group called "Strat_Series". For the fault, we declare a
+    # respective "Fault_Series" as the first key entry in the mapping dictionary. We could give any other names to these series;
+    # the formations, however, have to be referred to as named in the input data.
+    #
+    # In the following, we map the "Main Fault" to the "Fault Series" and the individual formations to the "Strat Series".
+
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 169-178
 
 .. code-block:: Python
 
@@ -304,6 +344,81 @@ input data.
                 "Strat_Series": ('Sandstone_2', 'Siltstone', 'Shale', 'Sandstone_1')
         }
     )
+
+
+
+
+
+
+.. raw:: html
+
+    <div class="output_subarea output_html rendered_html output_result">
+
+            <table>
+              <tr><td>Structural Groups:</td><td>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>Fault_Series</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #015482;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Main_Fault</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            <br>
+        <table style="border-left:1.2px solid black;>
+          <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+          <tr><td>Name:</td><td>Strat_Series</td></tr>
+          <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+          <tr><td>Elements:</td><td>
+        <table width="50%" style="border-left:15px solid #ffbe00;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Sandstone_2</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #443988;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Siltstone</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #728f02;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Shale</td></tr>
+        </table>
+            <br>
+        <table width="50%" style="border-left:15px solid #9f0052;">
+          <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+          <tr><td>Name:</td><td>Sandstone_1</td></tr>
+        </table>
+            </td></tr>
+        </table>
+            </td></tr>
+              <tr><td>Fault Relations:</td><td><table style="border-collapse: collapse; table-layout: fixed;"><th></th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Fault_Seri...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Strat_Seri...</th><tr><th>Fault_Series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>Strat_Series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr></table></td></tr>
+              <tr><td></td><td>
+            <table>
+              <tr>
+                <td><div style="display: inline-block; background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></div> True</td>
+                <td><div style="display: inline-block; background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></div> False</td>
+              </tr>
+            </table>
+            </td></tr>
+            </table>
+        
+    </div>
+    <br />
+    <br />
+
+.. GENERATED FROM PYTHON SOURCE LINES 179-181
+
+Note how the structural frame still indicates the "Fault Series" group to have a relation type "erode".
+We still need to tell GemPy that we want this group to be a fault. We do this using the function `set_is_fault`.
+
+.. GENERATED FROM PYTHON SOURCE LINES 181-184
+
+.. code-block:: Python
+
 
     geo_model.structural_frame  # Display the resulting structural frame
 
@@ -372,7 +487,7 @@ input data.
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 141-146
+.. GENERATED FROM PYTHON SOURCE LINES 185-190
 
 .. code-block:: Python
 
@@ -446,7 +561,7 @@ input data.
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 147-155
+.. GENERATED FROM PYTHON SOURCE LINES 191-199
 
 Now, all surfaces have been assigned to a series and are displayed in the correct order 
 (from young to old).
@@ -457,7 +572,7 @@ Our model input data, named "geo_model", contains all essential information for 
 our model. You can access different types of information by accessing the attributes.
 For instance, you can retrieve the coordinates of our modeling grid as follows:
 
-.. GENERATED FROM PYTHON SOURCE LINES 158-160
+.. GENERATED FROM PYTHON SOURCE LINES 202-204
 
 .. code-block:: Python
 
@@ -472,35 +587,33 @@ For instance, you can retrieve the coordinates of our modeling grid as follows:
  .. code-block:: none
 
 
-    Grid(_octree_grid=RegularGrid(resolution=array([16, 16, 16]), extent=array([   0., 2000.,    0., 2000.,    0.,  750.]), values=array([[  62.5   ,   62.5   ,   23.4375],
-           [  62.5   ,   62.5   ,   70.3125],
-           [  62.5   ,   62.5   ,  117.1875],
+    Grid(values=array([[  15.625   ,   15.625   ,    5.859375],
+           [  15.625   ,   15.625   ,   17.578125],
+           [  15.625   ,   15.625   ,   29.296875],
            ...,
-           [1937.5   , 1937.5   ,  632.8125],
-           [1937.5   , 1937.5   ,  679.6875],
-           [1937.5   , 1937.5   ,  726.5625]]), mask_topo=array([], shape=(0, 3), dtype=bool), _transform=None), _dense_grid=None, _custom_grid=None, _topography=None, _sections=None, _centered_grid=None, values=array([[  62.5   ,   62.5   ,   23.4375],
-           [  62.5   ,   62.5   ,   70.3125],
-           [  62.5   ,   62.5   ,  117.1875],
+           [1984.375   , 1984.375   ,  720.703125],
+           [1984.375   , 1984.375   ,  732.421875],
+           [1984.375   , 1984.375   ,  744.140625]]), length=array([], dtype=float64), _octree_grid=RegularGrid(resolution=array([64, 64, 64]), extent=array([   0., 2000.,    0., 2000.,    0.,  750.]), values=array([[  15.625   ,   15.625   ,    5.859375],
+           [  15.625   ,   15.625   ,   17.578125],
+           [  15.625   ,   15.625   ,   29.296875],
            ...,
-           [1937.5   , 1937.5   ,  632.8125],
-           [1937.5   , 1937.5   ,  679.6875],
-           [1937.5   , 1937.5   ,  726.5625]]), length=array([], dtype=float64), _transform=None, _octree_levels=-1)
+           [1984.375   , 1984.375   ,  720.703125],
+           [1984.375   , 1984.375   ,  732.421875],
+           [1984.375   , 1984.375   ,  744.140625]]), mask_topo=array([], shape=(0, 3), dtype=bool), _transform=None), _dense_grid=None, _custom_grid=None, _topography=None, _sections=None, _centered_grid=None, _transform=None, _octree_levels=-1)
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 161-170
+.. GENERATED FROM PYTHON SOURCE LINES 205-212
 
 Visualizing input data
 ~~~~~~~~~~~~~~~~~~~~~~
 
-We can also visualize our input data. This might for example be useful
-to check if all points and measurements are defined the way we want them
-to. Using the function :obj:`gempy_viewer.plot2d`, we attain a 2D projection of our
-data points onto a plane of chosen *direction* (we can choose this
-attribute to be either :math:`x`, :math:`y` or :math:`z`).
+Since we have already imported our input data, we can go ahead and visualize it in 2D and 3D. This can be useful to check if all points
+and orientations are defined the way we want them to be. Using the function `gempy_viewer.plot2d`, we obtain a 2D projection of our
+data points onto a plane of the chosen *direction* (we can choose this attribute to be either x, y or z, with the default being y).
+Below, we can freely switch the direction and check out the projection from different sides to get a good idea.
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 173-175
+.. GENERATED FROM PYTHON SOURCE LINES 216-218
 
 .. code-block:: Python
 
@@ -518,14 +631,12 @@ attribute to be either :math:`x`, :math:`y` or :math:`z`).
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 176-180
+.. GENERATED FROM PYTHON SOURCE LINES 219-221
 
-Using  :obj:`gempy_viewer.plot_3d`, # we can also visualize this data in 3D. Note that
-direct 3D visualization in GemPy requires `the Visualization
-Toolkit <https://www.vtk.org/>`__ (VTK) to be installed.
+Beyond 2D, however, we can also visualize our input data in full 3D using `gempy_viewer.plot_3d`. Note that direct 3D visualization
+in GemPy requires [the Visualization Toolkit](https://www.vtk.org/) (VTK) to be installed.
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 182-184
+.. GENERATED FROM PYTHON SOURCE LINES 224-226
 
 .. code-block:: Python
 
@@ -545,17 +656,17 @@ Toolkit <https://www.vtk.org/>`__ (VTK) to be installed.
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f8824fce9b0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fb288347610>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 185-198
+.. GENERATED FROM PYTHON SOURCE LINES 227-240
 
 Model Generation
 ~~~~~~~~~~~~~~~~
-Once we've correctly defined all our primary information in our 
-`gempy.core.data.GeoModel` object (referred to as `geo_model` in these tutorials),
-we can proceed to the next step: preparing the input data for interpolation.
+Once we've correctly defined all our primary information in our `gempy.core.data.GeoModel` object (referred to as `geo_model`
+in these tutorials), we can proceed with the model computation step. We can go ahead and save the solution of a specific computation
+as we do below, but solutions are also stored within the `gempy.core.data.GeoModel` object for future reference.
 
 
 .. admonition:: New in GemPy 3!  Numpy and TensorFlow backend
@@ -565,18 +676,18 @@ we can proceed to the next step: preparing the input data for interpolation.
    to recompile all theano functions (TensorFlow uses eager execution; we found no 
    notable speed difference after profiling the XLA compiler).
 
-.. GENERATED FROM PYTHON SOURCE LINES 200-204
+.. GENERATED FROM PYTHON SOURCE LINES 242-246
 
 The parameters used for the interpolation are stored in 
 `gempy.core.data.GeoModel.interpolation_options`. These parameters have sensible default values 
 that you can modify if necessary. However, we advise caution when changing these parameters 
 unless you fully understand their implications.
 
-.. GENERATED FROM PYTHON SOURCE LINES 206-207
+.. GENERATED FROM PYTHON SOURCE LINES 248-249
 
 Display the current interpolation options
 
-.. GENERATED FROM PYTHON SOURCE LINES 207-209
+.. GENERATED FROM PYTHON SOURCE LINES 249-251
 
 .. code-block:: Python
 
@@ -593,25 +704,25 @@ Display the current interpolation options
 
                     <table>
                         <tr><td colspan='2' style='text-align:center'><b>InterpolationOptions</b></td></tr>
-                        <tr><td>kernel_options</td><td>{'range': 5, 'c_o': 10, 'uni_degree': 1, 'i_res': 4, 'gi_res': 2, 'number_dimensions': 3, 'kernel_function': <AvailableKernelFunctions.cubic: KernelFunction(base_function=<function cubic_function at 0x7f8833a9d3f0>, derivative_div_r=<function cubic_function_p_div_r at 0x7f8833a9d480>, second_derivative=<function cubic_function_a at 0x7f8833a9d510>, consume_sq_distance=False)>, 'kernel_solver': <Solvers.DEFAULT: 1>, 'compute_condition_number': False, 'optimizing_condition_number': False, 'condition_number': None}</td></tr><tr><td>evaluation_options</td><td>{'_number_octree_levels': 4, '_number_octree_levels_surface': 4, 'curvature_threshold': -1, 'error_threshold': 1.0, 'min_octree_level': 2, 'mesh_extraction': True, 'mesh_extraction_masking_options': <MeshExtractionMaskingOptions.INTERSECT: 3>, 'mesh_extraction_fancy': True, 'evaluation_chunk_size': 500000, 'compute_scalar_gradient': False, 'verbose': False}</td></tr><tr><td>temp_interpolation_values</td><td><gempy_engine.core.data.options.temp_interpolation_values.TempInterpolationValues object at 0x7f87dc0376d0></td></tr><tr><td>debug</td><td>True</td></tr><tr><td>cache_mode</td><td>CacheMode.IN_MEMORY_CACHE</td></tr><tr><td>cache_model_name</td><td>Tutorial_ch1_1_Basics</td></tr><tr><td>block_solutions_type</td><td>BlockSolutionType.OCTREE</td></tr><tr><td>sigmoid_slope</td><td>50000</td></tr><tr><td>debug_water_tight</td><td>False</td></tr>
+                        <tr><td>kernel_options</td><td>{'range': 1.7, 'c_o': 10, 'uni_degree': 1, 'i_res': 4, 'gi_res': 2, 'number_dimensions': 3, 'kernel_function': <AvailableKernelFunctions.cubic: KernelFunction(base_function=<function cubic_function at 0x7fb28cc5a710>, derivative_div_r=<function cubic_function_p_div_r at 0x7fb28cc5a7a0>, second_derivative=<function cubic_function_a at 0x7fb28cc5a830>, consume_sq_distance=False)>, 'kernel_solver': <Solvers.DEFAULT: 1>, 'compute_condition_number': False, 'optimizing_condition_number': False, 'condition_number': None}</td></tr><tr><td>evaluation_options</td><td>{'_number_octree_levels': 6, '_number_octree_levels_surface': 4, 'octree_curvature_threshold': -1, 'octree_error_threshold': 1.0, 'octree_min_level': 2, 'mesh_extraction': True, 'mesh_extraction_masking_options': <MeshExtractionMaskingOptions.INTERSECT: 3>, 'mesh_extraction_fancy': True, 'evaluation_chunk_size': 500000, 'compute_scalar_gradient': False, 'verbose': False}</td></tr><tr><td>temp_interpolation_values</td><td><gempy_engine.core.data.options.temp_interpolation_values.TempInterpolationValues object at 0x7fb23ce2c2e0></td></tr><tr><td>debug</td><td>True</td></tr><tr><td>cache_mode</td><td>CacheMode.IN_MEMORY_CACHE</td></tr><tr><td>cache_model_name</td><td>Tutorial_ch1_1_Basics</td></tr><tr><td>block_solutions_type</td><td>BlockSolutionType.OCTREE</td></tr><tr><td>sigmoid_slope</td><td>50000</td></tr><tr><td>debug_water_tight</td><td>False</td></tr>
                     </table>
                 
     </div>
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 210-214
+.. GENERATED FROM PYTHON SOURCE LINES 252-256
 
 With all our prerequisites in place, we can now compute our complete geological model 
 using :func:`gempy.compute_model`. This function returns a :obj:`gempy.core.data.Solutions` object.
 
 The following sections illustrate these different model solutions and how to utilize them.
 
-.. GENERATED FROM PYTHON SOURCE LINES 216-217
+.. GENERATED FROM PYTHON SOURCE LINES 258-259
 
 Compute the geological model and get the solutions
 
-.. GENERATED FROM PYTHON SOURCE LINES 217-220
+.. GENERATED FROM PYTHON SOURCE LINES 259-262
 
 .. code-block:: Python
 
@@ -627,21 +738,23 @@ Compute the geological model and get the solutions
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.numpy
+    Chunking done: 20 chunks
+    Chunking done: 20 chunks
 
 
 .. raw:: html
 
     <div class="output_subarea output_html rendered_html output_result">
-    <b>Solutions:</b> 4 Octree Levels, 5 DualContouringMeshes
+    <b>Solutions:</b> 6 Octree Levels, 5 DualContouringMeshes
     </div>
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 221-222
+.. GENERATED FROM PYTHON SOURCE LINES 263-264
 
 Solutions are also stored within the :obj:`gempy.core.data.GeoModel` object, for future reference.
 
-.. GENERATED FROM PYTHON SOURCE LINES 224-226
+.. GENERATED FROM PYTHON SOURCE LINES 266-268
 
 .. code-block:: Python
 
@@ -655,12 +768,12 @@ Solutions are also stored within the :obj:`gempy.core.data.GeoModel` object, for
 .. raw:: html
 
     <div class="output_subarea output_html rendered_html output_result">
-    <b>Solutions:</b> 4 Octree Levels, 5 DualContouringMeshes
+    <b>Solutions:</b> 6 Octree Levels, 5 DualContouringMeshes
     </div>
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 227-233
+.. GENERATED FROM PYTHON SOURCE LINES 269-275
 
 Direct model visualization in GemPy
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -669,7 +782,7 @@ Model solutions can be easily visualized in 2D sections in GemPy
 directly. Let's take a look at our lithology block:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 235-237
+.. GENERATED FROM PYTHON SOURCE LINES 277-279
 
 .. code-block:: Python
 
@@ -689,11 +802,11 @@ directly. Let's take a look at our lithology block:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87dc0959c0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fb23cf10be0>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 238-248
+.. GENERATED FROM PYTHON SOURCE LINES 280-290
 
 With ``cell_number=mid``, we have chosen a section going through
 the middle of our block. We have moved in ``direction='y'``,
@@ -706,7 +819,7 @@ looking at different 2D planes.
 We can do the same with the underlying scalar-field solution:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 251-259
+.. GENERATED FROM PYTHON SOURCE LINES 293-301
 
 .. code-block:: Python
 
@@ -732,11 +845,11 @@ We can do the same with the underlying scalar-field solution:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f8824fcc730>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fb23ccc3070>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 260-268
+.. GENERATED FROM PYTHON SOURCE LINES 302-310
 
 .. code-block:: Python
 
@@ -762,11 +875,11 @@ We can do the same with the underlying scalar-field solution:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87dbd469b0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fb23ea2b850>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 269-284
+.. GENERATED FROM PYTHON SOURCE LINES 311-326
 
 Dual Contouring and vtk visualization
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -784,7 +897,7 @@ using dual contouring in the :obj:`gempy_engine`.
    enables further improvements in the midterm. This method is more efficient to use
    together with octrees and suited better the new capabilities of gempy3. 
 
-.. GENERATED FROM PYTHON SOURCE LINES 286-288
+.. GENERATED FROM PYTHON SOURCE LINES 328-330
 
 .. code-block:: Python
 
@@ -804,11 +917,11 @@ using dual contouring in the :obj:`gempy_engine`.
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f881e5dc5e0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fb23e891e40>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 289-294
+.. GENERATED FROM PYTHON SOURCE LINES 331-336
 
 Adding topography
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -816,7 +929,7 @@ In gempy we can add more grid types for different purposes. We will explore this
 next tutorials (:doc:`ch1_3a_grids`). For now, we will just add a topography grid to our model. This grid allows us to intersect the
 surfaces as well as compute a high resolution geological mal.
 
-.. GENERATED FROM PYTHON SOURCE LINES 297-316
+.. GENERATED FROM PYTHON SOURCE LINES 339-358
 
 .. code-block:: Python
 
@@ -859,12 +972,14 @@ surfaces as well as compute a high resolution geological mal.
 
     Active grids: GridTypes.NONE|TOPOGRAPHY|OCTREE
     Setting Backend To: AvailableBackends.numpy
+    Chunking done: 20 chunks
+    Chunking done: 20 chunks
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f87dbcaece0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fb23e58cbe0>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 317-322
+.. GENERATED FROM PYTHON SOURCE LINES 359-364
 
 Compute at a given location
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -872,7 +987,7 @@ Compute at a given location
 This is done by modifying the grid to a custom grid and recomputing.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 324-331
+.. GENERATED FROM PYTHON SOURCE LINES 366-373
 
 .. code-block:: Python
 
@@ -893,16 +1008,18 @@ This is done by modifying the grid to a custom grid and recomputing.
 
     Active grids: GridTypes.NONE|TOPOGRAPHY|CUSTOM|OCTREE
     Setting Backend To: AvailableBackends.numpy
+    Chunking done: 20 chunks
+    Chunking done: 20 chunks
 
     array([2.])
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 332-333
+.. GENERATED FROM PYTHON SOURCE LINES 374-375
 
 Therefore if we just want the value at **x\_i**: 
 
-.. GENERATED FROM PYTHON SOURCE LINES 335-337
+.. GENERATED FROM PYTHON SOURCE LINES 377-379
 
 .. code-block:: Python
 
@@ -921,7 +1038,7 @@ Therefore if we just want the value at **x\_i**:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 338-345
+.. GENERATED FROM PYTHON SOURCE LINES 380-387
 
 .. admonition:: Work in progress 
 
@@ -934,7 +1051,7 @@ sphinx_gallery_thumbnail_number = -2
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 11.597 seconds)
+   **Total running time of the script:** (1 minutes 40.737 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_1_basics.py:

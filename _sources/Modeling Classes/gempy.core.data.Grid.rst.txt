@@ -41,7 +41,6 @@
       ~Grid.custom_grid
       ~Grid.dense_grid
       ~Grid.extent
-      ~Grid.length
       ~Grid.octree_grid
       ~Grid.octree_levels
       ~Grid.regular_grid
@@ -49,6 +48,7 @@
       ~Grid.topography
       ~Grid.transform
       ~Grid.values
+      ~Grid.length
    
    
 

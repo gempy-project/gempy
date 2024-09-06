@@ -4,16 +4,19 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>gempy.modules.data_manipulation.manipulate_points &#8212; GemPy 2024.1.2.dev59+gc19c50fa.d20240531 documentation</title>
+    <title>gempy.modules.data_manipulation.manipulate_points &#8212; GemPy 2024.2.0.3.dev0+gf344a731.d20240626 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/alabaster.css?v=270d38c7" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=eafc0fe6" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery.css?v=61a4c737" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <script src="../../../../_static/documentation_options.js?v=2a6b7f2f"></script>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <script src="../../../../_static/documentation_options.js?v=bd57e1ea"></script>
     <script src="../../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/design-tabs.js?v=36754332"></script>
     <link rel="icon" href="../../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
@@ -138,8 +141,8 @@
         <span class="n">y</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
         <span class="n">z</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
         <span class="n">elements_names</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-        <span class="n">pole_vector</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">orientation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">pole_vector</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">orientation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">nugget</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StructuralFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Add orientation data to the geological model.</span>
@@ -154,8 +157,8 @@
 <span class="sd">        y (Sequence[float]): Sequence of y-coordinates for the orientation points.</span>
 <span class="sd">        z (Sequence[float]): Sequence of z-coordinates for the orientation points.</span>
 <span class="sd">        elements_names (Sequence[str]): Sequence of element names corresponding to each orientation point.</span>
-<span class="sd">        pole_vector (Optional[Sequence[np.ndarray]]): Sequence of pole vectors for the orientation points.</span>
-<span class="sd">        orientation (Optional[Sequence[np.ndarray]]): Sequence of orientation angles (azimuth, dip, polarity) for the orientation points.</span>
+<span class="sd">        pole_vector (Optional[Union[Sequence[np.ndarray], np.ndarray]]): Sequence of pole vectors for each orientation point. If is np.ndarray, it should have shape (n, 3).</span>
+<span class="sd">        orientation (Optional[Union[Sequence[np.ndarray], np.ndarray]]): Sequence of orientation angles for each orientation point. If is np.ndarray, it should have shape (n, 3).</span>
 <span class="sd">        nugget (Optional[Sequence[float]]): Sequence of nugget values for each orientation point. If not provided,</span>
 <span class="sd">            a default value will be used for all points.</span>
 
@@ -169,12 +172,15 @@
     <span class="k">if</span> <span class="n">pole_vector</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">orientation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Either pole_vector or orientation must be provided.&quot;</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">orientation</span><span class="p">:</span>  <span class="c1"># Convert orientation to pole_vector (or gradient)</span>
+    <span class="k">if</span> <span class="n">orientation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">orientation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">orientation</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
         <span class="n">pole_vector</span> <span class="o">=</span> <span class="n">convert_orientation_to_pole_vector</span><span class="p">(</span>
             <span class="n">azimuth</span><span class="o">=</span><span class="n">orientation</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span>
             <span class="n">dip</span><span class="o">=</span><span class="n">orientation</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
             <span class="n">polarity</span><span class="o">=</span><span class="n">orientation</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>
         <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">pole_vector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pole_vector</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 
     <span class="n">elements_names</span> <span class="o">=</span> <span class="n">_validate_args</span><span class="p">(</span><span class="n">elements_names</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">pole_vector</span><span class="p">)</span>
 
@@ -448,6 +454,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/index.html">GemPy Tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../examples/index.html">Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">External examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../external/external_examples.html">External Examples</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul>

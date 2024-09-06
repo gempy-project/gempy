@@ -4,16 +4,19 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>gempy.core.data.grid &#8212; GemPy 2024.1.2.dev59+gc19c50fa.d20240531 documentation</title>
+    <title>gempy.core.data.grid &#8212; GemPy 2024.2.0.3.dev0+gf344a731.d20240626 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/alabaster.css?v=270d38c7" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=eafc0fe6" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery.css?v=61a4c737" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <script src="../../../../_static/documentation_options.js?v=2a6b7f2f"></script>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <script src="../../../../_static/documentation_options.js?v=bd57e1ea"></script>
     <script src="../../../../_static/doctools.js?v=888ff710"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/design-tabs.js?v=36754332"></script>
     <link rel="icon" href="../../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
@@ -50,7 +53,7 @@
 
 <div class="viewcode-block" id="Grid">
 <a class="viewcode-back" href="../../../../Modeling%20Classes/gempy.core.data.Grid.html#gempy.core.data.Grid">[docs]</a>
-<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">Grid</span><span class="p">:</span>
 <div class="viewcode-block" id="Grid.GridTypes">
 <a class="viewcode-back" href="../../../../Modeling%20Classes/gempy.core.data.Grid.html#gempy.core.data.Grid.GridTypes">[docs]</a>
@@ -66,15 +69,15 @@
 
     <span class="c1"># ? What should we do with the extent?</span>
 
+    <span class="n">values</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="n">length</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    
     <span class="n">_octree_grid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">RegularGrid</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">_dense_grid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">RegularGrid</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">_custom_grid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">CustomGrid</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">_topography</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Topography</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">_sections</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sections</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">_centered_grid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">CenteredGrid</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-
-    <span class="n">values</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
-    <span class="n">length</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
     <span class="n">_active_grids</span> <span class="o">=</span> <span class="n">GridTypes</span><span class="o">.</span><span class="n">NONE</span>
     <span class="n">_transform</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Transform</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
@@ -84,10 +87,15 @@
 <div class="viewcode-block" id="Grid.__init__">
 <a class="viewcode-back" href="../../../../Modeling%20Classes/gempy.core.data.Grid.html#gempy.core.data.Grid.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">length</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        
         <span class="c1"># Init basic grid empty</span>
         <span class="k">if</span> <span class="n">extent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">resolution</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dense_grid</span> <span class="o">=</span> <span class="n">RegularGrid</span><span class="p">(</span><span class="n">extent</span><span class="p">,</span> <span class="n">resolution</span><span class="p">)</span></div>
 
+    
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">init_octree_grid</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">extent</span><span class="p">,</span> <span class="n">octree_levels</span><span class="p">):</span>
@@ -343,6 +351,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/index.html">GemPy Tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../examples/index.html">Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">External examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../external/external_examples.html">External Examples</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul>
