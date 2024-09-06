@@ -25,6 +25,8 @@ Unknown Model: Importing Borehole Data and Building a 3D Geological Model with G
 # Let's start by downloading the dataset and inspecting its content.
 
 # %%
+# sphinx_gallery_thumbnail_number = -1
+
 # List of relative paths used during the workshop
 import numpy as np
 import pandas as pd
@@ -39,16 +41,12 @@ from subsurface.modules.reader.wells.read_borehole_interface import read_collar,
 import subsurface as ss
 from subsurface.modules.visualization import to_pyvista_points, pv_plot, to_pyvista_line, init_plotter
 
-path_to_well_png = '../../common/basics/data/boreholes_concept.png'
-path_to_checkpoint_1 = '../../common/basics/checkpoints/checkpoint1.pickle'
-path_to_checkpoint_2 = '../../common/basics/checkpoints/checkpoint2.pickle'
-upgrade_pickles = False
-# %%
 # Importing GemPy
 import gempy as gp
 
 # %% md
 # We use `pooch` to download the dataset into a temp file:
+
 # %%
 url = "https://raw.githubusercontent.com/softwareunderground/subsurface/main/tests/data/borehole/kim_ready.csv"
 known_hash = "a91445cb960526398e25d8c1d2ab3b3a32f7d35feaf33e18887629b242256ab6"
@@ -76,11 +74,13 @@ collar_df: pd.DataFrame = read_collar(
         }
     )
 )
+
 # Convert to UnstructuredData
 unstruc: ss.UnstructuredData = ss.UnstructuredData.from_array(
     vertex=collar_df[["x", "y", "z"]].values,
     cells=SpecialCellCase.POINTS
 )
+
 points = ss.PointSet(data=unstruc)
 collars: Collars = Collars(
     ids=collar_df.index.to_list(),
@@ -96,7 +96,7 @@ collars: Collars = Collars(
 well_mesh = to_pyvista_points(collars.collar_loc)
 
 # Plot the collar points
-pv_plot([well_mesh], image_2d=True)
+pv_plot([well_mesh], image_2d=False)
 
 # %%
 # Reading Borehole Survey Data
@@ -388,8 +388,6 @@ pyvista_plotter.show()
 #
 
 # %% md
-# Surfaces
-# """"""""
 # Adding Surfaces and Formations
 # """""""""""""""""""""""""""""
 # In GemPy, surfaces mark the bottom of each geological unit. For our model, we will add the first two formations 
@@ -410,8 +408,8 @@ g2d = gpv.plot_2d(geo_model)
 # %%
 g2d.fig
 # %% md
-# ### Minimum Input Data for Interpolation
-#
+# Minimum Input Data for Interpolation
+# """"""""""""""""""""""""""""""""""""
 # To interpolate the geological layers, GemPy requires at least:
 #
 # - Two surface points per geological unit
@@ -429,8 +427,8 @@ gp.add_orientations(
 )
 
 # %% md
-# ## Model Computation
-#
+# Model Computation
+# """""""""""""""""
 # Now that we have the necessary surface points and orientations, we can compute the final geological model. The 
 # `compute_model` function will take all the input data and perform the interpolation to generate the 3D subsurface structure.
 
@@ -440,8 +438,8 @@ geo_model.interpolation_options
 gp.compute_model(geo_model)
 
 # %% md
-# ### Final 3D Visualization
-#
+# Final 3D Visualization
+# """"""""""""""""""""""
 # Let's take a look at the final model, combining the borehole data and geological formations in 3D.
 
 g3d = gpv.plot_3d(geo_model, show_lith=False, show=False)
@@ -450,8 +448,8 @@ g3d.p.show()
 
 
 # %% md
-# -----
-# ## Conclusion
+# Conclusion
+# """"""""""
 #
 # In this tutorial, we have demonstrated how to take borehole data and create a 3D geological model in GemPy. We explored 
 # how to extract structural elements from borehole data, set up a regular grid for interpolation, and visualize the 
@@ -461,10 +459,10 @@ g3d.p.show()
 # integrates seamlessly with borehole data for subsurface geological modeling.
 #
 # For further reading and resources, check out:
-
+#
 # 
-# #### Extra Resources
-# 
+# Extra Resources
+# """""""""""""""
 # Page:
 # https://www.gempy.org/
 # 
@@ -474,9 +472,9 @@ g3d.p.show()
 # Gitub:
 # https://github.com/cgre-aachen/gempy
 # 
-# #### Further training and collaborations
+# Further training and collaborations
+# """""""""""""""""""""""""""""""""""
 # https://www.terranigma-solutions.com/
 # 
-# ![Terranigma_Logotype_black.png](attachment:200622_Terranigma_Logotype_black.png)
 # 
 #
