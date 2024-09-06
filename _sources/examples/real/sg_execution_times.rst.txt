@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**00:11.808** total execution time for 7 files **from examples/real**:
+**00:11.073** total execution time for 7 files **from examples/real**:
 
 .. container::
 
@@ -33,7 +33,7 @@ Computation times
      - Time
      - Mem (MB)
    * - :ref:`sphx_glr_examples_real_mik.py` (``mik.py``)
-     - 00:11.808
+     - 00:11.073
      - 0.0
    * - :ref:`sphx_glr_examples_real_Alesmodel.py` (``Alesmodel.py``)
      - 00:00.000

@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**01:40.737** total execution time for 8 files **from tutorials/ch1_fundamentals**:
+**01:35.701** total execution time for 8 files **from tutorials/ch1_fundamentals**:
 
 .. container::
 
@@ -33,7 +33,7 @@ Computation times
      - Time
      - Mem (MB)
    * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_1_basics.py` (``ch1_1_basics.py``)
-     - 01:40.737
+     - 01:35.701
      - 0.0
    * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_3a_grids.py` (``ch1_3a_grids.py``)
      - 00:00.000
