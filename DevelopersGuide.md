@@ -16,7 +16,7 @@ Github release
     # push git tag
     $ git push --tags origin master
 
-PyPi release
+PyPi release:
 ------------
 New 
 ```
