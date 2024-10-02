@@ -126,12 +126,14 @@ def add_orientations(geo_model: GeoModel,
         raise ValueError("Either pole_vector or orientation must be provided.")
 
     if orientation is not None:
-        orientation = np.array(orientation)
+        orientation = np.array(orientation, ndmin=2)
         pole_vector = convert_orientation_to_pole_vector(
             azimuth=orientation[:, 0],
             dip=orientation[:, 1],
             polarity=orientation[:, 2]
         )
+    else:
+        pole_vector = np.array(pole_vector, ndmin=2)
 
     elements_names = _validate_args(elements_names, x, y, z, pole_vector)
 

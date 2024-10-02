@@ -37,7 +37,6 @@ make_external_gallery.make_example_gallery()
 pyvista.set_error_output_file('errors.txt')
 pyvista.OFF_SCREEN = True  # Not necessary - simply an insurance policy. Ensure that offscreen rendering is used for docs generation
 pyvista.set_plot_theme('document')  # Preferred plotting style for documentation
-# pyvista.rcParams['window_size'] = np.array([1024, 768]) * 2
 pyvista.FIGURE_PATH = os.path.join(os.path.abspath('_images/'), 'auto-generated/')  # Save figures in specified directory
 pyvista.BUILDING_GALLERY = True
 if not os.path.exists(pyvista.FIGURE_PATH):

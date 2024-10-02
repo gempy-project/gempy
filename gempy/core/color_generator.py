@@ -1,4 +1,5 @@
 ﻿from dataclasses import dataclass
+from functools import cached_property
 from typing import Optional
 
 import numpy as np
@@ -36,11 +37,10 @@ class ColorsGenerator:
     @staticmethod
     def _random_hexcolor() -> str:
         """Generates a random hex color string."""
-        return "#"+str(hex(np.random.randint(0, 16777215))).lstrip("0x")
+        return f"#{np.random.randint(0, 0xffffff):06x}"
 
     def regenerate_color_palette(self, seaborn_palettes: Optional[list[str]] = None):
         try:
-            
             import seaborn as sns
             seaborn_installed = True
         except ImportError:
@@ -54,7 +54,7 @@ class ColorsGenerator:
         elif seaborn_palettes and not seaborn_installed:
             raise ImportError("Seaborn is not installed. Please install it to use color palettes.")
         else:
-            hex_colors = self._gempy_default_colors
+            hex_colors = list(self._gempy_default_colors)
 
         self.hex_colors = hex_colors
 
@@ -65,14 +65,18 @@ class ColorsGenerator:
     
     def __next__(self) -> str:
         """Generator that yields the next color."""
-        for color in self.hex_colors:
-            result = self.hex_colors[self._index]
-            self._index += 1
-            return result
+        color = self.up_next()
+        self._index += 1
+        del self._next_color
+        return color
 
-        while True:
-            return self._random_hexcolor()
-    
     def up_next(self) -> str:
         """Returns the next color without incrementing the index."""
-        return self.hex_colors[self._index]
+        return self._next_color
+
+    @cached_property
+    def _next_color(self) -> str:
+        if self._index < len(self.hex_colors):
+            return self.hex_colors[self._index]
+
+        return self._random_hexcolor()
