@@ -80,6 +80,7 @@ gp.map_stack_to_surfaces(
 # Video tutorial 4: Computation and results
 # """""""""""""""""""""""""""""""""""""""""
 
+# View interpolation options
 geo_model.interpolation_options
 
 # %%
@@ -144,7 +145,7 @@ gpv.plot_3d(geo_model, show_lith=True, show_boundaries=True, ve=None)
 geo_model.solutions.dc_meshes[0].dc_data
 
 # %%
-# Video tutorial 7: 2D Topography
+# Video tutorial 7: Topography
 # """""""""""""""""""""""""""""""
 
 # Setting a randomly generated topography
