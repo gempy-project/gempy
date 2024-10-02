@@ -78,7 +78,7 @@ def set_topography_from_arrays(grid: Grid,  xyz_vertices: np.ndarray):
 
 def set_topography_from_file(grid: Grid, filepath: str, crop_to_extent: Union[Sequence, None] = None):
     ss = require_subsurface()
-    struct: ss.StructuredData = ss.modules.reader.read_structured_topography(
+    struct: ss.StructuredData = ss.reader.read_structured_topography(
         path=filepath,
         crop_to_extent=crop_to_extent
     )
