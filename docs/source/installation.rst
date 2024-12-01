@@ -15,6 +15,21 @@ The latest release version of ``GemPy`` is available via **PyPi**. To install th
 
 This will install ``GemPy`` with the minimal required dependencies.
 
+GemPy viewer
+^^^^^^^^^^^^
+
+For visualization in 2-D and 3-D, the additional package ``gempy-viewer`` can be used and installed with:
+
+.. code-block:: bash
+
+     $ pip install gempy-viewer
+
+The 3-D visualization is based on `pyvista`. This package needs to be installed separately. Please check:
+
+- PyVista: Installation guide available on the `PyVista installation page <https://docs.pyvista.org/getting-started/installation.html>`_.
+
+
+
 Enhanced Installation Options
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -39,10 +54,8 @@ For additional features, ``GemPy`` offers enhanced installation options:
       $ pip install gempy[dev]
 
 
-Note: Some functionalities in ``GemPy`` require `PyTorch` and `pyvista`. These libraries need to be installed separately:
-
-- PyTorch: Follow the instructions on the `PyTorch installation page <https://pytorch.org/get-started/locally/>`_.
-- PyVista: Installation guide available on the `PyVista installation page <https://docs.pyvista.org/getting-started/installation.html>`_.
+Note: Some advanced functionalities in ``GemPy`` require `PyTorch`. For installation, please follow the
+instructions on the `PyTorch installation page <https://pytorch.org/get-started/locally/>`_.
 
 Manual Installation
 ^^^^^^^^^^^^^^^^^^^
