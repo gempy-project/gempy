@@ -1,14 +1,50 @@
 """
-Modeling step by step
-^^^^^^^^^^^^^^^^^^^^^
+Video Tutorial "code-along": Modeling step by step
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This tutorial demonstrates step-by-step geological modeling using the `gempy` and `gempy_viewer` libraries.
 It follows the Video tutorial series available on the `gempy` YouTube channel (https://www.youtube.com/@GemPy3D).
 """
 
+
+# %%
+# Video tutorial 1: Introduction
+# """"""""""""""""""""""""""""""
+#
+# The first video is an introduction to GemPy - please view online before starting the tutorial.
+# 
+# https://youtu.be/3elCCHhARsU
+#
+#
+
+# %%
+#.. raw:: html
+#
+#    <iframe width="560" height="315" 
+#            src="https://www.youtube.com/embed/3elCCHhARsU" 
+#            title="YouTube video player" 
+#            frameborder="0" 
+#            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+#            allowfullscreen>
+#    </iframe>
+
+
 # %%
 # Video tutorial 2: Input data
 # """"""""""""""""""""""""""""
+
+# %%
+#.. raw:: html
+#
+#    <iframe width="560" height="315" 
+#            src="https://www.youtube.com/embed/yYwJVYy8ilw" 
+#            title="YouTube video player" 
+#            frameborder="0" 
+#            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+#            allowfullscreen>
+#    </iframe>
+
+
 
 # Required imports
 import gempy as gp
@@ -56,6 +92,17 @@ gpv.plot_2d(geo_model)
 # %%
 # Video tutorial 3: Structural frame
 # """"""""""""""""""""""""""""""""""
+
+# %%
+#.. raw:: html
+#
+#    <iframe width="560" height="315" 
+#            src="https://www.youtube.com/embed/4rav3lb2AR8" 
+#            title="YouTube video player" 
+#            frameborder="0" 
+#            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+#            allowfullscreen>
+#    </iframe>
 
 # View structural frame
 geo_model.structural_frame
@@ -177,3 +224,5 @@ gpv.plot_2d(geo_model, show_topography=True, section_names=['topography'], show_
 
 # Display the 3d model with topography
 gpv.plot_3d(geo_model, show_lith=True, show_topography=True)
+
+# sphinx_gallery_thumbnail_number = -1
