@@ -1,0 +1,315 @@
+
+
+Examples using ``gempy.core.data.StructuralFrame``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+.. start-sphx-glr-thumbnails
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+.. thumbnail-parent-div-open
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Getting Started">
+
+.. only:: html
+
+  .. image:: /tutorials/a_getting_started/images/thumb/sphx_glr_get_started_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_tutorials_a_getting_started_get_started.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Getting Started</div>
+    </div>
+
+
+.. only:: not html
+
+ * :ref:`sphx_glr_tutorials_a_getting_started_get_started.py`
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="1.1 -Basics of geological modeling with GemPy">
+
+.. only:: html
+
+  .. image:: /tutorials/ch1_fundamentals/images/thumb/sphx_glr_ch1_1_basics_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_1_basics.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">1.1 -Basics of geological modeling with GemPy</div>
+    </div>
+
+
+.. only:: not html
+
+ * :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_1_basics.py`
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="1.3b: 2-D sections">
+
+.. only:: html
+
+  .. image:: /tutorials/ch1_fundamentals/images/thumb/sphx_glr_ch1_3b_cross_sections_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_3b_cross_sections.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">1.3b: 2-D sections</div>
+    </div>
+
+
+.. only:: not html
+
+ * :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_3b_cross_sections.py`
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="1.4: Unconformity relationships">
+
+.. only:: html
+
+  .. image:: /tutorials/ch1_fundamentals/images/thumb/sphx_glr_ch1_4_onlap_relations_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_4_onlap_relations.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">1.4: Unconformity relationships</div>
+    </div>
+
+
+.. only:: not html
+
+ * :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_4_onlap_relations.py`
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="1.5: Fault relations">
+
+.. only:: html
+
+  .. image:: /tutorials/ch1_fundamentals/images/thumb/sphx_glr_ch1_5_fault_relations_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_5_fault_relations.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">1.5: Fault relations</div>
+    </div>
+
+
+.. only:: not html
+
+ * :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_5_fault_relations.py`
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="1.6: 2D Visualization.">
+
+.. only:: html
+
+  .. image:: /tutorials/ch1_fundamentals/images/thumb/sphx_glr_ch1_6_2d_visualization_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_6_2d_visualization.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">1.6: 2D Visualization.</div>
+    </div>
+
+
+.. only:: not html
+
+ * :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_6_2d_visualization.py`
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This tutorial demonstrates step-by-step geological modeling using the gempy and gempy_viewer libraries. It follows the Video tutorial series available on the gempy YouTube channel (https://www.youtube.com/@GemPy3D).">
+
+.. only:: html
+
+  .. image:: /tutorials/z_other_tutorials/images/thumb/sphx_glr_video_tutorial_model_1_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_tutorials_z_other_tutorials_video_tutorial_model_1.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Video Tutorial "code-along": Modeling step by step</div>
+    </div>
+
+
+.. only:: not html
+
+ * :ref:`sphx_glr_tutorials_z_other_tutorials_video_tutorial_model_1.py`
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This script creates a folded domain featuring an unconformity and a fault using GemPy, an open-source, Python-based library for building implicit geological models.">
+
+.. only:: html
+
+  .. image:: /examples/geometries/images/thumb/sphx_glr_g07_combination_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_geometries_g07_combination.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Model 7 - Combination</div>
+    </div>
+
+
+.. only:: not html
+
+ * :ref:`sphx_glr_examples_geometries_g07_combination.py`
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="# %% # .. admonition:: Explanation # #       This model is generally quite unstable and requires float64 precision to find a solution. #       The lack of data in one corner for the TRIAS and LIAS series causes the model to bend unrealistically, #       eroding the CARBO layer, which disappears in that section. The simple way to solve this is by adding more data in that area. #       However, I left it as is because I did not construct the model. #">
+
+.. only:: html
+
+  .. image:: /examples/real/images/thumb/sphx_glr_Alesmodel_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_real_Alesmodel.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Alesmodel: Plotting Sections and Maps</div>
+    </div>
+
+
+.. only:: not html
+
+ * :ref:`sphx_glr_examples_real_Alesmodel.py`
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Claudius">
+
+.. only:: html
+
+  .. image:: /examples/real/images/thumb/sphx_glr_Claudius_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_real_Claudius.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Claudius</div>
+    </div>
+
+
+.. only:: not html
+
+ * :ref:`sphx_glr_examples_real_Claudius.py`
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Hecho">
+
+.. only:: html
+
+  .. image:: /examples/real/images/thumb/sphx_glr_Hecho_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_real_Hecho.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Hecho</div>
+    </div>
+
+
+.. only:: not html
+
+ * :ref:`sphx_glr_examples_real_Hecho.py`
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Moureze">
+
+.. only:: html
+
+  .. image:: /examples/real/images/thumb/sphx_glr_Moureze_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_real_Moureze.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Moureze</div>
+    </div>
+
+
+.. only:: not html
+
+ * :ref:`sphx_glr_examples_real_Moureze.py`
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Perth basin.">
+
+.. only:: html
+
+  .. image:: /examples/real/images/thumb/sphx_glr_Perth_basin_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_real_Perth_basin.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Perth basin.</div>
+    </div>
+
+
+.. only:: not html
+
+ * :ref:`sphx_glr_examples_real_Perth_basin.py`
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Unknown Model: Importing Borehole Data and Building a 3D Geological Model with GemPy">
+
+.. only:: html
+
+  .. image:: /examples/real/images/thumb/sphx_glr_mik_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_real_mik.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Unknown Model: Importing Borehole Data and Building a 3D Geological Model with GemPy</div>
+    </div>
+
+
+.. only:: not html
+
+ * :ref:`sphx_glr_examples_real_mik.py`
+
+.. thumbnail-parent-div-close
+
+.. raw:: html
+
+    </div>
+

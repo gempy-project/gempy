@@ -1,0 +1,105 @@
+
+
+Examples using ``gempy.data.StructuralGroup``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+.. start-sphx-glr-thumbnails
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+.. thumbnail-parent-div-open
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Getting Started">
+
+.. only:: html
+
+  .. image:: /tutorials/a_getting_started/images/thumb/sphx_glr_get_started_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_tutorials_a_getting_started_get_started.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Getting Started</div>
+    </div>
+
+
+.. only:: not html
+
+ * :ref:`sphx_glr_tutorials_a_getting_started_get_started.py`
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="1.5: Fault relations">
+
+.. only:: html
+
+  .. image:: /tutorials/ch1_fundamentals/images/thumb/sphx_glr_ch1_5_fault_relations_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_5_fault_relations.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">1.5: Fault relations</div>
+    </div>
+
+
+.. only:: not html
+
+ * :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_5_fault_relations.py`
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Claudius">
+
+.. only:: html
+
+  .. image:: /examples/real/images/thumb/sphx_glr_Claudius_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_real_Claudius.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Claudius</div>
+    </div>
+
+
+.. only:: not html
+
+ * :ref:`sphx_glr_examples_real_Claudius.py`
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Unknown Model: Importing Borehole Data and Building a 3D Geological Model with GemPy">
+
+.. only:: html
+
+  .. image:: /examples/real/images/thumb/sphx_glr_mik_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_real_mik.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Unknown Model: Importing Borehole Data and Building a 3D Geological Model with GemPy</div>
+    </div>
+
+
+.. only:: not html
+
+ * :ref:`sphx_glr_examples_real_mik.py`
+
+.. thumbnail-parent-div-close
+
+.. raw:: html
+
+    </div>
+

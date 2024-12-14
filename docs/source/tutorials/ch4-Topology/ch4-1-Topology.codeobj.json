@@ -1,0 +1,616 @@
+{
+ "M": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "numpy",
+   "module_short": "numpy",
+   "name": "ndarray"
+  }
+ ],
+ "Plot2D": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy_viewer.modules.plot_2d.visualization_2d",
+   "module_short": "gempy_viewer.modules.plot_2d.visualization_2d",
+   "name": "Plot2D"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy_viewer.modules.plot_2d",
+   "module_short": "gempy_viewer.modules.plot_2d",
+   "name": "Plot2D"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy_viewer.modules",
+   "module_short": "gempy_viewer.modules",
+   "name": "Plot2D"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy_viewer",
+   "module_short": "gempy_viewer",
+   "name": "Plot2D"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_viewer.modules.plot_2d.visualization_2d",
+   "module_short": "gempy_viewer.modules.plot_2d.visualization_2d",
+   "name": "Plot2D"
+  }
+ ],
+ "centroids": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "dict"
+  }
+ ],
+ "data_path": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "str"
+  }
+ ],
+ "dcentroids": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "dict"
+  }
+ ],
+ "dedges": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "set"
+  }
+ ],
+ "edges": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "set"
+  }
+ ],
+ "fault_lot": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "dict"
+  }
+ ],
+ "geo_model": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.geo_model",
+   "module_short": "gempy.core.data",
+   "name": "GeoModel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "GeoModel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "GeoModel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "GeoModel"
+  }
+ ],
+ "geo_model.grid.regular_grid": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.grid",
+   "module_short": "gempy.core.data",
+   "name": "Grid.regular_grid"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "Grid.regular_grid"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "Grid.regular_grid"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "Grid.regular_grid"
+  }
+ ],
+ "geo_model.interpolation_options.mesh_extraction": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.geo_model",
+   "module_short": "gempy.core.data",
+   "name": "GeoModel.interpolation_options"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "GeoModel.interpolation_options"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "GeoModel.interpolation_options"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "GeoModel.interpolation_options"
+  }
+ ],
+ "gp.compute_model": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "compute_model"
+  }
+ ],
+ "gp.create_geomodel": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "create_geomodel"
+  }
+ ],
+ "gp.data.GeoModel": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data.geo_model",
+   "module_short": "gempy.core.data",
+   "name": "GeoModel"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "GeoModel"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "GeoModel"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "GeoModel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.data",
+   "module_short": "gempy.data",
+   "name": "GeoModel"
+  }
+ ],
+ "gp.data.ImporterHelper": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data.importer_helper",
+   "module_short": "gempy.core.data",
+   "name": "ImporterHelper"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "ImporterHelper"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "ImporterHelper"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "ImporterHelper"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.data",
+   "module_short": "gempy.data",
+   "name": "ImporterHelper"
+  }
+ ],
+ "gp.map_stack_to_surfaces": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "map_stack_to_surfaces"
+  }
+ ],
+ "gp.set_is_fault": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "set_is_fault"
+  }
+ ],
+ "gpv.plot_2d": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_viewer",
+   "module_short": "gempy_viewer",
+   "name": "plot_2d"
+  }
+ ],
+ "gpv.plot_topology": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_viewer",
+   "module_short": "gempy_viewer",
+   "name": "plot_topology"
+  }
+ ],
+ "lith_lot": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "dict"
+  }
+ ],
+ "os.path.abspath": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "os.path",
+   "module_short": "os.path",
+   "name": "abspath"
+  }
+ ],
+ "plot_2d": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_viewer.modules.plot_2d.visualization_2d",
+   "module_short": "gempy_viewer.modules.plot_2d.visualization_2d",
+   "name": "Plot2D"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_viewer.modules.plot_2d",
+   "module_short": "gempy_viewer.modules.plot_2d",
+   "name": "Plot2D"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_viewer.modules",
+   "module_short": "gempy_viewer.modules",
+   "name": "Plot2D"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_viewer",
+   "module_short": "gempy_viewer",
+   "name": "Plot2D"
+  }
+ ],
+ "plot_2d.axes": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "numpy",
+   "module_short": "numpy",
+   "name": "ndarray"
+  }
+ ],
+ "sol": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine.core.data.solutions",
+   "module_short": "gempy_engine.core.data",
+   "name": "Solutions"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine.core.data",
+   "module_short": "gempy_engine.core.data",
+   "name": "Solutions"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine.core",
+   "module_short": "gempy_engine.core",
+   "name": "Solutions"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine",
+   "module_short": "gempy_engine",
+   "name": "Solutions"
+  }
+ ],
+ "tp.check_adjacency": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_plugins.topology_analysis.topology",
+   "module_short": "gempy_plugins.topology_analysis.topology",
+   "name": "check_adjacency"
+  }
+ ],
+ "tp.compute_topology": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_plugins.topology_analysis.topology",
+   "module_short": "gempy_plugins.topology_analysis.topology",
+   "name": "compute_topology"
+  }
+ ],
+ "tp.get_adjacencies": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_plugins.topology_analysis.topology",
+   "module_short": "gempy_plugins.topology_analysis.topology",
+   "name": "get_adjacencies"
+  }
+ ],
+ "tp.get_adjacency_matrix": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_plugins.topology_analysis.topology",
+   "module_short": "gempy_plugins.topology_analysis.topology",
+   "name": "get_adjacency_matrix"
+  }
+ ],
+ "tp.get_detailed_labels": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_plugins.topology_analysis.topology",
+   "module_short": "gempy_plugins.topology_analysis.topology",
+   "name": "get_detailed_labels"
+  }
+ ],
+ "tp.get_lot_lith_to_node_id": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_plugins.topology_analysis.topology",
+   "module_short": "gempy_plugins.topology_analysis.topology",
+   "name": "get_lot_lith_to_node_id"
+  }
+ ],
+ "tp.get_lot_node_to_fault_block": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_plugins.topology_analysis.topology",
+   "module_short": "gempy_plugins.topology_analysis.topology",
+   "name": "get_lot_node_to_fault_block"
+  }
+ ],
+ "tp.get_lot_node_to_lith_id": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_plugins.topology_analysis.topology",
+   "module_short": "gempy_plugins.topology_analysis.topology",
+   "name": "get_lot_node_to_lith_id"
+  }
+ ],
+ "tp.plot_adjacency_matrix": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_plugins.topology_analysis.topology",
+   "module_short": "gempy_plugins.topology_analysis.topology",
+   "name": "plot_adjacency_matrix"
+  }
+ ],
+ "warnings.filterwarnings": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "warnings",
+   "module_short": "warnings",
+   "name": "filterwarnings"
+  }
+ ]
+}

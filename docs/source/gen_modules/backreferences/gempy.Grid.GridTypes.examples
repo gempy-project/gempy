@@ -1,0 +1,42 @@
+
+
+Examples using ``gempy.Grid.GridTypes``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+.. start-sphx-glr-thumbnails
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+.. thumbnail-parent-div-open
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="1.3a: Grids.">
+
+.. only:: html
+
+  .. image:: /tutorials/ch1_fundamentals/images/thumb/sphx_glr_ch1_3a_grids_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_3a_grids.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">1.3a: Grids.</div>
+    </div>
+
+
+.. only:: not html
+
+ * :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_3a_grids.py`
+
+.. thumbnail-parent-div-close
+
+.. raw:: html
+
+    </div>
+

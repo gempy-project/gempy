@@ -1,0 +1,42 @@
+
+
+Examples using ``gempy.core.GeoModel.surface_points_copy``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+.. start-sphx-glr-thumbnails
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+.. thumbnail-parent-div-open
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="1.1 -Basics of geological modeling with GemPy">
+
+.. only:: html
+
+  .. image:: /tutorials/ch1_fundamentals/images/thumb/sphx_glr_ch1_1_basics_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_1_basics.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">1.1 -Basics of geological modeling with GemPy</div>
+    </div>
+
+
+.. only:: not html
+
+ * :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_1_basics.py`
+
+.. thumbnail-parent-div-close
+
+.. raw:: html
+
+    </div>
+

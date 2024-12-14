@@ -1,0 +1,825 @@
+{
+ "X": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "numpy",
+   "module_short": "numpy",
+   "name": "ndarray"
+  }
+ ],
+ "Y": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "numpy",
+   "module_short": "numpy",
+   "name": "ndarray"
+  }
+ ],
+ "Z": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "int"
+  }
+ ],
+ "cbar": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.colorbar",
+   "module_short": "matplotlib.colorbar",
+   "name": "Colorbar"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "Colorbar"
+  }
+ ],
+ "cbar.set_label": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.colorbar",
+   "module_short": "matplotlib.colorbar",
+   "name": "Colorbar.set_label"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "Colorbar.set_label"
+  }
+ ],
+ "data_path": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "str"
+  }
+ ],
+ "geo_model": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.geo_model",
+   "module_short": "gempy.core.data",
+   "name": "GeoModel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "GeoModel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "GeoModel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "GeoModel"
+  }
+ ],
+ "geo_model.geophysics_input": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine.core.data.geophysics_input",
+   "module_short": "gempy_engine.core.data.geophysics_input",
+   "name": "GeophysicsInput"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine.core.data",
+   "module_short": "gempy_engine.core.data",
+   "name": "GeophysicsInput"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine.core",
+   "module_short": "gempy_engine.core",
+   "name": "GeophysicsInput"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine",
+   "module_short": "gempy_engine",
+   "name": "GeophysicsInput"
+  }
+ ],
+ "geo_model.grid": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.grid",
+   "module_short": "gempy.core.data",
+   "name": "Grid"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "Grid"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "Grid"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "Grid"
+  }
+ ],
+ "geo_model.grid.centered_grid": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.grid",
+   "module_short": "gempy.core.data",
+   "name": "Grid.centered_grid"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "Grid.centered_grid"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "Grid.centered_grid"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "Grid.centered_grid"
+  }
+ ],
+ "geo_model.grid.centered_grid.kernel_grid_centers": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.grid",
+   "module_short": "gempy.core.data",
+   "name": "Grid.centered_grid"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "Grid.centered_grid"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "Grid.centered_grid"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "Grid.centered_grid"
+  }
+ ],
+ "geo_model.interpolation_options.mesh_extraction": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.geo_model",
+   "module_short": "gempy.core.data",
+   "name": "GeoModel.interpolation_options"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "GeoModel.interpolation_options"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "GeoModel.interpolation_options"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "GeoModel.interpolation_options"
+  }
+ ],
+ "gp.calculate_gravity_gradient": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "calculate_gravity_gradient"
+  }
+ ],
+ "gp.compute_model": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "compute_model"
+  }
+ ],
+ "gp.create_geomodel": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "create_geomodel"
+  }
+ ],
+ "gp.data.AvailableBackends.numpy": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine.config",
+   "module_short": "gempy_engine.config",
+   "name": "AvailableBackends"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine",
+   "module_short": "gempy_engine",
+   "name": "AvailableBackends"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.data.AvailableBackends",
+   "module_short": "gempy.data.AvailableBackends",
+   "name": "numpy"
+  }
+ ],
+ "gp.data.GemPyEngineConfig": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data.gempy_engine_config",
+   "module_short": "gempy.core.data",
+   "name": "GemPyEngineConfig"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "GemPyEngineConfig"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "GemPyEngineConfig"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "GemPyEngineConfig"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.data",
+   "module_short": "gempy.data",
+   "name": "GemPyEngineConfig"
+  }
+ ],
+ "gp.data.GeoModel": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data.geo_model",
+   "module_short": "gempy.core.data",
+   "name": "GeoModel"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "GeoModel"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "GeoModel"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "GeoModel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.data",
+   "module_short": "gempy.data",
+   "name": "GeoModel"
+  }
+ ],
+ "gp.data.GeophysicsInput": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy_engine.core.data.geophysics_input",
+   "module_short": "gempy_engine.core.data.geophysics_input",
+   "name": "GeophysicsInput"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy_engine.core.data",
+   "module_short": "gempy_engine.core.data",
+   "name": "GeophysicsInput"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy_engine.core",
+   "module_short": "gempy_engine.core",
+   "name": "GeophysicsInput"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy_engine",
+   "module_short": "gempy_engine",
+   "name": "GeophysicsInput"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.data",
+   "module_short": "gempy.data",
+   "name": "GeophysicsInput"
+  }
+ ],
+ "gp.data.ImporterHelper": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data.importer_helper",
+   "module_short": "gempy.core.data",
+   "name": "ImporterHelper"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "ImporterHelper"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "ImporterHelper"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "ImporterHelper"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.data",
+   "module_short": "gempy.data",
+   "name": "ImporterHelper"
+  }
+ ],
+ "gp.map_stack_to_surfaces": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "map_stack_to_surfaces"
+  }
+ ],
+ "gp.set_centered_grid": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "set_centered_grid"
+  }
+ ],
+ "gpv.plot_2d": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_viewer",
+   "module_short": "gempy_viewer",
+   "name": "plot_2d"
+  }
+ ],
+ "grav": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "numpy",
+   "module_short": "numpy",
+   "name": "ndarray"
+  }
+ ],
+ "grav.reshape": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "builtin_function_or_method"
+  }
+ ],
+ "grav_res": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "int"
+  }
+ ],
+ "gravity_gradient": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "numpy",
+   "module_short": "numpy",
+   "name": "ndarray"
+  }
+ ],
+ "np.array": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "builtin_function_or_method"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "numpy",
+   "module_short": "numpy",
+   "name": "array"
+  }
+ ],
+ "np.linspace": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "numpy",
+   "module_short": "numpy",
+   "name": "_ArrayFunctionDispatcher"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "numpy",
+   "module_short": "numpy",
+   "name": "linspace"
+  }
+ ],
+ "np.meshgrid": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "numpy",
+   "module_short": "numpy",
+   "name": "_ArrayFunctionDispatcher"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "numpy",
+   "module_short": "numpy",
+   "name": "meshgrid"
+  }
+ ],
+ "np.random.seed": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "builtin_function_or_method"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "numpy.random",
+   "module_short": "numpy.random",
+   "name": "seed"
+  }
+ ],
+ "np.ravel": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "numpy",
+   "module_short": "numpy",
+   "name": "_ArrayFunctionDispatcher"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "numpy",
+   "module_short": "numpy",
+   "name": "ravel"
+  }
+ ],
+ "np.vstack": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "numpy",
+   "module_short": "numpy",
+   "name": "_ArrayFunctionDispatcher"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "numpy",
+   "module_short": "numpy",
+   "name": "vstack"
+  }
+ ],
+ "os.path.abspath": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "os.path",
+   "module_short": "os.path",
+   "name": "abspath"
+  }
+ ],
+ "pd.set_option": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas._config.config",
+   "module_short": "pandas._config.config",
+   "name": "CallableDynamicDoc"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas._config",
+   "module_short": "pandas._config",
+   "name": "CallableDynamicDoc"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "CallableDynamicDoc"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "set_option"
+  }
+ ],
+ "plt.colorbar": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.pyplot",
+   "module_short": "matplotlib.pyplot",
+   "name": "colorbar"
+  }
+ ],
+ "plt.imshow": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.pyplot",
+   "module_short": "matplotlib.pyplot",
+   "name": "imshow"
+  }
+ ],
+ "plt.scatter": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.pyplot",
+   "module_short": "matplotlib.pyplot",
+   "name": "scatter"
+  }
+ ],
+ "plt.show": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.pyplot",
+   "module_short": "matplotlib.pyplot",
+   "name": "show"
+  }
+ ],
+ "sol": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine.core.data.solutions",
+   "module_short": "gempy_engine.core.data",
+   "name": "Solutions"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine.core.data",
+   "module_short": "gempy_engine.core.data",
+   "name": "Solutions"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine.core",
+   "module_short": "gempy_engine.core",
+   "name": "Solutions"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine",
+   "module_short": "gempy_engine",
+   "name": "Solutions"
+  }
+ ],
+ "sol.gravity": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "numpy",
+   "module_short": "numpy",
+   "name": "ndarray"
+  }
+ ],
+ "sol.gravity.reshape": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "builtin_function_or_method"
+  }
+ ],
+ "xy_ravel": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "numpy",
+   "module_short": "numpy",
+   "name": "ndarray"
+  }
+ ],
+ "xyz": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "list"
+  }
+ ]
+}

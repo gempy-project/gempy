@@ -1,0 +1,693 @@
+{
+ "AvailableBackends.PYTORCH": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine.config",
+   "module_short": "gempy_engine.config",
+   "name": "AvailableBackends"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine",
+   "module_short": "gempy_engine",
+   "name": "AvailableBackends"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine.config.AvailableBackends",
+   "module_short": "gempy_engine.config.AvailableBackends",
+   "name": "PYTORCH"
+  }
+ ],
+ "data_path": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "str"
+  }
+ ],
+ "geo_model": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.geo_model",
+   "module_short": "gempy.core.data",
+   "name": "GeoModel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "GeoModel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "GeoModel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "GeoModel"
+  }
+ ],
+ "geo_model.grid": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.grid",
+   "module_short": "gempy.core.data",
+   "name": "Grid"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "Grid"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "Grid"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "Grid"
+  }
+ ],
+ "geo_model.input_transform.apply_anisotropy": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine.core.data.transforms",
+   "module_short": "gempy_engine.core.data.transforms",
+   "name": "Transform.apply_anisotropy"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine.core.data",
+   "module_short": "gempy_engine.core.data",
+   "name": "Transform.apply_anisotropy"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine.core",
+   "module_short": "gempy_engine.core",
+   "name": "Transform.apply_anisotropy"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine",
+   "module_short": "gempy_engine",
+   "name": "Transform.apply_anisotropy"
+  }
+ ],
+ "geo_model.solutions.raw_arrays.mask_matrix": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.geo_model",
+   "module_short": "gempy.core.data",
+   "name": "GeoModel.solutions"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "GeoModel.solutions"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "GeoModel.solutions"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "GeoModel.solutions"
+  }
+ ],
+ "geo_model.solutions.raw_arrays.mask_matrix_squeezed": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.geo_model",
+   "module_short": "gempy.core.data",
+   "name": "GeoModel.solutions"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "GeoModel.solutions"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "GeoModel.solutions"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "GeoModel.solutions"
+  }
+ ],
+ "geo_model.structural_frame": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.structural_frame",
+   "module_short": "gempy.core.data",
+   "name": "StructuralFrame"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "StructuralFrame"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "StructuralFrame"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "StructuralFrame"
+  }
+ ],
+ "geo_model.structural_frame.get_element_by_name": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.structural_frame",
+   "module_short": "gempy.core.data",
+   "name": "StructuralFrame.get_element_by_name"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "StructuralFrame.get_element_by_name"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "StructuralFrame.get_element_by_name"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "StructuralFrame.get_element_by_name"
+  }
+ ],
+ "gp.add_structural_group": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "add_structural_group"
+  }
+ ],
+ "gp.compute_model": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "compute_model"
+  }
+ ],
+ "gp.create_geomodel": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "create_geomodel"
+  }
+ ],
+ "gp.data.GemPyEngineConfig": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data.gempy_engine_config",
+   "module_short": "gempy.core.data",
+   "name": "GemPyEngineConfig"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "GemPyEngineConfig"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "GemPyEngineConfig"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "GemPyEngineConfig"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.data",
+   "module_short": "gempy.data",
+   "name": "GemPyEngineConfig"
+  }
+ ],
+ "gp.data.GeoModel": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data.geo_model",
+   "module_short": "gempy.core.data",
+   "name": "GeoModel"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "GeoModel"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "GeoModel"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "GeoModel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.data",
+   "module_short": "gempy.data",
+   "name": "GeoModel"
+  }
+ ],
+ "gp.data.GlobalAnisotropy.NONE": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine.core.data.transforms",
+   "module_short": "gempy_engine.core.data.transforms",
+   "name": "GlobalAnisotropy"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine.core.data",
+   "module_short": "gempy_engine.core.data",
+   "name": "GlobalAnisotropy"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine.core",
+   "module_short": "gempy_engine.core",
+   "name": "GlobalAnisotropy"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine",
+   "module_short": "gempy_engine",
+   "name": "GlobalAnisotropy"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.data.GlobalAnisotropy",
+   "module_short": "gempy.data.GlobalAnisotropy",
+   "name": "NONE"
+  }
+ ],
+ "gp.data.ImporterHelper": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data.importer_helper",
+   "module_short": "gempy.core.data",
+   "name": "ImporterHelper"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "ImporterHelper"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "ImporterHelper"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "ImporterHelper"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.data",
+   "module_short": "gempy.data",
+   "name": "ImporterHelper"
+  }
+ ],
+ "gp.data.StackRelationType.BASEMENT": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine.core.data.stack_relation_type",
+   "module_short": "gempy_engine.core.data.stack_relation_type",
+   "name": "StackRelationType"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine.core.data",
+   "module_short": "gempy_engine.core.data",
+   "name": "StackRelationType"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine.core",
+   "module_short": "gempy_engine.core",
+   "name": "StackRelationType"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine",
+   "module_short": "gempy_engine",
+   "name": "StackRelationType"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.data.StackRelationType",
+   "module_short": "gempy.data.StackRelationType",
+   "name": "BASEMENT"
+  }
+ ],
+ "gp.data.StackRelationType.ERODE": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine.core.data.stack_relation_type",
+   "module_short": "gempy_engine.core.data.stack_relation_type",
+   "name": "StackRelationType"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine.core.data",
+   "module_short": "gempy_engine.core.data",
+   "name": "StackRelationType"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine.core",
+   "module_short": "gempy_engine.core",
+   "name": "StackRelationType"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine",
+   "module_short": "gempy_engine",
+   "name": "StackRelationType"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.data.StackRelationType",
+   "module_short": "gempy.data.StackRelationType",
+   "name": "ERODE"
+  }
+ ],
+ "gp.data.StackRelationType.ONLAP": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine.core.data.stack_relation_type",
+   "module_short": "gempy_engine.core.data.stack_relation_type",
+   "name": "StackRelationType"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine.core.data",
+   "module_short": "gempy_engine.core.data",
+   "name": "StackRelationType"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine.core",
+   "module_short": "gempy_engine.core",
+   "name": "StackRelationType"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine",
+   "module_short": "gempy_engine",
+   "name": "StackRelationType"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.data.StackRelationType",
+   "module_short": "gempy.data.StackRelationType",
+   "name": "ONLAP"
+  }
+ ],
+ "gp.remove_structural_group_by_name": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "remove_structural_group_by_name"
+  }
+ ],
+ "gp.set_topography_from_random": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "set_topography_from_random"
+  }
+ ],
+ "gpv.plot_2d": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_viewer",
+   "module_short": "gempy_viewer",
+   "name": "plot_2d"
+  }
+ ],
+ "gpv.plot_3d": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_viewer",
+   "module_short": "gempy_viewer",
+   "name": "plot_3d"
+  }
+ ],
+ "np.array": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "builtin_function_or_method"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "numpy",
+   "module_short": "numpy",
+   "name": "array"
+  }
+ ],
+ "np.random.seed": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "builtin_function_or_method"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "numpy.random",
+   "module_short": "numpy.random",
+   "name": "seed"
+  }
+ ],
+ "os.path.abspath": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "os.path",
+   "module_short": "os.path",
+   "name": "abspath"
+  }
+ ],
+ "s": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine.core.data.solutions",
+   "module_short": "gempy_engine.core.data",
+   "name": "Solutions"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine.core.data",
+   "module_short": "gempy_engine.core.data",
+   "name": "Solutions"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine.core",
+   "module_short": "gempy_engine.core",
+   "name": "Solutions"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine",
+   "module_short": "gempy_engine",
+   "name": "Solutions"
+  }
+ ]
+}

@@ -1,0 +1,84 @@
+
+
+Examples using ``gempy.core.StructuralFrame.get_group_by_name``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+.. start-sphx-glr-thumbnails
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+.. thumbnail-parent-div-open
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="1.5: Fault relations">
+
+.. only:: html
+
+  .. image:: /tutorials/ch1_fundamentals/images/thumb/sphx_glr_ch1_5_fault_relations_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_5_fault_relations.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">1.5: Fault relations</div>
+    </div>
+
+
+.. only:: not html
+
+ * :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_5_fault_relations.py`
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="# %% # .. admonition:: Explanation # #       This model is generally quite unstable and requires float64 precision to find a solution. #       The lack of data in one corner for the TRIAS and LIAS series causes the model to bend unrealistically, #       eroding the CARBO layer, which disappears in that section. The simple way to solve this is by adding more data in that area. #       However, I left it as is because I did not construct the model. #">
+
+.. only:: html
+
+  .. image:: /examples/real/images/thumb/sphx_glr_Alesmodel_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_real_Alesmodel.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Alesmodel: Plotting Sections and Maps</div>
+    </div>
+
+
+.. only:: not html
+
+ * :ref:`sphx_glr_examples_real_Alesmodel.py`
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Claudius">
+
+.. only:: html
+
+  .. image:: /examples/real/images/thumb/sphx_glr_Claudius_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_real_Claudius.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Claudius</div>
+    </div>
+
+
+.. only:: not html
+
+ * :ref:`sphx_glr_examples_real_Claudius.py`
+
+.. thumbnail-parent-div-close
+
+.. raw:: html
+
+    </div>
+

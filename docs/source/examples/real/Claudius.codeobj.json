@@ -1,0 +1,2159 @@
+{
+ "data_path": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "str"
+  }
+ ],
+ "dfs": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "list"
+  }
+ ],
+ "dfs.append": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "builtin_function_or_method"
+  }
+ ],
+ "element": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.structural_element",
+   "module_short": "gempy.core.data",
+   "name": "StructuralElement"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "StructuralElement"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "StructuralElement"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "StructuralElement"
+  }
+ ],
+ "element.surface_points.xyz": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.surface_points",
+   "module_short": "gempy.core.data",
+   "name": "SurfacePointsTable.xyz"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "SurfacePointsTable.xyz"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "SurfacePointsTable.xyz"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "SurfacePointsTable.xyz"
+  }
+ ],
+ "geo_model": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.geo_model",
+   "module_short": "gempy.core.data",
+   "name": "GeoModel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "GeoModel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "GeoModel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "GeoModel"
+  }
+ ],
+ "geo_model.interpolation_options.kernel_options.range": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.geo_model",
+   "module_short": "gempy.core.data",
+   "name": "GeoModel.interpolation_options"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "GeoModel.interpolation_options"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "GeoModel.interpolation_options"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "GeoModel.interpolation_options"
+  }
+ ],
+ "geo_model.structural_frame": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.structural_frame",
+   "module_short": "gempy.core.data",
+   "name": "StructuralFrame"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "StructuralFrame"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "StructuralFrame"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "StructuralFrame"
+  }
+ ],
+ "geo_model.structural_frame.get_element_by_name": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.structural_frame",
+   "module_short": "gempy.core.data",
+   "name": "StructuralFrame.get_element_by_name"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "StructuralFrame.get_element_by_name"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "StructuralFrame.get_element_by_name"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "StructuralFrame.get_element_by_name"
+  }
+ ],
+ "geo_model.structural_frame.get_group_by_name": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.structural_frame",
+   "module_short": "gempy.core.data",
+   "name": "StructuralFrame.get_group_by_name"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "StructuralFrame.get_group_by_name"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "StructuralFrame.get_group_by_name"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "StructuralFrame.get_group_by_name"
+  }
+ ],
+ "geo_model.structural_frame.insert_group": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.structural_frame",
+   "module_short": "gempy.core.data",
+   "name": "StructuralFrame.insert_group"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "StructuralFrame.insert_group"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "StructuralFrame.insert_group"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "StructuralFrame.insert_group"
+  }
+ ],
+ "geo_model.structural_frame.structural_elements.pop": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.structural_frame",
+   "module_short": "gempy.core.data",
+   "name": "StructuralFrame.structural_elements"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "StructuralFrame.structural_elements"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "StructuralFrame.structural_elements"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "StructuralFrame.structural_elements"
+  }
+ ],
+ "gp.add_orientations": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "add_orientations"
+  }
+ ],
+ "gp.compute_model": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "compute_model"
+  }
+ ],
+ "gp.create_geomodel": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "create_geomodel"
+  }
+ ],
+ "gp.create_orientations_from_surface_points_coords": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "create_orientations_from_surface_points_coords"
+  }
+ ],
+ "gp.data.AvailableBackends.numpy": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine.config",
+   "module_short": "gempy_engine.config",
+   "name": "AvailableBackends"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine",
+   "module_short": "gempy_engine",
+   "name": "AvailableBackends"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.data.AvailableBackends",
+   "module_short": "gempy.data.AvailableBackends",
+   "name": "numpy"
+  }
+ ],
+ "gp.data.FaultsRelationSpecialCase.OFFSET_ALL": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.structural_group",
+   "module_short": "gempy.core.data",
+   "name": "FaultsRelationSpecialCase"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "FaultsRelationSpecialCase"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "FaultsRelationSpecialCase"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "FaultsRelationSpecialCase"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.data.FaultsRelationSpecialCase",
+   "module_short": "gempy.data.FaultsRelationSpecialCase",
+   "name": "OFFSET_ALL"
+  }
+ ],
+ "gp.data.GemPyEngineConfig": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data.gempy_engine_config",
+   "module_short": "gempy.core.data",
+   "name": "GemPyEngineConfig"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "GemPyEngineConfig"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "GemPyEngineConfig"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "GemPyEngineConfig"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.data",
+   "module_short": "gempy.data",
+   "name": "GemPyEngineConfig"
+  }
+ ],
+ "gp.data.GeoModel": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data.geo_model",
+   "module_short": "gempy.core.data",
+   "name": "GeoModel"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "GeoModel"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "GeoModel"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "GeoModel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.data",
+   "module_short": "gempy.data",
+   "name": "GeoModel"
+  }
+ ],
+ "gp.data.OrientationsTable": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data.orientations",
+   "module_short": "gempy.core.data",
+   "name": "OrientationsTable"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "OrientationsTable"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "OrientationsTable"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "OrientationsTable"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.data",
+   "module_short": "gempy.data",
+   "name": "OrientationsTable"
+  }
+ ],
+ "gp.data.OrientationsTable.from_arrays": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data.orientations",
+   "module_short": "gempy.core.data",
+   "name": "OrientationsTable.from_arrays"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "OrientationsTable.from_arrays"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "OrientationsTable.from_arrays"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "OrientationsTable.from_arrays"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.data.OrientationsTable",
+   "module_short": "gempy.data.OrientationsTable",
+   "name": "from_arrays"
+  }
+ ],
+ "gp.data.StackRelationType.FAULT": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine.core.data.stack_relation_type",
+   "module_short": "gempy_engine.core.data.stack_relation_type",
+   "name": "StackRelationType"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine.core.data",
+   "module_short": "gempy_engine.core.data",
+   "name": "StackRelationType"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine.core",
+   "module_short": "gempy_engine.core",
+   "name": "StackRelationType"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine",
+   "module_short": "gempy_engine",
+   "name": "StackRelationType"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.data.StackRelationType",
+   "module_short": "gempy.data.StackRelationType",
+   "name": "FAULT"
+  }
+ ],
+ "gp.data.StructuralFrame": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data.structural_frame",
+   "module_short": "gempy.core.data",
+   "name": "StructuralFrame"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "StructuralFrame"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "StructuralFrame"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "StructuralFrame"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.data",
+   "module_short": "gempy.data",
+   "name": "StructuralFrame"
+  }
+ ],
+ "gp.data.StructuralFrame.from_data_tables": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data.structural_frame",
+   "module_short": "gempy.core.data",
+   "name": "StructuralFrame.from_data_tables"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "StructuralFrame.from_data_tables"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "StructuralFrame.from_data_tables"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "StructuralFrame.from_data_tables"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.data.StructuralFrame",
+   "module_short": "gempy.data.StructuralFrame",
+   "name": "from_data_tables"
+  }
+ ],
+ "gp.data.StructuralGroup": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data.structural_group",
+   "module_short": "gempy.core.data",
+   "name": "StructuralGroup"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "StructuralGroup"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "StructuralGroup"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "StructuralGroup"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "abc",
+   "module_short": "abc",
+   "name": "ABC"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.data",
+   "module_short": "gempy.data",
+   "name": "StructuralGroup"
+  }
+ ],
+ "gp.data.SurfacePointsTable": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data.surface_points",
+   "module_short": "gempy.core.data",
+   "name": "SurfacePointsTable"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "SurfacePointsTable"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "SurfacePointsTable"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "SurfacePointsTable"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.data",
+   "module_short": "gempy.data",
+   "name": "SurfacePointsTable"
+  }
+ ],
+ "gp.data.SurfacePointsTable.from_arrays": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data.surface_points",
+   "module_short": "gempy.core.data",
+   "name": "SurfacePointsTable.from_arrays"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "SurfacePointsTable.from_arrays"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "SurfacePointsTable.from_arrays"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "SurfacePointsTable.from_arrays"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.data.SurfacePointsTable",
+   "module_short": "gempy.data.SurfacePointsTable",
+   "name": "from_arrays"
+  }
+ ],
+ "gp.map_stack_to_surfaces": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "map_stack_to_surfaces"
+  }
+ ],
+ "gp.modify_orientations": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "modify_orientations"
+  }
+ ],
+ "gp.modify_surface_points": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "modify_surface_points"
+  }
+ ],
+ "gp.set_is_fault": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "set_is_fault"
+  }
+ ],
+ "gpv.plot_2d": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_viewer",
+   "module_short": "gempy_viewer",
+   "name": "plot_2d"
+  }
+ ],
+ "gpv.plot_3d": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_viewer",
+   "module_short": "gempy_viewer",
+   "name": "plot_3d"
+  }
+ ],
+ "group_fault": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.structural_group",
+   "module_short": "gempy.core.data",
+   "name": "StructuralGroup"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "StructuralGroup"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "StructuralGroup"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "StructuralGroup"
+  }
+ ],
+ "letter": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "str"
+  }
+ ],
+ "new_orientations": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.orientations",
+   "module_short": "gempy.core.data",
+   "name": "OrientationsTable"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "OrientationsTable"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "OrientationsTable"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "OrientationsTable"
+  }
+ ],
+ "new_orientations.data": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "numpy",
+   "module_short": "numpy",
+   "name": "ndarray"
+  }
+ ],
+ "new_orientations.grads": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.orientations",
+   "module_short": "gempy.core.data",
+   "name": "OrientationsTable.grads"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "OrientationsTable.grads"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "OrientationsTable.grads"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "OrientationsTable.grads"
+  }
+ ],
+ "np.array": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "builtin_function_or_method"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "numpy",
+   "module_short": "numpy",
+   "name": "array"
+  }
+ ],
+ "o": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.frame",
+   "module_short": "pandas.core.frame",
+   "name": "DataFrame"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "DataFrame"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "DataFrame"
+  }
+ ],
+ "orientations": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.frame",
+   "module_short": "pandas.core.frame",
+   "name": "DataFrame"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "DataFrame"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "DataFrame"
+  }
+ ],
+ "orientations.dtypes": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.frame",
+   "module_short": "pandas.core.frame",
+   "name": "DataFrame.dtypes"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "DataFrame.dtypes"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "DataFrame.dtypes"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.generic",
+   "module_short": "pandas.core.generic",
+   "name": "NDFrame.dtypes"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "NDFrame.dtypes"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "NDFrame.dtypes"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.arraylike",
+   "module_short": "pandas.core.arraylike",
+   "name": "OpsMixin.dtypes"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "OpsMixin.dtypes"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "OpsMixin.dtypes"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.base",
+   "module_short": "pandas.core.base",
+   "name": "PandasObject.dtypes"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "PandasObject.dtypes"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "PandasObject.dtypes"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.indexing",
+   "module_short": "pandas.core.indexing",
+   "name": "IndexingMixin.dtypes"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "IndexingMixin.dtypes"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "IndexingMixin.dtypes"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.accessor",
+   "module_short": "pandas.core.accessor",
+   "name": "DirNamesMixin.dtypes"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "DirNamesMixin.dtypes"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "DirNamesMixin.dtypes"
+  }
+ ],
+ "orientations.reset_index": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.frame",
+   "module_short": "pandas.core.frame",
+   "name": "DataFrame.reset_index"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "DataFrame.reset_index"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "DataFrame.reset_index"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.generic",
+   "module_short": "pandas.core.generic",
+   "name": "NDFrame.reset_index"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "NDFrame.reset_index"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "NDFrame.reset_index"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.arraylike",
+   "module_short": "pandas.core.arraylike",
+   "name": "OpsMixin.reset_index"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "OpsMixin.reset_index"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "OpsMixin.reset_index"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.base",
+   "module_short": "pandas.core.base",
+   "name": "PandasObject.reset_index"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "PandasObject.reset_index"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "PandasObject.reset_index"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.indexing",
+   "module_short": "pandas.core.indexing",
+   "name": "IndexingMixin.reset_index"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "IndexingMixin.reset_index"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "IndexingMixin.reset_index"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.accessor",
+   "module_short": "pandas.core.accessor",
+   "name": "DirNamesMixin.reset_index"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "DirNamesMixin.reset_index"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "DirNamesMixin.reset_index"
+  }
+ ],
+ "orientations.tail": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.frame",
+   "module_short": "pandas.core.frame",
+   "name": "DataFrame.tail"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "DataFrame.tail"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "DataFrame.tail"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.generic",
+   "module_short": "pandas.core.generic",
+   "name": "NDFrame.tail"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "NDFrame.tail"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "NDFrame.tail"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.arraylike",
+   "module_short": "pandas.core.arraylike",
+   "name": "OpsMixin.tail"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "OpsMixin.tail"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "OpsMixin.tail"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.base",
+   "module_short": "pandas.core.base",
+   "name": "PandasObject.tail"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "PandasObject.tail"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "PandasObject.tail"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.indexing",
+   "module_short": "pandas.core.indexing",
+   "name": "IndexingMixin.tail"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "IndexingMixin.tail"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "IndexingMixin.tail"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.accessor",
+   "module_short": "pandas.core.accessor",
+   "name": "DirNamesMixin.tail"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "DirNamesMixin.tail"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "DirNamesMixin.tail"
+  }
+ ],
+ "orientations_table": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.orientations",
+   "module_short": "gempy.core.data",
+   "name": "OrientationsTable"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "OrientationsTable"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "OrientationsTable"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "OrientationsTable"
+  }
+ ],
+ "os.path.abspath": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "os.path",
+   "module_short": "os.path",
+   "name": "abspath"
+  }
+ ],
+ "pn.concat": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "concat"
+  }
+ ],
+ "pn.read_csv": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "read_csv"
+  }
+ ],
+ "reduce_data_by": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "int"
+  }
+ ],
+ "sect": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "list"
+  }
+ ],
+ "structural_frame": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.structural_frame",
+   "module_short": "gempy.core.data",
+   "name": "StructuralFrame"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "StructuralFrame"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "StructuralFrame"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "StructuralFrame"
+  }
+ ],
+ "surf": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "str"
+  }
+ ],
+ "surface_points": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.frame",
+   "module_short": "pandas.core.frame",
+   "name": "DataFrame"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "DataFrame"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "DataFrame"
+  }
+ ],
+ "surface_points.dtypes": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.frame",
+   "module_short": "pandas.core.frame",
+   "name": "DataFrame.dtypes"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "DataFrame.dtypes"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "DataFrame.dtypes"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.generic",
+   "module_short": "pandas.core.generic",
+   "name": "NDFrame.dtypes"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "NDFrame.dtypes"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "NDFrame.dtypes"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.arraylike",
+   "module_short": "pandas.core.arraylike",
+   "name": "OpsMixin.dtypes"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "OpsMixin.dtypes"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "OpsMixin.dtypes"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.base",
+   "module_short": "pandas.core.base",
+   "name": "PandasObject.dtypes"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "PandasObject.dtypes"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "PandasObject.dtypes"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.indexing",
+   "module_short": "pandas.core.indexing",
+   "name": "IndexingMixin.dtypes"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "IndexingMixin.dtypes"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "IndexingMixin.dtypes"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.accessor",
+   "module_short": "pandas.core.accessor",
+   "name": "DirNamesMixin.dtypes"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "DirNamesMixin.dtypes"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "DirNamesMixin.dtypes"
+  }
+ ],
+ "surface_points.groupby": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.frame",
+   "module_short": "pandas.core.frame",
+   "name": "DataFrame.groupby"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "DataFrame.groupby"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "DataFrame.groupby"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.generic",
+   "module_short": "pandas.core.generic",
+   "name": "NDFrame.groupby"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "NDFrame.groupby"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "NDFrame.groupby"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.arraylike",
+   "module_short": "pandas.core.arraylike",
+   "name": "OpsMixin.groupby"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "OpsMixin.groupby"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "OpsMixin.groupby"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.base",
+   "module_short": "pandas.core.base",
+   "name": "PandasObject.groupby"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "PandasObject.groupby"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "PandasObject.groupby"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.indexing",
+   "module_short": "pandas.core.indexing",
+   "name": "IndexingMixin.groupby"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "IndexingMixin.groupby"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "IndexingMixin.groupby"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.accessor",
+   "module_short": "pandas.core.accessor",
+   "name": "DirNamesMixin.groupby"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "DirNamesMixin.groupby"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "DirNamesMixin.groupby"
+  }
+ ],
+ "surface_points.reset_index": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.frame",
+   "module_short": "pandas.core.frame",
+   "name": "DataFrame.reset_index"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "DataFrame.reset_index"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "DataFrame.reset_index"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.generic",
+   "module_short": "pandas.core.generic",
+   "name": "NDFrame.reset_index"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "NDFrame.reset_index"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "NDFrame.reset_index"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.arraylike",
+   "module_short": "pandas.core.arraylike",
+   "name": "OpsMixin.reset_index"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "OpsMixin.reset_index"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "OpsMixin.reset_index"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.base",
+   "module_short": "pandas.core.base",
+   "name": "PandasObject.reset_index"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "PandasObject.reset_index"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "PandasObject.reset_index"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.indexing",
+   "module_short": "pandas.core.indexing",
+   "name": "IndexingMixin.reset_index"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "IndexingMixin.reset_index"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "IndexingMixin.reset_index"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.accessor",
+   "module_short": "pandas.core.accessor",
+   "name": "DirNamesMixin.reset_index"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "DirNamesMixin.reset_index"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "DirNamesMixin.reset_index"
+  }
+ ],
+ "surface_points.tail": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.frame",
+   "module_short": "pandas.core.frame",
+   "name": "DataFrame.tail"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "DataFrame.tail"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "DataFrame.tail"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.generic",
+   "module_short": "pandas.core.generic",
+   "name": "NDFrame.tail"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "NDFrame.tail"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "NDFrame.tail"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.arraylike",
+   "module_short": "pandas.core.arraylike",
+   "name": "OpsMixin.tail"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "OpsMixin.tail"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "OpsMixin.tail"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.base",
+   "module_short": "pandas.core.base",
+   "name": "PandasObject.tail"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "PandasObject.tail"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "PandasObject.tail"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.indexing",
+   "module_short": "pandas.core.indexing",
+   "name": "IndexingMixin.tail"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "IndexingMixin.tail"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "IndexingMixin.tail"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.accessor",
+   "module_short": "pandas.core.accessor",
+   "name": "DirNamesMixin.tail"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "DirNamesMixin.tail"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "DirNamesMixin.tail"
+  }
+ ],
+ "surface_points_table": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.surface_points",
+   "module_short": "gempy.core.data",
+   "name": "SurfacePointsTable"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "SurfacePointsTable"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "SurfacePointsTable"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "SurfacePointsTable"
+  }
+ ],
+ "surface_points_table.name_id_map": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "dict"
+  }
+ ]
+}

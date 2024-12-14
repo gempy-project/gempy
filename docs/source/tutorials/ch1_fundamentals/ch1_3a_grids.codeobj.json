@@ -1,0 +1,1289 @@
+{
+ "Grid": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data.grid",
+   "module_short": "gempy.core.data",
+   "name": "Grid"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "Grid"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "Grid"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "Grid"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "Grid"
+  }
+ ],
+ "RegularGrid": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data.grid_modules.grid_types",
+   "module_short": "gempy.core.data.grid_modules",
+   "name": "RegularGrid"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data.grid_modules",
+   "module_short": "gempy.core.data.grid_modules",
+   "name": "RegularGrid"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "RegularGrid"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "RegularGrid"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "RegularGrid"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.grid_modules",
+   "module_short": "gempy.core.data.grid_modules",
+   "name": "RegularGrid"
+  }
+ ],
+ "ax": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "mpl_toolkits.mplot3d.axes3d",
+   "module_short": "mpl_toolkits.mplot3d",
+   "name": "Axes3D"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "mpl_toolkits.mplot3d",
+   "module_short": "mpl_toolkits.mplot3d",
+   "name": "Axes3D"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "mpl_toolkits",
+   "module_short": "mpl_toolkits",
+   "name": "Axes3D"
+  }
+ ],
+ "ax.scatter": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "mpl_toolkits.mplot3d.axes3d",
+   "module_short": "mpl_toolkits.mplot3d",
+   "name": "Axes3D.scatter"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "mpl_toolkits.mplot3d",
+   "module_short": "mpl_toolkits.mplot3d",
+   "name": "Axes3D.scatter"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "mpl_toolkits",
+   "module_short": "mpl_toolkits",
+   "name": "Axes3D.scatter"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes._axes",
+   "module_short": "matplotlib.axes",
+   "name": "Axes.scatter"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes",
+   "module_short": "matplotlib.axes",
+   "name": "Axes.scatter"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "Axes.scatter"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes._base",
+   "module_short": "matplotlib.axes._base",
+   "name": "_AxesBase.scatter"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes",
+   "module_short": "matplotlib.axes",
+   "name": "_AxesBase.scatter"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "_AxesBase.scatter"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.artist",
+   "module_short": "matplotlib.artist",
+   "name": "Artist.scatter"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "Artist.scatter"
+  }
+ ],
+ "ax.set_xlabel": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "mpl_toolkits.mplot3d.axes3d",
+   "module_short": "mpl_toolkits.mplot3d",
+   "name": "Axes3D.set_xlabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "mpl_toolkits.mplot3d",
+   "module_short": "mpl_toolkits.mplot3d",
+   "name": "Axes3D.set_xlabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "mpl_toolkits",
+   "module_short": "mpl_toolkits",
+   "name": "Axes3D.set_xlabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes._axes",
+   "module_short": "matplotlib.axes",
+   "name": "Axes.set_xlabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes",
+   "module_short": "matplotlib.axes",
+   "name": "Axes.set_xlabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "Axes.set_xlabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes._base",
+   "module_short": "matplotlib.axes._base",
+   "name": "_AxesBase.set_xlabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes",
+   "module_short": "matplotlib.axes",
+   "name": "_AxesBase.set_xlabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "_AxesBase.set_xlabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.artist",
+   "module_short": "matplotlib.artist",
+   "name": "Artist.set_xlabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "Artist.set_xlabel"
+  }
+ ],
+ "ax.set_xlim": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "mpl_toolkits.mplot3d.axes3d",
+   "module_short": "mpl_toolkits.mplot3d",
+   "name": "Axes3D.set_xlim"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "mpl_toolkits.mplot3d",
+   "module_short": "mpl_toolkits.mplot3d",
+   "name": "Axes3D.set_xlim"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "mpl_toolkits",
+   "module_short": "mpl_toolkits",
+   "name": "Axes3D.set_xlim"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes._axes",
+   "module_short": "matplotlib.axes",
+   "name": "Axes.set_xlim"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes",
+   "module_short": "matplotlib.axes",
+   "name": "Axes.set_xlim"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "Axes.set_xlim"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes._base",
+   "module_short": "matplotlib.axes._base",
+   "name": "_AxesBase.set_xlim"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes",
+   "module_short": "matplotlib.axes",
+   "name": "_AxesBase.set_xlim"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "_AxesBase.set_xlim"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.artist",
+   "module_short": "matplotlib.artist",
+   "name": "Artist.set_xlim"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "Artist.set_xlim"
+  }
+ ],
+ "ax.set_ylabel": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "mpl_toolkits.mplot3d.axes3d",
+   "module_short": "mpl_toolkits.mplot3d",
+   "name": "Axes3D.set_ylabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "mpl_toolkits.mplot3d",
+   "module_short": "mpl_toolkits.mplot3d",
+   "name": "Axes3D.set_ylabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "mpl_toolkits",
+   "module_short": "mpl_toolkits",
+   "name": "Axes3D.set_ylabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes._axes",
+   "module_short": "matplotlib.axes",
+   "name": "Axes.set_ylabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes",
+   "module_short": "matplotlib.axes",
+   "name": "Axes.set_ylabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "Axes.set_ylabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes._base",
+   "module_short": "matplotlib.axes._base",
+   "name": "_AxesBase.set_ylabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes",
+   "module_short": "matplotlib.axes",
+   "name": "_AxesBase.set_ylabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "_AxesBase.set_ylabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.artist",
+   "module_short": "matplotlib.artist",
+   "name": "Artist.set_ylabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "Artist.set_ylabel"
+  }
+ ],
+ "ax.set_ylim": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "mpl_toolkits.mplot3d.axes3d",
+   "module_short": "mpl_toolkits.mplot3d",
+   "name": "Axes3D.set_ylim"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "mpl_toolkits.mplot3d",
+   "module_short": "mpl_toolkits.mplot3d",
+   "name": "Axes3D.set_ylim"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "mpl_toolkits",
+   "module_short": "mpl_toolkits",
+   "name": "Axes3D.set_ylim"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes._axes",
+   "module_short": "matplotlib.axes",
+   "name": "Axes.set_ylim"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes",
+   "module_short": "matplotlib.axes",
+   "name": "Axes.set_ylim"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "Axes.set_ylim"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes._base",
+   "module_short": "matplotlib.axes._base",
+   "name": "_AxesBase.set_ylim"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes",
+   "module_short": "matplotlib.axes",
+   "name": "_AxesBase.set_ylim"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "_AxesBase.set_ylim"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.artist",
+   "module_short": "matplotlib.artist",
+   "name": "Artist.set_ylim"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "Artist.set_ylim"
+  }
+ ],
+ "ax.set_zlabel": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "mpl_toolkits.mplot3d.axes3d",
+   "module_short": "mpl_toolkits.mplot3d",
+   "name": "Axes3D.set_zlabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "mpl_toolkits.mplot3d",
+   "module_short": "mpl_toolkits.mplot3d",
+   "name": "Axes3D.set_zlabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "mpl_toolkits",
+   "module_short": "mpl_toolkits",
+   "name": "Axes3D.set_zlabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes._axes",
+   "module_short": "matplotlib.axes._axes",
+   "name": "Axes.set_zlabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes",
+   "module_short": "matplotlib.axes",
+   "name": "Axes.set_zlabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "Axes.set_zlabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes._base",
+   "module_short": "matplotlib.axes._base",
+   "name": "_AxesBase.set_zlabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes",
+   "module_short": "matplotlib.axes",
+   "name": "_AxesBase.set_zlabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "_AxesBase.set_zlabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.artist",
+   "module_short": "matplotlib.artist",
+   "name": "Artist.set_zlabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "Artist.set_zlabel"
+  }
+ ],
+ "ax.set_zlim": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "mpl_toolkits.mplot3d.axes3d",
+   "module_short": "mpl_toolkits.mplot3d",
+   "name": "Axes3D.set_zlim"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "mpl_toolkits.mplot3d",
+   "module_short": "mpl_toolkits.mplot3d",
+   "name": "Axes3D.set_zlim"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "mpl_toolkits",
+   "module_short": "mpl_toolkits",
+   "name": "Axes3D.set_zlim"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes._axes",
+   "module_short": "matplotlib.axes._axes",
+   "name": "Axes.set_zlim"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes",
+   "module_short": "matplotlib.axes",
+   "name": "Axes.set_zlim"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "Axes.set_zlim"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes._base",
+   "module_short": "matplotlib.axes._base",
+   "name": "_AxesBase.set_zlim"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes",
+   "module_short": "matplotlib.axes",
+   "name": "_AxesBase.set_zlim"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "_AxesBase.set_zlim"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.artist",
+   "module_short": "matplotlib.artist",
+   "name": "Artist.set_zlim"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "Artist.set_zlim"
+  }
+ ],
+ "extent": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "numpy",
+   "module_short": "numpy",
+   "name": "ndarray"
+  }
+ ],
+ "fig": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.figure",
+   "module_short": "matplotlib.figure",
+   "name": "Figure"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "Figure"
+  }
+ ],
+ "fig.add_subplot": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.figure",
+   "module_short": "matplotlib.figure",
+   "name": "Figure.add_subplot"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "Figure.add_subplot"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.figure",
+   "module_short": "matplotlib.figure",
+   "name": "FigureBase.add_subplot"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "FigureBase.add_subplot"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.artist",
+   "module_short": "matplotlib.artist",
+   "name": "Artist.add_subplot"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "Artist.add_subplot"
+  }
+ ],
+ "gempy.core.grid_modules.topography.Topography": [
+  {
+   "is_class": false,
+   "is_explicit": true,
+   "module": "gempy.core.grid_modules.topography",
+   "module_short": "gempy.core.grid_modules.topography",
+   "name": "Topography"
+  }
+ ],
+ "gp.set_centered_grid": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "set_centered_grid"
+  }
+ ],
+ "gp.set_custom_grid": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "set_custom_grid"
+  }
+ ],
+ "gp.set_topography_from_random": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "set_topography_from_random"
+  }
+ ],
+ "grid": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.grid",
+   "module_short": "gempy.core.data",
+   "name": "Grid"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "Grid"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "Grid"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "Grid"
+  }
+ ],
+ "grid.GridTypes": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data.grid.Grid",
+   "module_short": "gempy.core.data.grid.Grid",
+   "name": "GridTypes"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data.Grid",
+   "module_short": "gempy.core.data.Grid",
+   "name": "GridTypes"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.Grid",
+   "module_short": "gempy.core.Grid",
+   "name": "GridTypes"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.Grid",
+   "module_short": "gempy.Grid",
+   "name": "GridTypes"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "enum",
+   "module_short": "enum",
+   "name": "Flag"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "enum",
+   "module_short": "enum",
+   "name": "Enum"
+  }
+ ],
+ "grid.GridTypes.DENSE": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.grid.Grid",
+   "module_short": "gempy.core.data.grid.Grid",
+   "name": "GridTypes"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.Grid",
+   "module_short": "gempy.core.data.Grid",
+   "name": "GridTypes"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.Grid",
+   "module_short": "gempy.core.Grid",
+   "name": "GridTypes"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.Grid",
+   "module_short": "gempy.Grid",
+   "name": "GridTypes"
+  }
+ ],
+ "grid.GridTypes.TOPOGRAPHY": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.grid.Grid",
+   "module_short": "gempy.core.data.grid.Grid",
+   "name": "GridTypes"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.Grid",
+   "module_short": "gempy.core.data.Grid",
+   "name": "GridTypes"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.Grid",
+   "module_short": "gempy.core.Grid",
+   "name": "GridTypes"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.Grid",
+   "module_short": "gempy.Grid",
+   "name": "GridTypes"
+  }
+ ],
+ "grid.active_grids": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.grid",
+   "module_short": "gempy.core.data",
+   "name": "Grid.active_grids"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "Grid.active_grids"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "Grid.active_grids"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "Grid.active_grids"
+  }
+ ],
+ "grid.centered_grid.values": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.grid",
+   "module_short": "gempy.core.data",
+   "name": "Grid.centered_grid"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "Grid.centered_grid"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "Grid.centered_grid"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "Grid.centered_grid"
+  }
+ ],
+ "grid.custom_grid": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.grid",
+   "module_short": "gempy.core.data",
+   "name": "Grid.custom_grid"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "Grid.custom_grid"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "Grid.custom_grid"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "Grid.custom_grid"
+  }
+ ],
+ "grid.custom_grid.values": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.grid",
+   "module_short": "gempy.core.data",
+   "name": "Grid.custom_grid"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "Grid.custom_grid"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "Grid.custom_grid"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "Grid.custom_grid"
+  }
+ ],
+ "grid.dense_grid": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.grid",
+   "module_short": "gempy.core.data",
+   "name": "Grid.dense_grid"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "Grid.dense_grid"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "Grid.dense_grid"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "Grid.dense_grid"
+  }
+ ],
+ "grid.length": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "numpy",
+   "module_short": "numpy",
+   "name": "ndarray"
+  }
+ ],
+ "grid.regular_grid": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.grid",
+   "module_short": "gempy.core.data",
+   "name": "Grid.regular_grid"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "Grid.regular_grid"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "Grid.regular_grid"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "Grid.regular_grid"
+  }
+ ],
+ "grid.regular_grid.values": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.grid",
+   "module_short": "gempy.core.data",
+   "name": "Grid.regular_grid"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "Grid.regular_grid"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "Grid.regular_grid"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "Grid.regular_grid"
+  }
+ ],
+ "grid.topography": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.grid",
+   "module_short": "gempy.core.data",
+   "name": "Grid.topography"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "Grid.topography"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "Grid.topography"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "Grid.topography"
+  }
+ ],
+ "grid.topography.values": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.grid",
+   "module_short": "gempy.core.data",
+   "name": "Grid.topography"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "Grid.topography"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "Grid.topography"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "Grid.topography"
+  }
+ ],
+ "grid.values": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "numpy",
+   "module_short": "numpy",
+   "name": "ndarray"
+  }
+ ],
+ "grid.values.shape": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "tuple"
+  }
+ ],
+ "np.array": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "builtin_function_or_method"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "numpy",
+   "module_short": "numpy",
+   "name": "array"
+  }
+ ],
+ "np.random.seed": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "builtin_function_or_method"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "numpy.random",
+   "module_short": "numpy.random",
+   "name": "seed"
+  }
+ ],
+ "plt.figure": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.pyplot",
+   "module_short": "matplotlib.pyplot",
+   "name": "figure"
+  }
+ ],
+ "plt.show": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.pyplot",
+   "module_short": "matplotlib.pyplot",
+   "name": "show"
+  }
+ ],
+ "resolution": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "numpy",
+   "module_short": "numpy",
+   "name": "ndarray"
+  }
+ ]
+}

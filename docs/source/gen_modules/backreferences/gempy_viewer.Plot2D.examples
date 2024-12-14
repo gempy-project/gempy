@@ -1,0 +1,147 @@
+
+
+Examples using ``gempy_viewer.Plot2D``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+.. start-sphx-glr-thumbnails
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+.. thumbnail-parent-div-open
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Getting Started">
+
+.. only:: html
+
+  .. image:: /tutorials/a_getting_started/images/thumb/sphx_glr_get_started_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_tutorials_a_getting_started_get_started.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Getting Started</div>
+    </div>
+
+
+.. only:: not html
+
+ * :ref:`sphx_glr_tutorials_a_getting_started_get_started.py`
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="1.1 -Basics of geological modeling with GemPy">
+
+.. only:: html
+
+  .. image:: /tutorials/ch1_fundamentals/images/thumb/sphx_glr_ch1_1_basics_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_1_basics.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">1.1 -Basics of geological modeling with GemPy</div>
+    </div>
+
+
+.. only:: not html
+
+ * :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_1_basics.py`
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="1.6: 2D Visualization.">
+
+.. only:: html
+
+  .. image:: /tutorials/ch1_fundamentals/images/thumb/sphx_glr_ch1_6_2d_visualization_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_6_2d_visualization.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">1.6: 2D Visualization.</div>
+    </div>
+
+
+.. only:: not html
+
+ * :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_6_2d_visualization.py`
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="3.1: Simple example of kriging in gempy">
+
+.. only:: html
+
+  .. image:: /tutorials/ch3-Interpolations/images/thumb/sphx_glr_ch3_1_kriging_interpolation_and_simulation_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_tutorials_ch3-Interpolations_ch3_1_kriging_interpolation_and_simulation.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">3.1: Simple example of kriging in gempy</div>
+    </div>
+
+
+.. only:: not html
+
+ * :ref:`sphx_glr_tutorials_ch3-Interpolations_ch3_1_kriging_interpolation_and_simulation.py`
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Chapter 4: Analyzing Geomodel Topology">
+
+.. only:: html
+
+  .. image:: /tutorials/ch4-Topology/images/thumb/sphx_glr_ch4-1-Topology_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_tutorials_ch4-Topology_ch4-1-Topology.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Chapter 4: Analyzing Geomodel Topology</div>
+    </div>
+
+
+.. only:: not html
+
+ * :ref:`sphx_glr_tutorials_ch4-Topology_ch4-1-Topology.py`
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Unknown Model: Importing Borehole Data and Building a 3D Geological Model with GemPy">
+
+.. only:: html
+
+  .. image:: /examples/real/images/thumb/sphx_glr_mik_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_real_mik.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Unknown Model: Importing Borehole Data and Building a 3D Geological Model with GemPy</div>
+    </div>
+
+
+.. only:: not html
+
+ * :ref:`sphx_glr_examples_real_mik.py`
+
+.. thumbnail-parent-div-close
+
+.. raw:: html
+
+    </div>
+

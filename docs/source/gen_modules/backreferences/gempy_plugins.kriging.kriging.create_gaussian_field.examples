@@ -1,0 +1,42 @@
+
+
+Examples using ``gempy_plugins.kriging.kriging.create_gaussian_field``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+.. start-sphx-glr-thumbnails
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+.. thumbnail-parent-div-open
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="3.1: Simple example of kriging in gempy">
+
+.. only:: html
+
+  .. image:: /tutorials/ch3-Interpolations/images/thumb/sphx_glr_ch3_1_kriging_interpolation_and_simulation_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_tutorials_ch3-Interpolations_ch3_1_kriging_interpolation_and_simulation.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">3.1: Simple example of kriging in gempy</div>
+    </div>
+
+
+.. only:: not html
+
+ * :ref:`sphx_glr_tutorials_ch3-Interpolations_ch3_1_kriging_interpolation_and_simulation.py`
+
+.. thumbnail-parent-div-close
+
+.. raw:: html
+
+    </div>
+

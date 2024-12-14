@@ -1,0 +1,133 @@
+{
+ "ExampleModel.GRABEN": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.enumerators",
+   "module_short": "gempy.core.data.enumerators",
+   "name": "ExampleModel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "ExampleModel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "ExampleModel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "ExampleModel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.enumerators.ExampleModel",
+   "module_short": "gempy.core.data.enumerators.ExampleModel",
+   "name": "GRABEN"
+  }
+ ],
+ "generate_example_model": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "generate_example_model"
+  }
+ ],
+ "geo_model": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.geo_model",
+   "module_short": "gempy.core.data",
+   "name": "GeoModel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "GeoModel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "GeoModel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "GeoModel"
+  }
+ ],
+ "gp.compute_model": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "compute_model"
+  }
+ ],
+ "gpv.plot_3d": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_viewer",
+   "module_short": "gempy_viewer",
+   "name": "plot_3d"
+  }
+ ],
+ "gpv.plot_to_liquid_earth": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_viewer",
+   "module_short": "gempy_viewer",
+   "name": "plot_to_liquid_earth"
+  }
+ ]
+}
