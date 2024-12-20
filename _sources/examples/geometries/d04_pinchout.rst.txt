@@ -139,7 +139,7 @@ Plot the initial geological model in the y direction
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fba40e071c0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fdaefbf13f0>
 
 
 
@@ -162,14 +162,14 @@ Plot the initial geological model in the y direction
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fbc661ba860>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fdaef7d2fe0>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 7.815 seconds)
+   **Total running time of the script:** (0 minutes 8.264 seconds)
 
 
 .. _sphx_glr_download_examples_geometries_d04_pinchout.py:

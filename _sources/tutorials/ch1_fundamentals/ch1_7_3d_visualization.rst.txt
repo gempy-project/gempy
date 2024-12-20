@@ -125,7 +125,7 @@ Data plot
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fbbf8802a40>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fda58f593f0>
 
 
 
@@ -155,7 +155,7 @@ Geomodel plot
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fbbf8800d30>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fda58f58220>
 
 
 
@@ -176,9 +176,9 @@ you can easily share the link with anyone.
 
     link = gpv.plot_to_liquid_earth(
         geo_model=geo_model,
-        space_name="[PUBLIC] GemPy Tutorial 1.7: 3-D Visualization",
+        space_name="GemPy",
         file_name="gempy_model",
-        user_token=None,  # If None, it will try to grab it from the environment
+        user_token="le-200fc6e0a15b4663b74dde7125493958lUdjsI7XqKMCFFDS1Nk01mnCqNHZ7nlti44ezWtqOYA",  # If None, it will try to grab it from the environment
         grab_link=True,
     )
 
@@ -186,16 +186,14 @@ you can easily share the link with anyone.
 
 
 
+
+
 .. rst-class:: sphx-glr-script-out
 
-.. code-block:: pytb
+ .. code-block:: none
 
-    Traceback (most recent call last):
-      File "/Users/flow/git/gempy/examples/tutorials/ch1_fundamentals/ch1_7_3d_visualization.py", line 67, in <module>
-        link = gpv.plot_to_liquid_earth(
-      File "/Users/flow/opt/anaconda3/envs/gempy3_pre/lib/python3.10/site-packages/gempy_viewer/API/_plot_LiquidEarth.py", line 19, in plot_to_liquid_earth
-        raise ValueError("No user token provided and no token found in the environment")
-    ValueError: No user token provided and no token found in the environment
+    Error uploading files: too many values to unpack (expected 2)
+    Generated Link: https://liquidearth.app.link/8d3223a5-3b2e-4189-a7d6-b388e91d7287
 
 
 
@@ -211,7 +209,7 @@ Now we can use `this link <https://liquidearth.app.link/gempy-promo>`_ to visual
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (3 minutes 55.741 seconds)
+   **Total running time of the script:** (4 minutes 26.246 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_7_3d_visualization.py:

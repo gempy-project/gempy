@@ -126,45 +126,45 @@ we can directly tidy the data in gempy style:</p>
     <tr>
       <th>761</th>
       <td>6</td>
-      <td>11.14</td>
-      <td>-0.17</td>
-      <td>1.53</td>
+      <td>11.143734</td>
+      <td>-0.172893</td>
+      <td>1.53226</td>
       <td>NaN</td>
       <td>f3</td>
     </tr>
     <tr>
       <th>762</th>
       <td>7</td>
-      <td>11.17</td>
-      <td>0.28</td>
-      <td>1.68</td>
+      <td>11.171513</td>
+      <td>0.284198</td>
+      <td>1.68442</td>
       <td>NaN</td>
       <td>f3</td>
     </tr>
     <tr>
       <th>763</th>
       <td>8</td>
-      <td>11.16</td>
-      <td>0.40</td>
-      <td>1.82</td>
+      <td>11.159113</td>
+      <td>0.399711</td>
+      <td>1.81939</td>
       <td>NaN</td>
       <td>f3</td>
     </tr>
     <tr>
       <th>764</th>
       <td>9</td>
-      <td>11.07</td>
-      <td>0.03</td>
-      <td>1.92</td>
+      <td>11.069008</td>
+      <td>0.032232</td>
+      <td>1.92030</td>
       <td>NaN</td>
       <td>f3</td>
     </tr>
     <tr>
       <th>765</th>
       <td>10</td>
-      <td>10.89</td>
-      <td>-0.43</td>
-      <td>2.10</td>
+      <td>10.885192</td>
+      <td>-0.428004</td>
+      <td>2.10412</td>
       <td>NaN</td>
       <td>f3</td>
     </tr>
@@ -188,7 +188,7 @@ we can directly tidy the data in gempy style:</p>
 <span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;G_y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
 
 <span class="c1"># Replace -99999.00000 with NaN</span>
-<span class="n">orientations</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="o">-</span><span class="mf">99999.00000</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">orientations</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="o">-</span><span class="mf">99999.00000</span><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/constants.html#numpy.nan" title="numpy.nan" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-data"><span class="n">np</span><span class="o">.</span><span class="n">nan</span></a><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="c1"># Drop irrelevant columns</span>
 <span class="n">orientations</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_&#39;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -204,14 +204,14 @@ we can directly tidy the data in gempy style:</p>
 Maximum: 16 0.5 4.5</p>
 <p>Suggested resolution: 0.05m (grid size 321 x 21 x 91)</p>
 <p>%%</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">surface_points_table</span><span class="p">:</span> <span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">SurfacePointsTable</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">SurfacePointsTable</span><span class="o">.</span><span class="n">from_arrays</span><span class="p">(</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../Modeling Classes/gempy.core.data.SurfacePointsTable.html#gempy.core.data.SurfacePointsTable" title="gempy.core.data.SurfacePointsTable" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">surface_points_table</span></a><span class="p">:</span> <a href="../../Modeling Classes/gempy.core.data.SurfacePointsTable.html#gempy.core.data.SurfacePointsTable" title="gempy.core.data.SurfacePointsTable" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class"><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">SurfacePointsTable</span></a> <span class="o">=</span> <a href="../../Modeling Classes/gempy.core.data.SurfacePointsTable.html#gempy.core.data.SurfacePointsTable.from_arrays" title="gempy.core.data.SurfacePointsTable.from_arrays" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-method"><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">SurfacePointsTable</span><span class="o">.</span><span class="n">from_arrays</span></a><span class="p">(</span>
     <span class="n">x</span><span class="o">=</span><span class="n">surface_points</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
     <span class="n">y</span><span class="o">=</span><span class="n">surface_points</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
     <span class="n">z</span><span class="o">=</span><span class="n">surface_points</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
     <span class="n">names</span><span class="o">=</span><span class="n">surface_points</span><span class="p">[</span><span class="s1">&#39;surface&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
 <span class="p">)</span>
 
-<span class="n">orientations_table</span><span class="p">:</span> <span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">OrientationsTable</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">OrientationsTable</span><span class="o">.</span><span class="n">from_arrays</span><span class="p">(</span>
+<a href="../../Modeling Classes/gempy.core.data.OrientationsTable.html#gempy.core.data.OrientationsTable" title="gempy.core.data.OrientationsTable" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">orientations_table</span></a><span class="p">:</span> <a href="../../Modeling Classes/gempy.core.data.OrientationsTable.html#gempy.core.data.OrientationsTable" title="gempy.core.data.OrientationsTable" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class"><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">OrientationsTable</span></a> <span class="o">=</span> <a href="../../Modeling Classes/gempy.core.data.OrientationsTable.html#gempy.core.data.OrientationsTable.from_arrays" title="gempy.core.data.OrientationsTable.from_arrays" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-method"><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">OrientationsTable</span><span class="o">.</span><span class="n">from_arrays</span></a><span class="p">(</span>
     <span class="n">x</span><span class="o">=</span><span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
     <span class="n">y</span><span class="o">=</span><span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
     <span class="n">z</span><span class="o">=</span><span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
@@ -219,23 +219,23 @@ Maximum: 16 0.5 4.5</p>
     <span class="n">G_y</span><span class="o">=</span><span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;G_y&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
     <span class="n">G_z</span><span class="o">=</span><span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;G_z&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
     <span class="n">names</span><span class="o">=</span><span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;surface&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">),</span>
-    <span class="n">name_id_map</span><span class="o">=</span><span class="n">surface_points_table</span><span class="o">.</span><span class="n">name_id_map</span>  <span class="c1"># ! Make sure that ids and names are shared</span>
+    <span class="n">name_id_map</span><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.SurfacePointsTable.html#gempy.core.data.SurfacePointsTable" title="gempy.core.data.SurfacePointsTable" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">surface_points_table</span></a><span class="o">.</span><span class="n">name_id_map</span>  <span class="c1"># ! Make sure that ids and names are shared</span>
 <span class="p">)</span>
 
-<span class="n">structural_frame</span><span class="p">:</span> <span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">StructuralFrame</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">StructuralFrame</span><span class="o">.</span><span class="n">from_data_tables</span><span class="p">(</span>
-    <span class="n">surface_points</span><span class="o">=</span><span class="n">surface_points_table</span><span class="p">,</span>
-    <span class="n">orientations</span><span class="o">=</span><span class="n">orientations_table</span>
+<a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">structural_frame</span></a><span class="p">:</span> <a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class"><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">StructuralFrame</span></a> <span class="o">=</span> <a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class"><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">StructuralFrame</span></a><span class="o">.</span><span class="n">from_data_tables</span><span class="p">(</span>
+    <span class="n">surface_points</span><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.SurfacePointsTable.html#gempy.core.data.SurfacePointsTable" title="gempy.core.data.SurfacePointsTable" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">surface_points_table</span></a><span class="p">,</span>
+    <span class="n">orientations</span><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.OrientationsTable.html#gempy.core.data.OrientationsTable" title="gempy.core.data.OrientationsTable" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">orientations_table</span></a>
 <span class="p">)</span>
 
-<span class="n">geo_model</span><span class="p">:</span> <span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GeoModel</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">create_geomodel</span><span class="p">(</span>
+<a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">:</span> <a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class"><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GeoModel</span></a> <span class="o">=</span> <a href="../../GemPy API/gempy.create_geomodel.html#gempy.create_geomodel" title="gempy.create_geomodel" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">create_geomodel</span></a><span class="p">(</span>
     <span class="n">project_name</span><span class="o">=</span><span class="s1">&#39;Moureze&#39;</span><span class="p">,</span>
     <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">],</span>
     <span class="n">resolution</span><span class="o">=</span><span class="p">[</span><span class="mi">321</span><span class="p">,</span> <span class="mi">21</span><span class="p">,</span> <span class="mi">91</span><span class="p">],</span>
-    <span class="n">structural_frame</span><span class="o">=</span><span class="n">structural_frame</span>
+    <a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">structural_frame</span></a><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">structural_frame</span></a>
 <span class="p">)</span>
 
-<span class="n">gp</span><span class="o">.</span><span class="n">set_section_grid</span><span class="p">(</span>
-    <span class="n">grid</span><span class="o">=</span><span class="n">geo_model</span><span class="o">.</span><span class="n">grid</span><span class="p">,</span>
+<a href="../../GemPy API/gempy.set_section_grid.html#gempy.set_section_grid" title="gempy.set_section_grid" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">set_section_grid</span></a><span class="p">(</span>
+    <span class="n">grid</span><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span><span class="o">.</span><span class="n">grid</span></a><span class="p">,</span>
     <span class="n">section_dict</span><span class="o">=</span><span class="p">{</span>
             <span class="s1">&#39;section&#39;</span><span class="p">:</span> <span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">16</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">321</span><span class="p">,</span> <span class="mi">91</span><span class="p">])</span>
     <span class="p">},</span>
@@ -273,29 +273,29 @@ orientation so the easiest is to create an orientation from the surface
 points availablle:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">f_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;f1&#39;</span><span class="p">,</span> <span class="s1">&#39;f2&#39;</span><span class="p">,</span> <span class="s1">&#39;f3&#39;</span><span class="p">]</span>
 <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="n">f_names</span><span class="p">:</span>
-    <span class="n">element</span> <span class="o">=</span> <span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span><span class="o">.</span><span class="n">get_element_by_name</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
-    <span class="n">new_orientations</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">create_orientations_from_surface_points_coords</span><span class="p">(</span>
-        <span class="n">xyz_coords</span><span class="o">=</span><span class="n">element</span><span class="o">.</span><span class="n">surface_points</span><span class="o">.</span><span class="n">xyz</span>
+    <a href="../../Modeling Classes/gempy.core.data.StructuralElement.html#gempy.core.data.StructuralElement" title="gempy.core.data.StructuralElement" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">element</span></a> <span class="o">=</span> <a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span></a><span class="o">.</span><span class="n">get_element_by_name</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+    <a href="../../Modeling Classes/gempy.core.data.OrientationsTable.html#gempy.core.data.OrientationsTable" title="gempy.core.data.OrientationsTable" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">new_orientations</span></a> <span class="o">=</span> <a href="../../GemPy API/gempy.create_orientations_from_surface_points_coords.html#gempy.create_orientations_from_surface_points_coords" title="gempy.create_orientations_from_surface_points_coords" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">create_orientations_from_surface_points_coords</span></a><span class="p">(</span>
+        <span class="n">xyz_coords</span><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.StructuralElement.html#gempy.core.data.StructuralElement" title="gempy.core.data.StructuralElement" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">element</span></a><span class="o">.</span><span class="n">surface_points</span><span class="o">.</span><span class="n">xyz</span>
     <span class="p">)</span>
-    <span class="n">gp</span><span class="o">.</span><span class="n">add_orientations</span><span class="p">(</span>
-        <span class="n">geo_model</span><span class="o">=</span><span class="n">geo_model</span><span class="p">,</span>
-        <span class="n">x</span><span class="o">=</span><span class="n">new_orientations</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span>
-        <span class="n">y</span><span class="o">=</span><span class="n">new_orientations</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span>
-        <span class="n">z</span><span class="o">=</span><span class="n">new_orientations</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">],</span>
-        <span class="n">pole_vector</span><span class="o">=</span><span class="n">new_orientations</span><span class="o">.</span><span class="n">grads</span><span class="p">,</span>
+    <a href="../../GemPy API/gempy.add_orientations.html#gempy.add_orientations" title="gempy.add_orientations" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">add_orientations</span></a><span class="p">(</span>
+        <a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span>
+        <span class="n">x</span><span class="o">=</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">new_orientations</span><span class="o">.</span><span class="n">data</span></a><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span>
+        <span class="n">y</span><span class="o">=</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">new_orientations</span><span class="o">.</span><span class="n">data</span></a><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span>
+        <span class="n">z</span><span class="o">=</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">new_orientations</span><span class="o">.</span><span class="n">data</span></a><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">],</span>
+        <span class="n">pole_vector</span><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.OrientationsTable.html#gempy.core.data.OrientationsTable.grads" title="gempy.core.data.OrientationsTable.grads" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-property"><span class="n">new_orientations</span><span class="o">.</span><span class="n">grads</span></a><span class="p">,</span>
         <span class="n">elements_names</span><span class="o">=</span><span class="n">fn</span>
     <span class="p">)</span>
 </pre></div>
 </div>
 <p>Now we can see how the data looks so far:</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><span class="n">geo_model</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_Hecho_001.png" srcset="../../_images/sphx_glr_Hecho_001.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fbc2068fa00&gt;
+<img src="../../_images/sphx_glr_Hecho_001.png" srcset="../../_images/sphx_glr_Hecho_001.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f827c8317e0&gt;
 </pre></div>
 </div>
 <p>By default all surfaces belong to one unique series.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span></a>
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
@@ -383,8 +383,8 @@ points availablle:</p>
 </div>
 <br />
 <br /><p>We will need to separate with surface belong to each series:</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">map_stack_to_surfaces</span><span class="p">(</span>
-    <span class="n">gempy_model</span><span class="o">=</span><span class="n">geo_model</span><span class="p">,</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../GemPy API/gempy.map_stack_to_surfaces.html#gempy.map_stack_to_surfaces" title="gempy.map_stack_to_surfaces" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">map_stack_to_surfaces</span></a><span class="p">(</span>
+    <span class="n">gempy_model</span><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span>
     <span class="n">mapping_object</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Fault1&#39;</span><span class="p">:</span> <span class="s1">&#39;f1&#39;</span><span class="p">,</span> <span class="s1">&#39;Fault2&#39;</span><span class="p">:</span> <span class="s1">&#39;f2&#39;</span><span class="p">,</span> <span class="s1">&#39;Fault3&#39;</span><span class="p">:</span> <span class="s1">&#39;f3&#39;</span><span class="p">}</span>
 <span class="p">)</span>
 </pre></div>
@@ -497,8 +497,8 @@ points availablle:</p>
 <br /><p>However if we want the faults to offset the “Default series”, they will
 need to be more recent (higher on the pile). We can modify the order by:</p>
 <p>Lastly, so far we did not specify which series/faults are actula faults:</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">set_is_fault</span><span class="p">(</span>
-    <span class="n">frame</span><span class="o">=</span><span class="n">geo_model</span><span class="p">,</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../GemPy API/gempy.set_is_fault.html#gempy.set_is_fault" title="gempy.set_is_fault" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">set_is_fault</span></a><span class="p">(</span>
+    <span class="n">frame</span><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span>
     <span class="n">fault_groups</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Fault1&#39;</span><span class="p">,</span> <span class="s1">&#39;Fault2&#39;</span><span class="p">,</span> <span class="s1">&#39;Fault3&#39;</span><span class="p">]</span>
 <span class="p">)</span>
 </pre></div>
@@ -611,7 +611,7 @@ need to be more recent (higher on the pile). We can modify the order by:</p>
 <br /><p>The default range is always the diagonal of the extent. Since in this
 model data is very close we will need to reduce the range to 5-10% of
 that value:</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">geo_model</span><span class="o">.</span><span class="n">interpolation_options</span><span class="o">.</span><span class="n">kernel_options</span><span class="o">.</span><span class="n">range</span> <span class="o">*=</span> <span class="mf">0.2</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="o">.</span><span class="n">interpolation_options</span><span class="o">.</span><span class="n">kernel_options</span><span class="o">.</span><span class="n">range</span> <span class="o">*=</span> <span class="mf">0.2</span>
 </pre></div>
 </div>
 <p>Explanation of model characteristics and adjustments
@@ -623,18 +623,18 @@ To address these issues:
 - Reduce the std of the error parameter in octree refinement, which evaluates fewer voxels but may leave some without refinement
 Enable debugging options to help tune these parameters.</p>
 <p>Setting verbose and condition number options for debugging</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">geo_model</span><span class="o">.</span><span class="n">interpolation_options</span><span class="o">.</span><span class="n">kernel_options</span><span class="o">.</span><span class="n">compute_condition_number</span> <span class="o">=</span> <span class="kc">True</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="o">.</span><span class="n">interpolation_options</span><span class="o">.</span><span class="n">kernel_options</span><span class="o">.</span><span class="n">compute_condition_number</span> <span class="o">=</span> <span class="kc">True</span>
 </pre></div>
 </div>
 <p>Observations and parameter adjustments
 The octree refinement is making the octree grid almost dense, and smaller chunks are needed to avoid running out of memory.
 Adjusting parameters accordingly:</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">geo_model</span><span class="o">.</span><span class="n">interpolation_options</span><span class="o">.</span><span class="n">evaluation_options</span><span class="o">.</span><span class="n">evaluation_chunk_size</span> <span class="o">=</span> <span class="mi">50_000</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="o">.</span><span class="n">interpolation_options</span><span class="o">.</span><span class="n">evaluation_options</span><span class="o">.</span><span class="n">evaluation_chunk_size</span> <span class="o">=</span> <span class="mi">50_000</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span><span class="p">(</span>
-    <span class="n">gempy_model</span><span class="o">=</span><span class="n">geo_model</span><span class="p">,</span>
-    <span class="n">engine_config</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GemPyEngineConfig</span><span class="p">(</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../GemPy API/gempy.compute_model.html#gempy.compute_model" title="gempy.compute_model" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span></a><span class="p">(</span>
+    <span class="n">gempy_model</span><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span>
+    <span class="n">engine_config</span><span class="o">=</span><a href="../../Helper Classes/gempy.core.data.GemPyEngineConfig.html#gempy.core.data.GemPyEngineConfig" title="gempy.core.data.GemPyEngineConfig" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class"><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GemPyEngineConfig</span></a><span class="p">(</span>
         <span class="n">backend</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">AvailableBackends</span><span class="o">.</span><span class="n">PYTORCH</span><span class="p">,</span>
         <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float64&#39;</span>
     <span class="p">)</span>
@@ -675,32 +675,35 @@ Chunking done: 251 chunks
 <b>Solutions:</b> 4 Octree Levels, 12 DualContouringMeshes
 </div>
 <br />
-<br /><div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><span class="n">geo_model</span><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">],</span> <span class="n">series_n</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">show_scalar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<br /><div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">],</span> <span class="n">series_n</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">show_scalar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_Hecho_002.png" srcset="../../_images/sphx_glr_Hecho_002.png" alt="Cell Number: 10 Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fba30adfb80&gt;
+<img src="../../_images/sphx_glr_Hecho_002.png" srcset="../../_images/sphx_glr_Hecho_002.png" alt="Cell Number: 10 Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f829d5d5120&gt;
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><span class="n">geo_model</span><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">],</span> <span class="n">show_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">],</span> <span class="n">show_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_Hecho_003.png" srcset="../../_images/sphx_glr_Hecho_003.png" alt="Cell Number: 10 Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fbc027f2bf0&gt;
+<img src="../../_images/sphx_glr_Hecho_003.png" srcset="../../_images/sphx_glr_Hecho_003.png" alt="Cell Number: 10 Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f827c7b7f70&gt;
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><span class="n">geo_model</span><span class="p">,</span> <span class="n">section_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;section&#39;</span><span class="p">],</span> <span class="n">show_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">section_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;section&#39;</span><span class="p">],</span> <span class="n">show_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_Hecho_004.png" srcset="../../_images/sphx_glr_Hecho_004.png" alt="section" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fbc2068e860&gt;
+<img src="../../_images/sphx_glr_Hecho_004.png" srcset="../../_images/sphx_glr_Hecho_004.png" alt="section" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/Users/flow/opt/anaconda3/envs/gempy3_pre/lib/python3.10/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:105: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
+  warnings.warn(
+
+&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f829d5d5fc0&gt;
 </pre></div>
 </div>
 <p>sphinx_gallery_thumbnail_number = 3</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_3d</span><span class="p">(</span><span class="n">geo_model</span><span class="p">,</span> <span class="n">kwargs_plot_structured_grid</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;opacity&#39;</span><span class="p">:</span> <span class="mf">.2</span><span class="p">})</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_3d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">kwargs_plot_structured_grid</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;opacity&#39;</span><span class="p">:</span> <span class="mf">.2</span><span class="p">})</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_Hecho_005.png" srcset="../../_images/sphx_glr_Hecho_005.png" alt="Hecho" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fba30adfb80&gt;
+<img src="../../_images/sphx_glr_Hecho_005.png" srcset="../../_images/sphx_glr_Hecho_005.png" alt="Hecho" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f8299ce1fc0&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (4 minutes 58.337 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (6 minutes 10.994 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-examples-real-hecho-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/0c198b4ddb49e2a808610518a878cf6d/Hecho.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">Hecho.ipynb</span></code></a></p>
@@ -748,20 +751,13 @@ Chunking done: 251 chunks
 <li class="toctree-l1"><a class="reference internal" href="../../index.html">About</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">GemPy Tutorials</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Examples</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../index.html#simple-geometries">Simple geometries</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../index.html#real-case-studies">Real case studies</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Examples</a></li>
 </ul>
-</li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">External examples</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../external/external_examples.html">External Examples</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../api_reference.html">Code</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api_reference.html#data-classes">Data Classes</a></li>

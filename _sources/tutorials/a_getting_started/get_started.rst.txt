@@ -647,7 +647,7 @@ Now, the model has been computed and is ready to be visualized. Let's see what i
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fbc64232da0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fdaef72af80>
 
 
 
@@ -714,7 +714,7 @@ Now, let's look at our 3D model:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fbc522a2d10>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fda681fbd60>
 
 
 
@@ -1030,7 +1030,7 @@ First, we add the two missing points to the Siltstone
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fbc66633550>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fda68dbf520>
 
 
 
@@ -1333,7 +1333,7 @@ how this younger structural group erodes all older elements and basically "cuts 
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fbc6621bd30>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fdaefc23d30>
 
 
 
@@ -1437,7 +1437,7 @@ Let's change the relation type from `ERODE` to `ONLAP` to achieve a different ty
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fbc533ab610>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fda9aa93670>
 
 
 
@@ -1614,7 +1614,7 @@ Let's compute our model including the fault and see what that looks like.
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fbbd2e8ff70>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fda387c90f0>
 
 
 
@@ -1689,7 +1689,7 @@ For demonstration, we'll create a random topography:
 
     Active grids: GridTypes.NONE|TOPOGRAPHY|DENSE
 
-    <gempy.core.data.grid_modules.topography.Topography object at 0x7fbbd2e2cb20>
+    <gempy.core.data.grid_modules.topography.Topography object at 0x7fda58f8a140>
 
 
 
@@ -1713,7 +1713,7 @@ For demonstration, we'll create a random topography:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fbbf8803f70>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fda3876ab30>
 
 
 
@@ -1737,7 +1737,7 @@ For demonstration, we'll create a random topography:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fbbf8802320>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fda98921db0>
 
 
 
@@ -1795,7 +1795,7 @@ function as shown below.
     /Users/flow/opt/anaconda3/envs/gempy3_pre/lib/python3.10/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:105: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
       warnings.warn(
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fbc6668a1a0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fda98ba5180>
 
 
 
@@ -1819,7 +1819,7 @@ function as shown below.
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fbc66630ee0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fda98ba5870>
 
 
 
@@ -2054,20 +2054,20 @@ object via `geo_model.grid` as shown below.
  .. code-block:: none
 
 
-    array([[   0.        , -200.        ,  -75.54670219],
-           [   0.        , -197.98994975,  -74.91268291],
-           [   0.        , -195.9798995 ,  -74.56759191],
+    array([[   0.        , -200.        ,  -59.99800606],
+           [   0.        , -197.98994975,  -61.71910298],
+           [   0.        , -195.9798995 ,  -62.93659753],
            ...,
-           [ 780.        ,  195.9798995 ,  -78.07071847],
-           [ 780.        ,  197.98994975,  -77.34526055],
-           [ 780.        ,  200.        ,  -77.15089647]])
+           [ 780.        ,  195.9798995 ,  -57.76729926],
+           [ 780.        ,  197.98994975,  -59.39838985],
+           [ 780.        ,  200.        ,  -59.17544491]])
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 57.286 seconds)
+   **Total running time of the script:** (0 minutes 57.520 seconds)
 
 
 .. _sphx_glr_download_tutorials_a_getting_started_get_started.py:

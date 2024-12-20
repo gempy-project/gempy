@@ -53,63 +53,29 @@ fold structures, fault networks and unconformities, based on an underlying
 powerful <strong>implicit</strong> approach. From the ground up, <code class="docutils literal notranslate"><span class="pre">GemPy</span></code> was designed to be easily embedded in probabilistic frameworks for conducting
 uncertainty analysis regarding subsurface structures.</p>
 <p>3D models created with GemPy may look like this:</p>
-<img alt="_images/perth_example.png" src="_images/perth_example.png" />
+<img alt="_images/AlesModel_example.png" src="_images/AlesModel_example.png" />
 <p>Contents:</p>
 <div class="toctree-wrapper compound">
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">About</a></li>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#installing-gempy">Installing <code class="docutils literal notranslate"><span class="pre">GemPy</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#gempy-viewer">GemPy viewer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#enhanced-installation-options">Enhanced Installation Options</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#manual-installation">Manual Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#dependencies">Dependencies</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="tutorials/index.html">GemPy Tutorials</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/index.html#getting-started">Getting Started</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/index.html#chapter-1-gempy-fundamentals">Chapter 1: GemPy fundamentals</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/index.html#chapter-2-forward-geophysics">Chapter 2: Forward Geophysics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/index.html#chapter-3-domain-kriging">Chapter 3: Domain Kriging</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/index.html#chapter-4-topological-analysis">Chapter 4: Topological analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/index.html#video-tutorials">Video tutorials</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="examples/index.html">Examples</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="examples/index.html#simple-geometries">Simple geometries</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/index.html#real-case-studies">Real case studies</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/index.html">GemPy Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/index.html">Examples</a></li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">External examples</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="external/external_examples.html">External Examples</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="external/external_examples.html#vector-examples">Vector Examples</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="external/external_examples.html">External Examples</a></li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="api_reference.html">Code</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="api_reference.html#gempy-api">GemPy API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api_reference.html#plot">Plot</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="api_reference.html#data-classes">Data Classes</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="api_reference.html#module-gempy.core.data">Modeling Classes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api_reference.html#helper-classes">Helper Classes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api_reference.html#enumerators">Enumerators</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="api_reference.html">Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_reference.html#data-classes">Data Classes</a></li>
 </ul>
 </div>
 </section>
@@ -117,7 +83,7 @@ uncertainty analysis regarding subsurface structures.</p>
 <h3>Features<a class="headerlink" href="#features" title="Link to this heading">¶</a></h3>
 <section id="geological-features">
 <h4>Geological features<a class="headerlink" href="#geological-features" title="Link to this heading">¶</a></h4>
-<!-- Start with an intro to the geological features - instead of algo --><p><code class="docutils literal notranslate"><span class="pre">GemPy</span></code> is capable of modeling complex 3D geological scenarios, including:</p>
+<p><code class="docutils literal notranslate"><span class="pre">GemPy</span></code> is capable of modeling complex 3D geological scenarios, including:</p>
 <ul class="simple">
 <li><p>Multiple conformal layers (e.g. sequences of sedimentary layers)</p></li>
 <li><p>Several sequences of layers, with conformal continuation or unconformities</p></li>
@@ -128,13 +94,12 @@ uncertainty analysis regarding subsurface structures.</p>
 </ul>
 <p>Combining these elements in GemPy allows for the generation of realistic
 3D geological models, on a par with most commercial geomodeling software.</p>
-<!-- Note: we should inlcude here links to models and/or publications where
-gempy has been used for realistic models!  --></section>
+</section>
 <section id="interpolation-approach">
 <h4>Interpolation approach<a class="headerlink" href="#interpolation-approach" title="Link to this heading">¶</a></h4>
 <p>The generation of complex structural settings is based on the powerful
 interpolation algorithm underlying <code class="docutils literal notranslate"><span class="pre">GemPy</span></code>, a unviersal cokriging method
-devoised by <cite>Lajaunie et al. (1997)</cite> and extended by <cite>Calcagno et al. (2008)</cite>.
+devised by <cite>Lajaunie et al. (1997)</cite> and extended by <cite>Calcagno et al. (2008)</cite>.
 This method is used to interpolate a 3D scalar field, such that geologically
 significant interfaces are isosurfces in this field.</p>
 <p>The algorithm allows for a direct integration of two of the most relevant
@@ -143,82 +108,49 @@ geological input data types:</p>
 <li><p><strong>Surface contact points</strong>: 3D coordinates of points marking the boundaries
 between different features (e.g. layer interfaces, fault planes, unconformities).</p></li>
 <li><p><strong>Orientation measurements</strong>: Orientation of the poles perpendicular to
-the dipping of surfaces at any point in the 3D space.</p></li>
+the dipping of surfaces at any point in 3D space.</p></li>
 </ul>
 <p><code class="docutils literal notranslate"><span class="pre">GemPy</span></code> also allows for the definition of topological elements such as
 combining multiple stratigraphic sequences and
 complex fault networks to be considered in the modeling process.</p>
-<img alt="_images/modeling_principle.png" src="_images/modeling_principle.png" />
+<img alt="_images/data_to_model.png" src="_images/data_to_model.png" />
 </section>
 <section id="integrated-visualization">
 <h4>Integrated visualization<a class="headerlink" href="#integrated-visualization" title="Link to this heading">¶</a></h4>
 <p>Models generated with <code class="docutils literal notranslate"><span class="pre">GemPy</span></code> can be visualized in several ways:</p>
 <ul class="simple">
 <li><p>direct visualization of 2D model sections (or geological maps) using
-<code class="docutils literal notranslate"><span class="pre">matplotlib</span></code>, including hillshading and other options for intuitive
+<a class="reference external" href="https://matplotlib.org/stable/index.html">matplotlib</a>, including hillshading and other options for intuitive
 representation of results;</p></li>
-<li><p>interactive 3D visualization and model input manipulation using the
-Visualization Toolkit (VTK);</p></li>
-<li><p>We also actively develop a link to the fantastic
-<a class="reference external" href="https://www.pyvista.org">pyvista</a> project
-for even better visualization and model interaction in 3D.</p></li>
+<li><p>3D visualization using <a class="reference external" href="https://www.pyvista.org">Pyvista</a>, including interactive plots</p></li>
 </ul>
-<p>In addition to visualization, the generated models can be exported
-in a variety of ways:</p>
-<ul class="simple">
-<li><p>Export of VTK files for further visualization and processing in other
-software such as ParaView;</p></li>
-<li><p>Export of triangulated surface meshes (e.g. for further processing in
-meshing programs);</p></li>
-<li><p>Export of images (e.g. geological maps).</p></li>
-</ul>
-<p>We are also currently working on a tighter integration with several
-meshing libraries, notably <a class="reference external" href="https://www.cgal.org">CGAL</a> and <a class="reference external" href="https://gmsh.info">gmesh</a>. In addition, we have
-established links to several other open-source libraries, including <a class="reference external" href="https://www.pygimli.org">pygiml</a>
-for geophysical modeling and inversion. In the current state, however, these
-links have to be considered as highly experimental and they are not yet
-part of the stable release. If you are interested in these features,
-feel free to contact us.</p>
-<a class="reference external image-reference" href="https://cgre-aachen.github.io/gempy/_images/sphx_glr_ch1_1_basics_009.png"><img alt="_images/vtkFault.png" src="_images/vtkFault.png" style="width: 70%;" />
+<a class="reference external image-reference" href="https://cgre-aachen.github.io/gempy/_images/sphx_glr_ch1_1_basics_009.png"><img alt="_images/3D_view_pyvista_example.png" src="_images/3D_view_pyvista_example.png" style="width: 70%;" />
 </a>
-</section>
-<section id="stochastic-geological-modeling">
-<h4>Stochastic geological modeling<a class="headerlink" href="#stochastic-geological-modeling" title="Link to this heading">¶</a></h4>
-<p>One of the most advanced features that sets <code class="docutils literal notranslate"><span class="pre">GemPy</span></code> also apart from
-available commercial packages is the full integration of stochastic
-geological modeling methods.
-<code class="docutils literal notranslate"><span class="pre">GemPy</span></code> was designed from the ground up to support stochastic geological
-modeling for uncertainty analysis (e.g. Monte Carlo simulations, Bayesian
-inference). This was achieved by writing <code class="docutils literal notranslate"><span class="pre">GemPy</span></code>’s core architecture
-using the numerical computation library <a class="reference external" href="http://deeplearning.net/software/aesara/">aesara</a>
-to couple it with the probabilistic programming
-framework <a class="reference external" href="https://pymc-devs.github.io/pymc3/notebooks/getting_started.html">PyMC3</a>.
-This enables the use of advanced sampling methods (e.g. Hamiltonian Monte
-Carlo) and is of particular relevance when considering uncertainties in
-the model input data and making use of additional secondary information
-in a Bayesian inference framework.</p>
-<p>We can, for example, include uncertainties with respect to the z-position
-of layer boundaries in the model space. Simple Monte Carlo simulation
-via PyMC will then result in different model realizations.</p>
-<!-- Removed images as wobble.gif not anymore included - TODO: include
-new images to represent stochastic modeling capabilities!
-
-<p align="center"><img src="docs/source/images/gempy_zunc.png" height="300">
-<img src="docs/source/images/model_wobble.gif" height="300"></p>
-
---><p>aesara allows the automated computation of gradients, opening the door to
-the use of advanced gradient-based sampling methods
-coupling <code class="docutils literal notranslate"><span class="pre">GemPy</span></code> and
-<a class="reference external" href="https://pymc-devs.github.io/pymc3/notebooks/getting_started.html">PyMC3</a>
-for advanced stochastic modeling. Also, the use of aesara allows making
-use of GPUs through cuda (see the aesara documentation for more information.</p>
-<p>Making use of vtk interactivity and <a class="reference external" href="https://github.com/quantopian/qgrid">Qgrid</a> ,
-<code class="docutils literal notranslate"><span class="pre">GemPy</span></code> provides a functional interface to interact with input data and models.</p>
 <p>For a more detailed elaboration of the theory behind <code class="docutils literal notranslate"><span class="pre">GemPy</span></code>, we refer to the
 <strong>open access scientific publication</strong>:
 <a class="reference external" href="https://www.geosci-model-dev.net/12/1/2019/gmd-12-1-2019.pdf">“GemPy 1.0: open-source stochastic geological modeling and inversion”
 by de la Varga et al. (2019)</a>.</p>
 </section>
+</section>
+<section id="publications-using-gempy">
+<h3>Publications using GemPy<a class="headerlink" href="#publications-using-gempy" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Marquetto, L., Jüstel, A., Troian, G.C., Reginato, P.A.R &amp; Simões, J.C. (2024). <a class="reference external" href="https://link.springer.com/article/10.1007/s12665-024-11609-y">Developing a 3D hydrostratigraphical model of the emerged part of the Pelotas Basin along the northern coast of Rio Grande do Sul state, Brazil</a>. Environmental Earth Sciences, 83, 329.</p></li>
+<li><p>Brisson, S., Wellmann, F., Chudalla, N., von Harten, J., &amp; von Hagke, C. (2023). <a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S2590197423000046">Estimating uncertainties in 3-D models of complex fold-and-thrust belts: A case study of the Eastern Alps triangle zone</a>. Applied Computing and Geosciences, 18, 100115.</p></li>
+<li><p>Liang, Z., de la Varga, M., &amp; Wellmann, F. (2023). <a class="reference external" href="https://pubs.geoscienceworld.org/geophysics/article/88/3/G43/621596/Kernel-method-for-gravity-forward-simulation-in?casa_token=VjCR7rYOkKoAAAAA:W81L1AXgW_j9GiYPciBvLIdL8Zo66IzYVYiU6Ri8xLgIjbzTmpcDE74rzmAwnokX_71_XKg">Kernel method for gravity forward simulation in implicit probabilistic geologic modeling</a>. Geophysics, 88(3), G43-G55.</p></li>
+<li><p>Kong, S., Oh, J., Yoon, D., Ryu, D. W., &amp; Kwon, H. S. (2023). <a class="reference external" href="https://www.mdpi.com/2076-3417/13/10/6250">Integrating Deep Learning and Deterministic Inversion for Enhancing Fault Detection in Electrical Resistivity Surveys</a>. Applied Sciences, 13(10), 6250.</p></li>
+<li><p>Thomas, A. T., Micallef, A., Duan, S., &amp; Zou, Z. (2023). <a class="reference external" href="https://www.frontiersin.org/articles/10.3389/feart.2023.1198215/full">Characteristics and controls of an offshore freshened groundwater system in the Shengsi region, East China Sea</a>. Frontiers in Earth Science, 11, 1198215.</p></li>
+<li><p>Haehnel, P., Freund, H., Greskowiak, J., &amp; Massmann, G. (2023). <a class="reference external" href="https://doi.org/10.1002/gdj3.208">Development of a three-dimensional hydrogeological model for the island of Norderney (Germany) using GemPy</a>. Geoscience Data Journal, 00, 1–17.</p></li>
+<li><p>Jüstel, A., de la Varga, M., Chudalla, N., Wagner, J. D., Back, S., &amp; Wellmann, F. (2023). <a class="reference external" href="https://jose.theoj.org/papers/10.21105/jose.00185">From Maps to Models-Tutorials for structural geological modeling using GemPy and GemGIS</a>. Journal of Open Source Education, 6(66), 185.</p></li>
+<li><p>Thomas, A. T., von Harten, J., Jusri, T., Reiche, S., &amp; Wellmann, F. (2022). <a class="reference external" href="https://link.springer.com/article/10.1007/s11001-022-09475-z">An integrated modeling scheme for characterizing 3D hydrogeological heterogeneity of the New Jersey shelf</a>. Marine Geophysical Research, 43, 11.</p></li>
+<li><p>Sehsah, H., Eldosouky, A. M., &amp; Pham, L. T. (2022). <a class="reference external" href="https://www.journals.uchicago.edu/doi/full/10.1086/722724?casa_token=pkl8XXrtyokAAAAA:YeIh1t-qwt6AT8yz_vTj4OQapaR1_nZUjS3Az_77VZXlpyfGu0cN5DSzrz6NNjoj4Qv5iud4rdc">Incremental Emplacement of the Sierra Nevada Batholith Constrained by U-Pb Ages and Potential Field Data</a>. The Journal of Geology, 130(5), 381-391.</p></li>
+<li><p>von Harten, J., de la Varga, M., Hillier, M., &amp; Wellmann, F. (2021). <a class="reference external" href="https://www.mdpi.com/2075-163X/11/11/1281">Informed Local Smoothing in 3D Implicit Geological Modeling</a>. Minerals 2021, 11, 1281.</p></li>
+<li><p>Schaaf, A., de la Varga, M., Wellmann, F., &amp; Bond, C. E. (2021). <a class="reference external" href="https://gmd.copernicus.org/articles/14/3899/2021/gmd-14-3899-2021.html">Constraining stochastic 3-D structural geological models with topology information using approximate Bayesian computation in GemPy 2.1</a>. Geosci. Model Dev., 14(6), 3899-3913. doi:10.5194/gmd-14-3899-2021.</p></li>
+<li><p>Güdük, N., de la Varga, M., Kaukolinna, J., &amp; Wellmann, F. (2021). <a class="reference external" href="https://www.mdpi.com/2076-3263/11/4/150">Model-Based Probabilistic Inversion Using Magnetic Data: A Case Study on the Kevitsa Deposit</a>. Geosciences, 11(4):150.</p></li>
+<li><p>Wu, J., &amp; Sun, B. (2021). <a class="reference external" href="https://www.e3s-conferences.org/articles/e3sconf/abs/2021/24/e3sconf_caes2021_03084/e3sconf_caes2021_03084.html">Discontinuous mechanical analysis of manifold element strain of rock slope based on open source Gempy</a>. In E3S Web of Conferences (Vol. 248, p. 03084). EDP Sciences.</p></li>
+<li><p>Stamm, F. A., de la Varga, M., &amp; Wellmann, F. (2019). <a class="reference external" href="https://se.copernicus.org/articles/10/2015/2019/se-10-2015-2019.html">Actors, actions, and uncertainties: optimizing decision-making based on 3-D structural geological models</a>. Solid Earth, 10, 2015–2043.</p></li>
+<li><p>Wellmann, F., Schaaf, A., de la Varga, M., &amp; von Hagke, C. (2019). <a class="reference external" href="https://www.sciencedirect.com/science/article/pii/B9780128140482000156">From Google Earth to 3D Geology Problem 2: Seeing Below the Surface of the Digital Earth</a>. In Developments in Structural Geology and Tectonics (Vol. 5, pp. 189-204). Elsevier.</p></li>
+</ul>
 </section>
 <section id="references">
 <h3>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h3>
@@ -275,16 +207,13 @@ by de la Varga et al. (2019)</a>.</p>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">About</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="tutorials/index.html">GemPy Tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples/index.html">Examples</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">External examples</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="external/external_examples.html">External Examples</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="api_reference.html">Code</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api_reference.html#data-classes">Data Classes</a></li>

@@ -351,7 +351,7 @@ Compilation of tutorials for videos on the `gempy` YouTube channel https://www.y
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This tutorial demonstrates step-by-step geological modeling using the gempy and gempy_viewer libraries. It follows the Video tutorial series available on the gempy YouTube channel (https://www.youtube.com/@GemPy3D).">
+    <div class="sphx-glr-thumbcontainer" tooltip="Video Tutorial &quot;code-along&quot;: Modeling step by step">
 
 .. only:: html
 

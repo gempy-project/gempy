@@ -1,0 +1,16 @@
+docs/source/gen_modules/backreferences/
+gempy/core/__pycache__/
+gempy/API/__pycache__/
+gempy/core/data/__pycache__/
+gempy/core/data/grid_modules/__pycache__/
+gempy/modules/data_manipulation/__pycache__/
+gempy/modules/__pycache__/
+gempy/__pycache__/
+gempy/API/gp2_gp3_compatibility/__pycache__/
+gempy/modules/custom_implicit_functions/__pycache__/__init__.cpython-310.pyc
+gempy/modules/custom_implicit_functions/__pycache__/ellipsoid_implicit_function.cpython-310.pyc
+gempy/modules/grids/__pycache__/__init__.cpython-310.pyc
+gempy/modules/grids/__pycache__/create_topography.cpython-310.pyc
+.ENV
+.DS_Store
+git_status.txt

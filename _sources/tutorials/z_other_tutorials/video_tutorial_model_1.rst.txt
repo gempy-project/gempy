@@ -21,17 +21,17 @@
 Video Tutorial "code-along": Modeling step by step
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This tutorial demonstrates step-by-step geological modeling using the `gempy` and `gempy_viewer` libraries.
-It follows the Video tutorial series available on the `gempy` YouTube channel (https://www.youtube.com/@GemPy3D).
+.. GENERATED FROM PYTHON SOURCE LINES 8-10
 
-.. GENERATED FROM PYTHON SOURCE LINES 11-19
+This tutorial demonstrates step-by-step geological modeling using the `gempy` and `gempy_viewer` libraries.
+It follows the Video tutorial series available on the `gempy YouTube channel <https://www.youtube.com/@GemPy3D>`_.
+
+.. GENERATED FROM PYTHON SOURCE LINES 13-19
 
 Video tutorial 1: Introduction
 """"""""""""""""""""""""""""""
 
 The first video is an introduction to GemPy - please view online before starting the tutorial.
-
-https://youtu.be/3elCCHhARsU
 
 
 
@@ -149,7 +149,7 @@ Video tutorial 2: Input data
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fbc52024b20>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fa5595c8fa0>
 
 
 
@@ -237,7 +237,7 @@ Video tutorial 2: Input data
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fbc51faea10>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fa56e4a5000>
 
 
 
@@ -425,9 +425,22 @@ Video tutorial 3: Structural frame
 Video tutorial 4: Computation and results
 """""""""""""""""""""""""""""""""""""""""
 
-.. GENERATED FROM PYTHON SOURCE LINES 129-133
+.. GENERATED FROM PYTHON SOURCE LINES 131-140
+
+.. raw:: html
+
+    <iframe width="560" height="315" 
+            src="https://www.youtube.com/embed/lrz1DeHrrBk" 
+            title="GemPy Tutorial Video 4" 
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allowfullscreen>
+    </iframe>
+
+.. GENERATED FROM PYTHON SOURCE LINES 140-145
 
 .. code-block:: Python
+
 
 
     # View interpolation options
@@ -444,14 +457,14 @@ Video tutorial 4: Computation and results
 
                     <table>
                         <tr><td colspan='2' style='text-align:center'><b>InterpolationOptions</b></td></tr>
-                        <tr><td>kernel_options</td><td>{'range': 1.7, 'c_o': 10, 'uni_degree': 1, 'i_res': 4, 'gi_res': 2, 'number_dimensions': 3, 'kernel_function': <AvailableKernelFunctions.cubic: KernelFunction(base_function=<function cubic_function at 0x7fbc62cb1bd0>, derivative_div_r=<function cubic_function_p_div_r at 0x7fbc62cb1e10>, second_derivative=<function cubic_function_a at 0x7fbc62cb1ea0>, consume_sq_distance=False)>, 'kernel_solver': <Solvers.DEFAULT: 1>, 'compute_condition_number': False, 'optimizing_condition_number': False, 'condition_number': None}</td></tr><tr><td>evaluation_options</td><td>{'_number_octree_levels': 1, '_number_octree_levels_surface': 4, 'octree_curvature_threshold': -1, 'octree_error_threshold': 1.0, 'octree_min_level': 2, 'mesh_extraction': True, 'mesh_extraction_masking_options': <MeshExtractionMaskingOptions.INTERSECT: 3>, 'mesh_extraction_fancy': True, 'evaluation_chunk_size': 500000, 'compute_scalar_gradient': False, 'verbose': False}</td></tr><tr><td>temp_interpolation_values</td><td><gempy_engine.core.data.options.temp_interpolation_values.TempInterpolationValues object at 0x7fbc30dccc10></td></tr><tr><td>debug</td><td>True</td></tr><tr><td>cache_mode</td><td>CacheMode.IN_MEMORY_CACHE</td></tr><tr><td>cache_model_name</td><td>tutorial_model</td></tr><tr><td>block_solutions_type</td><td>BlockSolutionType.DENSE_GRID</td></tr><tr><td>sigmoid_slope</td><td>50000</td></tr><tr><td>debug_water_tight</td><td>False</td></tr>
+                        <tr><td>kernel_options</td><td>{'range': 1.7, 'c_o': 10, 'uni_degree': 1, 'i_res': 4, 'gi_res': 2, 'number_dimensions': 3, 'kernel_function': <AvailableKernelFunctions.cubic: KernelFunction(base_function=<function cubic_function at 0x7fa569489bd0>, derivative_div_r=<function cubic_function_p_div_r at 0x7fa569489e10>, second_derivative=<function cubic_function_a at 0x7fa569489ea0>, consume_sq_distance=False)>, 'kernel_solver': <Solvers.DEFAULT: 1>, 'compute_condition_number': False, 'optimizing_condition_number': False, 'condition_number': None}</td></tr><tr><td>evaluation_options</td><td>{'_number_octree_levels': 1, '_number_octree_levels_surface': 4, 'octree_curvature_threshold': -1, 'octree_error_threshold': 1.0, 'octree_min_level': 2, 'mesh_extraction': True, 'mesh_extraction_masking_options': <MeshExtractionMaskingOptions.INTERSECT: 3>, 'mesh_extraction_fancy': True, 'evaluation_chunk_size': 500000, 'compute_scalar_gradient': False, 'verbose': False}</td></tr><tr><td>temp_interpolation_values</td><td><gempy_engine.core.data.options.temp_interpolation_values.TempInterpolationValues object at 0x7fa56e46c130></td></tr><tr><td>debug</td><td>True</td></tr><tr><td>cache_mode</td><td>CacheMode.IN_MEMORY_CACHE</td></tr><tr><td>cache_model_name</td><td>tutorial_model</td></tr><tr><td>block_solutions_type</td><td>BlockSolutionType.DENSE_GRID</td></tr><tr><td>sigmoid_slope</td><td>50000</td></tr><tr><td>debug_water_tight</td><td>False</td></tr>
                     </table>
                 
     </div>
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 134-138
+.. GENERATED FROM PYTHON SOURCE LINES 146-150
 
 .. code-block:: Python
 
@@ -480,7 +493,7 @@ Video tutorial 4: Computation and results
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 139-143
+.. GENERATED FROM PYTHON SOURCE LINES 151-155
 
 .. code-block:: Python
 
@@ -502,11 +515,11 @@ Video tutorial 4: Computation and results
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fbbf8801000>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fa56c924c10>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 144-149
+.. GENERATED FROM PYTHON SOURCE LINES 156-161
 
 .. code-block:: Python
 
@@ -535,14 +548,27 @@ Video tutorial 4: Computation and results
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 150-152
+.. GENERATED FROM PYTHON SOURCE LINES 162-164
 
 Video tutorial 5: 2D visualization
 """"""""""""""""""""""""""""""""""
 
-.. GENERATED FROM PYTHON SOURCE LINES 152-156
+.. GENERATED FROM PYTHON SOURCE LINES 166-175
+
+.. raw:: html
+
+    <iframe width="560" height="315" 
+            src="https://www.youtube.com/embed/nMms0JYn98o" 
+            title="GemPy tutorial video 5" 
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allowfullscreen>
+    </iframe>
+
+.. GENERATED FROM PYTHON SOURCE LINES 175-180
 
 .. code-block:: Python
+
 
 
     # 2d plotting options
@@ -562,11 +588,11 @@ Video tutorial 5: 2D visualization
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fbbfb422a70>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fa528f05900>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 157-167
+.. GENERATED FROM PYTHON SOURCE LINES 181-191
 
 .. code-block:: Python
 
@@ -610,14 +636,14 @@ Video tutorial 5: 2D visualization
           <td>[0, 0]</td>
           <td>[2500, 1000]</td>
           <td>[100, 50]</td>
-          <td>2692.58</td>
+          <td>2692.582404</td>
         </tr>
         <tr>
           <th>section2</th>
           <td>[1000, 1000]</td>
           <td>[1500, 0]</td>
           <td>[100, 100]</td>
-          <td>1118.03</td>
+          <td>1118.033989</td>
         </tr>
       </tbody>
     </table>
@@ -625,7 +651,7 @@ Video tutorial 5: 2D visualization
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 168-172
+.. GENERATED FROM PYTHON SOURCE LINES 192-196
 
 .. code-block:: Python
 
@@ -647,11 +673,11 @@ Video tutorial 5: 2D visualization
  .. code-block:: none
 
 
-    <function plot_section_traces at 0x7fbc63452830>
+    <function plot_section_traces at 0x7fa56cbd7f40>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 173-177
+.. GENERATED FROM PYTHON SOURCE LINES 197-201
 
 .. code-block:: Python
 
@@ -680,7 +706,7 @@ Video tutorial 5: 2D visualization
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 178-182
+.. GENERATED FROM PYTHON SOURCE LINES 202-206
 
 .. code-block:: Python
 
@@ -701,17 +727,19 @@ Video tutorial 5: 2D visualization
 
  .. code-block:: none
 
+    /Users/flow/opt/anaconda3/envs/gempy3_pre/lib/python3.10/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:105: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
+      warnings.warn(
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fbc65469090>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fa56e5ccc40>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 183-185
+.. GENERATED FROM PYTHON SOURCE LINES 207-209
 
 Video tutorial 6: 3D visualization
 """"""""""""""""""""""""""""""""""
 
-.. GENERATED FROM PYTHON SOURCE LINES 185-189
+.. GENERATED FROM PYTHON SOURCE LINES 209-213
 
 .. code-block:: Python
 
@@ -733,11 +761,11 @@ Video tutorial 6: 3D visualization
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fbc31c9bfa0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fa56ec8cca0>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 190-194
+.. GENERATED FROM PYTHON SOURCE LINES 214-222
 
 .. code-block:: Python
 
@@ -745,49 +773,23 @@ Video tutorial 6: 3D visualization
     # How to access DC meshes
     geo_model.solutions.dc_meshes[0].dc_data
 
+    # transform mesh vertices to original coordinate system
+
+    back_transformed_vertices = geo_model.input_transform.apply_inverse(geo_model.solutions.dc_meshes[0].vertices)
 
 
 
 
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-
-    DualContouringData(xyz_on_edge=array([[-0.249999 , -0.124999 ,  0.06875  ],
-           [-0.249999 , -0.109374 ,  0.06875  ],
-           [-0.2109365, -0.124999 ,  0.06875  ],
-           ...,
-           [ 0.3359385,  0.125001 ,  0.06875  ],
-           [ 0.375001 ,  0.109376 ,  0.06875  ],
-           [ 0.375001 ,  0.125001 ,  0.06875  ]]), valid_edges=array([[False, False, False, ...,  True,  True,  True],
-           [False, False, False, ..., False, False, False],
-           [False, False, False, ...,  True,  True,  True],
-           ...,
-           [False, False, False, ..., False, False, False],
-           [False, False, False, ..., False, False, False],
-           [False, False, False, ..., False, False, False]]), xyz_on_centers=array([[-0.23046775, -0.1171865 ,  0.0640635 ],
-           [-0.23046775, -0.1171865 ,  0.0796885 ],
-           [-0.23046775, -0.1015615 ,  0.0640635 ],
-           ...,
-           [ 0.35546975,  0.1015635 ,  0.1109385 ],
-           [ 0.35546975,  0.1171885 ,  0.0953135 ],
-           [ 0.35546975,  0.1171885 ,  0.1109385 ]]), dxdydz=(0.03906249999999999, 0.015625, 0.015625), exported_fields_on_edges=ExportedFields(_scalar_field=array([0.1375, 0.1375, 0.1375, ..., 0.137 , 0.137 , 0.1125]), _gx_field=array([0., 0., 0., ..., 0., 0., 0.]), _gy_field=array([0., 0., 0., ..., 0., 0., 0.]), _gz_field=array([1., 1., 1., ..., 1., 1., 1.]), _n_points_per_surface=array([0]), _slice_feature=slice(0, 15, None), _grid_size=1024, _scalar_field_at_surface_points=None, scalar_field_at_fault_shell=None), n_surfaces_to_export=1, _gradients=array([[0., 0., 1.],
-           [0., 0., 1.],
-           [0., 0., 1.],
-           ...,
-           [0., 0., 1.],
-           [0., 0., 1.],
-           [0., 0., 1.]]), tree_depth=4, mask=None, bias_center_mass=None, bias_normals=None)
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 195-197
+
+.. GENERATED FROM PYTHON SOURCE LINES 223-225
 
 Video tutorial 7: Topography
 """""""""""""""""""""""""""""""
 
-.. GENERATED FROM PYTHON SOURCE LINES 197-208
+.. GENERATED FROM PYTHON SOURCE LINES 225-236
 
 .. code-block:: Python
 
@@ -812,11 +814,11 @@ Video tutorial 7: Topography
 
     Active grids: GridTypes.NONE|SECTIONS|TOPOGRAPHY|DENSE
 
-    <gempy.core.data.grid_modules.topography.Topography object at 0x7fbbf978aec0>
+    <gempy.core.data.grid_modules.topography.Topography object at 0x7fa56ecb35b0>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 209-213
+.. GENERATED FROM PYTHON SOURCE LINES 237-241
 
 .. code-block:: Python
 
@@ -845,7 +847,7 @@ Video tutorial 7: Topography
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 214-218
+.. GENERATED FROM PYTHON SOURCE LINES 242-246
 
 .. code-block:: Python
 
@@ -867,11 +869,11 @@ Video tutorial 7: Topography
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fbbd2e8c850>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fa56ecff460>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 219-223
+.. GENERATED FROM PYTHON SOURCE LINES 247-251
 
 .. code-block:: Python
 
@@ -893,11 +895,11 @@ Video tutorial 7: Topography
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fbbfb492e00>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fa528f07850>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 224-229
+.. GENERATED FROM PYTHON SOURCE LINES 252-257
 
 .. code-block:: Python
 
@@ -920,14 +922,14 @@ Video tutorial 7: Topography
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fbc533c54b0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fa56ecfd510>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (3 minutes 2.323 seconds)
+   **Total running time of the script:** (2 minutes 59.534 seconds)
 
 
 .. _sphx_glr_download_tutorials_z_other_tutorials_video_tutorial_model_1.py:
