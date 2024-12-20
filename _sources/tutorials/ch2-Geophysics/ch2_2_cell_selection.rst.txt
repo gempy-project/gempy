@@ -11,7 +11,7 @@
         :class: sphx-glr-download-link-note
 
         :ref:`Go to the end <sphx_glr_download_tutorials_ch2-Geophysics_ch2_2_cell_selection.py>`
-        to download the full example code
+        to download the full example code.
 
 .. rst-class:: sphx-glr-example-title
 
@@ -270,7 +270,7 @@ Remember this is happening always in 3D:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 0.146 seconds)
+   **Total running time of the script:** (0 minutes 0.280 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch2-Geophysics_ch2_2_cell_selection.py:
@@ -286,6 +286,10 @@ Remember this is happening always in 3D:
     .. container:: sphx-glr-download sphx-glr-download-python
 
       :download:`Download Python source code: ch2_2_cell_selection.py <ch2_2_cell_selection.py>`
+
+    .. container:: sphx-glr-download sphx-glr-download-zip
+
+      :download:`Download zipped: ch2_2_cell_selection.zip <ch2_2_cell_selection.zip>`
 
 
 .. only:: html

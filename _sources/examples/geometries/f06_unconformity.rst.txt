@@ -11,7 +11,7 @@
         :class: sphx-glr-download-link-note
 
         :ref:`Go to the end <sphx_glr_download_examples_geometries_f06_unconformity.py>`
-        to download the full example code
+        to download the full example code.
 
 .. rst-class:: sphx-glr-example-title
 
@@ -121,7 +121,7 @@ Plot the initial geological model in the y direction
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87dbdd4430>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fdaa89df2e0>
 
 
 
@@ -162,14 +162,14 @@ Plot the result of the model in the y and x directions with data
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87db073cd0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fda3962d7e0>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 4.406 seconds)
+   **Total running time of the script:** (0 minutes 7.722 seconds)
 
 
 .. _sphx_glr_download_examples_geometries_f06_unconformity.py:
@@ -185,6 +185,10 @@ Plot the result of the model in the y and x directions with data
     .. container:: sphx-glr-download sphx-glr-download-python
 
       :download:`Download Python source code: f06_unconformity.py <f06_unconformity.py>`
+
+    .. container:: sphx-glr-download sphx-glr-download-zip
+
+      :download:`Download zipped: f06_unconformity.zip <f06_unconformity.zip>`
 
 
 .. only:: html

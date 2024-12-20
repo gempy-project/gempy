@@ -11,7 +11,7 @@
         :class: sphx-glr-download-link-note
 
         :ref:`Go to the end <sphx_glr_download_examples_geometries_b02_fold.py>`
-        to download the full example code
+        to download the full example code.
 
 .. rst-class:: sphx-glr-example-title
 
@@ -85,7 +85,7 @@ Define the path to data
     Surface points hash:  2790bb25dce52b1a99e4a95e3e9dc276a842dbcc863051d0a4cf4169a8de9a6e
     Orientations hash:  26fda5d7c0a74291d5fa18f880aeb84c106af0b771f95af103a025e4e80c4669
     Setting Backend To: AvailableBackends.numpy
-    Chunking done: 7 chunks
+    Chunking done: 8 chunks
     Chunking done: 6 chunks
 
 
@@ -137,14 +137,14 @@ Plot the initial geological model in the y direction without results
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87dbcfe1d0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fda480165f0>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.958 seconds)
+   **Total running time of the script:** (0 minutes 6.988 seconds)
 
 
 .. _sphx_glr_download_examples_geometries_b02_fold.py:
@@ -160,6 +160,10 @@ Plot the initial geological model in the y direction without results
     .. container:: sphx-glr-download sphx-glr-download-python
 
       :download:`Download Python source code: b02_fold.py <b02_fold.py>`
+
+    .. container:: sphx-glr-download sphx-glr-download-zip
+
+      :download:`Download zipped: b02_fold.zip <b02_fold.zip>`
 
 
 .. only:: html

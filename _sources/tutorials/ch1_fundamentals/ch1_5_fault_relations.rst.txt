@@ -11,7 +11,7 @@
         :class: sphx-glr-download-link-note
 
         :ref:`Go to the end <sphx_glr_download_tutorials_ch1_fundamentals_ch1_5_fault_relations.py>`
-        to download the full example code
+        to download the full example code.
 
 .. rst-class:: sphx-glr-example-title
 
@@ -76,8 +76,16 @@ We import a model from an existing folder.
 
  .. code-block:: none
 
-    {'_interpolation_options': InterpolationOptions(kernel_options={'range': 5, 'c_o': 10, 'uni_degree': 1, 'i_res': 4, 'gi_res': 2, 'number_dimensions': 3, 'kernel_function': <AvailableKernelFunctions.cubic: KernelFunction(base_function=<function cubic_function at 0x7f8833a9d3f0>, derivative_div_r=<function cubic_function_p_div_r at 0x7f8833a9d480>, second_derivative=<function cubic_function_a at 0x7f8833a9d510>, consume_sq_distance=False)>, 'kernel_solver': <Solvers.DEFAULT: 1>, 'compute_condition_number': False, 'optimizing_condition_number': False, 'condition_number': None}, evaluation_options={'_number_octree_levels': 6, '_number_octree_levels_surface': 4, 'curvature_threshold': -1, 'error_threshold': 1.0, 'min_octree_level': 2, 'mesh_extraction': True, 'mesh_extraction_masking_options': <MeshExtractionMaskingOptions.INTERSECT: 3>, 'mesh_extraction_fancy': True, 'evaluation_chunk_size': 500000, 'compute_scalar_gradient': False, 'verbose': False}, temp_interpolation_values=<gempy_engine.core.data.options.temp_interpolation_values.TempInterpolationValues object at 0x7f87d3e93730>, debug=True, cache_mode=CacheMode.IN_MEMORY_CACHE, cache_model_name=, block_solutions_type=BlockSolutionType.OCTREE, sigmoid_slope=50000, debug_water_tight=False),
-     'grid': Grid(_octree_grid=None,
+    {'_interpolation_options': InterpolationOptions(kernel_options={'range': 1.7, 'c_o': 10, 'uni_degree': 1, 'i_res': 4, 'gi_res': 2, 'number_dimensions': 3, 'kernel_function': <AvailableKernelFunctions.cubic: KernelFunction(base_function=<function cubic_function at 0x7fdaebe81bd0>, derivative_div_r=<function cubic_function_p_div_r at 0x7fdaebe81e10>, second_derivative=<function cubic_function_a at 0x7fdaebe81ea0>, consume_sq_distance=False)>, 'kernel_solver': <Solvers.DEFAULT: 1>, 'compute_condition_number': False, 'optimizing_condition_number': False, 'condition_number': None}, evaluation_options={'_number_octree_levels': 6, '_number_octree_levels_surface': 4, 'octree_curvature_threshold': -1, 'octree_error_threshold': 1.0, 'octree_min_level': 2, 'mesh_extraction': True, 'mesh_extraction_masking_options': <MeshExtractionMaskingOptions.INTERSECT: 3>, 'mesh_extraction_fancy': True, 'evaluation_chunk_size': 500000, 'compute_scalar_gradient': False, 'verbose': False}, temp_interpolation_values=<gempy_engine.core.data.options.temp_interpolation_values.TempInterpolationValues object at 0x7fdada7c04c0>, debug=True, cache_mode=CacheMode.IN_MEMORY_CACHE, cache_model_name=, block_solutions_type=BlockSolutionType.OCTREE, sigmoid_slope=50000, debug_water_tight=False),
+     'grid': Grid(values=array([[  25.,   25., -985.],
+           [  25.,   25., -955.],
+           [  25.,   25., -925.],
+           ...,
+           [ 975.,  975., -475.],
+           [ 975.,  975., -445.],
+           [ 975.,  975., -415.]]),
+                  length=array([], dtype=float64),
+                  _octree_grid=None,
                   _dense_grid=RegularGrid(resolution=array([20, 20, 20]),
                                           extent=array([    0.,  1000.,     0.,  1000., -1000.,  -400.]),
                                           values=array([[  25.,   25., -985.],
@@ -93,14 +101,6 @@ We import a model from an existing folder.
                   _topography=None,
                   _sections=None,
                   _centered_grid=None,
-                  values=array([[  25.,   25., -985.],
-           [  25.,   25., -955.],
-           [  25.,   25., -925.],
-           ...,
-           [ 975.,  975., -475.],
-           [ 975.,  975., -445.],
-           [ 975.,  975., -415.]]),
-                  length=array([], dtype=float64),
                   _transform=None,
                   _octree_levels=-1),
      'input_transform': {'_cached_pivot': None,
@@ -329,7 +329,7 @@ Setting the structural frame
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f87daf85210>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fda781fa380>
 
 
 
@@ -456,7 +456,7 @@ Setting the structural frame
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f87d3ec5690>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fdaef6eca00>
 
 
 
@@ -501,7 +501,7 @@ Setting the structural frame
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87dbd8e140>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fdaef7af820>
 
 
 
@@ -683,14 +683,14 @@ Let's split the formations in two groups
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f87dbca7430>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fda58fab940>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (3 minutes 26.504 seconds)
+   **Total running time of the script:** (6 minutes 29.781 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_5_fault_relations.py:
@@ -706,6 +706,10 @@ Let's split the formations in two groups
     .. container:: sphx-glr-download sphx-glr-download-python
 
       :download:`Download Python source code: ch1_5_fault_relations.py <ch1_5_fault_relations.py>`
+
+    .. container:: sphx-glr-download sphx-glr-download-zip
+
+      :download:`Download zipped: ch1_5_fault_relations.zip <ch1_5_fault_relations.zip>`
 
 
 .. only:: html

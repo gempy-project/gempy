@@ -11,7 +11,7 @@
         :class: sphx-glr-download-link-note
 
         :ref:`Go to the end <sphx_glr_download_examples_real_Greenstone.py>`
-        to download the full example code
+        to download the full example code.
 
 .. rst-class:: sphx-glr-example-title
 
@@ -41,7 +41,7 @@ Greenstone.
 
  .. code-block:: none
 
-    2024.1.2.dev59+gc19c50fa.d20240531
+    2024.2.0.2
 
 
 
@@ -95,7 +95,7 @@ Greenstone.
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87cc27cd00>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f827b941a80>
 
 
 
@@ -200,12 +200,12 @@ Greenstone.
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.numpy
-    Chunking done: 34 chunks
-    Chunking done: 11 chunks
-    Chunking done: 18 chunks
     Chunking done: 32 chunks
     Chunking done: 10 chunks
     Chunking done: 18 chunks
+    Chunking done: 31 chunks
+    Chunking done: 10 chunks
+    Chunking done: 17 chunks
 
 
 .. raw:: html
@@ -236,7 +236,7 @@ Greenstone.
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87cc0b0250>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f827c75c1f0>
 
 
 
@@ -260,7 +260,7 @@ Greenstone.
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87cc0b1090>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f827c75e6b0>
 
 
 
@@ -287,14 +287,14 @@ sphinx_gallery_thumbnail_number = -1
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f87cc109420>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f827c800bb0>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 32.628 seconds)
+   **Total running time of the script:** (0 minutes 59.751 seconds)
 
 
 .. _sphx_glr_download_examples_real_Greenstone.py:
@@ -310,6 +310,10 @@ sphinx_gallery_thumbnail_number = -1
     .. container:: sphx-glr-download sphx-glr-download-python
 
       :download:`Download Python source code: Greenstone.py <Greenstone.py>`
+
+    .. container:: sphx-glr-download sphx-glr-download-zip
+
+      :download:`Download zipped: Greenstone.zip <Greenstone.zip>`
 
 
 .. only:: html

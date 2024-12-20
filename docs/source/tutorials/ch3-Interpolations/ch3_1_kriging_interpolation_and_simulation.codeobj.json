@@ -1,0 +1,927 @@
+{
+ "Plot2D": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy_viewer.modules.plot_2d.visualization_2d",
+   "module_short": "gempy_viewer.modules.plot_2d.visualization_2d",
+   "name": "Plot2D"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy_viewer.modules.plot_2d",
+   "module_short": "gempy_viewer.modules.plot_2d",
+   "name": "Plot2D"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy_viewer.modules",
+   "module_short": "gempy_viewer.modules",
+   "name": "Plot2D"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy_viewer",
+   "module_short": "gempy_viewer",
+   "name": "Plot2D"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_viewer.modules.plot_2d.visualization_2d",
+   "module_short": "gempy_viewer.modules.plot_2d.visualization_2d",
+   "name": "Plot2D"
+  }
+ ],
+ "cond_data": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "numpy",
+   "module_short": "numpy",
+   "name": "ndarray"
+  }
+ ],
+ "data_path": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "str"
+  }
+ ],
+ "domain": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_plugins.kriging.kriging",
+   "module_short": "gempy_plugins.kriging.kriging",
+   "name": "Domain"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_plugins.kriging",
+   "module_short": "gempy_plugins.kriging",
+   "name": "Domain"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_plugins",
+   "module_short": "gempy_plugins",
+   "name": "Domain"
+  }
+ ],
+ "geo_data": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.geo_model",
+   "module_short": "gempy.core.data",
+   "name": "GeoModel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "GeoModel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "GeoModel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "GeoModel"
+  }
+ ],
+ "geo_data.input_transform": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine.core.data.transforms",
+   "module_short": "gempy_engine.core.data.transforms",
+   "name": "Transform"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine.core.data",
+   "module_short": "gempy_engine.core.data",
+   "name": "Transform"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine.core",
+   "module_short": "gempy_engine.core",
+   "name": "Transform"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine",
+   "module_short": "gempy_engine",
+   "name": "Transform"
+  }
+ ],
+ "gp.compute_model": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "compute_model"
+  }
+ ],
+ "gp.create_geomodel": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "create_geomodel"
+  }
+ ],
+ "gp.data.GeoModel": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data.geo_model",
+   "module_short": "gempy.core.data",
+   "name": "GeoModel"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "GeoModel"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "GeoModel"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "GeoModel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.data",
+   "module_short": "gempy.data",
+   "name": "GeoModel"
+  }
+ ],
+ "gp.data.ImporterHelper": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data.importer_helper",
+   "module_short": "gempy.core.data",
+   "name": "ImporterHelper"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "ImporterHelper"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "ImporterHelper"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "ImporterHelper"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.data",
+   "module_short": "gempy.data",
+   "name": "ImporterHelper"
+  }
+ ],
+ "gp.map_stack_to_surfaces": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "map_stack_to_surfaces"
+  }
+ ],
+ "gpv.plot_2d": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_viewer",
+   "module_short": "gempy_viewer",
+   "name": "plot_2d"
+  }
+ ],
+ "kriging.Domain": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy_plugins.kriging.kriging",
+   "module_short": "gempy_plugins.kriging.kriging",
+   "name": "Domain"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy_plugins.kriging",
+   "module_short": "gempy_plugins.kriging",
+   "name": "Domain"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy_plugins",
+   "module_short": "gempy_plugins",
+   "name": "Domain"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_plugins.kriging.kriging",
+   "module_short": "gempy_plugins.kriging.kriging",
+   "name": "Domain"
+  }
+ ],
+ "kriging.VariogramModel": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy_plugins.kriging.kriging",
+   "module_short": "gempy_plugins.kriging.kriging",
+   "name": "VariogramModel"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy_plugins.kriging",
+   "module_short": "gempy_plugins.kriging",
+   "name": "VariogramModel"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy_plugins",
+   "module_short": "gempy_plugins",
+   "name": "VariogramModel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_plugins.kriging.kriging",
+   "module_short": "gempy_plugins.kriging.kriging",
+   "name": "VariogramModel"
+  }
+ ],
+ "kriging.create_gaussian_field": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_plugins.kriging.kriging",
+   "module_short": "gempy_plugins.kriging.kriging",
+   "name": "create_gaussian_field"
+  }
+ ],
+ "kriging.create_kriged_field": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_plugins.kriging.kriging",
+   "module_short": "gempy_plugins.kriging.kriging",
+   "name": "create_kriged_field"
+  }
+ ],
+ "kriging.plot_kriging_results": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_plugins.kriging.kriging",
+   "module_short": "gempy_plugins.kriging.kriging",
+   "name": "plot_kriging_results"
+  }
+ ],
+ "kriging_solution": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_plugins.kriging.kriging",
+   "module_short": "gempy_plugins.kriging.kriging",
+   "name": "KrigingFieldSolution"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_plugins.kriging",
+   "module_short": "gempy_plugins.kriging",
+   "name": "KrigingFieldSolution"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_plugins",
+   "module_short": "gempy_plugins",
+   "name": "KrigingFieldSolution"
+  }
+ ],
+ "kriging_solution.results_df.head": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.frame",
+   "module_short": "pandas.core.frame",
+   "name": "DataFrame.head"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "DataFrame.head"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "DataFrame.head"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.generic",
+   "module_short": "pandas.core.generic",
+   "name": "NDFrame.head"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "NDFrame.head"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "NDFrame.head"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.arraylike",
+   "module_short": "pandas.core.arraylike",
+   "name": "OpsMixin.head"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "OpsMixin.head"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "OpsMixin.head"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.base",
+   "module_short": "pandas.core.base",
+   "name": "PandasObject.head"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "PandasObject.head"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "PandasObject.head"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.indexing",
+   "module_short": "pandas.core.indexing",
+   "name": "IndexingMixin.head"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "IndexingMixin.head"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "IndexingMixin.head"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.accessor",
+   "module_short": "pandas.core.accessor",
+   "name": "DirNamesMixin.head"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "DirNamesMixin.head"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "DirNamesMixin.head"
+  }
+ ],
+ "np.array": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "builtin_function_or_method"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "numpy",
+   "module_short": "numpy",
+   "name": "array"
+  }
+ ],
+ "np.random.seed": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "builtin_function_or_method"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "numpy.random",
+   "module_short": "numpy.random",
+   "name": "seed"
+  }
+ ],
+ "np.var": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "numpy",
+   "module_short": "numpy",
+   "name": "_ArrayFunctionDispatcher"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "numpy",
+   "module_short": "numpy",
+   "name": "var"
+  }
+ ],
+ "os.path.abspath": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "os.path",
+   "module_short": "os.path",
+   "name": "abspath"
+  }
+ ],
+ "plot_2d": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_viewer.modules.plot_2d.visualization_2d",
+   "module_short": "gempy_viewer.modules.plot_2d.visualization_2d",
+   "name": "Plot2D"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_viewer.modules.plot_2d",
+   "module_short": "gempy_viewer.modules.plot_2d",
+   "name": "Plot2D"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_viewer.modules",
+   "module_short": "gempy_viewer.modules",
+   "name": "Plot2D"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_viewer",
+   "module_short": "gempy_viewer",
+   "name": "Plot2D"
+  }
+ ],
+ "plot_2d_both": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_viewer.modules.plot_2d.visualization_2d",
+   "module_short": "gempy_viewer.modules.plot_2d.visualization_2d",
+   "name": "Plot2D"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_viewer.modules.plot_2d",
+   "module_short": "gempy_viewer.modules.plot_2d",
+   "name": "Plot2D"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_viewer.modules",
+   "module_short": "gempy_viewer.modules",
+   "name": "Plot2D"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_viewer",
+   "module_short": "gempy_viewer",
+   "name": "Plot2D"
+  }
+ ],
+ "plt.show": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.pyplot",
+   "module_short": "matplotlib.pyplot",
+   "name": "show"
+  }
+ ],
+ "sol": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine.core.data.solutions",
+   "module_short": "gempy_engine.core.data",
+   "name": "Solutions"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine.core.data",
+   "module_short": "gempy_engine.core.data",
+   "name": "Solutions"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine.core",
+   "module_short": "gempy_engine.core",
+   "name": "Solutions"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine",
+   "module_short": "gempy_engine",
+   "name": "Solutions"
+  }
+ ],
+ "solution_sim": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_plugins.kriging.kriging",
+   "module_short": "gempy_plugins.kriging.kriging",
+   "name": "KrigingFieldSolution"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_plugins.kriging",
+   "module_short": "gempy_plugins.kriging",
+   "name": "KrigingFieldSolution"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_plugins",
+   "module_short": "gempy_plugins",
+   "name": "KrigingFieldSolution"
+  }
+ ],
+ "solution_sim.results_df": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.frame",
+   "module_short": "pandas.core.frame",
+   "name": "DataFrame"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "DataFrame"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "DataFrame"
+  }
+ ],
+ "solution_sim.results_df.head": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.frame",
+   "module_short": "pandas.core.frame",
+   "name": "DataFrame.head"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "DataFrame.head"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "DataFrame.head"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.generic",
+   "module_short": "pandas.core.generic",
+   "name": "NDFrame.head"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "NDFrame.head"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "NDFrame.head"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.arraylike",
+   "module_short": "pandas.core.arraylike",
+   "name": "OpsMixin.head"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "OpsMixin.head"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "OpsMixin.head"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.base",
+   "module_short": "pandas.core.base",
+   "name": "PandasObject.head"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "PandasObject.head"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "PandasObject.head"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.indexing",
+   "module_short": "pandas.core.indexing",
+   "name": "IndexingMixin.head"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "IndexingMixin.head"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "IndexingMixin.head"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.accessor",
+   "module_short": "pandas.core.accessor",
+   "name": "DirNamesMixin.head"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "DirNamesMixin.head"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "DirNamesMixin.head"
+  }
+ ],
+ "variogram_model": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_plugins.kriging.kriging",
+   "module_short": "gempy_plugins.kriging.kriging",
+   "name": "VariogramModel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_plugins.kriging",
+   "module_short": "gempy_plugins.kriging",
+   "name": "VariogramModel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_plugins",
+   "module_short": "gempy_plugins",
+   "name": "VariogramModel"
+  }
+ ],
+ "variogram_model.plot": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_plugins.kriging.kriging",
+   "module_short": "gempy_plugins.kriging.kriging",
+   "name": "VariogramModel.plot"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_plugins.kriging",
+   "module_short": "gempy_plugins.kriging",
+   "name": "VariogramModel.plot"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_plugins",
+   "module_short": "gempy_plugins",
+   "name": "VariogramModel.plot"
+  }
+ ]
+}

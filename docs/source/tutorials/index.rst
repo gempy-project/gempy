@@ -1,0 +1,394 @@
+:orphan:
+
+GemPy Tutorials
+===============
+
+Here you will find a selection of examples showing what can you do and how
+you can do it in GemPy
+
+
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+.. thumbnail-parent-div-open
+
+.. thumbnail-parent-div-close
+
+.. raw:: html
+
+    </div>
+
+Getting Started
+---------------
+
+Here you can see how to run a simple GemPy example.
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+.. thumbnail-parent-div-open
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Getting Started">
+
+.. only:: html
+
+  .. image:: /tutorials/a_getting_started/images/thumb/sphx_glr_get_started_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_tutorials_a_getting_started_get_started.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Getting Started</div>
+    </div>
+
+
+.. thumbnail-parent-div-close
+
+.. raw:: html
+
+    </div>
+
+Chapter 1: GemPy fundamentals
+-----------------------------
+
+These examples show the basic functionality to create geometries.
+
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+.. thumbnail-parent-div-open
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="1.1 -Basics of geological modeling with GemPy">
+
+.. only:: html
+
+  .. image:: /tutorials/ch1_fundamentals/images/thumb/sphx_glr_ch1_1_basics_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_1_basics.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">1.1 -Basics of geological modeling with GemPy</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="1.3a: Grids.">
+
+.. only:: html
+
+  .. image:: /tutorials/ch1_fundamentals/images/thumb/sphx_glr_ch1_3a_grids_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_3a_grids.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">1.3a: Grids.</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="1.3b: 2-D sections">
+
+.. only:: html
+
+  .. image:: /tutorials/ch1_fundamentals/images/thumb/sphx_glr_ch1_3b_cross_sections_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_3b_cross_sections.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">1.3b: 2-D sections</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="1.3c: Adding topography to geological models">
+
+.. only:: html
+
+  .. image:: /tutorials/ch1_fundamentals/images/thumb/sphx_glr_ch1_3c_topography_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_3c_topography.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">1.3c: Adding topography to geological models</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="1.4: Unconformity relationships">
+
+.. only:: html
+
+  .. image:: /tutorials/ch1_fundamentals/images/thumb/sphx_glr_ch1_4_onlap_relations_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_4_onlap_relations.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">1.4: Unconformity relationships</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="1.5: Fault relations">
+
+.. only:: html
+
+  .. image:: /tutorials/ch1_fundamentals/images/thumb/sphx_glr_ch1_5_fault_relations_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_5_fault_relations.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">1.5: Fault relations</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="1.6: 2D Visualization.">
+
+.. only:: html
+
+  .. image:: /tutorials/ch1_fundamentals/images/thumb/sphx_glr_ch1_6_2d_visualization_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_6_2d_visualization.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">1.6: 2D Visualization.</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="1.7: 3-D Visualization">
+
+.. only:: html
+
+  .. image:: /tutorials/ch1_fundamentals/images/thumb/sphx_glr_ch1_7_3d_visualization_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_7_3d_visualization.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">1.7: 3-D Visualization</div>
+    </div>
+
+
+.. thumbnail-parent-div-close
+
+.. raw:: html
+
+    </div>
+
+Chapter 2: Forward Geophysics
+-----------------------------
+
+These examples show how to use some of the in built functionality for forward geophysics. At this date GemPy is not meant to be a package for classical geophysical inversion rather to allow probabilistic inversion. This means that we need algorithms that can be fast, differentiable but still capable to estimate the right answer!
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+.. thumbnail-parent-div-open
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="2.1 Forward Gravity: Simple example">
+
+.. only:: html
+
+  .. image:: /tutorials/ch2-Geophysics/images/thumb/sphx_glr_ch2_1_gravity_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_tutorials_ch2-Geophysics_ch2_1_gravity.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">2.1 Forward Gravity: Simple example</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Geophysics Preprocessing builds on the centered grid (https://github.com/cgre-aachen/gempy/blob/master/notebooks/tutorials/ch1-3-Grids.ipynb) to precompute the constant part of forward physical computations as for example gravity:">
+
+.. only:: html
+
+  .. image:: /tutorials/ch2-Geophysics/images/thumb/sphx_glr_ch2_2_cell_selection_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_tutorials_ch2-Geophysics_ch2_2_cell_selection.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">2.2: Centered Grid.</div>
+    </div>
+
+
+.. thumbnail-parent-div-close
+
+.. raw:: html
+
+    </div>
+
+Chapter 3: Domain Kriging
+-------------------------
+
+GemPy uses Kriging to interpolate the scalar field to construct the
+structural model. However to populate petrophysical data within each domain
+we also provide functionality to interpolate data in 3D.
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+.. thumbnail-parent-div-open
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="3.1: Simple example of kriging in gempy">
+
+.. only:: html
+
+  .. image:: /tutorials/ch3-Interpolations/images/thumb/sphx_glr_ch3_1_kriging_interpolation_and_simulation_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_tutorials_ch3-Interpolations_ch3_1_kriging_interpolation_and_simulation.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">3.1: Simple example of kriging in gempy</div>
+    </div>
+
+
+.. thumbnail-parent-div-close
+
+.. raw:: html
+
+    </div>
+
+Chapter 4: Topological analysis
+-------------------------------
+
+One of the reasons to perform structural modeling is to analyse the topology
+of the system, i.e. the connectivity between layers. GemPy provide built-in
+functionality to calculate and analyse this aspect of each geological modeling
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+.. thumbnail-parent-div-open
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Chapter 4: Analyzing Geomodel Topology">
+
+.. only:: html
+
+  .. image:: /tutorials/ch4-Topology/images/thumb/sphx_glr_ch4-1-Topology_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_tutorials_ch4-Topology_ch4-1-Topology.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Chapter 4: Analyzing Geomodel Topology</div>
+    </div>
+
+
+.. thumbnail-parent-div-close
+
+.. raw:: html
+
+    </div>
+
+Video tutorials
+---------------
+
+Compilation of tutorials for videos on the `gempy` YouTube channel https://www.youtube.com/@GemPy3D.
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+.. thumbnail-parent-div-open
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This tutorial demonstrates step-by-step geological modeling using the gempy and gempy_viewer libraries. It follows the Video tutorial series available on the gempy YouTube channel (https://www.youtube.com/@GemPy3D).">
+
+.. only:: html
+
+  .. image:: /tutorials/z_other_tutorials/images/thumb/sphx_glr_video_tutorial_model_1_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_tutorials_z_other_tutorials_video_tutorial_model_1.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Video Tutorial "code-along": Modeling step by step</div>
+    </div>
+
+
+.. thumbnail-parent-div-close
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+   :includehidden:
+
+
+   /tutorials/a_getting_started/index.rst
+   /tutorials/ch1_fundamentals/index.rst
+   /tutorials/ch2-Geophysics/index.rst
+   /tutorials/ch3-Interpolations/index.rst
+   /tutorials/ch4-Topology/index.rst
+   /tutorials/z_other_tutorials/index.rst
+
+
+
+.. only:: html
+
+ .. rst-class:: sphx-glr-signature
+
+    `Gallery generated by Sphinx-Gallery <https://sphinx-gallery.github.io>`_

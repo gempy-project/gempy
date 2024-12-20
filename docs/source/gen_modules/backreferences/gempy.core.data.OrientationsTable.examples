@@ -1,0 +1,126 @@
+
+
+Examples using ``gempy.core.data.OrientationsTable``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+.. start-sphx-glr-thumbnails
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+.. thumbnail-parent-div-open
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Getting Started">
+
+.. only:: html
+
+  .. image:: /tutorials/a_getting_started/images/thumb/sphx_glr_get_started_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_tutorials_a_getting_started_get_started.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Getting Started</div>
+    </div>
+
+
+.. only:: not html
+
+ * :ref:`sphx_glr_tutorials_a_getting_started_get_started.py`
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="1.1 -Basics of geological modeling with GemPy">
+
+.. only:: html
+
+  .. image:: /tutorials/ch1_fundamentals/images/thumb/sphx_glr_ch1_1_basics_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_1_basics.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">1.1 -Basics of geological modeling with GemPy</div>
+    </div>
+
+
+.. only:: not html
+
+ * :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_1_basics.py`
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Claudius">
+
+.. only:: html
+
+  .. image:: /examples/real/images/thumb/sphx_glr_Claudius_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_real_Claudius.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Claudius</div>
+    </div>
+
+
+.. only:: not html
+
+ * :ref:`sphx_glr_examples_real_Claudius.py`
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Hecho">
+
+.. only:: html
+
+  .. image:: /examples/real/images/thumb/sphx_glr_Hecho_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_real_Hecho.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Hecho</div>
+    </div>
+
+
+.. only:: not html
+
+ * :ref:`sphx_glr_examples_real_Hecho.py`
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Moureze">
+
+.. only:: html
+
+  .. image:: /examples/real/images/thumb/sphx_glr_Moureze_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_real_Moureze.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Moureze</div>
+    </div>
+
+
+.. only:: not html
+
+ * :ref:`sphx_glr_examples_real_Moureze.py`
+
+.. thumbnail-parent-div-close
+
+.. raw:: html
+
+    </div>
+

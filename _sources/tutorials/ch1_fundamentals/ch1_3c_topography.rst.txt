@@ -11,7 +11,7 @@
         :class: sphx-glr-download-link-note
 
         :ref:`Go to the end <sphx_glr_download_tutorials_ch1_fundamentals_ch1_3c_topography.py>`
-        to download the full example code
+        to download the full example code.
 
 .. rst-class:: sphx-glr-example-title
 
@@ -206,7 +206,7 @@ sphinx_gallery_thumbnail_number = 2
     [200. 500.]
     Active grids: GridTypes.NONE|SECTIONS|TOPOGRAPHY|DENSE
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87dfec0520>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fdaed8c3970>
 
 
 
@@ -254,7 +254,7 @@ It has additional keywords to play around with:
 
     Active grids: GridTypes.NONE|SECTIONS|TOPOGRAPHY|DENSE
 
-    <gempy.core.data.grid_modules.topography.Topography object at 0x7f87dfec1b40>
+    <gempy.core.data.grid_modules.topography.Topography object at 0x7fdaed8c0190>
 
 
 
@@ -318,7 +318,7 @@ It can be visualized using the 2D and 3D plotting functionality:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87dbc293f0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fda98922a40>
 
 
 
@@ -341,10 +341,10 @@ It can be visualized using the 2D and 3D plotting functionality:
 
  .. code-block:: none
 
-    /home/leguark/gempy_viewer/gempy_viewer/API/_plot_2d_sections_api.py:105: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
+    /Users/flow/opt/anaconda3/envs/gempy3_pre/lib/python3.10/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:105: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
       warnings.warn(
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87dbc29660>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fdaed8a2a40>
 
 
 
@@ -403,7 +403,7 @@ sphinx_gallery_thumbnail_number = 3
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 6.787 seconds)
+   **Total running time of the script:** (0 minutes 11.703 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_3c_topography.py:
@@ -419,6 +419,10 @@ sphinx_gallery_thumbnail_number = 3
     .. container:: sphx-glr-download sphx-glr-download-python
 
       :download:`Download Python source code: ch1_3c_topography.py <ch1_3c_topography.py>`
+
+    .. container:: sphx-glr-download sphx-glr-download-zip
+
+      :download:`Download zipped: ch1_3c_topography.zip <ch1_3c_topography.zip>`
 
 
 .. only:: html

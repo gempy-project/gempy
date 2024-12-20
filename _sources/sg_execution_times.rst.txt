@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**01:35.701** total execution time for 29 files **from all galleries**:
+**02:59.534** total execution time for 29 files **from all galleries**:
 
 .. container::
 
@@ -32,8 +32,8 @@ Computation times
    * - Example
      - Time
      - Mem (MB)
-   * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_1_basics.py` (``../../examples/tutorials/ch1_fundamentals/ch1_1_basics.py``)
-     - 01:35.701
+   * - :ref:`sphx_glr_tutorials_z_other_tutorials_video_tutorial_model_1.py` (``../../examples/tutorials/z_other_tutorials/video_tutorial_model_1.py``)
+     - 02:59.534
      - 0.0
    * - :ref:`sphx_glr_examples_geometries_a01_horizontal_stratigraphic.py` (``../../examples/examples/geometries/a01_horizontal_stratigraphic.py``)
      - 00:00.000
@@ -83,6 +83,9 @@ Computation times
    * - :ref:`sphx_glr_tutorials_a_getting_started_get_started.py` (``../../examples/tutorials/a_getting_started/get_started.py``)
      - 00:00.000
      - 0.0
+   * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_1_basics.py` (``../../examples/tutorials/ch1_fundamentals/ch1_1_basics.py``)
+     - 00:00.000
+     - 0.0
    * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_3a_grids.py` (``../../examples/tutorials/ch1_fundamentals/ch1_3a_grids.py``)
      - 00:00.000
      - 0.0
@@ -114,8 +117,5 @@ Computation times
      - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_tutorials_ch4-Topology_ch4-1-Topology.py` (``../../examples/tutorials/ch4-Topology/ch4-1-Topology.py``)
-     - 00:00.000
-     - 0.0
-   * - :ref:`sphx_glr_tutorials_z_other_tutorials_a1_fold.py` (``../../examples/tutorials/z_other_tutorials/a1_fold.py``)
      - 00:00.000
      - 0.0

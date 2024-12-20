@@ -11,7 +11,7 @@
         :class: sphx-glr-download-link-note
 
         :ref:`Go to the end <sphx_glr_download_tutorials_ch2-Geophysics_ch2_1_gravity.py>`
-        to download the full example code
+        to download the full example code.
 
 .. rst-class:: sphx-glr-example-title
 
@@ -182,7 +182,7 @@ Importing gempy
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87dbfcd480>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fdaed8a0670>
 
 
 
@@ -443,7 +443,7 @@ model as follows:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87dc095750>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fda68e3c760>
 
 
 
@@ -467,7 +467,7 @@ model as follows:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87cd3cd3c0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fdaed8c32b0>
 
 
 
@@ -546,7 +546,7 @@ gravity overlying):
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (1 minutes 5.883 seconds)
+   **Total running time of the script:** (1 minutes 49.869 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch2-Geophysics_ch2_1_gravity.py:
@@ -562,6 +562,10 @@ gravity overlying):
     .. container:: sphx-glr-download sphx-glr-download-python
 
       :download:`Download Python source code: ch2_1_gravity.py <ch2_1_gravity.py>`
+
+    .. container:: sphx-glr-download sphx-glr-download-zip
+
+      :download:`Download zipped: ch2_1_gravity.zip <ch2_1_gravity.zip>`
 
 
 .. only:: html

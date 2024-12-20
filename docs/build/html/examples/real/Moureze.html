@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Moureze &#8212; GemPy 2024.2.0.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=686e5160" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=e15417cb" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <script src="../../_static/documentation_options.js?v=6d9f68de"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <link rel="icon" href="../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Perth basin." href="Perth_basin.html" />
+    <link rel="prev" title="Hecho" href="Hecho.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#sphx-glr-download-examples-real-moureze-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code.</p>
+</div>
+<section class="sphx-glr-example-title" id="moureze">
+<span id="sphx-glr-examples-real-moureze-py"></span><h1>Moureze<a class="headerlink" href="#moureze" title="Link to this heading">¶</a></h1>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+</pre></div>
+</div>
+<p>These two lines are necessary only if gempy is not installed</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Importing gempy</span>
+<span class="kn">import</span> <span class="nn">gempy</span> <span class="k">as</span> <span class="nn">gp</span>
+<span class="kn">import</span> <span class="nn">gempy_viewer</span> <span class="k">as</span> <span class="nn">gpv</span>
+
+<span class="c1"># Aux imports</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">from</span> <span class="nn">gempy_engine.config</span> <span class="kn">import</span> <span class="n">AvailableBackends</span>
+</pre></div>
+</div>
+</section>
+<section id="loading-surface-points-from-repository">
+<h1>Loading surface points from repository:<a class="headerlink" href="#loading-surface-points-from-repository" title="Link to this heading">¶</a></h1>
+<p>With pandas we can do it directly from the web and with the right args
+we can directly tidy the data in gempy style:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">data_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s1">&#39;../../data/input_data/Moureze&#39;</span><span class="p">)</span>
+<span class="n">Moureze_points</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
+    <span class="n">filepath_or_buffer</span><span class="o">=</span><span class="n">data_path</span> <span class="o">+</span> <span class="s1">&#39;/Moureze_Points.csv&#39;</span><span class="p">,</span>
+    <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;;&#39;</span><span class="p">,</span>
+    <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">,</span> <span class="s1">&#39;G_x&#39;</span><span class="p">,</span> <span class="s1">&#39;G_y&#39;</span><span class="p">,</span> <span class="s1">&#39;G_z&#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">],</span>
+    <span class="n">header</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">Sections_EW</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
+    <span class="n">filepath_or_buffer</span><span class="o">=</span><span class="n">data_path</span> <span class="o">+</span> <span class="s1">&#39;/Sections_EW.csv&#39;</span><span class="p">,</span>
+    <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;;&#39;</span><span class="p">,</span>
+    <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">,</span> <span class="s1">&#39;ID&#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">],</span> <span class="n">header</span><span class="o">=</span><span class="mi">1</span>
+<span class="p">)</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+
+<span class="n">Sections_NS</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
+    <span class="n">filepath_or_buffer</span><span class="o">=</span><span class="n">data_path</span> <span class="o">+</span> <span class="s1">&#39;/Sections_NS.csv&#39;</span><span class="p">,</span>
+    <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;;&#39;</span><span class="p">,</span>
+    <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">,</span> <span class="s1">&#39;ID&#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">],</span> <span class="n">header</span><span class="o">=</span><span class="mi">1</span>
+<span class="p">)</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Extracting the orientatins:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">mask_surfpoints</span> <span class="o">=</span> <span class="n">Moureze_points</span><span class="p">[</span><span class="s1">&#39;G_x&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mi">9999</span>
+<span class="n">surface_points</span> <span class="o">=</span> <span class="n">Moureze_points</span><span class="p">[</span><span class="n">mask_surfpoints</span><span class="p">][::</span><span class="mi">10</span><span class="p">]</span>
+<span class="n">orientations</span> <span class="o">=</span> <span class="n">Moureze_points</span><span class="p">[</span><span class="o">~</span><span class="n">mask_surfpoints</span><span class="p">][::</span><span class="mi">10</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Giving an arbitrary value name to the surface</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">surface_points</span><span class="p">[</span><span class="s1">&#39;surface&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span>
+<span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;surface&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">surface_points</span><span class="o">.</span><span class="n">tail</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="output_subarea output_html rendered_html output_result">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>X</th>
+      <th>Y</th>
+      <th>Z</th>
+      <th>G_x</th>
+      <th>G_y</th>
+      <th>G_z</th>
+      <th>_</th>
+      <th>surface</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>3370</th>
+      <td>224.00</td>
+      <td>65.34</td>
+      <td>-120.00</td>
+      <td>-99999.0</td>
+      <td>-99999.0</td>
+      <td>-99999.0</td>
+      <td>0.67</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3386</th>
+      <td>232.00</td>
+      <td>20.00</td>
+      <td>-85.10</td>
+      <td>-99999.0</td>
+      <td>-99999.0</td>
+      <td>-99999.0</td>
+      <td>0.70</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3396</th>
+      <td>135.94</td>
+      <td>154.31</td>
+      <td>-154.02</td>
+      <td>-99999.0</td>
+      <td>-99999.0</td>
+      <td>-99999.0</td>
+      <td>0.35</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3411</th>
+      <td>296.00</td>
+      <td>378.00</td>
+      <td>-156.41</td>
+      <td>-99999.0</td>
+      <td>-99999.0</td>
+      <td>-99999.0</td>
+      <td>0.85</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3424</th>
+      <td>91.96</td>
+      <td>151.81</td>
+      <td>-83.26</td>
+      <td>-99999.0</td>
+      <td>-99999.0</td>
+      <td>-99999.0</td>
+      <td>0.95</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<br />
+<br /><div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">orientations</span><span class="o">.</span><span class="n">tail</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="output_subarea output_html rendered_html output_result">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>X</th>
+      <th>Y</th>
+      <th>Z</th>
+      <th>G_x</th>
+      <th>G_y</th>
+      <th>G_z</th>
+      <th>_</th>
+      <th>surface</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>3186</th>
+      <td>139.94</td>
+      <td>207.71</td>
+      <td>-154.77</td>
+      <td>-0.03</td>
+      <td>0.07</td>
+      <td>1.00</td>
+      <td>0.05</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3254</th>
+      <td>109.93</td>
+      <td>47.65</td>
+      <td>-135.34</td>
+      <td>0.35</td>
+      <td>-0.77</td>
+      <td>-0.54</td>
+      <td>0.94</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3315</th>
+      <td>158.34</td>
+      <td>211.32</td>
+      <td>-147.31</td>
+      <td>0.05</td>
+      <td>0.14</td>
+      <td>0.99</td>
+      <td>0.05</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3371</th>
+      <td>0.73</td>
+      <td>90.00</td>
+      <td>-100.00</td>
+      <td>0.76</td>
+      <td>0.53</td>
+      <td>0.38</td>
+      <td>0.17</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3409</th>
+      <td>47.97</td>
+      <td>129.89</td>
+      <td>-132.01</td>
+      <td>-0.45</td>
+      <td>-0.85</td>
+      <td>0.27</td>
+      <td>0.02</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<br />
+<br /></section>
+<section id="data-initialization">
+<h1>Data initialization:<a class="headerlink" href="#data-initialization" title="Link to this heading">¶</a></h1>
+<p>Suggested size of the axis-aligned modeling box:</p>
+<p>Origin: -5 -5 -200</p>
+<p>Maximum: 305 405 -50</p>
+<p>Suggested resolution: 2m (grid size 156 x 206 x 76)</p>
+</section>
+<section id="only-using-one-orientation-because-otherwhise-it-gets-a-mess">
+<h1>Only using one orientation because otherwhise it gets a mess<a class="headerlink" href="#only-using-one-orientation-because-otherwhise-it-gets-a-mess" title="Link to this heading">¶</a></h1>
+<p>Number voxels</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">156</span><span class="p">,</span> <span class="mi">206</span><span class="p">,</span> <span class="mi">76</span><span class="p">])</span><span class="o">.</span><span class="n">prod</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>2442336
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">resolution_requ</span> <span class="o">=</span> <span class="p">[</span><span class="mi">156</span><span class="p">,</span> <span class="mi">206</span><span class="p">,</span> <span class="mi">76</span><span class="p">]</span>
+<span class="n">resolution</span> <span class="o">=</span> <span class="p">[</span><span class="mi">77</span><span class="p">,</span> <span class="mi">103</span><span class="p">,</span> <span class="mi">38</span><span class="p">]</span>
+<span class="n">resolution_low</span> <span class="o">=</span> <span class="p">[</span><span class="mi">45</span><span class="p">,</span> <span class="mi">51</span><span class="p">,</span> <span class="mi">38</span><span class="p">]</span>
+
+
+<span class="n">surface_points_table</span><span class="p">:</span> <span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">SurfacePointsTable</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">SurfacePointsTable</span><span class="o">.</span><span class="n">from_arrays</span><span class="p">(</span>
+    <span class="n">x</span><span class="o">=</span><span class="n">surface_points</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+    <span class="n">y</span><span class="o">=</span><span class="n">surface_points</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+    <span class="n">z</span><span class="o">=</span><span class="n">surface_points</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+    <span class="n">names</span><span class="o">=</span><span class="n">surface_points</span><span class="p">[</span><span class="s1">&#39;surface&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="n">orientations_table</span><span class="p">:</span> <span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">OrientationsTable</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">OrientationsTable</span><span class="o">.</span><span class="n">from_arrays</span><span class="p">(</span>
+    <span class="n">x</span><span class="o">=</span><span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+    <span class="n">y</span><span class="o">=</span><span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+    <span class="n">z</span><span class="o">=</span><span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+    <span class="n">G_x</span><span class="o">=</span><span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;G_x&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+    <span class="n">G_y</span><span class="o">=</span><span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;G_y&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+    <span class="n">G_z</span><span class="o">=</span><span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;G_z&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+    <span class="n">names</span><span class="o">=</span><span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;surface&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">),</span>
+    <span class="n">name_id_map</span><span class="o">=</span><span class="n">surface_points_table</span><span class="o">.</span><span class="n">name_id_map</span>  <span class="c1"># ! Make sure that ids and names are shared</span>
+<span class="p">)</span>
+
+<span class="n">structural_frame</span><span class="p">:</span> <span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">StructuralFrame</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">StructuralFrame</span><span class="o">.</span><span class="n">from_data_tables</span><span class="p">(</span>
+    <span class="n">surface_points</span><span class="o">=</span><span class="n">surface_points_table</span><span class="p">,</span>
+    <span class="n">orientations</span><span class="o">=</span><span class="n">orientations_table</span>
+<span class="p">)</span>
+
+<span class="n">geo_model</span><span class="p">:</span> <span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GeoModel</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">create_geomodel</span><span class="p">(</span>
+    <span class="n">project_name</span><span class="o">=</span><span class="s1">&#39;Moureze&#39;</span><span class="p">,</span>
+    <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">305</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">405</span><span class="p">,</span> <span class="o">-</span><span class="mi">200</span><span class="p">,</span> <span class="o">-</span><span class="mi">50</span><span class="p">],</span>
+    <span class="c1"># resolution=resolution_low,</span>
+    <span class="n">refinement</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">structural_frame</span><span class="o">=</span><span class="n">structural_frame</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Now we can see how the data looks so far:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><span class="n">geo_model</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_Moureze_001.png" srcset="../../_images/sphx_glr_Moureze_001.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fbc774beec0&gt;
+</pre></div>
+</div>
+<p>The default range is always the diagonal of the extent. Since in this
+model data is very close we will need to reduce the range to 5-10% of
+that value:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">geo_model</span><span class="o">.</span><span class="n">interpolation_options</span><span class="o">.</span><span class="n">kernel_options</span><span class="o">.</span><span class="n">range</span> <span class="o">*=</span> <span class="mf">0.2</span>
+<span class="n">geo_model</span><span class="o">.</span><span class="n">interpolation_options</span><span class="o">.</span><span class="n">evaluation_options</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">geo_model</span><span class="o">.</span><span class="n">interpolation_options</span><span class="o">.</span><span class="n">evaluation_options</span><span class="o">.</span><span class="n">octree_error_threshold</span> <span class="o">=</span> <span class="mf">1.5</span>
+<span class="n">geo_model</span><span class="o">.</span><span class="n">interpolation_options</span><span class="o">.</span><span class="n">evaluation_options</span><span class="o">.</span><span class="n">number_octree_levels_surface</span> <span class="o">=</span> <span class="mi">5</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span><span class="p">(</span>
+    <span class="n">gempy_model</span><span class="o">=</span><span class="n">geo_model</span><span class="p">,</span>
+    <span class="n">engine_config</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GemPyEngineConfig</span><span class="p">(</span>
+        <span class="n">use_gpu</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">,</span>
+        <span class="n">backend</span><span class="o">=</span><span class="n">AvailableBackends</span><span class="o">.</span><span class="n">PYTORCH</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<ul class="sphx-glr-horizontal">
+<li><img src="../../_images/sphx_glr_Moureze_002.png" srcset="../../_images/sphx_glr_Moureze_002.png" alt="Voxel Scalar Values with Refinement Status" class = "sphx-glr-multi-img"/></li>
+<li><img src="../../_images/sphx_glr_Moureze_003.png" srcset="../../_images/sphx_glr_Moureze_003.png" alt="Voxel Scalar Values with Refinement Status" class = "sphx-glr-multi-img"/></li>
+</ul>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting Backend To: AvailableBackends.PYTORCH
+Number of voxels marked by stats: 437 of torch.Size([512]).
+ Number of voxels marked by corners : 408
+Total voxels: 437
+Dense Grid would be 512 voxels
+Chunking done: 30 chunks
+Number of voxels marked by stats: 3053 of torch.Size([3736]).
+ Number of voxels marked by corners : 1993
+Total voxels: 3053
+Dense Grid would be 4096 voxels
+Chunking done: 25 chunks
+Chunking done: 197 chunks
+Chunking done: 35 chunks
+</pre></div>
+</div>
+<div class="output_subarea output_html rendered_html output_result">
+<b>Solutions:</b> 5 Octree Levels, 1 DualContouringMeshes
+</div>
+<br />
+<br /></section>
+<section id="time">
+<h1>Time<a class="headerlink" href="#time" title="Link to this heading">¶</a></h1>
+<section id="k-voxels-3-5k-points">
+<h2>300k voxels 3.5k points<a class="headerlink" href="#k-voxels-3-5k-points" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Nvidia 2080: 500 ms ± 1.3 ms per loop (mean ± std. dev. of 7 runs, 1
+loop each), Memory 1 Gb</p></li>
+<li><p>CPU 14.2 s ± 82.4 ms per loop (mean ± std. dev. of 7 runs, 1 loop
+each), Memory: 1.3 Gb</p></li>
+</ul>
+</section>
+<section id="m-voxels-3-5k-points">
+<h2>2.4 M voxels, 3.5k points<a class="headerlink" href="#m-voxels-3-5k-points" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>CPU 2min 33s ± 216 ms per loop (mean ± std. dev. of 7 runs, 1 loop
+each) Memory: 1.3 GB</p></li>
+<li><p>Nvidia 2080: 1.92 s ± 6.74 ms per loop (mean ± std. dev. of 7 runs, 1
+loop each) 1 Gb</p></li>
+</ul>
+</section>
+<section id="m-voxels-3-5k-points-3-5-k-orientations">
+<h2>2.4 M voxels, 3.5k points 3.5 k orientations<a class="headerlink" href="#m-voxels-3-5k-points-3-5-k-orientations" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Nvidia 2080: 2.53 s ± 1.31 ms per loop (mean ± std. dev. of 7 runs, 1
+loop each)</p></li>
+</ul>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><span class="n">geo_model</span><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="s1">&#39;mid&#39;</span><span class="p">,</span> <span class="n">series_n</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">show_scalar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_Moureze_004.png" srcset="../../_images/sphx_glr_Moureze_004.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fbc774bd210&gt;
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><span class="n">geo_model</span><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="s1">&#39;mid&#39;</span><span class="p">,</span> <span class="n">show_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_Moureze_005.png" srcset="../../_images/sphx_glr_Moureze_005.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fbc20645c00&gt;
+</pre></div>
+</div>
+<p>sphinx_gallery_thumbnail_number = 4</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_3d</span><span class="p">(</span><span class="n">geo_model</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_Moureze_006.png" srcset="../../_images/sphx_glr_Moureze_006.png" alt="Moureze" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fbc774bde40&gt;
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 1.158 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-examples-real-moureze-py">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/2d7d09aaf014992a3cad066b50a20c60/Moureze.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">Moureze.ipynb</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/eb05d04f2a41e5fa5a58b112950d0585/Moureze.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">Moureze.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/60946e3e24819854040f8a7a330853b4/Moureze.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">Moureze.zip</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../index.html">
+    <img class="logo" src="../../_static/logos/gempy.png" alt="Logo" />
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=gempy-project&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">GemPy Tutorials</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#simple-geometries">Simple geometries</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#real-case-studies">Real case studies</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">External examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../external/external_examples.html">External Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api_reference.html">Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_reference.html#data-classes">Data Classes</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Examples</a><ul>
+  <li><a href="index.html">Real case studies</a><ul>
+      <li>Previous: <a href="Hecho.html" title="previous chapter">Hecho</a></li>
+      <li>Next: <a href="Perth_basin.html" title="next chapter">Perth basin.</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2017-2024, Gempy Developers.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../../_sources/examples/real/Moureze.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,3700 @@
+{
+ "BoreholeSet": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "subsurface.core.geological_formats.boreholes.boreholes",
+   "module_short": "subsurface.core.geological_formats.boreholes.boreholes",
+   "name": "BoreholeSet"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "subsurface.core.geological_formats.boreholes",
+   "module_short": "subsurface.core.geological_formats.boreholes",
+   "name": "BoreholeSet"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "subsurface.core.geological_formats",
+   "module_short": "subsurface.core.geological_formats",
+   "name": "BoreholeSet"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "subsurface.core",
+   "module_short": "subsurface.core",
+   "name": "BoreholeSet"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "subsurface",
+   "module_short": "subsurface",
+   "name": "BoreholeSet"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core.geological_formats",
+   "module_short": "subsurface.core.geological_formats",
+   "name": "BoreholeSet"
+  }
+ ],
+ "Collars": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "subsurface.core.geological_formats.boreholes.collars",
+   "module_short": "subsurface.core.geological_formats.boreholes.collars",
+   "name": "Collars"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "subsurface.core.geological_formats.boreholes",
+   "module_short": "subsurface.core.geological_formats.boreholes",
+   "name": "Collars"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "subsurface.core.geological_formats",
+   "module_short": "subsurface.core.geological_formats",
+   "name": "Collars"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "subsurface.core",
+   "module_short": "subsurface.core",
+   "name": "Collars"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "subsurface",
+   "module_short": "subsurface",
+   "name": "Collars"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core.geological_formats",
+   "module_short": "subsurface.core.geological_formats",
+   "name": "Collars"
+  }
+ ],
+ "GenericReaderFilesHelper": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "subsurface.core.reader_helpers.readers_data",
+   "module_short": "subsurface.core.reader_helpers.readers_data",
+   "name": "GenericReaderFilesHelper"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "subsurface.core.reader_helpers",
+   "module_short": "subsurface.core.reader_helpers",
+   "name": "GenericReaderFilesHelper"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "subsurface.core",
+   "module_short": "subsurface.core",
+   "name": "GenericReaderFilesHelper"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "subsurface",
+   "module_short": "subsurface",
+   "name": "GenericReaderFilesHelper"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core.reader_helpers.readers_data",
+   "module_short": "subsurface.core.reader_helpers.readers_data",
+   "name": "GenericReaderFilesHelper"
+  }
+ ],
+ "MergeOptions.INTERSECT": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core.geological_formats.boreholes._combine_trajectories",
+   "module_short": "subsurface.core.geological_formats.boreholes._combine_trajectories",
+   "name": "MergeOptions"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core.geological_formats.boreholes",
+   "module_short": "subsurface.core.geological_formats.boreholes",
+   "name": "MergeOptions"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core.geological_formats",
+   "module_short": "subsurface.core.geological_formats",
+   "name": "MergeOptions"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core",
+   "module_short": "subsurface.core",
+   "name": "MergeOptions"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface",
+   "module_short": "subsurface",
+   "name": "MergeOptions"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core.geological_formats.boreholes._combine_trajectories.MergeOptions",
+   "module_short": "subsurface.core.geological_formats.boreholes._combine_trajectories.MergeOptions",
+   "name": "INTERSECT"
+  }
+ ],
+ "SpecialCellCase.POINTS": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core.structs.base_structures.base_structures_enum",
+   "module_short": "subsurface.core.structs.base_structures.base_structures_enum",
+   "name": "SpecialCellCase"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core.structs.base_structures",
+   "module_short": "subsurface.core.structs.base_structures",
+   "name": "SpecialCellCase"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core.structs",
+   "module_short": "subsurface.core.structs",
+   "name": "SpecialCellCase"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core",
+   "module_short": "subsurface.core",
+   "name": "SpecialCellCase"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface",
+   "module_short": "subsurface",
+   "name": "SpecialCellCase"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core.structs.base_structures.base_structures_enum.SpecialCellCase",
+   "module_short": "subsurface.core.structs.base_structures.base_structures_enum.SpecialCellCase",
+   "name": "POINTS"
+  }
+ ],
+ "Survey": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "subsurface.core.geological_formats.boreholes.survey",
+   "module_short": "subsurface.core.geological_formats.boreholes.survey",
+   "name": "Survey"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "subsurface.core.geological_formats.boreholes",
+   "module_short": "subsurface.core.geological_formats.boreholes",
+   "name": "Survey"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "subsurface.core.geological_formats",
+   "module_short": "subsurface.core.geological_formats",
+   "name": "Survey"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "subsurface.core",
+   "module_short": "subsurface.core",
+   "name": "Survey"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "subsurface",
+   "module_short": "subsurface",
+   "name": "Survey"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core.geological_formats",
+   "module_short": "subsurface.core.geological_formats",
+   "name": "Survey"
+  }
+ ],
+ "Survey.from_df": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "subsurface.core.geological_formats.boreholes.survey",
+   "module_short": "subsurface.core.geological_formats.boreholes.survey",
+   "name": "Survey.from_df"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "subsurface.core.geological_formats.boreholes",
+   "module_short": "subsurface.core.geological_formats.boreholes",
+   "name": "Survey.from_df"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "subsurface.core.geological_formats",
+   "module_short": "subsurface.core.geological_formats",
+   "name": "Survey.from_df"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "subsurface.core",
+   "module_short": "subsurface.core",
+   "name": "Survey.from_df"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "subsurface",
+   "module_short": "subsurface",
+   "name": "Survey.from_df"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core.geological_formats.Survey",
+   "module_short": "subsurface.core.geological_formats.Survey",
+   "name": "from_df"
+  }
+ ],
+ "all_surface_points_coords": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.surface_points",
+   "module_short": "gempy.core.data",
+   "name": "SurfacePointsTable"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "SurfacePointsTable"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "SurfacePointsTable"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "SurfacePointsTable"
+  }
+ ],
+ "all_surface_points_coords.xyz.max": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.surface_points",
+   "module_short": "gempy.core.data",
+   "name": "SurfacePointsTable.xyz"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "SurfacePointsTable.xyz"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "SurfacePointsTable.xyz"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "SurfacePointsTable.xyz"
+  }
+ ],
+ "all_surface_points_coords.xyz.min": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.surface_points",
+   "module_short": "gempy.core.data",
+   "name": "SurfacePointsTable.xyz"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "SurfacePointsTable.xyz"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "SurfacePointsTable.xyz"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "SurfacePointsTable.xyz"
+  }
+ ],
+ "borehole_set": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core.geological_formats.boreholes.boreholes",
+   "module_short": "subsurface.core.geological_formats.boreholes.boreholes",
+   "name": "BoreholeSet"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core.geological_formats.boreholes",
+   "module_short": "subsurface.core.geological_formats.boreholes",
+   "name": "BoreholeSet"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core.geological_formats",
+   "module_short": "subsurface.core.geological_formats",
+   "name": "BoreholeSet"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core",
+   "module_short": "subsurface.core",
+   "name": "BoreholeSet"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface",
+   "module_short": "subsurface",
+   "name": "BoreholeSet"
+  }
+ ],
+ "borehole_set.combined_trajectory": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core.structs.unstructured_elements.line_set",
+   "module_short": "subsurface.core.structs",
+   "name": "LineSet"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core.structs.unstructured_elements",
+   "module_short": "subsurface.core.structs",
+   "name": "LineSet"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core.structs",
+   "module_short": "subsurface.core.structs",
+   "name": "LineSet"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core",
+   "module_short": "subsurface.core",
+   "name": "LineSet"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface",
+   "module_short": "subsurface",
+   "name": "LineSet"
+  }
+ ],
+ "boring_cmap": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.colors",
+   "module_short": "matplotlib.colors",
+   "name": "ListedColormap"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "ListedColormap"
+  }
+ ],
+ "collar_df": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.frame",
+   "module_short": "pandas.core.frame",
+   "name": "DataFrame"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "DataFrame"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "DataFrame"
+  }
+ ],
+ "collar_df.index.to_list": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.indexes.base",
+   "module_short": "pandas.core.indexes.base",
+   "name": "Index.to_list"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.indexes",
+   "module_short": "pandas.core.indexes",
+   "name": "Index.to_list"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "Index.to_list"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "Index.to_list"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.base",
+   "module_short": "pandas.core.base",
+   "name": "IndexOpsMixin.to_list"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "IndexOpsMixin.to_list"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "IndexOpsMixin.to_list"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.base",
+   "module_short": "pandas.core.base",
+   "name": "PandasObject.to_list"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "PandasObject.to_list"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "PandasObject.to_list"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.arraylike",
+   "module_short": "pandas.core.arraylike",
+   "name": "OpsMixin.to_list"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "OpsMixin.to_list"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "OpsMixin.to_list"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.accessor",
+   "module_short": "pandas.core.accessor",
+   "name": "DirNamesMixin.to_list"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "DirNamesMixin.to_list"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "DirNamesMixin.to_list"
+  }
+ ],
+ "collar_mesh": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.core.pointset",
+   "module_short": "pyvista",
+   "name": "PolyData"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.core",
+   "module_short": "pyvista",
+   "name": "PolyData"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "PolyData"
+  }
+ ],
+ "collars": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core.geological_formats.boreholes.collars",
+   "module_short": "subsurface.core.geological_formats.boreholes.collars",
+   "name": "Collars"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core.geological_formats.boreholes",
+   "module_short": "subsurface.core.geological_formats.boreholes",
+   "name": "Collars"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core.geological_formats",
+   "module_short": "subsurface.core.geological_formats",
+   "name": "Collars"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core",
+   "module_short": "subsurface.core",
+   "name": "Collars"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface",
+   "module_short": "subsurface",
+   "name": "Collars"
+  }
+ ],
+ "collars.collar_loc": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core.structs.unstructured_elements.point_set",
+   "module_short": "subsurface.core.structs",
+   "name": "PointSet"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core.structs.unstructured_elements",
+   "module_short": "subsurface.core.structs",
+   "name": "PointSet"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core.structs",
+   "module_short": "subsurface.core.structs",
+   "name": "PointSet"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core",
+   "module_short": "subsurface.core",
+   "name": "PointSet"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface",
+   "module_short": "subsurface",
+   "name": "PointSet"
+  }
+ ],
+ "collars.collar_loc.points": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core.structs.unstructured_elements.point_set",
+   "module_short": "subsurface.core.structs",
+   "name": "PointSet.points"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core.structs.unstructured_elements",
+   "module_short": "subsurface.core.structs",
+   "name": "PointSet.points"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core.structs",
+   "module_short": "subsurface.core.structs",
+   "name": "PointSet.points"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core",
+   "module_short": "subsurface.core",
+   "name": "PointSet.points"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface",
+   "module_short": "subsurface",
+   "name": "PointSet.points"
+  }
+ ],
+ "collars.ids": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "list"
+  }
+ ],
+ "colors_generator": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.color_generator",
+   "module_short": "gempy.core.color_generator",
+   "name": "ColorsGenerator"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "ColorsGenerator"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "ColorsGenerator"
+  }
+ ],
+ "elements": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "list"
+  }
+ ],
+ "extent_from_data": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "tuple"
+  }
+ ],
+ "g2d": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_viewer.modules.plot_2d.visualization_2d",
+   "module_short": "gempy_viewer.modules.plot_2d.visualization_2d",
+   "name": "Plot2D"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_viewer.modules.plot_2d",
+   "module_short": "gempy_viewer.modules.plot_2d",
+   "name": "Plot2D"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_viewer.modules",
+   "module_short": "gempy_viewer.modules",
+   "name": "Plot2D"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_viewer",
+   "module_short": "gempy_viewer",
+   "name": "Plot2D"
+  }
+ ],
+ "g2d.fig": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.figure",
+   "module_short": "matplotlib.figure",
+   "name": "Figure"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "Figure"
+  }
+ ],
+ "gempy_plot": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_viewer.modules.plot_3d.vista",
+   "module_short": "gempy_viewer.modules.plot_3d.vista",
+   "name": "GemPyToVista"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_viewer.modules.plot_3d",
+   "module_short": "gempy_viewer.modules.plot_3d",
+   "name": "GemPyToVista"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_viewer.modules",
+   "module_short": "gempy_viewer.modules",
+   "name": "GemPyToVista"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_viewer",
+   "module_short": "gempy_viewer",
+   "name": "GemPyToVista"
+  }
+ ],
+ "gempy_plot.surface_points_actor": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.actor",
+   "module_short": "pyvista",
+   "name": "Actor"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista",
+   "name": "Actor"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "Actor"
+  }
+ ],
+ "gempy_plot.surface_points_mesh": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.core.pointset",
+   "module_short": "pyvista",
+   "name": "PolyData"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.core",
+   "module_short": "pyvista",
+   "name": "PolyData"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "PolyData"
+  }
+ ],
+ "geo_model": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.geo_model",
+   "module_short": "gempy.core.data",
+   "name": "GeoModel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "GeoModel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "GeoModel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "GeoModel"
+  }
+ ],
+ "geo_model.interpolation_options": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.geo_model",
+   "module_short": "gempy.core.data",
+   "name": "GeoModel.interpolation_options"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "GeoModel.interpolation_options"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "GeoModel.interpolation_options"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "GeoModel.interpolation_options"
+  }
+ ],
+ "geo_model.structural_frame.structural_groups": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "list"
+  }
+ ],
+ "gp.add_orientations": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "add_orientations"
+  }
+ ],
+ "gp.compute_model": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "compute_model"
+  }
+ ],
+ "gp.data.ColorsGenerator": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.color_generator",
+   "module_short": "gempy.core.color_generator",
+   "name": "ColorsGenerator"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "ColorsGenerator"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "ColorsGenerator"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.data",
+   "module_short": "gempy.data",
+   "name": "ColorsGenerator"
+  }
+ ],
+ "gp.data.GeoModel": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data.geo_model",
+   "module_short": "gempy.core.data",
+   "name": "GeoModel"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "GeoModel"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "GeoModel"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "GeoModel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.data",
+   "module_short": "gempy.data",
+   "name": "GeoModel"
+  }
+ ],
+ "gp.data.Grid": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data.grid",
+   "module_short": "gempy.core.data",
+   "name": "Grid"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "Grid"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "Grid"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "Grid"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.data",
+   "module_short": "gempy.data",
+   "name": "Grid"
+  }
+ ],
+ "gp.data.InterpolationOptions": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy_engine.core.data.options.interpolation_options",
+   "module_short": "gempy_engine.core.data",
+   "name": "InterpolationOptions"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy_engine.core.data.options",
+   "module_short": "gempy_engine.core.data",
+   "name": "InterpolationOptions"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy_engine.core.data",
+   "module_short": "gempy_engine.core.data",
+   "name": "InterpolationOptions"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy_engine.core",
+   "module_short": "gempy_engine.core",
+   "name": "InterpolationOptions"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy_engine",
+   "module_short": "gempy_engine",
+   "name": "InterpolationOptions"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.data",
+   "module_short": "gempy.data",
+   "name": "InterpolationOptions"
+  }
+ ],
+ "gp.data.StackRelationType.ERODE": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine.core.data.stack_relation_type",
+   "module_short": "gempy_engine.core.data.stack_relation_type",
+   "name": "StackRelationType"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine.core.data",
+   "module_short": "gempy_engine.core.data",
+   "name": "StackRelationType"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine.core",
+   "module_short": "gempy_engine.core",
+   "name": "StackRelationType"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_engine",
+   "module_short": "gempy_engine",
+   "name": "StackRelationType"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.data.StackRelationType",
+   "module_short": "gempy.data.StackRelationType",
+   "name": "ERODE"
+  }
+ ],
+ "gp.data.StructuralFrame": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data.structural_frame",
+   "module_short": "gempy.core.data",
+   "name": "StructuralFrame"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "StructuralFrame"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "StructuralFrame"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "StructuralFrame"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.data",
+   "module_short": "gempy.data",
+   "name": "StructuralFrame"
+  }
+ ],
+ "gp.data.StructuralGroup": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data.structural_group",
+   "module_short": "gempy.core.data",
+   "name": "StructuralGroup"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "StructuralGroup"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "StructuralGroup"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "StructuralGroup"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "abc",
+   "module_short": "abc",
+   "name": "ABC"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.data",
+   "module_short": "gempy.data",
+   "name": "StructuralGroup"
+  }
+ ],
+ "gp.data.SurfacePointsTable": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data.surface_points",
+   "module_short": "gempy.core.data",
+   "name": "SurfacePointsTable"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "SurfacePointsTable"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "SurfacePointsTable"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "SurfacePointsTable"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.data",
+   "module_short": "gempy.data",
+   "name": "SurfacePointsTable"
+  }
+ ],
+ "gp.structural_elements_from_borehole_set": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "structural_elements_from_borehole_set"
+  }
+ ],
+ "gpv.plot_2d": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_viewer",
+   "module_short": "gempy_viewer",
+   "name": "plot_2d"
+  }
+ ],
+ "gpv.plot_3d": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy_viewer",
+   "module_short": "gempy_viewer",
+   "name": "plot_3d"
+  }
+ ],
+ "group": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.structural_group",
+   "module_short": "gempy.core.data",
+   "name": "StructuralGroup"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "StructuralGroup"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "StructuralGroup"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "StructuralGroup"
+  }
+ ],
+ "init_plotter": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.modules.visualization",
+   "module_short": "subsurface.modules.visualization",
+   "name": "init_plotter"
+  }
+ ],
+ "known_hash": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "str"
+  }
+ ],
+ "lith": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.frame",
+   "module_short": "pandas.core.frame",
+   "name": "DataFrame"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "DataFrame"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "DataFrame"
+  }
+ ],
+ "np.array": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "builtin_function_or_method"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "numpy",
+   "module_short": "numpy",
+   "name": "array"
+  }
+ ],
+ "p": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.plotter",
+   "module_short": "pyvista",
+   "name": "Plotter"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista",
+   "name": "Plotter"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "Plotter"
+  }
+ ],
+ "p.add_mesh": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.plotter",
+   "module_short": "pyvista",
+   "name": "Plotter.add_mesh"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista",
+   "name": "Plotter.add_mesh"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "Plotter.add_mesh"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.plotter",
+   "module_short": "pyvista",
+   "name": "BasePlotter.add_mesh"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista",
+   "name": "BasePlotter.add_mesh"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "BasePlotter.add_mesh"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.picking",
+   "module_short": "pyvista.plotting.picking",
+   "name": "PickingHelper.add_mesh"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista.plotting",
+   "name": "PickingHelper.add_mesh"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "PickingHelper.add_mesh"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.widgets",
+   "module_short": "pyvista.plotting.widgets",
+   "name": "WidgetHelper.add_mesh"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista.plotting",
+   "name": "WidgetHelper.add_mesh"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "WidgetHelper.add_mesh"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.picking",
+   "module_short": "pyvista.plotting.picking",
+   "name": "PickingMethods.add_mesh"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista.plotting",
+   "name": "PickingMethods.add_mesh"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "PickingMethods.add_mesh"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.picking",
+   "module_short": "pyvista.plotting.picking",
+   "name": "PickingInterface.add_mesh"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista.plotting",
+   "name": "PickingInterface.add_mesh"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "PickingInterface.add_mesh"
+  }
+ ],
+ "p.add_point_labels": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.plotter",
+   "module_short": "pyvista",
+   "name": "Plotter.add_point_labels"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista",
+   "name": "Plotter.add_point_labels"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "Plotter.add_point_labels"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.plotter",
+   "module_short": "pyvista",
+   "name": "BasePlotter.add_point_labels"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista",
+   "name": "BasePlotter.add_point_labels"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "BasePlotter.add_point_labels"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.picking",
+   "module_short": "pyvista.plotting.picking",
+   "name": "PickingHelper.add_point_labels"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista.plotting",
+   "name": "PickingHelper.add_point_labels"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "PickingHelper.add_point_labels"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.widgets",
+   "module_short": "pyvista.plotting.widgets",
+   "name": "WidgetHelper.add_point_labels"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista.plotting",
+   "name": "WidgetHelper.add_point_labels"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "WidgetHelper.add_point_labels"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.picking",
+   "module_short": "pyvista.plotting.picking",
+   "name": "PickingMethods.add_point_labels"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista.plotting",
+   "name": "PickingMethods.add_point_labels"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "PickingMethods.add_point_labels"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.picking",
+   "module_short": "pyvista.plotting.picking",
+   "name": "PickingInterface.add_point_labels"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista.plotting",
+   "name": "PickingInterface.add_point_labels"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "PickingInterface.add_point_labels"
+  }
+ ],
+ "p.show": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.plotter",
+   "module_short": "pyvista",
+   "name": "Plotter.show"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista",
+   "name": "Plotter.show"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "Plotter.show"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.plotter",
+   "module_short": "pyvista.plotting.plotter",
+   "name": "BasePlotter.show"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista.plotting",
+   "name": "BasePlotter.show"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "BasePlotter.show"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.picking",
+   "module_short": "pyvista.plotting.picking",
+   "name": "PickingHelper.show"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista.plotting",
+   "name": "PickingHelper.show"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "PickingHelper.show"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.widgets",
+   "module_short": "pyvista.plotting.widgets",
+   "name": "WidgetHelper.show"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista.plotting",
+   "name": "WidgetHelper.show"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "WidgetHelper.show"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.picking",
+   "module_short": "pyvista.plotting.picking",
+   "name": "PickingMethods.show"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista.plotting",
+   "name": "PickingMethods.show"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "PickingMethods.show"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.picking",
+   "module_short": "pyvista.plotting.picking",
+   "name": "PickingInterface.show"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista.plotting",
+   "name": "PickingInterface.show"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "PickingInterface.show"
+  }
+ ],
+ "pd.DataFrame": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "pandas.core.frame",
+   "module_short": "pandas.core.frame",
+   "name": "DataFrame"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "DataFrame"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "DataFrame"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "pandas.core.generic",
+   "module_short": "pandas.core.generic",
+   "name": "NDFrame"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "NDFrame"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "NDFrame"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "pandas.core.arraylike",
+   "module_short": "pandas.core.arraylike",
+   "name": "OpsMixin"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "OpsMixin"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "OpsMixin"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "pandas.core.base",
+   "module_short": "pandas.core.base",
+   "name": "PandasObject"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "PandasObject"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "PandasObject"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "pandas.core.indexing",
+   "module_short": "pandas.core.indexing",
+   "name": "IndexingMixin"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "IndexingMixin"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "IndexingMixin"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "pandas.core.accessor",
+   "module_short": "pandas.core.accessor",
+   "name": "DirNamesMixin"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "DirNamesMixin"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "DirNamesMixin"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "DataFrame"
+  }
+ ],
+ "plt.get_cmap": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.pyplot",
+   "module_short": "matplotlib.pyplot",
+   "name": "get_cmap"
+  }
+ ],
+ "points": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core.structs.unstructured_elements.point_set",
+   "module_short": "subsurface.core.structs",
+   "name": "PointSet"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core.structs.unstructured_elements",
+   "module_short": "subsurface.core.structs",
+   "name": "PointSet"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core.structs",
+   "module_short": "subsurface.core.structs",
+   "name": "PointSet"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core",
+   "module_short": "subsurface.core",
+   "name": "PointSet"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface",
+   "module_short": "subsurface",
+   "name": "PointSet"
+  }
+ ],
+ "pooch.retrieve": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pooch",
+   "module_short": "pooch",
+   "name": "retrieve"
+  }
+ ],
+ "pv_plot": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.modules.visualization",
+   "module_short": "subsurface.modules.visualization",
+   "name": "pv_plot"
+  }
+ ],
+ "pyvista.PolyData": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "pyvista.core.pointset",
+   "module_short": "pyvista",
+   "name": "PolyData"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "pyvista.core",
+   "module_short": "pyvista",
+   "name": "PolyData"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "PolyData"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "vtkmodules.vtkCommonDataModel",
+   "module_short": "vtkmodules.vtkCommonDataModel",
+   "name": "vtkPolyData"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "vtkmodules",
+   "module_short": "vtkmodules",
+   "name": "vtkPolyData"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "pyvista.core.pointset",
+   "module_short": "pyvista.core.pointset",
+   "name": "_PointSet"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "pyvista.core",
+   "module_short": "pyvista.core",
+   "name": "_PointSet"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "_PointSet"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "pyvista.core.filters.poly_data",
+   "module_short": "pyvista",
+   "name": "PolyDataFilters"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "pyvista.core.filters",
+   "module_short": "pyvista",
+   "name": "PolyDataFilters"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "pyvista.core",
+   "module_short": "pyvista",
+   "name": "PolyDataFilters"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "PolyDataFilters"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "vtkmodules.vtkCommonDataModel",
+   "module_short": "vtkmodules.vtkCommonDataModel",
+   "name": "vtkPointSet"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "vtkmodules",
+   "module_short": "vtkmodules",
+   "name": "vtkPointSet"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "pyvista.core.dataset",
+   "module_short": "pyvista",
+   "name": "DataSet"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "pyvista.core",
+   "module_short": "pyvista",
+   "name": "DataSet"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "DataSet"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "pyvista.core.filters.data_set",
+   "module_short": "pyvista",
+   "name": "DataSetFilters"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "pyvista.core.filters",
+   "module_short": "pyvista",
+   "name": "DataSetFilters"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "pyvista.core",
+   "module_short": "pyvista",
+   "name": "DataSetFilters"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "DataSetFilters"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "vtkmodules.vtkCommonDataModel",
+   "module_short": "vtkmodules.vtkCommonDataModel",
+   "name": "vtkDataSet"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "vtkmodules",
+   "module_short": "vtkmodules",
+   "name": "vtkDataSet"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "pyvista.core.dataobject",
+   "module_short": "pyvista",
+   "name": "DataObject"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "pyvista.core",
+   "module_short": "pyvista",
+   "name": "DataObject"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "DataObject"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "vtkmodules.vtkCommonDataModel",
+   "module_short": "vtkmodules.vtkCommonDataModel",
+   "name": "vtkDataObject"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "vtkmodules",
+   "module_short": "vtkmodules",
+   "name": "vtkDataObject"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "vtkmodules.vtkCommonCore",
+   "module_short": "vtkmodules.vtkCommonCore",
+   "name": "vtkObject"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "vtkmodules",
+   "module_short": "vtkmodules",
+   "name": "vtkObject"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "vtkmodules.vtkCommonCore",
+   "module_short": "vtkmodules.vtkCommonCore",
+   "name": "vtkObjectBase"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "vtkmodules",
+   "module_short": "vtkmodules",
+   "name": "vtkObjectBase"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "PolyData"
+  }
+ ],
+ "pyvista_plotter": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.plotter",
+   "module_short": "pyvista",
+   "name": "Plotter"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista",
+   "name": "Plotter"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "Plotter"
+  }
+ ],
+ "pyvista_plotter.add_actor": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.plotter",
+   "module_short": "pyvista",
+   "name": "Plotter.add_actor"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista",
+   "name": "Plotter.add_actor"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "Plotter.add_actor"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.plotter",
+   "module_short": "pyvista",
+   "name": "BasePlotter.add_actor"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista",
+   "name": "BasePlotter.add_actor"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "BasePlotter.add_actor"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.picking",
+   "module_short": "pyvista.plotting.picking",
+   "name": "PickingHelper.add_actor"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista.plotting",
+   "name": "PickingHelper.add_actor"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "PickingHelper.add_actor"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.widgets",
+   "module_short": "pyvista.plotting.widgets",
+   "name": "WidgetHelper.add_actor"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista.plotting",
+   "name": "WidgetHelper.add_actor"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "WidgetHelper.add_actor"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.picking",
+   "module_short": "pyvista.plotting.picking",
+   "name": "PickingMethods.add_actor"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista.plotting",
+   "name": "PickingMethods.add_actor"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "PickingMethods.add_actor"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.picking",
+   "module_short": "pyvista.plotting.picking",
+   "name": "PickingInterface.add_actor"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista.plotting",
+   "name": "PickingInterface.add_actor"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "PickingInterface.add_actor"
+  }
+ ],
+ "pyvista_plotter.add_mesh": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.plotter",
+   "module_short": "pyvista",
+   "name": "Plotter.add_mesh"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista",
+   "name": "Plotter.add_mesh"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "Plotter.add_mesh"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.plotter",
+   "module_short": "pyvista",
+   "name": "BasePlotter.add_mesh"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista",
+   "name": "BasePlotter.add_mesh"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "BasePlotter.add_mesh"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.picking",
+   "module_short": "pyvista.plotting.picking",
+   "name": "PickingHelper.add_mesh"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista.plotting",
+   "name": "PickingHelper.add_mesh"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "PickingHelper.add_mesh"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.widgets",
+   "module_short": "pyvista.plotting.widgets",
+   "name": "WidgetHelper.add_mesh"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista.plotting",
+   "name": "WidgetHelper.add_mesh"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "WidgetHelper.add_mesh"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.picking",
+   "module_short": "pyvista.plotting.picking",
+   "name": "PickingMethods.add_mesh"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista.plotting",
+   "name": "PickingMethods.add_mesh"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "PickingMethods.add_mesh"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.picking",
+   "module_short": "pyvista.plotting.picking",
+   "name": "PickingInterface.add_mesh"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista.plotting",
+   "name": "PickingInterface.add_mesh"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "PickingInterface.add_mesh"
+  }
+ ],
+ "pyvista_plotter.add_point_labels": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.plotter",
+   "module_short": "pyvista",
+   "name": "Plotter.add_point_labels"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista",
+   "name": "Plotter.add_point_labels"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "Plotter.add_point_labels"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.plotter",
+   "module_short": "pyvista",
+   "name": "BasePlotter.add_point_labels"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista",
+   "name": "BasePlotter.add_point_labels"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "BasePlotter.add_point_labels"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.picking",
+   "module_short": "pyvista.plotting.picking",
+   "name": "PickingHelper.add_point_labels"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista.plotting",
+   "name": "PickingHelper.add_point_labels"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "PickingHelper.add_point_labels"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.widgets",
+   "module_short": "pyvista.plotting.widgets",
+   "name": "WidgetHelper.add_point_labels"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista.plotting",
+   "name": "WidgetHelper.add_point_labels"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "WidgetHelper.add_point_labels"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.picking",
+   "module_short": "pyvista.plotting.picking",
+   "name": "PickingMethods.add_point_labels"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista.plotting",
+   "name": "PickingMethods.add_point_labels"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "PickingMethods.add_point_labels"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.picking",
+   "module_short": "pyvista.plotting.picking",
+   "name": "PickingInterface.add_point_labels"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista.plotting",
+   "name": "PickingInterface.add_point_labels"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "PickingInterface.add_point_labels"
+  }
+ ],
+ "pyvista_plotter.show": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.plotter",
+   "module_short": "pyvista",
+   "name": "Plotter.show"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista",
+   "name": "Plotter.show"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "Plotter.show"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.plotter",
+   "module_short": "pyvista.plotting.plotter",
+   "name": "BasePlotter.show"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista.plotting",
+   "name": "BasePlotter.show"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "BasePlotter.show"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.picking",
+   "module_short": "pyvista.plotting.picking",
+   "name": "PickingHelper.show"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista.plotting",
+   "name": "PickingHelper.show"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "PickingHelper.show"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.widgets",
+   "module_short": "pyvista.plotting.widgets",
+   "name": "WidgetHelper.show"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista.plotting",
+   "name": "WidgetHelper.show"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "WidgetHelper.show"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.picking",
+   "module_short": "pyvista.plotting.picking",
+   "name": "PickingMethods.show"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista.plotting",
+   "name": "PickingMethods.show"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "PickingMethods.show"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.picking",
+   "module_short": "pyvista.plotting.picking",
+   "name": "PickingInterface.show"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista.plotting",
+   "name": "PickingInterface.show"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "PickingInterface.show"
+  }
+ ],
+ "pyvista_plotter.show_bounds": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.plotter",
+   "module_short": "pyvista",
+   "name": "Plotter.show_bounds"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista",
+   "name": "Plotter.show_bounds"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "Plotter.show_bounds"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.plotter",
+   "module_short": "pyvista",
+   "name": "BasePlotter.show_bounds"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista",
+   "name": "BasePlotter.show_bounds"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "BasePlotter.show_bounds"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.picking",
+   "module_short": "pyvista.plotting.picking",
+   "name": "PickingHelper.show_bounds"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista.plotting",
+   "name": "PickingHelper.show_bounds"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "PickingHelper.show_bounds"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.widgets",
+   "module_short": "pyvista.plotting.widgets",
+   "name": "WidgetHelper.show_bounds"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista.plotting",
+   "name": "WidgetHelper.show_bounds"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "WidgetHelper.show_bounds"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.picking",
+   "module_short": "pyvista.plotting.picking",
+   "name": "PickingMethods.show_bounds"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista.plotting",
+   "name": "PickingMethods.show_bounds"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "PickingMethods.show_bounds"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting.picking",
+   "module_short": "pyvista.plotting.picking",
+   "name": "PickingInterface.show_bounds"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.plotting",
+   "module_short": "pyvista.plotting",
+   "name": "PickingInterface.show_bounds"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "PickingInterface.show_bounds"
+  }
+ ],
+ "raw_borehole_data_csv": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "str"
+  }
+ ],
+ "read_collar": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.modules.reader.wells.read_borehole_interface",
+   "module_short": "subsurface.modules.reader.wells.read_borehole_interface",
+   "name": "read_collar"
+  }
+ ],
+ "read_lith": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.modules.reader.wells.read_borehole_interface",
+   "module_short": "subsurface.modules.reader.wells.read_borehole_interface",
+   "name": "read_lith"
+  }
+ ],
+ "read_survey": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.modules.reader.wells.read_borehole_interface",
+   "module_short": "subsurface.modules.reader.wells.read_borehole_interface",
+   "name": "read_survey"
+  }
+ ],
+ "sp_mesh": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.core.pointset",
+   "module_short": "pyvista",
+   "name": "PolyData"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.core",
+   "module_short": "pyvista",
+   "name": "PolyData"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "PolyData"
+  }
+ ],
+ "ss.PointSet": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "subsurface.core.structs.unstructured_elements.point_set",
+   "module_short": "subsurface.core.structs",
+   "name": "PointSet"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "subsurface.core.structs.unstructured_elements",
+   "module_short": "subsurface.core.structs",
+   "name": "PointSet"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "subsurface.core.structs",
+   "module_short": "subsurface.core.structs",
+   "name": "PointSet"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "subsurface.core",
+   "module_short": "subsurface.core",
+   "name": "PointSet"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "subsurface",
+   "module_short": "subsurface",
+   "name": "PointSet"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface",
+   "module_short": "subsurface",
+   "name": "PointSet"
+  }
+ ],
+ "ss.UnstructuredData": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "subsurface.core.structs.base_structures.unstructured_data",
+   "module_short": "subsurface.core.structs",
+   "name": "UnstructuredData"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "subsurface.core.structs.base_structures",
+   "module_short": "subsurface.core.structs",
+   "name": "UnstructuredData"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "subsurface.core.structs",
+   "module_short": "subsurface.core.structs",
+   "name": "UnstructuredData"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "subsurface.core",
+   "module_short": "subsurface.core",
+   "name": "UnstructuredData"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "subsurface",
+   "module_short": "subsurface",
+   "name": "UnstructuredData"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface",
+   "module_short": "subsurface",
+   "name": "UnstructuredData"
+  }
+ ],
+ "ss.UnstructuredData.from_array": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "subsurface.core.structs.base_structures.unstructured_data",
+   "module_short": "subsurface.core.structs",
+   "name": "UnstructuredData.from_array"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "subsurface.core.structs.base_structures",
+   "module_short": "subsurface.core.structs",
+   "name": "UnstructuredData.from_array"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "subsurface.core.structs",
+   "module_short": "subsurface.core.structs",
+   "name": "UnstructuredData.from_array"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "subsurface.core",
+   "module_short": "subsurface.core",
+   "name": "UnstructuredData.from_array"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "subsurface",
+   "module_short": "subsurface",
+   "name": "UnstructuredData.from_array"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.UnstructuredData",
+   "module_short": "subsurface.UnstructuredData",
+   "name": "from_array"
+  }
+ ],
+ "structural_frame": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.structural_frame",
+   "module_short": "gempy.core.data",
+   "name": "StructuralFrame"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "StructuralFrame"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "StructuralFrame"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "StructuralFrame"
+  }
+ ],
+ "structural_frame.surface_points_copy": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data.structural_frame",
+   "module_short": "gempy.core.data",
+   "name": "StructuralFrame.surface_points_copy"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core.data",
+   "module_short": "gempy.core.data",
+   "name": "StructuralFrame.surface_points_copy"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy.core",
+   "module_short": "gempy.core",
+   "name": "StructuralFrame.surface_points_copy"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "gempy",
+   "module_short": "gempy",
+   "name": "StructuralFrame.surface_points_copy"
+  }
+ ],
+ "survey": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core.geological_formats.boreholes.survey",
+   "module_short": "subsurface.core.geological_formats.boreholes.survey",
+   "name": "Survey"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core.geological_formats.boreholes",
+   "module_short": "subsurface.core.geological_formats.boreholes",
+   "name": "Survey"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core.geological_formats",
+   "module_short": "subsurface.core.geological_formats",
+   "name": "Survey"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core",
+   "module_short": "subsurface.core",
+   "name": "Survey"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface",
+   "module_short": "subsurface",
+   "name": "Survey"
+  }
+ ],
+ "survey.update_survey_with_lith": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core.geological_formats.boreholes.survey",
+   "module_short": "subsurface.core.geological_formats.boreholes.survey",
+   "name": "Survey.update_survey_with_lith"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core.geological_formats.boreholes",
+   "module_short": "subsurface.core.geological_formats.boreholes",
+   "name": "Survey.update_survey_with_lith"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core.geological_formats",
+   "module_short": "subsurface.core.geological_formats",
+   "name": "Survey.update_survey_with_lith"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core",
+   "module_short": "subsurface.core",
+   "name": "Survey.update_survey_with_lith"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface",
+   "module_short": "subsurface",
+   "name": "Survey.update_survey_with_lith"
+  }
+ ],
+ "survey_df": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.frame",
+   "module_short": "pandas.core.frame",
+   "name": "DataFrame"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "DataFrame"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "DataFrame"
+  }
+ ],
+ "to_pyvista_line": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.modules.visualization",
+   "module_short": "subsurface.modules.visualization",
+   "name": "to_pyvista_line"
+  }
+ ],
+ "to_pyvista_points": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.modules.visualization",
+   "module_short": "subsurface.modules.visualization",
+   "name": "to_pyvista_points"
+  }
+ ],
+ "units_limit": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "list"
+  }
+ ],
+ "unstruc": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core.structs.base_structures.unstructured_data",
+   "module_short": "subsurface.core.structs",
+   "name": "UnstructuredData"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core.structs.base_structures",
+   "module_short": "subsurface.core.structs",
+   "name": "UnstructuredData"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core.structs",
+   "module_short": "subsurface.core.structs",
+   "name": "UnstructuredData"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface.core",
+   "module_short": "subsurface.core",
+   "name": "UnstructuredData"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "subsurface",
+   "module_short": "subsurface",
+   "name": "UnstructuredData"
+  }
+ ],
+ "url": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "str"
+  }
+ ],
+ "well_mesh": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.core.pointset",
+   "module_short": "pyvista",
+   "name": "PolyData"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.core",
+   "module_short": "pyvista",
+   "name": "PolyData"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "PolyData"
+  }
+ ],
+ "well_mesh.threshold": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.core.pointset",
+   "module_short": "pyvista",
+   "name": "PolyData.threshold"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.core",
+   "module_short": "pyvista",
+   "name": "PolyData.threshold"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "PolyData.threshold"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "vtkmodules.vtkCommonDataModel",
+   "module_short": "vtkmodules.vtkCommonDataModel",
+   "name": "vtkPolyData.threshold"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "vtkmodules",
+   "module_short": "vtkmodules",
+   "name": "vtkPolyData.threshold"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.core.pointset",
+   "module_short": "pyvista.core.pointset",
+   "name": "_PointSet.threshold"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.core",
+   "module_short": "pyvista.core",
+   "name": "_PointSet.threshold"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "_PointSet.threshold"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.core.filters.poly_data",
+   "module_short": "pyvista",
+   "name": "PolyDataFilters.threshold"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.core.filters",
+   "module_short": "pyvista",
+   "name": "PolyDataFilters.threshold"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.core",
+   "module_short": "pyvista",
+   "name": "PolyDataFilters.threshold"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "PolyDataFilters.threshold"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "vtkmodules.vtkCommonDataModel",
+   "module_short": "vtkmodules.vtkCommonDataModel",
+   "name": "vtkPointSet.threshold"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "vtkmodules",
+   "module_short": "vtkmodules",
+   "name": "vtkPointSet.threshold"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.core.dataset",
+   "module_short": "pyvista",
+   "name": "DataSet.threshold"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.core",
+   "module_short": "pyvista",
+   "name": "DataSet.threshold"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "DataSet.threshold"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.core.filters.data_set",
+   "module_short": "pyvista",
+   "name": "DataSetFilters.threshold"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.core.filters",
+   "module_short": "pyvista",
+   "name": "DataSetFilters.threshold"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.core",
+   "module_short": "pyvista",
+   "name": "DataSetFilters.threshold"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "DataSetFilters.threshold"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "vtkmodules.vtkCommonDataModel",
+   "module_short": "vtkmodules.vtkCommonDataModel",
+   "name": "vtkDataSet.threshold"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "vtkmodules",
+   "module_short": "vtkmodules",
+   "name": "vtkDataSet.threshold"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.core.dataobject",
+   "module_short": "pyvista.core.dataobject",
+   "name": "DataObject.threshold"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista.core",
+   "module_short": "pyvista.core",
+   "name": "DataObject.threshold"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pyvista",
+   "module_short": "pyvista",
+   "name": "DataObject.threshold"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "vtkmodules.vtkCommonDataModel",
+   "module_short": "vtkmodules.vtkCommonDataModel",
+   "name": "vtkDataObject.threshold"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "vtkmodules",
+   "module_short": "vtkmodules",
+   "name": "vtkDataObject.threshold"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "vtkmodules.vtkCommonCore",
+   "module_short": "vtkmodules.vtkCommonCore",
+   "name": "vtkObject.threshold"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "vtkmodules",
+   "module_short": "vtkmodules",
+   "name": "vtkObject.threshold"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "vtkmodules.vtkCommonCore",
+   "module_short": "vtkmodules.vtkCommonCore",
+   "name": "vtkObjectBase.threshold"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "vtkmodules",
+   "module_short": "vtkmodules",
+   "name": "vtkObjectBase.threshold"
+  }
+ ]
+}

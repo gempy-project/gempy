@@ -13,6 +13,9 @@ you can do it in GemPy
 
     <div class="sphx-glr-thumbnails">
 
+.. thumbnail-parent-div-open
+
+.. thumbnail-parent-div-close
 
 .. raw:: html
 
@@ -28,6 +31,7 @@ Here you can see how to run a simple GemPy example.
 
     <div class="sphx-glr-thumbnails">
 
+.. thumbnail-parent-div-open
 
 .. raw:: html
 
@@ -46,6 +50,8 @@ Here you can see how to run a simple GemPy example.
     </div>
 
 
+.. thumbnail-parent-div-close
+
 .. raw:: html
 
     </div>
@@ -61,6 +67,7 @@ These examples show the basic functionality to create geometries.
 
     <div class="sphx-glr-thumbnails">
 
+.. thumbnail-parent-div-open
 
 .. raw:: html
 
@@ -198,6 +205,8 @@ These examples show the basic functionality to create geometries.
     </div>
 
 
+.. thumbnail-parent-div-close
+
 .. raw:: html
 
     </div>
@@ -212,6 +221,7 @@ These examples show how to use some of the in built functionality for forward ge
 
     <div class="sphx-glr-thumbnails">
 
+.. thumbnail-parent-div-open
 
 .. raw:: html
 
@@ -232,7 +242,7 @@ These examples show how to use some of the in built functionality for forward ge
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Geophysics Preprocessing builds on the centered grid (https://github.com/cgre-aachen/gempy/blob...">
+    <div class="sphx-glr-thumbcontainer" tooltip="Geophysics Preprocessing builds on the centered grid (https://github.com/cgre-aachen/gempy/blob/master/notebooks/tutorials/ch1-3-Grids.ipynb) to precompute the constant part of forward physical computations as for example gravity:">
 
 .. only:: html
 
@@ -246,6 +256,8 @@ These examples show how to use some of the in built functionality for forward ge
       <div class="sphx-glr-thumbnail-title">2.2: Centered Grid.</div>
     </div>
 
+
+.. thumbnail-parent-div-close
 
 .. raw:: html
 
@@ -263,6 +275,7 @@ we also provide functionality to interpolate data in 3D.
 
     <div class="sphx-glr-thumbnails">
 
+.. thumbnail-parent-div-open
 
 .. raw:: html
 
@@ -281,6 +294,8 @@ we also provide functionality to interpolate data in 3D.
     </div>
 
 
+.. thumbnail-parent-div-close
+
 .. raw:: html
 
     </div>
@@ -297,6 +312,7 @@ functionality to calculate and analyse this aspect of each geological modeling
 
     <div class="sphx-glr-thumbnails">
 
+.. thumbnail-parent-div-open
 
 .. raw:: html
 
@@ -315,37 +331,42 @@ functionality to calculate and analyse this aspect of each geological modeling
     </div>
 
 
+.. thumbnail-parent-div-close
+
 .. raw:: html
 
     </div>
 
-Other tutorials
+Video tutorials
 ---------------
 
-Compilation of tutorials that do not fit in the above categories.
+Compilation of tutorials for videos on the `gempy` YouTube channel https://www.youtube.com/@GemPy3D.
 
 
 .. raw:: html
 
     <div class="sphx-glr-thumbnails">
 
+.. thumbnail-parent-div-open
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This tutorial demonstrates step-by-step geological modeling using the gempy and gempy_viewer li...">
+    <div class="sphx-glr-thumbcontainer" tooltip="Video Tutorial &quot;code-along&quot;: Modeling step by step">
 
 .. only:: html
 
-  .. image:: /tutorials/z_other_tutorials/images/thumb/sphx_glr_a1_fold_thumb.png
+  .. image:: /tutorials/z_other_tutorials/images/thumb/sphx_glr_video_tutorial_model_1_thumb.png
     :alt:
 
-  :ref:`sphx_glr_tutorials_z_other_tutorials_a1_fold.py`
+  :ref:`sphx_glr_tutorials_z_other_tutorials_video_tutorial_model_1.py`
 
 .. raw:: html
 
-      <div class="sphx-glr-thumbnail-title">Modeling step by step</div>
+      <div class="sphx-glr-thumbnail-title">Video Tutorial "code-along": Modeling step by step</div>
     </div>
 
+
+.. thumbnail-parent-div-close
 
 .. raw:: html
 

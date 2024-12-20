@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>1.5: Fault relations &#8212; GemPy 2024.2.0.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=686e5160" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=e15417cb" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <script src="../../_static/documentation_options.js?v=6d9f68de"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <link rel="icon" href="../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="1.6: 2D Visualization." href="ch1_6_2d_visualization.html" />
+    <link rel="prev" title="1.4: Unconformity relationships" href="ch1_4_onlap_relations.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#sphx-glr-download-tutorials-ch1-fundamentals-ch1-5-fault-relations-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code.</p>
+</div>
+<section class="sphx-glr-example-title" id="fault-relations">
+<span id="sphx-glr-tutorials-ch1-fundamentals-ch1-5-fault-relations-py"></span><h1>1.5: Fault relations<a class="headerlink" href="#fault-relations" title="Link to this heading">¶</a></h1>
+<p>Importing gempy</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gempy</span> <span class="k">as</span> <span class="nn">gp</span>
+<span class="kn">import</span> <span class="nn">gempy_viewer</span> <span class="k">as</span> <span class="nn">gpv</span>
+
+<span class="c1"># Aux imports</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1515</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We import a model from an existing folder.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">data_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s1">&#39;../../&#39;</span><span class="p">)</span>
+
+<span class="n">geo_model</span><span class="p">:</span> <span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GeoModel</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">create_geomodel</span><span class="p">(</span>
+    <span class="n">project_name</span><span class="o">=</span><span class="s1">&#39;Faults_relations&#39;</span><span class="p">,</span>
+    <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="o">-</span><span class="mi">1000</span><span class="p">,</span> <span class="o">-</span><span class="mi">400</span><span class="p">],</span>
+    <span class="n">resolution</span><span class="o">=</span><span class="p">[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">],</span>
+    <span class="n">refinement</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>  <span class="c1"># * For this model is better not to use octrees because we want to see what is happening in the scalar fields</span>
+    <span class="n">importer_helper</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">ImporterHelper</span><span class="p">(</span>
+        <span class="n">path_to_orientations</span><span class="o">=</span><span class="n">data_path</span> <span class="o">+</span> <span class="s2">&quot;/data/input_data/tut-ch1-5/tut_ch1-5_orientations.csv&quot;</span><span class="p">,</span>
+        <span class="n">path_to_surface_points</span><span class="o">=</span><span class="n">data_path</span> <span class="o">+</span> <span class="s2">&quot;/data/input_data/tut-ch1-5/tut_ch1-5_points.csv&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">geo_model</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;_interpolation_options&#39;: InterpolationOptions(kernel_options={&#39;range&#39;: 1.7, &#39;c_o&#39;: 10, &#39;uni_degree&#39;: 1, &#39;i_res&#39;: 4, &#39;gi_res&#39;: 2, &#39;number_dimensions&#39;: 3, &#39;kernel_function&#39;: &lt;AvailableKernelFunctions.cubic: KernelFunction(base_function=&lt;function cubic_function at 0x7fbc62cb1bd0&gt;, derivative_div_r=&lt;function cubic_function_p_div_r at 0x7fbc62cb1e10&gt;, second_derivative=&lt;function cubic_function_a at 0x7fbc62cb1ea0&gt;, consume_sq_distance=False)&gt;, &#39;kernel_solver&#39;: &lt;Solvers.DEFAULT: 1&gt;, &#39;compute_condition_number&#39;: False, &#39;optimizing_condition_number&#39;: False, &#39;condition_number&#39;: None}, evaluation_options={&#39;_number_octree_levels&#39;: 6, &#39;_number_octree_levels_surface&#39;: 4, &#39;octree_curvature_threshold&#39;: -1, &#39;octree_error_threshold&#39;: 1.0, &#39;octree_min_level&#39;: 2, &#39;mesh_extraction&#39;: True, &#39;mesh_extraction_masking_options&#39;: &lt;MeshExtractionMaskingOptions.INTERSECT: 3&gt;, &#39;mesh_extraction_fancy&#39;: True, &#39;evaluation_chunk_size&#39;: 500000, &#39;compute_scalar_gradient&#39;: False, &#39;verbose&#39;: False}, temp_interpolation_values=&lt;gempy_engine.core.data.options.temp_interpolation_values.TempInterpolationValues object at 0x7fbc52024340&gt;, debug=True, cache_mode=CacheMode.IN_MEMORY_CACHE, cache_model_name=, block_solutions_type=BlockSolutionType.OCTREE, sigmoid_slope=50000, debug_water_tight=False),
+ &#39;grid&#39;: Grid(values=array([[  25.,   25., -985.],
+       [  25.,   25., -955.],
+       [  25.,   25., -925.],
+       ...,
+       [ 975.,  975., -475.],
+       [ 975.,  975., -445.],
+       [ 975.,  975., -415.]]),
+              length=array([], dtype=float64),
+              _octree_grid=None,
+              _dense_grid=RegularGrid(resolution=array([20, 20, 20]),
+                                      extent=array([    0.,  1000.,     0.,  1000., -1000.,  -400.]),
+                                      values=array([[  25.,   25., -985.],
+       [  25.,   25., -955.],
+       [  25.,   25., -925.],
+       ...,
+       [ 975.,  975., -475.],
+       [ 975.,  975., -445.],
+       [ 975.,  975., -415.]]),
+                                      mask_topo=array([], shape=(0, 3), dtype=bool),
+                                      _transform=None),
+              _custom_grid=None,
+              _topography=None,
+              _sections=None,
+              _centered_grid=None,
+              _transform=None,
+              _octree_levels=-1),
+ &#39;input_transform&#39;: {&#39;_cached_pivot&#39;: None,
+ &#39;_is_default_transform&#39;: False,
+ &#39;position&#39;: array([-500., -500.,  650.]),
+ &#39;rotation&#39;: array([0., 0., 0.]),
+ &#39;scale&#39;: array([0.000625, 0.000625, 0.000625])},
+ &#39;meta&#39;: GeoModelMeta(name=&#39;Faults_relations&#39;,
+                      creation_date=None,
+                      last_modification_date=None,
+                      owner=None),
+ &#39;structural_frame&#39;: StructuralFrame(
+        structural_groups=[
+StructuralGroup(
+        name=default_formation,
+        structural_relation=StackRelationType.ERODE,
+        elements=[
+Element(
+        name=fault1,
+        color=#015482,
+        is_active=True
+),
+Element(
+        name=fault2,
+        color=#9f0052,
+        is_active=True
+),
+Element(
+        name=rock1,
+        color=#ffbe00,
+        is_active=True
+),
+Element(
+        name=rock2,
+        color=#728f02,
+        is_active=True
+),
+Element(
+        name=rock3,
+        color=#443988,
+        is_active=True
+),
+Element(
+        name=rock4,
+        color=#ff3f20,
+        is_active=True
+)
+]
+)
+],
+        fault_relations=
+[[False]],
+}
+</pre></div>
+</div>
+<section id="one-fault-model">
+<h2>One fault model<a class="headerlink" href="#one-fault-model" title="Link to this heading">¶</a></h2>
+<p>Setting the structural frame</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">fault1</span><span class="p">:</span> <span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">StructuralElement</span> <span class="o">=</span> <span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span><span class="o">.</span><span class="n">get_element_by_name</span><span class="p">(</span><span class="s2">&quot;fault1&quot;</span><span class="p">)</span>
+<span class="n">fault2</span><span class="p">:</span> <span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">StructuralElement</span> <span class="o">=</span> <span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span><span class="o">.</span><span class="n">get_element_by_name</span><span class="p">(</span><span class="s2">&quot;fault2&quot;</span><span class="p">)</span>
+
+<span class="c1"># Remove the faults from the default group</span>
+<span class="n">default_group</span><span class="p">:</span> <span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">StructuralGroup</span> <span class="o">=</span> <span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span><span class="o">.</span><span class="n">get_group_by_name</span><span class="p">(</span><span class="s2">&quot;default_formation&quot;</span><span class="p">)</span>
+<span class="n">default_group</span><span class="o">.</span><span class="n">elements</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">fault1</span><span class="p">)</span>
+<span class="n">default_group</span><span class="o">.</span><span class="n">elements</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">fault2</span><span class="p">)</span>
+
+<span class="c1"># Add a new group for the fault</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">add_structural_group</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">=</span><span class="n">geo_model</span><span class="p">,</span>
+    <span class="n">group_index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">structural_group_name</span><span class="o">=</span><span class="s2">&quot;fault_series_1&quot;</span><span class="p">,</span>
+    <span class="n">elements</span><span class="o">=</span><span class="p">[</span><span class="n">fault1</span><span class="p">],</span>
+    <span class="n">structural_relation</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">StackRelationType</span><span class="o">.</span><span class="n">FAULT</span><span class="p">,</span>
+    <span class="n">fault_relations</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">FaultsRelationSpecialCase</span><span class="o">.</span><span class="n">OFFSET_ALL</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>StructuralFrame(
+        structural_groups=[
+StructuralGroup(
+        name=fault_series_1,
+        structural_relation=StackRelationType.FAULT,
+        elements=[
+Element(
+        name=fault1,
+        color=#015482,
+        is_active=True
+)
+]
+),
+StructuralGroup(
+        name=default_formation,
+        structural_relation=StackRelationType.ERODE,
+        elements=[
+Element(
+        name=rock1,
+        color=#ffbe00,
+        is_active=True
+),
+Element(
+        name=rock2,
+        color=#728f02,
+        is_active=True
+),
+Element(
+        name=rock3,
+        color=#443988,
+        is_active=True
+),
+Element(
+        name=rock4,
+        color=#ff3f20,
+        is_active=True
+)
+]
+)
+],
+        fault_relations=
+[[False,  True],
+ [False, False]],
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">geo_model</span><span class="o">.</span><span class="n">input_transform</span><span class="o">.</span><span class="n">apply_anisotropy</span><span class="p">(</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GlobalAnisotropy</span><span class="o">.</span><span class="n">NONE</span><span class="p">)</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span><span class="p">(</span><span class="n">geo_model</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting Backend To: AvailableBackends.numpy
+Chunking done: 6 chunks
+Chunking done: 31 chunks
+Chunking done: 6 chunks
+Chunking done: 31 chunks
+</pre></div>
+</div>
+<div class="output_subarea output_html rendered_html output_result">
+<b>Solutions:</b> 6 Octree Levels, 5 DualContouringMeshes
+</div>
+<br />
+<br /><div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">geo_model</span><span class="o">.</span><span class="n">solutions</span><span class="o">.</span><span class="n">raw_arrays</span><span class="o">.</span><span class="n">block_matrix</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>  <span class="c1"># This contains the block values for the fault1</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">geo_model</span><span class="o">.</span><span class="n">solutions</span><span class="o">.</span><span class="n">raw_arrays</span><span class="o">.</span><span class="n">block_matrix</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>  <span class="c1"># This contains the block values for the formations</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[2. 2. 2. ... 1. 1. 1.]
+[6. 6. 6. ... 2. 2. 2.]
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><span class="n">geo_model</span><span class="p">,</span> <span class="n">show_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">gpv</span><span class="o">.</span><span class="n">plot_3d</span><span class="p">(</span><span class="n">geo_model</span><span class="p">,</span> <span class="n">show_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kwargs_plot_structured_grid</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;opacity&#39;</span><span class="p">:</span> <span class="mf">.2</span><span class="p">})</span>
+
+
+<span class="c1"># %5</span>
+<span class="c1"># Graben example</span>
+<span class="c1"># --------------</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_ch1_5_fault_relations_001.png" srcset="../../_images/sphx_glr_ch1_5_fault_relations_001.png" alt="ch1 5 fault relations" class = "sphx-glr-single-img"/><img src="../../_images/sphx_glr_ch1_5_fault_relations_002.png" srcset="../../_images/sphx_glr_ch1_5_fault_relations_002.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fbc7381ec50&gt;
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">add_structural_group</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">=</span><span class="n">geo_model</span><span class="p">,</span>
+    <span class="n">group_index</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">structural_group_name</span><span class="o">=</span><span class="s2">&quot;fault_series_2&quot;</span><span class="p">,</span>
+    <span class="n">elements</span><span class="o">=</span><span class="p">[</span><span class="n">fault2</span><span class="p">],</span>
+    <span class="n">structural_relation</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">StackRelationType</span><span class="o">.</span><span class="n">FAULT</span><span class="p">,</span>
+    <span class="n">fault_relations</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">FaultsRelationSpecialCase</span><span class="o">.</span><span class="n">OFFSET_ALL</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span><span class="p">)</span>
+
+<span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span><span class="p">(</span><span class="n">geo_model</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>StructuralFrame(
+        structural_groups=[
+StructuralGroup(
+        name=fault_series_1,
+        structural_relation=StackRelationType.FAULT,
+        elements=[
+Element(
+        name=fault1,
+        color=#015482,
+        is_active=True
+)
+]
+),
+StructuralGroup(
+        name=fault_series_2,
+        structural_relation=StackRelationType.FAULT,
+        elements=[
+Element(
+        name=fault2,
+        color=#9f0052,
+        is_active=True
+)
+]
+),
+StructuralGroup(
+        name=default_formation,
+        structural_relation=StackRelationType.ERODE,
+        elements=[
+Element(
+        name=rock4,
+        color=#ff3f20,
+        is_active=True
+),
+Element(
+        name=rock3,
+        color=#443988,
+        is_active=True
+),
+Element(
+        name=rock2,
+        color=#728f02,
+        is_active=True
+),
+Element(
+        name=rock1,
+        color=#ffbe00,
+        is_active=True
+)
+]
+)
+],
+        fault_relations=
+[[False,  True,  True],
+ [False, False,  True],
+ [False, False, False]],
+
+Setting Backend To: AvailableBackends.numpy
+Chunking done: 7 chunks
+Chunking done: 7 chunks
+Chunking done: 38 chunks
+Chunking done: 7 chunks
+Chunking done: 7 chunks
+Chunking done: 38 chunks
+</pre></div>
+</div>
+<div class="output_subarea output_html rendered_html output_result">
+<b>Solutions:</b> 6 Octree Levels, 6 DualContouringMeshes
+</div>
+<br />
+<br /><div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><span class="n">geo_model</span><span class="p">,</span> <span class="n">show_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">gpv</span><span class="o">.</span><span class="n">plot_3d</span><span class="p">(</span><span class="n">geo_model</span><span class="p">,</span> <span class="n">show_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kwargs_plot_structured_grid</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;opacity&#39;</span><span class="p">:</span> <span class="mf">.2</span><span class="p">})</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_ch1_5_fault_relations_003.png" srcset="../../_images/sphx_glr_ch1_5_fault_relations_003.png" alt="ch1 5 fault relations" class = "sphx-glr-single-img"/><img src="../../_images/sphx_glr_ch1_5_fault_relations_004.png" srcset="../../_images/sphx_glr_ch1_5_fault_relations_004.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fbc30aec880&gt;
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><span class="n">geo_model</span><span class="p">,</span> <span class="n">show_scalar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show_lith</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">series_n</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><span class="n">geo_model</span><span class="p">,</span> <span class="n">show_scalar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show_lith</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">series_n</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><span class="n">geo_model</span><span class="p">,</span> <span class="n">show_scalar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show_lith</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">series_n</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="sphx-glr-horizontal">
+<li><img src="../../_images/sphx_glr_ch1_5_fault_relations_005.png" srcset="../../_images/sphx_glr_ch1_5_fault_relations_005.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-multi-img"/></li>
+<li><img src="../../_images/sphx_glr_ch1_5_fault_relations_006.png" srcset="../../_images/sphx_glr_ch1_5_fault_relations_006.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-multi-img"/></li>
+<li><img src="../../_images/sphx_glr_ch1_5_fault_relations_007.png" srcset="../../_images/sphx_glr_ch1_5_fault_relations_007.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-multi-img"/></li>
+</ul>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fbc30c695a0&gt;
+</pre></div>
+</div>
+</section>
+<section id="finite-faults">
+<h2>Finite Faults<a class="headerlink" href="#finite-faults" title="Link to this heading">¶</a></h2>
+</section>
+<section id="faults-relations">
+<h2>Faults relations<a class="headerlink" href="#faults-relations" title="Link to this heading">¶</a></h2>
+<p>Let’s split the formations in two groups</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">add_structural_group</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">=</span><span class="n">geo_model</span><span class="p">,</span>
+    <span class="n">group_index</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">structural_group_name</span><span class="o">=</span><span class="s2">&quot;series_1&quot;</span><span class="p">,</span>
+    <span class="n">elements</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span><span class="o">.</span><span class="n">get_element_by_name</span><span class="p">(</span><span class="s2">&quot;rock4&quot;</span><span class="p">),</span>
+        <span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span><span class="o">.</span><span class="n">get_element_by_name</span><span class="p">(</span><span class="s2">&quot;rock3&quot;</span><span class="p">)</span>
+    <span class="p">],</span>
+    <span class="n">structural_relation</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">StackRelationType</span><span class="o">.</span><span class="n">ERODE</span>
+<span class="p">)</span>
+
+<span class="n">default_group</span><span class="o">.</span><span class="n">elements</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span><span class="o">.</span><span class="n">get_element_by_name</span><span class="p">(</span><span class="s2">&quot;rock4&quot;</span><span class="p">))</span>
+<span class="n">default_group</span><span class="o">.</span><span class="n">elements</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span><span class="o">.</span><span class="n">get_element_by_name</span><span class="p">(</span><span class="s2">&quot;rock3&quot;</span><span class="p">))</span>
+
+<span class="n">gp</span><span class="o">.</span><span class="n">set_fault_relation</span><span class="p">(</span>
+    <span class="n">frame</span><span class="o">=</span><span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span><span class="p">,</span>
+    <span class="n">rel_matrix</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+        <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+        <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+        <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+        <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="p">]</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>StructuralFrame(
+        structural_groups=[
+StructuralGroup(
+        name=fault_series_1,
+        structural_relation=StackRelationType.FAULT,
+        elements=[
+Element(
+        name=fault1,
+        color=#015482,
+        is_active=True
+)
+]
+),
+StructuralGroup(
+        name=fault_series_2,
+        structural_relation=StackRelationType.FAULT,
+        elements=[
+Element(
+        name=fault2,
+        color=#9f0052,
+        is_active=True
+)
+]
+),
+StructuralGroup(
+        name=series_1,
+        structural_relation=StackRelationType.ERODE,
+        elements=[
+Element(
+        name=rock4,
+        color=#ff3f20,
+        is_active=True
+),
+Element(
+        name=rock3,
+        color=#443988,
+        is_active=True
+)
+]
+),
+StructuralGroup(
+        name=default_formation,
+        structural_relation=StackRelationType.ERODE,
+        elements=[
+Element(
+        name=rock2,
+        color=#728f02,
+        is_active=True
+),
+Element(
+        name=rock1,
+        color=#ffbe00,
+        is_active=True
+)
+]
+)
+],
+        fault_relations=
+[[False,  True,  True,  True],
+ [False, False, False, False],
+ [False, False, False, False],
+ [False, False, False, False]],
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span><span class="p">(</span><span class="n">geo_model</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting Backend To: AvailableBackends.numpy
+Chunking done: 7 chunks
+Chunking done: 7 chunks
+Chunking done: 23 chunks
+Chunking done: 17 chunks
+Chunking done: 7 chunks
+Chunking done: 7 chunks
+Chunking done: 22 chunks
+Chunking done: 17 chunks
+</pre></div>
+</div>
+<div class="output_subarea output_html rendered_html output_result">
+<b>Solutions:</b> 6 Octree Levels, 6 DualContouringMeshes
+</div>
+<br />
+<br /><div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><span class="n">geo_model</span><span class="p">,</span> <span class="n">show_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">gpv</span><span class="o">.</span><span class="n">plot_3d</span><span class="p">(</span><span class="n">geo_model</span><span class="p">,</span> <span class="n">show_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">kwargs_plot_structured_grid</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;opacity&#39;</span><span class="p">:</span> <span class="mf">.2</span><span class="p">})</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_ch1_5_fault_relations_008.png" srcset="../../_images/sphx_glr_ch1_5_fault_relations_008.png" alt="ch1 5 fault relations" class = "sphx-glr-single-img"/><img src="../../_images/sphx_glr_ch1_5_fault_relations_009.png" srcset="../../_images/sphx_glr_ch1_5_fault_relations_009.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fbc30dcd750&gt;
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (6 minutes 42.573 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-tutorials-ch1-fundamentals-ch1-5-fault-relations-py">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/eb7933b506badaa023fc381051b0a53f/ch1_5_fault_relations.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">ch1_5_fault_relations.ipynb</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/934a5a0624d3db1e06a9d886a6cc4e5a/ch1_5_fault_relations.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">ch1_5_fault_relations.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/6b7cb8e337dfddaa997bfd153ed80656/ch1_5_fault_relations.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">ch1_5_fault_relations.zip</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../index.html">
+    <img class="logo" src="../../_static/logos/gempy.png" alt="Logo" />
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=gempy-project&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">GemPy Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#chapter-1-gempy-fundamentals">Chapter 1: GemPy fundamentals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#chapter-2-forward-geophysics">Chapter 2: Forward Geophysics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#chapter-3-domain-kriging">Chapter 3: Domain Kriging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#chapter-4-topological-analysis">Chapter 4: Topological analysis</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#video-tutorials">Video tutorials</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/index.html">Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">External examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../external/external_examples.html">External Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api_reference.html">Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_reference.html#data-classes">Data Classes</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">GemPy Tutorials</a><ul>
+  <li><a href="index.html">Chapter 1: GemPy fundamentals</a><ul>
+      <li>Previous: <a href="ch1_4_onlap_relations.html" title="previous chapter">1.4: Unconformity relationships</a></li>
+      <li>Next: <a href="ch1_6_2d_visualization.html" title="next chapter">1.6: 2D Visualization.</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2017-2024, Gempy Developers.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../../_sources/tutorials/ch1_fundamentals/ch1_5_fault_relations.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>1.3c: Adding topography to geological models &#8212; GemPy 2024.2.0.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=686e5160" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=e15417cb" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <script src="../../_static/documentation_options.js?v=6d9f68de"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <link rel="icon" href="../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="1.4: Unconformity relationships" href="ch1_4_onlap_relations.html" />
+    <link rel="prev" title="1.3b: 2-D sections" href="ch1_3b_cross_sections.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#sphx-glr-download-tutorials-ch1-fundamentals-ch1-3c-topography-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code.</p>
+</div>
+<section class="sphx-glr-example-title" id="c-adding-topography-to-geological-models">
+<span id="sphx-glr-tutorials-ch1-fundamentals-ch1-3c-topography-py"></span><h1>1.3c: Adding topography to geological models<a class="headerlink" href="#c-adding-topography-to-geological-models" title="Link to this heading">¶</a></h1>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gempy</span> <span class="k">as</span> <span class="nn">gp</span>
+<span class="kn">import</span> <span class="nn">gempy_viewer</span> <span class="k">as</span> <span class="nn">gpv</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">os</span>
+</pre></div>
+</div>
+<section id="the-common-procedure-to-set-up-a-model">
+<h2>1. The common procedure to set up a model:<a class="headerlink" href="#the-common-procedure-to-set-up-a-model" title="Link to this heading">¶</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">data_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s1">&#39;../../&#39;</span><span class="p">)</span>
+
+<span class="n">geo_model</span><span class="p">:</span> <span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GeoModel</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">create_geomodel</span><span class="p">(</span>
+    <span class="n">project_name</span><span class="o">=</span><span class="s1">&#39;Single_layer_topo&#39;</span><span class="p">,</span>
+    <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="mi">450000</span><span class="p">,</span> <span class="mi">460000</span><span class="p">,</span> <span class="mi">70000</span><span class="p">,</span> <span class="mi">80000</span><span class="p">,</span> <span class="o">-</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">500</span><span class="p">],</span>
+    <span class="n">resolution</span><span class="o">=</span><span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">],</span>
+    <span class="n">refinement</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">importer_helper</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">ImporterHelper</span><span class="p">(</span>
+        <span class="n">path_to_orientations</span><span class="o">=</span><span class="n">data_path</span> <span class="o">+</span> <span class="s2">&quot;/data/input_data/tut-ch1-7/onelayer_orient.csv&quot;</span><span class="p">,</span>
+        <span class="n">path_to_surface_points</span><span class="o">=</span><span class="n">data_path</span> <span class="o">+</span> <span class="s2">&quot;/data/input_data/tut-ch1-7/onelayer_interfaces.csv&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">set_section_grid</span><span class="p">(</span>
+    <span class="n">grid</span><span class="o">=</span><span class="n">geo_model</span><span class="o">.</span><span class="n">grid</span><span class="p">,</span>
+    <span class="n">section_dict</span><span class="o">=</span><span class="p">{</span>
+        <span class="s1">&#39;section1&#39;</span><span class="p">:</span> <span class="p">([</span><span class="mi">450000</span><span class="p">,</span> <span class="mi">75000</span><span class="p">],</span> <span class="p">[</span><span class="mi">460000</span><span class="p">,</span> <span class="mi">75500</span><span class="p">],</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">]),</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Active grids: GridTypes.NONE|SECTIONS|DENSE
+</pre></div>
+</div>
+<div class="output_subarea output_html rendered_html output_result">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>start</th>
+      <th>stop</th>
+      <th>resolution</th>
+      <th>dist</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>section1</th>
+      <td>[450000, 75000]</td>
+      <td>[460000, 75500]</td>
+      <td>[100, 100]</td>
+      <td>10012.492197</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<br />
+<br /></section>
+<section id="adding-topography">
+<h2>2. Adding topography<a class="headerlink" href="#adding-topography" title="Link to this heading">¶</a></h2>
+<section id="a-load-from-raster-file">
+<h3>2 a. Load from raster file<a class="headerlink" href="#a-load-from-raster-file" title="Link to this heading">¶</a></h3>
+<div class="admonition-coming-soon-importing-raster-data admonition">
+<p class="admonition-title">Coming soon: Importing raster data</p>
+<p>This feature is not yet available in the current version of GemPy. Probably will be moved to <cite>subsurface</cite> since
+coupling it with the geological model does not add much value.</p>
+</div>
+<p>%%</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># This is to make it work in sphinx gallery</span>
+<span class="c1"># cwd = os.getcwd()</span>
+<span class="c1"># if not &#39;examples&#39; in cwd:</span>
+<span class="c1">#     path_dir = os.getcwd() + &#39;/examples/tutorials/ch5_probabilistic_modeling&#39;</span>
+<span class="c1"># else:</span>
+<span class="c1">#     path_dir = cwd</span>
+<span class="c1">#</span>
+<span class="c1"># fp = path_dir + &quot;/../../data/input_data/tut-ch1-7/bogota.tif&quot;</span>
+<span class="c1">#</span>
+<span class="c1"># # %%</span>
+<span class="c1"># geo_model.set_topography(source=&#39;gdal&#39;, filepath=fp)</span>
+<span class="c1"># gp.plot_2d(geo_model, show_topography=True, section_names=[&#39;topography&#39;], show_lith=False,</span>
+<span class="c1">#            show_boundaries=False,</span>
+<span class="c1">#            kwargs_topography={&#39;cmap&#39;: &#39;gray&#39;, &#39;norm&#39;: None}</span>
+<span class="c1">#            )</span>
+<span class="c1"># plt.show()</span>
+</pre></div>
+</div>
+</section>
+<section id="b-create-fun-topography">
+<h3>2 b. create fun topography<a class="headerlink" href="#b-create-fun-topography" title="Link to this heading">¶</a></h3>
+<p>If there is no topography file, but you think that your model with
+topography would look significantly cooler, you can use gempys
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">set_topography</span></code> function
+to generate a random topography based on a fractal grid:</p>
+<p>sphinx_gallery_thumbnail_number = 2</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">set_topography_from_random</span><span class="p">(</span><span class="n">grid</span><span class="o">=</span><span class="n">geo_model</span><span class="o">.</span><span class="n">grid</span><span class="p">)</span>
+<span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><span class="n">geo_model</span><span class="p">,</span> <span class="n">show_topography</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">section_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;topography&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_ch1_3c_topography_001.png" srcset="../../_images/sphx_glr_ch1_3c_topography_001.png" alt="Geological map" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[200. 500.]
+Active grids: GridTypes.NONE|SECTIONS|TOPOGRAPHY|DENSE
+
+&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fbc31c993c0&gt;
+</pre></div>
+</div>
+<p>It has additional keywords to play around with:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>fd: fractal dimension:</dt><dd><p>defaults to 2.0. The higher (try 2.9), the rougher the landscape will
+be.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>d_z: height difference:</dt><dd><p>If none, last 20% of the model in z
+direction.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>extent:</dt><dd><p>extent in xy direction. If none,
+<code class="docutils literal notranslate"><span class="pre">geo_model.grid.extent</span></code> is used.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>resolution:</dt><dd><p>resolution of the topography array.
+If none, <code class="docutils literal notranslate"><span class="pre">geo_model.grid.resoution</span></code> is used. Increasing the resolution leads to
+much nicer geological maps!</p>
+</dd>
+</dl>
+</li>
+</ul>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">set_topography_from_random</span><span class="p">(</span>
+    <span class="n">grid</span><span class="o">=</span><span class="n">geo_model</span><span class="o">.</span><span class="n">grid</span><span class="p">,</span>
+    <span class="n">fractal_dimension</span><span class="o">=</span><span class="mf">1.9</span><span class="p">,</span>
+    <span class="n">d_z</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">250</span><span class="p">]),</span>
+    <span class="n">topography_resolution</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">])</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Active grids: GridTypes.NONE|SECTIONS|TOPOGRAPHY|DENSE
+
+&lt;gempy.core.data.grid_modules.topography.Topography object at 0x7fbc31c985b0&gt;
+</pre></div>
+</div>
+</section>
+</section>
+<section id="compute-model">
+<h2>Compute model<a class="headerlink" href="#compute-model" title="Link to this heading">¶</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span><span class="p">(</span><span class="n">geo_model</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting Backend To: AvailableBackends.numpy
+</pre></div>
+</div>
+<div class="output_subarea output_html rendered_html output_result">
+<b>Solutions:</b> 4 Octree Levels, 1 DualContouringMeshes
+</div>
+<br />
+<br /><section id="visualize">
+<h3>Visualize:<a class="headerlink" href="#visualize" title="Link to this heading">¶</a></h3>
+<p>Now, the solutions object does also contain the computed geological map.
+It can be visualized using the 2D and 3D plotting functionality:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><span class="n">geo_model</span><span class="p">,</span> <span class="n">show_topography</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">section_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;topography&#39;</span><span class="p">],</span> <span class="n">show_boundaries</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_ch1_3c_topography_002.png" srcset="../../_images/sphx_glr_ch1_3c_topography_002.png" alt="Geological map" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fbbd2e8c580&gt;
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><span class="n">geo_model</span><span class="p">,</span> <span class="n">show_topography</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">section_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;section1&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_ch1_3c_topography_003.png" srcset="../../_images/sphx_glr_ch1_3c_topography_003.png" alt="section1" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/Users/flow/opt/anaconda3/envs/gempy3_pre/lib/python3.10/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:105: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
+  warnings.warn(
+
+&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fbbd2e06c20&gt;
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">g3d</span> <span class="o">=</span> <span class="n">gpv</span><span class="o">.</span><span class="n">plot_3d</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">=</span><span class="n">geo_model</span><span class="p">,</span>
+    <span class="n">show_topography</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">show_lith</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">show_surfaces</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">show_results</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">ve</span><span class="o">=</span><span class="mi">5</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_ch1_3c_topography_004.png" srcset="../../_images/sphx_glr_ch1_3c_topography_004.png" alt="ch1 3c topography" class = "sphx-glr-single-img"/><p>sphinx_gallery_thumbnail_number = 3</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">g3d</span> <span class="o">=</span> <span class="n">gpv</span><span class="o">.</span><span class="n">plot_3d</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">=</span><span class="n">geo_model</span><span class="p">,</span>
+    <span class="n">show_topography</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">show_lith</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">show_surfaces</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">ve</span><span class="o">=</span><span class="mi">5</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_ch1_3c_topography_005.png" srcset="../../_images/sphx_glr_ch1_3c_topography_005.png" alt="ch1 3c topography" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 10.169 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-tutorials-ch1-fundamentals-ch1-3c-topography-py">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/5f79061946362a29ca439db5f144cba8/ch1_3c_topography.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">ch1_3c_topography.ipynb</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/021ebe9a74c9138b54c94a16bc9340f8/ch1_3c_topography.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">ch1_3c_topography.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/fda807f764c8efe019bc5ca95a7b76b3/ch1_3c_topography.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">ch1_3c_topography.zip</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../index.html">
+    <img class="logo" src="../../_static/logos/gempy.png" alt="Logo" />
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=gempy-project&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">GemPy Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#chapter-1-gempy-fundamentals">Chapter 1: GemPy fundamentals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#chapter-2-forward-geophysics">Chapter 2: Forward Geophysics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#chapter-3-domain-kriging">Chapter 3: Domain Kriging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#chapter-4-topological-analysis">Chapter 4: Topological analysis</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#video-tutorials">Video tutorials</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/index.html">Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">External examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../external/external_examples.html">External Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api_reference.html">Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_reference.html#data-classes">Data Classes</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">GemPy Tutorials</a><ul>
+  <li><a href="index.html">Chapter 1: GemPy fundamentals</a><ul>
+      <li>Previous: <a href="ch1_3b_cross_sections.html" title="previous chapter">1.3b: 2-D sections</a></li>
+      <li>Next: <a href="ch1_4_onlap_relations.html" title="next chapter">1.4: Unconformity relationships</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2017-2024, Gempy Developers.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../../_sources/tutorials/ch1_fundamentals/ch1_3c_topography.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,63 @@
+
+
+Examples using ``matplotlib.figure.FigureBase.add_subplot``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+.. start-sphx-glr-thumbnails
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+.. thumbnail-parent-div-open
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="1.3a: Grids.">
+
+.. only:: html
+
+  .. image:: /tutorials/ch1_fundamentals/images/thumb/sphx_glr_ch1_3a_grids_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_3a_grids.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">1.3a: Grids.</div>
+    </div>
+
+
+.. only:: not html
+
+ * :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_3a_grids.py`
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Geophysics Preprocessing builds on the centered grid (https://github.com/cgre-aachen/gempy/blob/master/notebooks/tutorials/ch1-3-Grids.ipynb) to precompute the constant part of forward physical computations as for example gravity:">
+
+.. only:: html
+
+  .. image:: /tutorials/ch2-Geophysics/images/thumb/sphx_glr_ch2_2_cell_selection_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_tutorials_ch2-Geophysics_ch2_2_cell_selection.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">2.2: Centered Grid.</div>
+    </div>
+
+
+.. only:: not html
+
+ * :ref:`sphx_glr_tutorials_ch2-Geophysics_ch2_2_cell_selection.py`
+
+.. thumbnail-parent-div-close
+
+.. raw:: html
+
+    </div>
+

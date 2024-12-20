@@ -1,0 +1,58 @@
+
+:orphan:
+
+.. _sphx_glr_tutorials_ch1_fundamentals_sg_execution_times:
+
+
+Computation times
+=================
+**14:17.301** total execution time for 8 files **from tutorials/ch1_fundamentals**:
+
+.. container::
+
+  .. raw:: html
+
+    <style scoped>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
+    </style>
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script type="text/javascript" class="init">
+    $(document).ready( function () {
+        $('table.sg-datatable').DataTable({order: [[1, 'desc']]});
+    } );
+    </script>
+
+  .. list-table::
+   :header-rows: 1
+   :class: table table-striped sg-datatable
+
+   * - Example
+     - Time
+     - Mem (MB)
+   * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_5_fault_relations.py` (``ch1_5_fault_relations.py``)
+     - 06:42.573
+     - 0.0
+   * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_7_3d_visualization.py` (``ch1_7_3d_visualization.py``)
+     - 03:55.741
+     - 0.0
+   * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_1_basics.py` (``ch1_1_basics.py``)
+     - 03:03.595
+     - 0.0
+   * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_4_onlap_relations.py` (``ch1_4_onlap_relations.py``)
+     - 00:13.754
+     - 0.0
+   * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_3c_topography.py` (``ch1_3c_topography.py``)
+     - 00:10.169
+     - 0.0
+   * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_3b_cross_sections.py` (``ch1_3b_cross_sections.py``)
+     - 00:06.859
+     - 0.0
+   * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_6_2d_visualization.py` (``ch1_6_2d_visualization.py``)
+     - 00:04.471
+     - 0.0
+   * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_3a_grids.py` (``ch1_3a_grids.py``)
+     - 00:00.138
+     - 0.0

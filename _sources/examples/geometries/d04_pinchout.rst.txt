@@ -11,7 +11,7 @@
         :class: sphx-glr-download-link-note
 
         :ref:`Go to the end <sphx_glr_download_examples_geometries_d04_pinchout.py>`
-        to download the full example code
+        to download the full example code.
 
 .. rst-class:: sphx-glr-example-title
 
@@ -139,7 +139,7 @@ Plot the initial geological model in the y direction
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87cc6a3340>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fdaefbf13f0>
 
 
 
@@ -162,14 +162,14 @@ Plot the initial geological model in the y direction
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f882aa61030>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fdaef7d2fe0>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 4.956 seconds)
+   **Total running time of the script:** (0 minutes 8.264 seconds)
 
 
 .. _sphx_glr_download_examples_geometries_d04_pinchout.py:
@@ -185,6 +185,10 @@ Plot the initial geological model in the y direction
     .. container:: sphx-glr-download sphx-glr-download-python
 
       :download:`Download Python source code: d04_pinchout.py <d04_pinchout.py>`
+
+    .. container:: sphx-glr-download sphx-glr-download-zip
+
+      :download:`Download zipped: d04_pinchout.zip <d04_pinchout.zip>`
 
 
 .. only:: html

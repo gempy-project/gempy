@@ -11,7 +11,7 @@
         :class: sphx-glr-download-link-note
 
         :ref:`Go to the end <sphx_glr_download_examples_real_Alesmodel.py>`
-        to download the full example code
+        to download the full example code.
 
 .. rst-class:: sphx-glr-example-title
 
@@ -308,7 +308,7 @@ Plotting the 2D model
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff8d1b7a5f0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f8281b872b0>
 
 
 
@@ -336,7 +336,7 @@ Plotting section traces
  .. code-block:: none
 
 
-    <function plot_section_traces at 0x7ff91cddef80>
+    <function plot_section_traces at 0x7f82811abf40>
 
 
 
@@ -486,7 +486,7 @@ Setting topography from file
 
     Active grids: GridTypes.NONE|SECTIONS|TOPOGRAPHY|OCTREE
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7ff8d3190cd0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f8281566680>
 
 
 
@@ -976,18 +976,18 @@ Computing the model with the adjusted settings
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.PYTORCH
-    Condition number: 2917573.7407638184.
+    Condition number: 2917573.740764309.
     Chunking done: 19 chunks
-    Condition number: 1174481.1989654184.
+    Condition number: 1174481.1989650137.
     Chunking done: 9 chunks
-    Condition number: 1642063.3117937546.
+    Condition number: 1642063.3117937273.
     Chunking done: 11 chunks
-    Condition number: 1586673.9519253937.
+    Condition number: 1586673.9519253916.
     Chunking done: 246 chunks
-    Condition number: 1122611.6721707566.
+    Condition number: 1122611.6721707575.
     Chunking done: 198 chunks
-    Condition number: 1586673.9519253937.
-    Condition number: 1122611.6721707566.
+    Condition number: 1586673.9519253916.
+    Condition number: 1122611.6721707575.
     Chunking done: 32 chunks
     Chunking done: 26 chunks
     Number of voxels marked by stats: 134 of torch.Size([512]).
@@ -1040,16 +1040,16 @@ Computing the model with the adjusted settings
     Chunking done: 14 chunks
     Chunking done: 7 chunks
     Chunking done: 8 chunks
-    Condition number: 1586673.9519253937.
+    Condition number: 1586673.9519253916.
     Chunking done: 182 chunks
-    Condition number: 1122611.6721707566.
+    Condition number: 1122611.6721707575.
     Chunking done: 146 chunks
     Chunking done: 108 chunks
     Chunking done: 50 chunks
     Chunking done: 62 chunks
-    Condition number: 1586673.9519253937.
+    Condition number: 1586673.9519253916.
     Chunking done: 1444 chunks
-    Condition number: 1122611.6721707566.
+    Condition number: 1122611.6721707575.
     Chunking done: 1160 chunks
     Number of voxels marked by stats: 7774 of torch.Size([23984]).
      Number of voxels marked by corners : 7469
@@ -1074,9 +1074,9 @@ Computing the model with the adjusted settings
     Chunking done: 104 chunks
     Chunking done: 48 chunks
     Chunking done: 59 chunks
-    Condition number: 1586673.9519253937.
+    Condition number: 1586673.9519253916.
     Chunking done: 1386 chunks
-    Condition number: 1122611.6721707566.
+    Condition number: 1122611.6721707575.
     Chunking done: 1113 chunks
 
 
@@ -1126,10 +1126,10 @@ Plotting the 2D model with and without topography
 
  .. code-block:: none
 
-    /home/leguark/gempy_viewer/gempy_viewer/API/_plot_2d_sections_api.py:105: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
+    /Users/flow/opt/anaconda3/envs/gempy3_pre/lib/python3.10/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:105: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
       warnings.warn(
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff8c0c18940>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f826113e740>
 
 
 
@@ -1157,14 +1157,14 @@ sphinx_gallery_thumbnail_number = -1
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7ff8d3274e50>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f827b91f310>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (1 minutes 6.784 seconds)
+   **Total running time of the script:** (3 minutes 14.428 seconds)
 
 
 .. _sphx_glr_download_examples_real_Alesmodel.py:
@@ -1180,6 +1180,10 @@ sphinx_gallery_thumbnail_number = -1
     .. container:: sphx-glr-download sphx-glr-download-python
 
       :download:`Download Python source code: Alesmodel.py <Alesmodel.py>`
+
+    .. container:: sphx-glr-download sphx-glr-download-zip
+
+      :download:`Download zipped: Alesmodel.zip <Alesmodel.zip>`
 
 
 .. only:: html

@@ -11,7 +11,7 @@
         :class: sphx-glr-download-link-note
 
         :ref:`Go to the end <sphx_glr_download_tutorials_a_getting_started_get_started.py>`
-        to download the full example code
+        to download the full example code.
 
 .. rst-class:: sphx-glr-example-title
 
@@ -647,7 +647,7 @@ Now, the model has been computed and is ready to be visualized. Let's see what i
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fb6049b2ec0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fdaef72af80>
 
 
 
@@ -714,7 +714,7 @@ Now, let's look at our 3D model:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fb6048e3910>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fda681fbd60>
 
 
 
@@ -1030,7 +1030,7 @@ First, we add the two missing points to the Siltstone
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fb60431bcd0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fda68dbf520>
 
 
 
@@ -1333,7 +1333,7 @@ how this younger structural group erodes all older elements and basically "cuts 
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fb60488c670>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fdaefc23d30>
 
 
 
@@ -1437,7 +1437,7 @@ Let's change the relation type from `ERODE` to `ONLAP` to achieve a different ty
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fb60474efe0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fda9aa93670>
 
 
 
@@ -1614,7 +1614,7 @@ Let's compute our model including the fault and see what that looks like.
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fb605a38310>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fda387c90f0>
 
 
 
@@ -1689,7 +1689,7 @@ For demonstration, we'll create a random topography:
 
     Active grids: GridTypes.NONE|TOPOGRAPHY|DENSE
 
-    <gempy.core.data.grid_modules.topography.Topography object at 0x7fb605a02a70>
+    <gempy.core.data.grid_modules.topography.Topography object at 0x7fda58f8a140>
 
 
 
@@ -1713,7 +1713,7 @@ For demonstration, we'll create a random topography:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fb60588a1d0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fda3876ab30>
 
 
 
@@ -1737,7 +1737,7 @@ For demonstration, we'll create a random topography:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fb6041dc280>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fda98921db0>
 
 
 
@@ -1792,10 +1792,10 @@ function as shown below.
 
  .. code-block:: none
 
-    /home/leguark/gempy_viewer/gempy_viewer/API/_plot_2d_sections_api.py:105: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
+    /Users/flow/opt/anaconda3/envs/gempy3_pre/lib/python3.10/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:105: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
       warnings.warn(
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fb604073550>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fda98ba5180>
 
 
 
@@ -1819,7 +1819,7 @@ function as shown below.
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fb604072f20>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fda98ba5870>
 
 
 
@@ -1863,7 +1863,7 @@ in our `structural_frame`, i.e., the index `[0]` will return the first and top s
 
  .. code-block:: none
 
-    <class 'trimesh.caching.TrackedArray'> [[ 0.45129359 -0.23915722 -0.63081408]
+    <class 'numpy.ndarray'> [[ 0.45129359 -0.23915722 -0.63081408]
      [ 0.43619337 -0.23915722 -0.58985021]
      [ 0.45123358 -0.20726947 -0.63101987]
      ...
@@ -2054,20 +2054,20 @@ object via `geo_model.grid` as shown below.
  .. code-block:: none
 
 
-    array([[   0.        , -200.        ,  -41.51146691],
-           [   0.        , -197.98994975,  -40.57677464],
-           [   0.        , -195.9798995 ,  -40.49454267],
+    array([[   0.        , -200.        ,  -59.99800606],
+           [   0.        , -197.98994975,  -61.71910298],
+           [   0.        , -195.9798995 ,  -62.93659753],
            ...,
-           [ 780.        ,  195.9798995 ,  -41.88077326],
-           [ 780.        ,  197.98994975,  -42.6337991 ],
-           [ 780.        ,  200.        ,  -43.31644351]])
+           [ 780.        ,  195.9798995 ,  -57.76729926],
+           [ 780.        ,  197.98994975,  -59.39838985],
+           [ 780.        ,  200.        ,  -59.17544491]])
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 31.970 seconds)
+   **Total running time of the script:** (0 minutes 57.520 seconds)
 
 
 .. _sphx_glr_download_tutorials_a_getting_started_get_started.py:
@@ -2083,6 +2083,10 @@ object via `geo_model.grid` as shown below.
     .. container:: sphx-glr-download sphx-glr-download-python
 
       :download:`Download Python source code: get_started.py <get_started.py>`
+
+    .. container:: sphx-glr-download sphx-glr-download-zip
+
+      :download:`Download zipped: get_started.zip <get_started.zip>`
 
 
 .. only:: html

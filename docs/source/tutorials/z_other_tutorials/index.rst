@@ -1,0 +1,45 @@
+
+
+.. _sphx_glr_tutorials_z_other_tutorials:
+
+Video tutorials
+---------------
+
+Compilation of tutorials for videos on the `gempy` YouTube channel https://www.youtube.com/@GemPy3D.
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+.. thumbnail-parent-div-open
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This tutorial demonstrates step-by-step geological modeling using the gempy and gempy_viewer libraries. It follows the Video tutorial series available on the gempy YouTube channel (https://www.youtube.com/@GemPy3D).">
+
+.. only:: html
+
+  .. image:: /tutorials/z_other_tutorials/images/thumb/sphx_glr_video_tutorial_model_1_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_tutorials_z_other_tutorials_video_tutorial_model_1.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Video Tutorial "code-along": Modeling step by step</div>
+    </div>
+
+
+.. thumbnail-parent-div-close
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /tutorials/z_other_tutorials/video_tutorial_model_1
+

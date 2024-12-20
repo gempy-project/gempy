@@ -1,0 +1,58 @@
+
+:orphan:
+
+.. _sphx_glr_examples_geometries_sg_execution_times:
+
+
+Computation times
+=================
+**03:18.634** total execution time for 8 files **from examples/geometries**:
+
+.. container::
+
+  .. raw:: html
+
+    <style scoped>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
+    </style>
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script type="text/javascript" class="init">
+    $(document).ready( function () {
+        $('table.sg-datatable').DataTable({order: [[1, 'desc']]});
+    } );
+    </script>
+
+  .. list-table::
+   :header-rows: 1
+   :class: table table-striped sg-datatable
+
+   * - Example
+     - Time
+     - Mem (MB)
+   * - :ref:`sphx_glr_examples_geometries_g07_combination.py` (``g07_combination.py``)
+     - 01:12.326
+     - 0.0
+   * - :ref:`sphx_glr_examples_geometries_h08_more_examples.py` (``h08_more_examples.py``)
+     - 00:58.796
+     - 0.0
+   * - :ref:`sphx_glr_examples_geometries_c03_recumbent_fold.py` (``c03_recumbent_fold.py``)
+     - 00:32.036
+     - 0.0
+   * - :ref:`sphx_glr_examples_geometries_e05_fault.py` (``e05_fault.py``)
+     - 00:11.037
+     - 0.0
+   * - :ref:`sphx_glr_examples_geometries_d04_pinchout.py` (``d04_pinchout.py``)
+     - 00:07.815
+     - 0.0
+   * - :ref:`sphx_glr_examples_geometries_f06_unconformity.py` (``f06_unconformity.py``)
+     - 00:07.425
+     - 0.0
+   * - :ref:`sphx_glr_examples_geometries_b02_fold.py` (``b02_fold.py``)
+     - 00:06.627
+     - 0.0
+   * - :ref:`sphx_glr_examples_geometries_a01_horizontal_stratigraphic.py` (``a01_horizontal_stratigraphic.py``)
+     - 00:02.572
+     - 0.0

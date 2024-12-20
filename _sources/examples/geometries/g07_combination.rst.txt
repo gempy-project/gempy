@@ -11,7 +11,7 @@
         :class: sphx-glr-download-link-note
 
         :ref:`Go to the end <sphx_glr_download_examples_geometries_g07_combination.py>`
-        to download the full example code
+        to download the full example code.
 
 .. rst-class:: sphx-glr-example-title
 
@@ -90,6 +90,7 @@ an open-source, Python-based library for building implicit geological models.
     Chunking done: 43 chunks
     Chunking done: 9 chunks
     Chunking done: 42 chunks
+    Chunking done: 6 chunks
 
 
 .. raw:: html
@@ -178,7 +179,7 @@ Plot the initial geological model in the y direction
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87cc6ca560>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fdaef74b280>
 
 
 
@@ -233,7 +234,7 @@ Plot the result of the model in the y and x directions with data and boundaries
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87cc3268f0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fdaefbf34c0>
 
 
 
@@ -260,14 +261,14 @@ The 3D plot is commented out due to a bug.
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f87cc56d4e0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fda39b10dc0>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 37.094 seconds)
+   **Total running time of the script:** (1 minutes 23.857 seconds)
 
 
 .. _sphx_glr_download_examples_geometries_g07_combination.py:
@@ -283,6 +284,10 @@ The 3D plot is commented out due to a bug.
     .. container:: sphx-glr-download sphx-glr-download-python
 
       :download:`Download Python source code: g07_combination.py <g07_combination.py>`
+
+    .. container:: sphx-glr-download sphx-glr-download-zip
+
+      :download:`Download zipped: g07_combination.zip <g07_combination.zip>`
 
 
 .. only:: html

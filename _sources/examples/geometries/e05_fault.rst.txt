@@ -11,7 +11,7 @@
         :class: sphx-glr-download-link-note
 
         :ref:`Go to the end <sphx_glr_download_examples_geometries_e05_fault.py>`
-        to download the full example code
+        to download the full example code.
 
 .. rst-class:: sphx-glr-example-title
 
@@ -122,7 +122,7 @@ Plot the initial geological model in the y direction
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87cc3249a0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fdaef749570>
 
 
 
@@ -167,14 +167,14 @@ Plot the initial geological model in the y direction
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f87cc6dc9d0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fda48017250>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 6.886 seconds)
+   **Total running time of the script:** (0 minutes 11.718 seconds)
 
 
 .. _sphx_glr_download_examples_geometries_e05_fault.py:
@@ -190,6 +190,10 @@ Plot the initial geological model in the y direction
     .. container:: sphx-glr-download sphx-glr-download-python
 
       :download:`Download Python source code: e05_fault.py <e05_fault.py>`
+
+    .. container:: sphx-glr-download sphx-glr-download-zip
+
+      :download:`Download zipped: e05_fault.zip <e05_fault.zip>`
 
 
 .. only:: html

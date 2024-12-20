@@ -5,19 +5,20 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>gempy.core.data.GemPyEngineConfig &#8212; GemPy 2024.2.0.3.dev0+gf344a731.d20240626 documentation</title>
+    <title>gempy.core.data.GemPyEngineConfig &#8212; GemPy 2024.2.0.2 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
-    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=270d38c7" />
-    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=eafc0fe6" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=686e5160" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=e15417cb" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
-    <script src="../_static/documentation_options.js?v=bd57e1ea"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <script src="../_static/documentation_options.js?v=6d9f68de"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <link rel="icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -26,8 +27,9 @@
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
+
   
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+  
 
   </head><body>
   
@@ -46,9 +48,24 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gempy.core.data.</span></span><span class="sig-name descname"><span class="pre">GemPyEngineConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">backend:</span> <span class="pre">gempy_engine.config.AvailableBackends</span> <span class="pre">=</span> <span class="pre">&lt;AvailableBackends.numpy:</span> <span class="pre">1&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_gpu:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype:</span> <span class="pre">Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data/gempy_engine_config.html#GemPyEngineConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gempy.core.data.GemPyEngineConfig" title="Link to this definition">¶</a></dt>
 <dd><section id="examples-using-gempy-core-data-gempyengineconfig">
 <h2>Examples using <code class="docutils literal notranslate"><span class="pre">gempy.core.data.GemPyEngineConfig</span></code><a class="headerlink" href="#examples-using-gempy-core-data-gempyengineconfig" title="Link to this heading">¶</a></h2>
-<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="Getting Started"><img alt="" src="../_images/sphx_glr_get_started_thumb.png" />
-<p><a class="reference internal" href="../tutorials/a_getting_started/get_started.html#sphx-glr-tutorials-a-getting-started-get-started-py"><span class="std std-ref">Getting Started</span></a></p>
-  <div class="sphx-glr-thumbnail-title">Getting Started</div>
+<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="GemPy Models - Some More Complex Examples"><img alt="" src="../_images/sphx_glr_h08_more_examples_thumb.png" />
+<p><a class="reference internal" href="../examples/geometries/h08_more_examples.html#sphx-glr-examples-geometries-h08-more-examples-py"><span class="std std-ref">GemPy Models - Some More Complex Examples</span></a></p>
+  <div class="sphx-glr-thumbnail-title">GemPy Models - Some More Complex Examples</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="# %% # .. admonition:: Explanation # #       This model is generally quite unstable and requires float64 precision to find a solution. #       The lack of data in one corner for the TRIAS and LIAS series causes the model to bend unrealistically, #       eroding the CARBO layer, which disappears in that section. The simple way to solve this is by adding more data in that area. #       However, I left it as is because I did not construct the model. #"><img alt="" src="../_images/sphx_glr_Alesmodel_thumb.png" />
+<p><a class="reference internal" href="../examples/real/Alesmodel.html#sphx-glr-examples-real-alesmodel-py"><span class="std std-ref">Alesmodel: Plotting Sections and Maps</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Alesmodel: Plotting Sections and Maps</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Claudius"><img alt="" src="../_images/sphx_glr_Claudius_thumb.png" />
+<p><a class="reference internal" href="../examples/real/Claudius.html#sphx-glr-examples-real-claudius-py"><span class="std std-ref">Claudius</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Claudius</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Hecho"><img alt="" src="../_images/sphx_glr_Hecho_thumb.png" />
+<p><a class="reference internal" href="../examples/real/Hecho.html#sphx-glr-examples-real-hecho-py"><span class="std std-ref">Hecho</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Hecho</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Moureze"><img alt="" src="../_images/sphx_glr_Moureze_thumb.png" />
+<p><a class="reference internal" href="../examples/real/Moureze.html#sphx-glr-examples-real-moureze-py"><span class="std std-ref">Moureze</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Moureze</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Perth basin."><img alt="" src="../_images/sphx_glr_Perth_basin_thumb.png" />
+<p><a class="reference internal" href="../examples/real/Perth_basin.html#sphx-glr-examples-real-perth-basin-py"><span class="std std-ref">Perth basin.</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Perth basin.</div>
 </div></div><div class="sphx-glr-clear"></div><p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -79,7 +96,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gempy.core.data.GemPyEngineConfig.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../Modeling%20Classes/gempy.core.data.AvailableBackends.html#gempy.core.data.AvailableBackends" title="gempy_engine.config.AvailableBackends"><span class="pre">AvailableBackends</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">AvailableBackends.numpy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_gpu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#gempy.core.data.GemPyEngineConfig.__init__" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">backend:</span> <span class="pre">~gempy_engine.config.AvailableBackends</span> <span class="pre">=</span> <span class="pre">&lt;AvailableBackends.numpy:</span> <span class="pre">1&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_gpu:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#gempy.core.data.GemPyEngineConfig.__init__" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </section>
@@ -92,11 +109,11 @@
           
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
 <p class="logo">
   <a href="../index.html">
-    <img class="logo" src="../_static/logos/gempy.png" alt="Logo"/>
+    <img class="logo" src="../_static/logos/gempy.png" alt="Logo" />
     
   </a>
 </p>
@@ -120,24 +137,16 @@
 <li class="toctree-l1"><a class="reference internal" href="../index.html">About</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">GemPy Tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">External examples</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../external/external_examples.html">External Examples</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../api_reference.html">Code</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../api_reference.html#data-classes">Data Classes</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../api_reference.html#module-gempy.core.data">Modeling Classes</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../api_reference.html#helper-classes">Helper Classes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api_reference.html#enumerators">Enumerators</a></li>
-</ul>
-</li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api_reference.html#data-classes">Data Classes</a></li>
 </ul>
 
 <div class="relations">
@@ -151,7 +160,7 @@
   </ul></li>
 </ul>
 </div>
-<div id="searchbox" style="display: none" role="search">
+<search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
@@ -159,7 +168,7 @@
       <input type="submit" value="Go" />
     </form>
     </div>
-</div>
+</search>
 <script>document.getElementById('searchbox').style.display = "block"</script>
 
 
@@ -174,11 +183,11 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2017-2024, Gempy Developers.
+      &#169;2017-2024, Gempy Developers.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       
       |
       <a href="../_sources/Helper Classes/gempy.core.data.GemPyEngineConfig.rst.txt"

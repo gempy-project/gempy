@@ -11,7 +11,7 @@
         :class: sphx-glr-download-link-note
 
         :ref:`Go to the end <sphx_glr_download_examples_real_Hecho.py>`
-        to download the full example code
+        to download the full example code.
 
 .. rst-class:: sphx-glr-example-title
 
@@ -134,45 +134,45 @@ we can directly tidy the data in gempy style:
         <tr>
           <th>761</th>
           <td>6</td>
-          <td>11.14</td>
-          <td>-0.17</td>
-          <td>1.53</td>
+          <td>11.143734</td>
+          <td>-0.172893</td>
+          <td>1.53226</td>
           <td>NaN</td>
           <td>f3</td>
         </tr>
         <tr>
           <th>762</th>
           <td>7</td>
-          <td>11.17</td>
-          <td>0.28</td>
-          <td>1.68</td>
+          <td>11.171513</td>
+          <td>0.284198</td>
+          <td>1.68442</td>
           <td>NaN</td>
           <td>f3</td>
         </tr>
         <tr>
           <th>763</th>
           <td>8</td>
-          <td>11.16</td>
-          <td>0.40</td>
-          <td>1.82</td>
+          <td>11.159113</td>
+          <td>0.399711</td>
+          <td>1.81939</td>
           <td>NaN</td>
           <td>f3</td>
         </tr>
         <tr>
           <th>764</th>
           <td>9</td>
-          <td>11.07</td>
-          <td>0.03</td>
-          <td>1.92</td>
+          <td>11.069008</td>
+          <td>0.032232</td>
+          <td>1.92030</td>
           <td>NaN</td>
           <td>f3</td>
         </tr>
         <tr>
           <th>765</th>
           <td>10</td>
-          <td>10.89</td>
-          <td>-0.43</td>
-          <td>2.10</td>
+          <td>10.885192</td>
+          <td>-0.428004</td>
+          <td>2.10412</td>
           <td>NaN</td>
           <td>f3</td>
         </tr>
@@ -371,7 +371,7 @@ Now we can see how the data looks so far:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87c7f2eda0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f827c8317e0>
 
 
 
@@ -829,33 +829,33 @@ Adjusting parameters accordingly:
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.PYTORCH
-    Condition number: 263879.392299568.
+    Condition number: 1546449.7334683603.
     Chunking done: 206 chunks
-    Condition number: 597671.5533391963.
+    Condition number: 1545102.6430545112.
     Chunking done: 258 chunks
-    Condition number: 112458.69653965058.
+    Condition number: 1447785.0114924805.
     Chunking done: 206 chunks
-    Condition number: 20512698.067502074.
+    Condition number: 40165630.35151405.
     Chunking done: 10501 chunks
-    Condition number: 20512698.06753521.
+    Condition number: 40165630.351562455.
     Chunking done: 14 chunks
     Chunking done: 14 chunks
     Chunking done: 21 chunks
     Chunking done: 21 chunks
     Chunking done: 80 chunks
-    Condition number: 20512698.06753521.
     Chunking done: 80 chunks
     Chunking done: 11 chunks
     Chunking done: 14 chunks
     Chunking done: 11 chunks
+    Condition number: 40165630.351562455.
     Chunking done: 548 chunks
-    Condition number: 20512698.067502074.
-    Chunking done: 36 chunks
-    Condition number: 20512698.06753521.
-    Chunking done: 34 chunks
+    Condition number: 40165630.35151405.
+    Chunking done: 38 chunks
+    Condition number: 40165630.351562455.
+    Chunking done: 35 chunks
     Chunking done: 33 chunks
     Chunking done: 7 chunks
-    Chunking done: 246 chunks
+    Chunking done: 251 chunks
 
 
 .. raw:: html
@@ -886,7 +886,7 @@ Adjusting parameters accordingly:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87cc833be0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f829d5d5120>
 
 
 
@@ -910,7 +910,7 @@ Adjusting parameters accordingly:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87cc8d2470>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f827c7b7f70>
 
 
 
@@ -933,8 +933,10 @@ Adjusting parameters accordingly:
 
  .. code-block:: none
 
+    /Users/flow/opt/anaconda3/envs/gempy3_pre/lib/python3.10/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:105: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
+      warnings.warn(
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f87cc832200>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f829d5d5fc0>
 
 
 
@@ -961,14 +963,14 @@ sphinx_gallery_thumbnail_number = 3
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f87c412f250>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f8299ce1fc0>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (1 minutes 50.980 seconds)
+   **Total running time of the script:** (6 minutes 10.994 seconds)
 
 
 .. _sphx_glr_download_examples_real_Hecho.py:
@@ -984,6 +986,10 @@ sphinx_gallery_thumbnail_number = 3
     .. container:: sphx-glr-download sphx-glr-download-python
 
       :download:`Download Python source code: Hecho.py <Hecho.py>`
+
+    .. container:: sphx-glr-download sphx-glr-download-zip
+
+      :download:`Download zipped: Hecho.zip <Hecho.zip>`
 
 
 .. only:: html

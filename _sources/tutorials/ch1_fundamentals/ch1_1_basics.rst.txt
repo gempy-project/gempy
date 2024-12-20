@@ -11,7 +11,7 @@
         :class: sphx-glr-download-link-note
 
         :ref:`Go to the end <sphx_glr_download_tutorials_ch1_fundamentals_ch1_1_basics.py>`
-        to download the full example code
+        to download the full example code.
 
 .. rst-class:: sphx-glr-example-title
 
@@ -151,7 +151,7 @@ Using `structural_frame.element_id_name_map`, we can see which ID corresponds to
 .. raw:: html
 
     <div class="output_subarea output_html rendered_html output_result">
-    <table><tr><th>X</th><th>Y</th><th>Z</th><th>id</th><th>nugget</th></tr><tr><td>700.00</td><td>1000.00</td><td>300.00</td><td>2332656</td><td>0.00</td></tr><tr><td>600.00</td><td>1000.00</td><td>200.00</td><td>2332656</td><td>0.00</td></tr><tr><td>500.00</td><td>1000.00</td><td>100.00</td><td>2332656</td><td>0.00</td></tr><tr><td>1000.00</td><td>1000.00</td><td>600.00</td><td>2332656</td><td>0.00</td></tr><tr><td>1100.00</td><td>1000.00</td><td>700.00</td><td>2332656</td><td>0.00</td></tr><tr><td>1000.00</td><td>50.00</td><td>350.00</td><td>146070823</td><td>0.00</td></tr><tr><td>1000.00</td><td>150.00</td><td>333.33</td><td>146070823</td><td>0.00</td></tr><tr><td>1000.00</td><td>300.00</td><td>333.33</td><td>146070823</td><td>0.00</td></tr><tr><td>1000.00</td><td>500.00</td><td>366.67</td><td>146070823</td><td>0.00</td></tr><tr><td>1000.00</td><td>1000.00</td><td>433.33</td><td>146070823</td><td>0.00</td></tr><tr><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td></tr><tr><td>1100.00</td><td>1700.00</td><td>473.33</td><td>421127523</td><td>0.00</td></tr><tr><td>1100.00</td><td>1950.00</td><td>490.00</td><td>421127523</td><td>0.00</td></tr><tr><td>0.00</td><td>1000.00</td><td>433.33</td><td>421127523</td><td>0.00</td></tr><tr><td>300.00</td><td>1000.00</td><td>400.00</td><td>421127523</td><td>0.00</td></tr><tr><td>600.00</td><td>1000.00</td><td>366.67</td><td>421127523</td><td>0.00</td></tr><tr><td>1300.00</td><td>1000.00</td><td>566.67</td><td>421127523</td><td>0.00</td></tr><tr><td>1600.00</td><td>1000.00</td><td>550.00</td><td>421127523</td><td>0.00</td></tr><tr><td>1900.00</td><td>1000.00</td><td>566.67</td><td>421127523</td><td>0.00</td></tr><tr><td>1700.00</td><td>500.00</td><td>533.33</td><td>421127523</td><td>0.00</td></tr><tr><td>1700.00</td><td>1500.00</td><td>516.67</td><td>421127523</td><td>0.00</td></tr></table>
+    <table><tr><th>X</th><th>Y</th><th>Z</th><th>id</th><th>nugget</th></tr><tr><td>700.00</td><td>1000.00</td><td>300.00</td><td>11472075</td><td>0.00</td></tr><tr><td>600.00</td><td>1000.00</td><td>200.00</td><td>11472075</td><td>0.00</td></tr><tr><td>500.00</td><td>1000.00</td><td>100.00</td><td>11472075</td><td>0.00</td></tr><tr><td>1000.00</td><td>1000.00</td><td>600.00</td><td>11472075</td><td>0.00</td></tr><tr><td>1100.00</td><td>1000.00</td><td>700.00</td><td>11472075</td><td>0.00</td></tr><tr><td>1000.00</td><td>50.00</td><td>350.00</td><td>192242050</td><td>0.00</td></tr><tr><td>1000.00</td><td>150.00</td><td>333.33</td><td>192242050</td><td>0.00</td></tr><tr><td>1000.00</td><td>300.00</td><td>333.33</td><td>192242050</td><td>0.00</td></tr><tr><td>1000.00</td><td>500.00</td><td>366.67</td><td>192242050</td><td>0.00</td></tr><tr><td>1000.00</td><td>1000.00</td><td>433.33</td><td>192242050</td><td>0.00</td></tr><tr><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td></tr><tr><td>1100.00</td><td>1700.00</td><td>473.33</td><td>466692227</td><td>0.00</td></tr><tr><td>1100.00</td><td>1950.00</td><td>490.00</td><td>466692227</td><td>0.00</td></tr><tr><td>0.00</td><td>1000.00</td><td>433.33</td><td>466692227</td><td>0.00</td></tr><tr><td>300.00</td><td>1000.00</td><td>400.00</td><td>466692227</td><td>0.00</td></tr><tr><td>600.00</td><td>1000.00</td><td>366.67</td><td>466692227</td><td>0.00</td></tr><tr><td>1300.00</td><td>1000.00</td><td>566.67</td><td>466692227</td><td>0.00</td></tr><tr><td>1600.00</td><td>1000.00</td><td>550.00</td><td>466692227</td><td>0.00</td></tr><tr><td>1900.00</td><td>1000.00</td><td>566.67</td><td>466692227</td><td>0.00</td></tr><tr><td>1700.00</td><td>500.00</td><td>533.33</td><td>466692227</td><td>0.00</td></tr><tr><td>1700.00</td><td>1500.00</td><td>516.67</td><td>466692227</td><td>0.00</td></tr></table>
     </div>
     <br />
     <br />
@@ -171,7 +171,7 @@ Using `structural_frame.element_id_name_map`, we can see which ID corresponds to
 .. raw:: html
 
     <div class="output_subarea output_html rendered_html output_result">
-    <table><tr><th>X</th><th>Y</th><th>Z</th><th>G_x</th><th>G_y</th><th>G_z</th><th>id</th><th>nugget</th></tr><tr><td>500.00</td><td>1000.00</td><td>300.00</td><td>-0.95</td><td>-0.00</td><td>0.32</td><td>2332656</td><td>0.01</td></tr><tr><td>400.00</td><td>1000.00</td><td>420.00</td><td>0.32</td><td>0.00</td><td>0.95</td><td>268604525</td><td>0.01</td></tr><tr><td>1000.00</td><td>1000.00</td><td>300.00</td><td>0.32</td><td>0.00</td><td>0.95</td><td>356755149</td><td>0.01</td></tr></table>
+    <table><tr><th>X</th><th>Y</th><th>Z</th><th>G_x</th><th>G_y</th><th>G_z</th><th>id</th><th>nugget</th></tr><tr><td>500.00</td><td>1000.00</td><td>300.00</td><td>-0.95</td><td>-0.00</td><td>0.32</td><td>11472075</td><td>0.01</td></tr><tr><td>400.00</td><td>1000.00</td><td>420.00</td><td>0.32</td><td>0.00</td><td>0.95</td><td>238275591</td><td>0.01</td></tr><tr><td>1000.00</td><td>1000.00</td><td>300.00</td><td>0.32</td><td>0.00</td><td>0.95</td><td>324395662</td><td>0.01</td></tr></table>
     </div>
     <br />
     <br />
@@ -460,7 +460,7 @@ in GemPy requires [the Visualization Toolkit](https://www.vtk.org/) (VTK) to be 
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f2c7d992140>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fdaecb8c790>
 
 
 
@@ -508,7 +508,7 @@ Display the current interpolation options
 
                     <table>
                         <tr><td colspan='2' style='text-align:center'><b>InterpolationOptions</b></td></tr>
-                        <tr><td>kernel_options</td><td>{'range': 1.7, 'c_o': 10, 'uni_degree': 1, 'i_res': 4, 'gi_res': 2, 'number_dimensions': 3, 'kernel_function': <AvailableKernelFunctions.cubic: KernelFunction(base_function=<function cubic_function at 0x7f2c80c4a830>, derivative_div_r=<function cubic_function_p_div_r at 0x7f2c80c4a8c0>, second_derivative=<function cubic_function_a at 0x7f2c80c4a950>, consume_sq_distance=False)>, 'kernel_solver': <Solvers.DEFAULT: 1>, 'compute_condition_number': False, 'optimizing_condition_number': False, 'condition_number': None}</td></tr><tr><td>evaluation_options</td><td>{'_number_octree_levels': 6, '_number_octree_levels_surface': 4, 'octree_curvature_threshold': -1, 'octree_error_threshold': 1.0, 'octree_min_level': 2, 'mesh_extraction': True, 'mesh_extraction_masking_options': <MeshExtractionMaskingOptions.INTERSECT: 3>, 'mesh_extraction_fancy': True, 'evaluation_chunk_size': 500000, 'compute_scalar_gradient': False, 'verbose': False}</td></tr><tr><td>temp_interpolation_values</td><td><gempy_engine.core.data.options.temp_interpolation_values.TempInterpolationValues object at 0x7f2c328683a0></td></tr><tr><td>debug</td><td>True</td></tr><tr><td>cache_mode</td><td>CacheMode.IN_MEMORY_CACHE</td></tr><tr><td>cache_model_name</td><td>Tutorial_ch1_1_Basics</td></tr><tr><td>block_solutions_type</td><td>BlockSolutionType.OCTREE</td></tr><tr><td>sigmoid_slope</td><td>50000</td></tr><tr><td>debug_water_tight</td><td>False</td></tr>
+                        <tr><td>kernel_options</td><td>{'range': 1.7, 'c_o': 10, 'uni_degree': 1, 'i_res': 4, 'gi_res': 2, 'number_dimensions': 3, 'kernel_function': <AvailableKernelFunctions.cubic: KernelFunction(base_function=<function cubic_function at 0x7fdaebe81bd0>, derivative_div_r=<function cubic_function_p_div_r at 0x7fdaebe81e10>, second_derivative=<function cubic_function_a at 0x7fdaebe81ea0>, consume_sq_distance=False)>, 'kernel_solver': <Solvers.DEFAULT: 1>, 'compute_condition_number': False, 'optimizing_condition_number': False, 'condition_number': None}</td></tr><tr><td>evaluation_options</td><td>{'_number_octree_levels': 6, '_number_octree_levels_surface': 4, 'octree_curvature_threshold': -1, 'octree_error_threshold': 1.0, 'octree_min_level': 2, 'mesh_extraction': True, 'mesh_extraction_masking_options': <MeshExtractionMaskingOptions.INTERSECT: 3>, 'mesh_extraction_fancy': True, 'evaluation_chunk_size': 500000, 'compute_scalar_gradient': False, 'verbose': False}</td></tr><tr><td>temp_interpolation_values</td><td><gempy_engine.core.data.options.temp_interpolation_values.TempInterpolationValues object at 0x7fdaed7c18d0></td></tr><tr><td>debug</td><td>True</td></tr><tr><td>cache_mode</td><td>CacheMode.IN_MEMORY_CACHE</td></tr><tr><td>cache_model_name</td><td>Tutorial_ch1_1_Basics</td></tr><tr><td>block_solutions_type</td><td>BlockSolutionType.OCTREE</td></tr><tr><td>sigmoid_slope</td><td>50000</td></tr><tr><td>debug_water_tight</td><td>False</td></tr>
                     </table>
                 
     </div>
@@ -606,7 +606,7 @@ directly. Let's take a look at our lithology block:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f2c3145b4f0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fdaefb5eda0>
 
 
 
@@ -649,7 +649,7 @@ We can do the same with the underlying scalar-field solution:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f2c3145b490>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fda58f5b130>
 
 
 
@@ -679,7 +679,7 @@ We can do the same with the underlying scalar-field solution:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f2c314f0a00>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fda39513700>
 
 
 
@@ -721,7 +721,7 @@ using dual contouring in the :obj:`gempy_engine`.
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f2c314d0d00>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fda394a8e20>
 
 
 
@@ -779,7 +779,7 @@ surfaces as well as compute a high resolution geological mal.
     Chunking done: 20 chunks
     Chunking done: 20 chunks
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f2c311b3010>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fdaed88a1a0>
 
 
 
@@ -855,7 +855,7 @@ sphinx_gallery_thumbnail_number = -2
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (1 minutes 35.701 seconds)
+   **Total running time of the script:** (2 minutes 56.119 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_1_basics.py:
@@ -871,6 +871,10 @@ sphinx_gallery_thumbnail_number = -2
     .. container:: sphx-glr-download sphx-glr-download-python
 
       :download:`Download Python source code: ch1_1_basics.py <ch1_1_basics.py>`
+
+    .. container:: sphx-glr-download sphx-glr-download-zip
+
+      :download:`Download zipped: ch1_1_basics.zip <ch1_1_basics.zip>`
 
 
 .. only:: html
