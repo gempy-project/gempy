@@ -74,12 +74,21 @@ Creating an update of the documentation can therefore be quite involved (dependi
 - If everything is fine, first commit all changes that were made in the main repo:
     - `git add .`
     - `git commit -m "update message"`
+- Copy updated documentation to a temporary directory,for example `/tmp/docs-html` with:
+    - `mkdir /tmp/docs-html`
+    - `cp -R docs/build/html/* /tmp/docs-html/`
 - checkout the documentation branch: `git checkout gh-pages`
-
+- Copy the updated files into the main folder of the `gh-pages` branch: `cp -R /tmp/docs-html/* .`
+- To be sure: check updated documentation, open `index.html`, now in the main folder of the repository.
+- Commit all changes:
+    - `git add .`
+    - `git commit -m "Updated documentation in gh-pages branch`
 
 #### Contribute updates back to main repository
 
-
+- Push _both_ branches `main` and `gh-pages` back to your own remote GitHub profile
+- Create a pull request for both branches (make sure to create the pull request for the `gh-pages` branch also to the `gh-pages` branch of the original gempy repository)
+- Please include meaningful descriptions about your changes (both, in the main repo, as well as in the documnetation).
 
 
 
