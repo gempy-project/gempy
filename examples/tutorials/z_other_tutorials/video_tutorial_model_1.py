@@ -1,10 +1,12 @@
 """
 Video Tutorial "code-along": Modeling step by step
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-This tutorial demonstrates step-by-step geological modeling using the `gempy` and `gempy_viewer` libraries.
-It follows the Video tutorial series available on the [`gempy` YouTube channel](https://www.youtube.com/@GemPy3D).
 """
+
+
+# %%
+# This tutorial demonstrates step-by-step geological modeling using the `gempy` and `gempy_viewer` libraries.
+# It follows the Video tutorial series available on the `gempy YouTube channel <https://www.youtube.com/@GemPy3D>`_.
 
 
 # %%
@@ -129,7 +131,7 @@ gp.map_stack_to_surfaces(
 #.. raw:: html
 #
 #    <iframe width="560" height="315" 
-#            src="https://youtu.be/lrz1DeHrrBk" 
+#            src="https://www.youtube.com/embed/lrz1DeHrrBk" 
 #            title="GemPy Tutorial Video 4" 
 #            frameborder="0" 
 #            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
@@ -164,7 +166,7 @@ print(geo_model.grid.dense_grid.values)
 #.. raw:: html
 #
 #    <iframe width="560" height="315" 
-#            src="https://youtu.be/nMms0JYn98o" 
+#            src="https://www.youtube.com/embed/nMms0JYn98o" 
 #            title="GemPy tutorial video 5" 
 #            frameborder="0" 
 #            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 

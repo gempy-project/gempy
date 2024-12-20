@@ -61,7 +61,7 @@ Creating an update of the documentation can therefore be quite involved (dependi
 
 #### Update documentation using Sphinx
 
-- Update the documentation using sphinx:
+- Update the documentation using sphinx in the branch where the changes were made (`main` branch or new branch based on `main`):
     - Check that you have `sphinx` and `sphinx-gallery` installed;
     - Change to folder with documentation from main repo with `cd docs`;
     - Run update with `make html`;
