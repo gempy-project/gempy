@@ -1,10 +1,12 @@
 """
 Video Tutorial "code-along": Modeling step by step
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-This tutorial demonstrates step-by-step geological modeling using the `gempy` and `gempy_viewer` libraries.
-It follows the Video tutorial series available on the `gempy` YouTube channel (https://www.youtube.com/@GemPy3D).
 """
+
+
+# %%
+# This tutorial demonstrates step-by-step geological modeling using the `gempy` and `gempy_viewer` libraries.
+# It follows the Video tutorial series available on the `gempy YouTube channel <https://www.youtube.com/@GemPy3D>`_.
 
 
 # %%
@@ -12,8 +14,6 @@ It follows the Video tutorial series available on the `gempy` YouTube channel (h
 # """"""""""""""""""""""""""""""
 #
 # The first video is an introduction to GemPy - please view online before starting the tutorial.
-# 
-# https://youtu.be/3elCCHhARsU
 #
 #
 
@@ -127,6 +127,18 @@ gp.map_stack_to_surfaces(
 # Video tutorial 4: Computation and results
 # """""""""""""""""""""""""""""""""""""""""
 
+# %%
+#.. raw:: html
+#
+#    <iframe width="560" height="315" 
+#            src="https://www.youtube.com/embed/lrz1DeHrrBk" 
+#            title="GemPy Tutorial Video 4" 
+#            frameborder="0" 
+#            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+#            allowfullscreen>
+#    </iframe>
+
+
 # View interpolation options
 geo_model.interpolation_options
 
@@ -149,6 +161,18 @@ print(geo_model.grid.dense_grid.values)
 # %%
 # Video tutorial 5: 2D visualization
 # """"""""""""""""""""""""""""""""""
+
+# %%
+#.. raw:: html
+#
+#    <iframe width="560" height="315" 
+#            src="https://www.youtube.com/embed/nMms0JYn98o" 
+#            title="GemPy tutorial video 5" 
+#            frameborder="0" 
+#            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+#            allowfullscreen>
+#    </iframe>
+
 
 # 2d plotting options
 gpv.plot_2d(geo_model, show_value=True, show_lith=False, show_scalar=True, series_n=1, cell_number=25)
@@ -190,6 +214,10 @@ gpv.plot_3d(geo_model, show_lith=True, show_boundaries=True, ve=None)
 
 # How to access DC meshes
 geo_model.solutions.dc_meshes[0].dc_data
+
+# transform mesh vertices to original coordinate system
+
+back_transformed_vertices = geo_model.input_transform.apply_inverse(geo_model.solutions.dc_meshes[0].vertices)
 
 # %%
 # Video tutorial 7: Topography
