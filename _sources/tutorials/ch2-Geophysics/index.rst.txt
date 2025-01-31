@@ -33,7 +33,7 @@ These examples show how to use some of the in built functionality for forward ge
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Geophysics Preprocessing builds on the centered grid (https://github.com/cgre-aachen/gempy/blob/master/notebooks/tutorials/ch1-3-Grids.ipynb) to precompute the constant part of forward physical computations as for example gravity:">
+    <div class="sphx-glr-thumbcontainer" tooltip="2.2: Centered Grid.">
 
 .. only:: html
 

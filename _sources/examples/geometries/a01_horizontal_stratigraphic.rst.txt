@@ -18,18 +18,22 @@
 .. _sphx_glr_examples_geometries_a01_horizontal_stratigraphic.py:
 
 
-Model 1 - Horizontal stratigraphic
+Model 1 - Horizontal stratigraphy
 ==================================
 
-This script demonstrates how to create a basic model of horizontally stacked layers using GemPy,
+A simple example with horizontal layers
+
+This script demonstrates how to create a basic model with horizontally stacked layers using GemPy,
 a Python-based, open-source library for implicit geological modeling.
 
-.. GENERATED FROM PYTHON SOURCE LINES 8-16
+.. GENERATED FROM PYTHON SOURCE LINES 13-14
+
+Import necessary libraries
+
+.. GENERATED FROM PYTHON SOURCE LINES 14-20
 
 .. code-block:: Python
 
-
-    # Import necessary libraries
     import gempy as gp
     import gempy_viewer as gpv
 
@@ -43,12 +47,12 @@ a Python-based, open-source library for implicit geological modeling.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 17-19
+.. GENERATED FROM PYTHON SOURCE LINES 21-23
 
 Generate the model
 Define the path to data
 
-.. GENERATED FROM PYTHON SOURCE LINES 19-39
+.. GENERATED FROM PYTHON SOURCE LINES 23-43
 
 .. code-block:: Python
 
@@ -87,11 +91,11 @@ Define the path to data
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 40-41
+.. GENERATED FROM PYTHON SOURCE LINES 44-45
 
 Plot the initial geological model in the y direction without results
 
-.. GENERATED FROM PYTHON SOURCE LINES 41-46
+.. GENERATED FROM PYTHON SOURCE LINES 45-50
 
 .. code-block:: Python
 
@@ -133,14 +137,14 @@ Plot the initial geological model in the y direction without results
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fda39ad01f0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc8debd5f60>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.756 seconds)
+   **Total running time of the script:** (0 minutes 2.536 seconds)
 
 
 .. _sphx_glr_download_examples_geometries_a01_horizontal_stratigraphic.py:

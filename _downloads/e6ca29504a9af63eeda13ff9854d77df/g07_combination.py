@@ -2,6 +2,8 @@
 Model 7 - Combination
 ======================
 
+Combining faults and unconformities
+
 This script creates a folded domain featuring an unconformity and a fault using GemPy,
 an open-source, Python-based library for building implicit geological models.
 """

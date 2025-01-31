@@ -21,10 +21,12 @@
 Model 3 - Recumbent Fold
 ========================
 
+Modeling a recumbent fold
+
 This script demonstrates how to create a geological model of a recumbent fold using GemPy,
 a Python-based, open-source library for implicit geological modeling.
 
-.. GENERATED FROM PYTHON SOURCE LINES 8-17
+.. GENERATED FROM PYTHON SOURCE LINES 10-19
 
 .. code-block:: Python
 
@@ -44,12 +46,12 @@ a Python-based, open-source library for implicit geological modeling.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 18-20
+.. GENERATED FROM PYTHON SOURCE LINES 20-22
 
 Generate the model
 Define the path to data
 
-.. GENERATED FROM PYTHON SOURCE LINES 20-42
+.. GENERATED FROM PYTHON SOURCE LINES 22-44
 
 .. code-block:: Python
 
@@ -93,11 +95,11 @@ Define the path to data
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 43-44
+.. GENERATED FROM PYTHON SOURCE LINES 45-46
 
 Plot the initial geological model in the y direction
 
-.. GENERATED FROM PYTHON SOURCE LINES 44-49
+.. GENERATED FROM PYTHON SOURCE LINES 46-51
 
 .. code-block:: Python
 
@@ -132,11 +134,11 @@ Plot the initial geological model in the y direction
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fda38723d00>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc6e82b2830>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 50-51
+.. GENERATED FROM PYTHON SOURCE LINES 52-53
 
 .. code-block:: Python
 
@@ -155,14 +157,14 @@ Plot the initial geological model in the y direction
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fda480e3820>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fc6e8272470>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 35.418 seconds)
+   **Total running time of the script:** (0 minutes 31.240 seconds)
 
 
 .. _sphx_glr_download_examples_geometries_c03_recumbent_fold.py:

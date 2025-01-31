@@ -1,18 +1,15 @@
-
 """
-Alesmodel: Plotting Sections and Maps
+Model of Ales, France: Plotting Sections and Maps
 ======================================
+"""
 
 # %%
 # .. admonition:: Explanation
 #
-#       This model is generally quite unstable and requires float64 precision to find a solution.
+#       This model is generally quite unstable and requires float64 precision to determine a solution.
 #       The lack of data in one corner for the TRIAS and LIAS series causes the model to bend unrealistically,
-#       eroding the CARBO layer, which disappears in that section. The simple way to solve this is by adding more data in that area.
-#       However, I left it as is because I did not construct the model.
+#       eroding the CARBO layer, which disappears in that section. 
 #
-
-"""
 
 import gempy as gp
 import gempy_viewer as gpv

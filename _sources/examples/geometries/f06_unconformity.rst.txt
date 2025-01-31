@@ -21,10 +21,12 @@
 Model 6 - Unconformity
 ======================
 
+Modeling unconformities through the combination of scalar fields
+
 This script creates an unconformity cutting an anticline structure using GemPy,
 an open-source, Python-based library for building implicit geological models.
 
-.. GENERATED FROM PYTHON SOURCE LINES 8-17
+.. GENERATED FROM PYTHON SOURCE LINES 10-19
 
 .. code-block:: Python
 
@@ -44,12 +46,12 @@ an open-source, Python-based library for building implicit geological models.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 18-20
+.. GENERATED FROM PYTHON SOURCE LINES 20-22
 
 Generate the model
 Define the path to data
 
-.. GENERATED FROM PYTHON SOURCE LINES 20-47
+.. GENERATED FROM PYTHON SOURCE LINES 22-49
 
 .. code-block:: Python
 
@@ -97,11 +99,11 @@ Define the path to data
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 48-49
+.. GENERATED FROM PYTHON SOURCE LINES 50-51
 
 Plot the initial geological model in the y direction
 
-.. GENERATED FROM PYTHON SOURCE LINES 49-51
+.. GENERATED FROM PYTHON SOURCE LINES 51-53
 
 .. code-block:: Python
 
@@ -121,15 +123,15 @@ Plot the initial geological model in the y direction
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fdaa89df2e0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc8de6821d0>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 52-53
+.. GENERATED FROM PYTHON SOURCE LINES 54-55
 
 Plot the result of the model in the y and x directions with data
 
-.. GENERATED FROM PYTHON SOURCE LINES 53-56
+.. GENERATED FROM PYTHON SOURCE LINES 55-58
 
 .. code-block:: Python
 
@@ -162,14 +164,14 @@ Plot the result of the model in the y and x directions with data
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fda3962d7e0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc8dec3c9d0>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 7.722 seconds)
+   **Total running time of the script:** (0 minutes 7.237 seconds)
 
 
 .. _sphx_glr_download_examples_geometries_f06_unconformity.py:

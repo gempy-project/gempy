@@ -17,7 +17,7 @@ These models are built with real data
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="# %% # .. admonition:: Explanation # #       This model is generally quite unstable and requires float64 precision to find a solution. #       The lack of data in one corner for the TRIAS and LIAS series causes the model to bend unrealistically, #       eroding the CARBO layer, which disappears in that section. The simple way to solve this is by adding more data in that area. #       However, I left it as is because I did not construct the model. #">
+    <div class="sphx-glr-thumbcontainer" tooltip="Model of Ales, France: Plotting Sections and Maps">
 
 .. only:: html
 
@@ -28,13 +28,13 @@ These models are built with real data
 
 .. raw:: html
 
-      <div class="sphx-glr-thumbnail-title">Alesmodel: Plotting Sections and Maps</div>
+      <div class="sphx-glr-thumbnail-title">Model of Ales, France: Plotting Sections and Maps</div>
     </div>
 
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Claudius">
+    <div class="sphx-glr-thumbcontainer" tooltip="This model is part of a geomodeling benchmaring effort. More information (and, hopefully, publication) coming.">
 
 .. only:: html
 
@@ -45,7 +45,7 @@ These models are built with real data
 
 .. raw:: html
 
-      <div class="sphx-glr-thumbnail-title">Claudius</div>
+      <div class="sphx-glr-thumbnail-title">Geomodeling benchmark: the "Claudius"-Model</div>
     </div>
 
 
@@ -68,7 +68,7 @@ These models are built with real data
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Hecho">
+    <div class="sphx-glr-thumbcontainer" tooltip="This model is part of a geomodeling benchmaring effort. More information (and, hopefully, publication) coming.">
 
 .. only:: html
 
@@ -79,13 +79,13 @@ These models are built with real data
 
 .. raw:: html
 
-      <div class="sphx-glr-thumbnail-title">Hecho</div>
+      <div class="sphx-glr-thumbnail-title">Geomodeling benchmark: the "Hecho"-Model</div>
     </div>
 
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Moureze">
+    <div class="sphx-glr-thumbcontainer" tooltip="This model is part of a geomodeling benchmaring effort. More information (and, hopefully, publication) coming.">
 
 .. only:: html
 
@@ -96,13 +96,13 @@ These models are built with real data
 
 .. raw:: html
 
-      <div class="sphx-glr-thumbnail-title">Moureze</div>
+      <div class="sphx-glr-thumbnail-title">Geomodeling benchmark: the "Moureze"-Model</div>
     </div>
 
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Perth basin.">
+    <div class="sphx-glr-thumbcontainer" tooltip="A geological model of the Perth basin, Australia">
 
 .. only:: html
 
@@ -113,7 +113,7 @@ These models are built with real data
 
 .. raw:: html
 
-      <div class="sphx-glr-thumbnail-title">Perth basin.</div>
+      <div class="sphx-glr-thumbnail-title">A geological model of the Perth basin, Australia</div>
     </div>
 
 

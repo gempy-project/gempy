@@ -205,7 +205,7 @@ So here is the very simple, basically 2D model that we created:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f9409e87c40>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc8ed2938b0>
 
 
 
@@ -701,7 +701,7 @@ Gaussian Simulation approach is applied in this module:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (85 minutes 50.755 seconds)
+   **Total running time of the script:** (27 minutes 42.665 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch3-Interpolations_ch3_1_kriging_interpolation_and_simulation.py:

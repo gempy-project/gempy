@@ -1,8 +1,10 @@
 """
-Moureze
-~~~~~~~
+Geomodeling benchmark: the "Moureze"-Model
+==========================================
 
+This model is part of a geomodeling benchmaring effort. More information (and, hopefully, publication) coming.
 """
+
 import os
 
 # %% 

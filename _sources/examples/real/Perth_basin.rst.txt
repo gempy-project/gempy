@@ -18,7 +18,7 @@
 .. _sphx_glr_examples_real_Perth_basin.py:
 
 
-Perth basin.
+A geological model of the Perth basin, Australia
 ============
 
 .. GENERATED FROM PYTHON SOURCE LINES 5-17
@@ -719,7 +719,7 @@ gp.set_fault_relation(geo_model, fr)
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f82859223e0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc8de705360>
 
 
 
@@ -740,7 +740,7 @@ gp.set_fault_relation(geo_model, fr)
     [-2800.  1000.]
     Active grids: GridTypes.NONE|TOPOGRAPHY|DENSE
 
-    <gempy.core.data.grid_modules.topography.Topography object at 0x7f8285b44160>
+    <gempy.core.data.grid_modules.topography.Topography object at 0x7fc89b430ac0>
 
 
 
@@ -764,7 +764,7 @@ gp.set_fault_relation(geo_model, fr)
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f82859d2740>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fc89b433580>
 
 
 
@@ -829,7 +829,7 @@ gp.set_fault_relation(geo_model, fr)
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f8285936fb0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc89b447790>
 
 
 
@@ -853,7 +853,7 @@ gp.set_fault_relation(geo_model, fr)
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f8285934970>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc89b4463e0>
 
 
 
@@ -877,7 +877,7 @@ gp.set_fault_relation(geo_model, fr)
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f827c75cd90>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc8d9da1f90>
 
 
 
@@ -903,14 +903,14 @@ sphinx_gallery_thumbnail_number = 6
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f8285b71000>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fc8deb95a20>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (3 minutes 32.436 seconds)
+   **Total running time of the script:** (1 minutes 29.880 seconds)
 
 
 .. _sphx_glr_download_examples_real_Perth_basin.py:

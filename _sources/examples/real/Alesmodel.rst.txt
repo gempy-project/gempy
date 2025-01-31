@@ -18,19 +18,19 @@
 .. _sphx_glr_examples_real_Alesmodel.py:
 
 
-Alesmodel: Plotting Sections and Maps
+Model of Ales, France: Plotting Sections and Maps
 ======================================
 
-# %%
-# .. admonition:: Explanation
-#
-#       This model is generally quite unstable and requires float64 precision to find a solution.
-#       The lack of data in one corner for the TRIAS and LIAS series causes the model to bend unrealistically,
-#       eroding the CARBO layer, which disappears in that section. The simple way to solve this is by adding more data in that area.
-#       However, I left it as is because I did not construct the model.
-#
+.. GENERATED FROM PYTHON SOURCE LINES 7-13
 
-.. GENERATED FROM PYTHON SOURCE LINES 16-21
+.. admonition:: Explanation
+
+      This model is generally quite unstable and requires float64 precision to determine a solution.
+      The lack of data in one corner for the TRIAS and LIAS series causes the model to bend unrealistically,
+      eroding the CARBO layer, which disappears in that section. 
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 13-18
 
 .. code-block:: Python
 
@@ -46,11 +46,11 @@ Alesmodel: Plotting Sections and Maps
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 22-23
+.. GENERATED FROM PYTHON SOURCE LINES 19-20
 
 Setting up paths
 
-.. GENERATED FROM PYTHON SOURCE LINES 23-30
+.. GENERATED FROM PYTHON SOURCE LINES 20-27
 
 .. code-block:: Python
 
@@ -68,11 +68,11 @@ Setting up paths
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 31-32
+.. GENERATED FROM PYTHON SOURCE LINES 28-29
 
 Creating the geological model
 
-.. GENERATED FROM PYTHON SOURCE LINES 32-43
+.. GENERATED FROM PYTHON SOURCE LINES 29-40
 
 .. code-block:: Python
 
@@ -94,11 +94,11 @@ Creating the geological model
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 44-45
+.. GENERATED FROM PYTHON SOURCE LINES 41-42
 
 Setting up the section grid
 
-.. GENERATED FROM PYTHON SOURCE LINES 45-52
+.. GENERATED FROM PYTHON SOURCE LINES 42-49
 
 .. code-block:: Python
 
@@ -147,11 +147,11 @@ Setting up the section grid
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 53-54
+.. GENERATED FROM PYTHON SOURCE LINES 50-51
 
 Sorting lithologies
 
-.. GENERATED FROM PYTHON SOURCE LINES 54-67
+.. GENERATED FROM PYTHON SOURCE LINES 51-64
 
 .. code-block:: Python
 
@@ -265,11 +265,11 @@ Sorting lithologies
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 68-69
+.. GENERATED FROM PYTHON SOURCE LINES 65-66
 
 Changing colors
 
-.. GENERATED FROM PYTHON SOURCE LINES 69-73
+.. GENERATED FROM PYTHON SOURCE LINES 66-70
 
 .. code-block:: Python
 
@@ -284,11 +284,11 @@ Changing colors
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 74-75
+.. GENERATED FROM PYTHON SOURCE LINES 71-72
 
 Plotting the 2D model
 
-.. GENERATED FROM PYTHON SOURCE LINES 75-77
+.. GENERATED FROM PYTHON SOURCE LINES 72-74
 
 .. code-block:: Python
 
@@ -308,15 +308,15 @@ Plotting the 2D model
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f8281b872b0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc8deaf1b10>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 78-79
+.. GENERATED FROM PYTHON SOURCE LINES 75-76
 
 Plotting section traces
 
-.. GENERATED FROM PYTHON SOURCE LINES 79-81
+.. GENERATED FROM PYTHON SOURCE LINES 76-78
 
 .. code-block:: Python
 
@@ -336,15 +336,15 @@ Plotting section traces
  .. code-block:: none
 
 
-    <function plot_section_traces at 0x7f82811abf40>
+    <function plot_section_traces at 0x7fc88801c8b0>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 82-83
+.. GENERATED FROM PYTHON SOURCE LINES 79-80
 
 Setting faults
 
-.. GENERATED FROM PYTHON SOURCE LINES 83-93
+.. GENERATED FROM PYTHON SOURCE LINES 80-90
 
 .. code-block:: Python
 
@@ -449,11 +449,11 @@ Setting faults
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 94-95
+.. GENERATED FROM PYTHON SOURCE LINES 91-92
 
 Setting topography from file
 
-.. GENERATED FROM PYTHON SOURCE LINES 95-104
+.. GENERATED FROM PYTHON SOURCE LINES 92-101
 
 .. code-block:: Python
 
@@ -486,15 +486,15 @@ Setting topography from file
 
     Active grids: GridTypes.NONE|SECTIONS|TOPOGRAPHY|OCTREE
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f8281566680>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fc8dfc48760>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 105-106
+.. GENERATED FROM PYTHON SOURCE LINES 102-103
 
 Getting the Carbon Series
 
-.. GENERATED FROM PYTHON SOURCE LINES 106-108
+.. GENERATED FROM PYTHON SOURCE LINES 103-105
 
 .. code-block:: Python
 
@@ -507,11 +507,11 @@ Getting the Carbon Series
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 109-110
+.. GENERATED FROM PYTHON SOURCE LINES 106-107
 
 Modifying interpolation options for better model fitting
 
-.. GENERATED FROM PYTHON SOURCE LINES 110-118
+.. GENERATED FROM PYTHON SOURCE LINES 107-115
 
 .. code-block:: Python
 
@@ -614,11 +614,11 @@ Modifying interpolation options for better model fitting
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 119-120
+.. GENERATED FROM PYTHON SOURCE LINES 116-117
 
 Displaying the structural frame
 
-.. GENERATED FROM PYTHON SOURCE LINES 120-123
+.. GENERATED FROM PYTHON SOURCE LINES 117-120
 
 .. code-block:: Python
 
@@ -791,7 +791,7 @@ Displaying the structural frame
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 124-132
+.. GENERATED FROM PYTHON SOURCE LINES 121-129
 
 Explanation of model characteristics and adjustments
 This model has characteristics that make it difficult to get the right default values:
@@ -802,11 +802,11 @@ To address these issues:
 - Reduce the std of the error parameter in octree refinement, which evaluates fewer voxels but may leave some without refinement
 Enable debugging options to help tune these parameters.
 
-.. GENERATED FROM PYTHON SOURCE LINES 134-135
+.. GENERATED FROM PYTHON SOURCE LINES 131-132
 
 Setting verbose and condition number options for debugging
 
-.. GENERATED FROM PYTHON SOURCE LINES 135-138
+.. GENERATED FROM PYTHON SOURCE LINES 132-135
 
 .. code-block:: Python
 
@@ -820,13 +820,13 @@ Setting verbose and condition number options for debugging
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 139-142
+.. GENERATED FROM PYTHON SOURCE LINES 136-139
 
 Observations and parameter adjustments
 The octree refinement is making the octree grid almost dense, and smaller chunks are needed to avoid running out of memory.
 Adjusting parameters accordingly:
 
-.. GENERATED FROM PYTHON SOURCE LINES 142-146
+.. GENERATED FROM PYTHON SOURCE LINES 139-143
 
 .. code-block:: Python
 
@@ -841,11 +841,11 @@ Adjusting parameters accordingly:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 147-148
+.. GENERATED FROM PYTHON SOURCE LINES 144-145
 
 Computing the model with the adjusted settings
 
-.. GENERATED FROM PYTHON SOURCE LINES 148-158
+.. GENERATED FROM PYTHON SOURCE LINES 145-155
 
 .. code-block:: Python
 
@@ -1082,11 +1082,11 @@ Computing the model with the adjusted settings
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 159-160
+.. GENERATED FROM PYTHON SOURCE LINES 156-157
 
 Plotting the 2D model with and without topography
 
-.. GENERATED FROM PYTHON SOURCE LINES 160-164
+.. GENERATED FROM PYTHON SOURCE LINES 157-161
 
 .. code-block:: Python
 
@@ -1126,19 +1126,17 @@ Plotting the 2D model with and without topography
 
  .. code-block:: none
 
-    /Users/flow/opt/anaconda3/envs/gempy3_pre/lib/python3.10/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:105: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
-      warnings.warn(
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f826113e740>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc898c228f0>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 165-167
+.. GENERATED FROM PYTHON SOURCE LINES 162-164
 
 Setting thumbnail number for Sphinx-Gallery
 sphinx_gallery_thumbnail_number = -1
 
-.. GENERATED FROM PYTHON SOURCE LINES 167-168
+.. GENERATED FROM PYTHON SOURCE LINES 164-165
 
 .. code-block:: Python
 
@@ -1157,14 +1155,14 @@ sphinx_gallery_thumbnail_number = -1
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f827b91f310>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fc8aa811180>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (3 minutes 14.428 seconds)
+   **Total running time of the script:** (2 minutes 1.241 seconds)
 
 
 .. _sphx_glr_download_examples_real_Alesmodel.py:

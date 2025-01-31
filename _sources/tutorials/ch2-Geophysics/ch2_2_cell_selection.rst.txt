@@ -21,31 +21,49 @@
 2.2: Centered Grid.
 ^^^^^^^^^^^^^^^^^^^
 
+.. GENERATED FROM PYTHON SOURCE LINES 8-15
+
+Concept of a measurement-centered grid
+""""""""""""""""""""""""""""""""""""""
+
 Geophysics Preprocessing builds on the centered grid
 (https://github.com/cgre-aachen/gempy/blob/master/notebooks/tutorials/ch1-3-Grids.ipynb)
 to precompute the constant part of forward physical computations as for
 example gravity:
 
-.. math::
+.. GENERATED FROM PYTHON SOURCE LINES 16-37
 
-    F_z = G_{\rho} ||| x \ln(y+r) + y \ln (x+r) - z \arctan (\frac{x y}{z r}) |^{x_2}_{x_1}|^{y_2}_{y_1}|^{
-    z_2}_{z_1}
+.. code-block:: Python
 
 
-where we can compress the grid dependent terms as
+    # .. math::
 
-.. math::
+    #     F_z = G_{\\rho} ||| x \\ln(y+r) + y \\ln (x+r) - z \\arctan (\\frac{x y}{z r}) |^{x_2}_{x_1}|^{y_2}_{y_1}|^{
+    #     z_2}_{z_1}
 
-    t_z = ||| x \ln (y+r) + y \ln (x+r)-z \arctan ( \frac{x y}{z r} ) |^{x_2}_{x_1}|^{y_2}_{y_1}|^{z_2}_{z_1}
 
-By doing this decomposition an keeping the grid constant we can compute
-the forward gravity by simply operate:
+    # where we can compress the grid dependent terms as
 
-.. math::
+    # .. math::
 
-    F_z = G_{\rho} \cdot t_z
+    #     t_z = ||| x \ln (y+r) + y \ln (x+r)-z \\arctan ( \\frac{x y}{z r} ) |^{x_2}_{x_1}|^{y_2}_{y_1}|^{z_2}_{z_1}
 
-.. GENERATED FROM PYTHON SOURCE LINES 33-45
+    # By doing this decomposition an keeping the grid constant we can compute
+    # the forward gravity by simply operate:
+
+    # .. math::
+
+    #     F_z = G_{\\rho} \cdot t_z
+
+
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 38-50
 
 .. code-block:: Python
 
@@ -68,7 +86,7 @@ the forward gravity by simply operate:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 46-52
+.. GENERATED FROM PYTHON SOURCE LINES 51-57
 
 .. code-block:: Python
 
@@ -85,13 +103,13 @@ the forward gravity by simply operate:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 53-56
+.. GENERATED FROM PYTHON SOURCE LINES 58-61
 
 ``create_irregular_grid_kernel`` will create a constant kernel around
 the point 0,0,0. This kernel will be what we use for each device.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 58-60
+.. GENERATED FROM PYTHON SOURCE LINES 63-65
 
 .. code-block:: Python
 
@@ -116,13 +134,13 @@ the point 0,0,0. This kernel will be what we use for each device.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 61-64
+.. GENERATED FROM PYTHON SOURCE LINES 66-69
 
 :math:`t_z` is only dependent on distance and therefore we can use the
 kerenel created on the previous cell
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 66-69
+.. GENERATED FROM PYTHON SOURCE LINES 71-74
 
 .. code-block:: Python
 
@@ -143,14 +161,14 @@ kerenel created on the previous cell
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 70-74
+.. GENERATED FROM PYTHON SOURCE LINES 75-79
 
 To compute tz we also need the edges of each voxel. The distance to the
 edges are stored on ``kernel_dxyz_left`` and ``kernel_dxyz_right``. We
 can plot all the data as follows:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 76-79
+.. GENERATED FROM PYTHON SOURCE LINES 81-84
 
 .. code-block:: Python
 
@@ -164,7 +182,7 @@ can plot all the data as follows:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 80-109
+.. GENERATED FROM PYTHON SOURCE LINES 85-114
 
 .. code-block:: Python
 
@@ -209,12 +227,12 @@ can plot all the data as follows:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 110-112
+.. GENERATED FROM PYTHON SOURCE LINES 115-117
 
 Just the quiver:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 114-122
+.. GENERATED FROM PYTHON SOURCE LINES 119-127
 
 .. code-block:: Python
 
@@ -238,12 +256,12 @@ Just the quiver:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 123-125
+.. GENERATED FROM PYTHON SOURCE LINES 128-130
 
 Remember this is happening always in 3D:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 127-135
+.. GENERATED FROM PYTHON SOURCE LINES 132-140
 
 .. code-block:: Python
 
@@ -270,7 +288,7 @@ Remember this is happening always in 3D:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 0.280 seconds)
+   **Total running time of the script:** (0 minutes 0.288 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch2-Geophysics_ch2_2_cell_selection.py:

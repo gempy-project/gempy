@@ -207,6 +207,18 @@ gpv.plot_2d(geo_model, section_names=['section1', 'section2'], show_data=False)
 # Video tutorial 6: 3D visualization
 # """"""""""""""""""""""""""""""""""
 
+# %%
+#.. raw:: html
+#
+#    <iframe width="560" height="315" 
+#            src="https://www.youtube.com/embed/MHEUQpVeSoQ" 
+#            title="YouTube video player" 
+#            frameborder="0" 
+#            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+#            allowfullscreen>
+#    </iframe>
+
+
 # Display the result in 3d
 gpv.plot_3d(geo_model, show_lith=True, show_boundaries=True, ve=None)
 
@@ -222,6 +234,19 @@ back_transformed_vertices = geo_model.input_transform.apply_inverse(geo_model.so
 # %%
 # Video tutorial 7: Topography
 # """""""""""""""""""""""""""""""
+
+
+# %%
+#.. raw:: html
+#
+#    <iframe width="560" height="315" 
+#            src="https://www.youtube.com/embed/FtAbUhwhiXE" 
+#            title="YouTube video player" 
+#            frameborder="0" 
+#            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+#            allowfullscreen>
+#    </iframe>
+
 
 # Setting a randomly generated topography
 import numpy as np

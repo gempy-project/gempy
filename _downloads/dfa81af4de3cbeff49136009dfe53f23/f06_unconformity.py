@@ -2,6 +2,8 @@
 Model 6 - Unconformity
 ======================
 
+Modeling unconformities through the combination of scalar fields
+
 This script creates an unconformity cutting an anticline structure using GemPy,
 an open-source, Python-based library for building implicit geological models.
 """

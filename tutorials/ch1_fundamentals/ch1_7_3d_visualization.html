@@ -51,7 +51,7 @@ to download the full example code.</p>
 <p>Importing GemPy</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gempy</span> <span class="k">as</span> <span class="nn">gp</span>
 <span class="kn">import</span> <span class="nn">gempy_viewer</span> <span class="k">as</span> <span class="nn">gpv</span>
-<span class="kn">from</span> <span class="nn">gempy</span> <span class="kn">import</span> <a href="../../GemPy API/gempy.generate_example_model.html#gempy.generate_example_model" title="gempy.generate_example_model" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">generate_example_model</span></a>
+<span class="kn">from</span> <span class="nn">gempy</span> <span class="kn">import</span> <span class="n">generate_example_model</span>
 <span class="kn">from</span> <span class="nn">gempy.core.data.enumerators</span> <span class="kn">import</span> <span class="n">ExampleModel</span>
 
 <span class="c1"># sphinx_gallery_thumbnail_number = -1</span>
@@ -59,9 +59,9 @@ to download the full example code.</p>
 </div>
 <section id="loading-an-example-geomodel">
 <h2>Loading an example geomodel<a class="headerlink" href="#loading-an-example-geomodel" title="Link to this heading">¶</a></h2>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a> <span class="o">=</span> <a href="../../GemPy API/gempy.generate_example_model.html#gempy.generate_example_model" title="gempy.generate_example_model" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">generate_example_model</span></a><span class="p">(</span><span class="n">ExampleModel</span><span class="o">.</span><span class="n">GRABEN</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">geo_model</span> <span class="o">=</span> <span class="n">generate_example_model</span><span class="p">(</span><span class="n">ExampleModel</span><span class="o">.</span><span class="n">GRABEN</span><span class="p">)</span>
 
-<a href="../../GemPy API/gempy.compute_model.html#gempy.compute_model" title="gempy.compute_model" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span></a><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">)</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span><span class="p">(</span><span class="n">geo_model</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Surface points hash:  8c72af50fc56389b620c6458a6af23915b121b5e655b3ce179a790636dc529a5
@@ -87,7 +87,7 @@ Chunking done: 34 chunks
 <section id="data-plot">
 <h2>Data plot<a class="headerlink" href="#data-plot" title="Link to this heading">¶</a></h2>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_3d</span><span class="p">(</span>
-    <span class="n">model</span><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span>
+    <span class="n">model</span><span class="o">=</span><span class="n">geo_model</span><span class="p">,</span>
     <span class="n">show_surfaces</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">show_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">show_lith</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -95,16 +95,16 @@ Chunking done: 34 chunks
 <span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_ch1_7_3d_visualization_001.png" srcset="../../_images/sphx_glr_ch1_7_3d_visualization_001.png" alt="ch1 7 3d visualization" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fda58f593f0&gt;
+<img src="../../_images/sphx_glr_ch1_7_3d_visualization_001.png" srcset="../../_images/sphx_glr_ch1_7_3d_visualization_001.png" alt="ch1 7 3d visualization" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fc8ec5c0f40&gt;
 </pre></div>
 </div>
 </section>
 <section id="geomodel-plot">
 <h2>Geomodel plot<a class="headerlink" href="#geomodel-plot" title="Link to this heading">¶</a></h2>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_3d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_3d</span><span class="p">(</span><span class="n">geo_model</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_ch1_7_3d_visualization_002.png" srcset="../../_images/sphx_glr_ch1_7_3d_visualization_002.png" alt="ch1 7 3d visualization" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fda58f58220&gt;
+<img src="../../_images/sphx_glr_ch1_7_3d_visualization_002.png" srcset="../../_images/sphx_glr_ch1_7_3d_visualization_002.png" alt="ch1 7 3d visualization" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fc8ed2e5d20&gt;
 </pre></div>
 </div>
 </section>
@@ -117,23 +117,27 @@ This makes it an excellent tool for sharing your models with others and viewing 
 To upload a model to LiquidEarth, you must have an account and a user token. Once your model is uploaded,
 you can easily share the link with anyone.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">link</span> <span class="o">=</span> <span class="n">gpv</span><span class="o">.</span><span class="n">plot_to_liquid_earth</span><span class="p">(</span>
-    <a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span>
-    <span class="n">space_name</span><span class="o">=</span><span class="s2">&quot;GemPy&quot;</span><span class="p">,</span>
+    <span class="n">geo_model</span><span class="o">=</span><span class="n">geo_model</span><span class="p">,</span>
+    <span class="n">space_name</span><span class="o">=</span><span class="s2">&quot;[PUBLIC] GemPy Tutorial 1.7: 3-D Visualization&quot;</span><span class="p">,</span>
     <span class="n">file_name</span><span class="o">=</span><span class="s2">&quot;gempy_model&quot;</span><span class="p">,</span>
-    <span class="n">user_token</span><span class="o">=</span><span class="s2">&quot;le-200fc6e0a15b4663b74dde7125493958lUdjsI7XqKMCFFDS1Nk01mnCqNHZ7nlti44ezWtqOYA&quot;</span><span class="p">,</span>  <span class="c1"># If None, it will try to grab it from the environment</span>
+    <span class="n">user_token</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># If None, it will try to grab it from the environment</span>
     <span class="n">grab_link</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Generated Link: </span><span class="si">{</span><span class="n">link</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Error uploading files: too many values to unpack (expected 2)
-Generated Link: https://liquidearth.app.link/8d3223a5-3b2e-4189-a7d6-b388e91d7287
+<div class="sphx-glr-script-out highlight-pytb notranslate"><div class="highlight"><pre><span></span><span class="gt">Traceback (most recent call last):</span>
+  File <span class="nb">&quot;/Users/flow/git/gempy/examples/tutorials/ch1_fundamentals/ch1_7_3d_visualization.py&quot;</span>, line <span class="m">67</span>, in <span class="n">&lt;module&gt;</span>
+<span class="w">    </span><span class="n">link</span> <span class="o">=</span> <span class="n">gpv</span><span class="o">.</span><span class="n">plot_to_liquid_earth</span><span class="p">(</span>
+  File <span class="nb">&quot;/Users/flow/opt/anaconda3/envs/gempy3_pre/lib/python3.10/site-packages/gempy_viewer/API/_plot_LiquidEarth.py&quot;</span>, line <span class="m">19</span>, in <span class="n">plot_to_liquid_earth</span>
+<span class="w">    </span><span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No user token provided and no token found in the environment&quot;</span><span class="p">)</span>
+<span class="gr">ValueError</span>: <span class="n">No user token provided and no token found in the environment</span>
 </pre></div>
 </div>
 <p>Now we can use <a class="reference external" href="https://liquidearth.app.link/gempy-promo">this link</a> to visualize the model in Liquid Earth.</p>
 <img alt="_static/gp_model_in_le.png" src="_static/gp_model_in_le.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (4 minutes 26.246 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (3 minutes 49.146 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-tutorials-ch1-fundamentals-ch1-7-3d-visualization-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/86436bd56e7c286070a7cef3a90c285e/ch1_7_3d_visualization.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">ch1_7_3d_visualization.ipynb</span></code></a></p>
@@ -230,7 +234,7 @@ Generated Link: https://liquidearth.app.link/8d3223a5-3b2e-4189-a7d6-b388e91d728
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &#169;2017-2024, Gempy Developers.
+      &#169;2017-2025, Gempy Developers.
       
       |
       Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>

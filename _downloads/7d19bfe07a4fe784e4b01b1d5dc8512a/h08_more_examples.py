@@ -2,6 +2,8 @@
 GemPy Models - Some More Complex Examples
 -----------------------------------------
 
+A set of more complex examples
+
 """
 
 # %%

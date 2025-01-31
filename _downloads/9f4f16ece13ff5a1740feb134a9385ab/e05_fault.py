@@ -2,6 +2,8 @@
 Model 5 - Fault
 ===============
 
+Modeling a fault
+
 This script demonstrates how to create a simple fault model with constant offset using GemPy,
 a Python-based, open-source library for implicit geological modeling.
 """
