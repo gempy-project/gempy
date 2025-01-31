@@ -67,19 +67,19 @@ like. Then we load our data points from csv files and set the series and
 order the formations (stratigraphic pile).</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">data_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s1">&#39;../../&#39;</span><span class="p">)</span>
 
-<a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">:</span> <a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class"><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GeoModel</span></a> <span class="o">=</span> <a href="../../GemPy API/gempy.create_geomodel.html#gempy.create_geomodel" title="gempy.create_geomodel" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">create_geomodel</span></a><span class="p">(</span>
+<span class="n">geo_model</span><span class="p">:</span> <span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GeoModel</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">create_geomodel</span><span class="p">(</span>
     <span class="n">project_name</span><span class="o">=</span><span class="s1">&#39;Model_Tutorial6&#39;</span><span class="p">,</span>
     <span class="n">extent</span><span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3000</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2000</span><span class="p">],</span>
     <span class="n">resolution</span><span class="o">=</span><span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">67</span><span class="p">],</span>
     <span class="n">refinement</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="c1"># * For this model is better not to use octrees because we want to see what is happening in the scalar fields</span>
-    <span class="n">importer_helper</span><span class="o">=</span><a href="../../Helper Classes/gempy.core.data.ImporterHelper.html#gempy.core.data.ImporterHelper" title="gempy.core.data.ImporterHelper" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class"><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">ImporterHelper</span></a><span class="p">(</span>
+    <span class="n">importer_helper</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">ImporterHelper</span><span class="p">(</span>
         <span class="n">path_to_orientations</span><span class="o">=</span><span class="n">data_path</span> <span class="o">+</span> <span class="s2">&quot;/data/input_data/tut_chapter6/ch6_data_fol.csv&quot;</span><span class="p">,</span>
         <span class="n">path_to_surface_points</span><span class="o">=</span><span class="n">data_path</span> <span class="o">+</span> <span class="s2">&quot;/data/input_data/tut_chapter6/ch6_data_interf.csv&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 <span class="p">)</span>
 
-<a href="../../GemPy API/gempy.map_stack_to_surfaces.html#gempy.map_stack_to_surfaces" title="gempy.map_stack_to_surfaces" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">map_stack_to_surfaces</span></a><span class="p">(</span>
-    <span class="n">gempy_model</span><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">map_stack_to_surfaces</span><span class="p">(</span>
+    <span class="n">gempy_model</span><span class="o">=</span><span class="n">geo_model</span><span class="p">,</span>
     <span class="n">mapping_object</span><span class="o">=</span>
     <span class="p">{</span>
         <span class="s2">&quot;fault&quot;</span><span class="p">:</span> <span class="s2">&quot;Fault&quot;</span><span class="p">,</span>
@@ -87,19 +87,19 @@ order the formations (stratigraphic pile).</p>
     <span class="p">}</span>
 <span class="p">)</span>
 
-<a href="../../GemPy API/gempy.set_is_fault.html#gempy.set_is_fault" title="gempy.set_is_fault" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">set_is_fault</span></a><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;fault&#39;</span><span class="p">])</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">set_is_fault</span><span class="p">(</span><span class="n">geo_model</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;fault&#39;</span><span class="p">])</span>
 
-<a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="o">.</span><span class="n">interpolation_options</span><span class="o">.</span><span class="n">mesh_extraction</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="n">sol</span> <span class="o">=</span> <a href="../../GemPy API/gempy.compute_model.html#gempy.compute_model" title="gempy.compute_model" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span></a><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">)</span>
+<span class="n">geo_model</span><span class="o">.</span><span class="n">interpolation_options</span><span class="o">.</span><span class="n">mesh_extraction</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">sol</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span><span class="p">(</span><span class="n">geo_model</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting Backend To: AvailableBackends.numpy
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><span class="n">geo_model</span><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_ch4-1-Topology_001.png" srcset="../../_images/sphx_glr_ch4-1-Topology_001.png" alt="Cell Number: 5 Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fda693a5ba0&gt;
+<img src="../../_images/sphx_glr_ch4-1-Topology_001.png" srcset="../../_images/sphx_glr_ch4-1-Topology_001.png" alt="Cell Number: 5 Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc8dec3c070&gt;
 </pre></div>
 </div>
 </section>
@@ -118,7 +118,7 @@ model (x,y,z coordinates of their center)</p></li>
 <li><p>two look-up-tables from the lithology id’s to the node labels, and
 vice versa</p></li>
 </ul>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">edges</span><span class="p">,</span> <span class="n">centroids</span> <span class="o">=</span> <span class="n">tp</span><span class="o">.</span><span class="n">compute_topology</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">edges</span><span class="p">,</span> <span class="n">centroids</span> <span class="o">=</span> <span class="n">tp</span><span class="o">.</span><span class="n">compute_topology</span><span class="p">(</span><span class="n">geo_model</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The first output of the topology function is the <code class="docutils literal notranslate"><span class="pre">set</span></code> of edges
@@ -150,18 +150,18 @@ over a model section:</p>
 <section id="d-visualization-of-the-topology-graph">
 <h1>2-D Visualization of the Topology Graph<a class="headerlink" href="#d-visualization-of-the-topology-graph" title="Link to this heading">¶</a></h1>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_topology</span><span class="p">(</span>
-    <span class="n">regular_grid</span><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">regular_grid</span><span class="p">,</span>
+    <span class="n">regular_grid</span><span class="o">=</span><span class="n">geo_model</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">regular_grid</span><span class="p">,</span>
     <span class="n">edges</span><span class="o">=</span><span class="n">edges</span><span class="p">,</span>
     <span class="n">centroids</span><span class="o">=</span><span class="n">centroids</span>
 <span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_ch4-1-Topology_002.png" srcset="../../_images/sphx_glr_ch4-1-Topology_002.png" alt="ch4 1 Topology" class = "sphx-glr-single-img"/><div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">plot_2d</span><span class="p">:</span> <span class="n">Plot2D</span> <span class="o">=</span> <span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<img src="../../_images/sphx_glr_ch4-1-Topology_002.png" srcset="../../_images/sphx_glr_ch4-1-Topology_002.png" alt="ch4 1 Topology" class = "sphx-glr-single-img"/><div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">plot_2d</span><span class="p">:</span> <span class="n">Plot2D</span> <span class="o">=</span> <span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><span class="n">geo_model</span><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">gpv</span><span class="o">.</span><span class="n">plot_topology</span><span class="p">(</span>
-    <span class="n">regular_grid</span><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">regular_grid</span><span class="p">,</span>
+    <span class="n">regular_grid</span><span class="o">=</span><span class="n">geo_model</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">regular_grid</span><span class="p">,</span>
     <span class="n">edges</span><span class="o">=</span><span class="n">edges</span><span class="p">,</span>
     <span class="n">centroids</span><span class="o">=</span><span class="n">centroids</span><span class="p">,</span>
-    <span class="n">ax</span><span class="o">=</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">plot_2d</span><span class="o">.</span><span class="n">axes</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">ax</span><span class="o">=</span><span class="n">plot_2d</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -170,8 +170,8 @@ over a model section:</p>
 <h1>Adjacency Matrix<a class="headerlink" href="#adjacency-matrix" title="Link to this heading">¶</a></h1>
 <p>Another way to encode and visualize the geomodel topology is using an
 adjacency graph:</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">M</span></a> <span class="o">=</span> <span class="n">tp</span><span class="o">.</span><span class="n">get_adjacency_matrix</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">centroids</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">M</span></a><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">M</span> <span class="o">=</span> <span class="n">tp</span><span class="o">.</span><span class="n">get_adjacency_matrix</span><span class="p">(</span><span class="n">geo_model</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">centroids</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">M</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[[False  True False False False  True  True  True False False]
@@ -186,7 +186,7 @@ adjacency graph:</p>
  [False False  True  True  True False False False  True False]]
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">tp</span><span class="o">.</span><span class="n">plot_adjacency_matrix</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">M</span></a><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">tp</span><span class="o">.</span><span class="n">plot_adjacency_matrix</span><span class="p">(</span><span class="n">geo_model</span><span class="p">,</span> <span class="n">M</span><span class="p">)</span>
 </pre></div>
 </div>
 <img src="../../_images/sphx_glr_ch4-1-Topology_004.png" srcset="../../_images/sphx_glr_ch4-1-Topology_004.png" alt="Topology Adjacency Matrix" class = "sphx-glr-single-img"/></section>
@@ -195,7 +195,7 @@ adjacency graph:</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">topology</span></code> asset provides several look-up tables to work with the
 unique geobody topology id’s.</p>
 <p>Mapping node id’s back to lithology / surface id’s:</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">lith_lot</span> <span class="o">=</span> <span class="n">tp</span><span class="o">.</span><span class="n">get_lot_node_to_lith_id</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">centroids</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">lith_lot</span> <span class="o">=</span> <span class="n">tp</span><span class="o">.</span><span class="n">get_lot_node_to_lith_id</span><span class="p">(</span><span class="n">geo_model</span><span class="p">,</span> <span class="n">centroids</span><span class="p">)</span>
 <span class="n">lith_lot</span>
 </pre></div>
 </div>
@@ -203,7 +203,7 @@ unique geobody topology id’s.</p>
 </pre></div>
 </div>
 <p>Figuring out which nodes are in which fault block:</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">fault_lot</span> <span class="o">=</span> <span class="n">tp</span><span class="o">.</span><span class="n">get_lot_node_to_fault_block</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">centroids</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">fault_lot</span> <span class="o">=</span> <span class="n">tp</span><span class="o">.</span><span class="n">get_lot_node_to_fault_block</span><span class="p">(</span><span class="n">geo_model</span><span class="p">,</span> <span class="n">centroids</span><span class="p">)</span>
 <span class="n">fault_lot</span>
 </pre></div>
 </div>
@@ -222,22 +222,22 @@ id’s:</p>
 <section id="detailed-node-labeling">
 <h1>Detailed node labeling<a class="headerlink" href="#detailed-node-labeling" title="Link to this heading">¶</a></h1>
 <p>sphinx_gallery_thumbnail_number = 4</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">dedges</span><span class="p">,</span> <span class="n">dcentroids</span> <span class="o">=</span> <span class="n">tp</span><span class="o">.</span><span class="n">get_detailed_labels</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">centroids</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">dedges</span><span class="p">,</span> <span class="n">dcentroids</span> <span class="o">=</span> <span class="n">tp</span><span class="o">.</span><span class="n">get_detailed_labels</span><span class="p">(</span><span class="n">geo_model</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">centroids</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">plot_2d</span><span class="p">:</span> <span class="n">Plot2D</span> <span class="o">=</span> <span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">plot_2d</span><span class="p">:</span> <span class="n">Plot2D</span> <span class="o">=</span> <span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><span class="n">geo_model</span><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">gpv</span><span class="o">.</span><span class="n">plot_topology</span><span class="p">(</span>
-    <span class="n">regular_grid</span><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">regular_grid</span><span class="p">,</span>
+    <span class="n">regular_grid</span><span class="o">=</span><span class="n">geo_model</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">regular_grid</span><span class="p">,</span>
     <span class="n">edges</span><span class="o">=</span><span class="n">dedges</span><span class="p">,</span>
     <span class="n">centroids</span><span class="o">=</span><span class="n">dcentroids</span><span class="p">,</span>
-    <span class="n">ax</span><span class="o">=</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">plot_2d</span><span class="o">.</span><span class="n">axes</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">ax</span><span class="o">=</span><span class="n">plot_2d</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 <img src="../../_images/sphx_glr_ch4-1-Topology_005.png" srcset="../../_images/sphx_glr_ch4-1-Topology_005.png" alt="Cell Number: 5 Direction: y" class = "sphx-glr-single-img"/><div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">dedges</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{(&#39;3_1&#39;, &#39;4_1&#39;), (&#39;3_0&#39;, &#39;4_0&#39;), (&#39;4_0&#39;, &#39;5_1&#39;), (&#39;2_1&#39;, &#39;3_1&#39;), (&#39;5_0&#39;, &#39;6_1&#39;), (&#39;2_0&#39;, &#39;4_1&#39;), (&#39;6_0&#39;, &#39;6_1&#39;), (&#39;2_0&#39;, &#39;3_0&#39;), (&#39;4_1&#39;, &#39;5_1&#39;), (&#39;2_0&#39;, &#39;2_1&#39;), (&#39;3_0&#39;, &#39;5_1&#39;), (&#39;5_1&#39;, &#39;6_1&#39;), (&#39;4_0&#39;, &#39;6_1&#39;), (&#39;3_0&#39;, &#39;4_1&#39;), (&#39;5_0&#39;, &#39;6_0&#39;), (&#39;2_0&#39;, &#39;3_1&#39;), (&#39;4_0&#39;, &#39;5_0&#39;)}
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{(&#39;3_1&#39;, &#39;4_1&#39;), (&#39;3_0&#39;, &#39;5_1&#39;), (&#39;2_0&#39;, &#39;4_1&#39;), (&#39;4_0&#39;, &#39;5_0&#39;), (&#39;4_0&#39;, &#39;5_1&#39;), (&#39;4_0&#39;, &#39;6_1&#39;), (&#39;2_0&#39;, &#39;3_0&#39;), (&#39;3_0&#39;, &#39;4_1&#39;), (&#39;2_0&#39;, &#39;3_1&#39;), (&#39;3_0&#39;, &#39;4_0&#39;), (&#39;5_0&#39;, &#39;6_0&#39;), (&#39;5_1&#39;, &#39;6_1&#39;), (&#39;4_1&#39;, &#39;5_1&#39;), (&#39;6_0&#39;, &#39;6_1&#39;), (&#39;2_0&#39;, &#39;2_1&#39;), (&#39;5_0&#39;, &#39;6_1&#39;), (&#39;2_1&#39;, &#39;3_1&#39;)}
 </pre></div>
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">dcentroids</span>
@@ -263,10 +263,10 @@ use of the detailed labeling and the <code class="docutils literal notranslate">
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">tp</span><span class="o">.</span><span class="n">get_adjacencies</span><span class="p">(</span><span class="n">dedges</span><span class="p">,</span> <span class="s2">&quot;5_1&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;4_0&#39;, &#39;6_1&#39;, &#39;4_1&#39;, &#39;3_0&#39;}
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;6_1&#39;, &#39;3_0&#39;, &#39;4_0&#39;, &#39;4_1&#39;}
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.272 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.163 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-tutorials-ch4-topology-ch4-1-topology-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/b62f53be8911417b868e63ee9b97b42c/ch4-1-Topology.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">ch4-1-Topology.ipynb</span></code></a></p>
@@ -362,7 +362,7 @@ use of the detailed labeling and the <code class="docutils literal notranslate">
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &#169;2017-2024, Gempy Developers.
+      &#169;2017-2025, Gempy Developers.
       
       |
       Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>

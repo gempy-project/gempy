@@ -15,7 +15,7 @@ Some simple geometries.
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This script demonstrates how to create a basic model of horizontally stacked layers using GemPy, a Python-based, open-source library for implicit geological modeling.">
+    <div class="sphx-glr-thumbcontainer" tooltip="A simple example with horizontal layers">
 
 .. only:: html
 
@@ -26,13 +26,13 @@ Some simple geometries.
 
 .. raw:: html
 
-      <div class="sphx-glr-thumbnail-title">Model 1 - Horizontal stratigraphic</div>
+      <div class="sphx-glr-thumbnail-title">Model 1 - Horizontal stratigraphy</div>
     </div>
 
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This script demonstrates how to create a geological model of an anticline structure using GemPy, a Python-based, open-source library for implicit geological modeling.">
+    <div class="sphx-glr-thumbcontainer" tooltip="Simple model of an anticline">
 
 .. only:: html
 
@@ -49,7 +49,7 @@ Some simple geometries.
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This script demonstrates how to create a geological model of a recumbent fold using GemPy, a Python-based, open-source library for implicit geological modeling.">
+    <div class="sphx-glr-thumbcontainer" tooltip="Modeling a recumbent fold">
 
 .. only:: html
 
@@ -66,7 +66,7 @@ Some simple geometries.
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This script demonstrates how to create a geological model with a layer of varying thickness (pinchout) using GemPy, a Python-based, open-source library for implicit geological modeling.">
+    <div class="sphx-glr-thumbcontainer" tooltip="Modeling of a pinchout: combining scalar fields">
 
 .. only:: html
 
@@ -83,7 +83,7 @@ Some simple geometries.
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This script demonstrates how to create a simple fault model with constant offset using GemPy, a Python-based, open-source library for implicit geological modeling.">
+    <div class="sphx-glr-thumbcontainer" tooltip="Modeling a fault">
 
 .. only:: html
 
@@ -100,7 +100,7 @@ Some simple geometries.
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This script creates an unconformity cutting an anticline structure using GemPy, an open-source, Python-based library for building implicit geological models.">
+    <div class="sphx-glr-thumbcontainer" tooltip="Modeling unconformities through the combination of scalar fields">
 
 .. only:: html
 
@@ -117,7 +117,7 @@ Some simple geometries.
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This script creates a folded domain featuring an unconformity and a fault using GemPy, an open-source, Python-based library for building implicit geological models.">
+    <div class="sphx-glr-thumbcontainer" tooltip="Combining faults and unconformities">
 
 .. only:: html
 
@@ -134,7 +134,7 @@ Some simple geometries.
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="GemPy Models - Some More Complex Examples">
+    <div class="sphx-glr-thumbcontainer" tooltip="A set of more complex examples">
 
 .. only:: html
 

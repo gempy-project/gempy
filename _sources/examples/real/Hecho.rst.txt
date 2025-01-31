@@ -18,12 +18,15 @@
 .. _sphx_glr_examples_real_Hecho.py:
 
 
-Hecho
-~~~~~
+Geomodeling benchmark: the "Hecho"-Model
+========
 
-.. GENERATED FROM PYTHON SOURCE LINES 6-9
+This model is part of a geomodeling benchmaring effort. More information (and, hopefully, publication) coming.
+
+.. GENERATED FROM PYTHON SOURCE LINES 7-11
 
 .. code-block:: Python
+
 
     import os
 
@@ -35,7 +38,7 @@ Hecho
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 10-18
+.. GENERATED FROM PYTHON SOURCE LINES 12-20
 
 .. code-block:: Python
 
@@ -54,7 +57,7 @@ Hecho
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 19-25
+.. GENERATED FROM PYTHON SOURCE LINES 21-27
 
 Loading surface points from repository:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -63,7 +66,7 @@ With pandas we can do it directly from the web and with the right args
 we can directly tidy the data in gempy style:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 27-56
+.. GENERATED FROM PYTHON SOURCE LINES 29-58
 
 .. code-block:: Python
 
@@ -183,12 +186,12 @@ we can directly tidy the data in gempy style:
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 57-59
+.. GENERATED FROM PYTHON SOURCE LINES 59-61
 
 Now we do the same with the orientations:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 61-83
+.. GENERATED FROM PYTHON SOURCE LINES 63-85
 
 .. code-block:: Python
 
@@ -221,7 +224,7 @@ Now we do the same with the orientations:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 84-93
+.. GENERATED FROM PYTHON SOURCE LINES 86-95
 
 Data initialization:
 ~~~~~~~~~~~~~~~~~~~~
@@ -233,7 +236,7 @@ Suggested resolution: 0.05m (grid size 321 x 21 x 91)
 
 %%
 
-.. GENERATED FROM PYTHON SOURCE LINES 93-131
+.. GENERATED FROM PYTHON SOURCE LINES 95-133
 
 .. code-block:: Python
 
@@ -313,14 +316,14 @@ Suggested resolution: 0.05m (grid size 321 x 21 x 91)
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 132-136
+.. GENERATED FROM PYTHON SOURCE LINES 134-138
 
 We need an orientation per series/fault. The faults does not have
 orientation so the easiest is to create an orientation from the surface
 points availablle:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 138-153
+.. GENERATED FROM PYTHON SOURCE LINES 140-155
 
 .. code-block:: Python
 
@@ -346,12 +349,12 @@ points availablle:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 154-156
+.. GENERATED FROM PYTHON SOURCE LINES 156-158
 
 Now we can see how the data looks so far:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 158-160
+.. GENERATED FROM PYTHON SOURCE LINES 160-162
 
 .. code-block:: Python
 
@@ -371,16 +374,16 @@ Now we can see how the data looks so far:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f827c8317e0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc89b431f60>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 161-163
+.. GENERATED FROM PYTHON SOURCE LINES 163-165
 
 By default all surfaces belong to one unique series.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 165-167
+.. GENERATED FROM PYTHON SOURCE LINES 167-169
 
 .. code-block:: Python
 
@@ -479,12 +482,12 @@ By default all surfaces belong to one unique series.
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 168-170
+.. GENERATED FROM PYTHON SOURCE LINES 170-172
 
 We will need to separate with surface belong to each series:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 172-177
+.. GENERATED FROM PYTHON SOURCE LINES 174-179
 
 .. code-block:: Python
 
@@ -607,18 +610,18 @@ We will need to separate with surface belong to each series:
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 178-181
+.. GENERATED FROM PYTHON SOURCE LINES 180-183
 
 However if we want the faults to offset the “Default series”, they will
 need to be more recent (higher on the pile). We can modify the order by:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 185-187
+.. GENERATED FROM PYTHON SOURCE LINES 187-189
 
 Lastly, so far we did not specify which series/faults are actula faults:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 189-194
+.. GENERATED FROM PYTHON SOURCE LINES 191-196
 
 .. code-block:: Python
 
@@ -741,14 +744,14 @@ Lastly, so far we did not specify which series/faults are actula faults:
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 195-199
+.. GENERATED FROM PYTHON SOURCE LINES 197-201
 
 The default range is always the diagonal of the extent. Since in this
 model data is very close we will need to reduce the range to 5-10% of
 that value:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 201-203
+.. GENERATED FROM PYTHON SOURCE LINES 203-205
 
 .. code-block:: Python
 
@@ -761,7 +764,7 @@ that value:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 204-212
+.. GENERATED FROM PYTHON SOURCE LINES 206-214
 
 Explanation of model characteristics and adjustments
 This model has characteristics that make it difficult to get the right default values:
@@ -772,11 +775,11 @@ To address these issues:
 - Reduce the std of the error parameter in octree refinement, which evaluates fewer voxels but may leave some without refinement
 Enable debugging options to help tune these parameters.
 
-.. GENERATED FROM PYTHON SOURCE LINES 214-215
+.. GENERATED FROM PYTHON SOURCE LINES 216-217
 
 Setting verbose and condition number options for debugging
 
-.. GENERATED FROM PYTHON SOURCE LINES 215-216
+.. GENERATED FROM PYTHON SOURCE LINES 217-218
 
 .. code-block:: Python
 
@@ -788,13 +791,13 @@ Setting verbose and condition number options for debugging
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 217-220
+.. GENERATED FROM PYTHON SOURCE LINES 219-222
 
 Observations and parameter adjustments
 The octree refinement is making the octree grid almost dense, and smaller chunks are needed to avoid running out of memory.
 Adjusting parameters accordingly:
 
-.. GENERATED FROM PYTHON SOURCE LINES 220-223
+.. GENERATED FROM PYTHON SOURCE LINES 222-225
 
 .. code-block:: Python
 
@@ -808,7 +811,7 @@ Adjusting parameters accordingly:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 224-232
+.. GENERATED FROM PYTHON SOURCE LINES 226-234
 
 .. code-block:: Python
 
@@ -866,7 +869,7 @@ Adjusting parameters accordingly:
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 233-235
+.. GENERATED FROM PYTHON SOURCE LINES 235-237
 
 .. code-block:: Python
 
@@ -886,11 +889,11 @@ Adjusting parameters accordingly:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f829d5d5120>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc8dfbef1c0>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 236-238
+.. GENERATED FROM PYTHON SOURCE LINES 238-240
 
 .. code-block:: Python
 
@@ -910,11 +913,11 @@ Adjusting parameters accordingly:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f827c7b7f70>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc8d9f08340>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 239-241
+.. GENERATED FROM PYTHON SOURCE LINES 241-243
 
 .. code-block:: Python
 
@@ -933,18 +936,16 @@ Adjusting parameters accordingly:
 
  .. code-block:: none
 
-    /Users/flow/opt/anaconda3/envs/gempy3_pre/lib/python3.10/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:105: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
-      warnings.warn(
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f829d5d5fc0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc8dfbeea70>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 242-243
+.. GENERATED FROM PYTHON SOURCE LINES 244-245
 
 sphinx_gallery_thumbnail_number = 3
 
-.. GENERATED FROM PYTHON SOURCE LINES 243-244
+.. GENERATED FROM PYTHON SOURCE LINES 245-246
 
 .. code-block:: Python
 
@@ -963,14 +964,14 @@ sphinx_gallery_thumbnail_number = 3
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f8299ce1fc0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fc8deb076a0>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (6 minutes 10.994 seconds)
+   **Total running time of the script:** (4 minutes 25.323 seconds)
 
 
 .. _sphx_glr_download_examples_real_Hecho.py:

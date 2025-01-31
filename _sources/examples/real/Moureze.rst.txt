@@ -18,12 +18,15 @@
 .. _sphx_glr_examples_real_Moureze.py:
 
 
-Moureze
-~~~~~~~
+Geomodeling benchmark: the "Moureze"-Model
+==========================================
 
-.. GENERATED FROM PYTHON SOURCE LINES 6-8
+This model is part of a geomodeling benchmaring effort. More information (and, hopefully, publication) coming.
+
+.. GENERATED FROM PYTHON SOURCE LINES 7-10
 
 .. code-block:: Python
+
 
     import os
 
@@ -34,11 +37,11 @@ Moureze
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 9-10
+.. GENERATED FROM PYTHON SOURCE LINES 11-12
 
 These two lines are necessary only if gempy is not installed
 
-.. GENERATED FROM PYTHON SOURCE LINES 10-21
+.. GENERATED FROM PYTHON SOURCE LINES 12-23
 
 .. code-block:: Python
 
@@ -60,7 +63,7 @@ These two lines are necessary only if gempy is not installed
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 22-28
+.. GENERATED FROM PYTHON SOURCE LINES 24-30
 
 Loading surface points from repository:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -69,7 +72,7 @@ With pandas we can do it directly from the web and with the right args
 we can directly tidy the data in gempy style:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 30-51
+.. GENERATED FROM PYTHON SOURCE LINES 32-53
 
 .. code-block:: Python
 
@@ -101,12 +104,12 @@ we can directly tidy the data in gempy style:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 52-54
+.. GENERATED FROM PYTHON SOURCE LINES 54-56
 
 Extracting the orientatins:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 56-60
+.. GENERATED FROM PYTHON SOURCE LINES 58-62
 
 .. code-block:: Python
 
@@ -121,12 +124,12 @@ Extracting the orientatins:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 61-63
+.. GENERATED FROM PYTHON SOURCE LINES 63-65
 
 Giving an arbitrary value name to the surface
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 65-68
+.. GENERATED FROM PYTHON SOURCE LINES 67-70
 
 .. code-block:: Python
 
@@ -140,7 +143,7 @@ Giving an arbitrary value name to the surface
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 69-71
+.. GENERATED FROM PYTHON SOURCE LINES 71-73
 
 .. code-block:: Python
 
@@ -245,7 +248,7 @@ Giving an arbitrary value name to the surface
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 72-74
+.. GENERATED FROM PYTHON SOURCE LINES 74-76
 
 .. code-block:: Python
 
@@ -350,7 +353,7 @@ Giving an arbitrary value name to the surface
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 75-86
+.. GENERATED FROM PYTHON SOURCE LINES 77-88
 
 Data initialization:
 ~~~~~~~~~~~~~~~~~~~~
@@ -364,17 +367,17 @@ Maximum: 305 405 -50
 Suggested resolution: 2m (grid size 156 x 206 x 76)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 89-92
+.. GENERATED FROM PYTHON SOURCE LINES 91-94
 
 Only using one orientation because otherwhise it gets a mess
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 94-95
+.. GENERATED FROM PYTHON SOURCE LINES 96-97
 
 Number voxels
 
-.. GENERATED FROM PYTHON SOURCE LINES 95-97
+.. GENERATED FROM PYTHON SOURCE LINES 97-99
 
 .. code-block:: Python
 
@@ -393,7 +396,7 @@ Number voxels
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 98-134
+.. GENERATED FROM PYTHON SOURCE LINES 100-136
 
 .. code-block:: Python
 
@@ -440,12 +443,12 @@ Number voxels
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 135-137
+.. GENERATED FROM PYTHON SOURCE LINES 137-139
 
 Now we can see how the data looks so far:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 139-142
+.. GENERATED FROM PYTHON SOURCE LINES 141-144
 
 .. code-block:: Python
 
@@ -466,18 +469,18 @@ Now we can see how the data looks so far:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f828596d360>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc8aa810970>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 143-147
+.. GENERATED FROM PYTHON SOURCE LINES 145-149
 
 The default range is always the diagonal of the extent. Since in this
 model data is very close we will need to reduce the range to 5-10% of
 that value:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 149-154
+.. GENERATED FROM PYTHON SOURCE LINES 151-156
 
 .. code-block:: Python
 
@@ -493,7 +496,7 @@ that value:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 155-165
+.. GENERATED FROM PYTHON SOURCE LINES 157-167
 
 .. code-block:: Python
 
@@ -555,7 +558,7 @@ that value:
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 166-191
+.. GENERATED FROM PYTHON SOURCE LINES 168-193
 
 Time
 ~~~~
@@ -583,7 +586,7 @@ Time
    loop each)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 193-195
+.. GENERATED FROM PYTHON SOURCE LINES 195-197
 
 .. code-block:: Python
 
@@ -603,11 +606,11 @@ Time
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f828596d480>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc8aa812ef0>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 196-198
+.. GENERATED FROM PYTHON SOURCE LINES 198-200
 
 .. code-block:: Python
 
@@ -627,15 +630,15 @@ Time
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f828596d510>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc89cbd3880>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 199-200
+.. GENERATED FROM PYTHON SOURCE LINES 201-202
 
 sphinx_gallery_thumbnail_number = 4
 
-.. GENERATED FROM PYTHON SOURCE LINES 200-201
+.. GENERATED FROM PYTHON SOURCE LINES 202-203
 
 .. code-block:: Python
 
@@ -654,14 +657,14 @@ sphinx_gallery_thumbnail_number = 4
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f828596dc60>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fc8aa812ce0>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (1 minutes 17.430 seconds)
+   **Total running time of the script:** (0 minutes 46.990 seconds)
 
 
 .. _sphx_glr_download_examples_real_Moureze.py:

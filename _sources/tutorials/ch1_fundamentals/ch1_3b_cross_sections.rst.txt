@@ -261,7 +261,7 @@ Add topography
 
     Active grids: GridTypes.NONE|SECTIONS|TOPOGRAPHY|DENSE
 
-    <gempy.core.data.grid_modules.topography.Topography object at 0x7fdad93306d0>
+    <gempy.core.data.grid_modules.topography.Topography object at 0x7fe484ceaa10>
 
 
 
@@ -309,7 +309,7 @@ Active grids:
  .. code-block:: none
 
 
-    <function plot_section_traces at 0x7fdaecff2830>
+    <function plot_section_traces at 0x7fe4d2e9f520>
 
 
 
@@ -356,7 +356,7 @@ Active grids:
     /Users/flow/opt/anaconda3/envs/gempy3_pre/lib/python3.10/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:105: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
       warnings.warn(
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fda98ba58d0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fe4f3c6d6f0>
 
 
 
@@ -382,7 +382,7 @@ Active grids:
     /Users/flow/opt/anaconda3/envs/gempy3_pre/lib/python3.10/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:105: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
       warnings.warn(
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fdaed888fd0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fe480bea230>
 
 
 
@@ -414,14 +414,14 @@ Active grids:
     /Users/flow/opt/anaconda3/envs/gempy3_pre/lib/python3.10/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:105: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
       warnings.warn(
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fda98ba52a0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fe4f3c6da80>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 7.803 seconds)
+   **Total running time of the script:** (0 minutes 6.790 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_3b_cross_sections.py:

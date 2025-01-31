@@ -2,6 +2,8 @@
 Model 3 - Recumbent Fold
 ========================
 
+Modeling a recumbent fold
+
 This script demonstrates how to create a geological model of a recumbent fold using GemPy,
 a Python-based, open-source library for implicit geological modeling.
 """

@@ -2,6 +2,8 @@
 Model 4 - Pinchout
 ==================
 
+Modeling of a pinchout: combining scalar fields
+
 This script demonstrates how to create a geological model with a layer of varying thickness (pinchout) using GemPy,
 a Python-based, open-source library for implicit geological modeling.
 """

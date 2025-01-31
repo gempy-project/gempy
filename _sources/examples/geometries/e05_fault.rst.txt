@@ -21,10 +21,12 @@
 Model 5 - Fault
 ===============
 
+Modeling a fault
+
 This script demonstrates how to create a simple fault model with constant offset using GemPy,
 a Python-based, open-source library for implicit geological modeling.
 
-.. GENERATED FROM PYTHON SOURCE LINES 8-18
+.. GENERATED FROM PYTHON SOURCE LINES 10-20
 
 .. code-block:: Python
 
@@ -45,12 +47,12 @@ a Python-based, open-source library for implicit geological modeling.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 19-21
+.. GENERATED FROM PYTHON SOURCE LINES 21-23
 
 Generate the model
 Define the path to data
 
-.. GENERATED FROM PYTHON SOURCE LINES 21-48
+.. GENERATED FROM PYTHON SOURCE LINES 23-50
 
 .. code-block:: Python
 
@@ -98,11 +100,11 @@ Define the path to data
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 49-50
+.. GENERATED FROM PYTHON SOURCE LINES 51-52
 
 Plot the initial geological model in the y direction
 
-.. GENERATED FROM PYTHON SOURCE LINES 50-52
+.. GENERATED FROM PYTHON SOURCE LINES 52-54
 
 .. code-block:: Python
 
@@ -122,11 +124,11 @@ Plot the initial geological model in the y direction
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fdaef749570>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc8debd4df0>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 53-59
+.. GENERATED FROM PYTHON SOURCE LINES 55-61
 
 .. code-block:: Python
 
@@ -167,14 +169,14 @@ Plot the initial geological model in the y direction
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fda48017250>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fc8de6b7fa0>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 11.718 seconds)
+   **Total running time of the script:** (0 minutes 10.706 seconds)
 
 
 .. _sphx_glr_download_examples_geometries_e05_fault.py:

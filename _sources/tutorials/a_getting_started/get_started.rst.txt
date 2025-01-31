@@ -647,7 +647,7 @@ Now, the model has been computed and is ready to be visualized. Let's see what i
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fdaef72af80>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fe4e0dca050>
 
 
 
@@ -714,7 +714,7 @@ Now, let's look at our 3D model:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fda681fbd60>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fe4d7797010>
 
 
 
@@ -743,7 +743,7 @@ elements and data.
 
     p2d = gpv.plot_2d(
         model=geo_model,
-        series_n=0,  # This will plot the scalar field used for the fault
+        series_n=0, 
         show_data=True,
         show_scalar=True,
         show_lith=False
@@ -1030,7 +1030,7 @@ First, we add the two missing points to the Siltstone
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fda68dbf520>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fe480c1dbd0>
 
 
 
@@ -1212,7 +1212,7 @@ groups independently.
 
     p2d = gpv.plot_2d(
         model=geo_model,
-        series_n=1,  # This will plot the scalar field used for the fault
+        series_n=1,  # This setting will now plot the scalar field used for the fault
         show_data=True,
         show_scalar=True,
         show_lith=False
@@ -1238,7 +1238,7 @@ groups independently.
 
     p2d = gpv.plot_2d(
         model=geo_model,
-        series_n=0,  # This will plot the scalar field used for the discontinuity.
+        series_n=0,  # This setting will plot the scalar field used for the discontinuity.
         show_data=True,
         show_scalar=True,
         show_lith=False
@@ -1333,7 +1333,7 @@ how this younger structural group erodes all older elements and basically "cuts 
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fdaefc23d30>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fe4e0c0f490>
 
 
 
@@ -1437,7 +1437,7 @@ Let's change the relation type from `ERODE` to `ONLAP` to achieve a different ty
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fda9aa93670>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fe482c2caf0>
 
 
 
@@ -1614,7 +1614,7 @@ Let's compute our model including the fault and see what that looks like.
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fda387c90f0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fe482c2ea40>
 
 
 
@@ -1689,7 +1689,7 @@ For demonstration, we'll create a random topography:
 
     Active grids: GridTypes.NONE|TOPOGRAPHY|DENSE
 
-    <gempy.core.data.grid_modules.topography.Topography object at 0x7fda58f8a140>
+    <gempy.core.data.grid_modules.topography.Topography object at 0x7fe484c3bd60>
 
 
 
@@ -1713,7 +1713,7 @@ For demonstration, we'll create a random topography:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fda3876ab30>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fe482c2c310>
 
 
 
@@ -1737,7 +1737,7 @@ For demonstration, we'll create a random topography:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fda98921db0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fe482c2d960>
 
 
 
@@ -1795,7 +1795,7 @@ function as shown below.
     /Users/flow/opt/anaconda3/envs/gempy3_pre/lib/python3.10/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:105: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
       warnings.warn(
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fda98ba5180>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fe482c8bf10>
 
 
 
@@ -1819,7 +1819,7 @@ function as shown below.
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fda98ba5870>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fe4f6af3310>
 
 
 
@@ -2054,20 +2054,20 @@ object via `geo_model.grid` as shown below.
  .. code-block:: none
 
 
-    array([[   0.        , -200.        ,  -59.99800606],
-           [   0.        , -197.98994975,  -61.71910298],
-           [   0.        , -195.9798995 ,  -62.93659753],
+    array([[   0.        , -200.        , -106.5098847 ],
+           [   0.        , -197.98994975, -105.62943777],
+           [   0.        , -195.9798995 , -105.78799757],
            ...,
-           [ 780.        ,  195.9798995 ,  -57.76729926],
-           [ 780.        ,  197.98994975,  -59.39838985],
-           [ 780.        ,  200.        ,  -59.17544491]])
+           [ 780.        ,  195.9798995 , -106.1039054 ],
+           [ 780.        ,  197.98994975, -108.11963052],
+           [ 780.        ,  200.        , -109.35038753]])
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 57.520 seconds)
+   **Total running time of the script:** (0 minutes 53.539 seconds)
 
 
 .. _sphx_glr_download_tutorials_a_getting_started_get_started.py:

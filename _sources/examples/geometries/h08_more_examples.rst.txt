@@ -21,11 +21,13 @@
 GemPy Models - Some More Complex Examples
 -----------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 8-9
+A set of more complex examples
+
+.. GENERATED FROM PYTHON SOURCE LINES 10-11
 
 Importing gempy
 
-.. GENERATED FROM PYTHON SOURCE LINES 9-16
+.. GENERATED FROM PYTHON SOURCE LINES 11-18
 
 .. code-block:: Python
 
@@ -43,7 +45,7 @@ Importing gempy
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 17-36
+.. GENERATED FROM PYTHON SOURCE LINES 19-38
 
 Choose a model and load the corresponding data set in the line below
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -65,7 +67,7 @@ Model 8: Similar to Model 5
 Model 9: Parallel flat dipping layers
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 38-42
+.. GENERATED FROM PYTHON SOURCE LINES 40-44
 
 .. code-block:: Python
 
@@ -80,7 +82,7 @@ Model 9: Parallel flat dipping layers
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 43-138
+.. GENERATED FROM PYTHON SOURCE LINES 45-140
 
 .. code-block:: Python
 
@@ -186,12 +188,12 @@ Model 9: Parallel flat dipping layers
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 139-141
+.. GENERATED FROM PYTHON SOURCE LINES 141-143
 
 Discordant layering 1
 =====================
 
-.. GENERATED FROM PYTHON SOURCE LINES 141-144
+.. GENERATED FROM PYTHON SOURCE LINES 143-146
 
 .. code-block:: Python
 
@@ -288,12 +290,12 @@ Discordant layering 1
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 145-147
+.. GENERATED FROM PYTHON SOURCE LINES 147-149
 
 Discordant layering 2
 =====================
 
-.. GENERATED FROM PYTHON SOURCE LINES 147-150
+.. GENERATED FROM PYTHON SOURCE LINES 149-152
 
 .. code-block:: Python
 
@@ -382,12 +384,12 @@ Discordant layering 2
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 151-153
+.. GENERATED FROM PYTHON SOURCE LINES 153-155
 
 Discordant layering 3
 =====================
 
-.. GENERATED FROM PYTHON SOURCE LINES 153-156
+.. GENERATED FROM PYTHON SOURCE LINES 155-158
 
 .. code-block:: Python
 
@@ -475,12 +477,12 @@ Discordant layering 3
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 157-159
+.. GENERATED FROM PYTHON SOURCE LINES 159-161
 
 One normal Fault 1
 ==================
 
-.. GENERATED FROM PYTHON SOURCE LINES 159-162
+.. GENERATED FROM PYTHON SOURCE LINES 161-164
 
 .. code-block:: Python
 
@@ -580,12 +582,12 @@ One normal Fault 1
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 163-165
+.. GENERATED FROM PYTHON SOURCE LINES 165-167
 
 Fold
 ====
 
-.. GENERATED FROM PYTHON SOURCE LINES 165-168
+.. GENERATED FROM PYTHON SOURCE LINES 167-170
 
 .. code-block:: Python
 
@@ -674,12 +676,12 @@ Fold
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 169-171
+.. GENERATED FROM PYTHON SOURCE LINES 171-173
 
 Graben
 ======
 
-.. GENERATED FROM PYTHON SOURCE LINES 171-174
+.. GENERATED FROM PYTHON SOURCE LINES 173-176
 
 .. code-block:: Python
 
@@ -792,12 +794,12 @@ Graben
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 175-177
+.. GENERATED FROM PYTHON SOURCE LINES 177-179
 
 One normal Fault 2
 ===================
 
-.. GENERATED FROM PYTHON SOURCE LINES 177-180
+.. GENERATED FROM PYTHON SOURCE LINES 179-182
 
 .. code-block:: Python
 
@@ -898,12 +900,12 @@ One normal Fault 2
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 181-183
+.. GENERATED FROM PYTHON SOURCE LINES 183-185
 
 Horizontal tilted
 =================
 
-.. GENERATED FROM PYTHON SOURCE LINES 183-186
+.. GENERATED FROM PYTHON SOURCE LINES 185-188
 
 .. code-block:: Python
 
@@ -991,7 +993,7 @@ Horizontal tilted
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 187-191
+.. GENERATED FROM PYTHON SOURCE LINES 189-193
 
 .. code-block:: Python
 
@@ -1009,7 +1011,7 @@ Horizontal tilted
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (1 minutes 45.108 seconds)
+   **Total running time of the script:** (0 minutes 53.556 seconds)
 
 
 .. _sphx_glr_download_examples_geometries_h08_more_examples.py:

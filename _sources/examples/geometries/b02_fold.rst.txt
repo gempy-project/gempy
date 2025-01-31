@@ -21,10 +21,12 @@
 Model 2 - Anticline
 ===================
 
+Simple model of an anticline
+
 This script demonstrates how to create a geological model of an anticline structure using GemPy,
 a Python-based, open-source library for implicit geological modeling.
 
-.. GENERATED FROM PYTHON SOURCE LINES 8-17
+.. GENERATED FROM PYTHON SOURCE LINES 10-19
 
 .. code-block:: Python
 
@@ -44,12 +46,12 @@ a Python-based, open-source library for implicit geological modeling.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 18-20
+.. GENERATED FROM PYTHON SOURCE LINES 20-22
 
 Generate the model
 Define the path to data
 
-.. GENERATED FROM PYTHON SOURCE LINES 20-41
+.. GENERATED FROM PYTHON SOURCE LINES 22-43
 
 .. code-block:: Python
 
@@ -91,11 +93,11 @@ Define the path to data
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 42-43
+.. GENERATED FROM PYTHON SOURCE LINES 44-45
 
 Plot the initial geological model in the y direction without results
 
-.. GENERATED FROM PYTHON SOURCE LINES 43-48
+.. GENERATED FROM PYTHON SOURCE LINES 45-50
 
 .. code-block:: Python
 
@@ -137,14 +139,14 @@ Plot the initial geological model in the y direction without results
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fda480165f0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc8de6b7eb0>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 6.988 seconds)
+   **Total running time of the script:** (0 minutes 6.355 seconds)
 
 
 .. _sphx_glr_download_examples_geometries_b02_fold.py:

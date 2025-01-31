@@ -95,7 +95,7 @@ zone with onlap relationships.
 
     Active grids: GridTypes.NONE|TOPOGRAPHY|DENSE
 
-    <gempy.core.data.grid_modules.topography.Topography object at 0x7fda387c84c0>
+    <gempy.core.data.grid_modules.topography.Topography object at 0x7fe4e0706920>
 
 
 
@@ -119,7 +119,7 @@ zone with onlap relationships.
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fda682654b0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fe4e0707d90>
 
 
 
@@ -381,7 +381,7 @@ Raw structural frame
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fda38798b20>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fe48000f6a0>
 
 
 
@@ -457,7 +457,7 @@ Raw structural frame
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fdaefbc1720>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fe4f3ca7250>
 
 
 
@@ -532,14 +532,14 @@ Raw structural frame
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fda78214a30>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fe4e0d4fa00>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 11.922 seconds)
+   **Total running time of the script:** (0 minutes 12.325 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_4_onlap_relations.py:

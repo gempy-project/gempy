@@ -18,10 +18,12 @@
 .. _sphx_glr_examples_real_Claudius.py:
 
 
-Claudius
+Geomodeling benchmark: the "Claudius"-Model
 ========
 
-.. GENERATED FROM PYTHON SOURCE LINES 8-18
+This model is part of a geomodeling benchmaring effort. More information (and, hopefully, publication) coming.
+
+.. GENERATED FROM PYTHON SOURCE LINES 9-19
 
 .. code-block:: Python
 
@@ -42,7 +44,7 @@ Claudius
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 19-25
+.. GENERATED FROM PYTHON SOURCE LINES 20-26
 
 Loading data from repository:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -51,7 +53,7 @@ With pandas we can do it directly from the web and with the right args
 we can directly tidy the data in gempy style:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 27-58
+.. GENERATED FROM PYTHON SOURCE LINES 28-59
 
 .. code-block:: Python
 
@@ -173,7 +175,7 @@ we can directly tidy the data in gempy style:
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 59-61
+.. GENERATED FROM PYTHON SOURCE LINES 60-62
 
 .. code-block:: Python
 
@@ -198,12 +200,12 @@ we can directly tidy the data in gempy style:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 62-64
+.. GENERATED FROM PYTHON SOURCE LINES 63-65
 
 How many points are per surface
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 66-68
+.. GENERATED FROM PYTHON SOURCE LINES 67-69
 
 .. code-block:: Python
 
@@ -298,12 +300,12 @@ How many points are per surface
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 69-71
+.. GENERATED FROM PYTHON SOURCE LINES 70-72
 
 Now we do the same with the orientations:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 73-92
+.. GENERATED FROM PYTHON SOURCE LINES 74-93
 
 .. code-block:: Python
 
@@ -431,7 +433,7 @@ Now we do the same with the orientations:
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 93-95
+.. GENERATED FROM PYTHON SOURCE LINES 94-96
 
 .. code-block:: Python
 
@@ -459,7 +461,7 @@ Now we do the same with the orientations:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 96-104
+.. GENERATED FROM PYTHON SOURCE LINES 97-105
 
 Data initialization:
 ~~~~~~~~~~~~~~~~~~~~
@@ -470,11 +472,11 @@ Suggested size of the axis-aligned modeling box: Origin: 548800 7816600
 Suggested resolution: 100m x 100m x -90m (grid size 38 x 55 x 30)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 106-107
+.. GENERATED FROM PYTHON SOURCE LINES 107-108
 
 Number of voxels:
 
-.. GENERATED FROM PYTHON SOURCE LINES 107-159
+.. GENERATED FROM PYTHON SOURCE LINES 108-160
 
 .. code-block:: Python
 
@@ -538,7 +540,7 @@ Number of voxels:
 
  .. code-block:: none
 
-    {'_interpolation_options': InterpolationOptions(kernel_options={'range': 1.7, 'c_o': 10, 'uni_degree': 1, 'i_res': 4, 'gi_res': 2, 'number_dimensions': 3, 'kernel_function': <AvailableKernelFunctions.cubic: KernelFunction(base_function=<function cubic_function at 0x7f82701fdbd0>, derivative_div_r=<function cubic_function_p_div_r at 0x7f82701fde10>, second_derivative=<function cubic_function_a at 0x7f82701fdea0>, consume_sq_distance=False)>, 'kernel_solver': <Solvers.DEFAULT: 1>, 'compute_condition_number': False, 'optimizing_condition_number': False, 'condition_number': None}, evaluation_options={'_number_octree_levels': 5, '_number_octree_levels_surface': 4, 'octree_curvature_threshold': -1, 'octree_error_threshold': 1.0, 'octree_min_level': 2, 'mesh_extraction': True, 'mesh_extraction_masking_options': <MeshExtractionMaskingOptions.INTERSECT: 3>, 'mesh_extraction_fancy': True, 'evaluation_chunk_size': 500000, 'compute_scalar_gradient': False, 'verbose': False}, temp_interpolation_values=<gempy_engine.core.data.options.temp_interpolation_values.TempInterpolationValues object at 0x7f82611d07f0>, debug=True, cache_mode=CacheMode.IN_MEMORY_CACHE, cache_model_name=, block_solutions_type=BlockSolutionType.OCTREE, sigmoid_slope=50000, debug_water_tight=False),
+    {'_interpolation_options': InterpolationOptions(kernel_options={'range': 1.7, 'c_o': 10, 'uni_degree': 1, 'i_res': 4, 'gi_res': 2, 'number_dimensions': 3, 'kernel_function': <AvailableKernelFunctions.cubic: KernelFunction(base_function=<function cubic_function at 0x7fc8ead68ca0>, derivative_div_r=<function cubic_function_p_div_r at 0x7fc8ead68ee0>, second_derivative=<function cubic_function_a at 0x7fc8ead68f70>, consume_sq_distance=False)>, 'kernel_solver': <Solvers.DEFAULT: 1>, 'compute_condition_number': False, 'optimizing_condition_number': False, 'condition_number': None}, evaluation_options={'_number_octree_levels': 5, '_number_octree_levels_surface': 4, 'octree_curvature_threshold': -1, 'octree_error_threshold': 1.0, 'octree_min_level': 2, 'mesh_extraction': True, 'mesh_extraction_masking_options': <MeshExtractionMaskingOptions.INTERSECT: 3>, 'mesh_extraction_fancy': True, 'evaluation_chunk_size': 500000, 'compute_scalar_gradient': False, 'verbose': False}, temp_interpolation_values=<gempy_engine.core.data.options.temp_interpolation_values.TempInterpolationValues object at 0x7fc6e82c3a30>, debug=True, cache_mode=CacheMode.IN_MEMORY_CACHE, cache_model_name=, block_solutions_type=BlockSolutionType.OCTREE, sigmoid_slope=50000, debug_water_tight=False),
      'grid': Grid(values=array([[ 548848.68421053, 7816649.09090909,  -10966.5       ],
            [ 548848.68421053, 7816649.09090909,  -10879.5       ],
            [ 548848.68421053, 7816649.09090909,  -10792.5       ],
@@ -622,13 +624,13 @@ Number of voxels:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 160-163
+.. GENERATED FROM PYTHON SOURCE LINES 161-164
 
 We are going to increase the smoothness (nugget) of the data to increase
 the conditional number of the matrix:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 165-167
+.. GENERATED FROM PYTHON SOURCE LINES 166-168
 
 .. code-block:: Python
 
@@ -699,13 +701,13 @@ the conditional number of the matrix:
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 168-171
+.. GENERATED FROM PYTHON SOURCE LINES 169-172
 
 Also the original poles are pointing downwards. We can change the
 direction by calling the following:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 173-175
+.. GENERATED FROM PYTHON SOURCE LINES 174-176
 
 .. code-block:: Python
 
@@ -776,14 +778,14 @@ direction by calling the following:
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 176-180
+.. GENERATED FROM PYTHON SOURCE LINES 177-181
 
 We need an orientation per series/fault. The faults does not have
 orientation so the easiest is to create an orientation from the surface
 points availablle:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 180-194
+.. GENERATED FROM PYTHON SOURCE LINES 181-195
 
 .. code-block:: Python
 
@@ -866,7 +868,7 @@ points availablle:
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 195-197
+.. GENERATED FROM PYTHON SOURCE LINES 196-198
 
 .. code-block:: Python
 
@@ -886,16 +888,16 @@ points availablle:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f8285b73790>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc89cb1aa70>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 198-200
+.. GENERATED FROM PYTHON SOURCE LINES 199-201
 
 We will need to separate with surface belong to each series:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 200-209
+.. GENERATED FROM PYTHON SOURCE LINES 201-210
 
 .. code-block:: Python
 
@@ -980,12 +982,12 @@ We will need to separate with surface belong to each series:
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 210-212
+.. GENERATED FROM PYTHON SOURCE LINES 211-213
 
 So far we did not specify which series/faults are actula faults:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 214-221
+.. GENERATED FROM PYTHON SOURCE LINES 215-222
 
 .. code-block:: Python
 
@@ -1068,7 +1070,7 @@ So far we did not specify which series/faults are actula faults:
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 222-232
+.. GENERATED FROM PYTHON SOURCE LINES 223-233
 
 .. code-block:: Python
 
@@ -1113,7 +1115,7 @@ So far we did not specify which series/faults are actula faults:
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 233-237
+.. GENERATED FROM PYTHON SOURCE LINES 234-238
 
 .. code-block:: Python
 
@@ -1135,11 +1137,11 @@ So far we did not specify which series/faults are actula faults:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f82611adc60>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc6e82c12d0>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 238-240
+.. GENERATED FROM PYTHON SOURCE LINES 239-241
 
 .. code-block:: Python
 
@@ -1159,11 +1161,11 @@ So far we did not specify which series/faults are actula faults:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f82611d3f10>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc6e82c0c40>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 241-245
+.. GENERATED FROM PYTHON SOURCE LINES 242-246
 
 .. code-block:: Python
 
@@ -1204,11 +1206,11 @@ So far we did not specify which series/faults are actula faults:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f8282baf610>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc8dfc9f940>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 246-248
+.. GENERATED FROM PYTHON SOURCE LINES 247-249
 
 .. code-block:: Python
 
@@ -1228,11 +1230,11 @@ So far we did not specify which series/faults are actula faults:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f82611ae140>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc8aa831ae0>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 249-252
+.. GENERATED FROM PYTHON SOURCE LINES 250-253
 
 .. code-block:: Python
 
@@ -1253,14 +1255,14 @@ So far we did not specify which series/faults are actula faults:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f82611adb70>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fc8ec5c2260>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (2 minutes 31.623 seconds)
+   **Total running time of the script:** (2 minutes 13.650 seconds)
 
 
 .. _sphx_glr_download_examples_real_Claudius.py:
