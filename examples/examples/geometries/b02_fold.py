@@ -2,6 +2,8 @@
 Model 2 - Anticline
 ===================
 
+Simple model of an anticline
+
 This script demonstrates how to create a geological model of an anticline structure using GemPy,
 a Python-based, open-source library for implicit geological modeling.
 """

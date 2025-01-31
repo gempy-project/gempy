@@ -1,8 +1,10 @@
 """
-Hecho
-~~~~~
+Geomodeling benchmark: the "Hecho"-Model
+========
 
+This model is part of a geomodeling benchmaring effort. More information (and, hopefully, publication) coming.
 """
+
 import os
 
 import numpy as np

@@ -2,31 +2,36 @@
 2.2: Centered Grid.
 ^^^^^^^^^^^^^^^^^^^
 
-Geophysics Preprocessing builds on the centered grid
-(https://github.com/cgre-aachen/gempy/blob/master/notebooks/tutorials/ch1-3-Grids.ipynb)
-to precompute the constant part of forward physical computations as for
-example gravity:
-
-.. math::
-
-    F_z = G_{\\rho} ||| x \\ln(y+r) + y \\ln (x+r) - z \\arctan (\\frac{x y}{z r}) |^{x_2}_{x_1}|^{y_2}_{y_1}|^{
-    z_2}_{z_1}
-
-
-where we can compress the grid dependent terms as
-
-.. math::
-
-    t_z = ||| x \ln (y+r) + y \ln (x+r)-z \\arctan ( \\frac{x y}{z r} ) |^{x_2}_{x_1}|^{y_2}_{y_1}|^{z_2}_{z_1}
-
-By doing this decomposition an keeping the grid constant we can compute
-the forward gravity by simply operate:
-
-.. math::
-
-    F_z = G_{\\rho} \cdot t_z
-
 """
+
+# %%
+# 
+# Concept of a measurement-centered grid
+# """"""""""""""""""""""""""""""""""""""
+#
+# Geophysics Preprocessing builds on the centered grid
+# (https://github.com/cgre-aachen/gempy/blob/master/notebooks/tutorials/ch1-3-Grids.ipynb)
+# to precompute the constant part of forward physical computations as for
+# example gravity:
+
+# .. math::
+
+#     F_z = G_{\\rho} ||| x \\ln(y+r) + y \\ln (x+r) - z \\arctan (\\frac{x y}{z r}) |^{x_2}_{x_1}|^{y_2}_{y_1}|^{
+#     z_2}_{z_1}
+
+
+# where we can compress the grid dependent terms as
+
+# .. math::
+
+#     t_z = ||| x \ln (y+r) + y \ln (x+r)-z \\arctan ( \\frac{x y}{z r} ) |^{x_2}_{x_1}|^{y_2}_{y_1}|^{z_2}_{z_1}
+
+# By doing this decomposition an keeping the grid constant we can compute
+# the forward gravity by simply operate:
+
+# .. math::
+
+#     F_z = G_{\\rho} \cdot t_z
 
 
 # %%
