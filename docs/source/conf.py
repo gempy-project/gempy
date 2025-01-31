@@ -154,6 +154,7 @@ sphinx_gallery_conf = {
                 # 'integrations'
         ],
         "filename_pattern"       : r"\.py",
+ #       "ignore_pattern": r"(__init__\.py|ch1_7_3d_visualization\.py|mik\.py)$",  # Exclude specific files: uncomment for faster build as long as examples are broken
         "download_all_examples"  : False,  # Remove the "Download all examples" button from the top level gallery
         "within_subsection_order": FileNameSortKey,  # Sort gallery example by file name instead of number of lines (default)
         "backreferences_dir"     : 'gen_modules/backreferences',  # directory where function granular galleries are stored

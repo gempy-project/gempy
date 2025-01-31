@@ -340,7 +340,7 @@ gpv.plot_3d(geo_model, show_surfaces=True, image=False)
 # %%
 p2d = gpv.plot_2d(
     model=geo_model,
-    series_n=0,  # This will plot the scalar field used for the fault
+    series_n=0, 
     show_data=True,
     show_scalar=True,
     show_lith=False
@@ -515,7 +515,7 @@ gp.compute_model(geo_model, engine_config=gp.data.GemPyEngineConfig())
 # %%
 p2d = gpv.plot_2d(
     model=geo_model,
-    series_n=1,  # This will plot the scalar field used for the fault
+    series_n=1,  # This setting will now plot the scalar field used for the fault
     show_data=True,
     show_scalar=True,
     show_lith=False
@@ -526,7 +526,7 @@ plt.show()
 # %%
 p2d = gpv.plot_2d(
     model=geo_model,
-    series_n=0,  # This will plot the scalar field used for the discontinuity.
+    series_n=0,  # This setting will plot the scalar field used for the discontinuity.
     show_data=True,
     show_scalar=True,
     show_lith=False
