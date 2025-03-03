@@ -85,7 +85,7 @@ Data Preparation
 
     Active grids: GridTypes.NONE|TOPOGRAPHY|DENSE
 
-    <gempy.core.data.grid_modules.topography.Topography object at 0x7fe484ceb640>
+    <gempy.core.data.grid_modules.topography.Topography object at 0x7fcd95250340>
 
 
 
@@ -109,7 +109,7 @@ Data Preparation
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fe4e0b5a200>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fcd95253430>
 
 
 
@@ -150,7 +150,7 @@ Data Preparation
 
     Active grids: GridTypes.NONE|SECTIONS|TOPOGRAPHY|DENSE
 
-    <function plot_section_traces at 0x7fe4d2e9f520>
+    <function plot_section_traces at 0x7fcdc99ef520>
 
 
 
@@ -348,7 +348,7 @@ new plotting api
     /Users/flow/opt/anaconda3/envs/gempy3_pre/lib/python3.10/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:105: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
       warnings.warn(
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fe4e0b5a200>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fcd952515d0>
 
 
 
@@ -410,7 +410,7 @@ any combination of the above:
     /Users/flow/opt/anaconda3/envs/gempy3_pre/lib/python3.10/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:105: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
       warnings.warn(
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fe4e0da9bd0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fcd798ac8e0>
 
 
 
@@ -436,7 +436,7 @@ any combination of the above:
     /Users/flow/opt/anaconda3/envs/gempy3_pre/lib/python3.10/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:105: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
       warnings.warn(
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fe4e06fece0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fcd95252e30>
 
 
 
@@ -462,7 +462,7 @@ any combination of the above:
     /Users/flow/opt/anaconda3/envs/gempy3_pre/lib/python3.10/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:105: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
       warnings.warn(
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fe4d76c0fa0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fcd95253a90>
 
 
 
@@ -487,14 +487,14 @@ any combination of the above:
     /Users/flow/opt/anaconda3/envs/gempy3_pre/lib/python3.10/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:105: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
       warnings.warn(
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fe471bae560>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fcd58923cd0>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 4.686 seconds)
+   **Total running time of the script:** (0 minutes 4.313 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_6_2d_visualization.py:

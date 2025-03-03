@@ -123,6 +123,10 @@ functions to parse different combination of .csv</p>
 <span class="p">)</span>
 </pre></div>
 </div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/Users/flow/opt/anaconda3/envs/gempy3_pre/lib/python3.10/site-packages/subsurface/modules/reader/wells/_read_to_df.py:13: ParserWarning: Falling back to the &#39;python&#39; engine because the &#39;c&#39; engine does not support sep=None with delim_whitespace=False; you can avoid this warning by specifying engine=&#39;python&#39;.
+  d = reader(
+</pre></div>
+</div>
 </section>
 <section id="visualizing-the-borehole-collars">
 <h2>Visualizing the Borehole Collars<a class="headerlink" href="#visualizing-the-borehole-collars" title="Link to this heading">¶</a></h2>
@@ -135,7 +139,7 @@ and we will label the boreholes using their IDs.</p>
 <span class="n">pv_plot</span><span class="p">([</span><span class="n">well_mesh</span><span class="p">],</span> <span class="n">image_2d</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_mik_001.png" srcset="../../_images/sphx_glr_mik_001.png" alt="mik" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;pyvista.plotting.plotter.Plotter object at 0x7fc8d9d899f0&gt;
+<img src="../../_images/sphx_glr_mik_001.png" srcset="../../_images/sphx_glr_mik_001.png" alt="mik" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;pyvista.plotting.plotter.Plotter object at 0x7f91d188e2f0&gt;
 </pre></div>
 </div>
 </section>
@@ -158,12 +162,17 @@ The survey data allows us to compute the full 3D path of each wellbore. We will 
 <span class="n">survey</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Survey(ids=array([ 0.,  1.,  2.,  3.,  4.,  5.,  6.,  7.,  8.,  9., 10., 11., 12.,
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/Users/flow/opt/anaconda3/envs/gempy3_pre/lib/python3.10/site-packages/subsurface/modules/reader/wells/_read_to_df.py:13: ParserWarning: Falling back to the &#39;python&#39; engine because the &#39;c&#39; engine does not support sep=None with delim_whitespace=False; you can avoid this warning by specifying engine=&#39;python&#39;.
+  d = reader(
+/Users/flow/opt/anaconda3/envs/gempy3_pre/lib/python3.10/site-packages/subsurface/modules/reader/wells/read_borehole_interface.py:82: UserWarning: inc and/or azi columns are not present in the file. The boreholes will be straight.
+  warnings.warn(
+
+Survey(ids=array([ 0.,  1.,  2.,  3.,  4.,  5.,  6.,  7.,  8.,  9., 10., 11., 12.,
        13., 14., 15., 16., 17., 18., 19., 20., 21., 22., 23., 24., 25.,
        26., 27., 28., 29., 30., 31., 32., 33., 34., 35., 36., 37., 38.,
        39., 40., 41., 42., 43., 44., 45., 46., 47., 48., 49., 50., 51.,
        52., 53., 54., 55., 56., 57., 58., 59., 60., 61., 62., 63., 64.,
-       65., 66., 67., 68.]), survey_trajectory=&lt;subsurface.core.structs.unstructured_elements.line_set.LineSet object at 0x7fc8d9d89a50&gt;, well_id_mapper={&#39;KCL12&#39;: 0, &#39;KCL_B45&#39;: 1, &#39;Russell1&#39;: 2, &#39;CallowayXX&#39;: 3, &#39;KCL15&#39;: 4, &#39;KCL_1144&#39;: 5, &#39;Kramer1&#39;: 6, &#39;Davies1&#39;: 7, &#39;Tidewater_Capital_Co.XX&#39;: 8, &#39;Westates44&#39;: 9, &#39;Roe3&#39;: 10, &#39;RoeXX&#39;: 11, &#39;Helbling1&#39;: 12, &#39;PACIFIC_STATESXX&#39;: 13, &#39;KerncoXX&#39;: 14, &#39;Amalgamated_Happold2&#39;: 15, &#39;DearingerXX&#39;: 16, &#39;St._Anthony1&#39;: 17, &#39;BALD_EAGLE74&#39;: 18, &#39;CURRY1&#39;: 19, &#39;KCL87_25&#39;: 20, &#39;Del_Fortuna1&#39;: 21, &#39;XX32_15&#39;: 22, &#39;Wright_Bloemer74&#39;: 23, &#39;MARQUIS1&#39;: 24, &#39;Famosa12_1&#39;: 25, &#39;Kuhn81_15&#39;: 26, &#39;Bergman_Trust1&#39;: 27, &#39;KCL_A58_8&#39;: 28, &#39;Steele_Petroleum_Co4_1&#39;: 29, &#39;Gow1&#39;: 30, &#39;RUSSELLXX&#39;: 31, &#39;KCL_G1&#39;: 32, &#39;33XX&#39;: 33, &#39;Sharples_Marathon_BillingtonXX&#39;: 34, &#39;Mobil_Pan_Petroleum_KCL31_15&#39;: 35, &#39;Mobil_Pan_Pet_KCL86_35&#39;: 36, &#39;Roberts_Cox23_1&#39;: 37, &#39;Law_et_alXX&#39;: 38, &#39;TennecoXX&#39;: 39, &#39;11&#39;: 40, &#39;Cities_Service_TennecoXX&#39;: 41, &#39;USLXX&#39;: 42, &#39;HayesXX&#39;: 43, &#39;SUPERIOR_TENNECO_GAUTXX&#39;: 44, &#39;TWIXX&#39;: 45, &#39;Tenneco_Ladd_Rio_Bravo_North87&#39;: 46, &#39;Tenneco_Rio_Bravo32&#39;: 47, &#39;McCulloch_Camp_et_al1_36&#39;: 48, &#39;West_Rio_Bravo1&#39;: 49, &#39;Shell_Magee_GlideXX&#39;: 50, &#39;XXXX&#39;: 51, &#39;Wiedman55_26&#39;: 52, &#39;R.A._Shafter_A1&#39;: 53, &#39;KerrXX&#39;: 54, &#39;Bishop_FeeXX&#39;: 55, &#39;API_BartellXX&#39;: 56, &#39;Kimberlina1&#39;: 57, &#39;Kern_AXX&#39;: 58, &#39;Tenneco_Sun11x_31&#39;: 59, &#39;Bishop_FeeXXX&#39;: 60, &#39;Bellevue_Deep1&#39;: 61, &#39;S_&amp;_D_Killingwoth_EPM1&#39;: 62, &#39;Arkelian23_26&#39;: 63, &#39;Ingram13_73&#39;: 64, &#39;Union_Tribe_BXX&#39;: 65, &#39;JewettaXX&#39;: 66, &#39;Golden_State_VintnersXX&#39;: 67, &#39;USLXXX&#39;: 68})
+       65., 66., 67., 68.]), survey_trajectory=&lt;subsurface.core.structs.unstructured_elements.line_set.LineSet object at 0x7f8fd5310f70&gt;, well_id_mapper={&#39;KCL12&#39;: 0, &#39;KCL_B45&#39;: 1, &#39;Russell1&#39;: 2, &#39;CallowayXX&#39;: 3, &#39;KCL15&#39;: 4, &#39;KCL_1144&#39;: 5, &#39;Kramer1&#39;: 6, &#39;Davies1&#39;: 7, &#39;Tidewater_Capital_Co.XX&#39;: 8, &#39;Westates44&#39;: 9, &#39;Roe3&#39;: 10, &#39;RoeXX&#39;: 11, &#39;Helbling1&#39;: 12, &#39;PACIFIC_STATESXX&#39;: 13, &#39;KerncoXX&#39;: 14, &#39;Amalgamated_Happold2&#39;: 15, &#39;DearingerXX&#39;: 16, &#39;St._Anthony1&#39;: 17, &#39;BALD_EAGLE74&#39;: 18, &#39;CURRY1&#39;: 19, &#39;KCL87_25&#39;: 20, &#39;Del_Fortuna1&#39;: 21, &#39;XX32_15&#39;: 22, &#39;Wright_Bloemer74&#39;: 23, &#39;MARQUIS1&#39;: 24, &#39;Famosa12_1&#39;: 25, &#39;Kuhn81_15&#39;: 26, &#39;Bergman_Trust1&#39;: 27, &#39;KCL_A58_8&#39;: 28, &#39;Steele_Petroleum_Co4_1&#39;: 29, &#39;Gow1&#39;: 30, &#39;RUSSELLXX&#39;: 31, &#39;KCL_G1&#39;: 32, &#39;33XX&#39;: 33, &#39;Sharples_Marathon_BillingtonXX&#39;: 34, &#39;Mobil_Pan_Petroleum_KCL31_15&#39;: 35, &#39;Mobil_Pan_Pet_KCL86_35&#39;: 36, &#39;Roberts_Cox23_1&#39;: 37, &#39;Law_et_alXX&#39;: 38, &#39;TennecoXX&#39;: 39, &#39;11&#39;: 40, &#39;Cities_Service_TennecoXX&#39;: 41, &#39;USLXX&#39;: 42, &#39;HayesXX&#39;: 43, &#39;SUPERIOR_TENNECO_GAUTXX&#39;: 44, &#39;TWIXX&#39;: 45, &#39;Tenneco_Ladd_Rio_Bravo_North87&#39;: 46, &#39;Tenneco_Rio_Bravo32&#39;: 47, &#39;McCulloch_Camp_et_al1_36&#39;: 48, &#39;West_Rio_Bravo1&#39;: 49, &#39;Shell_Magee_GlideXX&#39;: 50, &#39;XXXX&#39;: 51, &#39;Wiedman55_26&#39;: 52, &#39;R.A._Shafter_A1&#39;: 53, &#39;KerrXX&#39;: 54, &#39;Bishop_FeeXX&#39;: 55, &#39;API_BartellXX&#39;: 56, &#39;Kimberlina1&#39;: 57, &#39;Kern_AXX&#39;: 58, &#39;Tenneco_Sun11x_31&#39;: 59, &#39;Bishop_FeeXXX&#39;: 60, &#39;Bellevue_Deep1&#39;: 61, &#39;S_&amp;_D_Killingwoth_EPM1&#39;: 62, &#39;Arkelian23_26&#39;: 63, &#39;Ingram13_73&#39;: 64, &#39;Union_Tribe_BXX&#39;: 65, &#39;JewettaXX&#39;: 66, &#39;Golden_State_VintnersXX&#39;: 67, &#39;USLXXX&#39;: 68})
 </pre></div>
 </div>
 </section>
@@ -191,7 +200,9 @@ of each geological formation within the borehole, as well as the formation name.
 <span class="n">lith</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>(&#39;cell&#39;,) are not coordinates with an index xarray dataset must include &#39;cell&#39; key (KeyError) or xarray &#39;cell&#39; has no index (ValueError).
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/Users/flow/opt/anaconda3/envs/gempy3_pre/lib/python3.10/site-packages/subsurface/modules/reader/wells/_read_to_df.py:13: ParserWarning: Falling back to the &#39;python&#39; engine because the &#39;c&#39; engine does not support sep=None with delim_whitespace=False; you can avoid this warning by specifying engine=&#39;python&#39;.
+  d = reader(
+(&#39;cell&#39;,) are not coordinates with an index xarray dataset must include &#39;cell&#39; key (KeyError) or xarray &#39;cell&#39; has no index (ValueError).
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
@@ -636,7 +647,7 @@ integrates seamlessly with borehole data for subsurface geological modeling.</p>
 <section id="further-training-and-collaborations">
 <h2>Further training and collaborations<a class="headerlink" href="#further-training-and-collaborations" title="Link to this heading">¶</a></h2>
 <p><a class="reference external" href="https://www.terranigma-solutions.com/">https://www.terranigma-solutions.com/</a></p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.045 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.932 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-examples-real-mik-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/91b4271740953f838c43efba0cfbc333/mik.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">mik.ipynb</span></code></a></p>

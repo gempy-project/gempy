@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**49:27.082** total execution time for 29 files **from all galleries**:
+**06:43.545** total execution time for 30 files **from all galleries**:
 
 .. container::
 
@@ -32,62 +32,56 @@ Computation times
    * - Example
      - Time
      - Mem (MB)
-   * - :ref:`sphx_glr_tutorials_ch3-Interpolations_ch3_1_kriging_interpolation_and_simulation.py` (``../../examples/tutorials/ch3-Interpolations/ch3_1_kriging_interpolation_and_simulation.py``)
-     - 27:42.665
-     - 0.0
-   * - :ref:`sphx_glr_examples_real_Hecho.py` (``../../examples/examples/real/Hecho.py``)
-     - 04:25.323
-     - 0.0
    * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_7_3d_visualization.py` (``../../examples/tutorials/ch1_fundamentals/ch1_7_3d_visualization.py``)
-     - 03:49.146
+     - 03:46.142
      - 0.0
-   * - :ref:`sphx_glr_tutorials_z_other_tutorials_video_tutorial_model_1.py` (``../../examples/tutorials/z_other_tutorials/video_tutorial_model_1.py``)
-     - 02:54.061
-     - 0.0
-   * - :ref:`sphx_glr_examples_real_Claudius.py` (``../../examples/examples/real/Claudius.py``)
-     - 02:13.650
-     - 0.0
-   * - :ref:`sphx_glr_examples_real_Alesmodel.py` (``../../examples/examples/real/Alesmodel.py``)
-     - 02:01.241
-     - 0.0
-   * - :ref:`sphx_glr_examples_real_Perth_basin.py` (``../../examples/examples/real/Perth_basin.py``)
-     - 01:29.880
-     - 0.0
-   * - :ref:`sphx_glr_examples_geometries_g07_combination.py` (``../../examples/examples/geometries/g07_combination.py``)
-     - 01:08.238
-     - 0.0
-   * - :ref:`sphx_glr_examples_real_Greenstone.py` (``../../examples/examples/real/Greenstone.py``)
-     - 00:54.527
-     - 0.0
-   * - :ref:`sphx_glr_examples_geometries_h08_more_examples.py` (``../../examples/examples/geometries/h08_more_examples.py``)
-     - 00:53.556
-     - 0.0
-   * - :ref:`sphx_glr_examples_real_Moureze.py` (``../../examples/examples/real/Moureze.py``)
-     - 00:46.990
-     - 0.0
-   * - :ref:`sphx_glr_examples_geometries_c03_recumbent_fold.py` (``../../examples/examples/geometries/c03_recumbent_fold.py``)
-     - 00:31.240
-     - 0.0
-   * - :ref:`sphx_glr_examples_geometries_e05_fault.py` (``../../examples/examples/geometries/e05_fault.py``)
-     - 00:10.706
-     - 0.0
-   * - :ref:`sphx_glr_examples_geometries_d04_pinchout.py` (``../../examples/examples/geometries/d04_pinchout.py``)
-     - 00:07.524
-     - 0.0
-   * - :ref:`sphx_glr_examples_geometries_f06_unconformity.py` (``../../examples/examples/geometries/f06_unconformity.py``)
-     - 00:07.237
-     - 0.0
-   * - :ref:`sphx_glr_examples_geometries_b02_fold.py` (``../../examples/examples/geometries/b02_fold.py``)
-     - 00:06.355
-     - 0.0
-   * - :ref:`sphx_glr_examples_geometries_a01_horizontal_stratigraphic.py` (``../../examples/examples/geometries/a01_horizontal_stratigraphic.py``)
-     - 00:02.536
-     - 0.0
-   * - :ref:`sphx_glr_tutorials_ch4-Topology_ch4-1-Topology.py` (``../../examples/tutorials/ch4-Topology/ch4-1-Topology.py``)
-     - 00:01.163
+   * - :ref:`sphx_glr_tutorials_z_other_tutorials_video_tutorial_model_2_faults.py` (``../../examples/tutorials/z_other_tutorials/video_tutorial_model_2_faults.py``)
+     - 02:56.471
      - 0.0
    * - :ref:`sphx_glr_examples_real_mik.py` (``../../examples/examples/real/mik.py``)
-     - 00:01.045
+     - 00:00.932
+     - 0.0
+   * - :ref:`sphx_glr_examples_geometries_a01_horizontal_stratigraphic.py` (``../../examples/examples/geometries/a01_horizontal_stratigraphic.py``)
+     - 00:00.000
+     - 0.0
+   * - :ref:`sphx_glr_examples_geometries_b02_fold.py` (``../../examples/examples/geometries/b02_fold.py``)
+     - 00:00.000
+     - 0.0
+   * - :ref:`sphx_glr_examples_geometries_c03_recumbent_fold.py` (``../../examples/examples/geometries/c03_recumbent_fold.py``)
+     - 00:00.000
+     - 0.0
+   * - :ref:`sphx_glr_examples_geometries_d04_pinchout.py` (``../../examples/examples/geometries/d04_pinchout.py``)
+     - 00:00.000
+     - 0.0
+   * - :ref:`sphx_glr_examples_geometries_e05_fault.py` (``../../examples/examples/geometries/e05_fault.py``)
+     - 00:00.000
+     - 0.0
+   * - :ref:`sphx_glr_examples_geometries_f06_unconformity.py` (``../../examples/examples/geometries/f06_unconformity.py``)
+     - 00:00.000
+     - 0.0
+   * - :ref:`sphx_glr_examples_geometries_g07_combination.py` (``../../examples/examples/geometries/g07_combination.py``)
+     - 00:00.000
+     - 0.0
+   * - :ref:`sphx_glr_examples_geometries_h08_more_examples.py` (``../../examples/examples/geometries/h08_more_examples.py``)
+     - 00:00.000
+     - 0.0
+   * - :ref:`sphx_glr_examples_real_Alesmodel.py` (``../../examples/examples/real/Alesmodel.py``)
+     - 00:00.000
+     - 0.0
+   * - :ref:`sphx_glr_examples_real_Claudius.py` (``../../examples/examples/real/Claudius.py``)
+     - 00:00.000
+     - 0.0
+   * - :ref:`sphx_glr_examples_real_Greenstone.py` (``../../examples/examples/real/Greenstone.py``)
+     - 00:00.000
+     - 0.0
+   * - :ref:`sphx_glr_examples_real_Hecho.py` (``../../examples/examples/real/Hecho.py``)
+     - 00:00.000
+     - 0.0
+   * - :ref:`sphx_glr_examples_real_Moureze.py` (``../../examples/examples/real/Moureze.py``)
+     - 00:00.000
+     - 0.0
+   * - :ref:`sphx_glr_examples_real_Perth_basin.py` (``../../examples/examples/real/Perth_basin.py``)
+     - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_tutorials_a_getting_started_get_started.py` (``../../examples/tutorials/a_getting_started/get_started.py``)
      - 00:00.000
@@ -117,5 +111,14 @@ Computation times
      - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_tutorials_ch2-Geophysics_ch2_2_cell_selection.py` (``../../examples/tutorials/ch2-Geophysics/ch2_2_cell_selection.py``)
+     - 00:00.000
+     - 0.0
+   * - :ref:`sphx_glr_tutorials_ch3-Interpolations_ch3_1_kriging_interpolation_and_simulation.py` (``../../examples/tutorials/ch3-Interpolations/ch3_1_kriging_interpolation_and_simulation.py``)
+     - 00:00.000
+     - 0.0
+   * - :ref:`sphx_glr_tutorials_ch4-Topology_ch4-1-Topology.py` (``../../examples/tutorials/ch4-Topology/ch4-1-Topology.py``)
+     - 00:00.000
+     - 0.0
+   * - :ref:`sphx_glr_tutorials_z_other_tutorials_video_tutorial_model_1.py` (``../../examples/tutorials/z_other_tutorials/video_tutorial_model_1.py``)
      - 00:00.000
      - 0.0

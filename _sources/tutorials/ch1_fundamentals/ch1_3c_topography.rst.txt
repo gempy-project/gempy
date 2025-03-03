@@ -206,7 +206,7 @@ sphinx_gallery_thumbnail_number = 2
     [200. 500.]
     Active grids: GridTypes.NONE|SECTIONS|TOPOGRAPHY|DENSE
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fe4e03f74c0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fcddd923b20>
 
 
 
@@ -254,7 +254,7 @@ It has additional keywords to play around with:
 
     Active grids: GridTypes.NONE|SECTIONS|TOPOGRAPHY|DENSE
 
-    <gempy.core.data.grid_modules.topography.Topography object at 0x7fe4e03f47c0>
+    <gempy.core.data.grid_modules.topography.Topography object at 0x7fcddd9221a0>
 
 
 
@@ -318,7 +318,7 @@ It can be visualized using the 2D and 3D plotting functionality:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fe4f6af0490>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fcd49a89de0>
 
 
 
@@ -344,7 +344,7 @@ It can be visualized using the 2D and 3D plotting functionality:
     /Users/flow/opt/anaconda3/envs/gempy3_pre/lib/python3.10/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:105: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
       warnings.warn(
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fe484c65fc0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fcd4a0bfbb0>
 
 
 
@@ -403,7 +403,7 @@ sphinx_gallery_thumbnail_number = 3
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 9.551 seconds)
+   **Total running time of the script:** (0 minutes 12.900 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_3c_topography.py:

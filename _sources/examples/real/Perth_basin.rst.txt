@@ -719,7 +719,7 @@ gp.set_fault_relation(geo_model, fr)
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc8de705360>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fcddd918fd0>
 
 
 
@@ -740,7 +740,7 @@ gp.set_fault_relation(geo_model, fr)
     [-2800.  1000.]
     Active grids: GridTypes.NONE|TOPOGRAPHY|DENSE
 
-    <gempy.core.data.grid_modules.topography.Topography object at 0x7fc89b430ac0>
+    <gempy.core.data.grid_modules.topography.Topography object at 0x7fcddd92af50>
 
 
 
@@ -764,7 +764,7 @@ gp.set_fault_relation(geo_model, fr)
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fc89b433580>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fcdcdafdf60>
 
 
 
@@ -829,7 +829,7 @@ gp.set_fault_relation(geo_model, fr)
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc89b447790>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fcdcdafd390>
 
 
 
@@ -853,7 +853,7 @@ gp.set_fault_relation(geo_model, fr)
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc89b4463e0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fcdcdafea10>
 
 
 
@@ -877,7 +877,7 @@ gp.set_fault_relation(geo_model, fr)
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc8d9da1f90>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fcddfacffd0>
 
 
 
@@ -903,14 +903,14 @@ sphinx_gallery_thumbnail_number = 6
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fc8deb95a20>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fcd8ff2f9a0>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (1 minutes 29.880 seconds)
+   **Total running time of the script:** (1 minutes 28.469 seconds)
 
 
 .. _sphx_glr_download_examples_real_Perth_basin.py:

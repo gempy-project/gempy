@@ -149,7 +149,7 @@ Video tutorial 2: Input data
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc6e9233430>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fcd89db2fb0>
 
 
 
@@ -237,7 +237,7 @@ Video tutorial 2: Input data
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc8d9eb4970>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fcd89e259f0>
 
 
 
@@ -457,7 +457,7 @@ Video tutorial 4: Computation and results
 
                     <table>
                         <tr><td colspan='2' style='text-align:center'><b>InterpolationOptions</b></td></tr>
-                        <tr><td>kernel_options</td><td>{'range': 1.7, 'c_o': 10, 'uni_degree': 1, 'i_res': 4, 'gi_res': 2, 'number_dimensions': 3, 'kernel_function': <AvailableKernelFunctions.cubic: KernelFunction(base_function=<function cubic_function at 0x7fc8ead68ca0>, derivative_div_r=<function cubic_function_p_div_r at 0x7fc8ead68ee0>, second_derivative=<function cubic_function_a at 0x7fc8ead68f70>, consume_sq_distance=False)>, 'kernel_solver': <Solvers.DEFAULT: 1>, 'compute_condition_number': False, 'optimizing_condition_number': False, 'condition_number': None}</td></tr><tr><td>evaluation_options</td><td>{'_number_octree_levels': 1, '_number_octree_levels_surface': 4, 'octree_curvature_threshold': -1, 'octree_error_threshold': 1.0, 'octree_min_level': 2, 'mesh_extraction': True, 'mesh_extraction_masking_options': <MeshExtractionMaskingOptions.INTERSECT: 3>, 'mesh_extraction_fancy': True, 'evaluation_chunk_size': 500000, 'compute_scalar_gradient': False, 'verbose': False}</td></tr><tr><td>temp_interpolation_values</td><td><gempy_engine.core.data.options.temp_interpolation_values.TempInterpolationValues object at 0x7fc8d9eb5e70></td></tr><tr><td>debug</td><td>True</td></tr><tr><td>cache_mode</td><td>CacheMode.IN_MEMORY_CACHE</td></tr><tr><td>cache_model_name</td><td>tutorial_model</td></tr><tr><td>block_solutions_type</td><td>BlockSolutionType.DENSE_GRID</td></tr><tr><td>sigmoid_slope</td><td>50000</td></tr><tr><td>debug_water_tight</td><td>False</td></tr>
+                        <tr><td>kernel_options</td><td>{'range': 1.7, 'c_o': 10, 'uni_degree': 1, 'i_res': 4, 'gi_res': 2, 'number_dimensions': 3, 'kernel_function': <AvailableKernelFunctions.cubic: KernelFunction(base_function=<function cubic_function at 0x7fcdc9720ca0>, derivative_div_r=<function cubic_function_p_div_r at 0x7fcdc9720ee0>, second_derivative=<function cubic_function_a at 0x7fcdc9720f70>, consume_sq_distance=False)>, 'kernel_solver': <Solvers.DEFAULT: 1>, 'compute_condition_number': False, 'optimizing_condition_number': False, 'condition_number': None}</td></tr><tr><td>evaluation_options</td><td>{'_number_octree_levels': 1, '_number_octree_levels_surface': 4, 'octree_curvature_threshold': -1, 'octree_error_threshold': 1.0, 'octree_min_level': 2, 'mesh_extraction': True, 'mesh_extraction_masking_options': <MeshExtractionMaskingOptions.INTERSECT: 3>, 'mesh_extraction_fancy': True, 'evaluation_chunk_size': 500000, 'compute_scalar_gradient': False, 'verbose': False}</td></tr><tr><td>temp_interpolation_values</td><td><gempy_engine.core.data.options.temp_interpolation_values.TempInterpolationValues object at 0x7fcd89d91330></td></tr><tr><td>debug</td><td>True</td></tr><tr><td>cache_mode</td><td>CacheMode.IN_MEMORY_CACHE</td></tr><tr><td>cache_model_name</td><td>tutorial_model</td></tr><tr><td>block_solutions_type</td><td>BlockSolutionType.DENSE_GRID</td></tr><tr><td>sigmoid_slope</td><td>50000</td></tr><tr><td>debug_water_tight</td><td>False</td></tr>
                     </table>
                 
     </div>
@@ -515,7 +515,7 @@ Video tutorial 4: Computation and results
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc8d9eb5a50>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fcd89d92ef0>
 
 
 
@@ -588,7 +588,7 @@ Video tutorial 5: 2D visualization
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc8d9c93f10>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fcd49a11ed0>
 
 
 
@@ -636,14 +636,14 @@ Video tutorial 5: 2D visualization
           <td>[0, 0]</td>
           <td>[2500, 1000]</td>
           <td>[100, 50]</td>
-          <td>2692.582404</td>
+          <td>2692.58</td>
         </tr>
         <tr>
           <th>section2</th>
           <td>[1000, 1000]</td>
           <td>[1500, 0]</td>
           <td>[100, 100]</td>
-          <td>1118.033989</td>
+          <td>1118.03</td>
         </tr>
       </tbody>
     </table>
@@ -673,7 +673,7 @@ Video tutorial 5: 2D visualization
  .. code-block:: none
 
 
-    <function plot_section_traces at 0x7fc88801c8b0>
+    <function plot_section_traces at 0x7fcdc99ef520>
 
 
 
@@ -728,7 +728,7 @@ Video tutorial 5: 2D visualization
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc8dfbed4b0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fcddd8cfbe0>
 
 
 
@@ -772,7 +772,7 @@ Video tutorial 6: 3D visualization
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fc6e91f5cf0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fcd49a11090>
 
 
 
@@ -838,7 +838,7 @@ Video tutorial 7: Topography
 
     Active grids: GridTypes.NONE|SECTIONS|TOPOGRAPHY|DENSE
 
-    <gempy.core.data.grid_modules.topography.Topography object at 0x7fc6e9271cf0>
+    <gempy.core.data.grid_modules.topography.Topography object at 0x7fcc70239150>
 
 
 
@@ -893,7 +893,7 @@ Video tutorial 7: Topography
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc8deb33f70>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fcc70287040>
 
 
 
@@ -919,7 +919,7 @@ Video tutorial 7: Topography
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc8deb31e70>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fcd7983f7f0>
 
 
 
@@ -946,14 +946,14 @@ Video tutorial 7: Topography
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fc6c6c2f730>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fcd8a171180>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (2 minutes 54.061 seconds)
+   **Total running time of the script:** (3 minutes 1.073 seconds)
 
 
 .. _sphx_glr_download_tutorials_z_other_tutorials_video_tutorial_model_1.py:

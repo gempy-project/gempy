@@ -182,7 +182,7 @@ Importing gempy
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fe480be9630>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fcddd056ce0>
 
 
 
@@ -443,7 +443,7 @@ model as follows:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fe4f6af2f80>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fcd7a46e6b0>
 
 
 
@@ -467,7 +467,7 @@ model as follows:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fe48000c940>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fcd5f918a90>
 
 
 
@@ -546,7 +546,7 @@ gravity overlying):
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (1 minutes 51.074 seconds)
+   **Total running time of the script:** (1 minutes 45.388 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch2-Geophysics_ch2_1_gravity.py:
