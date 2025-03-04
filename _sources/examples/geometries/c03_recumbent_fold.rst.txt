@@ -134,7 +134,7 @@ Plot the initial geological model in the y direction
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc6e82b2830>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fcd49a137c0>
 
 
 
@@ -157,14 +157,14 @@ Plot the initial geological model in the y direction
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fc6e8272470>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fcddc589360>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 31.240 seconds)
+   **Total running time of the script:** (0 minutes 31.293 seconds)
 
 
 .. _sphx_glr_download_examples_geometries_c03_recumbent_fold.py:

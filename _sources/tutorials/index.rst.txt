@@ -366,6 +366,23 @@ Compilation of tutorials for videos on the `gempy` YouTube channel https://www.y
     </div>
 
 
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Video Tutorial &quot;code-along&quot;: Faults">
+
+.. only:: html
+
+  .. image:: /tutorials/z_other_tutorials/images/thumb/sphx_glr_video_tutorial_model_2_faults_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_tutorials_z_other_tutorials_video_tutorial_model_2_faults.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Video Tutorial "code-along": Faults</div>
+    </div>
+
+
 .. thumbnail-parent-div-close
 
 .. raw:: html

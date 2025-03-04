@@ -125,7 +125,7 @@ Data plot
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fc8ec5c0f40>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f91d1830220>
 
 
 
@@ -155,7 +155,7 @@ Geomodel plot
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fc8ed2e5d20>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f91d188ca90>
 
 
 
@@ -211,7 +211,7 @@ Now we can use `this link <https://liquidearth.app.link/gempy-promo>`_ to visual
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (3 minutes 49.146 seconds)
+   **Total running time of the script:** (3 minutes 46.142 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_7_3d_visualization.py:

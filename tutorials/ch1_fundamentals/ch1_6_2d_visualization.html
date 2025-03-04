@@ -83,13 +83,13 @@ to download the full example code.</p>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Active grids: GridTypes.NONE|TOPOGRAPHY|DENSE
 
-&lt;gempy.core.data.grid_modules.topography.Topography object at 0x7fe484ceb640&gt;
+&lt;gempy.core.data.grid_modules.topography.Topography object at 0x7fcd95250340&gt;
 </pre></div>
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_ch1_6_2d_visualization_001.png" srcset="../../_images/sphx_glr_ch1_6_2d_visualization_001.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fe4e0b5a200&gt;
+<img src="../../_images/sphx_glr_ch1_6_2d_visualization_001.png" srcset="../../_images/sphx_glr_ch1_6_2d_visualization_001.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fcd95253430&gt;
 </pre></div>
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">section_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;section1&#39;</span><span class="p">:</span> <span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">1000</span><span class="p">],</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">80</span><span class="p">]),</span>
@@ -103,7 +103,7 @@ to download the full example code.</p>
 </div>
 <img src="../../_images/sphx_glr_ch1_6_2d_visualization_002.png" srcset="../../_images/sphx_glr_ch1_6_2d_visualization_002.png" alt="Cell Number: -1 Direction: z" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Active grids: GridTypes.NONE|SECTIONS|TOPOGRAPHY|DENSE
 
-&lt;function plot_section_traces at 0x7fe4d2e9f520&gt;
+&lt;function plot_section_traces at 0x7fcdc99ef520&gt;
 </pre></div>
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">geo_data</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">sections</span>
@@ -229,7 +229,7 @@ to download the full example code.</p>
 <img src="../../_images/sphx_glr_ch1_6_2d_visualization_003.png" srcset="../../_images/sphx_glr_ch1_6_2d_visualization_003.png" alt="section1" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/Users/flow/opt/anaconda3/envs/gempy3_pre/lib/python3.10/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:105: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
   warnings.warn(
 
-&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fe4e0b5a200&gt;
+&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fcd952515d0&gt;
 </pre></div>
 </div>
 <section id="plot-api">
@@ -247,7 +247,7 @@ any combination of the above:</p>
 <img src="../../_images/sphx_glr_ch1_6_2d_visualization_005.png" srcset="../../_images/sphx_glr_ch1_6_2d_visualization_005.png" alt="Geological map" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/Users/flow/opt/anaconda3/envs/gempy3_pre/lib/python3.10/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:105: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
   warnings.warn(
 
-&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fe4e0da9bd0&gt;
+&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fcd798ac8e0&gt;
 </pre></div>
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">section_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;section1&#39;</span><span class="p">])</span>
@@ -256,7 +256,7 @@ any combination of the above:</p>
 <img src="../../_images/sphx_glr_ch1_6_2d_visualization_006.png" srcset="../../_images/sphx_glr_ch1_6_2d_visualization_006.png" alt="section1" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/Users/flow/opt/anaconda3/envs/gempy3_pre/lib/python3.10/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:105: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
   warnings.warn(
 
-&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fe4e06fece0&gt;
+&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fcd95252e30&gt;
 </pre></div>
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">section_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;section1&#39;</span><span class="p">,</span> <span class="s1">&#39;section2&#39;</span><span class="p">])</span>
@@ -265,7 +265,7 @@ any combination of the above:</p>
 <img src="../../_images/sphx_glr_ch1_6_2d_visualization_007.png" srcset="../../_images/sphx_glr_ch1_6_2d_visualization_007.png" alt="section1, section2" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/Users/flow/opt/anaconda3/envs/gempy3_pre/lib/python3.10/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:105: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
   warnings.warn(
 
-&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fe4d76c0fa0&gt;
+&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fcd95253a90&gt;
 </pre></div>
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">15</span><span class="p">),</span> <span class="n">section_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;section1&#39;</span><span class="p">,</span> <span class="s1">&#39;section2&#39;</span><span class="p">,</span> <span class="s1">&#39;topography&#39;</span><span class="p">],</span> <span class="n">cell_number</span><span class="o">=</span><span class="s1">&#39;mid&#39;</span><span class="p">)</span>
@@ -274,10 +274,10 @@ any combination of the above:</p>
 <img src="../../_images/sphx_glr_ch1_6_2d_visualization_008.png" srcset="../../_images/sphx_glr_ch1_6_2d_visualization_008.png" alt="section1, section2, Geological map, Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/Users/flow/opt/anaconda3/envs/gempy3_pre/lib/python3.10/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:105: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
   warnings.warn(
 
-&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fe471bae560&gt;
+&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fcd58923cd0&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 4.686 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 4.313 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-tutorials-ch1-fundamentals-ch1-6-2d-visualization-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/1438cbd1cf9855187089363076f1f187/ch1_6_2d_visualization.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">ch1_6_2d_visualization.ipynb</span></code></a></p>
