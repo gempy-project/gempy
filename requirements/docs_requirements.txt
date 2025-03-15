@@ -1,5 +1,6 @@
 ﻿-r dev-requirements.txt
 
+torch
 sphinx
 sphinx-gallery
 sphinx_design
