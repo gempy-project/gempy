@@ -2,3 +2,4 @@
 
 sphinx
 sphinx-gallery
+sphinx_design
