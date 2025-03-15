@@ -3,3 +3,4 @@
 sphinx
 sphinx-gallery
 sphinx_design
+sphinx_automodapi
