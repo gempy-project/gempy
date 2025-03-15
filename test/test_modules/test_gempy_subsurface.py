@@ -36,7 +36,8 @@ def test_gempy_to_subsurface():
 
     concatenated_id_array = np.concatenate(vertex_id_array)
     concatenated_cell_id_array = np.concatenate(cell_id_array)
-    
+
+    ss = optional_dependencies.require_subsurface()
     meshes: ss.UnstructuredData = ss.UnstructuredData.from_array(
         vertex=np.concatenate(vertex),
         cells=np.concatenate(simplex_list),
