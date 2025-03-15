@@ -5,7 +5,10 @@ import gempy_viewer as gpv
 
 
 def test_subduction():
-    data_path = os.path.abspath('../examples')
+    # Get the directory containing the test file
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    # Navigate to examples directory relative to test location
+    data_path = os.path.join(current_dir, '../..', 'examples')
 
     geo_model: gp.data.GeoModel = gp.create_geomodel(
         project_name='Onlap_relations',
