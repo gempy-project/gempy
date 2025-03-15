@@ -2,7 +2,8 @@
 
 import gempy as gp
 import gempy_viewer as gpv
-import subsurface.core.structs.unstructured_elements.triangular_surface
+
+from gempy import optional_dependencies
 from gempy.core.data.enumerators import ExampleModel
 
 import numpy as np
@@ -14,7 +15,6 @@ pytestmark = pytest.mark.skipif(
     reason="This test needs higher requirements."
 )
 
-ss = pytest.importorskip("subsurface", reason="Subsurface is not installed")
 pd = pytest.importorskip("pandas", reason="Pandas is not installed")
 
 
@@ -51,9 +51,10 @@ def test_gempy_to_subsurface():
 
 def test_gempy_to_subsurface_II():
     model: gp.data.GeoModel = gp.generate_example_model(ExampleModel.ANTICLINE, compute_model=True)
-    from gempy_engine.core.data.raw_arrays_solution import RawArraysSolution
+    subsurface = optional_dependencies.require_subsurface()
+    ss = subsurface
+    
     meshes: ss.UnstructuredData = model.solutions.raw_arrays.meshes_to_subsurface()
-
     trisurf = subsurface.core.structs.unstructured_elements.triangular_surface.TriSurf(meshes)
     pyvista_mesh = ss.visualization.to_pyvista_mesh(trisurf)
     ss.visualization.pv_plot([pyvista_mesh], image_2d=True)
@@ -61,6 +62,8 @@ def test_gempy_to_subsurface_II():
 
 def test_gempy_to_subsurface_III():
     model = gp.generate_example_model(ExampleModel.ANTICLINE, compute_model=True)
+    subsurface = optional_dependencies.require_subsurface()
+    ss = subsurface
     meshes: ss.UnstructuredData = model.solutions.meshes_to_unstruct()
 
     trisurf = subsurface.core.structs.unstructured_elements.triangular_surface.TriSurf(meshes)
