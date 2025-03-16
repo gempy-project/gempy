@@ -1,6 +1,8 @@
 ﻿-r dev-requirements.txt
 
 torch
+rasterio
+
 sphinx
 sphinx-gallery
 sphinx_design
