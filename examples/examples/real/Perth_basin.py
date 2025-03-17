@@ -1,5 +1,5 @@
 """
-Perth basin.
+A geological model of the Perth basin, Australia
 ============
 """
 import os

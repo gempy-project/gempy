@@ -137,8 +137,17 @@ notebooks/prototype notebooks/vtk_res_model_adjusted_1
 notebooks/prototype notebooks/vtk_exp_smooth_trnasitions
 notebooks/prototype notebooks/plots
 
+# Remove the built document files - but not the static ones, which are required for the builds
 docs/build
-docs/source
+# The following files are generated locally during sphinx updates - they don't have to be part of the repo
+docs/source/examples
+docs/source/tutorials
+docs/source/Modeling\ Classes
+docs/source/GemPy\ API
+docs/source/Helper\ Classes
+docs/source/Plot
+docs/source/external
+docs/source/sg_execution_times.rst
 test/figs
 
 Profiles

@@ -1,11 +1,15 @@
 """
-Model 1 - Horizontal stratigraphic
+Model 1 - Horizontal stratigraphy
 ==================================
 
-This script demonstrates how to create a basic model of horizontally stacked layers using GemPy,
+A simple example with horizontal layers
+
+This script demonstrates how to create a basic model with horizontally stacked layers using GemPy,
 a Python-based, open-source library for implicit geological modeling.
 """
 
+
+# %%
 # Import necessary libraries
 import gempy as gp
 import gempy_viewer as gpv

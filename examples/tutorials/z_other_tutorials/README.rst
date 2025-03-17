@@ -1,4 +1,4 @@
-Other tutorials
+Video tutorials
 ---------------
 
-Compilation of tutorials that do not fit in the above categories.
+Compilation of tutorials for videos on the `gempy` YouTube channel https://www.youtube.com/@GemPy3D.

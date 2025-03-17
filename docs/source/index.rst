@@ -25,32 +25,29 @@ uncertainty analysis regarding subsurface structures.
 
 3D models created with GemPy may look like this:
 
-.. image:: ./_images/perth_example.png
+.. image:: ./_images/AlesModel_example.png
 
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    self
    installation
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Getting started
+   :maxdepth: 1
 
    tutorials/index
    examples/index
 
 .. toctree::
-    :maxdepth: 2
-    :caption: External examples
+    :maxdepth: 1
     
     external/external_examples
 
 .. toctree::
-   :maxdepth: 2
-   :caption: API Reference
+   :maxdepth: 1
 
    api_reference
 
@@ -60,12 +57,6 @@ Features
 
 Geological features
 ^^^^^^^^^^^^^^^^^^^
-
-
-.. raw:: html
-
-   <!-- Start with an intro to the geological features - instead of algo -->
-
 
 
 ``GemPy`` is capable of modeling complex 3D geological scenarios, including:
@@ -80,19 +71,13 @@ Geological features
 Combining these elements in GemPy allows for the generation of realistic
 3D geological models, on a par with most commercial geomodeling software.
 
-.. raw:: html
-
-   <!-- Note: we should inlcude here links to models and/or publications where
-   gempy has been used for realistic models!  -->
-
-
 
 Interpolation approach
 ^^^^^^^^^^^^^^^^^^^^^^
 
 The generation of complex structural settings is based on the powerful
 interpolation algorithm underlying ``GemPy``\ , a unviersal cokriging method
-devoised by `Lajaunie et al. (1997)` and extended by `Calcagno et al. (2008)`\ .
+devised by `Lajaunie et al. (1997)` and extended by `Calcagno et al. (2008)`\ .
 This method is used to interpolate a 3D scalar field, such that geologically
 significant interfaces are isosurfces in this field.
 
@@ -103,13 +88,13 @@ geological input data types:
 * **Surface contact points**\ : 3D coordinates of points marking the boundaries
   between different features (e.g. layer interfaces, fault planes, unconformities).
 * **Orientation measurements**\ : Orientation of the poles perpendicular to
-  the dipping of surfaces at any point in the 3D space.
+  the dipping of surfaces at any point in 3D space.
 
 ``GemPy`` also allows for the definition of topological elements such as
 combining multiple stratigraphic sequences and
 complex fault networks to be considered in the modeling process.
 
-.. image:: ./_images/modeling_principle.png
+.. image:: ./_images/data_to_model.png
 
 
 
@@ -120,84 +105,52 @@ Models generated with ``GemPy`` can be visualized in several ways:
 
 
 * direct visualization of 2D model sections (or geological maps) using
-  ``matplotlib``, including hillshading and other options for intuitive
+  `matplotlib <https://matplotlib.org/stable/index.html>`_, including hillshading and other options for intuitive
   representation of results;
-* interactive 3D visualization and model input manipulation using the
-  Visualization Toolkit (VTK);
-* We also actively develop a link to the fantastic
-  `pyvista <https://www.pyvista.org>`_ project
-  for even better visualization and model interaction in 3D.
+* 3D visualization using `Pyvista <https://www.pyvista.org>`_, including interactive plots
 
-In addition to visualization, the generated models can be exported
-in a variety of ways:
-
-
-* Export of VTK files for further visualization and processing in other
-  software such as ParaView;
-* Export of triangulated surface meshes (e.g. for further processing in
-  meshing programs);
-* Export of images (e.g. geological maps).
-
-We are also currently working on a tighter integration with several
-meshing libraries, notably `CGAL <https://www.cgal.org>`_ and `gmesh <https://gmsh.info>`_. In addition, we have
-established links to several other open-source libraries, including `pygiml <https://www.pygimli.org>`_
-for geophysical modeling and inversion. In the current state, however, these
-links have to be considered as highly experimental and they are not yet
-part of the stable release. If you are interested in these features,
-feel free to contact us.
-
-.. image:: _images/vtkFault.png
+.. image:: _images/3D_view_pyvista_example.png
    :target: https://cgre-aachen.github.io/gempy/_images/sphx_glr_ch1_1_basics_009.png
    :width: 70%
-
-
-Stochastic geological modeling
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-One of the most advanced features that sets ``GemPy`` also apart from
-available commercial packages is the full integration of stochastic
-geological modeling methods.
-``GemPy`` was designed from the ground up to support stochastic geological
-modeling for uncertainty analysis (e.g. Monte Carlo simulations, Bayesian
-inference). This was achieved by writing ``GemPy``'s core architecture
-using the numerical computation library `aesara <http://deeplearning.net/software/aesara/>`_
-to couple it with the probabilistic programming
-framework `PyMC3 <https://pymc-devs.github.io/pymc3/notebooks/getting_started.html>`_.
-This enables the use of advanced sampling methods (e.g. Hamiltonian Monte
-Carlo) and is of particular relevance when considering uncertainties in
-the model input data and making use of additional secondary information
-in a Bayesian inference framework.
-
-We can, for example, include uncertainties with respect to the z-position
-of layer boundaries in the model space. Simple Monte Carlo simulation
-via PyMC will then result in different model realizations.
-
-
-.. raw:: html
-
-   <!-- Removed images as wobble.gif not anymore included - TODO: include
-   new images to represent stochastic modeling capabilities!
-
-   <p align="center"><img src="docs/source/images/gempy_zunc.png" height="300">
-   <img src="docs/source/images/model_wobble.gif" height="300"></p>
-
-   -->
-
-
-aesara allows the automated computation of gradients, opening the door to
-the use of advanced gradient-based sampling methods
-coupling ``GemPy`` and
-`PyMC3 <https://pymc-devs.github.io/pymc3/notebooks/getting_started.html>`_
-for advanced stochastic modeling. Also, the use of aesara allows making
-use of GPUs through cuda (see the aesara documentation for more information.
-
-Making use of vtk interactivity and `Qgrid <https://github.com/quantopian/qgrid>`_ ,
-``GemPy`` provides a functional interface to interact with input data and models.
 
 For a more detailed elaboration of the theory behind ``GemPy``\ , we refer to the
 **open access scientific publication**\ :
 `\ "GemPy 1.0: open-source stochastic geological modeling and inversion"
 by de la Varga et al. (2019) <https://www.geosci-model-dev.net/12/1/2019/gmd-12-1-2019.pdf>`_.
+
+Publications using GemPy
+------------------------
+
+- Marquetto, L., Jüstel, A., Troian, G.C., Reginato, P.A.R & Simões, J.C. (2024). `Developing a 3D hydrostratigraphical model of the emerged part of the Pelotas Basin along the northern coast of Rio Grande do Sul state, Brazil <https://link.springer.com/article/10.1007/s12665-024-11609-y>`_. Environmental Earth Sciences, 83, 329.
+
+- Brisson, S., Wellmann, F., Chudalla, N., von Harten, J., & von Hagke, C. (2023). `Estimating uncertainties in 3-D models of complex fold-and-thrust belts: A case study of the Eastern Alps triangle zone <https://www.sciencedirect.com/science/article/pii/S2590197423000046>`_. Applied Computing and Geosciences, 18, 100115.
+
+- Liang, Z., de la Varga, M., & Wellmann, F. (2023). `Kernel method for gravity forward simulation in implicit probabilistic geologic modeling <https://pubs.geoscienceworld.org/geophysics/article/88/3/G43/621596/Kernel-method-for-gravity-forward-simulation-in?casa_token=VjCR7rYOkKoAAAAA:W81L1AXgW_j9GiYPciBvLIdL8Zo66IzYVYiU6Ri8xLgIjbzTmpcDE74rzmAwnokX_71_XKg>`_. Geophysics, 88(3), G43-G55.
+
+- Kong, S., Oh, J., Yoon, D., Ryu, D. W., & Kwon, H. S. (2023). `Integrating Deep Learning and Deterministic Inversion for Enhancing Fault Detection in Electrical Resistivity Surveys <https://www.mdpi.com/2076-3417/13/10/6250>`_. Applied Sciences, 13(10), 6250.
+
+- Thomas, A. T., Micallef, A., Duan, S., & Zou, Z. (2023). `Characteristics and controls of an offshore freshened groundwater system in the Shengsi region, East China Sea <https://www.frontiersin.org/articles/10.3389/feart.2023.1198215/full>`_. Frontiers in Earth Science, 11, 1198215.
+
+- Haehnel, P., Freund, H., Greskowiak, J., & Massmann, G. (2023). `Development of a three-dimensional hydrogeological model for the island of Norderney (Germany) using GemPy <https://doi.org/10.1002/gdj3.208>`_. Geoscience Data Journal, 00, 1–17.
+
+- Jüstel, A., de la Varga, M., Chudalla, N., Wagner, J. D., Back, S., & Wellmann, F. (2023). `From Maps to Models-Tutorials for structural geological modeling using GemPy and GemGIS <https://jose.theoj.org/papers/10.21105/jose.00185>`_. Journal of Open Source Education, 6(66), 185.
+
+- Thomas, A. T., von Harten, J., Jusri, T., Reiche, S., & Wellmann, F. (2022). `An integrated modeling scheme for characterizing 3D hydrogeological heterogeneity of the New Jersey shelf <https://link.springer.com/article/10.1007/s11001-022-09475-z>`_. Marine Geophysical Research, 43, 11.
+
+- Sehsah, H., Eldosouky, A. M., & Pham, L. T. (2022). `Incremental Emplacement of the Sierra Nevada Batholith Constrained by U-Pb Ages and Potential Field Data <https://www.journals.uchicago.edu/doi/full/10.1086/722724?casa_token=pkl8XXrtyokAAAAA:YeIh1t-qwt6AT8yz_vTj4OQapaR1_nZUjS3Az_77VZXlpyfGu0cN5DSzrz6NNjoj4Qv5iud4rdc>`_. The Journal of Geology, 130(5), 381-391.
+
+- von Harten, J., de la Varga, M., Hillier, M., & Wellmann, F. (2021). `Informed Local Smoothing in 3D Implicit Geological Modeling <https://www.mdpi.com/2075-163X/11/11/1281>`_. Minerals 2021, 11, 1281.
+
+- Schaaf, A., de la Varga, M., Wellmann, F., & Bond, C. E. (2021). `Constraining stochastic 3-D structural geological models with topology information using approximate Bayesian computation in GemPy 2.1 <https://gmd.copernicus.org/articles/14/3899/2021/gmd-14-3899-2021.html>`_. Geosci. Model Dev., 14(6), 3899-3913. doi:10.5194/gmd-14-3899-2021.
+
+- Güdük, N., de la Varga, M., Kaukolinna, J., & Wellmann, F. (2021). `Model-Based Probabilistic Inversion Using Magnetic Data: A Case Study on the Kevitsa Deposit <https://www.mdpi.com/2076-3263/11/4/150>`_. Geosciences, 11(4):150.
+
+- Wu, J., & Sun, B. (2021). `Discontinuous mechanical analysis of manifold element strain of rock slope based on open source Gempy <https://www.e3s-conferences.org/articles/e3sconf/abs/2021/24/e3sconf_caes2021_03084/e3sconf_caes2021_03084.html>`_. In E3S Web of Conferences (Vol. 248, p. 03084). EDP Sciences.
+
+- Stamm, F. A., de la Varga, M., & Wellmann, F. (2019). `Actors, actions, and uncertainties: optimizing decision-making based on 3-D structural geological models <https://se.copernicus.org/articles/10/2015/2019/se-10-2015-2019.html>`_. Solid Earth, 10, 2015–2043.
+
+- Wellmann, F., Schaaf, A., de la Varga, M., & von Hagke, C. (2019). `From Google Earth to 3D Geology Problem 2: Seeing Below the Surface of the Digital Earth <https://www.sciencedirect.com/science/article/pii/B9780128140482000156>`_. In Developments in Structural Geology and Tectonics (Vol. 5, pp. 189-204). Elsevier.
+
 
 References
 ----------
@@ -205,6 +158,7 @@ References
 * de la Varga, M., Schaaf, A., and Wellmann, F.: GemPy 1.0: `open-source stochastic geological modeling and inversion,` Geosci. Model Dev., 12, 1–32, https://doi.org/10.5194/gmd-12-1-2019, 2019.
 * Calcagno, P., Chilès, J. P., Courrioux, G., & Guillen, A. (2008). `Geological modelling from field data and geological knowledge: Part I. Modelling method coupling 3D potential-field interpolation and geological rules.` Physics of the Earth and Planetary Interiors, 171(1-4), 147-157.
 * `Lajaunie, C., Courrioux, G., & Manuel, L. (1997). `Foliation fields and 3D cartography in geology: principles of a method based on potential interpolation.` Mathematical Geology, 29(4), 571-584.
+
 
 
 Indices and tables

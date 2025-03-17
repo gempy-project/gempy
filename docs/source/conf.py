@@ -37,7 +37,6 @@ make_external_gallery.make_example_gallery()
 pyvista.set_error_output_file('errors.txt')
 pyvista.OFF_SCREEN = True  # Not necessary - simply an insurance policy. Ensure that offscreen rendering is used for docs generation
 pyvista.set_plot_theme('document')  # Preferred plotting style for documentation
-# pyvista.rcParams['window_size'] = np.array([1024, 768]) * 2
 pyvista.FIGURE_PATH = os.path.join(os.path.abspath('_images/'), 'auto-generated/')  # Save figures in specified directory
 pyvista.BUILDING_GALLERY = True
 if not os.path.exists(pyvista.FIGURE_PATH):
@@ -155,6 +154,7 @@ sphinx_gallery_conf = {
                 # 'integrations'
         ],
         "filename_pattern"       : r"\.py",
+ #       "ignore_pattern": r"(__init__\.py|ch1_7_3d_visualization\.py|mik\.py)$",  # Exclude specific files: uncomment for faster build as long as examples are broken
         "download_all_examples"  : False,  # Remove the "Download all examples" button from the top level gallery
         "within_subsection_order": FileNameSortKey,  # Sort gallery example by file name instead of number of lines (default)
         "backreferences_dir"     : 'gen_modules/backreferences',  # directory where function granular galleries are stored

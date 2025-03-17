@@ -94,8 +94,8 @@ def add_orientations(geo_model: GeoModel,
         y: Sequence[float],
         z: Sequence[float],
         elements_names: Sequence[str],
-        pole_vector: Optional[Sequence[np.ndarray]] = None,
-        orientation: Optional[Sequence[np.ndarray]] = None,
+        pole_vector: Optional[Union[Sequence[np.ndarray], np.ndarray]] = None,
+        orientation: Optional[Union[Sequence[np.ndarray], np.ndarray]] = None,
         nugget: Optional[Sequence[float]] = None
 ) -> StructuralFrame:
     """Add orientation data to the geological model.
@@ -110,8 +110,8 @@ def add_orientations(geo_model: GeoModel,
         y (Sequence[float]): Sequence of y-coordinates for the orientation points.
         z (Sequence[float]): Sequence of z-coordinates for the orientation points.
         elements_names (Sequence[str]): Sequence of element names corresponding to each orientation point.
-        pole_vector (Optional[Sequence[np.ndarray]]): Sequence of pole vectors for the orientation points.
-        orientation (Optional[Sequence[np.ndarray]]): Sequence of orientation angles (azimuth, dip, polarity) for the orientation points.
+        pole_vector (Optional[Union[Sequence[np.ndarray], np.ndarray]]): Sequence of pole vectors for each orientation point. If is np.ndarray, it should have shape (n, 3).
+        orientation (Optional[Union[Sequence[np.ndarray], np.ndarray]]): Sequence of orientation angles for each orientation point. If is np.ndarray, it should have shape (n, 3).
         nugget (Optional[Sequence[float]]): Sequence of nugget values for each orientation point. If not provided,
             a default value will be used for all points.
 
@@ -125,12 +125,15 @@ def add_orientations(geo_model: GeoModel,
     if pole_vector is None and orientation is None:
         raise ValueError("Either pole_vector or orientation must be provided.")
 
-    if orientation:  # Convert orientation to pole_vector (or gradient)
+    if orientation is not None:
+        orientation = np.array(orientation, ndmin=2)
         pole_vector = convert_orientation_to_pole_vector(
             azimuth=orientation[:, 0],
             dip=orientation[:, 1],
             polarity=orientation[:, 2]
         )
+    else:
+        pole_vector = np.array(pole_vector, ndmin=2)
 
     elements_names = _validate_args(elements_names, x, y, z, pole_vector)
 
