@@ -7,7 +7,7 @@ from ..core.data.structural_group import StructuralGroup
 
 
 def map_stack_to_surfaces(gempy_model: GeoModel, mapping_object: Union[dict[str, list[str]] | dict[str, tuple]],
-                          set_series: bool = True, remove_unused_series=True) -> StructuralFrame:
+                          set_series: bool = True, remove_unused_series=True, series_data: list = None) -> StructuralFrame:
     """
     Map stack (series) to surfaces by reorganizing elements between groups in a GeoModel's structural frame.
 
@@ -20,6 +20,7 @@ def map_stack_to_surfaces(gempy_model: GeoModel, mapping_object: Union[dict[str,
         mapping_object (Union[dict[str, list[str]] | dict[str, tuple]]): Dictionary mapping group names to element names.
         set_series (bool, optional): If True, creates new series for groups not present in the GeoModel. Defaults to True.
         remove_unused_series (bool, optional): If True, removes groups without any elements. Defaults to True.
+        series_data (list, optional): List of series data from JSON containing structural relations. Defaults to None.
 
     Returns:
         StructuralFrame: The updated StructuralFrame object.
@@ -27,14 +28,21 @@ def map_stack_to_surfaces(gempy_model: GeoModel, mapping_object: Union[dict[str,
     structural_groups: list[StructuralGroup] = gempy_model.structural_frame.structural_groups
 
     for index, (group_name, elements) in enumerate(mapping_object.items()):
-
         # region Create new series if needed
         group_already_exists = any(group.name == group_name for group in structural_groups)
         if set_series and not group_already_exists:
+            # Get structural relation from series_data if available
+            structural_relation = StackRelationType.ERODE  # Default value
+            if series_data:
+                for series in series_data:
+                    if series['name'] == group_name:
+                        structural_relation = StackRelationType[series['structural_relation']]
+                        break
+
             new_group = StructuralGroup(
                 name=group_name,
                 elements=[],
-                structural_relation=StackRelationType.ERODE
+                structural_relation=structural_relation
             )
             structural_groups.insert(index, new_group)
         # endregion
