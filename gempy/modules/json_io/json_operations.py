@@ -8,6 +8,7 @@ from typing import Dict, Any, Optional, List
 import numpy as np
 
 from .schema import SurfacePoint, Orientation, GemPyModelJson
+from gempy_engine.core.data.stack_relation_type import StackRelationType
 
 
 class JsonIO:
@@ -75,9 +76,9 @@ class JsonIO:
             interpolation_options=interpolation_options
         )
         
-        # Map series to surfaces
-        for series in data['series']:
-            map_stack_to_surfaces(model, {series['name']: series['surfaces']})
+        # Map series to surfaces with structural relations
+        mapping_object = {series['name']: series['surfaces'] for series in data['series']}
+        map_stack_to_surfaces(model, mapping_object, series_data=data['series'])
         
         return model
     
