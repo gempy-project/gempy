@@ -12,7 +12,7 @@ from gempy.core.data.orientations import OrientationsTable
 from gempy.core.data.structural_frame import StructuralFrame
 from gempy.core.data.grid import Grid
 from gempy.core.data.geo_model import GeoModel
-from .schema import SurfacePoint, GemPyModelJson
+from .schema import SurfacePoint, Orientation, GemPyModelJson
 
 
 class JsonIO:
@@ -36,11 +36,12 @@ class JsonIO:
         if not JsonIO._validate_json_schema(data):
             raise ValueError("Invalid JSON schema")
             
-        # Load surface points
+        # Load surface points and orientations
         surface_points = JsonIO._load_surface_points(data['surface_points'])
+        orientations = JsonIO._load_orientations(data['orientations'])
         
         # TODO: Load other components
-        raise NotImplementedError("Only surface points loading is implemented")
+        raise NotImplementedError("Only surface points and orientations loading is implemented")
     
     @staticmethod
     def _load_surface_points(surface_points_data: List[SurfacePoint]) -> SurfacePointsTable:
@@ -89,6 +90,69 @@ class JsonIO:
             nugget=nugget,
             name_id_map=name_id_map
         )
+
+    @staticmethod
+    def _load_orientations(orientations_data: List[Orientation]) -> OrientationsTable:
+        """
+        Load orientations from JSON data.
+        
+        Args:
+            orientations_data (List[Orientation]): List of orientation dictionaries
+            
+        Returns:
+            OrientationsTable: A new OrientationsTable instance
+            
+        Raises:
+            ValueError: If the data is invalid or missing required fields
+        """
+        # Validate data structure
+        required_fields = {'x', 'y', 'z', 'G_x', 'G_y', 'G_z', 'id', 'nugget', 'polarity'}
+        for i, ori in enumerate(orientations_data):
+            missing_fields = required_fields - set(ori.keys())
+            if missing_fields:
+                raise ValueError(f"Missing required fields in orientation {i}: {missing_fields}")
+            
+            # Validate data types
+            if not all(isinstance(ori[field], (int, float)) for field in ['x', 'y', 'z', 'G_x', 'G_y', 'G_z', 'nugget']):
+                raise ValueError(f"Invalid data type in orientation {i}. All coordinates, gradients, and nugget must be numeric.")
+            if not isinstance(ori['id'], int):
+                raise ValueError(f"Invalid data type in orientation {i}. ID must be an integer.")
+            if not isinstance(ori['polarity'], int) or ori['polarity'] not in {-1, 1}:
+                raise ValueError(f"Invalid polarity in orientation {i}. Must be 1 (normal) or -1 (reverse).")
+        
+        # Extract coordinates and other data
+        x = np.array([ori['x'] for ori in orientations_data])
+        y = np.array([ori['y'] for ori in orientations_data])
+        z = np.array([ori['z'] for ori in orientations_data])
+        G_x = np.array([ori['G_x'] for ori in orientations_data])
+        G_y = np.array([ori['G_y'] for ori in orientations_data])
+        G_z = np.array([ori['G_z'] for ori in orientations_data])
+        ids = np.array([ori['id'] for ori in orientations_data])
+        nugget = np.array([ori['nugget'] for ori in orientations_data])
+        
+        # Apply polarity to gradients
+        for i, ori in enumerate(orientations_data):
+            if ori['polarity'] == -1:
+                G_x[i] *= -1
+                G_y[i] *= -1
+                G_z[i] *= -1
+        
+        # Create name_id_map from unique IDs
+        unique_ids = np.unique(ids)
+        name_id_map = {f"surface_{id}": id for id in unique_ids}
+        
+        # Create OrientationsTable
+        return OrientationsTable.from_arrays(
+            x=x,
+            y=y,
+            z=z,
+            G_x=G_x,
+            G_y=G_y,
+            G_z=G_z,
+            names=[f"surface_{id}" for id in ids],
+            nugget=nugget,
+            name_id_map=name_id_map
+        )
     
     @staticmethod
     def save_model_to_json(model: GeoModel, file_path: str) -> None:
@@ -114,8 +178,8 @@ class JsonIO:
             bool: True if valid, False otherwise
         """
         # Check required top-level keys
-        required_keys = {'metadata', 'surface_points', 'orientations', 'faults', 
-                        'series', 'grid_settings', 'interpolation_options'}
+        required_keys = {'metadata', 'surface_points', 'orientations', 'series', 
+                        'grid_settings', 'interpolation_options'}
         if not all(key in data for key in required_keys):
             return False
             
@@ -130,6 +194,21 @@ class JsonIO:
             if not all(isinstance(sp[key], (int, float)) for key in ['x', 'y', 'z', 'nugget']):
                 return False
             if not isinstance(sp['id'], int):
+                return False
+                
+        # Validate orientations
+        if not isinstance(data['orientations'], list):
+            return False
+            
+        for ori in data['orientations']:
+            required_ori_keys = {'x', 'y', 'z', 'G_x', 'G_y', 'G_z', 'id', 'nugget', 'polarity'}
+            if not all(key in ori for key in required_ori_keys):
+                return False
+            if not all(isinstance(ori[key], (int, float)) for key in ['x', 'y', 'z', 'G_x', 'G_y', 'G_z', 'nugget']):
+                return False
+            if not isinstance(ori['id'], int):
+                return False
+            if not isinstance(ori['polarity'], int) or ori['polarity'] not in {-1, 1}:
                 return False
                 
         return True 
