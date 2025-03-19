@@ -8,11 +8,14 @@ The model consists of two horizontal layers (rock1 and rock2) with surface point
 
 # %%
 # Import necessary libraries
+import matplotlib
+matplotlib.use('Agg')  # Use non-interactive backend
 import gempy as gp
 import gempy_viewer as gpv
 import numpy as np
 import json
 from pathlib import Path
+import matplotlib.pyplot as plt
 
 # %%
 # Define the model data
@@ -24,28 +27,26 @@ model_data = {
         "owner": "tutorial"
     },
     "surface_points": [
-        # rock1 surface points
-        {"x": 500.0, "y": 500.0, "z": 500.0, "id": 0, "nugget": 0.00002},
-        {"x": 500.0, "y": 500.0, "z": 600.0, "id": 0, "nugget": 0.00002},
-        {"x": 500.0, "y": 500.0, "z": 700.0, "id": 0, "nugget": 0.00002},
-        {"x": 500.0, "y": 500.0, "z": 800.0, "id": 0, "nugget": 0.00002},
-        {"x": 500.0, "y": 500.0, "z": 900.0, "id": 0, "nugget": 0.00002},
         # rock2 surface points
-        {"x": 500.0, "y": 500.0, "z": 200.0, "id": 1, "nugget": 0.00002},
-        {"x": 500.0, "y": 500.0, "z": 300.0, "id": 1, "nugget": 0.00002},
-        {"x": 500.0, "y": 500.0, "z": 400.0, "id": 1, "nugget": 0.00002},
-        {"x": 500.0, "y": 500.0, "z": 500.0, "id": 1, "nugget": 0.00002},
-        {"x": 500.0, "y": 500.0, "z": 600.0, "id": 1, "nugget": 0.00002},
+        {"x": 100.0, "y": 200.0, "z": 600.0, "id": 1, "nugget": 0.00002},
+        {"x": 500.0, "y": 200.0, "z": 600.0, "id": 1, "nugget": 0.00002},
+        {"x": 900.0, "y": 200.0, "z": 600.0, "id": 1, "nugget": 0.00002},
+        {"x": 100.0, "y": 800.0, "z": 600.0, "id": 1, "nugget": 0.00002},
+        {"x": 500.0, "y": 800.0, "z": 600.0, "id": 1, "nugget": 0.00002},
+        {"x": 900.0, "y": 800.0, "z": 600.0, "id": 1, "nugget": 0.00002},
+        # rock1 surface points
+        {"x": 100.0, "y": 200.0, "z": 400.0, "id": 0, "nugget": 0.00002},
+        {"x": 500.0, "y": 200.0, "z": 400.0, "id": 0, "nugget": 0.00002},
+        {"x": 900.0, "y": 200.0, "z": 400.0, "id": 0, "nugget": 0.00002},
+        {"x": 100.0, "y": 800.0, "z": 400.0, "id": 0, "nugget": 0.00002},
+        {"x": 500.0, "y": 800.0, "z": 400.0, "id": 0, "nugget": 0.00002},
+        {"x": 900.0, "y": 800.0, "z": 400.0, "id": 0, "nugget": 0.00002},
     ],
     "orientations": [
-        # rock1 orientations
-        {"x": 500.0, "y": 500.0, "z": 500.0, "G_x": 0.0, "G_y": 0.0, "G_z": 1.0, "id": 0, "nugget": 0.01, "polarity": 1},
-        {"x": 500.0, "y": 500.0, "z": 700.0, "G_x": 0.0, "G_y": 0.0, "G_z": 1.0, "id": 0, "nugget": 0.01, "polarity": 1},
-        {"x": 500.0, "y": 500.0, "z": 900.0, "G_x": 0.0, "G_y": 0.0, "G_z": 1.0, "id": 0, "nugget": 0.01, "polarity": 1},
-        # rock2 orientations
-        {"x": 500.0, "y": 500.0, "z": 200.0, "G_x": 0.0, "G_y": 0.0, "G_z": 1.0, "id": 1, "nugget": 0.01, "polarity": 1},
-        {"x": 500.0, "y": 500.0, "z": 400.0, "G_x": 0.0, "G_y": 0.0, "G_z": 1.0, "id": 1, "nugget": 0.01, "polarity": 1},
+        # rock2 orientation
         {"x": 500.0, "y": 500.0, "z": 600.0, "G_x": 0.0, "G_y": 0.0, "G_z": 1.0, "id": 1, "nugget": 0.01, "polarity": 1},
+        # rock1 orientation
+        {"x": 500.0, "y": 500.0, "z": 400.0, "G_x": 0.0, "G_y": 0.0, "G_z": 1.0, "id": 0, "nugget": 0.01, "polarity": 1},
     ],
     "series": [
         {
@@ -73,10 +74,24 @@ with open(json_file, "w") as f:
 model = gp.modules.json_io.JsonIO.load_model_from_json(str(json_file))
 
 # %%
+# Compute the geological model
+gp.compute_model(model)
+
+# %%
 # Plot the model
 # Plot the initial geological model in the y direction without results
-gpv.plot_2d(model, direction=['y'], show_results=False)
+fig, ax = plt.subplots(figsize=(10, 6))
+gpv.plot_2d(model, direction=['y'], show_results=False, ax=ax)
+plt.title("Initial Geological Model (y direction)")
+plt.savefig('initial_model_y.png')
+plt.close()
 
 # Plot the result of the model in the x and y direction with data and without boundaries
-gpv.plot_2d(model, direction=['x'], show_data=True, show_boundaries=False)
-gpv.plot_2d(model, direction=['y'], show_data=True, show_boundaries=False) 
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
+gpv.plot_2d(model, direction=['x'], show_data=True, show_boundaries=False, ax=ax1)
+ax1.set_title("Model with Data (x direction)")
+gpv.plot_2d(model, direction=['y'], show_data=True, show_boundaries=False, ax=ax2)
+ax2.set_title("Model with Data (y direction)")
+plt.tight_layout()
+plt.savefig('model_with_data.png')
+plt.close() 
