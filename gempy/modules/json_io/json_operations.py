@@ -7,11 +7,6 @@ import json
 from typing import Dict, Any, Optional, List
 import numpy as np
 
-from gempy.core.data.surface_points import SurfacePointsTable
-from gempy.core.data.orientations import OrientationsTable
-from gempy.core.data.structural_frame import StructuralFrame
-from gempy.core.data.grid import Grid
-from gempy.core.data.geo_model import GeoModel
 from .schema import SurfacePoint, Orientation, GemPyModelJson
 
 
@@ -19,7 +14,7 @@ class JsonIO:
     """Class for handling JSON I/O operations for GemPy models."""
     
     @staticmethod
-    def load_model_from_json(file_path: str) -> GeoModel:
+    def load_model_from_json(file_path: str):
         """
         Load a GemPy model from a JSON file.
         
@@ -29,6 +24,13 @@ class JsonIO:
         Returns:
             GeoModel: A new GemPy model instance
         """
+        # Import here to avoid circular imports
+        from gempy.core.data.geo_model import GeoModel
+        from gempy.core.data.grid import Grid
+        from gempy.core.data.structural_frame import StructuralFrame
+        from gempy_engine.core.data import InterpolationOptions
+        from gempy.API.map_stack_to_surfaces_API import map_stack_to_surfaces
+        
         with open(file_path, 'r') as f:
             data = json.load(f)
             
@@ -36,20 +38,57 @@ class JsonIO:
         if not JsonIO._validate_json_schema(data):
             raise ValueError("Invalid JSON schema")
             
-        # Load surface points and orientations
-        surface_points = JsonIO._load_surface_points(data['surface_points'])
-        orientations = JsonIO._load_orientations(data['orientations'])
+        # Get surface names from series data
+        surface_names = []
+        for series in data['series']:
+            surface_names.extend(series['surfaces'])
         
-        # TODO: Load other components
-        raise NotImplementedError("Only surface points and orientations loading is implemented")
+        # Create id to name mapping
+        id_to_name = {i: name for i, name in enumerate(surface_names)}
+            
+        # Load surface points and orientations
+        surface_points = JsonIO._load_surface_points(data['surface_points'], id_to_name)
+        orientations = JsonIO._load_orientations(data['orientations'], id_to_name)
+        
+        # Create structural frame
+        structural_frame = StructuralFrame.from_data_tables(surface_points, orientations)
+        
+        # Create grid
+        grid = Grid(
+            extent=data['grid_settings']['regular_grid_extent'],
+            resolution=data['grid_settings']['regular_grid_resolution']
+        )
+        
+        # Create interpolation options
+        interpolation_options = InterpolationOptions(
+            range=1.7,  # Default value
+            c_o=10,  # Default value
+            mesh_extraction=True,  # Default value
+            number_octree_levels=1  # Default value
+        )
+        
+        # Create GeoModel
+        model = GeoModel(
+            name=data['metadata']['name'],
+            structural_frame=structural_frame,
+            grid=grid,
+            interpolation_options=interpolation_options
+        )
+        
+        # Map series to surfaces
+        for series in data['series']:
+            map_stack_to_surfaces(model, {series['name']: series['surfaces']})
+        
+        return model
     
     @staticmethod
-    def _load_surface_points(surface_points_data: List[SurfacePoint]) -> SurfacePointsTable:
+    def _load_surface_points(surface_points_data: List[SurfacePoint], id_to_name: Dict[int, str]):
         """
         Load surface points from JSON data.
         
         Args:
             surface_points_data (List[SurfacePoint]): List of surface point dictionaries
+            id_to_name (Dict[int, str]): Mapping from surface IDs to names
             
         Returns:
             SurfacePointsTable: A new SurfacePointsTable instance
@@ -57,6 +96,9 @@ class JsonIO:
         Raises:
             ValueError: If the data is invalid or missing required fields
         """
+        # Import here to avoid circular imports
+        from gempy.core.data.surface_points import SurfacePointsTable
+        
         # Validate data structure
         required_fields = {'x', 'y', 'z', 'id', 'nugget'}
         for i, sp in enumerate(surface_points_data):
@@ -79,25 +121,26 @@ class JsonIO:
         
         # Create name_id_map from unique IDs
         unique_ids = np.unique(ids)
-        name_id_map = {f"surface_{id}": id for id in unique_ids}
+        name_id_map = {id_to_name[id]: id for id in unique_ids}
         
         # Create SurfacePointsTable
         return SurfacePointsTable.from_arrays(
             x=x,
             y=y,
             z=z,
-            names=[f"surface_{id}" for id in ids],
+            names=[id_to_name[id] for id in ids],
             nugget=nugget,
             name_id_map=name_id_map
         )
 
     @staticmethod
-    def _load_orientations(orientations_data: List[Orientation]) -> OrientationsTable:
+    def _load_orientations(orientations_data: List[Orientation], id_to_name: Dict[int, str]):
         """
         Load orientations from JSON data.
         
         Args:
             orientations_data (List[Orientation]): List of orientation dictionaries
+            id_to_name (Dict[int, str]): Mapping from surface IDs to names
             
         Returns:
             OrientationsTable: A new OrientationsTable instance
@@ -105,6 +148,9 @@ class JsonIO:
         Raises:
             ValueError: If the data is invalid or missing required fields
         """
+        # Import here to avoid circular imports
+        from gempy.core.data.orientations import OrientationsTable
+        
         # Validate data structure
         required_fields = {'x', 'y', 'z', 'G_x', 'G_y', 'G_z', 'id', 'nugget', 'polarity'}
         for i, ori in enumerate(orientations_data):
@@ -139,7 +185,7 @@ class JsonIO:
         
         # Create name_id_map from unique IDs
         unique_ids = np.unique(ids)
-        name_id_map = {f"surface_{id}": id for id in unique_ids}
+        name_id_map = {id_to_name[id]: id for id in unique_ids}
         
         # Create OrientationsTable
         return OrientationsTable.from_arrays(
@@ -149,18 +195,18 @@ class JsonIO:
             G_x=G_x,
             G_y=G_y,
             G_z=G_z,
-            names=[f"surface_{id}" for id in ids],
+            names=[id_to_name[id] for id in ids],
             nugget=nugget,
             name_id_map=name_id_map
         )
     
     @staticmethod
-    def save_model_to_json(model: GeoModel, file_path: str) -> None:
+    def save_model_to_json(model, file_path: str) -> None:
         """
         Save a GemPy model to a JSON file.
         
         Args:
-            model (GeoModel): The GemPy model to save
+            model: The GemPy model to save
             file_path (str): Path where to save the JSON file
         """
         # TODO: Implement saving logic
