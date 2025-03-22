@@ -104,6 +104,13 @@ with open(json_file, "w") as f:
 # Load the model from JSON
 model = JsonIO.load_model_from_json(str(json_file))
 
+# Print metadata to verify it's properly loaded
+print("\nModel Metadata:")
+print(f"Name: {model.meta.name}")
+print(f"Creation Date: {model.meta.creation_date}")
+print(f"Last Modification Date: {model.meta.last_modification_date}")
+print(f"Owner: {model.meta.owner}")
+
 # Print structural groups
 print("\nStructural Groups:")
 print(model.structural_frame.structural_groups)
@@ -129,6 +136,21 @@ gp.set_is_fault(
 # %%
 # Compute the geological model
 gp.compute_model(model)
+
+# %%
+# Save the computed model to a new JSON file
+computed_json_file = tutorial_dir / "multiple_series_faults_computed.json"
+JsonIO.save_model_to_json(model, str(computed_json_file))
+print(f"\nSaved computed model to: {computed_json_file}")
+
+# %%
+# Load the computed model back to verify metadata is preserved
+reloaded_model = JsonIO.load_model_from_json(str(computed_json_file))
+print("\nReloaded Model Metadata:")
+print(f"Name: {reloaded_model.meta.name}")
+print(f"Creation Date: {reloaded_model.meta.creation_date}")
+print(f"Last Modification Date: {reloaded_model.meta.last_modification_date}")
+print(f"Owner: {reloaded_model.meta.owner}")
 
 # %%
 # Plot the model

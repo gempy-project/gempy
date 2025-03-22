@@ -26,7 +26,7 @@ class JsonIO:
             GeoModel: A new GemPy model instance
         """
         # Import here to avoid circular imports
-        from gempy.core.data.geo_model import GeoModel
+        from gempy.core.data.geo_model import GeoModel, GeoModelMeta
         from gempy.core.data.grid import Grid
         from gempy.core.data.structural_frame import StructuralFrame
         from gempy_engine.core.data import InterpolationOptions
@@ -68,6 +68,14 @@ class JsonIO:
             number_octree_levels=1  # Default value
         )
         
+        # Create GeoModelMeta with all metadata fields
+        model_meta = GeoModelMeta(
+            name=data['metadata']['name'],
+            creation_date=data['metadata'].get('creation_date', None),
+            last_modification_date=data['metadata'].get('last_modification_date', None),
+            owner=data['metadata'].get('owner', None)
+        )
+        
         # Create GeoModel
         model = GeoModel(
             name=data['metadata']['name'],
@@ -75,6 +83,9 @@ class JsonIO:
             grid=grid,
             interpolation_options=interpolation_options
         )
+        
+        # Set the metadata
+        model.meta = model_meta
         
         # Map series to surfaces with structural relations
         mapping_object = {series['name']: series['surfaces'] for series in data['series']}
@@ -210,8 +221,75 @@ class JsonIO:
             model: The GemPy model to save
             file_path (str): Path where to save the JSON file
         """
-        # TODO: Implement saving logic
-        raise NotImplementedError("JSON saving not yet implemented")
+        # Create JSON structure
+        json_data = {
+            "metadata": {
+                "name": model.meta.name,
+                "creation_date": model.meta.creation_date,
+                "last_modification_date": model.meta.last_modification_date,
+                "owner": model.meta.owner
+            },
+            "surface_points": [],
+            "orientations": [],
+            "series": [],
+            "grid_settings": {
+                "regular_grid_resolution": model.grid._dense_grid.resolution.tolist(),
+                "regular_grid_extent": model.grid._dense_grid.extent.tolist(),
+                "octree_levels": None  # TODO: Add octree levels if needed
+            },
+            "interpolation_options": {}
+        }
+        
+        # Get series and surface information
+        for group in model.structural_frame.structural_groups:
+            series_entry = {
+                "name": group.name,
+                "surfaces": [element.name for element in group.elements],
+                "structural_relation": group.structural_relation.name,
+                "colors": [element.color for element in group.elements]
+            }
+            json_data["series"].append(series_entry)
+        
+        # Get surface points
+        surface_points_table = model.surface_points_copy
+        xyz_values = surface_points_table.xyz
+        ids = surface_points_table.ids
+        nugget_values = surface_points_table.nugget
+        
+        for i in range(len(xyz_values)):
+            point = {
+                "x": float(xyz_values[i, 0]),
+                "y": float(xyz_values[i, 1]),
+                "z": float(xyz_values[i, 2]),
+                "id": int(ids[i]),
+                "nugget": float(nugget_values[i])
+            }
+            json_data["surface_points"].append(point)
+        
+        # Get orientations
+        orientations_table = model.orientations_copy
+        ori_xyz_values = orientations_table.xyz
+        ori_grads_values = orientations_table.grads
+        ori_ids = orientations_table.ids
+        ori_nugget_values = orientations_table.nugget
+        
+        for i in range(len(ori_xyz_values)):
+            orientation = {
+                "x": float(ori_xyz_values[i, 0]),
+                "y": float(ori_xyz_values[i, 1]),
+                "z": float(ori_xyz_values[i, 2]),
+                "G_x": float(ori_grads_values[i, 0]),
+                "G_y": float(ori_grads_values[i, 1]),
+                "G_z": float(ori_grads_values[i, 2]),
+                "id": int(ori_ids[i]),
+                "nugget": float(ori_nugget_values[i]),
+                "polarity": 1  # Default value, update if available
+            }
+            json_data["orientations"].append(orientation)
+        
+        # Save to file
+        with open(file_path, 'w') as f:
+            json.dump(json_data, f, indent=4)
     
     @staticmethod
     def _validate_json_schema(data: Dict[str, Any]) -> bool:
