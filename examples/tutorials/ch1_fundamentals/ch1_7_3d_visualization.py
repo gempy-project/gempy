@@ -10,6 +10,9 @@ import gempy as gp
 import gempy_viewer as gpv
 from gempy import generate_example_model
 from gempy.core.data.enumerators import ExampleModel
+import dotenv
+
+dotenv.load_dotenv()
 
 # sphinx_gallery_thumbnail_number = -1
 
@@ -70,6 +73,7 @@ link = gpv.plot_to_liquid_earth(
     file_name="gempy_model",
     user_token=None,  # If None, it will try to grab it from the environment
     grab_link=True,
+    make_new_space=False
 )
 
 print(f"Generated Link: {link}")
