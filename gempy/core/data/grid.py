@@ -254,7 +254,11 @@ class Grid:
         if self.GridTypes.CENTERED in self.active_grids:
             if self.centered_grid is None: raise AttributeError('Centered grid is active but not defined')
             values.append(self.centered_grid.values)
-
+        
+        # make sure values is not empty
+        if len(values) == 0:
+            return self.values
+        
         self.values = np.concatenate(values)
 
         return self.values
