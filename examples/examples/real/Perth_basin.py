@@ -25,8 +25,7 @@ else:
 geo_model: gp.data.GeoModel = gp.create_geomodel(
     project_name='Perth_Basin',
     extent=[337000, 400000, 6640000, 6710000, -18000, 1000],
-    resolution=[100, 100, 100],
-    refinement=4,
+    refinement=6,
     importer_helper=gp.data.ImporterHelper(
         path_to_orientations=data_path + "/data/input_data/perth_basin/Paper_GU2F_sc_faults_topo_Foliations.csv",
         path_to_surface_points=data_path + "/data/input_data/perth_basin/Paper_GU2F_sc_faults_topo_Points.csv",
