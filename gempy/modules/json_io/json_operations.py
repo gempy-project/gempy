@@ -10,7 +10,6 @@ from datetime import datetime
 
 from .schema import SurfacePoint, Orientation, GemPyModelJson
 from gempy_engine.core.data.stack_relation_type import StackRelationType
-from gempy.core.data.structural_element import StructuralElement
 
 
 class JsonIO:
@@ -44,8 +43,6 @@ class JsonIO:
         from gempy.core.data.structural_frame import StructuralFrame
         from gempy_engine.core.data import InterpolationOptions
         from gempy.API.map_stack_to_surfaces_API import map_stack_to_surfaces
-        from gempy_engine.core.data.stack_relation_type import StackRelationType
-        from gempy.core.data.structural_group import StructuralGroup
         
         with open(file_path, 'r') as f:
             data = json.load(f)
@@ -54,30 +51,52 @@ class JsonIO:
         if not JsonIO._validate_json_schema(data):
             raise ValueError("Invalid JSON schema")
             
-        # Create a mapping from surface IDs to names
-        id_to_name = {}
+        # Get surface names from series data
+        surface_names = []
         for series in data['series']:
-            for surface_name in series['surfaces']:
-                # Find the ID for this surface name from surface points
-                for sp in data['surface_points']:
-                    if sp['id'] not in id_to_name:
-                        id_to_name[sp['id']] = surface_name
-                        break
+            surface_names.extend(series['surfaces'])
         
-        # Create GeoModel with default structural frame
+        # Create a mapping from surface points to their names
+        surface_point_names = {}
+        for sp in data['surface_points']:
+            # Find the surface name that corresponds to this ID
+            surface_name = None
+            for series in data['series']:
+                for i, name in enumerate(series['surfaces']):
+                    if i == sp['id']:  # Match the ID with the index in the series
+                        surface_name = name
+                        break
+                if surface_name is not None:
+                    break
+            surface_point_names[sp['id']] = surface_name if surface_name is not None else f"surface_{sp['id']}"
+        
+        # Load surface points and orientations
+        surface_points = JsonIO._load_surface_points(data['surface_points'], surface_point_names)
+        orientations = JsonIO._load_orientations(data['orientations'], surface_point_names)
+        
+        # Create structural frame
+        structural_frame = StructuralFrame.from_data_tables(surface_points, orientations)
+        
+        # Create grid
+        grid = Grid(
+            extent=data['grid_settings']['regular_grid_extent'],
+            resolution=data['grid_settings']['regular_grid_resolution']
+        )
+        
+        # Create interpolation options with kernel options
+        interpolation_options = InterpolationOptions(
+            range=data['interpolation_options'].get('kernel_options', {}).get('range', 1.7),
+            c_o=data['interpolation_options'].get('kernel_options', {}).get('c_o', 10),
+            mesh_extraction=data['interpolation_options'].get('mesh_extraction', True),
+            number_octree_levels=data['interpolation_options'].get('number_octree_levels', 1)
+        )
+        
+        # Create GeoModel
         model = GeoModel(
             name=data['metadata']['name'],
-            structural_frame=StructuralFrame.initialize_default_structure(),
-            grid=Grid(
-                extent=data['grid_settings']['regular_grid_extent'],
-                resolution=data['grid_settings']['regular_grid_resolution']
-            ),
-            interpolation_options=InterpolationOptions(
-                range=data['interpolation_options'].get('kernel_options', {}).get('range', 1.7),
-                c_o=data['interpolation_options'].get('kernel_options', {}).get('c_o', 10),
-                mesh_extraction=data['interpolation_options'].get('mesh_extraction', True),
-                number_octree_levels=data['interpolation_options'].get('number_octree_levels', 1)
-            )
+            structural_frame=structural_frame,
+            grid=grid,
+            interpolation_options=interpolation_options
         )
         
         # Set the metadata with proper dates
@@ -89,34 +108,15 @@ class JsonIO:
         )
         model.meta = model_meta
         
-        # Load surface points and orientations with the ID to name mapping
-        surface_points = JsonIO._load_surface_points(data['surface_points'], id_to_name)
-        orientations = JsonIO._load_orientations(data['orientations'], id_to_name)
+        # Map series to surfaces with structural relations
+        mapping_object = {series['name']: series['surfaces'] for series in data['series']}
+        map_stack_to_surfaces(model, mapping_object, series_data=data['series'])
         
-        # Create structural groups based on series data
-        model.structural_frame.structural_groups = []
-        for i, series in enumerate(data['series']):
-            group = StructuralGroup(
-                name=series['name'],
-                elements=[],
-                structural_relation=StackRelationType[series.get('structural_relation', 'ERODE')]
-            )
-            model.structural_frame.structural_groups.append(group)
-            
-            # Add elements to the group
-            for surface_name in series['surfaces']:
-                element = StructuralElement(
-                    name=surface_name,
-                    id=len(group.elements),
-                    surface_points=surface_points.get_surface_points_by_name(surface_name),
-                    orientations=orientations.get_orientations_by_name(surface_name),
-                    color=next(model.structural_frame.color_generator)
-                )
-                group.append_element(element)
-        
-        # Ensure the last group has the correct structural relation for the basement
-        if model.structural_frame.structural_groups:
-            model.structural_frame.structural_groups[-1].structural_relation = StackRelationType.BASEMENT
+        # Set fault relations after structural groups are set up
+        if 'fault_relations' in data and data['fault_relations'] is not None:
+            fault_relations = np.array(data['fault_relations'])
+            if fault_relations.shape == (len(model.structural_frame.structural_groups), len(model.structural_frame.structural_groups)):
+                model.structural_frame.fault_relations = fault_relations
         
         return model
     
@@ -131,9 +131,25 @@ class JsonIO:
             
         Returns:
             SurfacePointsTable: A new SurfacePointsTable instance
+            
+        Raises:
+            ValueError: If the data is invalid or missing required fields
         """
         # Import here to avoid circular imports
         from gempy.core.data.surface_points import SurfacePointsTable
+        
+        # Validate data structure
+        required_fields = {'x', 'y', 'z', 'nugget', 'id'}
+        for i, sp in enumerate(surface_points_data):
+            missing_fields = required_fields - set(sp.keys())
+            if missing_fields:
+                raise ValueError(f"Missing required fields in surface point {i}: {missing_fields}")
+            
+            # Validate data types
+            if not all(isinstance(sp[field], (int, float)) for field in ['x', 'y', 'z', 'nugget']):
+                raise ValueError(f"Invalid data type in surface point {i}. All coordinates and nugget must be numeric.")
+            if not isinstance(sp['id'], int):
+                raise ValueError(f"Invalid data type in surface point {i}. ID must be an integer.")
         
         # Extract coordinates and other data
         x = np.array([sp['x'] for sp in surface_points_data])
@@ -168,9 +184,27 @@ class JsonIO:
             
         Returns:
             OrientationsTable: A new OrientationsTable instance
+            
+        Raises:
+            ValueError: If the data is invalid or missing required fields
         """
         # Import here to avoid circular imports
         from gempy.core.data.orientations import OrientationsTable
+        
+        # Validate data structure
+        required_fields = {'x', 'y', 'z', 'G_x', 'G_y', 'G_z', 'nugget', 'polarity', 'id'}
+        for i, ori in enumerate(orientations_data):
+            missing_fields = required_fields - set(ori.keys())
+            if missing_fields:
+                raise ValueError(f"Missing required fields in orientation {i}: {missing_fields}")
+            
+            # Validate data types
+            if not all(isinstance(ori[field], (int, float)) for field in ['x', 'y', 'z', 'G_x', 'G_y', 'G_z', 'nugget']):
+                raise ValueError(f"Invalid data type in orientation {i}. All coordinates, gradients, and nugget must be numeric.")
+            if not isinstance(ori.get('polarity', 1), int) or ori.get('polarity', 1) not in {-1, 1}:
+                raise ValueError(f"Invalid polarity in orientation {i}. Must be 1 (normal) or -1 (reverse).")
+            if not isinstance(ori['id'], int):
+                raise ValueError(f"Invalid data type in orientation {i}. ID must be an integer.")
         
         # Extract coordinates and other data
         x = np.array([ori['x'] for ori in orientations_data])
