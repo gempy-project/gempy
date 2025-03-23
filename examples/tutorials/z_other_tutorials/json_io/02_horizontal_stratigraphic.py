@@ -51,7 +51,8 @@ model_data = {
     "series": [
         {
             "name": "Strat_Series",
-            "surfaces": ["rock2", "rock1"]
+            "surfaces": ["rock2", "rock1"],
+            "structural_relation": "ERODE"
         }
     ],
     "grid_settings": {
