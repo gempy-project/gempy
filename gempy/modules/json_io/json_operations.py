@@ -59,9 +59,16 @@ class JsonIO:
         # Create a mapping from surface points to their names
         surface_point_names = {}
         for sp in data['surface_points']:
-            surface_point_names[sp['id']] = next((name for series in data['series'] 
-                                                for name in series['surfaces'] 
-                                                if name in surface_names), "surface_0")
+            # Find the surface name that corresponds to this ID
+            surface_name = None
+            for series in data['series']:
+                for i, name in enumerate(series['surfaces']):
+                    if i == sp['id']:  # Match the ID with the index in the series
+                        surface_name = name
+                        break
+                if surface_name is not None:
+                    break
+            surface_point_names[sp['id']] = surface_name if surface_name is not None else f"surface_{sp['id']}"
         
         # Load surface points and orientations
         surface_points = JsonIO._load_surface_points(data['surface_points'], surface_point_names)
@@ -114,13 +121,13 @@ class JsonIO:
         return model
     
     @staticmethod
-    def _load_surface_points(surface_points_data: List[SurfacePoint], id_to_name: Dict[int, str]):
+    def _load_surface_points(surface_points_data: List[SurfacePoint], id_to_name: Optional[Dict[int, str]] = None):
         """
         Load surface points from JSON data.
         
         Args:
             surface_points_data (List[SurfacePoint]): List of surface point dictionaries
-            id_to_name (Dict[int, str]): Mapping from surface IDs to names
+            id_to_name (Optional[Dict[int, str]]): Optional mapping from surface IDs to names
             
         Returns:
             SurfacePointsTable: A new SurfacePointsTable instance
@@ -132,7 +139,7 @@ class JsonIO:
         from gempy.core.data.surface_points import SurfacePointsTable
         
         # Validate data structure
-        required_fields = {'x', 'y', 'z', 'nugget', 'id'}  # Add 'id' back to required fields
+        required_fields = {'x', 'y', 'z', 'nugget', 'id'}
         for i, sp in enumerate(surface_points_data):
             missing_fields = required_fields - set(sp.keys())
             if missing_fields:
@@ -149,7 +156,13 @@ class JsonIO:
         y = np.array([sp['y'] for sp in surface_points_data])
         z = np.array([sp['z'] for sp in surface_points_data])
         nugget = np.array([sp['nugget'] for sp in surface_points_data])
-        names = [id_to_name.get(sp['id'], "surface_0") for sp in surface_points_data]
+        
+        # Handle names based on whether id_to_name mapping is provided
+        if id_to_name is not None:
+            names = [id_to_name.get(sp['id'], f"surface_{sp['id']}") for sp in surface_points_data]
+        else:
+            # If no mapping provided, use surface IDs as names
+            names = [f"surface_{sp['id']}" for sp in surface_points_data]
         
         # Create SurfacePointsTable
         return SurfacePointsTable.from_arrays(
@@ -161,13 +174,13 @@ class JsonIO:
         )
 
     @staticmethod
-    def _load_orientations(orientations_data: List[Orientation], id_to_name: Dict[int, str]):
+    def _load_orientations(orientations_data: List[Orientation], id_to_name: Optional[Dict[int, str]] = None):
         """
         Load orientations from JSON data.
         
         Args:
             orientations_data (List[Orientation]): List of orientation dictionaries
-            id_to_name (Dict[int, str]): Mapping from surface IDs to names
+            id_to_name (Optional[Dict[int, str]]): Optional mapping from surface IDs to names
             
         Returns:
             OrientationsTable: A new OrientationsTable instance
@@ -179,7 +192,7 @@ class JsonIO:
         from gempy.core.data.orientations import OrientationsTable
         
         # Validate data structure
-        required_fields = {'x', 'y', 'z', 'G_x', 'G_y', 'G_z', 'nugget', 'polarity', 'id'}  # Add 'id' back to required fields
+        required_fields = {'x', 'y', 'z', 'G_x', 'G_y', 'G_z', 'nugget', 'polarity', 'id'}
         for i, ori in enumerate(orientations_data):
             missing_fields = required_fields - set(ori.keys())
             if missing_fields:
@@ -201,7 +214,13 @@ class JsonIO:
         G_y = np.array([ori['G_y'] for ori in orientations_data])
         G_z = np.array([ori['G_z'] for ori in orientations_data])
         nugget = np.array([ori['nugget'] for ori in orientations_data])
-        names = [id_to_name.get(ori['id'], "surface_0") for ori in orientations_data]
+        
+        # Handle names based on whether id_to_name mapping is provided
+        if id_to_name is not None:
+            names = [id_to_name.get(ori['id'], f"surface_{ori['id']}") for ori in orientations_data]
+        else:
+            # If no mapping provided, use surface IDs as names
+            names = [f"surface_{ori['id']}" for ori in orientations_data]
         
         # Apply polarity to gradients
         for i, ori in enumerate(orientations_data):
