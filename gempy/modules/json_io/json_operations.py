@@ -6,6 +6,7 @@ This module provides functionality to load and save GemPy models to/from JSON fi
 import json
 from typing import Dict, Any, Optional, List
 import numpy as np
+from datetime import datetime
 
 from .schema import SurfacePoint, Orientation, GemPyModelJson
 from gempy_engine.core.data.stack_relation_type import StackRelationType
@@ -14,6 +15,17 @@ from gempy_engine.core.data.stack_relation_type import StackRelationType
 class JsonIO:
     """Class for handling JSON I/O operations for GemPy models."""
     
+    @staticmethod
+    def _numpy_to_list(obj):
+        """Convert numpy arrays to lists for JSON serialization."""
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        elif isinstance(obj, np.integer):
+            return int(obj)
+        elif isinstance(obj, np.floating):
+            return float(obj)
+        return obj
+
     @staticmethod
     def load_model_from_json(file_path: str):
         """
@@ -44,12 +56,16 @@ class JsonIO:
         for series in data['series']:
             surface_names.extend(series['surfaces'])
         
-        # Create id to name mapping
-        id_to_name = {i: name for i, name in enumerate(surface_names)}
-            
+        # Create a mapping from surface points to their names
+        surface_point_names = {}
+        for sp in data['surface_points']:
+            surface_point_names[sp['id']] = next((name for series in data['series'] 
+                                                for name in series['surfaces'] 
+                                                if name in surface_names), "surface_0")
+        
         # Load surface points and orientations
-        surface_points = JsonIO._load_surface_points(data['surface_points'], id_to_name)
-        orientations = JsonIO._load_orientations(data['orientations'], id_to_name)
+        surface_points = JsonIO._load_surface_points(data['surface_points'], surface_point_names)
+        orientations = JsonIO._load_orientations(data['orientations'], surface_point_names)
         
         # Create structural frame
         structural_frame = StructuralFrame.from_data_tables(surface_points, orientations)
@@ -60,20 +76,12 @@ class JsonIO:
             resolution=data['grid_settings']['regular_grid_resolution']
         )
         
-        # Create interpolation options
+        # Create interpolation options with kernel options
         interpolation_options = InterpolationOptions(
-            range=1.7,  # Default value
-            c_o=10,  # Default value
-            mesh_extraction=True,  # Default value
-            number_octree_levels=1  # Default value
-        )
-        
-        # Create GeoModelMeta with all metadata fields
-        model_meta = GeoModelMeta(
-            name=data['metadata']['name'],
-            creation_date=data['metadata'].get('creation_date', None),
-            last_modification_date=data['metadata'].get('last_modification_date', None),
-            owner=data['metadata'].get('owner', None)
+            range=data['interpolation_options'].get('kernel_options', {}).get('range', 1.7),
+            c_o=data['interpolation_options'].get('kernel_options', {}).get('c_o', 10),
+            mesh_extraction=data['interpolation_options'].get('mesh_extraction', True),
+            number_octree_levels=data['interpolation_options'].get('number_octree_levels', 1)
         )
         
         # Create GeoModel
@@ -84,12 +92,24 @@ class JsonIO:
             interpolation_options=interpolation_options
         )
         
-        # Set the metadata
+        # Set the metadata with proper dates
+        model_meta = GeoModelMeta(
+            name=data['metadata']['name'],
+            creation_date=data['metadata'].get('creation_date', datetime.now().isoformat()),
+            last_modification_date=data['metadata'].get('last_modification_date', datetime.now().isoformat()),
+            owner=data['metadata'].get('owner', None)
+        )
         model.meta = model_meta
         
         # Map series to surfaces with structural relations
         mapping_object = {series['name']: series['surfaces'] for series in data['series']}
         map_stack_to_surfaces(model, mapping_object, series_data=data['series'])
+        
+        # Set fault relations after structural groups are set up
+        if 'fault_relations' in data and data['fault_relations'] is not None:
+            fault_relations = np.array(data['fault_relations'])
+            if fault_relations.shape == (len(model.structural_frame.structural_groups), len(model.structural_frame.structural_groups)):
+                model.structural_frame.fault_relations = fault_relations
         
         return model
     
@@ -112,7 +132,7 @@ class JsonIO:
         from gempy.core.data.surface_points import SurfacePointsTable
         
         # Validate data structure
-        required_fields = {'x', 'y', 'z', 'id', 'nugget'}
+        required_fields = {'x', 'y', 'z', 'nugget', 'id'}  # Add 'id' back to required fields
         for i, sp in enumerate(surface_points_data):
             missing_fields = required_fields - set(sp.keys())
             if missing_fields:
@@ -128,21 +148,16 @@ class JsonIO:
         x = np.array([sp['x'] for sp in surface_points_data])
         y = np.array([sp['y'] for sp in surface_points_data])
         z = np.array([sp['z'] for sp in surface_points_data])
-        ids = np.array([sp['id'] for sp in surface_points_data])
         nugget = np.array([sp['nugget'] for sp in surface_points_data])
-        
-        # Create name_id_map from unique IDs
-        unique_ids = np.unique(ids)
-        name_id_map = {id_to_name[id]: id for id in unique_ids}
+        names = [id_to_name.get(sp['id'], "surface_0") for sp in surface_points_data]
         
         # Create SurfacePointsTable
         return SurfacePointsTable.from_arrays(
             x=x,
             y=y,
             z=z,
-            names=[id_to_name[id] for id in ids],
-            nugget=nugget,
-            name_id_map=name_id_map
+            names=names,
+            nugget=nugget
         )
 
     @staticmethod
@@ -164,7 +179,7 @@ class JsonIO:
         from gempy.core.data.orientations import OrientationsTable
         
         # Validate data structure
-        required_fields = {'x', 'y', 'z', 'G_x', 'G_y', 'G_z', 'id', 'nugget', 'polarity'}
+        required_fields = {'x', 'y', 'z', 'G_x', 'G_y', 'G_z', 'nugget', 'polarity', 'id'}  # Add 'id' back to required fields
         for i, ori in enumerate(orientations_data):
             missing_fields = required_fields - set(ori.keys())
             if missing_fields:
@@ -173,10 +188,10 @@ class JsonIO:
             # Validate data types
             if not all(isinstance(ori[field], (int, float)) for field in ['x', 'y', 'z', 'G_x', 'G_y', 'G_z', 'nugget']):
                 raise ValueError(f"Invalid data type in orientation {i}. All coordinates, gradients, and nugget must be numeric.")
+            if not isinstance(ori.get('polarity', 1), int) or ori.get('polarity', 1) not in {-1, 1}:
+                raise ValueError(f"Invalid polarity in orientation {i}. Must be 1 (normal) or -1 (reverse).")
             if not isinstance(ori['id'], int):
                 raise ValueError(f"Invalid data type in orientation {i}. ID must be an integer.")
-            if not isinstance(ori['polarity'], int) or ori['polarity'] not in {-1, 1}:
-                raise ValueError(f"Invalid polarity in orientation {i}. Must be 1 (normal) or -1 (reverse).")
         
         # Extract coordinates and other data
         x = np.array([ori['x'] for ori in orientations_data])
@@ -185,19 +200,15 @@ class JsonIO:
         G_x = np.array([ori['G_x'] for ori in orientations_data])
         G_y = np.array([ori['G_y'] for ori in orientations_data])
         G_z = np.array([ori['G_z'] for ori in orientations_data])
-        ids = np.array([ori['id'] for ori in orientations_data])
         nugget = np.array([ori['nugget'] for ori in orientations_data])
+        names = [id_to_name.get(ori['id'], "surface_0") for ori in orientations_data]
         
         # Apply polarity to gradients
         for i, ori in enumerate(orientations_data):
-            if ori['polarity'] == -1:
+            if ori.get('polarity', 1) == -1:
                 G_x[i] *= -1
                 G_y[i] *= -1
                 G_z[i] *= -1
-        
-        # Create name_id_map from unique IDs
-        unique_ids = np.unique(ids)
-        name_id_map = {id_to_name[id]: id for id in unique_ids}
         
         # Create OrientationsTable
         return OrientationsTable.from_arrays(
@@ -207,9 +218,8 @@ class JsonIO:
             G_x=G_x,
             G_y=G_y,
             G_z=G_z,
-            names=[id_to_name[id] for id in ids],
-            nugget=nugget,
-            name_id_map=name_id_map
+            names=names,
+            nugget=nugget
         )
     
     @staticmethod
@@ -233,11 +243,19 @@ class JsonIO:
             "orientations": [],
             "series": [],
             "grid_settings": {
-                "regular_grid_resolution": model.grid._dense_grid.resolution.tolist(),
-                "regular_grid_extent": model.grid._dense_grid.extent.tolist(),
+                "regular_grid_resolution": JsonIO._numpy_to_list(model.grid._dense_grid.resolution),
+                "regular_grid_extent": JsonIO._numpy_to_list(model.grid._dense_grid.extent),
                 "octree_levels": None  # TODO: Add octree levels if needed
             },
-            "interpolation_options": {}
+            "interpolation_options": {
+                "kernel_options": {
+                    "range": float(model.interpolation_options.kernel_options.range),
+                    "c_o": float(model.interpolation_options.kernel_options.c_o)
+                },
+                "mesh_extraction": bool(model.interpolation_options.mesh_extraction),
+                "number_octree_levels": int(model.interpolation_options.number_octree_levels)
+            },
+            "fault_relations": JsonIO._numpy_to_list(model.structural_frame.fault_relations) if hasattr(model.structural_frame, 'fault_relations') else None
         }
         
         # Get series and surface information
