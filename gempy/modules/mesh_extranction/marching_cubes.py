@@ -71,11 +71,14 @@ def extract_mesh_for_element(structural_element: StructuralElement,
     if mask is not None:
         volume = volume * mask
     
+    # TODO: We need to pass the mask arrays to the marching cubes to account for discontinuities. The mask array are in InterpOutput too if I remember correctly.
+    
     # Extract mesh using marching cubes
     verts, faces, _, _ = measure.marching_cubes(
         volume=volume,
         level=structural_element.scalar_field,
-        spacing=(regular_grid.dx, regular_grid.dy, regular_grid.dz)
+        spacing=(regular_grid.dx, regular_grid.dy, regular_grid.dz),
+        mask=None
     )
     
     # Adjust vertices to correct coordinates in the model's extent
