@@ -29,8 +29,6 @@ def set_meshes_with_marching_cubes(model: GeoModel) -> None:
     regular_grid: RegularGrid = model.grid.regular_grid
     structural_groups: list[StructuralGroup] = model.structural_frame.structural_groups
 
-    print(model.solutions.scalar_field_at_surface_points)
-
     if not model.solutions.octrees_output or not model.solutions.octrees_output[0].outputs_centers:
         raise ValueError("No interpolation outputs available for mesh extraction.")
     
@@ -53,13 +51,29 @@ def set_meshes_with_marching_cubes(model: GeoModel) -> None:
             continue
             
         output_group: InterpOutput = output_lvl0[e]
+
         scalar_field_matrix = output_group.exported_fields_dense_grid.scalar_field
+
+        # TODO: get the correct mask
+        #  for some reason output_group.mask_components has 8 more entries then necessary
+        #  output_group.mask_components[8:] seems to be correct for plotting when transposed
+        #  at least for the 2D slice plot. But it does not work for the marching cubes
+        mask = np.invert(output_group.mask_components[8:].reshape(model.grid.regular_grid.resolution).T)
+
+        # plot slice of mask as sanity check
+        import matplotlib.pyplot as plt
+        plt.imshow(mask[:, 5, :])
+        # set extent to match the model
+        plt.xlim(0, 40)
+        plt.ylim(0, 20)
+        plt.show()
 
         for element in structural_group.elements:
             extract_mesh_for_element(
                 structural_element=element,
                 regular_grid=regular_grid,
-                scalar_field=scalar_field_matrix
+                scalar_field=scalar_field_matrix,
+                mask=mask
             )
 
 
@@ -82,11 +96,13 @@ def extract_mesh_for_element(structural_element: StructuralElement,
     """
     # Apply mask if provided
     volume = scalar_field.reshape(regular_grid.resolution)
-    if mask is not None:
-        volume = volume * mask
     
     # TODO: We need to pass the mask arrays to the marching cubes to account for discontinuities. The mask array are
     #  in InterpOutput too if I remember correctly.
+
+    # TODO: Do we apply the mask before or add it as an argument to the marching cubes function?
+    # if mask is not None:
+    #     volume = volume * mask
 
     # Extract mesh using marching cubes
     verts, faces, _, _ = measure.marching_cubes(
