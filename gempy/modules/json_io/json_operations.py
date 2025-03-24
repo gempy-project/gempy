@@ -8,7 +8,7 @@ from typing import Dict, Any, Optional, List
 import numpy as np
 from datetime import datetime
 
-from .schema import SurfacePoint, Orientation, GemPyModelJson
+from .schema import SurfacePoint, Orientation, GemPyModelJson, IdNameMapping
 from gempy_engine.core.data.stack_relation_type import StackRelationType
 
 
@@ -20,11 +20,16 @@ class JsonIO:
         """Convert numpy arrays to lists for JSON serialization."""
         if isinstance(obj, np.ndarray):
             return obj.tolist()
-        elif isinstance(obj, np.integer):
+        elif isinstance(obj, (np.integer, np.int32, np.int64)):
             return int(obj)
-        elif isinstance(obj, np.floating):
+        elif isinstance(obj, (np.floating, np.float32, np.float64)):
             return float(obj)
         return obj
+
+    @staticmethod
+    def _create_id_to_name(name_to_id: Dict[str, int]) -> Dict[int, str]:
+        """Create an id_to_name mapping from a name_to_id mapping."""
+        return {id: name for name, id in name_to_id.items()}
 
     @staticmethod
     def load_model_from_json(file_path: str):
@@ -56,23 +61,32 @@ class JsonIO:
         for series in data['series']:
             surface_names.extend(series['surfaces'])
         
-        # Create a mapping from surface points to their names
-        surface_point_names = {}
-        for sp in data['surface_points']:
-            # Find the surface name that corresponds to this ID
-            surface_name = None
+        # Use the id_name_mapping if available, otherwise create one from series data
+        if 'id_name_mapping' in data and data['id_name_mapping']:
+            name_to_id = data['id_name_mapping']['name_to_id']
+            id_to_name = JsonIO._create_id_to_name(name_to_id)
+        else:
+            # Create a mapping from surface points to their names
+            surface_point_names = {}
+            # First, create a mapping from surface names to their IDs
+            surface_id_map = {}
             for series in data['series']:
                 for i, name in enumerate(series['surfaces']):
-                    if i == sp['id']:  # Match the ID with the index in the series
-                        surface_name = name
-                        break
-                if surface_name is not None:
-                    break
-            surface_point_names[sp['id']] = surface_name if surface_name is not None else f"surface_{sp['id']}"
+                    # Find the first surface point with this name
+                    for sp in data['surface_points']:
+                        if sp['id'] not in surface_id_map:
+                            surface_id_map[sp['id']] = name
+                            break
+            
+            # Now create the mapping from IDs to names
+            for sp in data['surface_points']:
+                surface_point_names[sp['id']] = surface_id_map.get(sp['id'], f"surface_{sp['id']}")
+            id_to_name = surface_point_names
+            name_to_id = {name: id for id, name in id_to_name.items()}
         
         # Load surface points and orientations
-        surface_points = JsonIO._load_surface_points(data['surface_points'], surface_point_names)
-        orientations = JsonIO._load_orientations(data['orientations'], surface_point_names)
+        surface_points = JsonIO._load_surface_points(data['surface_points'], id_to_name)
+        orientations = JsonIO._load_orientations(data['orientations'], id_to_name)
         
         # Create structural frame
         structural_frame = StructuralFrame.from_data_tables(surface_points, orientations)
@@ -262,8 +276,8 @@ class JsonIO:
             "orientations": [],
             "series": [],
             "grid_settings": {
-                "regular_grid_resolution": JsonIO._numpy_to_list(model.grid._dense_grid.resolution),
-                "regular_grid_extent": JsonIO._numpy_to_list(model.grid._dense_grid.extent),
+                "regular_grid_resolution": [int(x) for x in model.grid._dense_grid.resolution],
+                "regular_grid_extent": [float(x) for x in model.grid._dense_grid.extent],
                 "octree_levels": None  # TODO: Add octree levels if needed
             },
             "interpolation_options": {
@@ -274,7 +288,10 @@ class JsonIO:
                 "mesh_extraction": bool(model.interpolation_options.mesh_extraction),
                 "number_octree_levels": int(model.interpolation_options.number_octree_levels)
             },
-            "fault_relations": JsonIO._numpy_to_list(model.structural_frame.fault_relations) if hasattr(model.structural_frame, 'fault_relations') else None
+            "fault_relations": [[int(x) for x in row] for row in model.structural_frame.fault_relations] if hasattr(model.structural_frame, 'fault_relations') else None,
+            "id_name_mapping": {
+                "name_to_id": {k: int(v) for k, v in model.structural_frame.element_name_id_map.items()}
+            }
         }
         
         # Get series and surface information
@@ -371,6 +388,16 @@ class JsonIO:
             if not isinstance(ori['id'], int):
                 return False
             if not isinstance(ori['polarity'], int) or ori['polarity'] not in {-1, 1}:
+                return False
+                
+        # Validate id_name_mapping if present
+        if 'id_name_mapping' in data:
+            mapping = data['id_name_mapping']
+            if not isinstance(mapping, dict):
+                return False
+            if 'name_to_id' not in mapping:
+                return False
+            if not isinstance(mapping['name_to_id'], dict):
                 return False
                 
         return True 
