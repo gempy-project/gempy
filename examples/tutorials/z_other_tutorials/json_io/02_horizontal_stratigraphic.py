@@ -16,14 +16,15 @@ import numpy as np
 import json
 from pathlib import Path
 import matplotlib.pyplot as plt
+from datetime import datetime
 
 # %%
 # Define the model data
 model_data = {
     "metadata": {
         "name": "Horizontal Stratigraphic Model",
-        "creation_date": "2024-01-01T00:00:00",
-        "last_modification_date": "2024-01-01T00:00:00",
+        "creation_date": "2024-03-24",
+        "last_modification_date": datetime.now().strftime("%Y-%m-%d"),
         "owner": "GemPy Team"
     },
     "surface_points": [
