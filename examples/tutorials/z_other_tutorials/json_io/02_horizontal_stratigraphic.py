@@ -21,46 +21,53 @@ import matplotlib.pyplot as plt
 # Define the model data
 model_data = {
     "metadata": {
-        "name": "horizontal_stratigraphic",
-        "creation_date": "2024-03-19",
-        "last_modification_date": "2024-03-19",
-        "owner": "tutorial"
+        "name": "Horizontal Stratigraphic Model",
+        "creation_date": "2024-01-01T00:00:00",
+        "last_modification_date": "2024-01-01T00:00:00",
+        "owner": "GemPy Team"
     },
     "surface_points": [
-        # rock2 surface points
-        {"x": 100.0, "y": 200.0, "z": 600.0, "id": 1, "nugget": 0.00002},
-        {"x": 500.0, "y": 200.0, "z": 600.0, "id": 1, "nugget": 0.00002},
-        {"x": 900.0, "y": 200.0, "z": 600.0, "id": 1, "nugget": 0.00002},
-        {"x": 100.0, "y": 800.0, "z": 600.0, "id": 1, "nugget": 0.00002},
-        {"x": 500.0, "y": 800.0, "z": 600.0, "id": 1, "nugget": 0.00002},
-        {"x": 900.0, "y": 800.0, "z": 600.0, "id": 1, "nugget": 0.00002},
-        # rock1 surface points
-        {"x": 100.0, "y": 200.0, "z": 400.0, "id": 0, "nugget": 0.00002},
-        {"x": 500.0, "y": 200.0, "z": 400.0, "id": 0, "nugget": 0.00002},
-        {"x": 900.0, "y": 200.0, "z": 400.0, "id": 0, "nugget": 0.00002},
-        {"x": 100.0, "y": 800.0, "z": 400.0, "id": 0, "nugget": 0.00002},
-        {"x": 500.0, "y": 800.0, "z": 400.0, "id": 0, "nugget": 0.00002},
-        {"x": 900.0, "y": 800.0, "z": 400.0, "id": 0, "nugget": 0.00002},
+        {"x": 0.0, "y": 0.0, "z": 0.0, "id": 1, "nugget": 0.0},
+        {"x": 1.0, "y": 0.0, "z": 0.0, "id": 1, "nugget": 0.0},
+        {"x": 0.0, "y": 1.0, "z": 0.0, "id": 1, "nugget": 0.0},
+        {"x": 1.0, "y": 1.0, "z": 0.0, "id": 1, "nugget": 0.0},
+        {"x": 0.0, "y": 0.0, "z": 1.0, "id": 2, "nugget": 0.0},
+        {"x": 1.0, "y": 0.0, "z": 1.0, "id": 2, "nugget": 0.0},
+        {"x": 0.0, "y": 1.0, "z": 1.0, "id": 2, "nugget": 0.0},
+        {"x": 1.0, "y": 1.0, "z": 1.0, "id": 2, "nugget": 0.0}
     ],
     "orientations": [
-        # rock2 orientation
-        {"x": 500.0, "y": 500.0, "z": 600.0, "G_x": 0.0, "G_y": 0.0, "G_z": 1.0, "id": 1, "nugget": 0.01, "polarity": 1},
-        # rock1 orientation
-        {"x": 500.0, "y": 500.0, "z": 400.0, "G_x": 0.0, "G_y": 0.0, "G_z": 1.0, "id": 0, "nugget": 0.01, "polarity": 1},
+        {"x": 0.5, "y": 0.5, "z": 0.0, "G_x": 0.0, "G_y": 0.0, "G_z": 1.0, "id": 1, "nugget": 0.0, "polarity": 1},
+        {"x": 0.5, "y": 0.5, "z": 1.0, "G_x": 0.0, "G_y": 0.0, "G_z": 1.0, "id": 2, "nugget": 0.0, "polarity": 1}
     ],
     "series": [
         {
-            "name": "Strat_Series",
-            "surfaces": ["rock2", "rock1"],
-            "structural_relation": "ERODE"
+            "name": "series1",
+            "surfaces": ["layer1", "layer2"],
+            "structural_relation": "ERODE",
+            "colors": ["#ff0000", "#00ff00"]
         }
     ],
     "grid_settings": {
         "regular_grid_resolution": [10, 10, 10],
-        "regular_grid_extent": [0, 1000, 0, 1000, 0, 1000],
+        "regular_grid_extent": [0.0, 1.0, 0.0, 1.0, 0.0, 1.0],
         "octree_levels": None
     },
-    "interpolation_options": {}
+    "interpolation_options": {
+        "kernel_options": {
+            "range": 1.7,
+            "c_o": 10
+        },
+        "mesh_extraction": True,
+        "number_octree_levels": 1
+    },
+    "fault_relations": None,
+    "id_name_mapping": {
+        "name_to_id": {
+            "layer1": 1,
+            "layer2": 2
+        }
+    }
 }
 
 # %%

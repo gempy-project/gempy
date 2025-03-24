@@ -9,7 +9,7 @@ The model consists of two layers (rock1, rock2) and a fault that offsets them.
 # %%
 # Import necessary libraries
 import matplotlib
-matplotlib.use('Agg')  # Use non-interactive backend
+# matplotlib.use('Agg')  # Use non-interactive backend
 import gempy as gp
 import gempy_viewer as gpv
 import numpy as np
@@ -18,79 +18,87 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 from gempy_engine.core.data.stack_relation_type import StackRelationType
 from gempy.modules.json_io.json_operations import JsonIO  # Updated import path
+from datetime import datetime
 
 # %%
 # Define the model data
 model_data = {
     "metadata": {
-        "name": "multiple_series_faults",
-        "creation_date": "2024-03-19",
-        "last_modification_date": "2024-03-19",
-        "owner": "tutorial"
+        "name": "Multiple Series and Faults Model",
+        "creation_date": datetime.now().isoformat(),
+        "last_modification_date": datetime.now().isoformat(),
+        "owner": "GemPy Team"
     },
     "surface_points": [
-        # fault surface points (previously rock1 points)
-        {"x": 0.0, "y": 200.0, "z": 600.0, "id": 2, "nugget": 0.00002},
-        {"x": 0.0, "y": 500.0, "z": 600.0, "id": 2, "nugget": 0.00002},
-        {"x": 0.0, "y": 800.0, "z": 600.0, "id": 2, "nugget": 0.00002},
-        {"x": 200.0, "y": 200.0, "z": 600.0, "id": 2, "nugget": 0.00002},
-        {"x": 200.0, "y": 500.0, "z": 600.0, "id": 2, "nugget": 0.00002},
-        {"x": 200.0, "y": 800.0, "z": 600.0, "id": 2, "nugget": 0.00002},
-        {"x": 800.0, "y": 200.0, "z": 200.0, "id": 2, "nugget": 0.00002},
-        {"x": 800.0, "y": 500.0, "z": 200.0, "id": 2, "nugget": 0.00002},
-        {"x": 800.0, "y": 800.0, "z": 200.0, "id": 2, "nugget": 0.00002},
-        {"x": 1000.0, "y": 200.0, "z": 200.0, "id": 2, "nugget": 0.00002},
-        {"x": 1000.0, "y": 500.0, "z": 200.0, "id": 2, "nugget": 0.00002},
-        {"x": 1000.0, "y": 800.0, "z": 200.0, "id": 2, "nugget": 0.00002},
-        # rock2 surface points
-        {"x": 0.0, "y": 200.0, "z": 800.0, "id": 1, "nugget": 0.00002},
-        {"x": 0.0, "y": 800.0, "z": 800.0, "id": 1, "nugget": 0.00002},
-        {"x": 200.0, "y": 200.0, "z": 800.0, "id": 1, "nugget": 0.00002},
-        {"x": 200.0, "y": 800.0, "z": 800.0, "id": 1, "nugget": 0.00002},
-        {"x": 800.0, "y": 200.0, "z": 400.0, "id": 1, "nugget": 0.00002},
-        {"x": 800.0, "y": 800.0, "z": 400.0, "id": 1, "nugget": 0.00002},
-        {"x": 1000.0, "y": 200.0, "z": 400.0, "id": 1, "nugget": 0.00002},
-        {"x": 1000.0, "y": 800.0, "z": 400.0, "id": 1, "nugget": 0.00002},
-        # rock1 surface points (previously fault points)
-        {"x": 500.0, "y": 500.0, "z": 500.0, "id": 0, "nugget": 0.00002},
-        {"x": 450.0, "y": 500.0, "z": 600.0, "id": 0, "nugget": 0.00002},
-        {"x": 500.0, "y": 200.0, "z": 500.0, "id": 0, "nugget": 0.00002},
-        {"x": 450.0, "y": 200.0, "z": 600.0, "id": 0, "nugget": 0.00002},
-        {"x": 500.0, "y": 800.0, "z": 500.0, "id": 0, "nugget": 0.00002},
-        {"x": 450.0, "y": 800.0, "z": 600.0, "id": 0, "nugget": 0.00002},
+        {"x": 0, "y": 200, "z": 600, "id": 0, "nugget": 0.00002},  # rock1
+        {"x": 0, "y": 500, "z": 600, "id": 0, "nugget": 0.00002},  # rock1
+        {"x": 0, "y": 800, "z": 600, "id": 0, "nugget": 0.00002},  # rock1
+        {"x": 200, "y": 200, "z": 600, "id": 0, "nugget": 0.00002},  # rock1
+        {"x": 200, "y": 500, "z": 600, "id": 0, "nugget": 0.00002},  # rock1
+        {"x": 200, "y": 800, "z": 600, "id": 0, "nugget": 0.00002},  # rock1
+        {"x": 800, "y": 200, "z": 200, "id": 0, "nugget": 0.00002},  # rock1
+        {"x": 800, "y": 500, "z": 200, "id": 0, "nugget": 0.00002},  # rock1
+        {"x": 800, "y": 800, "z": 200, "id": 0, "nugget": 0.00002},  # rock1
+        {"x": 1000, "y": 200, "z": 200, "id": 0, "nugget": 0.00002},  # rock1
+        {"x": 1000, "y": 500, "z": 200, "id": 0, "nugget": 0.00002},  # rock1
+        {"x": 1000, "y": 800, "z": 200, "id": 0, "nugget": 0.00002},  # rock1
+        {"x": 0, "y": 200, "z": 800, "id": 1, "nugget": 0.00002},  # rock2
+        {"x": 0, "y": 800, "z": 800, "id": 1, "nugget": 0.00002},  # rock2
+        {"x": 200, "y": 200, "z": 800, "id": 1, "nugget": 0.00002},  # rock2
+        {"x": 200, "y": 800, "z": 800, "id": 1, "nugget": 0.00002},  # rock2
+        {"x": 800, "y": 200, "z": 400, "id": 1, "nugget": 0.00002},  # rock2
+        {"x": 800, "y": 800, "z": 400, "id": 1, "nugget": 0.00002},  # rock2
+        {"x": 1000, "y": 200, "z": 400, "id": 1, "nugget": 0.00002},  # rock2
+        {"x": 1000, "y": 800, "z": 400, "id": 1, "nugget": 0.00002},  # rock2
+        {"x": 500, "y": 500, "z": 500, "id": 2, "nugget": 0.00002},  # fault
+        {"x": 450, "y": 500, "z": 600, "id": 2, "nugget": 0.00002},  # fault
+        {"x": 500, "y": 200, "z": 500, "id": 2, "nugget": 0.00002},  # fault
+        {"x": 450, "y": 200, "z": 600, "id": 2, "nugget": 0.00002},  # fault
+        {"x": 500, "y": 800, "z": 500, "id": 2, "nugget": 0.00002},  # fault
+        {"x": 450, "y": 800, "z": 600, "id": 2, "nugget": 0.00002}  # fault
     ],
     "orientations": [
-        # rock2 orientation (upper layer at x=100)
-        {"x": 100.0, "y": 500.0, "z": 800.0, "G_x": 0.0, "G_y": 0.0, "G_z": 1.0, "id": 1, "nugget": 0.01, "polarity": 1},
-        # rock1 orientation (lower layer at x=100)
-        {"x": 100.0, "y": 500.0, "z": 600.0, "G_x": 0.0, "G_y": 0.0, "G_z": 1.0, "id": 2, "nugget": 0.01, "polarity": 1},
-        # fault orientation (at x=500)
-        {"x": 500.0, "y": 500.0, "z": 500.0, "G_x": 0.8, "G_y": 0.0, "G_z": 0.6, "id": 0, "nugget": 0.01, "polarity": 1},
-        # rock2 orientation (upper layer at x=900)
-        {"x": 900.0, "y": 500.0, "z": 400.0, "G_x": 0.0, "G_y": 0.0, "G_z": 1.0, "id": 1, "nugget": 0.01, "polarity": 1},
-        # rock1 orientation (lower layer at x=900)
-        {"x": 900.0, "y": 500.0, "z": 200.0, "G_x": 0.0, "G_y": 0.0, "G_z": 1.0, "id": 2, "nugget": 0.01, "polarity": 1},
+        {"x": 100, "y": 500, "z": 800, "G_x": 0, "G_y": 0, "G_z": 1, "id": 1, "nugget": 0.00002, "polarity": 1},  # rock2
+        {"x": 100, "y": 500, "z": 600, "G_x": 0, "G_y": 0, "G_z": 1, "id": 0, "nugget": 0.00002, "polarity": 1},  # rock1
+        {"x": 900, "y": 500, "z": 400, "G_x": 0, "G_y": 0, "G_z": 1, "id": 1, "nugget": 0.00002, "polarity": 1},  # rock2
+        {"x": 900, "y": 500, "z": 200, "G_x": 0, "G_y": 0, "G_z": 1, "id": 0, "nugget": 0.00002, "polarity": 1},  # rock1
+        {"x": 500, "y": 500, "z": 500, "G_x": 0.866, "G_y": 0, "G_z": 0.5, "id": 2, "nugget": 0.00002, "polarity": 1}  # fault
     ],
     "series": [
         {
-            "name": "Fault_Series",
-            "surfaces": ["fault"],
-            "structural_relation": "FAULT",
-            "color": "#015482"  # Blue color for fault
+            "name": "series1",
+            "surfaces": ["rock1", "rock2"],
+            "structural_relation": "ERODE",
+            "colors": ["#015482", "#9f0052"]
         },
         {
-            "name": "Strat_Series",
-            "surfaces": ["rock2", "rock1"],
-            "structural_relation": "ERODE",
-            "colors": ["#ffbe00", "#9f0052"]  # Yellow for rock2, Pink for rock1
+            "name": "fault_series",
+            "surfaces": ["fault"],
+            "structural_relation": "FAULT",
+            "colors": ["#ffbe00"]
         }
     ],
     "grid_settings": {
-        "regular_grid_resolution": [90, 30, 30],  # Increased resolution for better visualization
+        "regular_grid_resolution": [50, 50, 50],
         "regular_grid_extent": [0, 1000, 0, 1000, 0, 1000],
         "octree_levels": None
     },
-    "interpolation_options": {}
+    "interpolation_options": {
+        "kernel_options": {
+            "range": 1.7,
+            "c_o": 10
+        },
+        "mesh_extraction": True,
+        "number_octree_levels": 1
+    },
+    "fault_relations": [[0, 1], [0, 0]],  # Fault series affects series1
+    "id_name_mapping": {
+        "name_to_id": {
+            "rock1": 0,
+            "rock2": 1,
+            "fault": 2
+        }
+    }
 }
 
 # %%
@@ -119,18 +127,15 @@ print(model.structural_frame.structural_groups)
 # Set fault relations
 # Create a 2x2 matrix for fault relations (2 series: Fault_Series, Strat_Series)
 # 1 means the fault affects the series, 0 means it doesn't
-model.structural_frame.fault_relations = np.array([
-    [0, 1],  # Fault_Series affects Strat_Series
-    [0, 0]   # Strat_Series doesn't affect any series
-])
+model.structural_frame.fault_relations = np.array([[0, 1], [0, 0]], dtype=bool)  # Using NumPy array with boolean type
 
 # Explicitly set the structural relation for the fault series
-model.structural_frame.structural_groups[0].structural_relation = StackRelationType.FAULT
+model.structural_frame.structural_groups[1].structural_relation = StackRelationType.FAULT
 
 # Set the fault series as a fault
 gp.set_is_fault(
     frame=model,
-    fault_groups=['Fault_Series']
+    fault_groups=['fault_series']
 )
 
 # %%
@@ -177,3 +182,4 @@ gpv.plot_2d(model, show_scalar=True, show_lith=False, series_n=0, ax=ax)
 plt.title("Fault Scalar Field")
 plt.savefig('fault_scalar_field.png')
 plt.close() 
+# %%
