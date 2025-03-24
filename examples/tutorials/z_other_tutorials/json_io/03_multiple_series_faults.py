@@ -25,8 +25,8 @@ from datetime import datetime
 model_data = {
     "metadata": {
         "name": "Multiple Series and Faults Model",
-        "creation_date": datetime.now().isoformat(),
-        "last_modification_date": datetime.now().isoformat(),
+        "creation_date": "2024-03-24",  # Fixed creation date
+        "last_modification_date": datetime.now().strftime("%Y-%m-%d"),  # Current date only
         "owner": "GemPy Team"
     },
     "surface_points": [
