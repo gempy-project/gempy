@@ -43,6 +43,8 @@ class Series(TypedDict):
     order_series: int
     surfaces: List[Surface]
     faults: List[Fault]
+    structural_relation: str
+    colors: Optional[List[str]]
 
 class GridSettings(TypedDict):
     regular_grid_resolution: List[int]
@@ -53,7 +55,10 @@ class ModelMetadata(TypedDict):
     name: str
     creation_date: str
     last_modification_date: str
-    owner: str
+    owner: Optional[str]
+
+class IdNameMapping(TypedDict):
+    name_to_id: Dict[str, int]
 
 class GemPyModelJson(TypedDict):
     metadata: ModelMetadata
@@ -61,4 +66,5 @@ class GemPyModelJson(TypedDict):
     orientations: List[Orientation]
     series: List[Series]
     grid_settings: GridSettings
-    interpolation_options: Dict[str, Any] 
+    interpolation_options: Dict[str, Any]
+    id_name_mapping: IdNameMapping 
