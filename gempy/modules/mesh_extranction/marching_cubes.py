@@ -28,11 +28,25 @@ def set_meshes_with_marching_cubes(model: GeoModel) -> None:
     
     regular_grid: RegularGrid = model.grid.regular_grid
     structural_groups: list[StructuralGroup] = model.structural_frame.structural_groups
-    
+
+    print(model.solutions.scalar_field_at_surface_points)
+
     if not model.solutions.octrees_output or not model.solutions.octrees_output[0].outputs_centers:
         raise ValueError("No interpolation outputs available for mesh extraction.")
     
     output_lvl0: list[InterpOutput] = model.solutions.octrees_output[0].outputs_centers
+
+    # TODO: Attribute of element.scalar_field was None, changed it to scalar field value of that element
+    #  This should probably be done somewhere else and maybe renamed to scalar_field_value?
+    #  This is just the most basic solution to be clear what I did
+    counter = 0
+    for e, structural_group in enumerate(structural_groups):
+        if e >= len(output_lvl0):
+            continue
+
+        for element in structural_group.elements:
+            element.scalar_field = model.solutions.scalar_field_at_surface_points[counter]
+            counter += 1
 
     for e, structural_group in enumerate(structural_groups):
         if e >= len(output_lvl0):
@@ -40,7 +54,7 @@ def set_meshes_with_marching_cubes(model: GeoModel) -> None:
             
         output_group: InterpOutput = output_lvl0[e]
         scalar_field_matrix = output_group.exported_fields_dense_grid.scalar_field
-        
+
         for element in structural_group.elements:
             extract_mesh_for_element(
                 structural_element=element,
@@ -71,8 +85,9 @@ def extract_mesh_for_element(structural_element: StructuralElement,
     if mask is not None:
         volume = volume * mask
     
-    # TODO: We need to pass the mask arrays to the marching cubes to account for discontinuities. The mask array are in InterpOutput too if I remember correctly.
-    
+    # TODO: We need to pass the mask arrays to the marching cubes to account for discontinuities. The mask array are
+    #  in InterpOutput too if I remember correctly.
+
     # Extract mesh using marching cubes
     verts, faces, _, _ = measure.marching_cubes(
         volume=volume,
