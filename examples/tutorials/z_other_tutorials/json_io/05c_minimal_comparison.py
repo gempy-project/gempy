@@ -59,8 +59,7 @@ json_model_data = {
             "x": 50.0,
             "y": 0.0,
             "z": -20.0,
-            "id": 0,
-            "nugget": 0.0  # Default nugget value
+            "id": 0
         }
     ],
     "orientations": [
@@ -71,9 +70,7 @@ json_model_data = {
             "G_x": 1.0,
             "G_y": 0.0,
             "G_z": 1.0,
-            "id": 0,
-            "nugget": 0.01,  # Default nugget value
-            "polarity": 1
+            "id": 0
         }
     ],
     "grid_settings": {
