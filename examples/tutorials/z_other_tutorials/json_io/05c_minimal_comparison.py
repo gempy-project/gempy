@@ -60,7 +60,7 @@ json_model_data = {
             "y": 0.0,
             "z": -20.0,
             "id": 0,
-            "nugget": 0.000001  # Default nugget value
+            "nugget": 0.0  # Default nugget value
         }
     ],
     "orientations": [
@@ -86,8 +86,15 @@ json_model_data = {
             "c_o": 5.0
         },
         "mesh_extraction": True,
-        "number_octree_levels": 4
-    }
+        "number_octree_levels": 2
+    },
+    "series": [
+        {
+            "name": "default_formations",
+            "surfaces": ["surface1"],
+            "structural_relation": "ERODE"
+        }
+    ]
 }
 
 # Save the JSON model
