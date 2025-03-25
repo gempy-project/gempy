@@ -25,14 +25,6 @@ model_data = {
             "y": 0.0,
             "z": -20.0,
             "id": 0,
-            "nugget": 0.001  # Default nugget value
-        },
-        {
-            "x": 120.0,
-            "y": 0.0,
-            "z": -20.0,
-            "id": 0,
-            "nugget": 0.001  # Default nugget value
         }
     ],
     "orientations": [
@@ -44,7 +36,6 @@ model_data = {
             "G_y": 0.0,
             "G_z": 1.0,
             "id": 0,
-            "nugget": 0.001,  # Default nugget value
             "polarity": 1
         }
     ],

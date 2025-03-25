@@ -74,7 +74,7 @@ class JsonIO:
         z_padding = z_range * 0.1
         
         return {
-            "regular_grid_resolution": [10, 10, 10],
+            "regular_grid_resolution": [20, 20, 20],
             "regular_grid_extent": [
                 x_min - x_padding, x_max + x_padding,
                 y_min - y_padding, y_max + y_padding,
@@ -413,115 +413,90 @@ class JsonIO:
             json.dump(json_data, f, indent=4)
     
     @staticmethod
-    def _validate_json_schema(data: Dict[str, Any]) -> bool:
-        """
-        Validate the JSON data against the expected schema.
-        
-        Args:
-            data (Dict[str, Any]): The JSON data to validate
-            
-        Returns:
-            bool: True if valid, False otherwise
-        """
-        # Check required top-level keys (metadata, grid_settings, interpolation_options, and series are optional)
-        required_keys = {'surface_points', 'orientations'}
-        if not all(key in data for key in required_keys):
-            return False
-            
+    def _validate_json_schema(data: Dict) -> None:
+        """Validate the JSON schema and set default values."""
+        # Required top-level keys
+        required_keys = ['surface_points', 'orientations', 'grid_settings']
+        for key in required_keys:
+            if key not in data:
+                raise ValueError(f"Missing required key: {key}")
+
         # Validate surface points
-        if not isinstance(data['surface_points'], list):
-            return False
-            
-        for sp in data['surface_points']:
-            required_sp_keys = {'x', 'y', 'z', 'id', 'nugget'}
-            if not all(key in sp for key in required_sp_keys):
-                return False
-            if not all(isinstance(sp[key], (int, float)) for key in ['x', 'y', 'z', 'nugget']):
-                return False
-            if not isinstance(sp['id'], int):
-                return False
-                
+        for point in data['surface_points']:
+            required_point_keys = ['x', 'y', 'z']
+            for key in required_point_keys:
+                if key not in point:
+                    raise ValueError(f"Missing required key in surface point: {key}")
+            # Set default nugget if not provided
+            if 'nugget' not in point:
+                point['nugget'] = 0.0  # Default nugget for surface points
+
         # Validate orientations
-        if not isinstance(data['orientations'], list):
-            return False
-            
-        for ori in data['orientations']:
-            required_ori_keys = {'x', 'y', 'z', 'G_x', 'G_y', 'G_z', 'id', 'nugget', 'polarity'}
-            if not all(key in ori for key in required_ori_keys):
-                return False
-            if not all(isinstance(ori[key], (int, float)) for key in ['x', 'y', 'z', 'G_x', 'G_y', 'G_z', 'nugget']):
-                return False
-            if not isinstance(ori['id'], int):
-                return False
-            if not isinstance(ori['polarity'], int):
-                return False
-                
-        # Validate series if present
+        for orientation in data['orientations']:
+            required_orientation_keys = ['x', 'y', 'z', 'G_x', 'G_y', 'G_z']
+            for key in required_orientation_keys:
+                if key not in orientation:
+                    raise ValueError(f"Missing required key in orientation: {key}")
+            # Set default nugget if not provided
+            if 'nugget' not in orientation:
+                orientation['nugget'] = 0.01  # Default nugget for orientations
+            # Set default polarity if not provided
+            if 'polarity' not in orientation:
+                orientation['polarity'] = 1
+
+        # Validate grid settings
+        grid_settings = data['grid_settings']
+        required_grid_keys = ['regular_grid_resolution', 'regular_grid_extent']
+        for key in required_grid_keys:
+            if key not in grid_settings:
+                raise ValueError(f"Missing required key in grid_settings: {key}")
+
+        # Validate series if provided
         if 'series' in data:
-            if not isinstance(data['series'], list):
-                return False
-                
             for series in data['series']:
-                # Only name and surfaces are required
-                required_series_keys = {'name', 'surfaces'}
-                if not all(key in series for key in required_series_keys):
-                    return False
-                if not isinstance(series['name'], str):
-                    return False
-                if not isinstance(series['surfaces'], list):
-                    return False
-                # Validate optional fields if present
-                if 'structural_relation' in series and not isinstance(series['structural_relation'], str):
-                    return False
+                required_series_keys = ['name', 'surfaces']
+                for key in required_series_keys:
+                    if key not in series:
+                        raise ValueError(f"Missing required key in series: {key}")
+                # Set default structural relation if not provided
+                if 'structural_relation' not in series:
+                    series['structural_relation'] = "ERODE"
+                # Validate colors if provided
                 if 'colors' in series:
                     if not isinstance(series['colors'], list):
-                        return False
-                    if not all(isinstance(color, str) for color in series['colors']):
-                        return False
-                
-        # Validate grid settings if present
-        if 'grid_settings' in data:
-            if not isinstance(data['grid_settings'], dict):
-                return False
-            
-            required_grid_keys = {'regular_grid_resolution', 'regular_grid_extent'}
-            if not all(key in data['grid_settings'] for key in required_grid_keys):
-                return False
-                
-            if not isinstance(data['grid_settings']['regular_grid_resolution'], list):
-                return False
-            if not isinstance(data['grid_settings']['regular_grid_extent'], list):
-                return False
+                        raise ValueError("Colors must be a list")
+                    if not all(isinstance(color, str) and color.startswith('#') for color in series['colors']):
+                        raise ValueError("Colors must be hex color codes starting with #")
                 
         # Validate interpolation options if present
         if 'interpolation_options' in data:
             if not isinstance(data['interpolation_options'], dict):
-                return False
+                raise ValueError("Interpolation options must be a dictionary")
             if 'kernel_options' in data['interpolation_options']:
                 kernel_options = data['interpolation_options']['kernel_options']
                 if not isinstance(kernel_options, dict):
-                    return False
+                    raise ValueError("Kernel options must be a dictionary")
                 if 'range' in kernel_options and not isinstance(kernel_options['range'], (int, float)):
-                    return False
+                    raise ValueError("Kernel range must be a number")
                 if 'c_o' in kernel_options and not isinstance(kernel_options['c_o'], (int, float)):
-                    return False
+                    raise ValueError("Kernel c_o must be a number")
             if 'mesh_extraction' in data['interpolation_options'] and not isinstance(data['interpolation_options']['mesh_extraction'], bool):
-                return False
+                raise ValueError("Mesh extraction must be a boolean")
             if 'number_octree_levels' in data['interpolation_options'] and not isinstance(data['interpolation_options']['number_octree_levels'], int):
-                return False
+                raise ValueError("Number of octree levels must be an integer")
                 
         # Validate metadata if present
         if 'metadata' in data:
             metadata = data['metadata']
             if not isinstance(metadata, dict):
-                return False
+                raise ValueError("Metadata must be a dictionary")
             if 'name' in metadata and not isinstance(metadata['name'], str):
-                return False
+                raise ValueError("Metadata name must be a string")
             if 'creation_date' in metadata and not isinstance(metadata['creation_date'], str):
-                return False
+                raise ValueError("Metadata creation date must be a string")
             if 'last_modification_date' in metadata and not isinstance(metadata['last_modification_date'], str):
-                return False
+                raise ValueError("Metadata last modification date must be a string")
             if 'owner' in metadata and not isinstance(metadata['owner'], str):
-                return False
+                raise ValueError("Metadata owner must be a string")
                 
         return True 
