@@ -3,7 +3,7 @@ Schema definitions for JSON I/O operations in GemPy.
 This module defines the expected structure of JSON files for loading and saving GemPy models.
 """
 
-from typing import TypedDict, List, Dict, Any, Optional, Union, Sequence
+from typing import TypedDict, List, Dict, Any, Optional, Union, Sequence, NotRequired
 
 class SurfacePoint(TypedDict):
     x: float
@@ -35,16 +35,16 @@ class Fault(TypedDict):
     is_active: bool
     surface: Surface
 
-class Series(TypedDict):
-    name: str
+class Series(TypedDict, total=False):
+    name: str  # Required
     id: int
     is_active: bool
     is_fault: bool
     order_series: int
-    surfaces: List[Surface]
+    surfaces: List[str]  # Required, list of surface names
     faults: List[Fault]
-    structural_relation: str
-    colors: Optional[List[str]]
+    structural_relation: NotRequired[str]  # Optional, defaults to "ONLAP"
+    colors: NotRequired[Optional[List[str]]]  # Optional list of hex color codes
 
 class GridSettings(TypedDict):
     regular_grid_resolution: List[int]
@@ -60,11 +60,11 @@ class ModelMetadata(TypedDict):
 class IdNameMapping(TypedDict):
     name_to_id: Dict[str, int]
 
-class GemPyModelJson(TypedDict):
+class GemPyModelJson(TypedDict, total=False):
     metadata: ModelMetadata
     surface_points: List[SurfacePoint]
     orientations: List[Orientation]
     series: List[Series]
-    grid_settings: GridSettings
-    interpolation_options: Dict[str, Any]
+    grid_settings: Optional[GridSettings]
+    interpolation_options: Optional[Dict[str, Any]]
     id_name_mapping: IdNameMapping 

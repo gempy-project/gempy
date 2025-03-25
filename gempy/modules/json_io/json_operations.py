@@ -32,6 +32,57 @@ class JsonIO:
         return {id: name for name, id in name_to_id.items()}
 
     @staticmethod
+    def _calculate_default_range(grid_extent: List[float]) -> float:
+        """Calculate the default range based on the model extent (room diagonal)."""
+        # Extract min and max coordinates
+        x_min, x_max = grid_extent[0], grid_extent[1]
+        y_min, y_max = grid_extent[2], grid_extent[3]
+        z_min, z_max = grid_extent[4], grid_extent[5]
+        
+        # Calculate the room diagonal (Euclidean distance)
+        return np.sqrt((x_max - x_min)**2 + (y_max - y_min)**2 + (z_max - z_min)**2)
+
+    @staticmethod
+    def _calculate_default_grid_settings(surface_points: List[SurfacePoint], orientations: List[Orientation]) -> Dict[str, Any]:
+        """Calculate default grid settings based on data points.
+        
+        Args:
+            surface_points: List of surface points
+            orientations: List of orientations
+            
+        Returns:
+            Dict containing grid settings with default values
+        """
+        # Collect all x, y, z coordinates
+        all_x = [sp['x'] for sp in surface_points] + [ori['x'] for ori in orientations]
+        all_y = [sp['y'] for sp in surface_points] + [ori['y'] for ori in orientations]
+        all_z = [sp['z'] for sp in surface_points] + [ori['z'] for ori in orientations]
+        
+        # Calculate extents
+        x_min, x_max = min(all_x), max(all_x)
+        y_min, y_max = min(all_y), max(all_y)
+        z_min, z_max = min(all_z), max(all_z)
+        
+        # Calculate ranges
+        x_range = x_max - x_min
+        y_range = y_max - y_min
+        z_range = z_max - z_min
+        
+        # Add 10% padding to each dimension
+        x_padding = x_range * 0.1
+        y_padding = y_range * 0.1
+        z_padding = z_range * 0.1
+        
+        return {
+            "regular_grid_resolution": [10, 10, 10],
+            "regular_grid_extent": [
+                x_min - x_padding, x_max + x_padding,
+                y_min - y_padding, y_max + y_padding,
+                z_min - z_padding, z_max + z_padding
+            ]
+        }
+
+    @staticmethod
     def load_model_from_json(file_path: str):
         """
         Load a GemPy model from a JSON file.
@@ -60,54 +111,49 @@ class JsonIO:
         surface_names = []
         for series in data['series']:
             surface_names.extend(series['surfaces'])
-        
-        # Use the id_name_mapping if available, otherwise create one from series data
-        if 'id_name_mapping' in data and data['id_name_mapping']:
-            name_to_id = data['id_name_mapping']['name_to_id']
-            id_to_name = JsonIO._create_id_to_name(name_to_id)
-        else:
-            # Create a mapping from surface points to their names
-            surface_point_names = {}
-            # First, create a mapping from surface names to their IDs
-            surface_id_map = {}
-            for series in data['series']:
-                for i, name in enumerate(series['surfaces']):
-                    # Find the first surface point with this name
-                    for sp in data['surface_points']:
-                        if sp['id'] not in surface_id_map:
-                            surface_id_map[sp['id']] = name
-                            break
             
-            # Now create the mapping from IDs to names
-            for sp in data['surface_points']:
-                surface_point_names[sp['id']] = surface_id_map.get(sp['id'], f"surface_{sp['id']}")
-            id_to_name = surface_point_names
-            name_to_id = {name: id for id, name in id_to_name.items()}
+        # Create ID to name mapping if not provided
+        if 'id_name_mapping' in data:
+            id_to_name = JsonIO._create_id_to_name(data['id_name_mapping']['name_to_id'])
+        else:
+            # Create mapping from series data
+            id_to_name = {i: name for i, name in enumerate(surface_names)}
+            
+        # Create surface points table
+        surface_points_table = JsonIO._load_surface_points(data['surface_points'], id_to_name)
         
-        # Load surface points and orientations
-        surface_points = JsonIO._load_surface_points(data['surface_points'], id_to_name)
-        orientations = JsonIO._load_orientations(data['orientations'], id_to_name)
+        # Create orientations table
+        orientations_table = JsonIO._load_orientations(data['orientations'], id_to_name)
         
         # Create structural frame
-        structural_frame = StructuralFrame.from_data_tables(surface_points, orientations)
+        structural_frame = StructuralFrame.from_data_tables(surface_points_table, orientations_table)
+        
+        # Get grid settings with defaults if not provided
+        grid_settings = data.get('grid_settings', JsonIO._calculate_default_grid_settings(data['surface_points'], data['orientations']))
         
         # Create grid
         grid = Grid(
-            extent=data['grid_settings']['regular_grid_extent'],
-            resolution=data['grid_settings']['regular_grid_resolution']
+            resolution=grid_settings['regular_grid_resolution'],
+            extent=grid_settings['regular_grid_extent']
         )
         
-        # Create interpolation options with kernel options
+        # Calculate default range based on model extent
+        default_range = JsonIO._calculate_default_range(grid_settings['regular_grid_extent'])
+        
+        # Create interpolation options with defaults if not provided
         interpolation_options = InterpolationOptions(
-            range=data['interpolation_options'].get('kernel_options', {}).get('range', 1.7),
-            c_o=data['interpolation_options'].get('kernel_options', {}).get('c_o', 10),
-            mesh_extraction=data['interpolation_options'].get('mesh_extraction', True),
-            number_octree_levels=data['interpolation_options'].get('number_octree_levels', 1)
+            range=data.get('interpolation_options', {}).get('kernel_options', {}).get('range', default_range),
+            c_o=data.get('interpolation_options', {}).get('kernel_options', {}).get('c_o', 10),
+            mesh_extraction=data.get('interpolation_options', {}).get('mesh_extraction', True),
+            number_octree_levels=data.get('interpolation_options', {}).get('number_octree_levels', 1)
         )
         
-        # Create GeoModel
+        # Create GeoModel with default metadata if not provided
+        current_date = datetime.now().strftime("%Y-%m-%d")
+        model_name = data.get('metadata', {}).get('name', "GemPy Model")
+        
         model = GeoModel(
-            name=data['metadata']['name'],
+            name=model_name,
             structural_frame=structural_frame,
             grid=grid,
             interpolation_options=interpolation_options
@@ -115,16 +161,23 @@ class JsonIO:
         
         # Set the metadata with proper dates
         model_meta = GeoModelMeta(
-            name=data['metadata']['name'],
-            creation_date=data['metadata'].get('creation_date', datetime.now().isoformat()),
-            last_modification_date=data['metadata'].get('last_modification_date', datetime.now().isoformat()),
-            owner=data['metadata'].get('owner', None)
+            name=model_name,
+            creation_date=data.get('metadata', {}).get('creation_date', current_date),
+            last_modification_date=data.get('metadata', {}).get('last_modification_date', current_date),
+            owner=data.get('metadata', {}).get('owner', "GemPy Modeller")
         )
         model.meta = model_meta
         
         # Map series to surfaces with structural relations
         mapping_object = {series['name']: series['surfaces'] for series in data['series']}
-        map_stack_to_surfaces(model, mapping_object, series_data=data['series'])
+        # Ensure each series has structural_relation set to ERODE by default
+        series_data = []
+        for series in data['series']:
+            series_copy = series.copy()
+            if 'structural_relation' not in series_copy:
+                series_copy['structural_relation'] = 'ERODE'
+            series_data.append(series_copy)
+        map_stack_to_surfaces(model, mapping_object, series_data=series_data)
         
         # Set fault relations after structural groups are set up
         if 'fault_relations' in data and data['fault_relations'] is not None:
@@ -356,9 +409,8 @@ class JsonIO:
         Returns:
             bool: True if valid, False otherwise
         """
-        # Check required top-level keys
-        required_keys = {'metadata', 'surface_points', 'orientations', 'series', 
-                        'grid_settings', 'interpolation_options'}
+        # Check required top-level keys (metadata, grid_settings, and interpolation_options are optional)
+        required_keys = {'surface_points', 'orientations', 'series'}
         if not all(key in data for key in required_keys):
             return False
             
@@ -387,17 +439,74 @@ class JsonIO:
                 return False
             if not isinstance(ori['id'], int):
                 return False
-            if not isinstance(ori['polarity'], int) or ori['polarity'] not in {-1, 1}:
+            if not isinstance(ori['polarity'], int):
                 return False
                 
-        # Validate id_name_mapping if present
-        if 'id_name_mapping' in data:
-            mapping = data['id_name_mapping']
-            if not isinstance(mapping, dict):
+        # Validate series
+        if not isinstance(data['series'], list):
+            return False
+            
+        for series in data['series']:
+            # Only name and surfaces are required
+            required_series_keys = {'name', 'surfaces'}
+            if not all(key in series for key in required_series_keys):
                 return False
-            if 'name_to_id' not in mapping:
+            if not isinstance(series['name'], str):
                 return False
-            if not isinstance(mapping['name_to_id'], dict):
+            if not isinstance(series['surfaces'], list):
+                return False
+            # Validate optional fields if present
+            if 'structural_relation' in series and not isinstance(series['structural_relation'], str):
+                return False
+            if 'colors' in series:
+                if not isinstance(series['colors'], list):
+                    return False
+                if not all(isinstance(color, str) for color in series['colors']):
+                    return False
+                
+        # Validate grid settings if present
+        if 'grid_settings' in data:
+            if not isinstance(data['grid_settings'], dict):
+                return False
+            
+            required_grid_keys = {'regular_grid_resolution', 'regular_grid_extent'}
+            if not all(key in data['grid_settings'] for key in required_grid_keys):
+                return False
+                
+            if not isinstance(data['grid_settings']['regular_grid_resolution'], list):
+                return False
+            if not isinstance(data['grid_settings']['regular_grid_extent'], list):
+                return False
+                
+        # Validate interpolation options if present
+        if 'interpolation_options' in data:
+            if not isinstance(data['interpolation_options'], dict):
+                return False
+            if 'kernel_options' in data['interpolation_options']:
+                kernel_options = data['interpolation_options']['kernel_options']
+                if not isinstance(kernel_options, dict):
+                    return False
+                if 'range' in kernel_options and not isinstance(kernel_options['range'], (int, float)):
+                    return False
+                if 'c_o' in kernel_options and not isinstance(kernel_options['c_o'], (int, float)):
+                    return False
+            if 'mesh_extraction' in data['interpolation_options'] and not isinstance(data['interpolation_options']['mesh_extraction'], bool):
+                return False
+            if 'number_octree_levels' in data['interpolation_options'] and not isinstance(data['interpolation_options']['number_octree_levels'], int):
+                return False
+                
+        # Validate metadata if present
+        if 'metadata' in data:
+            metadata = data['metadata']
+            if not isinstance(metadata, dict):
+                return False
+            if 'name' in metadata and not isinstance(metadata['name'], str):
+                return False
+            if 'creation_date' in metadata and not isinstance(metadata['creation_date'], str):
+                return False
+            if 'last_modification_date' in metadata and not isinstance(metadata['last_modification_date'], str):
+                return False
+            if 'owner' in metadata and not isinstance(metadata['owner'], str):
                 return False
                 
         return True 
