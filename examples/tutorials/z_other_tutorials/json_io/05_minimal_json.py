@@ -17,21 +17,41 @@ from gempy.modules.json_io.json_operations import JsonIO  # Updated import path
 
 
 # %%
-# Define the model data with minimal required fields
+# Create the corresponding minimal JSON model
 model_data = {
     "surface_points": [
-        {"x": 100.0, "y": 200.0, "z": 600.0, "id": 1, "nugget": 0.00002},
-        {"x": 500.0, "y": 200.0, "z": 600.0, "id": 1, "nugget": 0.00002},
-        {"x": 900.0, "y": 800.0, "z": 400.0, "id": 0, "nugget": 0.00002},
+        {
+            "x": 50.0,
+            "y": 0.0,
+            "z": -20.0,
+            "id": 0,
+            "nugget": 0.001  # Default nugget value
+        },
+        {
+            "x": 120.0,
+            "y": 0.0,
+            "z": -20.0,
+            "id": 0,
+            "nugget": 0.001  # Default nugget value
+        }
     ],
     "orientations": [
-        {"x": 500.0, "y": 500.0, "z": 600.0, "G_x": 0.0, "G_y": 0.0, "G_z": 1.0, "id": 1, "nugget": 0.01, "polarity": 1},
-        {"x": 500.0, "y": 500.0, "z": 400.0, "G_x": 0.0, "G_y": 0.0, "G_z": 1.0, "id": 0, "nugget": 0.01, "polarity": 1},
-    ]
-    # series will be automatically created with default values:
-    # - name: "Strat_Series"
-    # - surfaces: ["surface_0", "surface_1"] (based on unique IDs)
-    # - structural_relation: "ERODE"
+        {
+            "x": 50.0,
+            "y": 0.0,
+            "z": -20.0,
+            "G_x": 1.0,
+            "G_y": 0.0,
+            "G_z": 1.0,
+            "id": 0,
+            "nugget": 0.001,  # Default nugget value
+            "polarity": 1
+        }
+    ],
+    "grid_settings": {
+        "regular_grid_resolution": [100, 2, 100],
+        "regular_grid_extent": [0, 150, -10, 10, -100, 0]
+    }
 }
 
 # %%
