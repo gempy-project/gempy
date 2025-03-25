@@ -150,7 +150,9 @@ class JsonIO:
         )
         
         # Calculate default range based on model extent
-        default_range = JsonIO._calculate_default_range(grid_settings['regular_grid_extent'])
+        # default_range = JsonIO._calculate_default_range(grid_settings['regular_grid_extent'])
+        # set as fixed value
+        default_range = 1.7  # Match standard GemPy default
         
         # Create interpolation options with defaults if not provided
         interpolation_options = InterpolationOptions(
