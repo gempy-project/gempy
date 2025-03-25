@@ -27,15 +27,11 @@ model_data = {
     "orientations": [
         {"x": 500.0, "y": 500.0, "z": 600.0, "G_x": 0.0, "G_y": 0.0, "G_z": 1.0, "id": 1, "nugget": 0.01, "polarity": 1},
         {"x": 500.0, "y": 500.0, "z": 400.0, "G_x": 0.0, "G_y": 0.0, "G_z": 1.0, "id": 0, "nugget": 0.01, "polarity": 1},
-    ],
-    "series": [
-        {
-            "name": "Strat_Series",
-            "surfaces": ["surface_1", "surface_2"]
-            # structural_relation will default to "ONLAP"
-            # colors are optional
-        }
     ]
+    # series will be automatically created with default values:
+    # - name: "Strat_Series"
+    # - surfaces: ["surface_0", "surface_1"] (based on unique IDs)
+    # - structural_relation: "ERODE"
 }
 
 # %%
