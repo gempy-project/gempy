@@ -107,6 +107,18 @@ class JsonIO:
         if not JsonIO._validate_json_schema(data):
             raise ValueError("Invalid JSON schema")
             
+        # Get unique surface IDs from surface points and orientations
+        surface_ids = set(sp['id'] for sp in data['surface_points'])
+        surface_ids.update(ori['id'] for ori in data['orientations'])
+        
+        # Create default series if not provided
+        if 'series' not in data:
+            data['series'] = [{
+                'name': 'Strat_Series',
+                'surfaces': [f'surface_{id}' for id in sorted(surface_ids)],
+                'structural_relation': 'ERODE'
+            }]
+            
         # Get surface names from series data
         surface_names = []
         for series in data['series']:
@@ -409,8 +421,8 @@ class JsonIO:
         Returns:
             bool: True if valid, False otherwise
         """
-        # Check required top-level keys (metadata, grid_settings, and interpolation_options are optional)
-        required_keys = {'surface_points', 'orientations', 'series'}
+        # Check required top-level keys (metadata, grid_settings, interpolation_options, and series are optional)
+        required_keys = {'surface_points', 'orientations'}
         if not all(key in data for key in required_keys):
             return False
             
@@ -442,27 +454,28 @@ class JsonIO:
             if not isinstance(ori['polarity'], int):
                 return False
                 
-        # Validate series
-        if not isinstance(data['series'], list):
-            return False
-            
-        for series in data['series']:
-            # Only name and surfaces are required
-            required_series_keys = {'name', 'surfaces'}
-            if not all(key in series for key in required_series_keys):
+        # Validate series if present
+        if 'series' in data:
+            if not isinstance(data['series'], list):
                 return False
-            if not isinstance(series['name'], str):
-                return False
-            if not isinstance(series['surfaces'], list):
-                return False
-            # Validate optional fields if present
-            if 'structural_relation' in series and not isinstance(series['structural_relation'], str):
-                return False
-            if 'colors' in series:
-                if not isinstance(series['colors'], list):
+                
+            for series in data['series']:
+                # Only name and surfaces are required
+                required_series_keys = {'name', 'surfaces'}
+                if not all(key in series for key in required_series_keys):
                     return False
-                if not all(isinstance(color, str) for color in series['colors']):
+                if not isinstance(series['name'], str):
                     return False
+                if not isinstance(series['surfaces'], list):
+                    return False
+                # Validate optional fields if present
+                if 'structural_relation' in series and not isinstance(series['structural_relation'], str):
+                    return False
+                if 'colors' in series:
+                    if not isinstance(series['colors'], list):
+                        return False
+                    if not all(isinstance(color, str) for color in series['colors']):
+                        return False
                 
         # Validate grid settings if present
         if 'grid_settings' in data:
