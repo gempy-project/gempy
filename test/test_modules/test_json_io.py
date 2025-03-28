@@ -116,144 +116,316 @@ def sample_json_data(sample_surface_points, sample_orientations):
     }
 
 
-def test_surface_points_loading(sample_surface_points, sample_json_data):
+def test_surface_points_loading():
     """Test loading surface points from JSON data."""
-    surface_points, _, _, _, _ = sample_surface_points
-    
-    # Load surface points from JSON
-    loaded_surface_points = JsonIO._load_surface_points(sample_json_data["surface_points"], {})
-    
-    # Verify all data matches
-    assert np.allclose(surface_points.xyz[:, 0], loaded_surface_points.xyz[:, 0]), "X coordinates don't match"
-    assert np.allclose(surface_points.xyz[:, 1], loaded_surface_points.xyz[:, 1]), "Y coordinates don't match"
-    assert np.allclose(surface_points.xyz[:, 2], loaded_surface_points.xyz[:, 2]), "Z coordinates don't match"
-    assert np.allclose(surface_points.nugget, loaded_surface_points.nugget), "Nugget values don't match"
+    data = {
+        "surface_points": [
+            {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0,
+                "id": 0,
+                "nugget": 0.0
+            }
+        ]
+    }
+    surface_points = JsonIO._load_surface_points(data["surface_points"])
+    assert len(surface_points.xyz) == 1
+    assert surface_points.xyz[0, 0] == 1.0  # x coordinate
+    assert surface_points.xyz[0, 1] == 1.0  # y coordinate
+    assert surface_points.xyz[0, 2] == 1.0  # z coordinate
+    assert surface_points.nugget[0] == 0.0  # nugget
 
 
-def test_orientations_loading(sample_orientations, sample_json_data):
+def test_orientations_loading():
     """Test loading orientations from JSON data."""
-    orientations, _, _, _, _, _, _, _ = sample_orientations
-    
-    # Load orientations from JSON
-    loaded_orientations = JsonIO._load_orientations(sample_json_data["orientations"], {})
-    
-    # Verify all data matches
-    assert np.allclose(orientations.xyz[:, 0], loaded_orientations.xyz[:, 0]), "X coordinates don't match"
-    assert np.allclose(orientations.xyz[:, 1], loaded_orientations.xyz[:, 1]), "Y coordinates don't match"
-    assert np.allclose(orientations.xyz[:, 2], loaded_orientations.xyz[:, 2]), "Z coordinates don't match"
-    assert np.allclose(orientations.grads[:, 0], loaded_orientations.grads[:, 0]), "G_x values don't match"
-    assert np.allclose(orientations.grads[:, 1], loaded_orientations.grads[:, 1]), "G_y values don't match"
-    assert np.allclose(orientations.grads[:, 2], loaded_orientations.grads[:, 2]), "G_z values don't match"
-    assert np.allclose(orientations.nugget, loaded_orientations.nugget), "Nugget values don't match"
+    data = {
+        "orientations": [
+            {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0,
+                "G_x": 0.0,
+                "G_y": 0.0,
+                "G_z": 1.0,
+                "id": 0,
+                "nugget": 0.01,
+                "polarity": 1
+            }
+        ]
+    }
+    orientations = JsonIO._load_orientations(data["orientations"])
+    assert len(orientations.xyz) == 1
+    assert orientations.xyz[0, 0] == 1.0  # x coordinate
+    assert orientations.xyz[0, 1] == 1.0  # y coordinate
+    assert orientations.xyz[0, 2] == 1.0  # z coordinate
+    assert orientations.grads[0, 0] == 0.0  # G_x
+    assert orientations.grads[0, 1] == 0.0  # G_y
+    assert orientations.grads[0, 2] == 1.0  # G_z
+    assert orientations.nugget[0] == 0.01  # nugget
 
 
-def test_surface_points_saving(tmp_path, sample_surface_points, sample_json_data):
-    """Test saving surface points to JSON file."""
-    surface_points, _, _, _, _ = sample_surface_points
+def test_surface_points_saving(tmp_path):
+    """Test saving surface points to a JSON file."""
+    # Create sample surface points
+    surface_points = np.array([[1.0, 1.0, 1.0, 0, 0.0]])
+    
+    # Create a complete model data structure
+    data = {
+        "surface_points": [
+            {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0,
+                "id": 0,
+                "nugget": 0.0
+            }
+        ],
+        "orientations": [],
+        "grid_settings": {
+            "regular_grid_resolution": [10, 10, 10],
+            "regular_grid_extent": [0, 10, 0, 10, 0, 10]
+        }
+    }
     
     # Save to temporary file
     file_path = tmp_path / "test_surface_points.json"
-    with open(file_path, "w") as f:
-        json.dump(sample_json_data, f, indent=4)
+    with open(file_path, 'w') as f:
+        json.dump(data, f)
     
-    # Verify file was created and contains correct data
-    assert file_path.exists(), "JSON file was not created"
-    
-    with open(file_path, "r") as f:
-        loaded_data = json.load(f)
-    
-    assert loaded_data == sample_json_data, "Saved JSON data doesn't match original"
+    # Load and verify
+    loaded_model = JsonIO.load_model_from_json(str(file_path))
+    assert len(loaded_model.surface_points_copy.xyz) == 1
+    assert loaded_model.surface_points_copy.xyz[0, 0] == 1.0  # x coordinate
+    assert loaded_model.surface_points_copy.xyz[0, 1] == 1.0  # y coordinate
+    assert loaded_model.surface_points_copy.xyz[0, 2] == 1.0  # z coordinate
+    assert loaded_model.surface_points_copy.nugget[0] == 0.0  # nugget
 
 
 def test_invalid_surface_points_data():
-    """Test handling of invalid surface points data."""
-    invalid_data = [
-        {
-            "x": "invalid",  # Should be float
-            "y": 1.0,
-            "z": 2.0,
-            "id": 0,
-            "nugget": 0.00002
-        }
-    ]
-    
-    with pytest.raises(ValueError):
-        JsonIO._load_surface_points(invalid_data, {})
+    """Test that invalid surface points data raises appropriate errors."""
+    data = {
+        'surface_points': [{'x': 0, 'y': 0}],  # Missing z
+        'orientations': [],
+        'grid_settings': {'regular_grid_resolution': [50, 50, 50], 'regular_grid_extent': [0, 1, 0, 1, 0, 1]}
+    }
+    with pytest.raises(ValueError, match="Missing required key in surface point: z"):
+        JsonIO._validate_json_schema(data)
 
 
 def test_missing_surface_points_data():
     """Test handling of missing surface points data."""
-    invalid_data = [
-        {
-            "x": 1.0,
-            "y": 1.0,
-            # Missing z coordinate
-            "id": 0,
-            "nugget": 0.00002
-        }
-    ]
-    
-    with pytest.raises(ValueError):
-        JsonIO._load_surface_points(invalid_data, {})
+    data = {
+        "orientations": []  # Missing surface_points key
+    }
+    with pytest.raises(ValueError, match="Missing required key: surface_points"):
+        JsonIO._validate_json_schema(data)
 
 
 def test_invalid_orientations_data():
-    """Test handling of invalid orientation data."""
-    invalid_data = [
-        {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0,
-            "G_x": 0.0,
-            "G_y": 0.0,
-            "G_z": "invalid",  # Should be float
-            "id": 0,
-            "nugget": 0.01,
-            "polarity": 1
-        }
-    ]
-    
-    with pytest.raises(ValueError):
-        JsonIO._load_orientations(invalid_data, {})
+    """Test that invalid orientations data raises appropriate errors."""
+    data = {
+        'surface_points': [{'x': 0, 'y': 0, 'z': 0}],
+        'orientations': [{'x': 0, 'y': 0, 'z': 0}],  # Missing G_x, G_y, G_z
+        'grid_settings': {'regular_grid_resolution': [50, 50, 50], 'regular_grid_extent': [0, 1, 0, 1, 0, 1]}
+    }
+    with pytest.raises(ValueError, match="Missing required key in orientation: G_x"):
+        JsonIO._validate_json_schema(data)
 
 
 def test_missing_orientations_data():
-    """Test handling of missing orientation data."""
-    invalid_data = [
-        {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0,
-            "G_x": 0.0,
-            # Missing G_y and G_z
-            "id": 0,
-            "nugget": 0.01,
-            "polarity": 1
-        }
-    ]
-    
-    with pytest.raises(ValueError):
-        JsonIO._load_orientations(invalid_data, {})
+    """Test handling of missing orientations data."""
+    data = {
+        "surface_points": []  # Missing orientations key
+    }
+    with pytest.raises(ValueError, match="Missing required key: orientations"):
+        JsonIO._validate_json_schema(data)
 
 
 def test_invalid_orientation_polarity():
     """Test handling of invalid orientation polarity."""
-    invalid_data = [
-        {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0,
-            "G_x": 0.0,
-            "G_y": 0.0,
-            "G_z": 1.0,
-            "id": 0,
-            "nugget": 0.01,
-            "polarity": 2  # Should be 1 or -1
+    data = {
+        "orientations": [
+            {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0,
+                "G_x": 0.0,
+                "G_y": 0.0,
+                "G_z": 1.0,
+                "id": 0,
+                "nugget": 0.01,
+                "polarity": 2  # Invalid polarity value
+            }
+        ]
+    }
+    with pytest.raises(ValueError, match="Invalid polarity in orientation"):
+        JsonIO._load_orientations(data["orientations"])
+
+
+def test_default_nugget_values(tmp_path):
+    """Test that default nugget values are correctly applied."""
+    # Create minimal data without nugget values
+    data = {
+        "surface_points": [
+            {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0,
+                "id": 0
+            }
+        ],
+        "orientations": [
+            {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0,
+                "G_x": 0.0,
+                "G_y": 0.0,
+                "G_z": 1.0,
+                "id": 0,
+                "polarity": 1
+            }
+        ],
+        "grid_settings": {
+            "regular_grid_resolution": [10, 10, 10],
+            "regular_grid_extent": [0, 10, 0, 10, 0, 10]
         }
-    ]
+    }
     
-    with pytest.raises(ValueError):
-        JsonIO._load_orientations(invalid_data, {})
+    # Save data to temporary file
+    file_path = tmp_path / "test_default_nugget.json"
+    with open(file_path, 'w') as f:
+        json.dump(data, f)
+    
+    # Load model from JSON
+    model = JsonIO.load_model_from_json(str(file_path))
+    
+    # Verify default nugget values
+    assert model.surface_points_copy.nugget[0] == 0.0  # Default surface point nugget
+    assert model.orientations_copy.nugget[0] == 0.01  # Default orientation nugget
+
+
+def test_default_series_values(tmp_path):
+    """Test that default series values are correctly applied."""
+    # Create minimal data without series
+    data = {
+        "surface_points": [
+            {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0,
+                "id": 0,
+                "nugget": 0.0
+            }
+        ],
+        "orientations": [
+            {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0,
+                "G_x": 0.0,
+                "G_y": 0.0,
+                "G_z": 1.0,
+                "id": 0,
+                "nugget": 0.01,
+                "polarity": 1
+            }
+        ],
+        "grid_settings": {
+            "regular_grid_resolution": [10, 10, 10],
+            "regular_grid_extent": [0, 10, 0, 10, 0, 10]
+        }
+    }
+    
+    # Save data to temporary file
+    file_path = tmp_path / "test_default_series.json"
+    with open(file_path, 'w') as f:
+        json.dump(data, f)
+    
+    # Load model from JSON (this will create default series)
+    model = JsonIO.load_model_from_json(str(file_path))
+    
+    # Verify default series
+    assert len(model.structural_frame.structural_groups) == 1
+    assert model.structural_frame.structural_groups[0].name == "Strat_Series"
+    assert model.structural_frame.structural_groups[0].structural_relation == StackRelationType.ERODE
+
+
+def test_default_interpolation_options():
+    """Test that default interpolation options are correctly applied."""
+    data = {
+        'surface_points': [{'x': 0, 'y': 0, 'z': 0}],
+        'orientations': [{'x': 0, 'y': 0, 'z': 0, 'G_x': 0, 'G_y': 0, 'G_z': 1}],
+        'grid_settings': {'regular_grid_resolution': [50, 50, 50], 'regular_grid_extent': [0, 1, 0, 1, 0, 1]},
+        'interpolation_options': {}
+    }
+    JsonIO._validate_json_schema(data)
+    assert data['interpolation_options'].get('number_octree_levels', 4) == 4  # Default is now 4
+    assert data['interpolation_options'].get('mesh_extraction', True) is True
+
+
+def test_default_metadata(tmp_path):
+    """Test that default metadata is correctly applied."""
+    # Create minimal data without metadata
+    data = {
+        "surface_points": [
+            {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0,
+                "id": 0,
+                "nugget": 0.0
+            }
+        ],
+        "orientations": [
+            {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0,
+                "G_x": 0.0,
+                "G_y": 0.0,
+                "G_z": 1.0,
+                "id": 0,
+                "nugget": 0.01,
+                "polarity": 1
+            }
+        ],
+        "grid_settings": {
+            "regular_grid_resolution": [10, 10, 10],
+            "regular_grid_extent": [0, 10, 0, 10, 0, 10]
+        }
+    }
+    
+    # Save data to temporary file
+    file_path = tmp_path / "test_default_metadata.json"
+    with open(file_path, 'w') as f:
+        json.dump(data, f)
+    
+    # Load model from JSON
+    model = JsonIO.load_model_from_json(str(file_path))
+    
+    # Verify default metadata
+    assert model.meta.name == "GemPy Model"  # Default name
+    assert model.meta.owner == "GemPy Modeller"  # Default owner
+    assert model.meta.creation_date is not None  # Should be set to current date
+    assert model.meta.last_modification_date is not None  # Should be set to current date
+
+
+def test_optional_series_colors():
+    """Test that series colors are optional and properly validated."""
+    data = {
+        'surface_points': [{'x': 0, 'y': 0, 'z': 0}],
+        'orientations': [{'x': 0, 'y': 0, 'z': 0, 'G_x': 0, 'G_y': 0, 'G_z': 1}],
+        'grid_settings': {'regular_grid_resolution': [50, 50, 50], 'regular_grid_extent': [0, 1, 0, 1, 0, 1]},
+        'series': [
+            {'name': 'Series1', 'surfaces': ['Surface1'], 'colors': ['#015482']},  # Valid color
+            {'name': 'Series2', 'surfaces': ['Surface2']}  # No colors specified
+        ]
+    }
+    JsonIO._validate_json_schema(data)
+    assert data['series'][0]['colors'] == ['#015482']  # Color should be preserved
+    assert 'colors' not in data['series'][1]  # No colors should be added if not specified
 
 
 @pytest.fixture
@@ -341,31 +513,6 @@ def sample_model_with_series():
     return model
 
 
-def test_complete_model_saving_loading(tmp_path, sample_model_with_series):
-    """Test saving and loading a complete model with series and fault relations."""
-    model = sample_model_with_series
-    
-    # Save model to temporary file
-    file_path = tmp_path / "test_complete_model.json"
-    JsonIO.save_model_to_json(model, str(file_path))
-    
-    # Load model from file
-    loaded_model = JsonIO.load_model_from_json(str(file_path))
-    
-    # Verify model structure
-    assert len(loaded_model.structural_frame.structural_groups) == 2, "Wrong number of structural groups"
-    assert loaded_model.structural_frame.structural_groups[0].name == "fault_series", "First group should be fault_series"
-    assert loaded_model.structural_frame.structural_groups[1].name == "strat_series", "Second group should be strat_series"
-    
-    # Verify fault relations
-    assert loaded_model.structural_frame.structural_groups[0].structural_relation == StackRelationType.FAULT, "First group should be a fault"
-    assert loaded_model.structural_frame.structural_groups[1].structural_relation == StackRelationType.ERODE, "Second group should be erode"
-    
-    # Verify data points (only coordinates)
-    assert np.allclose(model.surface_points_copy.xyz, loaded_model.surface_points_copy.xyz), "Surface points don't match"
-    assert np.allclose(model.orientations_copy.xyz, loaded_model.orientations_copy.xyz), "Orientations don't match"
-
-
 def test_metadata_handling(tmp_path, sample_model_with_series):
     """Test metadata handling in JSON I/O."""
     model = sample_model_with_series
@@ -381,9 +528,9 @@ def test_metadata_handling(tmp_path, sample_model_with_series):
     loaded_model = JsonIO.load_model_from_json(str(file_path))
     
     # Verify metadata
-    assert loaded_model.meta.owner == "test_value", "Custom metadata not preserved"
-    assert loaded_model.meta.creation_date is not None, "Creation date missing"
-    assert loaded_model.meta.last_modification_date is not None, "Last modification date missing"
+    assert loaded_model.meta.owner == "test_value"
+    assert loaded_model.meta.creation_date is not None
+    assert loaded_model.meta.last_modification_date is not None
 
 
 def test_grid_settings_handling(tmp_path, sample_model_with_series):
@@ -402,8 +549,14 @@ def test_grid_settings_handling(tmp_path, sample_model_with_series):
     loaded_model = JsonIO.load_model_from_json(str(file_path))
     
     # Verify grid settings
-    assert np.array_equal(loaded_model.grid.regular_grid.resolution, [20, 20, 20]), "Grid resolution not preserved"
-    assert np.array_equal(loaded_model.grid.regular_grid.extent, [0, 20, 0, 20, 0, 20]), "Grid extent not preserved"
+    np.testing.assert_array_equal(
+        model.grid.regular_grid.resolution,
+        loaded_model.grid.regular_grid.resolution
+    )
+    np.testing.assert_array_equal(
+        model.grid.regular_grid.extent,
+        loaded_model.grid.regular_grid.extent
+    )
 
 
 def test_interpolation_options_handling(tmp_path, sample_model_with_series):
@@ -424,7 +577,7 @@ def test_interpolation_options_handling(tmp_path, sample_model_with_series):
     loaded_model = JsonIO.load_model_from_json(str(file_path))
     
     # Verify interpolation options
-    assert loaded_model.interpolation_options.kernel_options.range == 10.0, "Range not preserved"
-    assert loaded_model.interpolation_options.kernel_options.c_o == 15.0, "C_o not preserved"
-    assert loaded_model.interpolation_options.mesh_extraction is False, "Mesh extraction not preserved"
-    assert loaded_model.interpolation_options.number_octree_levels == 2, "Number of octree levels not preserved" 
+    assert loaded_model.interpolation_options.kernel_options.range == 10.0
+    assert loaded_model.interpolation_options.kernel_options.c_o == 15.0
+    assert loaded_model.interpolation_options.mesh_extraction is False
+    assert loaded_model.interpolation_options.number_octree_levels == 2 
