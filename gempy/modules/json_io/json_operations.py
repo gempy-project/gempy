@@ -173,12 +173,13 @@ class JsonIO:
             interpolation_options=interpolation_options
         )
         
-        # Set the metadata with proper dates
+        # Set the metadata with proper dates and defaults
+        metadata = data.get('metadata', {})
         model_meta = GeoModelMeta(
-            name=model_name,
-            creation_date=data.get('metadata', {}).get('creation_date', current_date),
-            last_modification_date=data.get('metadata', {}).get('last_modification_date', current_date),
-            owner=data.get('metadata', {}).get('owner', "GemPy Modeller")
+            name=metadata.get('name', model.meta.name),  # Use model's name if available
+            creation_date=metadata.get('creation_date', current_date),  # Set current date as default
+            last_modification_date=metadata.get('last_modification_date', current_date),  # Set current date as default
+            owner=metadata.get('owner', "GemPy Modeller")  # Set default owner
         )
         model.meta = model_meta
         
@@ -331,13 +332,16 @@ class JsonIO:
             model: The GemPy model to save
             file_path (str): Path where to save the JSON file
         """
-        # Create JSON structure
+        # Get current date for default values
+        current_date = datetime.now().strftime("%Y-%m-%d")
+
+        # Create JSON structure with metadata handling
         json_data = {
             "metadata": {
-                "name": model.meta.name,
-                "creation_date": model.meta.creation_date,
-                "last_modification_date": model.meta.last_modification_date,
-                "owner": model.meta.owner
+                "name": model.meta.name if model.meta.name is not None else "GemPy Model",
+                "creation_date": model.meta.creation_date if model.meta.creation_date is not None else current_date,
+                "last_modification_date": model.meta.last_modification_date if model.meta.last_modification_date is not None else current_date,
+                "owner": model.meta.owner if model.meta.owner is not None else "GemPy Modeller"
             },
             "surface_points": [],
             "orientations": [],
@@ -364,10 +368,10 @@ class JsonIO:
         # Get series and surface information
         for group in model.structural_frame.structural_groups:
             series_entry = {
-                "name": group.name,
-                "surfaces": [element.name for element in group.elements],
-                "structural_relation": group.structural_relation.name,
-                "colors": [element.color for element in group.elements]
+                "name": str(group.name),
+                "surfaces": [str(element.name) for element in group.elements],
+                "structural_relation": str(group.structural_relation.name),
+                "colors": [str(element.color) for element in group.elements]
             }
             json_data["series"].append(series_entry)
         
@@ -430,6 +434,9 @@ class JsonIO:
             # Set default nugget if not provided
             if 'nugget' not in point:
                 point['nugget'] = 0.0  # Default nugget for surface points
+            # Set default id if not provided
+            if 'id' not in point:
+                point['id'] = 0  # Default id
 
         # Validate orientations
         for orientation in data['orientations']:
@@ -443,6 +450,9 @@ class JsonIO:
             # Set default polarity if not provided
             if 'polarity' not in orientation:
                 orientation['polarity'] = 1
+            # Set default id if not provided
+            if 'id' not in orientation:
+                orientation['id'] = 0  # Default id
 
         # Validate grid settings
         grid_settings = data['grid_settings']
@@ -485,18 +495,34 @@ class JsonIO:
             if 'number_octree_levels' in data['interpolation_options'] and not isinstance(data['interpolation_options']['number_octree_levels'], int):
                 raise ValueError("Number of octree levels must be an integer")
                 
-        # Validate metadata if present
-        if 'metadata' in data:
-            metadata = data['metadata']
-            if not isinstance(metadata, dict):
-                raise ValueError("Metadata must be a dictionary")
-            if 'name' in metadata and not isinstance(metadata['name'], str):
-                raise ValueError("Metadata name must be a string")
-            if 'creation_date' in metadata and not isinstance(metadata['creation_date'], str):
-                raise ValueError("Metadata creation date must be a string")
-            if 'last_modification_date' in metadata and not isinstance(metadata['last_modification_date'], str):
-                raise ValueError("Metadata last modification date must be a string")
-            if 'owner' in metadata and not isinstance(metadata['owner'], str):
-                raise ValueError("Metadata owner must be a string")
-                
+        # Validate and set default metadata
+        if 'metadata' not in data:
+            data['metadata'] = {}
+
+        metadata = data['metadata']
+        if not isinstance(metadata, dict):
+            raise ValueError("Metadata must be a dictionary")
+
+        # Set default values for metadata
+        current_date = datetime.now().strftime("%Y-%m-%d")
+        if 'name' not in metadata or metadata['name'] is None:
+            metadata['name'] = "GemPy Model"
+        elif not isinstance(metadata['name'], str):
+            raise ValueError("Metadata name must be a string")
+
+        if 'creation_date' not in metadata or metadata['creation_date'] is None:
+            metadata['creation_date'] = current_date
+        elif not isinstance(metadata['creation_date'], str):
+            raise ValueError("Metadata creation_date must be a string")
+
+        if 'last_modification_date' not in metadata or metadata['last_modification_date'] is None:
+            metadata['last_modification_date'] = current_date
+        elif not isinstance(metadata['last_modification_date'], str):
+            raise ValueError("Metadata last_modification_date must be a string")
+
+        if 'owner' not in metadata or metadata['owner'] is None:
+            metadata['owner'] = "GemPy Modeller"
+        elif not isinstance(metadata['owner'], str):
+            raise ValueError("Metadata owner must be a string")
+
         return True 
