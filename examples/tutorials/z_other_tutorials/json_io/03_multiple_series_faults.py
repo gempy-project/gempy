@@ -30,52 +30,58 @@ model_data = {
         "owner": "GemPy Team"
     },
     "surface_points": [
-        {"x": 0, "y": 200, "z": 600, "id": 0, "nugget": 0.00002},  # rock1
-        {"x": 0, "y": 500, "z": 600, "id": 0, "nugget": 0.00002},  # rock1
-        {"x": 0, "y": 800, "z": 600, "id": 0, "nugget": 0.00002},  # rock1
-        {"x": 200, "y": 200, "z": 600, "id": 0, "nugget": 0.00002},  # rock1
-        {"x": 200, "y": 500, "z": 600, "id": 0, "nugget": 0.00002},  # rock1
-        {"x": 200, "y": 800, "z": 600, "id": 0, "nugget": 0.00002},  # rock1
-        {"x": 800, "y": 200, "z": 200, "id": 0, "nugget": 0.00002},  # rock1
-        {"x": 800, "y": 500, "z": 200, "id": 0, "nugget": 0.00002},  # rock1
-        {"x": 800, "y": 800, "z": 200, "id": 0, "nugget": 0.00002},  # rock1
-        {"x": 1000, "y": 200, "z": 200, "id": 0, "nugget": 0.00002},  # rock1
-        {"x": 1000, "y": 500, "z": 200, "id": 0, "nugget": 0.00002},  # rock1
-        {"x": 1000, "y": 800, "z": 200, "id": 0, "nugget": 0.00002},  # rock1
-        {"x": 0, "y": 200, "z": 800, "id": 1, "nugget": 0.00002},  # rock2
-        {"x": 0, "y": 800, "z": 800, "id": 1, "nugget": 0.00002},  # rock2
-        {"x": 200, "y": 200, "z": 800, "id": 1, "nugget": 0.00002},  # rock2
-        {"x": 200, "y": 800, "z": 800, "id": 1, "nugget": 0.00002},  # rock2
-        {"x": 800, "y": 200, "z": 400, "id": 1, "nugget": 0.00002},  # rock2
-        {"x": 800, "y": 800, "z": 400, "id": 1, "nugget": 0.00002},  # rock2
-        {"x": 1000, "y": 200, "z": 400, "id": 1, "nugget": 0.00002},  # rock2
-        {"x": 1000, "y": 800, "z": 400, "id": 1, "nugget": 0.00002},  # rock2
-        {"x": 500, "y": 500, "z": 500, "id": 2, "nugget": 0.00002},  # fault
-        {"x": 450, "y": 500, "z": 600, "id": 2, "nugget": 0.00002},  # fault
-        {"x": 500, "y": 200, "z": 500, "id": 2, "nugget": 0.00002},  # fault
-        {"x": 450, "y": 200, "z": 600, "id": 2, "nugget": 0.00002},  # fault
-        {"x": 500, "y": 800, "z": 500, "id": 2, "nugget": 0.00002},  # fault
-        {"x": 450, "y": 800, "z": 600, "id": 2, "nugget": 0.00002}  # fault
+        # rock1 points
+        {"x": 0, "y": 200, "z": 600, "id": 0, "nugget": 0.00002},
+        {"x": 0, "y": 500, "z": 600, "id": 0, "nugget": 0.00002},
+        {"x": 0, "y": 800, "z": 600, "id": 0, "nugget": 0.00002},
+        {"x": 200, "y": 200, "z": 600, "id": 0, "nugget": 0.00002},
+        {"x": 200, "y": 500, "z": 600, "id": 0, "nugget": 0.00002},
+        {"x": 200, "y": 800, "z": 600, "id": 0, "nugget": 0.00002},
+        {"x": 800, "y": 200, "z": 200, "id": 0, "nugget": 0.00002},
+        {"x": 800, "y": 500, "z": 200, "id": 0, "nugget": 0.00002},
+        {"x": 800, "y": 800, "z": 200, "id": 0, "nugget": 0.00002},
+        {"x": 1000, "y": 200, "z": 200, "id": 0, "nugget": 0.00002},
+        {"x": 1000, "y": 500, "z": 200, "id": 0, "nugget": 0.00002},
+        {"x": 1000, "y": 800, "z": 200, "id": 0, "nugget": 0.00002},
+        # rock2 points
+        {"x": 0, "y": 200, "z": 800, "id": 1, "nugget": 0.00002},
+        {"x": 0, "y": 800, "z": 800, "id": 1, "nugget": 0.00002},
+        {"x": 200, "y": 200, "z": 800, "id": 1, "nugget": 0.00002},
+        {"x": 200, "y": 800, "z": 800, "id": 1, "nugget": 0.00002},
+        {"x": 800, "y": 200, "z": 400, "id": 1, "nugget": 0.00002},
+        {"x": 800, "y": 800, "z": 400, "id": 1, "nugget": 0.00002},
+        {"x": 1000, "y": 200, "z": 400, "id": 1, "nugget": 0.00002},
+        {"x": 1000, "y": 800, "z": 400, "id": 1, "nugget": 0.00002},
+        # fault points
+        {"x": 500, "y": 500, "z": 500, "id": 2, "nugget": 0.00002},
+        {"x": 450, "y": 500, "z": 600, "id": 2, "nugget": 0.00002},
+        {"x": 500, "y": 200, "z": 500, "id": 2, "nugget": 0.00002},
+        {"x": 450, "y": 200, "z": 600, "id": 2, "nugget": 0.00002},
+        {"x": 500, "y": 800, "z": 500, "id": 2, "nugget": 0.00002},
+        {"x": 450, "y": 800, "z": 600, "id": 2, "nugget": 0.00002}
     ],
     "orientations": [
-        {"x": 100, "y": 500, "z": 800, "G_x": 0, "G_y": 0, "G_z": 1, "id": 1, "nugget": 0.00002, "polarity": 1},  # rock2
-        {"x": 100, "y": 500, "z": 600, "G_x": 0, "G_y": 0, "G_z": 1, "id": 0, "nugget": 0.00002, "polarity": 1},  # rock1
-        {"x": 900, "y": 500, "z": 400, "G_x": 0, "G_y": 0, "G_z": 1, "id": 1, "nugget": 0.00002, "polarity": 1},  # rock2
-        {"x": 900, "y": 500, "z": 200, "G_x": 0, "G_y": 0, "G_z": 1, "id": 0, "nugget": 0.00002, "polarity": 1},  # rock1
-        {"x": 500, "y": 500, "z": 500, "G_x": 0.866, "G_y": 0, "G_z": 0.5, "id": 2, "nugget": 0.00002, "polarity": 1}  # fault
+        # rock2 orientations
+        {"x": 100, "y": 500, "z": 800, "G_x": 0, "G_y": 0, "G_z": 1, "id": 1, "nugget": 0.00002, "polarity": 1},
+        {"x": 900, "y": 500, "z": 400, "G_x": 0, "G_y": 0, "G_z": 1, "id": 1, "nugget": 0.00002, "polarity": 1},
+        # rock1 orientations
+        {"x": 100, "y": 500, "z": 600, "G_x": 0, "G_y": 0, "G_z": 1, "id": 0, "nugget": 0.00002, "polarity": 1},
+        {"x": 900, "y": 500, "z": 200, "G_x": 0, "G_y": 0, "G_z": 1, "id": 0, "nugget": 0.00002, "polarity": 1},
+        # fault orientation (60-degree dip)
+        {"x": 500, "y": 500, "z": 500, "G_x": 0.866, "G_y": 0, "G_z": 0.5, "id": 2, "nugget": 0.00002, "polarity": 1}
     ],
     "series": [
         {
-            "name": "series1",
-            "surfaces": ["rock1", "rock2"],
-            "structural_relation": "ERODE",
-            "colors": ["#015482", "#9f0052"]
-        },
-        {
-            "name": "fault_series",
+            "name": "Fault_Series",
             "surfaces": ["fault"],
             "structural_relation": "FAULT",
             "colors": ["#ffbe00"]
+        },
+        {
+            "name": "Strat_Series",
+            "surfaces": ["rock2", "rock1"],
+            "structural_relation": "ERODE",
+            "colors": ["#015482", "#9f0052"]
         }
     ],
     "grid_settings": {
@@ -91,7 +97,7 @@ model_data = {
         "mesh_extraction": True,
         "number_octree_levels": 1
     },
-    "fault_relations": [[0, 1], [0, 0]],  # Fault series affects series1
+    "fault_relations": [[0, 1], [0, 0]],  # Fault series affects Strat_Series
     "id_name_mapping": {
         "name_to_id": {
             "rock1": 0,
@@ -124,21 +130,6 @@ print("\nStructural Groups:")
 print(model.structural_frame.structural_groups)
 
 # %%
-# Set fault relations
-# Create a 2x2 matrix for fault relations (2 series: Fault_Series, Strat_Series)
-# 1 means the fault affects the series, 0 means it doesn't
-model.structural_frame.fault_relations = np.array([[0, 1], [0, 0]], dtype=bool)  # Using NumPy array with boolean type
-
-# Explicitly set the structural relation for the fault series
-model.structural_frame.structural_groups[1].structural_relation = StackRelationType.FAULT
-
-# Set the fault series as a fault
-gp.set_is_fault(
-    frame=model,
-    fault_groups=['fault_series']
-)
-
-# %%
 # Compute the geological model
 gp.compute_model(model)
 
@@ -158,28 +149,70 @@ print(f"Last Modification Date: {reloaded_model.meta.last_modification_date}")
 print(f"Owner: {reloaded_model.meta.owner}")
 
 # %%
-# Plot the model
-# Plot the initial geological model in the y direction without results
-fig, ax = plt.subplots(figsize=(10, 6))
-gpv.plot_2d(model, direction=['y'], show_results=False, ax=ax)
-plt.title("Initial Geological Model (y direction)")
-plt.savefig('initial_model_y.png')
+# Create plots with proper configuration
+# Plot 1: Cross-section in Y direction (XZ plane)
+fig = plt.figure(figsize=(10, 8))
+ax = fig.add_subplot(111)
+gpv.plot_2d(
+    model,
+    cell_number=25,  # Middle of the model
+    direction='y',
+    show_data=True,
+    show_boundaries=True,
+    show_results=True,
+    ax=ax
+)
+plt.title("Geological Model - Y Direction (XZ plane)")
+plt.savefig('model_y_direction.png', dpi=300, bbox_inches='tight')
 plt.close()
 
-# Plot the result of the model in the x and y direction with data and without boundaries
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
-gpv.plot_2d(model, direction=['x'], show_data=True, show_boundaries=False, ax=ax1)
-ax1.set_title("Model with Data (x direction)")
-gpv.plot_2d(model, direction=['y'], show_data=True, show_boundaries=False, ax=ax2)
-ax2.set_title("Model with Data (y direction)")
-plt.tight_layout()
-plt.savefig('model_with_data.png')
+# Plot 2: Cross-section in X direction (YZ plane)
+fig = plt.figure(figsize=(10, 8))
+ax = fig.add_subplot(111)
+gpv.plot_2d(
+    model,
+    cell_number=25,  # Middle of the model
+    direction='x',
+    show_data=True,
+    show_boundaries=True,
+    show_results=True,
+    ax=ax
+)
+plt.title("Geological Model - X Direction (YZ plane)")
+plt.savefig('model_x_direction.png', dpi=300, bbox_inches='tight')
 plt.close()
 
-# Plot the scalar field of the fault
-fig, ax = plt.subplots(figsize=(10, 6))
-gpv.plot_2d(model, show_scalar=True, show_lith=False, series_n=0, ax=ax)
-plt.title("Fault Scalar Field")
-plt.savefig('fault_scalar_field.png')
-plt.close() 
+# Plot 3: Scalar field of the fault
+fig = plt.figure(figsize=(10, 8))
+ax = fig.add_subplot(111)
+gpv.plot_2d(
+    model,
+    cell_number=25,
+    direction='y',
+    show_scalar=True,
+    show_data=True,
+    series_n=0,  # Fault series
+    show_results=False,
+    ax=ax
+)
+plt.title("Fault Scalar Field - Y Direction")
+plt.savefig('fault_scalar_field.png', dpi=300, bbox_inches='tight')
+plt.close()
+
+# Plot 4: 3D visualization
+# Note: 3D plotting requires interactive backend
+try:
+    import pyvista as pv
+    p = pv.Plotter(notebook=False, off_screen=True)
+    gpv.plot_3d(
+        model,
+        show_data=True,
+        show_surfaces=True,
+        show_boundaries=True,
+        plotter=p
+    )
+    p.screenshot('model_3d.png', transparent_background=False)
+    p.close()
+except Exception as e:
+    print(f"Could not create 3D plot: {e}")
 # %%
