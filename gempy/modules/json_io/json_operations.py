@@ -200,6 +200,14 @@ class JsonIO:
             if fault_relations.shape == (len(model.structural_frame.structural_groups), len(model.structural_frame.structural_groups)):
                 model.structural_frame.fault_relations = fault_relations
         
+        # Set colors for each element
+        for series in data['series']:
+            if 'colors' in series:
+                for surface_name, color in zip(series['surfaces'], series['colors']):
+                    element = model.structural_frame.get_element_by_name(surface_name)
+                    if element is not None:
+                        element.color = color
+        
         return model
     
     @staticmethod
