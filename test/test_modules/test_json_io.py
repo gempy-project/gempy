@@ -8,6 +8,9 @@ import pytest
 import gempy as gp
 from gempy.modules.json_io import JsonIO
 from gempy_engine.core.data.stack_relation_type import StackRelationType
+from gempy.core.data.importer_helper import ImporterHelper
+import pandas as pd
+from gempy.core.data.structural_group import FaultsRelationSpecialCase
 
 
 @pytest.fixture
@@ -580,4 +583,234 @@ def test_interpolation_options_handling(tmp_path, sample_model_with_series):
     assert loaded_model.interpolation_options.kernel_options.range == 10.0
     assert loaded_model.interpolation_options.kernel_options.c_o == 15.0
     assert loaded_model.interpolation_options.mesh_extraction is False
-    assert loaded_model.interpolation_options.number_octree_levels == 2 
+    assert loaded_model.interpolation_options.number_octree_levels == 2
+
+
+def test_fault_relationships(tmp_path):
+    """Test saving and loading models with fault relationships."""
+    # Create temporary CSV files for surface points and orientations
+    surface_points_data = pd.DataFrame({
+        'X': [500, 500, 500],
+        'Y': [500, 500, 500],
+        'Z': [800, 500, 200],
+        'surface': ['fault', 'rock2', 'rock1']
+    })
+    orientations_data = pd.DataFrame({
+        'X': [500, 500, 500],
+        'Y': [500, 500, 500],
+        'Z': [800, 500, 200],
+        'dip': [90, 0, 0],
+        'azimuth': [90, 90, 90],
+        'polarity': [1, 1, 1],
+        'surface': ['fault', 'rock2', 'rock1']
+    })
+    
+    surface_points_path = tmp_path / "surface_points.csv"
+    orientations_path = tmp_path / "orientations.csv"
+    surface_points_data.to_csv(surface_points_path, index=False)
+    orientations_data.to_csv(orientations_path, index=False)
+
+    # Create a model with fault relationships
+    importer_helper = ImporterHelper(
+        path_to_surface_points=str(surface_points_path),
+        path_to_orientations=str(orientations_path)
+    )
+    model = gp.create_geomodel(
+        project_name='fault_test',
+        extent=[0, 1000, 0, 1000, 0, 1000],
+        resolution=[10, 10, 10],
+        importer_helper=importer_helper
+    )
+
+    # Map stack to surfaces
+    gp.map_stack_to_surfaces(
+        gempy_model=model,
+        mapping_object={
+            "Fault_Series": ['fault'],
+            "Strat_Series1": ['rock2'],
+            "Strat_Series2": ['rock1']
+        }
+    )
+
+    # Set structural relations
+    model.structural_frame.structural_groups[0].structural_relation = StackRelationType.FAULT
+    model.structural_frame.structural_groups[0].fault_relations = FaultsRelationSpecialCase.OFFSET_ALL
+
+    # Save the model
+    file_path = tmp_path / "fault_model.json"
+    JsonIO.save_model_to_json(model, str(file_path))
+
+    # Load the model and verify
+    loaded_model = JsonIO.load_model_from_json(str(file_path))
+    
+    # Check structural groups
+    assert len(loaded_model.structural_frame.structural_groups) == 3
+    assert loaded_model.structural_frame.structural_groups[0].name == "Fault_Series"
+    assert loaded_model.structural_frame.structural_groups[0].structural_relation == StackRelationType.FAULT
+    assert loaded_model.structural_frame.structural_groups[0].fault_relations == FaultsRelationSpecialCase.OFFSET_ALL
+    
+    # Check fault relations matrix
+    np.testing.assert_array_equal(
+        loaded_model.structural_frame.fault_relations,
+        np.array([[0, 1, 1], [0, 0, 0], [0, 0, 0]])
+    )
+
+
+def test_multiple_series_relationships(tmp_path):
+    """Test saving and loading models with multiple series and different structural relationships."""
+    # Create temporary CSV files for surface points and orientations
+    surface_points_data = pd.DataFrame({
+        'X': [500, 500, 500, 500],
+        'Y': [500, 500, 500, 500],
+        'Z': [800, 600, 400, 200],
+        'surface': ['fault', 'rock3', 'rock2', 'rock1']
+    })
+    orientations_data = pd.DataFrame({
+        'X': [500, 500, 500, 500],
+        'Y': [500, 500, 500, 500],
+        'Z': [800, 600, 400, 200],
+        'dip': [90, 0, 0, 0],
+        'azimuth': [90, 90, 90, 90],
+        'polarity': [1, 1, 1, 1],
+        'surface': ['fault', 'rock3', 'rock2', 'rock1']
+    })
+
+    surface_points_path = tmp_path / "surface_points.csv"
+    orientations_path = tmp_path / "orientations.csv"
+    surface_points_data.to_csv(surface_points_path, index=False)
+    orientations_data.to_csv(orientations_path, index=False)
+
+    # Create a model with multiple series relationships
+    importer_helper = ImporterHelper(
+        path_to_surface_points=str(surface_points_path),
+        path_to_orientations=str(orientations_path)
+    )
+    model = gp.create_geomodel(
+        project_name='multiple_series_test',
+        extent=[0, 1000, 0, 1000, 0, 1000],
+        resolution=[10, 10, 10],
+        importer_helper=importer_helper
+    )
+
+    # Map stack to surfaces
+    gp.map_stack_to_surfaces(
+        gempy_model=model,
+        mapping_object={
+            "Fault_Series": ['fault'],
+            "Series3": ['rock3'],
+            "Series2": ['rock2'],
+            "Series1": ['rock1']
+        }
+    )
+
+    # Set structural relations
+    model.structural_frame.structural_groups[0].structural_relation = StackRelationType.FAULT
+    model.structural_frame.structural_groups[0].fault_relations = FaultsRelationSpecialCase.OFFSET_ALL
+    model.structural_frame.structural_groups[1].structural_relation = StackRelationType.ONLAP
+    model.structural_frame.structural_groups[2].structural_relation = StackRelationType.ERODE
+    model.structural_frame.structural_groups[3].structural_relation = StackRelationType.ERODE
+
+    # Set colors for verification
+    model.structural_frame.get_element_by_name("fault").color = '#527682'  # Fault color
+    model.structural_frame.get_element_by_name("rock3").color = '#9f0052'  # rock3 color
+    model.structural_frame.get_element_by_name("rock2").color = '#015482'  # rock2 color
+    model.structural_frame.get_element_by_name("rock1").color = '#728f02'  # rock1 color
+
+    # Save the model
+    file_path = tmp_path / "multiple_series_model.json"
+    JsonIO.save_model_to_json(model, str(file_path))
+
+    # Load the model and verify
+    loaded_model = JsonIO.load_model_from_json(str(file_path))
+
+    # Check structural groups
+    assert len(loaded_model.structural_frame.structural_groups) == 4
+    assert loaded_model.structural_frame.structural_groups[0].structural_relation == StackRelationType.FAULT
+    assert loaded_model.structural_frame.structural_groups[1].structural_relation == StackRelationType.ONLAP
+    assert loaded_model.structural_frame.structural_groups[2].structural_relation == StackRelationType.ERODE
+
+    # Check colors are preserved
+    assert loaded_model.structural_frame.get_element_by_name("fault").color == '#527682'
+    assert loaded_model.structural_frame.get_element_by_name("rock3").color == '#9f0052'
+    assert loaded_model.structural_frame.get_element_by_name("rock2").color == '#015482'
+    assert loaded_model.structural_frame.get_element_by_name("rock1").color == '#728f02'
+
+
+def test_combination_model(tmp_path):
+    """Test saving and loading a complex model that combines faults and unconformities."""
+    # Create temporary CSV files for surface points and orientations
+    surface_points_data = pd.DataFrame({
+        'X': [500, 500, 500],
+        'Y': [500, 500, 500],
+        'Z': [800, 500, 200],
+        'surface': ['fault', 'rock2', 'rock1']
+    })
+    orientations_data = pd.DataFrame({
+        'X': [500, 500, 500],
+        'Y': [500, 500, 500],
+        'Z': [800, 500, 200],
+        'dip': [90, 0, 0],
+        'azimuth': [90, 90, 90],
+        'polarity': [1, 1, 1],
+        'surface': ['fault', 'rock2', 'rock1']
+    })
+    
+    surface_points_path = tmp_path / "surface_points.csv"
+    orientations_path = tmp_path / "orientations.csv"
+    surface_points_data.to_csv(surface_points_path, index=False)
+    orientations_data.to_csv(orientations_path, index=False)
+
+    # Create a combination model
+    importer_helper = ImporterHelper(
+        path_to_surface_points=str(surface_points_path),
+        path_to_orientations=str(orientations_path)
+    )
+    model = gp.create_geomodel(
+        project_name='Combination Model',
+        extent=[0, 1000, 0, 1000, 0, 1000],
+        resolution=[10, 10, 10],
+        importer_helper=importer_helper
+    )
+
+    # Map stack to surfaces
+    gp.map_stack_to_surfaces(
+        gempy_model=model,
+        mapping_object={
+            "Fault_Series": ['fault'],
+            "Strat_Series1": ['rock2'],
+            "Strat_Series2": ['rock1']
+        }
+    )
+
+    # Set structural relations
+    model.structural_frame.structural_groups[0].structural_relation = StackRelationType.FAULT
+    model.structural_frame.structural_groups[0].fault_relations = FaultsRelationSpecialCase.OFFSET_ALL
+    model.structural_frame.structural_groups[1].structural_relation = StackRelationType.ERODE
+    model.structural_frame.structural_groups[2].structural_relation = StackRelationType.ONLAP
+
+    # Set metadata
+    model.meta.creation_date = "2024-03-24"
+    model.meta.last_modification_date = "2024-03-24"
+
+    # Save the model
+    file_path = tmp_path / "combination_model.json"
+    JsonIO.save_model_to_json(model, str(file_path))
+
+    # Load the model and verify
+    loaded_model = JsonIO.load_model_from_json(str(file_path))
+    
+    # Check structural setup
+    assert len(loaded_model.structural_frame.structural_groups) == 3
+    assert loaded_model.structural_frame.structural_groups[0].structural_relation == StackRelationType.FAULT
+    assert loaded_model.structural_frame.structural_groups[1].structural_relation == StackRelationType.ERODE
+    assert loaded_model.structural_frame.structural_groups[2].structural_relation == StackRelationType.ONLAP
+    
+    # Check fault relations
+    np.testing.assert_array_equal(
+        loaded_model.structural_frame.fault_relations,
+        np.array([[0, 1, 1], [0, 0, 0], [0, 0, 0]])
+    )
+    
+    # Check metadata
+    assert loaded_model.meta.creation_date == "2024-03-24"
+    assert loaded_model.meta.last_modification_date == "2024-03-24" 
