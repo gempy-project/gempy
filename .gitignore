@@ -177,3 +177,7 @@ examples/tutorials/z_other_tutorials/json_io/fault_scalar_field.png
 examples/tutorials/z_other_tutorials/json_io/initial_model_y.png
 examples/tutorials/z_other_tutorials/json_io/model_with_data.png
 examples/tutorials/z_other_tutorials/json_io/multiple_series_faults_computed.json
+
+# Generated JSON files from examples
+examples/tutorials/z_other_tutorials/json_io/combination_model.json
+examples/tutorials/z_other_tutorials/json_io/combination_model_computed.json
