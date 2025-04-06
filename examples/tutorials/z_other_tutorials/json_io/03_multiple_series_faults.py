@@ -133,6 +133,13 @@ print(model.structural_frame.structural_groups)
 # Compute the geological model
 gp.compute_model(model)
 
+# Print scalar field values to verify they are calculated
+print("\nScalar Field Values (Fault Series):")
+print(f"Shape: {model.solutions.raw_arrays.scalar_field_matrix.shape}")
+print(f"Min value: {model.solutions.raw_arrays.scalar_field_matrix[0].min()}")
+print(f"Max value: {model.solutions.raw_arrays.scalar_field_matrix[0].max()}")
+print(f"Mean value: {model.solutions.raw_arrays.scalar_field_matrix[0].mean()}")
+
 # %%
 # Save the computed model to a new JSON file
 computed_json_file = tutorial_dir / "multiple_series_faults_computed.json"
@@ -183,36 +190,63 @@ plt.savefig('model_x_direction.png', dpi=300, bbox_inches='tight')
 plt.close()
 
 # Plot 3: Scalar field of the fault
-fig = plt.figure(figsize=(10, 8))
-ax = fig.add_subplot(111)
-gpv.plot_2d(
-    model,
-    cell_number=25,
-    direction='y',
-    show_scalar=True,
-    show_data=True,
-    series_n=0,  # Fault series
-    show_results=False,
-    ax=ax
-)
-plt.title("Fault Scalar Field - Y Direction")
+plt.figure(figsize=(10, 8))
+ax = plt.gca()
+
+# Get scalar field values and reshape to grid
+scalar_field = model.solutions.raw_arrays.scalar_field_matrix[0].reshape(50, 50, 50)
+
+# Plot middle slice in Y direction
+middle_slice = scalar_field[:, 25, :]
+im = ax.imshow(middle_slice.T, 
+               extent=[0, 1000, 0, 1000],
+               origin='lower',
+               cmap='RdBu',
+               aspect='equal')
+
+# Add colorbar
+plt.colorbar(im, ax=ax, label='Scalar Field Value')
+
+# Plot surface points
+fault_element = model.structural_frame.get_element_by_name("fault")
+if fault_element and fault_element.surface_points is not None:
+    fault_points_coords = fault_element.surface_points.xyz
+
+    # Filter points near the slice (Y around 500)
+    mask = np.abs(fault_points_coords[:, 1] - 500) < 100
+    filtered_points = fault_points_coords[mask]
+
+    if len(filtered_points) > 0:
+        ax.scatter(filtered_points[:, 0], filtered_points[:, 2], 
+                  c='red', s=50, label='Surface Points')
+        ax.legend()
+
+ax.set_xlabel('X')
+ax.set_ylabel('Z')
+ax.set_title('Fault Scalar Field - Y Direction (Middle Slice)')
+
+# Save plot
 plt.savefig('fault_scalar_field.png', dpi=300, bbox_inches='tight')
 plt.close()
 
-# Plot 4: 3D visualization
-# Note: 3D plotting requires interactive backend
-try:
-    import pyvista as pv
-    p = pv.Plotter(notebook=False, off_screen=True)
-    gpv.plot_3d(
-        model,
-        show_data=True,
-        show_surfaces=True,
-        show_boundaries=True,
-        plotter=p
-    )
-    p.screenshot('model_3d.png', transparent_background=False)
-    p.close()
-except Exception as e:
-    print(f"Could not create 3D plot: {e}")
+print("\nPlot saved as fault_scalar_field.png")
+
+# Plot 4: 3D visualization (optional)
+PLOT_3D = False  # Set to True to enable 3D plotting
+
+if PLOT_3D:
+    try:
+        import pyvista as pv
+        p = pv.Plotter(notebook=False, off_screen=True)
+        gpv.plot_3d(
+            model,
+            show_data=True,
+            show_surfaces=True,
+            show_boundaries=True,
+            plotter=p
+        )
+        p.screenshot('model_3d.png', transparent_background=False)
+        p.close()
+    except Exception as e:
+        print(f"Could not create 3D plot: {e}")
 # %%
