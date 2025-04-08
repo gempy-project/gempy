@@ -44,6 +44,6 @@ def test_marching_cubes_implementation():
         gtv: gpv.GemPyToVista = gpv.plot_3d(
             model=model,
             show_data=True,
-            image=True,
+            image=False,
             show=True
         )
