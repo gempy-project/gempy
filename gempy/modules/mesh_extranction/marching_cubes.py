@@ -28,24 +28,83 @@ def set_meshes_with_marching_cubes(model: GeoModel) -> None:
     
     regular_grid: RegularGrid = model.grid.regular_grid
     structural_groups: list[StructuralGroup] = model.structural_frame.structural_groups
-    
+
     if not model.solutions.octrees_output or not model.solutions.octrees_output[0].outputs_centers:
         raise ValueError("No interpolation outputs available for mesh extraction.")
     
     output_lvl0: list[InterpOutput] = model.solutions.octrees_output[0].outputs_centers
 
+    # TODO: How to get this properly in gempy
+    # get a list of indices of the lithological groups
+    lith_group_indices = []
+    fault_group_indices = []
+    index = 0
+    for i in model.structural_frame.structural_groups:
+        if i.is_fault:
+            fault_group_indices.append(index)
+        else:
+            lith_group_indices.append(index)
+        index += 1
+
+    # extract scalar field values at surface points
+    scalar_values = model.solutions.raw_arrays.scalar_field_at_surface_points
+
+    # TODO: Here I just get my own masks, cause the gempy masks dont work as expected
+    masks = []
+    masks.append(np.ones_like(model.solutions.raw_arrays.scalar_field_matrix[0].reshape(model.grid.regular_grid.resolution),
+                              dtype=bool))
+    for idx in lith_group_indices:
+        mask = model.solutions.raw_arrays.scalar_field_matrix[idx].reshape(model.grid.regular_grid.resolution) <= \
+               scalar_values[idx][-1]
+
+        masks.append(mask)
+
+    # TODO: Attribute of element.scalar_field was None, changed it to scalar field value of that element
+    #  This should probably be done somewhere else and maybe renamed to scalar_field_value?
+    #  This is just the most basic solution to be clear what I did
+    counter = 0
     for e, structural_group in enumerate(structural_groups):
         if e >= len(output_lvl0):
             continue
-            
-        output_group: InterpOutput = output_lvl0[e]
-        scalar_field_matrix = output_group.exported_fields_dense_grid.scalar_field
-        
+
+        for element in structural_group.elements:
+            element.scalar_field = model.solutions.scalar_field_at_surface_points[counter]
+            counter += 1
+
+    # Trying to use the exiting gempy masks
+    # masks = []
+    # masks.append(
+    #     np.ones_like(model.solutions.raw_arrays.scalar_field_matrix[0].reshape(model.grid.regular_grid.resolution),
+    #                  dtype=bool))
+    # for idx in lith_group_indices:
+    #     output_group: InterpOutput = output_lvl0[idx]
+    #     masks.append(output_group.mask_components[8:].reshape(model.grid.regular_grid.resolution))
+
+    non_fault_counter = 0
+    for e, structural_group in enumerate(structural_groups):
+        if e >= len(output_lvl0):
+            continue
+
+        # Outdated?
+        # output_group: InterpOutput = output_lvl0[e]
+        # scalar_field_matrix = output_group.exported_fields_dense_grid.scalar_field
+
+        # Specify the correct scalar field, can be removed in the future
+        scalar_field = model.solutions.raw_arrays.scalar_field_matrix[e].reshape(model.grid.regular_grid.resolution)
+
+        # pick mask depending on whether the structural group is a fault or not
+        if structural_group.is_fault:
+            mask = np.ones_like(scalar_field, dtype=bool)
+        else:
+            mask = masks[non_fault_counter] # TODO: I need the entry without faults here
+            non_fault_counter += 1
+
         for element in structural_group.elements:
             extract_mesh_for_element(
                 structural_element=element,
                 regular_grid=regular_grid,
-                scalar_field=scalar_field_matrix
+                scalar_field=scalar_field,
+                mask=mask
             )
 
 
@@ -66,16 +125,12 @@ def extract_mesh_for_element(structural_element: StructuralElement,
     mask : np.ndarray, optional
         Optional mask to restrict the mesh extraction to specific regions.
     """
-    # Apply mask if provided
-    volume = scalar_field.reshape(regular_grid.resolution)
-    if mask is not None:
-        volume = volume * mask
-    
     # Extract mesh using marching cubes
     verts, faces, _, _ = measure.marching_cubes(
-        volume=volume,
+        volume=scalar_field,
         level=structural_element.scalar_field,
-        spacing=(regular_grid.dx, regular_grid.dy, regular_grid.dz)
+        spacing=(regular_grid.dx, regular_grid.dy, regular_grid.dz),
+        mask=mask
     )
     
     # Adjust vertices to correct coordinates in the model's extent
