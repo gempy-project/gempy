@@ -85,7 +85,8 @@ model = JsonIO.load_model_from_json(json_file)
 print("\nModel Metadata:")
 print(f"Name: {model.meta.name}")
 print(f"Creation Date: {model.meta.creation_date}")
-print(f"Last Modified: {model.meta.last_modification_date}") # TODO: This does not update here when running. In 03 you have a current date time setter
+# TODO: This does not update here when running. In 03 you have a current date time setter
+print(f"Last Modified: {model.meta.last_modification_date}")
 
 print("\nStructural Groups:")
 print(model.structural_frame)
@@ -112,15 +113,15 @@ print("\nGenerating plots...")
 
 # 2D plots
 gpv.plot_2d(model, direction='y', show_results=False)
-# gpv.plot_2d(model, direction='y', show_data=True, show_boundaries=True)
-# gpv.plot_2d(model, direction='x', show_data=True)
-#
-# # Plot the blocks accounting for fault blocks
-# gpv.plot_2d(
-#     model=model,
-#     override_regular_grid=model.solutions.raw_arrays.litho_faults_block,
-#     show_data=True, kwargs_lithology={'cmap': 'Set1', 'norm': None}
-# )
+gpv.plot_2d(model, direction='y', show_data=True, show_boundaries=True)
+gpv.plot_2d(model, direction='x', show_data=True)
+
+# Plot the blocks accounting for fault blocks
+gpv.plot_2d(
+    model=model,
+    override_regular_grid=model.solutions.raw_arrays.litho_faults_block,
+    show_data=True, kwargs_lithology={'cmap': 'Set1', 'norm': None}
+)
 
 # 3D plot
 gpv.plot_3d(model)
