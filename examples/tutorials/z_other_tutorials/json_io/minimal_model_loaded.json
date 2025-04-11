@@ -1,0 +1,77 @@
+{
+    "metadata": {
+        "name": "GemPy Model",
+        "creation_date": "2025-03-28",
+        "last_modification_date": "2025-03-28",
+        "owner": "GemPy Modeller"
+    },
+    "surface_points": [
+        {
+            "x": 50.0,
+            "y": 0.0,
+            "z": -20.0,
+            "id": 34966260,
+            "nugget": 0.0
+        }
+    ],
+    "orientations": [
+        {
+            "x": 50.0,
+            "y": 0.0,
+            "z": -20.0,
+            "G_x": 1.0,
+            "G_y": 0.0,
+            "G_z": 1.0,
+            "id": 34966260,
+            "nugget": 0.01,
+            "polarity": 1
+        }
+    ],
+    "series": [
+        {
+            "name": "Strat_Series",
+            "surfaces": [
+                "surface_0"
+            ],
+            "structural_relation": "ERODE",
+            "colors": [
+                "#015482"
+            ]
+        }
+    ],
+    "grid_settings": {
+        "regular_grid_resolution": [
+            100,
+            2,
+            100
+        ],
+        "regular_grid_extent": [
+            0.0,
+            150.0,
+            -10.0,
+            10.0,
+            -100.0,
+            0.0
+        ],
+        "octree_levels": null
+    },
+    "interpolation_options": {
+        "kernel_options": {
+            "range": 1.7,
+            "c_o": 10.0
+        },
+        "mesh_extraction": true,
+        "number_octree_levels": 4
+    },
+    "fault_relations": [
+        [
+            0
+        ]
+    ],
+    "id_name_mapping": {
+        "name_to_id": {
+            "surface_0": 34966260,
+            "basement": 91927817
+        }
+    }
+}

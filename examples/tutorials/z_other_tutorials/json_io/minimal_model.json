@@ -1,0 +1,53 @@
+{
+    "surface_points": [
+        {
+            "x": 50.0,
+            "y": 0.0,
+            "z": -20.0,
+            "id": 0
+        }
+    ],
+    "orientations": [
+        {
+            "x": 50.0,
+            "y": 0.0,
+            "z": -68.0,
+            "G_x": 1.0,
+            "G_y": 0.0,
+            "G_z": 1.0,
+            "id": 0
+        }
+    ],
+    "grid_settings": {
+        "regular_grid_resolution": [
+            100,
+            2,
+            100
+        ],
+        "regular_grid_extent": [
+            0,
+            150,
+            -10,
+            10,
+            -100,
+            0
+        ]
+    },
+    "interpolation_options": {
+        "kernel_options": {
+            "range": 10.0,
+            "c_o": 5.0
+        },
+        "mesh_extraction": true,
+        "number_octree_levels": 2
+    },
+    "series": [
+        {
+            "name": "default_formations",
+            "surfaces": [
+                "surface1"
+            ],
+            "structural_relation": "ERODE"
+        }
+    ]
+}
