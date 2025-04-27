@@ -23,48 +23,48 @@ class Orientation(TypedDict):
     nugget: float
     polarity: int  # 1 for normal, -1 for reverse
 
-class Surface(TypedDict):
-    name: str
-    id: int
-    color: Optional[str]  # Hex color code
-    vertices: Optional[List[List[float]]]  # List of [x, y, z] coordinates
+class Surface(TypedDict, total=False):
+    name: str  # Required
+    id: NotRequired[int]  # Optional, will be auto-generated if not provided
+    color: NotRequired[Optional[str]]  # Optional hex color code
+    vertices: NotRequired[Optional[List[List[float]]]]  # Optional list of [x, y, z] coordinates
 
-class Fault(TypedDict):
-    name: str
-    id: int
-    is_active: bool
+class Fault(TypedDict, total=False):
+    name: str  # Required
+    id: NotRequired[int]  # Optional, will be auto-generated
+    is_active: NotRequired[bool]  # Optional, defaults to True
     surface: Surface
 
 class Series(TypedDict, total=False):
     name: str  # Required
-    id: int
-    is_active: bool
-    is_fault: bool
-    order_series: int
-    surfaces: List[str]  # Required, list of surface names
-    faults: List[Fault]
+    surfaces: Union[List[str], List[Surface]]  # Required, can be list of names or Surface objects
+    id: NotRequired[int]  # Optional, will be auto-generated
+    is_active: NotRequired[bool]  # Optional, defaults to True
+    is_fault: NotRequired[bool]  # Optional, defaults to False
+    order_series: NotRequired[int]  # Optional, will be auto-generated
+    faults: NotRequired[List[Fault]]  # Optional, defaults to empty list
     structural_relation: NotRequired[str]  # Optional, defaults to "ONLAP"
-    colors: NotRequired[Optional[List[str]]]  # Optional list of hex color codes
+    colors: NotRequired[Optional[List[str]]]  # Optional
 
-class GridSettings(TypedDict):
-    regular_grid_resolution: List[int]
-    regular_grid_extent: List[float]
-    octree_levels: Optional[int]
+class GridSettings(TypedDict, total=False):
+    regular_grid_resolution: NotRequired[List[int]]  # Optional, defaults to [10, 10, 10]
+    regular_grid_extent: NotRequired[List[float]]  # Optional, auto-calculated from data
+    octree_levels: NotRequired[Optional[int]]  # Optional
 
-class ModelMetadata(TypedDict):
-    name: str
-    creation_date: str
-    last_modification_date: str
-    owner: Optional[str]
+class ModelMetadata(TypedDict, total=False):
+    name: NotRequired[str]  # Optional, defaults to "GemPy Model"
+    creation_date: NotRequired[str]  # Optional, defaults to current date
+    last_modification_date: NotRequired[str]  # Optional, defaults to current date
+    owner: NotRequired[Optional[str]]  # Optional, defaults to "GemPy Team"
 
-class IdNameMapping(TypedDict):
-    name_to_id: Dict[str, int]
+class IdNameMapping(TypedDict, total=False):
+    name_to_id: Dict[str, int]  # Required if id_name_mapping is provided
 
-class GemPyModelJson(TypedDict, total=False):
-    metadata: ModelMetadata
-    surface_points: List[SurfacePoint]
-    orientations: List[Orientation]
-    series: List[Series]
-    grid_settings: Optional[GridSettings]
-    interpolation_options: Optional[Dict[str, Any]]
-    id_name_mapping: IdNameMapping 
+class GemPyModelJson(TypedDict):
+    surface_points: List[SurfacePoint]  # Required
+    orientations: List[Orientation]  # Required
+    series: List[Series]  # Required but with minimal required fields
+    metadata: NotRequired[ModelMetadata]  # Optional
+    grid_settings: NotRequired[Optional[GridSettings]]  # Optional
+    interpolation_options: NotRequired[Optional[Dict[str, Any]]]  # Optional
+    id_name_mapping: NotRequired[IdNameMapping]  # Optional 
