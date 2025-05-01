@@ -38,12 +38,20 @@ def test_marching_cubes_implementation():
     # assert arrays.scalar_field_matrix.shape == (3, 8_000)  # * 3 surfaces, 8000 points
 
     marching_cubes.set_meshes_with_marching_cubes(model)
+    
+    # Assert
+    assert model.solutions.block_solution_type == RawArraysSolution.BlockSolutionType.DENSE_GRID
+    assert model.solutions.dc_meshes is  None
+    assert model.structural_frame.structural_groups[0].elements[0].vertices.shape == (600, 3)
+    assert model.structural_frame.structural_groups[1].elements[0].vertices.shape == (860, 3)
+    assert model.structural_frame.structural_groups[2].elements[0].vertices.shape == (1_256, 3)
+    assert model.structural_frame.structural_groups[2].elements[1].vertices.shape == (1_680, 3)
 
     if PLOT:
         gpv = require_gempy_viewer()
         gtv: gpv.GemPyToVista = gpv.plot_3d(
             model=model,
             show_data=True,
-            image=False,
+            image=True,
             show=True
         )
