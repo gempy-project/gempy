@@ -55,7 +55,7 @@ def set_meshes_with_marching_cubes(model: GeoModel) -> None:
     # TODO: Attribute of element.scalar_field was None, changed it to scalar field value of that element
     #  This should probably be done somewhere else and maybe renamed to scalar_field_value?
     #  This is just the most basic solution to be clear what I did
-    _set_scalar_field_to_element(model, output_lvl0, structural_groups)
+    # _set_scalar_field_to_element(model, output_lvl0, structural_groups)
 
     # Trying to use the exiting gempy masks
     # masks = []
@@ -96,13 +96,14 @@ def set_meshes_with_marching_cubes(model: GeoModel) -> None:
 
 # TODO: This should be set somewhere else
 def _set_scalar_field_to_element(model, output_lvl0, structural_groups):
+    element: StructuralElement
     counter = 0
     for e, structural_group in enumerate(structural_groups):
         if e >= len(output_lvl0):
             continue
 
         for element in structural_group.elements:
-            element.scalar_field = model.solutions.scalar_field_at_surface_points[counter]
+            element.scalar_field_at_interface = model.solutions.scalar_field_at_surface_points[counter]
             counter += 1
 
 
@@ -139,7 +140,7 @@ def extract_mesh_for_element(structural_element: StructuralElement,
     # Extract mesh using marching cubes
     verts, faces, _, _ = measure.marching_cubes(
         volume=scalar_field,
-        level=structural_element.scalar_field,
+        level=structural_element.scalar_field_at_interface,
         spacing=(regular_grid.dx, regular_grid.dy, regular_grid.dz),
         mask=mask
     )

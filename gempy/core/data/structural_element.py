@@ -31,7 +31,7 @@ class StructuralElement:
     # ? Should we extract this to a separate class?
     vertices: Optional[np.ndarray] = None  #: The vertices of the element in 3D space.
     edges: Optional[np.ndarray] = None  #: The edges of the element in 3D space.
-    scalar_field: Optional[float] = None  #: The scalar field value for the element.
+    scalar_field_at_interface: Optional[float] = None  #: The scalar field value for the element.
 
     _id: int = -1
     

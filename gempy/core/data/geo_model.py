@@ -146,7 +146,7 @@ class GeoModel:
         return self._solutions
 
     @solutions.setter
-    def solutions(self, value):
+    def solutions(self, value: Solutions):
         # * This is set  from the gempy engine
         
         self._solutions = value
@@ -161,6 +161,8 @@ class GeoModel:
 
         # * Set solutions per element
         for e, element in enumerate(self.structural_frame.structural_elements[:-1]):  # * Ignore basement
+            element.scalar_field_at_interface = value.scalar_field_at_surface_points[e]
+            
             if self._solutions.dc_meshes is None:
                 continue
             dc_mesh = self._solutions.dc_meshes[e]
