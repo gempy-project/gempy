@@ -3,7 +3,13 @@ Schema definitions for JSON I/O operations in GemPy.
 This module defines the expected structure of JSON files for loading and saving GemPy models.
 """
 
-from typing import TypedDict, List, Dict, Any, Optional, Union, Sequence, NotRequired
+from typing import TypedDict, List, Dict, Any, Optional, Union, Sequence
+
+try:
+    from typing import NotRequired
+except ImportError:
+    from typing_extensions import NotRequired # Fallback for older Python versions
+
 
 class SurfacePoint(TypedDict):
     x: float
