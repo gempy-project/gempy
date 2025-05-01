@@ -147,6 +147,8 @@ class GeoModel:
 
     @solutions.setter
     def solutions(self, value):
+        # * This is set  from the gempy engine
+        
         self._solutions = value
 
         # * Set solutions per group

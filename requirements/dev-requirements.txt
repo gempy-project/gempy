@@ -1,7 +1,8 @@
 -r optional-requirements.txt
 
 pytest
-subsurface~=2024.2.0
+pyvista
+git+https://github.com/terranigma-solutions/subsurface.git@2025.0.0b2
 
 # Testing
 pytest-approvaltests
