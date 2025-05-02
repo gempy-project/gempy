@@ -27,8 +27,8 @@ def test_outliers_model_1():
     gp.map_stack_to_surfaces(
         gempy_model=model,
         mapping_object={
-            "Young_Series": ("basin_fill_2", "basin_fill_1"),
-            "Old_Series": ("basin_top", "basin_bottom")
+                "Young_Series": ("basin_fill_2", "basin_fill_1"),
+                "Old_Series"  : ("basin_top", "basin_bottom")
         }
     )
 
@@ -37,7 +37,12 @@ def test_outliers_model_1():
     model.structural_frame.structural_groups[0].structural_relation = StackRelationType.ONLAP
 
     # Compute a solution for the model
-    gp.compute_model(model)
+    gp.compute_model(
+        gempy_model=model,
+        engine_config=gp.data.GemPyEngineConfig(
+            backend=gp.data.AvailableBackends.PYTORCH
+        )
+    )
 
     # Assert
     arrays = model.solutions.raw_arrays  # * arrays is equivalent to gempy v2 solutions
@@ -49,5 +54,23 @@ def test_outliers_model_1():
             model=model,
             show_data=False,
             show_boundaries=False,
+            show=True
+        )
+
+        gpv.plot_2d(
+            model=model,
+            show_data=False,
+            show_boundaries=False,
+            show_scalar=True,
+            show=True
+        )
+
+
+        gpv.plot_2d(
+            model=model,
+            show_data=False,
+            show_boundaries=False,
+            show_scalar=True,
+            series_n=1,
             show=True
         )
