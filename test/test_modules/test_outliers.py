@@ -35,12 +35,14 @@ def test_outliers_model_1():
     # Set the relation of the youngest group to Onlap
     from gempy_engine.core.data.stack_relation_type import StackRelationType
     model.structural_frame.structural_groups[0].structural_relation = StackRelationType.ONLAP
+    
+    model.interpolation_options.sigmoid_slope = 5_000_000
 
     # Compute a solution for the model
     gp.compute_model(
         gempy_model=model,
         engine_config=gp.data.GemPyEngineConfig(
-            backend=gp.data.AvailableBackends.PYTORCH
+            backend=gp.data.AvailableBackends.numpy
         )
     )
 
@@ -52,7 +54,7 @@ def test_outliers_model_1():
         gpv = require_gempy_viewer()
         gpv.plot_2d(
             model=model,
-            show_data=False,
+            show_data=True,
             show_boundaries=False,
             show=True
         )
