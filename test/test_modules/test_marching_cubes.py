@@ -26,8 +26,7 @@ def test_marching_cubes_implementation():
         reset=True
     )
 
-    model.interpolation_options.evaluation_options.number_octree_levels = 1
-    model.interpolation_options.evaluation_options.mesh_extraction = False  # * Not extracting the mesh with dual contouring
+    model.interpolation_options = gp.data.InterpolationOptions.init_dense_grid_options()
     gp.compute_model(model)
 
     # Assert

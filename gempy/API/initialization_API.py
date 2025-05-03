@@ -6,16 +6,16 @@ from numpy import ndarray
 
 from gempy.API.io_API import read_surface_points, read_orientations
 from gempy_engine.core.data import InterpolationOptions
-from ..core.data.grid_modules import RegularGrid
-from ..optional_dependencies import require_subsurface
 from ..core.data import StructuralElement
 from ..core.data.geo_model import GeoModel
 from ..core.data.grid import Grid
 from ..core.data.importer_helper import ImporterHelper
+from ..core.data.options import InterpolationOptionsType
 from ..core.data.orientations import OrientationsTable
 from ..core.data.structural_frame import StructuralFrame
 from ..core.data.surface_points import SurfacePointsTable
 from ..optional_dependencies import require_pooch
+from ..optional_dependencies import require_subsurface
 
 
 def create_geomodel(
@@ -26,23 +26,40 @@ def create_geomodel(
         refinement: int = 1,
         structural_frame: StructuralFrame = None,
         importer_helper: ImporterHelper = None,
+        intpolation_options_tye: InterpolationOptionsType = InterpolationOptionsType.OCTREE,
 ) -> GeoModel:  # ? Do I need to pass pandas read kwargs?
     """
-    Initializes and returns a GeoModel instance with specified parameters.
+    Creates a geological model based on input parameters, spatial configuration, and interpolation options.
+
+    This function initializes a geological model by defining the grid (dense grid or
+    octree-based), selecting interpolation options based on the desired type, and 
+    configuring the structural frame using either a provided structural frame or an 
+    importer helper instance. The geological model is tailored for specific project-based 
+    requirements and can be either dense or with variable resolution depending on the 
+    refinement level.
 
     Args:
-        project_name (str, optional): The name of the project. Defaults to 'default_project'.
-        extent (Union[List, np.ndarray], optional): The 3D extent of the grid. Must be provided if resolution is specified. Defaults to None.
-        resolution (Union[List, np.ndarray], optional): The resolution of the grid. If None, an octree grid will be initialized. Defaults to None.
-        refinement (int, optional): The level of refinement for the octree grid. Defaults to 1.
-        structural_frame (StructuralFrame, optional): The structural frame of the GeoModel. Either this or importer_helper must be provided. Defaults to None.
-        importer_helper (ImporterHelper, optional): Helper object for importing structural elements. Either this or structural_frame must be provided. Defaults to None.
+        project_name (str): Name of the geological model project. Defaults to 'default_project'.
+        extent (list, ndarray): Spatial extent of the geological model in the form of
+            [min_x, max_x, min_y, max_y, min_z, max_z].
+        resolution (list, ndarray): Resolution of the model grid in the form [x_res, y_res, z_res].
+            If not provided, the function will default to octree initialization.
+        refinement (int): Refinement level for the octree grid. Ignored if resolution is provided.
+            Defaults to 1.
+        structural_frame (StructuralFrame): Pre-configured instance of StructuralFrame
+            for the geological model. If not provided, an importer_helper must be supplied.
+        importer_helper (ImporterHelper): Helper object for initializing a structural frame if none
+            is explicitly provided.
+        intpolation_options_tye (InterpolationOptionsType): Enum representing the desired type of 
+            interpolation options. Defaults to InterpolationOptionsType.OCTREE.
 
     Returns:
-        GeoModel: The initialized GeoModel object.
+        GeoModel: An initialized geological model with specified spatial configuration 
+        and interpolation properties.
 
     Raises:
         ValueError: If neither structural_frame nor importer_helper is provided.
+        ValueError: If the interpolation options type is unrecognized.
     """
     
     # init resolutions well
@@ -57,12 +74,13 @@ def create_geomodel(
             resolution=resolution
         )
 
-    interpolation_options: InterpolationOptions = InterpolationOptions(
-        range=1.7,
-        c_o=10,
-        mesh_extraction=True,
-        number_octree_levels=refinement,
-    )
+    match intpolation_options_tye:
+        case InterpolationOptionsType.DENSE_GRID:
+            interpolation_options: InterpolationOptions = InterpolationOptions.init_dense_grid_options()
+        case InterpolationOptionsType.OCTREE:
+            interpolation_options: InterpolationOptions = InterpolationOptions.init_octree_options(refinement=refinement)
+        case _:
+            raise ValueError(f"Interpolation options type {intpolation_options_tye} not recognized. Use InterpolationOptionsType.DENSE_GRID or InterpolationOptionsType.OCTREE.")
 
     match (structural_frame, importer_helper):
         case (None, None):
