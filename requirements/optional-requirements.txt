@@ -1,0 +1,8 @@
+-r base-requirements.txt
+
+gempy_plugins
+
+# for data download
+pooch 
+scipy
+scikit-image

@@ -1,0 +1,4 @@
+exclude notebooks/*
+exclude docs/*
+exclude examples/*
+include LICENSE

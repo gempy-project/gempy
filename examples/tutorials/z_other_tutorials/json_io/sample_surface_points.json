@@ -1,0 +1,65 @@
+{
+    "metadata": {
+        "name": "sample_model",
+        "creation_date": "2024-03-19",
+        "last_modification_date": "2024-03-19",
+        "owner": "tutorial"
+    },
+    "surface_points": [
+        {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "id": 0,
+            "nugget": 2e-05
+        },
+        {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0,
+            "id": 0,
+            "nugget": 2e-05
+        },
+        {
+            "x": 2.0,
+            "y": 2.0,
+            "z": 2.0,
+            "id": 1,
+            "nugget": 2e-05
+        },
+        {
+            "x": 3.0,
+            "y": 3.0,
+            "z": 3.0,
+            "id": 1,
+            "nugget": 2e-05
+        },
+        {
+            "x": 4.0,
+            "y": 4.0,
+            "z": 4.0,
+            "id": 2,
+            "nugget": 2e-05
+        }
+    ],
+    "orientations": [],
+    "faults": [],
+    "series": [],
+    "grid_settings": {
+        "regular_grid_resolution": [
+            10,
+            10,
+            10
+        ],
+        "regular_grid_extent": [
+            0,
+            4,
+            0,
+            4,
+            0,
+            4
+        ],
+        "octree_levels": null
+    },
+    "interpolation_options": {}
+}

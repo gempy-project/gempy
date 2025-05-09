@@ -1,0 +1,2 @@
+# This install also numpy
+gempy_engine~=2025.1.1

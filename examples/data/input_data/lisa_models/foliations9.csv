@@ -1,0 +1,4 @@
+,X,Y,Z,G_x,G_y,G_z,dip,azimuth,polarity,formation,series,formation_number,order_series,isFault,Unnamed: 0,formation_value,annotations
+2,1000.0,1249.9999999999984,10.000000000000009,0.31816239933811036,-0.4772448176609822,0.8191520442899918,35.0,146.31,1.0,Gneiss,Default series,1,1,False,0,1,"${\bf{x}}_{\beta \,{\bf{1}},0}$"
+0,1000.0,1250.0,1500.0,0.31816239933811036,-0.4772448176609822,0.8191520442899918,35.0,146.31,1.0,Sandstone,Default series,2,1,False,2,2,"${\bf{x}}_{\beta \,{\bf{2}},0}$"
+1,1000.0,1250.0,700.0,0.31816239933731816,-0.4772448176597939,0.8191520442909919,34.999999999900105,146.31,1.0,Schist,Default series,4,1,False,1,4,"${\bf{x}}_{\beta \,{\bf{4}},0}$"

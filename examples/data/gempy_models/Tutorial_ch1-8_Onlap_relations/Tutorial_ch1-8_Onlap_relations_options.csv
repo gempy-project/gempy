@@ -1,0 +1,2 @@
+,dtype,output,aesara_optimizer,device,verbosity
+values,float64,geology,fast_compile,cpu,[]

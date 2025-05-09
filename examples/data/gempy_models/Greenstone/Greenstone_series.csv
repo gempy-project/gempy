@@ -1,0 +1,5 @@
+,order_series,BottomRelation,isActive
+EarlyGranite_Series,1,Erosion,True
+BIF_Series,2,Erosion,True
+SimpleMafic_Series,3,Erosion,True
+Basement,4,Erosion,False

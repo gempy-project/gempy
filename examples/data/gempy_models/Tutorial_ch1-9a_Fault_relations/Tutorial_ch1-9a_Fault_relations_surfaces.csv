@@ -1,0 +1,8 @@
+,surface,series,order_surfaces,isBasement,color,vertices,edges,id
+4,basement,basement_series,1,False,#325916,,,1
+5,fault1,fault_series1,1,False,#015482,,,2
+0,rock3,series1,1,False,#728f02,,,3
+3,rock2,series1,2,False,#443988,,,4
+1,rock1,series1,3,False,#ff3f20,,,5
+7,rock5,series2,1,False,#9f0052,,,6
+6,rock4,series2,2,True,#ffbe00,,,7

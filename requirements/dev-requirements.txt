@@ -1,0 +1,8 @@
+-r optional-requirements.txt
+
+pytest
+pyvista
+subsurface-terra
+
+# Testing
+pytest-approvaltests

@@ -1,0 +1,144 @@
+{
+    "metadata": {
+        "name": "horizontal_stratigraphic",
+        "creation_date": "2024-03-19",
+        "last_modification_date": "2024-03-19",
+        "owner": "tutorial"
+    },
+    "surface_points": [
+        {
+            "x": 100.0,
+            "y": 200.0,
+            "z": 600.0,
+            "id": 1,
+            "nugget": 2e-05
+        },
+        {
+            "x": 500.0,
+            "y": 200.0,
+            "z": 600.0,
+            "id": 1,
+            "nugget": 2e-05
+        },
+        {
+            "x": 900.0,
+            "y": 200.0,
+            "z": 600.0,
+            "id": 1,
+            "nugget": 2e-05
+        },
+        {
+            "x": 100.0,
+            "y": 800.0,
+            "z": 600.0,
+            "id": 1,
+            "nugget": 2e-05
+        },
+        {
+            "x": 500.0,
+            "y": 800.0,
+            "z": 600.0,
+            "id": 1,
+            "nugget": 2e-05
+        },
+        {
+            "x": 900.0,
+            "y": 800.0,
+            "z": 600.0,
+            "id": 1,
+            "nugget": 2e-05
+        },
+        {
+            "x": 100.0,
+            "y": 200.0,
+            "z": 400.0,
+            "id": 0,
+            "nugget": 2e-05
+        },
+        {
+            "x": 500.0,
+            "y": 200.0,
+            "z": 400.0,
+            "id": 0,
+            "nugget": 2e-05
+        },
+        {
+            "x": 900.0,
+            "y": 200.0,
+            "z": 400.0,
+            "id": 0,
+            "nugget": 2e-05
+        },
+        {
+            "x": 100.0,
+            "y": 800.0,
+            "z": 400.0,
+            "id": 0,
+            "nugget": 2e-05
+        },
+        {
+            "x": 500.0,
+            "y": 800.0,
+            "z": 400.0,
+            "id": 0,
+            "nugget": 2e-05
+        },
+        {
+            "x": 900.0,
+            "y": 800.0,
+            "z": 400.0,
+            "id": 0,
+            "nugget": 2e-05
+        }
+    ],
+    "orientations": [
+        {
+            "x": 500.0,
+            "y": 500.0,
+            "z": 600.0,
+            "G_x": 0.0,
+            "G_y": 0.0,
+            "G_z": 1.0,
+            "id": 1,
+            "nugget": 0.01,
+            "polarity": 1
+        },
+        {
+            "x": 500.0,
+            "y": 500.0,
+            "z": 400.0,
+            "G_x": 0.0,
+            "G_y": 0.0,
+            "G_z": 1.0,
+            "id": 0,
+            "nugget": 0.01,
+            "polarity": 1
+        }
+    ],
+    "series": [
+        {
+            "name": "Strat_Series",
+            "surfaces": [
+                "rock2",
+                "rock1"
+            ]
+        }
+    ],
+    "grid_settings": {
+        "regular_grid_resolution": [
+            10,
+            10,
+            10
+        ],
+        "regular_grid_extent": [
+            0,
+            1000,
+            0,
+            1000,
+            0,
+            1000
+        ],
+        "octree_levels": null
+    },
+    "interpolation_options": {}
+}

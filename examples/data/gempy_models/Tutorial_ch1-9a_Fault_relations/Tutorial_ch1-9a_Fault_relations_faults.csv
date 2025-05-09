@@ -1,0 +1,5 @@
+,isFault,isFinite
+fault_series1,True,False
+series2,False,False
+series1,False,False
+basement_series,False,False

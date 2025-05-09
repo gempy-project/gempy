@@ -1,0 +1,6 @@
+,order_series,BottomRelation
+seafloor_series,1,Erosion
+right_series,2,Onlap
+onlap_series,3,Erosion
+left_series,4,Erosion
+basement,5,Erosion

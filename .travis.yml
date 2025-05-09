@@ -1,0 +1,75 @@
+language: python
+os: linux
+dist: xenial
+
+branches:
+    only:
+        - master
+        - release
+
+python:
+  - '3.8'
+
+before_install:
+  # configure a headless display
+  - git clone --depth 1 git://github.com/pyvista/gl-ci-helpers.git
+  - source ./gl-ci-helpers/travis/setup_headless_display.sh
+
+install:
+  - sudo apt-get update
+  # We do this conditionally because it saves us some downloading if the
+  # version is the same.
+  - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - hash -r
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update --all
+  # Useful for debugging any issues with conda
+  - conda info -a
+
+  # Install and activate environment, install packages
+  - conda create -q -n tenv python=$TRAVIS_PYTHON_VERSION
+  - source activate tenv
+
+  # Installs from conda-forge
+  - conda install -c conda-forge python-graphviz
+  - conda install -c conda-forge pip matplotlib ipython six pytest pytest-cov ipywidgets
+  - conda install -c conda-forge recommonmark networkx panel setuptools mkl-service
+
+  # Installs from anaconda
+  - conda install -c anaconda libffi
+
+  - conda install aesara
+
+  # Installs from pip
+  - pip install welly pymc3
+
+  - pip install scikit-image>=0.17 sklearn
+
+  - pip install pandas seaborn>=0.9 sphinx-gallery
+  # Install
+  - pip install -e .
+
+  # Pyvista should have been fixed- pip install pyvista
+  # Arviz broke with xarray update
+  - pip install git+https://github.com/arviz-devs/arviz --force-reinstall
+
+  # Install subsurface
+  - pip install subsurface
+
+  - conda install -c conda-forge gdal
+
+  - python -c "import pyvista as pv;print(pv.Report())"
+
+  - pip install pooch
+
+stages:
+  - test
+
+jobs:
+  include:
+      - stage: test
+        script:
+          - pytest -v
+cache: pip
