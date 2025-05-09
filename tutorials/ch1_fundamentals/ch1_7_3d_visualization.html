@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>1.7: 3-D Visualization &#8212; GemPy 2024.2.0.3.dev0+gf344a731.d20240626 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=686e5160" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=e15417cb" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <script src="../../_static/documentation_options.js?v=bd57e1ea"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <link rel="icon" href="../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Chapter 2: Forward Geophysics" href="../ch2-Geophysics/index.html" />
+    <link rel="prev" title="1.6: 2D Visualization." href="ch1_6_2d_visualization.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#sphx-glr-download-tutorials-ch1-fundamentals-ch1-7-3d-visualization-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code.</p>
+</div>
+<section class="sphx-glr-example-title" id="d-visualization">
+<span id="sphx-glr-tutorials-ch1-fundamentals-ch1-7-3d-visualization-py"></span><h1>1.7: 3-D Visualization<a class="headerlink" href="#d-visualization" title="Link to this heading">¶</a></h1>
+<p>Importing GemPy</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">gempy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">gempy_viewer</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gpv</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gempy</span><span class="w"> </span><span class="kn">import</span> <a href="../../GemPy API/gempy.generate_example_model.html#gempy.generate_example_model" title="gempy.generate_example_model" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">generate_example_model</span></a>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gempy.core.data.enumerators</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExampleModel</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dotenv</span>
+
+<span class="n">dotenv</span><span class="o">.</span><span class="n">load_dotenv</span><span class="p">()</span>
+
+<span class="c1"># sphinx_gallery_thumbnail_number = -1</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>False
+</pre></div>
+</div>
+<section id="loading-an-example-geomodel">
+<h2>Loading an example geomodel<a class="headerlink" href="#loading-an-example-geomodel" title="Link to this heading">¶</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a> <span class="o">=</span> <a href="../../GemPy API/gempy.generate_example_model.html#gempy.generate_example_model" title="gempy.generate_example_model" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">generate_example_model</span></a><span class="p">(</span><span class="n">ExampleModel</span><span class="o">.</span><span class="n">GRABEN</span><span class="p">)</span>
+
+<a href="../../GemPy API/gempy.compute_model.html#gempy.compute_model" title="gempy.compute_model" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span></a><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Surface points hash:  8c72af50fc56389b620c6458a6af23915b121b5e655b3ce179a790636dc529a5
+Orientations hash:  87cf30b08b5be03b38c5e6d288fa7bb8855263704efb62c7c3cd77673eaae96d
+Setting Backend To: AvailableBackends.numpy
+Chunking done: 19 chunks
+Chunking done: 36 chunks
+Chunking done: 34 chunks
+Setting Backend To: AvailableBackends.numpy
+Chunking done: 19 chunks
+Chunking done: 36 chunks
+Chunking done: 34 chunks
+</pre></div>
+</div>
+<div class="output_subarea output_html rendered_html output_result">
+<b>Solutions:</b> 6 Octree Levels, 8 DualContouringMeshes
+</div>
+<br />
+<br /><section id="basic-plotting-api">
+<h3>Basic plotting API<a class="headerlink" href="#basic-plotting-api" title="Link to this heading">¶</a></h3>
+</section>
+</section>
+<section id="data-plot">
+<h2>Data plot<a class="headerlink" href="#data-plot" title="Link to this heading">¶</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_3d</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span>
+    <span class="n">show_surfaces</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">show_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">show_lith</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">image</span><span class="o">=</span><span class="kc">False</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_ch1_7_3d_visualization_001.png" srcset="../../_images/sphx_glr_ch1_7_3d_visualization_001.png" alt="ch1 7 3d visualization" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fc5bb209ff0&gt;
+</pre></div>
+</div>
+</section>
+<section id="geomodel-plot">
+<h2>Geomodel plot<a class="headerlink" href="#geomodel-plot" title="Link to this heading">¶</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_3d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_ch1_7_3d_visualization_002.png" srcset="../../_images/sphx_glr_ch1_7_3d_visualization_002.png" alt="ch1 7 3d visualization" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fc5be56a890&gt;
+</pre></div>
+</div>
+</section>
+<section id="liquidearth-integration">
+<h2>LiquidEarth Integration<a class="headerlink" href="#liquidearth-integration" title="Link to this heading">¶</a></h2>
+<p>Beyond the classical plotting capabilities introduced in GemPy v3, users can now also upload models to LiquidEarth.
+<a class="reference external" href="https://www.terranigma-solutions.com/liquidearth">LiquidEarth</a> is a collaborative platform designed for 3D visualization,
+developed by many of the main <cite>gempy</cite> maintainers,  with a strong focus on collaboration and sharing.
+This makes it an excellent tool for sharing your models with others and viewing them across different platforms.
+To upload a model to LiquidEarth, you must have an account and a user token. Once your model is uploaded,
+you can easily share the link with anyone.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">link</span> <span class="o">=</span> <span class="n">gpv</span><span class="o">.</span><span class="n">plot_to_liquid_earth</span><span class="p">(</span>
+    <a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span>
+    <span class="n">space_name</span><span class="o">=</span><span class="s2">&quot;[PUBLIC] GemPy Tutorial 1.7: 3-D Visualization&quot;</span><span class="p">,</span>
+    <span class="n">file_name</span><span class="o">=</span><span class="s2">&quot;gempy_model&quot;</span><span class="p">,</span>
+    <span class="n">user_token</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># If None, it will try to grab it from the environment</span>
+    <span class="n">grab_link</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">make_new_space</span><span class="o">=</span><span class="kc">False</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Generated Link: </span><span class="si">{</span><span class="n">link</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Generated Link: ServerResponse(deep_link=&#39;https://liquidearth.app.link/cb40d7bb-77b4-4609-8e37-34dc7d61c401&#39;, available_projects=[AvailableProject(CreationDate=&#39;Thursday, 01 May 2025&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Test 2025.1.2 (Clone)&#39;, OwnerId=&#39;Fce/u4dGtdaSuJDMFM4FWA==:e9apv1A+ZT5pTjX9CnRzYsp+XF0rGiGhzA+KGogONhJXOBmfulf/fcMQ0XyqDWiu&#39;, SpaceId=&#39;jST3sg2R7wN6iCT6vfZ0dQ==:3ZggI+Sq30qz9jpYq50TYhPjTo0RWmUEfL18AFOo/uDnQfHJ23xRLFbVHikwQnK+&#39;), AvailableProject(CreationDate=&#39;Thursday, 01 May 2025&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Test 2025.1.2&#39;, OwnerId=&#39;WTgMj2dRP3FXklFXZnSSAQ==:K0QgvHHkt6fpQMhDmtVJBDeQWCmBUHzMFQd5esSrEYVo5Jj10PP+DpJYTuG4z+6E&#39;, SpaceId=&#39;NgQhY2RJZ53ZlGkfKygybQ==:fvIJOQ1LrqSp3rAUy1YBKEXUab5kLava32vCdWZl9rAWZEL7NYsbhplEO4MCtNso&#39;), AvailableProject(CreationDate=&#39;Tuesday, 18 March 2025&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Test vtk &#39;, OwnerId=&#39;YVqr8r3JPAdRSo5ZOybupQ==:ralYLxslEoi1YEE76OeEhqy6+mERJ92P9H9QvectNw3+oeCSP4bCkhIZ+jxo15Q/&#39;, SpaceId=&#39;hZ90YAHmjKcDtXsNjZQOfw==:Iow0IQiySIV6oVIb9E6NWbBPUDE1i0Nj+bW/JvrgUJu/CqeFXsmw6klOkmMUqZCx&#39;), AvailableProject(CreationDate=&#39;Tuesday, 28 January 2025&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;[VECTOR] Jadar&#39;, OwnerId=&#39;kocbHFKS8XHKM2+s0XCjHw==:Qektu64NU3/YMw7nBXJ9l4WE7TI/H6iObjZrX8Q6UPk9VEMkbfy/Op2pcZfXTru0&#39;, SpaceId=&#39;A1HAQAVroD+mizPXaFNLvw==:tiPTaL2fyj3lvD0acZQgxA1aw8E9yEU2diR1ow5/5W2GYY02C4Le739L7EVWDI17&#39;), AvailableProject(CreationDate=&#39;Tuesday, 06 August 2024&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Vector - Stonepark&#39;, OwnerId=&#39;8z40bmksBYrMQ6ejx9CGLQ==:U+w/a7mTAQOpXwJiPihZlSBBoKyAgenGFt5z5FRu/znhzRcFzpVKKfXYZlEsmKVt&#39;, SpaceId=&#39;qJg2nAIERU+/p6Lm2vyQbA==:HTAP5e8O+n82n/Q7YlH9ZHiS/UaOq7J+BwtrKpKRePwTc4UQHadw4heKKyt+bvJ3&#39;), AvailableProject(CreationDate=&#39;Tuesday, 06 August 2024&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;[VECTOR] Spremberg (Clone)&#39;, OwnerId=&#39;4WD+bHL5tlSZ15iIEsT5KQ==:azPHI6rB4bMEsYVnkl9IgY9+ZMIJ7Mw6OpOMjUCCoQLpZY1TFqhZm9LUMEiswq5S&#39;, SpaceId=&#39;TbfKmRLnXSOpvQP/lqURaw==:du2t3vcmmwQIXdjH/3qMm3TTkIIFw7VMCQ01hQUI0dvUyPVnAhMq2rRDv1kQF5Qd&#39;), AvailableProject(CreationDate=&#39;Tuesday, 06 August 2024&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;[VECTOR] Spremberg&#39;, OwnerId=&#39;QWMjh69VBmy91tm+F4J80w==:5u5xgVOdbKvMLGIwgqKoW+5AB3x/CpEti6ZLK+PBGSpJpWX4Rmdj7VKQ7hSwollI&#39;, SpaceId=&#39;V3RCKPJT/0SCa3Dowm6DXg==:2OKFBb4wwfMB/3MNovU3g3oO0unLFkMju63zRZqSB1ieIx6dFq4Yz/uTzb0yPTtn&#39;), AvailableProject(CreationDate=&#39;Tuesday, 06 August 2024&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Vector - Collinstown&#39;, OwnerId=&#39;fqkeHYwuOqvEwfUux3jiQQ==:OyEdRA5oiu8Y0ubcOQobwg8PELhTv+4oANHFIV4T0S42GPHPpUTUmgyZsrXte1rm&#39;, SpaceId=&#39;q5kJQdiMaNwbsBBplzi8qA==:gCo9a1agPJOHojreuqXef2WWtz6zmGnmZC55WIkP+byDs4WLq2l34+HB+oViOZO3&#39;), AvailableProject(CreationDate=&#39;Tuesday, 23 July 2024&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Testing dxf (Clone)&#39;, OwnerId=&#39;X5NojXdYTzPtYa+Szsh1Fw==:h4TIvok7+Fjz8r8euWCAWWrXtUzu7Vbtx2+I+Jpv/Y2ytMVjWqIdNQDA1tiTOtIi&#39;, SpaceId=&#39;c5co9IpakeDr2l6YqG+pVA==:RdwuMymcQweBYPfYKxm3Fn/qJ/+ZONXiL++/O3W7ajcT+Tyw+2si2KDsoQjb59gi&#39;), AvailableProject(CreationDate=&#39;Tuesday, 23 July 2024&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Testing dxf&#39;, OwnerId=&#39;v0I5vtuS3CppCJHNReTAgA==:cqTk+xSLXXDX2hrH6VftidHyRGAEjAFMR9afPaWoSQLXDx3DfA0VF2rq6SYoHxd7&#39;, SpaceId=&#39;c2+sYYirhiHBhtfwOxTh7A==:kuPyDuKCagDwPxUpKadwVcXikCmlmfLSW8yggjbxRceV9Xa5h8gyh35RqOX8mEtJ&#39;), AvailableProject(CreationDate=&#39;Thursday, 04 July 2024&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Test Ideon 1&#39;, OwnerId=&#39;dVFUz5wYXYjBTUm8fDMPZQ==:2nmptpa1BkfibCKF66WbKc0ZEpW6I18+KPpSPgp2ZObm8ouUjqw1gF+bn1rrqMgv&#39;, SpaceId=&#39;/ukXBh6DtZV7ZYewZqOd2Q==:oBK1c2OfhAFvBB0UjYQyrIv6lBgzoWAtndC1WABr7kPt9DErfMzLy3w6VhofbHQ+&#39;), AvailableProject(CreationDate=&#39;Tuesday, 11 June 2024&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Spremberg&#39;, OwnerId=&#39;+zD4yTCA6k5i/3LI9osZ1w==:+Ou6nNZtnHlMC6yrXFtCrIvY6paPiWbAKFX+3j+O1Ir2ZIJvhZxJSyELI1HIBz0I&#39;, SpaceId=&#39;o9kNosL0jzq1ivYwEHfU+g==:tkC1vGVrxDCpIclrCJBqzjAZCab6TKefyRDv+IJtJRtsW8Fzq9Xvgt5SdzKk5zr9&#39;), AvailableProject(CreationDate=&#39;Monday, 27 May 2024&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Testing versioning&#39;, OwnerId=&#39;8dofoQXPZerRXVgoLoXMfw==:dLGpRDGL024pBVhULkgljdoj80RgiC1oAAfGDdmvDBi2l8bCEtysoYj8yqQXe0+j&#39;, SpaceId=&#39;WSeYDT2YED6N2NoUXkkIog==:McBiIGvTQNqTHh/IlpYNR1T9/u2eq3URIFZyB51slLT35+1thCfixncHiN9+Pmo5&#39;), AvailableProject(CreationDate=&#39;Thursday, 18 April 2024&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Test upload&#39;, OwnerId=&#39;7w1JlWL/vvRuhO0AHeSnKA==:3HzcrNXC32nv+tHZhQggalmU673745I9kwwkCG+3wORViAtOAeLLmQdE8FKPlxuy&#39;, SpaceId=&#39;qGuct0ACwFceiRpDOz6VHg==:urB1dv6p1F0Bj5TwL0op2CrF1t6esBzpzWMFZQ1G2zIeRAZaOWTA9xrGgBNraZSf&#39;), AvailableProject(CreationDate=&#39;Monday, April 22, 2024&#39;, DisplayedOwner=&#39;Dev v0.1&#39;, Name=&#39;Test upload from python&#39;, OwnerId=&#39;SryEt8q7NfL04j6c9/0IvQ==:Q690dCZXbNvfiC7KL6PYoJC6VTYBEM1blko3y77ihkjMULzy6tuwNuMJ5QRQmu7s&#39;, SpaceId=&#39;jq7nr6dHaJj1tCRSzMCCFw==:Ru1BQoZnHxK60GDmbnooukCDKOsXRkpQtLMPilq3SdOLitTtjuwQSkSAC/r068Zg&#39;), AvailableProject(CreationDate=&#39;Tuesday, 26 March 2024&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Boliden Garpenberg &#39;, OwnerId=&#39;+on6ufsCbzMLlq9XEGZyHA==:gc9SjCb+oFxsBhB9snAdsBQuDNuAx0tDTVJO3zxVJehV6OdY1bpH/D+/kAqSAIaU&#39;, SpaceId=&#39;hBIi/5c4SRtDmjGcSiS+Qg==:rtqrqAgRTf8FiMVx3Qeb5igzPgfPqyMzslgz0Gc7nnrf02msCVyt/Tu5Yp7fWI94&#39;), AvailableProject(CreationDate=&#39;Monday, 06 November 2023&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Test versioning 2&#39;, OwnerId=&#39;axGsFwGKqUFcBcm3r1dsJg==:XZV5S5fzydzt7HVJZJbYeVm+jkhEbwNOJpSRr806wvGUgQGz1xzZ7vgMad3svIkG&#39;, SpaceId=&#39;jqFDCSXDqYeqPC5OPYvGAA==:c2Efmoymfamz9l0iXrZAgxChNQIbCtcXZBNn6vy4biakj/YSe+ja2+nUOpiNx49y&#39;), AvailableProject(CreationDate=&#39;Friday, 16 February 2024&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Testing order new&#39;, OwnerId=&#39;vGYStcKIRxfHcWmDIIHqng==:nmHGbQR87NmSZNh9KVGWWt/TAeum4rzivdZVUGPwZ0WnRLpoYvzvyNBjwrRGqh+T&#39;, SpaceId=&#39;5kAWg1vs6Jpq/PjROXZjGg==:7akeEeCdkCtXvmkdUORg8a+mYmVtDG/70D+rh8iRBYjOW/D6L2U4NWeO2DeO69L1&#39;), AvailableProject(CreationDate=&#39;Tuesday, 30 January 2024&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Test state versioning with transforms (Clone)&#39;, OwnerId=&#39;6rwSJE2l53HRnkA4BmaRYQ==:YdB5RBjnORs9+gSlH2aa523/Mq4Z39dG6/CXCJRFCnMsjLYO/2UlZER/OoPJTPAg&#39;, SpaceId=&#39;2ZemjqUJdB1hM0ydQnbS4Q==:yg/R9XkktLCr93Vo3UZev+bZGdqbJTk6YVKAm6TePH8DBofucEC7OiSpJVi+THRT&#39;), AvailableProject(CreationDate=&#39;Tuesday, 30 January 2024&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Test state versioning with transforms&#39;, OwnerId=&#39;GTPiZx3Xt56Aaotp24i2eQ==:JflZ37XnbHmGw3A16HA7HKDGk9hgLV2Rzcxl7l8nqRb7tD9NNVTStZltsrjCZnZM&#39;, SpaceId=&#39;sleRitE2TprMk/+04o5rgQ==:TOnRZFnOukVdETbAj41zPPjtr96u1f/GqjOCQj6fsd98uCSDu4sdOP3ESUu3gv1s&#39;), AvailableProject(CreationDate=&#39;Monday, 29 January 2024&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Testing importing obj&#39;, OwnerId=&#39;nr9C8CqyLpH0L8V9C0J75A==:5YRQ761dZPAwcI/qFxlXf5f/JpMMwqqAXmR3gN2fL3sfe06k1QaV5FAgIQjXoV8y&#39;, SpaceId=&#39;2Zlfviz6pzSShaVGIZ+UYw==:LU4r5jY8Dr1ayy7AoFyxqaBJscKWLbrOSPiNwbv2lBqYNo8UEyx5RCmdisnh1vTe&#39;), AvailableProject(CreationDate=&#39;Thursday, 25 January 2024&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Understanding state versioning ids (Clone)&#39;, OwnerId=&#39;xwo8LoXob2QLu4Alfx0DwA==:EehgHYA+WIaOryAJek6HthwKgotldqRWWXeNZXPvxq09Uf1DNZIFMmZ5CpkcsEn6&#39;, SpaceId=&#39;Hmkno2Nze5VYXzpKHyjQsg==:y+xkJzhBSKhfQ+13O/n+c/AgrXst8K3JIBlYYey3mV+F3c2MbhcPmIzsBj74Ptk5&#39;), AvailableProject(CreationDate=&#39;Thursday, 25 January 2024&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Understanding state versioning ids&#39;, OwnerId=&#39;lkayBaS7ixdR63OKBxi1Kw==:DOjFnDQaVyLs62qqlvAEvE/6qfPPuVYdaeLzBaRztKJMe1b9rdkG/6TnKLc/XUxg&#39;, SpaceId=&#39;NDSwpbSsGlrFJRTvzjOxag==:DO3bvtiu3hbaXC65GlJTwOW1cI4fbDEFwqg7lnXM/qqQq/99WVtc8yCmV6/ovF2T&#39;), AvailableProject(CreationDate=&#39;Monday, 15 January 2024&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Testing syncing 3&#39;, OwnerId=&#39;o80KKsU3QB/KVTHctL0/dg==:WLn+za6U8+GWuJf2bKUbHq2hT9yo59dSOZXFANKE4msZFJtyu8COoxsL+QFApcgf&#39;, SpaceId=&#39;41W6jLoJcBrptBL5l77cRA==:pVQbcNAWx8N6myXl+3Qcb0E9WjEri9N8vw/bOCgDhrnZ5gFL1EiDFgmqn4i7fNaI&#39;), AvailableProject(CreationDate=&#39;Monday, 15 January 2024&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Testing syncing 2&#39;, OwnerId=&#39;gj80WhmDB/l1A//survrGg==:2WjTE4XyzO3cFV9oWEo46bpsMuc1qsBtMP/qhNSui4in0WEFhCY8BEG6a80j7+v2&#39;, SpaceId=&#39;7ElAyt17GBzYls1L59h1RA==:yNBFeQDPE9eL05v0jJRmHHoWAPO2pQuo3x6otMyuSdrAuKpeyjTNk0muD7+RuOta&#39;), AvailableProject(CreationDate=&#39;Monday, 06 November 2023&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Test versioning (Clone)&#39;, OwnerId=&#39;+nlQdYpWdRi/qk0PcXOEvQ==:LVRYFyi+jOqjsnjWmnGwKWcXEwCCjej9HTitN4iVuixyY3FlwL9eG6IWqdEHN92D&#39;, SpaceId=&#39;GdMIhfxsHKins7lIm0C1+A==:Nd1rTAPyU8cKu2r5G5DPiU3eYvrwr/sHQ/Y14ywE/hnI1l5GbBQ5RhBvHHs0sgTR&#39;), AvailableProject(CreationDate=&#39;Thursday, 14 September 2023&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Clashach&#39;, OwnerId=&#39;O8O3qs1TsbttemidJse5JA==:A+LRAuAmSIGIoRfMfeI3ItJQYqs6jXdj5uDxv83ZZ/P47UiW6AVkHqzvoxTIUY4Z&#39;, SpaceId=&#39;TxWTDSWg7NGSTqfiP3uc8Q==:sdE4kvdJpuoAGqtVJDlQNLSCL5RWbbrpHJhsKO6UNIvl4DZUocN4lQrpZ3orPeKD&#39;), AvailableProject(CreationDate=&#39;17/06/2021&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Only Meshes - 3D obj&#39;, OwnerId=&#39;PyP60XTKd2Nw00ewsLFEww==:weBeX1lv3HxSWgJbQE3CC2b2wOVq4bTB8ubJY1IcBgfR5FFt2WYoHHXqy3eCqpfP&#39;, SpaceId=&#39;fT4aDoqPxbBCueZuK3BeUQ==:pikdbDR6pMXPT39MttXQCRtrqsETDHn+KXu3vvOoeICFTDLC1BWSysGyaifzt8SQ&#39;), AvailableProject(CreationDate=&#39;17/06/2021&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Only Meshes (Clone) (Clone)&#39;, OwnerId=&#39;AKnPX7TaeKvTqpXOzPHoBQ==:FMIPkUk1SnHYTAUZOEialNQfV5aLF+7DhZA6zQlHoEbslglQmqVINmgqx5aRkhqW&#39;, SpaceId=&#39;A7ShQioA6Q8wXPO2nCMwQQ==:FwdkDvtCtt2I0qpPfnTu2VL0GciJBJkPMAhP2j+5Oy/ezDctl8MPhT1JfI+cp9h5&#39;), AvailableProject(CreationDate=&#39;Friday, 19 May 2023&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Stackpole&#39;, OwnerId=&#39;CbFofqiq2RxNWxi0r2fnZg==:gC4OV2vthLKlwwjFGrs1sRhc93xjCk0ZnJsIvKoBcjRyDnlQlZWDcuOhBdTnChBT&#39;, SpaceId=&#39;jSlVhBuEEo5tvNHgFSP/tQ==:VtDiK/x4ENwNKhS2wIfTv0DnvxoLRuBLJqGba/m4L8GLEUBO3gS3KhY5dNpfxqqE&#39;), AvailableProject(CreationDate=&#39;Friday, 07 April 2023&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Testing cloning&#39;, OwnerId=&#39;ZjsTIiYIGPyoiQN1X3d7eQ==:jEm4ddEEpEHG8m83dvovuYyR5lpaDnD91cgql1nRZn4wcFRdtMw6aTS8ouSbskJG&#39;, SpaceId=&#39;JUom+Bk+I4I5FDx4N3AB1w==:RvlbHPB+m2kST8ydcBvTXvMHQSHHODvT+z8f786/X2vAYMmSHIzd/DyvsN+WUV46&#39;), AvailableProject(CreationDate=&#39;17/06/2021&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Only Meshes (Clone)&#39;, OwnerId=&#39;ODzKtoeJ7I2mgalVmO271A==:rvraYC1wVBirF5O59jD8pPtTOa1vu+9KX+qedsl2kmxtVsTQJPf1SPPro3LpZ4aM&#39;, SpaceId=&#39;4H9zBFmBlL6nuovUzThO6Q==:Mq4mUzNKP/ldxl4fu8fPdt+IkaU837Y9+HTN1pzlX25NaoQGLoikihbW83ttwrBK&#39;), AvailableProject(CreationDate=&#39;Friday, 03 February 2023&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&quot;Mike&#39;s Project 3&quot;, OwnerId=&#39;2OhbPQ2MniTTuPkHIk+mVw==:F2xI5GKwBoAyfXfERwx0r79rq4zqEy+GmAvEbIJaxMHsMqDvsfdQHfdyCiWuY3e6&#39;, SpaceId=&#39;IbXC5ZwmhK1GDJq7UVFRlg==:DtBES2r4Q/wbinFA9SaJj2Qh01H/mq/rOdMrWONoLoHIWl4cOxjk1WodUnp9BPIM&#39;), AvailableProject(CreationDate=&#39;Wednesday, 21 December 2022&#39;, DisplayedOwner=&#39;Demo user&#39;, Name=&#39;Widmo obj&#39;, OwnerId=&#39;4LNqAt/2qWOoLsUZu7BNOA==:CxRN+4jpTOSrJovHuIF00VMAb0tnKXaQQ5Ht7Zi/4XHtG88+XFRGtQ0gq5uj1HEc&#39;, SpaceId=&#39;IkqqunnMS28PPE56xLJJ3A==:p78Pd3W0C1OwEKlhv1/DxPSEIPx488zQLxOQetOR3jCbaJHgVOGbZSyC2X51saqI&#39;), AvailableProject(CreationDate=&#39;Monday, 07 November 2022&#39;, DisplayedOwner=&#39;Demo user&#39;, Name=&#39;yet another foo bar&#39;, OwnerId=&#39;oko7dua863/njRQrh1uT0w==:uEhv2A8OtgDjaMtVJs/n2lVELji8RkINjnJK8sKTaNKhl6iIEKXKsNK75fAgJ7Ra&#39;, SpaceId=&#39;ln3y69YkpO1LFdbubpwdpQ==:7gwjZXJWwtm4rDgo12NZI7kWTfzKn47Ii+BEf2jHIeCR7z05rkMQ0TaqMzPzYMEZ&#39;), AvailableProject(CreationDate=&#39;Wednesday, 07 December 2022&#39;, DisplayedOwner=&#39;Demo user&#39;, Name=&#39;Belgium&#39;, OwnerId=&#39;UtInteGx7u3vdM7g7pmaoQ==:gY2v+6jAhMw72gRPtuIDMsusiTPhIiz7B8x4zaZKyS21169KghAJONup1EsnIZo+&#39;, SpaceId=&#39;d7FuCfOuLCboWHffUJcpNA==:cpeIqu2fkB2RZnFq5iTydnskx3dbeX2Rn6gX55ea1uoAG9Q8PO9gAq+4JU7CMc/K&#39;), AvailableProject(CreationDate=&#39;Wednesday, 01 February 2023&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Mikes Project&#39;, OwnerId=&#39;cYjr3s1w2Ek2ZGHSJ/Dp8A==:XzOyQLkpa/nlGLkJP5j2fOvBWQkqR9yArXsR25ftIvd/hj3mPj4mbDF9nzKR52rd&#39;, SpaceId=&#39;oSVVTNDLhtAKDGFAklUF2w==:CEotIISGVJWWxxrKnv1wT7326hC1mm4UA8Mp3+3TNlmJTUr5xI9kEVlXK33jiYvG&#39;), AvailableProject(CreationDate=&#39;Friday, 03 February 2023&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&quot;Mike&#39;s Project 2&quot;, OwnerId=&#39;8tSKlbaPY39sI3g1GbnWvQ==:EWAb2c/DQw7rY1EiJKGtUIfoI9niHUhNhceLYL41s5VlisJkVJwf9+tLCHn94EIp&#39;, SpaceId=&#39;RMUrE3wwX31DyiaoUp/P6Q==:MfP0d5feYQJ0yYo68K3LVFug3S2Y/cizFcYYr0YYhOAdP9c2ApbblH27vdMmuwcG&#39;), AvailableProject(CreationDate=&#39;Monday, 13 February 2023&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&quot;Mike&#39;s project 5&quot;, OwnerId=&#39;6P09YZ8rS99w0FEoXNYo5w==:t1XTKKPbr9K7ylxOkVASWuXBZp59bnZ0DVRbY5gkChGdFBJC5Llm2NqSSJJD6RsJ&#39;, SpaceId=&#39;M9DL28be5asR+KfhhRTH3g==:XwqNcmO8keYcZj442cwtxvqnrJuIwXMxnDrTf2lJ0ZYAW8wAbCWygUtVqwfuqc9p&#39;), AvailableProject(CreationDate=&#39;Wednesday, June 1, 2022&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Aitik photogrammetry (Clone)&#39;, OwnerId=&#39;XCQqw6m1oT/gzCjmaZaqIQ==:hf6UFn7IeAruqmgCZMdDNOywtgpr7cmOHKbuUGXrvW7APqT+taaxOt3IbXULw+45&#39;, SpaceId=&#39;bQChV5bt5Geb2TYq2MC/Hg==:c1u9qPgzl61AsSbgf709clUtWKMzFsuf6fYUhjL8OmBCsYSPm2Cmjw23ufwMVIZf&#39;), AvailableProject(CreationDate=&#39;na&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Boliden Aitik - Uncorrupted&#39;, OwnerId=&#39;zzBcd+KqoaBobg1cQ9TTng==:wUZeKqwONQ51AaaZK2YHkoOwJuukj+x+aKY9Da1wrXRqmh0lWy2d/rprnyLVao5W&#39;, SpaceId=&#39;gJCjYIdY/ug2IijpwJQ7Cw==:q+vqNMrmXrFLuBWpQ3aBCzxlOqDBhg1lWAY4MOQxfuFpdlsWmpHZkSE9bk6GQaZg&#39;), AvailableProject(CreationDate=&#39;na&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;weisweiler (Clone)&#39;, OwnerId=&#39;ljaeHokVemMP/uSXyIDkHA==:QQ8co+nh46j8YMS1P9gUvwkr8IPVpAXUi0KBZZegGDVwhlFNbD14I2ek+Sin/7es&#39;, SpaceId=&#39;QjD7CLskZxopbSh7iiG04A==:Gr+YI/hyg5Kzw48jc8HC+XRRWoOtyX+kwUW3vaTznPv69TOhI/FXyWoDUIf7tQnk&#39;), AvailableProject(CreationDate=&#39;Tuesday, 14 February 2023&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;testing updates&#39;, OwnerId=&#39;97KxNRH6uwrQ4CDhNWxfZg==:ecOtQCgGChrxyL3diZikxxr2e3AMzicw2ijZAMMmhJOljZ0xndso1MQR91e+2yUE&#39;, SpaceId=&#39;E6KwHGngnSRSXQ36MsMV1Q==:vrFtSkbDDdjrjeiy8wnlOyo0npJz4qmBNG7nqI0MrLheDFm2UMCHNRlI75wDwdMD&#39;), AvailableProject(CreationDate=&#39;na&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Boliden Kristineberg (Clone)&#39;, OwnerId=&#39;SfzbnVApHYiAIhl0i4zOFg==:SVrVCCJ6iuY/C3pu5gk0DF43Alli6KS59x4b2gtSRpso1PqDpddlTmkHrhsxGMC+&#39;, SpaceId=&#39;L3/a5Dp6y3uAli7Mwo1Fcg==:zQiRFPsvRjDa0vJvfCEIWYwIKLrsWnd50kxBfLQ6Ch22Qmhp0olSMODE9qlB3V+C&#39;), AvailableProject(CreationDate=&#39;Thursday, 16 February 2023&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Flin Flon&#39;, OwnerId=&#39;DfFc2LCb8VZcjh60o3YduQ==:Gjgi44D9RZ/s5PUSAtQQvshpGy09fSYnvWIoK9DUywCPlNG46kbZQsYPQtAoPK/x&#39;, SpaceId=&#39;bzE2ZUtZ54/1jAIcT1NoOg==:z02tfZNLoQgsIWPcjdjn2lwRXfxeKQrxkGk/+XC9gm9RxPxd3+MPMsCCdZhdyCZh&#39;), AvailableProject(CreationDate=&#39;Tuesday, 04 April 2023&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;ET Seismic cross-section&#39;, OwnerId=&#39;aMvtSlvKUWKzXbPwa5VlJw==:CMuAwhwISYr6aEpNfsEwJ3e8cGKP7hHl9zUg4Dj28WwsPa9f4WZVbiBT/pnHaVPz&#39;, SpaceId=&#39;1zFfX+AGkQa3x/RCm2cVhA==:3zSz0R0S0o24wig7KQafcdcapLjx2xeCRf+wPtNctwqpA4uSh4G57jpKs00kASCf&#39;), AvailableProject(CreationDate=&#39;Tuesday, 04 April 2023&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Foobar&#39;, OwnerId=&#39;u9jbSBFGkF+pmbFACtwMqg==:iqsoxF58lwyJemrGoyHbovAU836jzmeecGArr5s7cZZxHrdfGzQo1iHF+ZQClHcO&#39;, SpaceId=&#39;e/fzWrftqRRKTfMJSbnkDg==:4YeXBNnf4GnAyLMaR2fw14h638LHJCzerjJ9FEyYYUx/UttHVAbD78bV5HV8DiW8&#39;), AvailableProject(CreationDate=&#39;Tuesday, April 26, 2022&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Portugal Outcrop (Clone)&#39;, OwnerId=&#39;M2j1kheR9u9sOL0Gt7i7jw==:bAEOzzn7OsEj3eb6zK7BoVPLqonaBpnHrb+TK7+i/8zDWNSj/caBM4m02IRrrIwn&#39;, SpaceId=&#39;/qKK1GyZIz0m/iknm5NO8w==:cscypSnbRfiUgVLB8spl7qaZ+K2cD26Ps+vjK2agoolklHn+8idqLMVP9ICC5VBO&#39;), AvailableProject(CreationDate=&#39;Friday, 07 April 2023&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Testing cloning (Clone)&#39;, OwnerId=&#39;91WjXwPFy2bExiGsBkEsEw==:W72kZ11N0hD39UlfhazkA4kJsCut1ifFb0iG9hHUneF2HPQpqlMJAl3iDctlfALv&#39;, SpaceId=&#39;ifhoZgYQDjU0wNjLGpkAZA==:qXDtwSyV8NgTuugfu2B3lvJDJZpekS54zj7tWojVLgej2d/zpcluVDZkBiuYv6Zn&#39;), AvailableProject(CreationDate=&#39;Friday, 07 April 2023&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Testing cloning (Clone) 2&#39;, OwnerId=&#39;cxC4QCWTLqo8wjEEyjLMpQ==:96+FGuQUU661oUHaVcmlKMLONkjgQkv6N5GPSm+876Z/GV1CJl2/gMRqs+YjGD79&#39;, SpaceId=&#39;4HvGQERUYRg5fKrDn5vWjQ==:CKZQUy6CI1HMAxKx2iVFC4LWb8iIIYv3k4XLgFMBZbyN5SySnLyxlRvsTDlWENkj&#39;), AvailableProject(CreationDate=&#39;Friday, 07 April 2023&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Testing cloning (Clone) 3&#39;, OwnerId=&#39;ZCFO0pt/flg8yHpA6vfjQA==:k1N2+xo4r9k0lYWNC7dAxbNYB/VzS1+IbUAsYHNr5NVsgxPltJvbe8Mqy4Cd7ZoR&#39;, SpaceId=&#39;vlqa5pM/QmMWEqNCtNhXlA==:gQF+PgwrIHyeXZqqSi/tD9hYj0+fd6xgvOYalFT9VsdzfviI4tPTE46cHGP3bNS0&#39;), AvailableProject(CreationDate=&#39;Tuesday, 18 April 2023&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Testing obj import&#39;, OwnerId=&#39;YMvmC5ba/ZBIIGzvkuRLuA==:NfdYsoYTnsk3cEiBplYIa4yUP9sLeE6hQyy8mGe/QhrUa2xfTga1SlsMcnBJh/hp&#39;, SpaceId=&#39;hWbjGdFD7M1kJ4w3Nw07Ig==:PzE2AXXfFeZ7CPk0smtfH/ogk4Wx/TYTU/VJRBg47t1YpEDxsraMjjMPHDZHeoNr&#39;), AvailableProject(CreationDate=&#39;17/06/2021&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Only Meshes (Clone) (Clone) (Clone)&#39;, OwnerId=&#39;j28YJThrnQX+R1A+FeK2ig==:C5ak5Bf8m5OO6gGYmZGNb/aofyFP3NsAPfOy7AiiYq+uVvrUGxw1HDJcVJn6UgHV&#39;, SpaceId=&#39;zOGA370qaQk/365SdFQpuw==:pyVYgIUJJ5osZHug0ndwsb9uhOyYVnONRvVznIZgWiq2SNNtPZ4Lp8nj/FJPNpjg&#39;), AvailableProject(CreationDate=&#39;na&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;weisweiler (Clone)&#39;, OwnerId=&#39;uNDjInwBIzwtBLhwbkm3dw==:2x69WlslSzw+xHWuRfrHHaDn/imoYPqTKy5aZA3XtTn1RnQ4zCQB040czFi78eL+&#39;, SpaceId=&#39;JhFuc61iGWG0ZiO5xKaGhg==:PKPJBIXchZm4GUGxiyhB57We5LOZr40W4gwJ+Jxpodid9qASn6npRK47z72LWb6n&#39;), AvailableProject(CreationDate=&#39;Tuesday, 09 May 2023&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Shell Beach (Clone)&#39;, OwnerId=&#39;zsGcw7jAI2JXyxX1SM8ZVA==:QcwlM0uIMicM9IBFCpqPVMpj2ApIGAC/XAs9i2c4oXxOO3KsNGJytW1Pgojn3RuH&#39;, SpaceId=&#39;u9kxKrFKDuldZBHvwQLQEQ==:xuMzVfrIeW2Rl7tgOalZyddJm8fI1FV49yDKxJ94OkhFAY8QtUdXPYyX3W6+pM2R&#39;), AvailableProject(CreationDate=&#39;Wednesday, 31 May 2023&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;New Project&#39;, OwnerId=&#39;rWIIjjxU+Qh3TmKkiSh4mA==:TyfRR9niBczDRMBzZYMNgDNXJ+aUOVWEA6XsloKOT1oRWEkSTjJaBlJe+yH2CSyw&#39;, SpaceId=&#39;gb8pKN9ERbEWzo+ODW0N+Q==:DRbngxZoDL363dD2W8oZUIT/7jc4zYh549WvhnD/PFIBLuwSngLfrvtIL3n8xTN5&#39;), AvailableProject(CreationDate=&#39;Tuesday, 04 April 2023&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;ET Seismic cross-section (Clone)&#39;, OwnerId=&#39;5qp+UBMzqLia17mZZ0/9/w==:RxQSkBjlYLG3sRfFW+LegeXgnDPwzcRzetcp09Xzv6FbI8oSuni/1nFullzfO2xj&#39;, SpaceId=&#39;jlk9sSzoNWOB0bIEP8/flw==:UNoQBJwhEcfnPEUmoj7k8lHmO8RvKGe1jpWJWt2yMd184LLWk4BTsZsFojulG3tx&#39;), AvailableProject(CreationDate=&#39;Thursday, 01 June 2023&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Importing leapfrog&#39;, OwnerId=&#39;/Z8IVucyOTKWlYreDNwqWw==:6FNgsEg8LnSmvaIB/9mcs07Cl02MWqqSLqVdGnGawcDHL476tP9zRb/EWR3hTIRB&#39;, SpaceId=&#39;nM8gLYjT6vSXnE4maJxbvw==:12fzXy+jdbhPNITRXM8E/ty31oRt0UBUOnu6rfyHZb6Z7Ik9UnWUWEXCauZtgOcp&#39;), AvailableProject(CreationDate=&#39;Friday, 02 June 2023&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Importing Leapfrog 2&#39;, OwnerId=&#39;2y2JraFXqkPznaKyrdmd9g==:snlbh2NYjx0GyX5t6b50YqGC66G4C6AY5DIKjw6IeB25eih2hdCRbObhFL73kmyi&#39;, SpaceId=&#39;mDKDX7cbiFfUE5aZv3snBg==:dHAsu+55mSbKraLU2JHOksFyB34XyL9gPT5aCkWyQfmREo8YlX8EzqJvuMLwam5q&#39;), AvailableProject(CreationDate=&#39;Monday, 05 June 2023&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;DXF tests&#39;, OwnerId=&#39;BpDRljGwBUTTT4PkR7gRWw==:LylLtD6u8YZZMMiC09KKVBc/r+vAiu6PXA07F8ejBVpToAPWGydxkWtxsp5xdQGn&#39;, SpaceId=&#39;7GXajb2D2TrI8/jykBQEMg==:Dt8rPSfiTxMbAVWNCxuZ3XJ5StZCf0/KRCabRroSEmk5X/aq7uEeD3zDkliYmjbX&#39;), AvailableProject(CreationDate=&#39;Tuesday, 06 June 2023&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Importing Leapfrog3&#39;, OwnerId=&#39;hebqDfJTswektLY7sK9Qdw==:sr3cF+HkH2JYmINc2DoyqMHc0hOS90F9aTcMr3pS8REySCZxY5bkf0s/yQD2FoPf&#39;, SpaceId=&#39;nWdCUk7kWDks1NeaGm6qWA==:nOt1/bxjhvXqRpWtGXlvbMMET+sVsv31ZcjN2xG5VN5nurQOHm0HQxzquiNdG+iG&#39;), AvailableProject(CreationDate=&#39;Tuesday, 06 June 2023&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Import Leadfrog4&#39;, OwnerId=&#39;/zZniEUoBpSyE0TQzhjFCw==:bHdqUX0vKYoXGCcgnp8HDoaaoYwj5KmW7QQs19j8rDvKdkk9SzOSBWgjEr0jVnR5&#39;, SpaceId=&#39;80OuaKAyn1GqKosCi6jvbg==:jybDFAXFJfLkH2V++tkqO3gwJnXeaeyPiixkX+lX1cNjlv+7pRxqyYXnGqHzgSVH&#39;), AvailableProject(CreationDate=&#39;Tuesday, 06 June 2023&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Leapfrog 5&#39;, OwnerId=&#39;uIVYBLJTBRa3RRqcIZLXCg==:MCkopd9V9iD9gTW0tQ2jMvnM6bIGEEmajggNuHSufBg2gMNnX7scUSuu6ltEXVCW&#39;, SpaceId=&#39;U2SZT/Vh3IiSEPi3n30YDA==:iyDsWiBPYWD1AQc6GgXIsa1pf5ahpNZGfT1CeUlAWQaI09xNnsUECJVbr/blwNGp&#39;), AvailableProject(CreationDate=&#39;Tuesday, 06 June 2023&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Import Leapfrg 6&#39;, OwnerId=&#39;6t6vmGsl9TBRvDOPayn/EQ==:ZE3v7vDIoBVm4ZpI90qbeDTW+SAE88bveiGIlWKMtT6gmWUY36cAZOu71hyU9B0k&#39;, SpaceId=&#39;+7vtWwe4o6QWfyQDYq4dHg==:O7XWrkBMXf8nAdzZuljZzGXJlnOXMcE07QuLJtMxSLUvYadl/d2b/X9jfzgw3UlX&#39;), AvailableProject(CreationDate=&#39;Tuesday, 06 June 2023&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Import Leapfrog7&#39;, OwnerId=&#39;8VFqn9IiBWVOhuy+tYe8ew==:Zau7aLuQP5E4IKKHd0fwBjWQzqBPOLhoTZ0ygkwTBD2bcw2ncaa/dtsmNQxcVbuS&#39;, SpaceId=&#39;4D92O8nypmX0YSOUyIEZ0g==:0ZcVewEcpKlcAfqlPvh6ZZI+hNa22OgLHpmcDPA6Q6kVyMDN3P4Oz9DNB38xCvyZ&#39;), AvailableProject(CreationDate=&#39;Wednesday, 07 June 2023&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Testing cloning blocks&#39;, OwnerId=&#39;xNK+YVIANv8++DHe4l23hw==:YVCnhmo83222FhgNFI+iehnzufj1Q6IO2aJZCYS0zrJsSiDLbbPHET/jbkVcXtAa&#39;, SpaceId=&#39;You3mOv+h8rOy6xDfk95yA==:g1mc8F62LOrRXjvzTLfmYoON+JDzL9AOL+cAkUg185UWvo2M9SECS79MSj9QGE+O&#39;), AvailableProject(CreationDate=&#39;Wednesday, 07 June 2023&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Testing cloning blocks (Clone)&#39;, OwnerId=&#39;6BKjzakT0t/AIgBWrf1fug==:C1qCdXCldC5t2NZzJAePs8SLPfd3bBOHtjYHuZNAs8uPi05t1lN0crJ92G6fvYI2&#39;, SpaceId=&#39;9hfVQBqm4VpYmRnjWVZ61g==:l99X+lZHYDNGkjmOWyVQBt8iHfiI0kzeVFLVRuPzPyZUeqgOJmoJ3MM8caF1IYiS&#39;), AvailableProject(CreationDate=&#39;10 September 2021&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Falun (Clone) (Clone)&#39;, OwnerId=&#39;vLzQ0vT5b1YWVAGEDfks+A==:e/mpFeEhbkhu5OMZs3FZvGKJEPNfvByn9dn8b2NJbx67ZOToNu4vVGJhe0bsJW2y&#39;, SpaceId=&#39;6tgsTmpqFHZC3hxY+qOJ6g==:UwMorGjoa4qGfiVb269/LVxOUObhIaZSNUrHZ9RowhmRKvU9vFGNn6gMzQ/fm07r&#39;), AvailableProject(CreationDate=&#39;Tuesday, April 26, 2022&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Portugal Outcrop (Clone)&#39;, OwnerId=&#39;GE+cngru8T9o7ZmmbusSFQ==:MyDAb1K9YjmLqjYzxvEAuXo07Ww80TyLqAbdpiGhqS0hnQ5mJ1vHhDYKOJos8NTz&#39;, SpaceId=&#39;+U816HLb6+Nobgx0Qk+4YQ==:8egGLjnlUWjuAh6rO3mz1PzeQUbTuxKb140kKwy/790nRPXok68OZNM1si0kF+OX&#39;), AvailableProject(CreationDate=&#39;Thursday, 01 June 2023&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Iron&#39;, OwnerId=&#39;jepr/32kwzCFbiQ9kGLEfg==:QqZA3OtodR83265oSS46rVEQeEboe8atRSNk9qrxsQ4OuXtpIVkdg0hSmJmGiTYR&#39;, SpaceId=&#39;vF+lRlyhEoVfeI3lJMmx0g==:irWLvig4DTKDy7cTip9KfthNywNVjrhNxWbpxM5XvIXi7U4hrgbLjgWJrnXBPXKU&#39;), AvailableProject(CreationDate=&#39;Friday, 02 June 2023&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Collinstown&#39;, OwnerId=&#39;rnPvHptAbj2w4EJtR8W/NA==:BWsn9A2MJriF8/6dPiRuFwifEU88Vfb+2+EkWdsJ5DJxGZGHFuSMmeOMvGjfFzcN&#39;, SpaceId=&#39;BFlAs7w0P5Wh1AxwQbx0bQ==:bivKavFImZmWlkWdmUVXkBFpbzuKQWKNT7hYTaFYG1Rd7FXL9mZ+524+k8wAWUwr&#39;), AvailableProject(CreationDate=&#39;Tuesday, 06 June 2023&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Stonepark&#39;, OwnerId=&#39;+VAq3lUlBbMFGl81r0Fo4w==:CnYADGaDcF9kiKjEvLMQgtGzZOr3VrNkr0hhrOGhBtvvG4Ey774aPsl5w2YLJJUI&#39;, SpaceId=&#39;jItzpv89mupN2QEcMGaEpg==:pXb87LB0E89YHfTjMw5mBND50vMuqknfxZX6raPYBHS7EGkm2toNm30tSA0yFVJq&#39;), AvailableProject(CreationDate=&#39;Tuesday, 06 June 2023&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Kupferschiefer&#39;, OwnerId=&#39;20t8izTjIPI/kiTpKtG4bQ==:blG521wbH35DaN8yvV6TppvlOKqvH8pVr9HkqxUVotqkoy+BK1jLiDSnvBnL4yc+&#39;, SpaceId=&#39;f1ZrJzw4F+18iH8U4OWxZw==:ECdrpc24br+BAJbEdwCWr6MsSWFE0oKCM7DHGhhJCCo9A8FyyAUGujYEvnZqIISx&#39;), AvailableProject(CreationDate=&#39;Friday, 09 June 2023&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Import Leapfrog model&#39;, OwnerId=&#39;ugdVet6RgxMt1e3nWgTjig==:Irim0H72i2WLhtHgX8vXstOx5/On+pcayDZ8NlbJiSouRz8/KLbpcSZ47WxOHXhI&#39;, SpaceId=&#39;+teuAidUB+XbelkHFBqXNQ==:YEVQo8RaB4IZZGZkBk46+52wTX6/++PnPYoBcY7J0tGA8fgIsgqktFlsNi6xe0jq&#39;), AvailableProject(CreationDate=&#39;Friday, 09 June 2023&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;New Project&#39;, OwnerId=&#39;f0TKDs0U/IlhIzqwaknZag==:ofEw6TzYwoF3vE2SF/dGA6tT97M0QvUl7F5wwYtqkDmW3XhppQyccN0xTDCZloDa&#39;, SpaceId=&#39;ecAu2uvU2LCqr2L0sUqR1A==:n4db5cHwKpgKDaxU6DjDwEKJMKWLv5RUH0k2mxHQ+1YFyyAnNx0ig39foAHlmh1Y&#39;), AvailableProject(CreationDate=&#39;Tuesday, 11 July 2023&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Collisntown&#39;, OwnerId=&#39;btac8wRBaA1B7hInOrdpkA==:2QlxdAKUvGM7etRW1Js7fSytLqtRyUYMTwNHr0cQv7lI2ocsQFbdCl8Q/gx4LBjj&#39;, SpaceId=&#39;TFl79IVgrP3vRqXktQg6kQ==:8wQxDOIROS56iLW56gyQAqN3SoLsRyKc8H2GiubUffwj/pXJ6l7eMlHJmeowj28j&#39;), AvailableProject(CreationDate=&#39;Wednesday, 13 September 2023&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Foobar32&#39;, OwnerId=&#39;/2zqsMbRFzTv6MMZCOC2bQ==:bjlruv8TXKnIwJIBzcWJbkje1++n3mrBN0WbTwrwR6ziN/g9mDfaMtZDqcGn+9rs&#39;, SpaceId=&#39;96RrO57mXJP9Wp3swGHWuA==:OSP/x8bz0bui1XBwZZJJyyB1XVWk7aFqM8wcv/eq5z6bukkWHCNdaGK8ZdJs3tmz&#39;), AvailableProject(CreationDate=&#39;17/06/2021&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Kimberlina Meshes (Clone)&#39;, OwnerId=&#39;OP7p/K+cuba2Rwy+hwl6bQ==:27+h0GtYjSw0sgKrYi4Jij8WIuVyew2+gNOdFKIfO5c9UJxDuDhdBG+tHB4s8RHi&#39;, SpaceId=&#39;Ww3XLmstbj3lx/QNHMNXIg==:n2+x3Aai01Tuup7nMGwSyYGSLQPi/W0sp/HCz4tLyjBkAzttd1MaJnxxZc9BcyGN&#39;), AvailableProject(CreationDate=&#39;17/06/2021&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Kimberlina Meshes (Clone)&#39;, OwnerId=&#39;4RhRg3Z+ZJ/LwQYmpWcPwQ==:+14N1caGLGf2NPo0DosFA/zVUqFPR2pRCOl1E0tDPhr9IpkWhZdrsNmPo0NYDy9B&#39;, SpaceId=&#39;61MBFs2enYBc7eJtpdvrlA==:SbvFRiC90s9HKfYPqC9cgk7ZfStlixYnxJOp2ZgR7PMmc4FnNiHDMCU69bIMMcWC&#39;), AvailableProject(CreationDate=&#39;Sunday, 03 December 2023&#39;, DisplayedOwner=&#39;letest.basic.alex@gmail.com&#39;, Name=&#39;Test TH&#39;, OwnerId=&#39;TrIzblVeU5q7tLw5rIYyvQ==:F73rh0no2Ktkzk0BauT6nMel25IkgCWta0PoViVzoGnazUj22Fr8pKWLwra+e2bn&#39;, SpaceId=&#39;J4o9aBv3xRvhjvjmYhI92A==:KtwM/SwPX59HvYRH+Xvlz1c3+K1bnrrR1OvqIvX59xkwFMoa3AT3PpC6DksnaeH3&#39;), AvailableProject(CreationDate=&#39;Tuesday, 09 January 2024&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Boliden-MVS Demo (Clone)&#39;, OwnerId=&#39;mKIC3/C0Q7knMoah/cJ6gA==:vU25NX7Jh0kXkTwAcCmFbb6Nm2ToJ7qvtK/8s1rbDWEPQtMWE7Zs5paTFvo1C4XB&#39;, SpaceId=&#39;PkQoOyFuk+6DLsf7JxGWhA==:1sAGa7wTalgS9laE3ul2GU6Phoujj6T6z2Bip7C757W9oziNmzboUNJEdhtVAgch&#39;), AvailableProject(CreationDate=&#39;Tuesday, 30 January 2024&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;Test state versioning with transforms (Clone)&#39;, OwnerId=&#39;dFe9qrx+F50E30qY91jfQg==:MDqjrBLz4u6zxgYZCAFtPfT0MWL8qj4+uVd+gzLtwGZRZYIq3wn+DLhgTF1CPmIn&#39;, SpaceId=&#39;zXhaY1LiePBpzDOGq98BAg==:VeclznHakYF26Be38cH+P21vPDm0EMMHoH4ijzSwZEHhxJT0Obk+t26r+lRmpqsB&#39;), AvailableProject(CreationDate=&#39;Thursday, 25 April 2024&#39;, DisplayedOwner=&#39;Dev v0.1&#39;, Name=&#39;[PUBLIC] GemPy Tutorial 1.7: 3-D Visualization&#39;, OwnerId=&#39;S1eGRVf5yV8vgSb/WSDJRQ==:0/eMWeXqvJug8uj7ECfrjkFdaiC2IeB+q/BDKBCdg4NTVrsbiXa33+gchNoroedj&#39;, SpaceId=&#39;kS8QV8sQFVnZa4AFuByw7g==:NRCsHhu6JPYKUpEoWeUIfLm9ojPx/5tmtUA6lvPEDsyu3kGKW9eAIQ/l9t2nXe3D&#39;), AvailableProject(CreationDate=&#39;Wednesday, 30 April 2025&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;[TEMP] Test python api&#39;, OwnerId=&#39;1PjhiO++UFOWsQd5Qj/SAA==:cq6onw+V9/Iw7a2V9DOwLBMU3xsvx5MXfDeGMaI4FKwfNeQhaQ8Xc8mtpA/8eV93&#39;, SpaceId=&#39;5eXzfx9LdTGkTRGTbeplAw==:cMrlwRi2uLge011XDuz3Nv3QO9AaY012T/Sc2gPEoErRJbefbzr0g+10o0mYI8/V&#39;), AvailableProject(CreationDate=&#39;Thursday, 01 May 2025&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;[PUBLIC] GemPy Tutorial 1.7: 3-D Visualization&#39;, OwnerId=&#39;zAteoXpJfu6JJKepWUfvnQ==:t9oPQEvihoHVr5sh05Xy0WlkZBEOG2n7U9j7QpcIHJ8mrTkxEm/c9iRfoUxr4m6S&#39;, SpaceId=&#39;+OQptk2w/3a0DNJYClmgvQ==:9AZGVOoBdjZ7RxO36PUytMEZoJBvs/zmJs86RY8R1Pxtl5bImgQNhqCYRZaTukW9&#39;)], selected_project=AvailableProject(CreationDate=&#39;Thursday, 01 May 2025&#39;, DisplayedOwner=&#39;miguel@terranigma-solutions.com&#39;, Name=&#39;[PUBLIC] GemPy Tutorial 1.7: 3-D Visualization&#39;, OwnerId=&#39;zAteoXpJfu6JJKepWUfvnQ==:t9oPQEvihoHVr5sh05Xy0WlkZBEOG2n7U9j7QpcIHJ8mrTkxEm/c9iRfoUxr4m6S&#39;, SpaceId=&#39;+OQptk2w/3a0DNJYClmgvQ==:9AZGVOoBdjZ7RxO36PUytMEZoJBvs/zmJs86RY8R1Pxtl5bImgQNhqCYRZaTukW9&#39;))
+</pre></div>
+</div>
+<p>Now we can use <a class="reference external" href="https://liquidearth.app.link/gempy-promo">this link</a> to visualize the model in Liquid Earth.</p>
+<img alt="_static/gp_model_in_le.png" src="_static/gp_model_in_le.png" />
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (2 minutes 9.125 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-tutorials-ch1-fundamentals-ch1-7-3d-visualization-py">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/86436bd56e7c286070a7cef3a90c285e/ch1_7_3d_visualization.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">ch1_7_3d_visualization.ipynb</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/15f2d3174f7539b8013e0fe547a57c51/ch1_7_3d_visualization.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">ch1_7_3d_visualization.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/8fafe628a516a41f43cc5ed6d64e4f4d/ch1_7_3d_visualization.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">ch1_7_3d_visualization.zip</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../index.html">
+    <img class="logo" src="../../_static/logos/gempy.png" alt="Logo" />
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=gempy-project&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">GemPy Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/index.html">Examples</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../external/external_examples.html">External Examples</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api_reference.html">Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_reference.html#data-classes">Data Classes</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">GemPy Tutorials</a><ul>
+  <li><a href="index.html">Chapter 1: GemPy fundamentals</a><ul>
+      <li>Previous: <a href="ch1_6_2d_visualization.html" title="previous chapter">1.6: 2D Visualization.</a></li>
+      <li>Next: <a href="../ch2-Geophysics/index.html" title="next chapter">Chapter 2: Forward Geophysics</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2017-2025, Gempy Developers.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../../_sources/tutorials/ch1_fundamentals/ch1_7_3d_visualization.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

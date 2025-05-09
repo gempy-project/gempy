@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>gempy.API.faults_API &#8212; GemPy 2024.2.0.3.dev0+gf344a731.d20240626 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/basic.css?v=686e5160" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=e15417cb" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <script src="../../../_static/documentation_options.js?v=bd57e1ea"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <link rel="icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for gempy.API.faults_API</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">gempy_engine.core.data.stack_relation_type</span><span class="w"> </span><span class="kn">import</span> <span class="n">StackRelationType</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gempy.core.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">GeoModel</span><span class="p">,</span> <span class="n">StructuralFrame</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gempy.core.data.structural_group</span><span class="w"> </span><span class="kn">import</span> <span class="n">StructuralGroup</span><span class="p">,</span> <span class="n">FaultsRelationSpecialCase</span>
+
+
+<div class="viewcode-block" id="set_is_fault">
+<a class="viewcode-back" href="../../../GemPy%20API/gempy.set_is_fault.html#gempy.set_is_fault">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">set_is_fault</span><span class="p">(</span><span class="n">frame</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">GeoModel</span><span class="p">,</span> <span class="n">StructuralFrame</span><span class="p">],</span> <span class="n">fault_groups</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="n">StructuralGroup</span><span class="p">]],</span>
+                 <span class="n">faults_relation_type</span><span class="p">:</span> <span class="n">FaultsRelationSpecialCase</span> <span class="o">=</span> <span class="n">FaultsRelationSpecialCase</span><span class="o">.</span><span class="n">OFFSET_FORMATIONS</span><span class="p">,</span>
+                 <span class="n">change_color</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StructuralFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sets given groups as fault in the structural frame of the GeoModel. It can optionally change the color of these groups.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        frame (Union[GeoModel, StructuralFrame]): GeoModel or its StructuralFrame to be modified.</span>
+<span class="sd">        fault_groups (Union[list[str], list[StructuralGroup]]): Groups to be set as faults.</span>
+<span class="sd">        faults_relation_type (FaultsRelationSpecialCase, optional): Faults relation type to be set. Defaults to FaultsRelationSpecialCase.OFFSET_FORMATIONS.</span>
+<span class="sd">        change_color (bool, optional): If True, changes the color of the fault groups. Defaults to True.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        StructuralFrame: The updated StructuralFrame object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">GeoModel</span><span class="p">):</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">structural_frame</span>
+
+    <span class="n">frame</span> <span class="o">=</span> <span class="n">_find_and_set_fields</span><span class="p">(</span>
+        <span class="n">frame</span><span class="o">=</span><span class="n">frame</span><span class="p">,</span>
+        <span class="n">fault_groups</span><span class="o">=</span><span class="n">fault_groups</span><span class="p">,</span>
+        <span class="n">faults_relation_type</span><span class="o">=</span><span class="n">faults_relation_type</span><span class="p">,</span>
+        <span class="n">stack_relation_type</span><span class="o">=</span><span class="n">StackRelationType</span><span class="o">.</span><span class="n">FAULT</span><span class="p">,</span>
+        <span class="n">change_color</span><span class="o">=</span><span class="n">change_color</span>
+    <span class="p">)</span>
+
+    <span class="c1"># * TODO: Set the fault colors</span>
+
+    <span class="k">return</span> <span class="n">frame</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">unset_is_fault</span><span class="p">(</span><span class="n">frame</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">GeoModel</span><span class="p">,</span> <span class="n">StructuralFrame</span><span class="p">],</span> <span class="n">fault_groups</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="n">StructuralGroup</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">StructuralFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Unsets given groups as fault in the structural frame of the GeoModel.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        frame (Union[GeoModel, StructuralFrame]): GeoModel or its StructuralFrame to be modified.</span>
+<span class="sd">        fault_groups (Union[list[str], list[StructuralGroup]]): Groups to be unset as faults.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        StructuralFrame: The updated StructuralFrame object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">GeoModel</span><span class="p">):</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">structural_frame</span>
+
+    <span class="n">frame</span> <span class="o">=</span> <span class="n">_find_and_set_fields</span><span class="p">(</span>
+        <span class="n">frame</span><span class="o">=</span><span class="n">frame</span><span class="p">,</span>
+        <span class="n">fault_groups</span><span class="o">=</span><span class="n">fault_groups</span><span class="p">,</span>
+        <span class="n">faults_relation_type</span><span class="o">=</span><span class="n">FaultsRelationSpecialCase</span><span class="o">.</span><span class="n">OFFSET_NONE</span><span class="p">,</span>
+        <span class="n">stack_relation_type</span><span class="o">=</span><span class="n">StackRelationType</span><span class="o">.</span><span class="n">ERODE</span><span class="p">,</span>
+        <span class="n">change_color</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">frame</span>
+
+
+<div class="viewcode-block" id="set_fault_relation">
+<a class="viewcode-back" href="../../../GemPy%20API/gempy.set_fault_relation.html#gempy.set_fault_relation">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">set_fault_relation</span><span class="p">(</span><span class="n">frame</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">GeoModel</span><span class="p">,</span> <span class="n">StructuralFrame</span><span class="p">],</span> <span class="n">rel_matrix</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StructuralFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sets the fault relations in the structural frame of the GeoModel.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        frame (Union[GeoModel, StructuralFrame]): GeoModel or its StructuralFrame to be modified.</span>
+<span class="sd">        rel_matrix (np.ndarray): Fault relation matrix to be set.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        StructuralFrame: The updated StructuralFrame object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">GeoModel</span><span class="p">):</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">structural_frame</span>
+
+    <span class="n">frame</span><span class="o">.</span><span class="n">fault_relations</span> <span class="o">=</span> <span class="n">rel_matrix</span>
+    <span class="k">return</span> <span class="n">frame</span></div>
+
+
+
+<div class="viewcode-block" id="set_is_finite_fault">
+<a class="viewcode-back" href="../../../GemPy%20API/gempy.set_is_finite_fault.html#gempy.set_is_finite_fault">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">set_is_finite_fault</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">series_fault</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">toggle</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+    <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_faults</span><span class="o">.</span><span class="n">set_is_finite_fault</span><span class="p">(</span><span class="n">series_fault</span><span class="p">,</span>
+                                         <span class="n">toggle</span><span class="p">)</span>  <span class="c1"># change df in Fault obj</span>
+    <span class="c1"># change shared aesara variable for infinite factor</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_interpolator</span><span class="o">.</span><span class="n">set_aesara_shared_is_finite</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">s</span></div>
+
+
+
+<span class="c1"># TODO: Move to a faults module</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_find_and_set_fields</span><span class="p">(</span><span class="n">frame</span><span class="p">:</span> <span class="n">StructuralFrame</span><span class="p">,</span> <span class="n">fault_groups</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">StructuralGroup</span><span class="p">],</span>
+                         <span class="n">faults_relation_type</span><span class="p">:</span> <span class="n">FaultsRelationSpecialCase</span><span class="p">,</span> <span class="n">stack_relation_type</span><span class="p">:</span> <span class="n">StackRelationType</span><span class="p">,</span>
+                         <span class="n">change_color</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StructuralFrame</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">group</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">fault_groups</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">group</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">g</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">frame</span><span class="o">.</span><span class="n">structural_groups</span> <span class="k">if</span> <span class="n">g</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">group</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="n">StructuralGroup</span><span class="p">):</span>
+            <span class="n">group</span><span class="o">.</span><span class="n">structural_relation</span> <span class="o">=</span> <span class="n">stack_relation_type</span>
+            <span class="n">group</span><span class="o">.</span><span class="n">fault_relations</span> <span class="o">=</span> <span class="n">faults_relation_type</span>  <span class="c1"># * Set the default fault relations</span>
+            <span class="k">if</span> <span class="n">change_color</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">group</span><span class="o">.</span><span class="n">elements</span><span class="p">:</span>
+                    <span class="n">element</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;#527682&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find group &#39;</span><span class="si">{</span><span class="n">group</span><span class="si">}</span><span class="s2">&#39; in structural frame.&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">frame</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../index.html">
+    <img class="logo" src="../../../_static/logos/gempy.png" alt="Logo" />
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=gempy-project&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/index.html">GemPy Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/index.html">Examples</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../external/external_examples.html">External Examples</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_reference.html">Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_reference.html#data-classes">Data Classes</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2017-2025, Gempy Developers.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,55 @@
+
+:orphan:
+
+.. _sphx_glr_examples_real_sg_execution_times:
+
+
+Computation times
+=================
+**04:35.373** total execution time for 7 files **from examples/real**:
+
+.. container::
+
+  .. raw:: html
+
+    <style scoped>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
+    </style>
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script type="text/javascript" class="init">
+    $(document).ready( function () {
+        $('table.sg-datatable').DataTable({order: [[1, 'desc']]});
+    } );
+    </script>
+
+  .. list-table::
+   :header-rows: 1
+   :class: table table-striped sg-datatable
+
+   * - Example
+     - Time
+     - Mem (MB)
+   * - :ref:`sphx_glr_examples_real_Hecho.py` (``Hecho.py``)
+     - 01:38.012
+     - 0.0
+   * - :ref:`sphx_glr_examples_real_Claudius.py` (``Claudius.py``)
+     - 01:02.532
+     - 0.0
+   * - :ref:`sphx_glr_examples_real_Alesmodel.py` (``Alesmodel.py``)
+     - 00:52.086
+     - 0.0
+   * - :ref:`sphx_glr_examples_real_Greenstone.py` (``Greenstone.py``)
+     - 00:26.861
+     - 0.0
+   * - :ref:`sphx_glr_examples_real_Perth_basin.py` (``Perth_basin.py``)
+     - 00:13.964
+     - 0.0
+   * - :ref:`sphx_glr_examples_real_Moureze.py` (``Moureze.py``)
+     - 00:12.619
+     - 0.0
+   * - :ref:`sphx_glr_examples_real_mik.py` (``mik.py``)
+     - 00:09.298
+     - 0.0

@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>gempy.API.examples_generator &#8212; GemPy 2024.2.0.3.dev0+gf344a731.d20240626 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/basic.css?v=686e5160" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=e15417cb" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <script src="../../../_static/documentation_options.js?v=bd57e1ea"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <link rel="icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for gempy.API.examples_generator</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">gempy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gempy_engine.core.data.stack_relation_type</span><span class="w"> </span><span class="kn">import</span> <span class="n">StackRelationType</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gempy.core.data.enumerators</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExampleModel</span>
+
+
+
+
+<div class="viewcode-block" id="generate_example_model">
+<a class="viewcode-back" href="../../../GemPy%20API/gempy.generate_example_model.html#gempy.generate_example_model">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_example_model</span><span class="p">(</span><span class="n">example_model</span><span class="p">:</span> <span class="n">ExampleModel</span><span class="p">,</span> <span class="n">compute_model</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GeoModel</span><span class="p">:</span>
+    <span class="k">match</span> <span class="n">example_model</span><span class="p">:</span>
+        <span class="k">case</span> <span class="n">ExampleModel</span><span class="o">.</span><span class="n">HORIZONTAL_STRAT</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_generate_horizontal_stratigraphic_model</span><span class="p">(</span><span class="n">compute_model</span><span class="p">)</span>
+        <span class="k">case</span> <span class="n">ExampleModel</span><span class="o">.</span><span class="n">ANTICLINE</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_generate_anticline_model</span><span class="p">(</span><span class="n">compute_model</span><span class="p">)</span>
+        <span class="k">case</span> <span class="n">ExampleModel</span><span class="o">.</span><span class="n">ONE_FAULT</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_generate_one_fault_model</span><span class="p">(</span><span class="n">compute_model</span><span class="p">)</span>
+        <span class="k">case</span> <span class="n">ExampleModel</span><span class="o">.</span><span class="n">TWO_AND_A_HALF_D</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_generate_2_5d_model</span><span class="p">(</span><span class="n">compute_model</span><span class="p">)</span>
+        <span class="k">case</span> <span class="n">ExampleModel</span><span class="o">.</span><span class="n">COMBINATION</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_generate_combination_model</span><span class="p">(</span><span class="n">compute_model</span><span class="p">)</span>
+        <span class="k">case</span> <span class="n">ExampleModel</span><span class="o">.</span><span class="n">ONE_FAULT_GRAVITY</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_generate_one_fault_model_gravity</span><span class="p">(</span><span class="n">compute_model</span><span class="p">)</span>
+        <span class="k">case</span> <span class="n">ExampleModel</span><span class="o">.</span><span class="n">GRABEN</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_generate_graben_model</span><span class="p">(</span><span class="n">compute_model</span><span class="p">)</span>
+        <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Example model </span><span class="si">{</span><span class="n">example_model</span><span class="si">}</span><span class="s2"> not implemented.&quot;</span><span class="p">)</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_generate_2_5d_model</span><span class="p">(</span><span class="n">compute_model</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GeoModel</span><span class="p">:</span>
+    <span class="n">geo_model</span><span class="p">:</span> <span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GeoModel</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">create_geomodel</span><span class="p">(</span>
+        <span class="n">project_name</span><span class="o">=</span><span class="s1">&#39;Model1&#39;</span><span class="p">,</span>
+        <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">791</span><span class="p">,</span> <span class="o">-</span><span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="o">-</span><span class="mi">582</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+        <span class="n">resolution</span><span class="o">=</span><span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">],</span>
+        <span class="n">refinement</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">structural_frame</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">StructuralFrame</span><span class="o">.</span><span class="n">initialize_default_structure</span><span class="p">()</span>
+    <span class="p">)</span>
+
+    <span class="n">gp</span><span class="o">.</span><span class="n">add_surface_points</span><span class="p">(</span>
+        <span class="n">geo_model</span><span class="o">=</span><span class="n">geo_model</span><span class="p">,</span>
+        <span class="n">x</span><span class="o">=</span><span class="p">[</span><span class="mi">223</span><span class="p">,</span> <span class="mi">458</span><span class="p">,</span> <span class="mi">612</span><span class="p">],</span>
+        <span class="n">y</span><span class="o">=</span><span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+        <span class="n">z</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">94</span><span class="p">,</span> <span class="o">-</span><span class="mi">197</span><span class="p">,</span> <span class="o">-</span><span class="mi">14</span><span class="p">],</span>
+        <span class="n">elements_names</span><span class="o">=</span><span class="s1">&#39;surface1&#39;</span>
+    <span class="p">)</span>
+
+    <span class="n">gp</span><span class="o">.</span><span class="n">add_orientations</span><span class="p">(</span>
+        <span class="n">geo_model</span><span class="o">=</span><span class="n">geo_model</span><span class="p">,</span>
+        <span class="n">x</span><span class="o">=</span><span class="p">[</span><span class="mi">350</span><span class="p">],</span>
+        <span class="n">y</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+        <span class="n">z</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">300</span><span class="p">],</span>
+        <span class="n">elements_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;surface1&#39;</span><span class="p">],</span>
+        <span class="n">pole_vector</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]</span>
+    <span class="p">)</span>
+
+    <span class="n">geo_model</span><span class="o">.</span><span class="n">update_transform</span><span class="p">(</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GlobalAnisotropy</span><span class="o">.</span><span class="n">NONE</span><span class="p">)</span>  <span class="c1"># * Remove the auto anisotropy for this 2.5D model</span>
+
+    <span class="n">element2</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">StructuralElement</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;surface2&#39;</span><span class="p">,</span>
+        <span class="n">color</span><span class="o">=</span><span class="nb">next</span><span class="p">(</span><span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span><span class="o">.</span><span class="n">color_generator</span><span class="p">),</span>
+        <span class="n">surface_points</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">SurfacePointsTable</span><span class="o">.</span><span class="n">from_arrays</span><span class="p">(</span>
+            <span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">225</span><span class="p">,</span> <span class="mi">459</span><span class="p">]),</span>
+            <span class="n">y</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span>
+            <span class="n">z</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mi">269</span><span class="p">,</span> <span class="o">-</span><span class="mi">279</span><span class="p">]),</span>
+            <span class="n">names</span><span class="o">=</span><span class="s1">&#39;surface2&#39;</span>
+        <span class="p">),</span>
+        <span class="n">orientations</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">OrientationsTable</span><span class="o">.</span><span class="n">initialize_empty</span><span class="p">()</span>
+    <span class="p">)</span>
+
+    <span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span><span class="o">.</span><span class="n">structural_groups</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">append_element</span><span class="p">(</span><span class="n">element2</span><span class="p">)</span>
+
+    <span class="n">element3</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">StructuralElement</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;surface3&#39;</span><span class="p">,</span>
+        <span class="n">color</span><span class="o">=</span><span class="nb">next</span><span class="p">(</span><span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span><span class="o">.</span><span class="n">color_generator</span><span class="p">),</span>
+        <span class="n">surface_points</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">SurfacePointsTable</span><span class="o">.</span><span class="n">from_arrays</span><span class="p">(</span>
+            <span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">225</span><span class="p">,</span> <span class="mi">464</span><span class="p">,</span> <span class="mi">619</span><span class="p">]),</span>
+            <span class="n">y</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span>
+            <span class="n">z</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mi">439</span><span class="p">,</span> <span class="o">-</span><span class="mi">456</span><span class="p">,</span> <span class="o">-</span><span class="mi">433</span><span class="p">]),</span>
+            <span class="n">names</span><span class="o">=</span><span class="s1">&#39;surface3&#39;</span>
+        <span class="p">),</span>
+        <span class="n">orientations</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">OrientationsTable</span><span class="o">.</span><span class="n">initialize_empty</span><span class="p">()</span>
+    <span class="p">)</span>
+
+    <span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span><span class="o">.</span><span class="n">structural_groups</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">append_element</span><span class="p">(</span><span class="n">element3</span><span class="p">)</span>
+
+    <span class="n">element_fault</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">StructuralElement</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;fault1&#39;</span><span class="p">,</span>
+        <span class="n">color</span><span class="o">=</span><span class="nb">next</span><span class="p">(</span><span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span><span class="o">.</span><span class="n">color_generator</span><span class="p">),</span>
+        <span class="n">surface_points</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">SurfacePointsTable</span><span class="o">.</span><span class="n">from_arrays</span><span class="p">(</span>
+            <span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">550</span><span class="p">,</span> <span class="mi">650</span><span class="p">]),</span>
+            <span class="n">y</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span>
+            <span class="n">z</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mi">30</span><span class="p">,</span> <span class="o">-</span><span class="mi">200</span><span class="p">]),</span>
+            <span class="n">names</span><span class="o">=</span><span class="s1">&#39;fault1&#39;</span>
+        <span class="p">),</span>
+        <span class="n">orientations</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">OrientationsTable</span><span class="o">.</span><span class="n">from_arrays</span><span class="p">(</span>
+            <span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">600</span><span class="p">]),</span>
+            <span class="n">y</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">]),</span>
+            <span class="n">z</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mi">100</span><span class="p">]),</span>
+            <span class="n">G_x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">.3</span><span class="p">]),</span>
+            <span class="n">G_y</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">]),</span>
+            <span class="n">G_z</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">.3</span><span class="p">]),</span>
+            <span class="n">names</span><span class="o">=</span><span class="s1">&#39;fault1&#39;</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">group_fault</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">StructuralGroup</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Fault1&#39;</span><span class="p">,</span>
+        <span class="n">elements</span><span class="o">=</span><span class="p">[</span><span class="n">element_fault</span><span class="p">],</span>
+        <span class="n">structural_relation</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">StackRelationType</span><span class="o">.</span><span class="n">FAULT</span><span class="p">,</span>
+        <span class="n">fault_relations</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">FaultsRelationSpecialCase</span><span class="o">.</span><span class="n">OFFSET_ALL</span>
+    <span class="p">)</span>
+
+    <span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span><span class="o">.</span><span class="n">insert_group</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">group_fault</span><span class="p">)</span>  <span class="c1"># * We are placing it already in the right place so we do not need to map anything</span>
+
+    <span class="n">gp</span><span class="o">.</span><span class="n">set_topography_from_random</span><span class="p">(</span>
+        <span class="n">grid</span><span class="o">=</span><span class="n">geo_model</span><span class="o">.</span><span class="n">grid</span><span class="p">,</span>
+        <span class="n">fractal_dimension</span><span class="o">=</span><span class="mf">1.9</span><span class="p">,</span>
+        <span class="n">d_z</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mi">150</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span>
+        <span class="n">topography_resolution</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">50</span><span class="p">,</span> <span class="mi">40</span><span class="p">])</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">compute_model</span><span class="p">:</span>
+        <span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span><span class="p">(</span><span class="n">geo_model</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">geo_model</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_generate_horizontal_stratigraphic_model</span><span class="p">(</span><span class="n">compute_model</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GeoModel</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function to create a geological model of horizontally stacked layers,</span>
+<span class="sd">    map the geological series to surfaces, and compute the geological model.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Define the path to data</span>
+    <span class="n">data_path</span> <span class="o">=</span> <span class="s1">&#39;https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/&#39;</span>
+
+    <span class="c1"># Create a GeoModel instance</span>
+    <span class="n">geo_data</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">create_geomodel</span><span class="p">(</span>
+        <span class="n">project_name</span><span class="o">=</span><span class="s1">&#39;horizontal&#39;</span><span class="p">,</span>
+        <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1000</span><span class="p">],</span>
+        <span class="n">resolution</span><span class="o">=</span><span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">50</span><span class="p">],</span>
+        <span class="n">refinement</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="n">importer_helper</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">ImporterHelper</span><span class="p">(</span>
+            <span class="n">path_to_orientations</span><span class="o">=</span><span class="n">data_path</span> <span class="o">+</span> <span class="s2">&quot;/data/input_data/jan_models/model1_orientations.csv&quot;</span><span class="p">,</span>
+            <span class="n">path_to_surface_points</span><span class="o">=</span><span class="n">data_path</span> <span class="o">+</span> <span class="s2">&quot;/data/input_data/jan_models/model1_surface_points.csv&quot;</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Map geological series to surfaces</span>
+    <span class="n">gp</span><span class="o">.</span><span class="n">map_stack_to_surfaces</span><span class="p">(</span>
+        <span class="n">gempy_model</span><span class="o">=</span><span class="n">geo_data</span><span class="p">,</span>
+        <span class="n">mapping_object</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Strat_Series&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;rock2&#39;</span><span class="p">,</span> <span class="s1">&#39;rock1&#39;</span><span class="p">)}</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">compute_model</span><span class="p">:</span>
+        <span class="c1"># Compute the geological model</span>
+        <span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">geo_data</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_generate_anticline_model</span><span class="p">(</span><span class="n">compute_model</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GeoModel</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function to create a geological model of an anticline structure,</span>
+<span class="sd">    map the geological series to surfaces, and compute the geological model.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Define the path to data</span>
+    <span class="n">data_path</span> <span class="o">=</span> <span class="s1">&#39;https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/&#39;</span>
+    <span class="n">path_to_data</span> <span class="o">=</span> <span class="n">data_path</span> <span class="o">+</span> <span class="s2">&quot;/data/input_data/jan_models/&quot;</span>
+
+    <span class="c1"># Create a GeoModel instance</span>
+    <span class="n">geo_data</span><span class="p">:</span> <span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GeoModel</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">create_geomodel</span><span class="p">(</span>
+        <span class="n">project_name</span><span class="o">=</span><span class="s1">&#39;fold&#39;</span><span class="p">,</span>
+        <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1000</span><span class="p">],</span>
+        <span class="n">refinement</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="n">importer_helper</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">ImporterHelper</span><span class="p">(</span>
+            <span class="n">path_to_orientations</span><span class="o">=</span><span class="n">path_to_data</span> <span class="o">+</span> <span class="s2">&quot;model2_orientations.csv&quot;</span><span class="p">,</span>
+            <span class="n">path_to_surface_points</span><span class="o">=</span><span class="n">path_to_data</span> <span class="o">+</span> <span class="s2">&quot;model2_surface_points.csv&quot;</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Map geological series to surfaces</span>
+    <span class="n">gp</span><span class="o">.</span><span class="n">map_stack_to_surfaces</span><span class="p">(</span>
+        <span class="n">gempy_model</span><span class="o">=</span><span class="n">geo_data</span><span class="p">,</span>
+        <span class="n">mapping_object</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Strat_Series&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;rock2&#39;</span><span class="p">,</span> <span class="s1">&#39;rock1&#39;</span><span class="p">)}</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">compute_model</span><span class="p">:</span>
+        <span class="c1"># Compute the geological model</span>
+        <span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">geo_data</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_generate_one_fault_model</span><span class="p">(</span><span class="n">compute_model</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GeoModel</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function to create a simple fault model,</span>
+<span class="sd">    map the geological series to surfaces, and compute the geological model.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Define the path to data</span>
+    <span class="n">data_path</span> <span class="o">=</span> <span class="s1">&#39;https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/&#39;</span>
+    <span class="n">path_to_data</span> <span class="o">=</span> <span class="n">data_path</span> <span class="o">+</span> <span class="s2">&quot;/data/input_data/jan_models/&quot;</span>
+
+    <span class="c1"># Create a GeoModel instance</span>
+    <span class="n">geo_data</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">create_geomodel</span><span class="p">(</span>
+        <span class="n">project_name</span><span class="o">=</span><span class="s1">&#39;fault&#39;</span><span class="p">,</span>
+        <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1000</span><span class="p">],</span>
+        <span class="n">refinement</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+        <span class="c1"># resolution=[20, 20, 20],</span>
+        <span class="n">importer_helper</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">ImporterHelper</span><span class="p">(</span>
+            <span class="n">path_to_orientations</span><span class="o">=</span><span class="n">path_to_data</span> <span class="o">+</span> <span class="s2">&quot;model5_orientations.csv&quot;</span><span class="p">,</span>
+            <span class="n">path_to_surface_points</span><span class="o">=</span><span class="n">path_to_data</span> <span class="o">+</span> <span class="s2">&quot;model5_surface_points.csv&quot;</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Map geological series to surfaces</span>
+    <span class="n">gp</span><span class="o">.</span><span class="n">map_stack_to_surfaces</span><span class="p">(</span>
+        <span class="n">gempy_model</span><span class="o">=</span><span class="n">geo_data</span><span class="p">,</span>
+        <span class="n">mapping_object</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;Fault_Series&quot;</span><span class="p">:</span> <span class="s1">&#39;fault&#39;</span><span class="p">,</span>
+                <span class="s2">&quot;Strat_Series&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;rock2&#39;</span><span class="p">,</span> <span class="s1">&#39;rock1&#39;</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Define fault groups</span>
+    <span class="n">geo_data</span><span class="o">.</span><span class="n">structural_frame</span><span class="o">.</span><span class="n">structural_groups</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">structural_relation</span> <span class="o">=</span> <span class="n">StackRelationType</span><span class="o">.</span><span class="n">FAULT</span>
+    <span class="n">geo_data</span><span class="o">.</span><span class="n">structural_frame</span><span class="o">.</span><span class="n">fault_relations</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                                                          <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
+    <span class="n">gp</span><span class="o">.</span><span class="n">set_is_fault</span><span class="p">(</span>
+        <span class="n">frame</span><span class="o">=</span><span class="n">geo_data</span><span class="p">,</span>
+        <span class="n">fault_groups</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Fault_Series&#39;</span><span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">compute_model</span><span class="p">:</span>
+        <span class="c1"># Compute the geological model</span>
+        <span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">geo_data</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_generate_combination_model</span><span class="p">(</span><span class="n">compute_model</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GeoModel</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function to create a model with a folded domain featuring an unconformity and a fault,</span>
+<span class="sd">    map the geological series to surfaces, and compute the geological model.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Define the path to data</span>
+    <span class="n">data_path</span> <span class="o">=</span> <span class="s1">&#39;https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/&#39;</span>
+    <span class="n">path_to_data</span> <span class="o">=</span> <span class="n">data_path</span> <span class="o">+</span> <span class="s2">&quot;/data/input_data/jan_models/&quot;</span>
+
+    <span class="c1"># Create a GeoModel instance</span>
+    <span class="n">geo_data</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">create_geomodel</span><span class="p">(</span>
+        <span class="n">project_name</span><span class="o">=</span><span class="s1">&#39;combination&#39;</span><span class="p">,</span>
+        <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2500</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1000</span><span class="p">],</span>
+        <span class="n">refinement</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+        <span class="n">importer_helper</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">ImporterHelper</span><span class="p">(</span>
+            <span class="n">path_to_orientations</span><span class="o">=</span><span class="n">path_to_data</span> <span class="o">+</span> <span class="s2">&quot;model7_orientations.csv&quot;</span><span class="p">,</span>
+            <span class="n">path_to_surface_points</span><span class="o">=</span><span class="n">path_to_data</span> <span class="o">+</span> <span class="s2">&quot;model7_surface_points.csv&quot;</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">geo_data</span><span class="o">.</span><span class="n">interpolation_options</span><span class="o">.</span><span class="n">evaluation_options</span><span class="o">.</span><span class="n">number_octree_levels_surface</span> <span class="o">=</span> <span class="mi">4</span>
+
+    <span class="c1"># Map geological series to surfaces</span>
+    <span class="n">gp</span><span class="o">.</span><span class="n">map_stack_to_surfaces</span><span class="p">(</span>
+        <span class="n">gempy_model</span><span class="o">=</span><span class="n">geo_data</span><span class="p">,</span>
+        <span class="n">mapping_object</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;Fault_Series&quot;</span> <span class="p">:</span> <span class="p">(</span><span class="s1">&#39;fault&#39;</span><span class="p">),</span>
+                <span class="s2">&quot;Strat_Series1&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;rock3&#39;</span><span class="p">),</span>
+                <span class="s2">&quot;Strat_Series2&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;rock2&#39;</span><span class="p">,</span> <span class="s1">&#39;rock1&#39;</span><span class="p">),</span>
+        <span class="p">}</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Define the structural relation</span>
+    <span class="n">geo_data</span><span class="o">.</span><span class="n">structural_frame</span><span class="o">.</span><span class="n">structural_groups</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">structural_relation</span> <span class="o">=</span> <span class="n">StackRelationType</span><span class="o">.</span><span class="n">FAULT</span>
+    <span class="n">geo_data</span><span class="o">.</span><span class="n">structural_frame</span><span class="o">.</span><span class="n">fault_relations</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+        <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+         <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+         <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Compute the geological model</span>
+    <span class="k">if</span> <span class="n">compute_model</span><span class="p">:</span>
+        <span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span><span class="p">(</span>
+            <span class="n">gempy_model</span><span class="o">=</span><span class="n">geo_data</span><span class="p">,</span>
+            <span class="n">engine_config</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GemPyEngineConfig</span><span class="p">(</span>
+                <span class="n">backend</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">AvailableBackends</span><span class="o">.</span><span class="n">numpy</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">geo_data</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_generate_one_fault_model_gravity</span><span class="p">(</span><span class="n">compute_model</span><span class="p">):</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gempy_engine.core.backend_tensor</span><span class="w"> </span><span class="kn">import</span> <span class="n">BackendTensor</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gempy.optional_dependencies</span><span class="w"> </span><span class="kn">import</span> <span class="n">require_pandas</span>
+    <span class="n">pd</span> <span class="o">=</span> <span class="n">require_pandas</span><span class="p">()</span>
+    
+    <span class="n">resolution</span> <span class="o">=</span> <span class="p">[</span><span class="mi">150</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">150</span><span class="p">]</span>
+    <span class="n">extent</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="o">-</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="o">-</span><span class="mi">100</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># %%</span>
+    <span class="c1"># Configure GemPy for geological modeling with PyTorch backend</span>
+    <span class="n">BackendTensor</span><span class="o">.</span><span class="n">change_backend_gempy</span><span class="p">(</span><span class="n">engine_backend</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">AvailableBackends</span><span class="o">.</span><span class="n">PYTORCH</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float64&quot;</span><span class="p">)</span>
+
+    <span class="n">geo_model</span><span class="p">:</span> <span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GeoModel</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">create_geomodel</span><span class="p">(</span>
+        <span class="n">project_name</span><span class="o">=</span><span class="s1">&#39;Fault model&#39;</span><span class="p">,</span>
+        <span class="n">extent</span><span class="o">=</span><span class="n">extent</span><span class="p">,</span>
+        <span class="n">resolution</span><span class="o">=</span><span class="n">resolution</span><span class="p">,</span>
+        <span class="n">structural_frame</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">StructuralFrame</span><span class="o">.</span><span class="n">initialize_default_structure</span><span class="p">()</span>
+    <span class="p">)</span>
+
+    <span class="n">interpolation_options</span> <span class="o">=</span> <span class="n">geo_model</span><span class="o">.</span><span class="n">interpolation_options</span>
+    <span class="n">interpolation_options</span><span class="o">.</span><span class="n">mesh_extraction</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">interpolation_options</span><span class="o">.</span><span class="n">kernel_options</span><span class="o">.</span><span class="n">range</span> <span class="o">=</span> <span class="mf">.7</span>
+    <span class="n">interpolation_options</span><span class="o">.</span><span class="n">kernel_options</span><span class="o">.</span><span class="n">c_o</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">interpolation_options</span><span class="o">.</span><span class="n">kernel_options</span><span class="o">.</span><span class="n">compute_condition_number</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="n">gp</span><span class="o">.</span><span class="n">add_surface_points</span><span class="p">(</span>
+        <span class="n">geo_model</span><span class="o">=</span><span class="n">geo_model</span><span class="p">,</span>
+        <span class="n">x</span><span class="o">=</span><span class="p">[</span><span class="mi">40</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">120</span><span class="p">,</span> <span class="mi">140</span><span class="p">],</span>
+        <span class="n">y</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+        <span class="n">z</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">50</span><span class="p">,</span> <span class="o">-</span><span class="mi">50</span><span class="p">,</span> <span class="o">-</span><span class="mi">60</span><span class="p">,</span> <span class="o">-</span><span class="mi">60</span><span class="p">],</span>
+        <span class="n">elements_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;surface1&#39;</span><span class="p">,</span> <span class="s1">&#39;surface1&#39;</span><span class="p">,</span> <span class="s1">&#39;surface1&#39;</span><span class="p">,</span> <span class="s1">&#39;surface1&#39;</span><span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="n">gp</span><span class="o">.</span><span class="n">add_orientations</span><span class="p">(</span>
+        <span class="n">geo_model</span><span class="o">=</span><span class="n">geo_model</span><span class="p">,</span>
+        <span class="n">x</span><span class="o">=</span><span class="p">[</span><span class="mi">130</span><span class="p">],</span>
+        <span class="n">y</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+        <span class="n">z</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">50</span><span class="p">],</span>
+        <span class="n">elements_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;surface1&#39;</span><span class="p">],</span>
+        <span class="n">pole_vector</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1.</span><span class="p">]]</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Define second element</span>
+    <span class="n">element2</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">StructuralElement</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;surface2&#39;</span><span class="p">,</span>
+        <span class="n">color</span><span class="o">=</span><span class="nb">next</span><span class="p">(</span><span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span><span class="o">.</span><span class="n">color_generator</span><span class="p">),</span>
+        <span class="n">surface_points</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">SurfacePointsTable</span><span class="o">.</span><span class="n">from_arrays</span><span class="p">(</span>
+            <span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">120</span><span class="p">]),</span>
+            <span class="n">y</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">]),</span>
+            <span class="n">z</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mi">40</span><span class="p">]),</span>
+            <span class="n">names</span><span class="o">=</span><span class="s1">&#39;surface2&#39;</span>
+        <span class="p">),</span>
+        <span class="n">orientations</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">OrientationsTable</span><span class="o">.</span><span class="n">initialize_empty</span><span class="p">()</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Add second element to structural frame</span>
+    <span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span><span class="o">.</span><span class="n">structural_groups</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">append_element</span><span class="p">(</span><span class="n">element2</span><span class="p">)</span>
+
+    <span class="c1"># add fault</span>
+    <span class="c1"># Calculate orientation from point values</span>
+    <span class="n">fault_point_1</span> <span class="o">=</span> <span class="p">(</span><span class="mi">80</span><span class="p">,</span> <span class="o">-</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">fault_point_2</span> <span class="o">=</span> <span class="p">(</span><span class="mi">110</span><span class="p">,</span> <span class="o">-</span><span class="mi">80</span><span class="p">)</span>
+
+    <span class="c1"># calculate angle</span>
+    <span class="n">angle</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan</span><span class="p">((</span><span class="n">fault_point_2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">fault_point_1</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">fault_point_2</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">fault_point_1</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
+
+    <span class="n">element_fault</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">StructuralElement</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;fault1&#39;</span><span class="p">,</span>
+        <span class="n">color</span><span class="o">=</span><span class="nb">next</span><span class="p">(</span><span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span><span class="o">.</span><span class="n">color_generator</span><span class="p">),</span>
+        <span class="n">surface_points</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">SurfacePointsTable</span><span class="o">.</span><span class="n">from_arrays</span><span class="p">(</span>
+            <span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">fault_point_1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">fault_point_2</span><span class="p">[</span><span class="mi">0</span><span class="p">]]),</span>
+            <span class="n">y</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span>
+            <span class="n">z</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">fault_point_1</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">fault_point_2</span><span class="p">[</span><span class="mi">1</span><span class="p">]]),</span>
+            <span class="n">names</span><span class="o">=</span><span class="s1">&#39;fault1&#39;</span>
+        <span class="p">),</span>
+        <span class="n">orientations</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">OrientationsTable</span><span class="o">.</span><span class="n">from_arrays</span><span class="p">(</span>
+            <span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">fault_point_1</span><span class="p">[</span><span class="mi">0</span><span class="p">]]),</span>
+            <span class="n">y</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">]),</span>
+            <span class="n">z</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">fault_point_1</span><span class="p">[</span><span class="mi">1</span><span class="p">]]),</span>
+            <span class="n">G_x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">]),</span>
+            <span class="n">G_y</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">]),</span>
+            <span class="n">G_z</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">z</span><span class="p">]),</span>
+            <span class="n">names</span><span class="o">=</span><span class="s1">&#39;fault1&#39;</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">group_fault</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">StructuralGroup</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Fault1&#39;</span><span class="p">,</span>
+        <span class="n">elements</span><span class="o">=</span><span class="p">[</span><span class="n">element_fault</span><span class="p">],</span>
+        <span class="n">structural_relation</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">StackRelationType</span><span class="o">.</span><span class="n">FAULT</span><span class="p">,</span>
+        <span class="n">fault_relations</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">FaultsRelationSpecialCase</span><span class="o">.</span><span class="n">OFFSET_ALL</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Insert the fault group into the structural frame:</span>
+    <span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span><span class="o">.</span><span class="n">insert_group</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">group_fault</span><span class="p">)</span>
+    <span class="c1"># %% md</span>
+    <span class="c1">## Compute model</span>
+    <span class="c1"># %%</span>
+    <span class="n">geo_model</span><span class="o">.</span><span class="n">update_transform</span><span class="p">(</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GlobalAnisotropy</span><span class="o">.</span><span class="n">NONE</span><span class="p">)</span>
+    
+    <span class="n">interesting_columns</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+    <span class="c1"># x_vals = np.arange(20, 191, 10)</span>
+
+    <span class="n">x_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">191</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+    <span class="n">interesting_columns</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">x_vals</span>
+    <span class="n">interesting_columns</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">x_vals</span><span class="p">)</span>
+
+    <span class="c1"># Configuring the data correctly is key for accurate gravity calculations.</span>
+    <span class="n">device_location</span> <span class="o">=</span> <span class="n">interesting_columns</span><span class="p">[[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">]]</span>
+    <span class="n">device_location</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Add a Z-coordinate</span>
+
+    <span class="c1"># Set up a centered grid for geophysical calculations</span>
+    <span class="c1"># This grid will be used for gravity gradient calculations.</span>
+    <span class="n">gp</span><span class="o">.</span><span class="n">set_centered_grid</span><span class="p">(</span>
+        <span class="n">grid</span><span class="o">=</span><span class="n">geo_model</span><span class="o">.</span><span class="n">grid</span><span class="p">,</span>
+        <span class="n">centers</span><span class="o">=</span><span class="n">device_location</span><span class="p">,</span>
+        <span class="n">resolution</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">75</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">150</span><span class="o">/</span><span class="mi">3</span><span class="p">]),</span>
+        <span class="n">radius</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">150</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">300</span><span class="p">])</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Calculate the gravity gradient using GemPy</span>
+    <span class="c1"># Gravity gradient data is critical for geophysical modeling and inversion.</span>
+    <span class="n">gravity_gradient</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">calculate_gravity_gradient</span><span class="p">(</span><span class="n">geo_model</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">centered_grid</span><span class="p">)</span>
+
+    <span class="n">densities_tensor</span> <span class="o">=</span> <span class="n">BackendTensor</span><span class="o">.</span><span class="n">t</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">])</span>
+    <span class="n">densities_tensor</span><span class="o">.</span><span class="n">requires_grad</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="c1"># Set geophysics input for the GemPy model</span>
+    <span class="c1"># Configuring this input is crucial for the forward gravity calculation.</span>
+    <span class="n">geo_model</span><span class="o">.</span><span class="n">geophysics_input</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GeophysicsInput</span><span class="p">(</span>
+        <span class="n">tz</span><span class="o">=</span><span class="n">BackendTensor</span><span class="o">.</span><span class="n">t</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">gravity_gradient</span><span class="p">),</span>
+        <span class="n">densities</span><span class="o">=</span><span class="n">densities_tensor</span>
+    <span class="p">)</span>
+
+    <span class="c1"># %%</span>
+    <span class="c1"># Compute the geological model with geophysical data</span>
+    <span class="c1"># This computation integrates the geological model with gravity data.</span>
+    <span class="k">if</span> <span class="n">compute_model</span><span class="p">:</span>
+        <span class="n">sol</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span><span class="p">(</span>
+            <span class="n">gempy_model</span><span class="o">=</span><span class="n">geo_model</span><span class="p">,</span>
+            <span class="n">engine_config</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GemPyEngineConfig</span><span class="p">(</span>
+                <span class="n">backend</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">AvailableBackends</span><span class="o">.</span><span class="n">PYTORCH</span><span class="p">,</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">,</span>
+                <span class="n">use_gpu</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">grav</span> <span class="o">=</span> <span class="o">-</span> <span class="n">sol</span><span class="o">.</span><span class="n">gravity</span>
+        <span class="n">grav</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+    
+    <span class="k">return</span> <span class="n">geo_model</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_generate_graben_model</span><span class="p">(</span><span class="n">compute_model</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GeoModel</span><span class="p">:</span>
+    <span class="c1"># Data path is in root/examples/data</span>
+    <span class="c1"># script_dir = os.path.dirname(os.path.abspath(__file__))</span>
+    <span class="c1"># data_path = os.path.join(script_dir, &#39;.../examples/&#39;)</span>
+    <span class="c1"># n_model = 7</span>
+    <span class="c1"># https: // github.com / gempy - project / gempy / blob / 279</span>
+    <span class="c1"># bbe904283e16320c54d868fe74be873177cca / examples / data / input_data / lisa_models / interfaces7.csv</span>
+    <span class="c1"># csv_ = data_path + &quot;/data/input_data/lisa_models/foliations&quot; + n_model + &quot;.csv&quot;</span>
+
+    <span class="n">data_path</span> <span class="o">=</span> <span class="s1">&#39;https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/&#39;</span>
+    <span class="n">path_to_data</span> <span class="o">=</span> <span class="n">data_path</span> <span class="o">+</span> <span class="s2">&quot;/data/input_data/lisa_models/&quot;</span>
+    
+    <span class="n">geo_data</span><span class="p">:</span> <span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GeoModel</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">create_geomodel</span><span class="p">(</span>
+        <span class="n">project_name</span><span class="o">=</span><span class="s2">&quot;Graben&quot;</span><span class="p">,</span>
+        <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1600</span><span class="p">],</span>
+        <span class="n">resolution</span><span class="o">=</span><span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">],</span>
+        <span class="n">refinement</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>  <span class="c1"># * For this model is better not to use octrees because we want to see what is happening in the scalar fields</span>
+        <span class="n">importer_helper</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">ImporterHelper</span><span class="p">(</span>
+            <span class="n">path_to_orientations</span><span class="o">=</span> <span class="n">path_to_data</span> <span class="o">+</span> <span class="s2">&quot;foliations7.csv&quot;</span><span class="p">,</span>
+            <span class="n">path_to_surface_points</span><span class="o">=</span> <span class="n">path_to_data</span> <span class="o">+</span> <span class="s2">&quot;interfaces7.csv&quot;</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">gp</span><span class="o">.</span><span class="n">map_stack_to_surfaces</span><span class="p">(</span>
+        <span class="n">gempy_model</span><span class="o">=</span><span class="n">geo_data</span><span class="p">,</span>
+        <span class="n">mapping_object</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;Fault_1&quot;</span>     <span class="p">:</span> <span class="s1">&#39;Fault_1&#39;</span><span class="p">,</span> <span class="s2">&quot;Fault_2&quot;</span><span class="p">:</span> <span class="s1">&#39;Fault_2&#39;</span><span class="p">,</span>
+                <span class="s2">&quot;Strat_Series&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;Sandstone&#39;</span><span class="p">,</span> <span class="s1">&#39;Siltstone&#39;</span><span class="p">,</span> <span class="s1">&#39;Shale&#39;</span><span class="p">,</span> <span class="s1">&#39;Sandstone_2&#39;</span><span class="p">,</span> <span class="s1">&#39;Schist&#39;</span><span class="p">,</span> <span class="s1">&#39;Gneiss&#39;</span><span class="p">)</span>
+        <span class="p">},</span>
+    <span class="p">)</span>
+
+    <span class="n">gp</span><span class="o">.</span><span class="n">set_is_fault</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;Fault_1&#39;</span><span class="p">,</span> <span class="s1">&#39;Fault_2&#39;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">compute_model</span><span class="p">:</span>
+        <span class="n">sol</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span><span class="p">(</span><span class="n">gempy_model</span><span class="o">=</span><span class="n">geo_data</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">geo_data</span>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../index.html">
+    <img class="logo" src="../../../_static/logos/gempy.png" alt="Logo" />
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=gempy-project&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/index.html">GemPy Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/index.html">Examples</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../external/external_examples.html">External Examples</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_reference.html">Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_reference.html#data-classes">Data Classes</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2017-2025, Gempy Developers.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

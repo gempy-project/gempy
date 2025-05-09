@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>gempy.modules.data_manipulation.manipulate_points &#8212; GemPy 2024.2.0.3.dev0+gf344a731.d20240626 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/basic.css?v=686e5160" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/alabaster.css?v=e15417cb" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <script src="../../../../_static/documentation_options.js?v=bd57e1ea"></script>
+    <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <link rel="icon" href="../../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for gempy.modules.data_manipulation.manipulate_points</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">gempy.core.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">GeoModel</span><span class="p">,</span> <span class="n">StructuralFrame</span><span class="p">,</span> <span class="n">SurfacePointsTable</span><span class="p">,</span> <span class="n">StructuralElement</span><span class="p">,</span> <span class="n">OrientationsTable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gempy.core.data.orientations</span><span class="w"> </span><span class="kn">import</span> <span class="n">DEFAULT_ORI_NUGGET</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gempy.core.data.surface_points</span><span class="w"> </span><span class="kn">import</span> <span class="n">DEFAULT_SP_NUGGET</span>
+
+
+<div class="viewcode-block" id="add_surface_points">
+<a class="viewcode-back" href="../../../../GemPy%20API/gempy.add_surface_points.html#gempy.add_surface_points">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">add_surface_points</span><span class="p">(</span>
+        <span class="n">geo_model</span><span class="p">:</span> <span class="n">GeoModel</span><span class="p">,</span>
+        <span class="n">x</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+        <span class="n">y</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+        <span class="n">z</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+        <span class="n">elements_names</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">nugget</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StructuralFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add surface points to the geological model.</span>
+
+<span class="sd">    This function adds surface points to the specified geological elements in the model.</span>
+<span class="sd">    The points are grouped by element names, and optional nugget values can be specified</span>
+<span class="sd">    for each point.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        geo_model (GeoModel): The geological model to which the surface points will be added.</span>
+<span class="sd">        x (Sequence[float]): Sequence of x-coordinates for the surface points.</span>
+<span class="sd">        y (Sequence[float]): Sequence of y-coordinates for the surface points.</span>
+<span class="sd">        z (Sequence[float]): Sequence of z-coordinates for the surface points.</span>
+<span class="sd">        elements_names (Sequence[str]): Sequence of element names corresponding to each surface point.</span>
+<span class="sd">        nugget (Optional[Sequence[float]]): Sequence of nugget values for each surface point. If not provided,</span>
+<span class="sd">            a default value will be used for all points.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        StructuralFrame: The updated structural frame of the geological model.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: If the length of the nugget sequence does not match the lengths of the other input sequences.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">elements_names</span> <span class="o">=</span> <span class="n">_validate_args</span><span class="p">(</span><span class="n">elements_names</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+
+    <span class="c1"># If nugget is not provided, create a Sequence filled with the default value</span>
+    <span class="k">if</span> <span class="n">nugget</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">nugget</span> <span class="o">=</span> <span class="p">[</span><span class="n">DEFAULT_SP_NUGGET</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="c1"># Ensure nugget also has the same length as the other Sequences</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nugget</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The length of the nugget Sequence does not match the lengths of other input Sequences.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># * Split the sequences according to the elements_names</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+    <span class="n">elements_names</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">elements_names</span><span class="p">)</span>
+    <span class="n">nugget</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">nugget</span><span class="p">)</span>
+
+    <span class="n">unique_names</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">elements_names</span><span class="p">)</span>
+    <span class="n">grouped_data</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">unique_names</span><span class="p">:</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">elements_names</span> <span class="o">==</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">grouped_data</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;x&#39;</span>     <span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span>
+                <span class="s1">&#39;y&#39;</span>     <span class="p">:</span> <span class="n">y</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span>
+                <span class="s1">&#39;z&#39;</span>     <span class="p">:</span> <span class="n">z</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span>
+                <span class="s1">&#39;nugget&#39;</span><span class="p">:</span> <span class="n">nugget</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+        <span class="p">}</span>
+
+    <span class="c1"># * Loop per element_name</span>
+    <span class="k">for</span> <span class="n">element_name</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">grouped_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">formatted_data</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">SurfacePointsTable</span><span class="o">.</span><span class="n">_data_from_arrays</span><span class="p">(</span>
+            <span class="n">x</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">],</span>
+            <span class="n">y</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">],</span>
+            <span class="n">z</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;z&#39;</span><span class="p">],</span>
+            <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="n">element_name</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]),</span>
+            <span class="n">nugget</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;nugget&#39;</span><span class="p">],</span>
+            <span class="n">name_id_map</span><span class="o">=</span><span class="kc">None</span>
+        <span class="p">)</span>
+
+        <span class="n">element</span><span class="p">:</span> <span class="n">StructuralElement</span> <span class="o">=</span> <span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span><span class="o">.</span><span class="n">get_element_by_name</span><span class="p">(</span><span class="n">element_name</span><span class="p">)</span>
+        <span class="n">element</span><span class="o">.</span><span class="n">surface_points</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span>
+                <span class="n">element</span><span class="o">.</span><span class="n">surface_points</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+                <span class="n">formatted_data</span>
+        <span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span></div>
+
+
+
+<div class="viewcode-block" id="delete_surface_points">
+<a class="viewcode-back" href="../../../../GemPy%20API/gempy.delete_surface_points.html#gempy.delete_surface_points">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">delete_surface_points</span><span class="p">():</span>
+    <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+
+
+<div class="viewcode-block" id="add_orientations">
+<a class="viewcode-back" href="../../../../GemPy%20API/gempy.add_orientations.html#gempy.add_orientations">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">add_orientations</span><span class="p">(</span><span class="n">geo_model</span><span class="p">:</span> <span class="n">GeoModel</span><span class="p">,</span>
+        <span class="n">x</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+        <span class="n">y</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+        <span class="n">z</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+        <span class="n">elements_names</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">pole_vector</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">orientation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">nugget</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StructuralFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add orientation data to the geological model.</span>
+
+<span class="sd">    This function adds orientation data to the specified geological elements in the model.</span>
+<span class="sd">    The orientation can be provided directly as pole vectors or as orientation angles (azimuth, dip, polarity).</span>
+<span class="sd">    Optional nugget values can also be specified for each orientation point.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        geo_model (GeoModel): The geological model to which the orientations will be added.</span>
+<span class="sd">        x (Sequence[float]): Sequence of x-coordinates for the orientation points.</span>
+<span class="sd">        y (Sequence[float]): Sequence of y-coordinates for the orientation points.</span>
+<span class="sd">        z (Sequence[float]): Sequence of z-coordinates for the orientation points.</span>
+<span class="sd">        elements_names (Sequence[str]): Sequence of element names corresponding to each orientation point.</span>
+<span class="sd">        pole_vector (Optional[Union[Sequence[np.ndarray], np.ndarray]]): Sequence of pole vectors for each orientation point. If is np.ndarray, it should have shape (n, 3).</span>
+<span class="sd">        orientation (Optional[Union[Sequence[np.ndarray], np.ndarray]]): Sequence of orientation angles for each orientation point. If is np.ndarray, it should have shape (n, 3).</span>
+<span class="sd">        nugget (Optional[Sequence[float]]): Sequence of nugget values for each orientation point. If not provided,</span>
+<span class="sd">            a default value will be used for all points.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        StructuralFrame: The updated structural frame of the geological model.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: If neither pole_vector nor orientation is provided, or if the length of the nugget sequence</span>
+<span class="sd">            does not match the lengths of the other input sequences.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">pole_vector</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">orientation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Either pole_vector or orientation must be provided.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">orientation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">orientation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">orientation</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">pole_vector</span> <span class="o">=</span> <span class="n">convert_orientation_to_pole_vector</span><span class="p">(</span>
+            <span class="n">azimuth</span><span class="o">=</span><span class="n">orientation</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span>
+            <span class="n">dip</span><span class="o">=</span><span class="n">orientation</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
+            <span class="n">polarity</span><span class="o">=</span><span class="n">orientation</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">pole_vector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pole_vector</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">elements_names</span> <span class="o">=</span> <span class="n">_validate_args</span><span class="p">(</span><span class="n">elements_names</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">pole_vector</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">nugget</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># If nugget is not provided, create a Sequence filled with the default value</span>
+        <span class="n">nugget</span> <span class="o">=</span> <span class="p">[</span><span class="n">DEFAULT_ORI_NUGGET</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="c1"># Ensure nugget also has the same length as the other Sequences</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nugget</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The length of the nugget Sequence does not match the lengths of other input Sequences.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># * Split the sequences according to the elements_names</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+    <span class="n">elements_names</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">elements_names</span><span class="p">)</span>
+    <span class="n">pole_vector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pole_vector</span><span class="p">)</span>
+    <span class="n">nugget</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">nugget</span><span class="p">)</span>
+
+    <span class="n">unique_names</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">elements_names</span><span class="p">)</span>
+    <span class="n">grouped_data</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">unique_names</span><span class="p">:</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">elements_names</span> <span class="o">==</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">grouped_data</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;x&#39;</span>          <span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span>
+                <span class="s1">&#39;y&#39;</span>          <span class="p">:</span> <span class="n">y</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span>
+                <span class="s1">&#39;z&#39;</span>          <span class="p">:</span> <span class="n">z</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span>
+                <span class="s1">&#39;pole_vector&#39;</span><span class="p">:</span> <span class="n">pole_vector</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span>
+                <span class="s1">&#39;nugget&#39;</span>     <span class="p">:</span> <span class="n">nugget</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+        <span class="p">}</span>
+
+    <span class="c1"># * Loop per element_name</span>
+    <span class="k">for</span> <span class="n">element_name</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">grouped_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">formatted_data</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">OrientationsTable</span><span class="o">.</span><span class="n">_data_from_arrays</span><span class="p">(</span>
+            <span class="n">x</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">],</span>
+            <span class="n">y</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">],</span>
+            <span class="n">z</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;z&#39;</span><span class="p">],</span>
+            <span class="n">G_x</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;pole_vector&#39;</span><span class="p">][</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+            <span class="n">G_y</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;pole_vector&#39;</span><span class="p">][</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+            <span class="n">G_z</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;pole_vector&#39;</span><span class="p">][</span><span class="o">...</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+            <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="n">element_name</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]),</span>
+            <span class="n">nugget</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;nugget&#39;</span><span class="p">],</span>
+        <span class="p">)</span>
+
+        <span class="n">element</span><span class="p">:</span> <span class="n">StructuralElement</span> <span class="o">=</span> <span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span><span class="o">.</span><span class="n">get_element_by_name</span><span class="p">(</span><span class="n">element_name</span><span class="p">)</span>
+        <span class="n">element</span><span class="o">.</span><span class="n">orientations</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span>
+                <span class="n">element</span><span class="o">.</span><span class="n">orientations</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+                <span class="n">formatted_data</span>
+        <span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span></div>
+
+
+
+<div class="viewcode-block" id="modify_orientations">
+<a class="viewcode-back" href="../../../../GemPy%20API/gempy.modify_orientations.html#gempy.modify_orientations">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">modify_orientations</span><span class="p">(</span><span class="n">geo_model</span><span class="p">:</span> <span class="n">GeoModel</span><span class="p">,</span> <span class="nb">slice</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">slice</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                        <span class="o">**</span><span class="n">orientation_field</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">StructuralFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Modifies specified fields of all orientations in the structural frame. The keys of the orientation_field </span>
+<span class="sd">    dictionary should match the field names in the orientations (e.g., &quot;X&quot;, &quot;Y&quot;, &quot;Z&quot;, &quot;G_x&quot;, &quot;G_y&quot;, &quot;G_z&quot;, &quot;nugget&quot;).</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        geo_model (GeoModel): The GeoModel instance to modify.</span>
+<span class="sd">        slice (Optional[Union[int, slice]]): The slice of orientations to modify. If None, all orientations will be modified.</span>
+<span class="sd">        </span>
+<span class="sd">    Keyword Args:</span>
+<span class="sd">        X (Union[float, np.ndarray]): X coordinates of the orientations.</span>
+<span class="sd">        Y (Union[float, np.ndarray]): Y coordinates of the orientations.</span>
+<span class="sd">        Z (Union[float, np.ndarray]): Z coordinates of the orientations.</span>
+<span class="sd">        azimuth (Union[float, np.ndarray]): Azimuth angles of the orientations.</span>
+<span class="sd">        dip (Union[float, np.ndarray]): Dip angles of the orientations.</span>
+<span class="sd">        polarity (Union[float, np.ndarray]): Polarity values of the orientations.</span>
+<span class="sd">        G_x (Union[float, np.ndarray]): X component of the gradient vector.</span>
+<span class="sd">        G_y (Union[float, np.ndarray]): Y component of the gradient vector.</span>
+<span class="sd">        G_z (Union[float, np.ndarray]): Z component of the gradient vector.</span>
+<span class="sd">        nugget (Union[float, np.ndarray]): Nugget value of the orientations.</span>
+<span class="sd">            </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        StructuralFrame: The modified structural frame.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">orientations</span> <span class="o">=</span> <span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span><span class="o">.</span><span class="n">orientations_copy</span>
+
+    <span class="c1"># If no slice is provided, target all rows; else, target specified slice</span>
+    <span class="n">target_rows</span> <span class="o">=</span> <span class="nb">slice</span> <span class="k">if</span> <span class="nb">slice</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">s_</span><span class="p">[:]</span>
+
+    <span class="c1"># Extract provided orientation fields without modifying the dictionary</span>
+    <span class="n">azimuth</span> <span class="o">=</span> <span class="n">orientation_field</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;azimuth&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">dip</span> <span class="o">=</span> <span class="n">orientation_field</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;dip&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">polarity</span> <span class="o">=</span> <span class="n">orientation_field</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;polarity&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="c1"># Update all the other fields</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">orientation_field</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">orientations</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">target_rows</span><span class="p">]):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Length mismatch: Expected size </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">orientations</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">target_rows</span><span class="p">])</span><span class="si">}</span><span class="s2"> for field </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">, but got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="n">orientations</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">target_rows</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="c1"># Check if azimuth, dip, or polarity are provided</span>
+    <span class="n">any_polar_fields</span> <span class="o">=</span> <span class="n">azimuth</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">dip</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">polarity</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="n">all_polar_fields</span> <span class="o">=</span> <span class="n">azimuth</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dip</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">polarity</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+    <span class="k">match</span> <span class="p">(</span><span class="n">any_polar_fields</span><span class="p">,</span> <span class="n">all_polar_fields</span><span class="p">):</span>
+        <span class="k">case</span> <span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>
+            <span class="c1"># All polar fields provided, convert to gradients</span>
+            <span class="n">gx</span><span class="p">,</span> <span class="n">gy</span><span class="p">,</span> <span class="n">gz</span> <span class="o">=</span> <span class="n">convert_orientation_to_pole_vector</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">azimuth</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">dip</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">polarity</span><span class="p">))</span>
+            <span class="n">orientations</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;G_x&#39;</span><span class="p">][</span><span class="n">target_rows</span><span class="p">]</span> <span class="o">=</span> <span class="n">gx</span>
+            <span class="n">orientations</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;G_y&#39;</span><span class="p">][</span><span class="n">target_rows</span><span class="p">]</span> <span class="o">=</span> <span class="n">gy</span>
+            <span class="n">orientations</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;G_z&#39;</span><span class="p">][</span><span class="n">target_rows</span><span class="p">]</span> <span class="o">=</span> <span class="n">gz</span>
+
+        <span class="k">case</span> <span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="c1"># Some polar fields missing, compute missing fields from gradients</span>
+            <span class="n">prev_azimuth</span><span class="p">,</span> <span class="n">prev_dip</span><span class="p">,</span> <span class="n">prev_polarity</span> <span class="o">=</span> <span class="n">compute_adp_from_gradients</span><span class="p">(</span>
+                <span class="n">orientations</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;G_x&#39;</span><span class="p">],</span>
+                <span class="n">orientations</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;G_y&#39;</span><span class="p">],</span>
+                <span class="n">orientations</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;G_z&#39;</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="n">azimuth</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">azimuth</span><span class="p">)</span> <span class="k">if</span> <span class="n">azimuth</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">prev_azimuth</span>
+            <span class="n">dip</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">dip</span><span class="p">)</span> <span class="k">if</span> <span class="n">dip</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">prev_dip</span>
+            <span class="n">polarity</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">polarity</span><span class="p">)</span> <span class="k">if</span> <span class="n">polarity</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">prev_polarity</span>
+
+            <span class="n">gradients</span> <span class="o">=</span> <span class="n">convert_orientation_to_pole_vector</span><span class="p">(</span><span class="n">azimuth</span><span class="p">,</span> <span class="n">dip</span><span class="p">,</span> <span class="n">polarity</span><span class="p">)</span>
+            <span class="n">orientations</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;G_x&#39;</span><span class="p">][</span><span class="n">target_rows</span><span class="p">]</span> <span class="o">=</span> <span class="n">gradients</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+            <span class="n">orientations</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;G_y&#39;</span><span class="p">][</span><span class="n">target_rows</span><span class="p">]</span> <span class="o">=</span> <span class="n">gradients</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">orientations</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;G_z&#39;</span><span class="p">][</span><span class="n">target_rows</span><span class="p">]</span> <span class="o">=</span> <span class="n">gradients</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>
+
+        <span class="k">case</span><span class="w"> </span><span class="p">(</span><span class="k">_</span><span class="p">,</span> <span class="n">_</span><span class="p">):</span>
+            <span class="k">pass</span>
+
+    <span class="n">geo_model</span><span class="o">.</span><span class="n">orientations</span> <span class="o">=</span> <span class="n">orientations</span>
+    <span class="k">return</span> <span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span></div>
+
+
+
+<div class="viewcode-block" id="modify_surface_points">
+<a class="viewcode-back" href="../../../../GemPy%20API/gempy.modify_surface_points.html#gempy.modify_surface_points">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">modify_surface_points</span><span class="p">(</span><span class="n">geo_model</span><span class="p">:</span> <span class="n">GeoModel</span><span class="p">,</span>
+                          <span class="nb">slice</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">slice</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                          <span class="n">elements_names</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                          <span class="o">**</span><span class="n">surface_points_field</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">StructuralFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Modifies specified fields of all surface points in the structural frame. The keys of the surface_points_field </span>
+<span class="sd">    dictionary should match the field names in the surface points (e.g., &quot;X&quot;, &quot;Y&quot;, &quot;Z&quot;, &quot;nugget&quot;).</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        geo_model (GeoModel): The GeoModel instance to modify.</span>
+<span class="sd">        slice (Optional[Union[int, slice]]): The slice of surface points to modify. If None, all surface points will be modified.</span>
+<span class="sd">        </span>
+<span class="sd">    Keyword Args:</span>
+<span class="sd">        X (Union[float, np.ndarray]): X coordinates of the surface points.</span>
+<span class="sd">        Y (Union[float, np.ndarray]): Y coordinates of the surface points.</span>
+<span class="sd">        Z (Union[float, np.ndarray]): Z coordinates of the surface points.</span>
+<span class="sd">        nugget (Union[float, np.ndarray]): Nugget value of the surface points.</span>
+<span class="sd">            </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        StructuralFrame: The modified structural frame.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">elements_names</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">slice</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot provide both elements_names and slice.&quot;</span><span class="p">)</span>
+
+    <span class="n">surface_points</span> <span class="o">=</span> <span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span><span class="o">.</span><span class="n">surface_points_copy</span>
+
+    <span class="k">if</span> <span class="n">elements_names</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">surface_points</span><span class="o">.</span><span class="n">name_id_map</span><span class="p">[</span><span class="n">element</span><span class="p">]</span> <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">elements_names</span><span class="p">]</span>
+        <span class="nb">slice</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">s_</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">surface_points</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span> <span class="n">ids</span><span class="p">)]</span>
+
+    <span class="c1"># If no slice is provided, target all rows; else, target specified slice</span>
+    <span class="n">target_rows</span> <span class="o">=</span> <span class="nb">slice</span> <span class="k">if</span> <span class="nb">slice</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">s_</span><span class="p">[:]</span>
+
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">surface_points_field</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">surface_points</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">target_rows</span><span class="p">]):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Length mismatch: Expected size </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">surface_points</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">target_rows</span><span class="p">])</span><span class="si">}</span><span class="s2"> for field </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">, but got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+        <span class="n">surface_points</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">target_rows</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="n">geo_model</span><span class="o">.</span><span class="n">surface_points</span> <span class="o">=</span> <span class="n">surface_points</span>
+    <span class="k">return</span> <span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span></div>
+
+
+
+<div class="viewcode-block" id="delete_orientations">
+<a class="viewcode-back" href="../../../../GemPy%20API/gempy.delete_orientations.html#gempy.delete_orientations">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">delete_orientations</span><span class="p">():</span>
+    <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">convert_orientation_to_pole_vector</span><span class="p">(</span><span class="n">azimuth</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">dip</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">polarity</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+    <span class="c1"># Convert sequences to numpy arrays for vectorized operations</span>
+    <span class="n">azimuth</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">azimuth</span><span class="p">)</span>
+    <span class="n">dip</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dip</span><span class="p">)</span>
+    <span class="n">polarity</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">polarity</span><span class="p">)</span>
+
+    <span class="c1"># Calculate gradient components</span>
+    <span class="n">G_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">dip</span><span class="p">))</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">azimuth</span><span class="p">))</span> <span class="o">*</span> <span class="n">polarity</span>
+    <span class="n">G_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">dip</span><span class="p">))</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">azimuth</span><span class="p">))</span> <span class="o">*</span> <span class="n">polarity</span>
+    <span class="n">G_z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">dip</span><span class="p">))</span> <span class="o">*</span> <span class="n">polarity</span>
+
+    <span class="c1"># Combine gradient components into an array of vectors</span>
+    <span class="n">gradients</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">G_x</span><span class="p">,</span> <span class="n">G_y</span><span class="p">,</span> <span class="n">G_z</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+
+    <span class="k">return</span> <span class="n">gradients</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_adp_from_gradients</span><span class="p">(</span><span class="n">G_x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">G_y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">G_z</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+    <span class="c1"># Calculate polarity (here assumed to be 1 for all, but you can adapt if needed)</span>
+    <span class="n">polarity</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">G_x</span><span class="p">)</span>
+
+    <span class="c1"># Calculate dip</span>
+    <span class="n">dip</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="n">G_z</span> <span class="o">/</span> <span class="n">polarity</span><span class="p">)))</span>
+
+    <span class="c1"># Calculate azimuth</span>
+    <span class="n">azimuth</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">G_x</span> <span class="o">/</span> <span class="n">polarity</span><span class="p">,</span> <span class="n">G_y</span> <span class="o">/</span> <span class="n">polarity</span><span class="p">)))</span>
+
+    <span class="c1"># Shift values from [-pi, 0] to [pi,2*pi]</span>
+    <span class="n">azimuth</span><span class="p">[</span><span class="n">azimuth</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">360</span>
+
+    <span class="c1"># Adjust azimuth where dip is nearly zero, because if dip is zero, azimuth is undefined</span>
+    <span class="n">azimuth</span><span class="p">[</span><span class="n">dip</span> <span class="o">&lt;</span> <span class="mf">0.001</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">return</span> <span class="n">azimuth</span><span class="p">,</span> <span class="n">dip</span><span class="p">,</span> <span class="n">polarity</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_validate_args</span><span class="p">(</span><span class="n">elements_names</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">elements_names</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">elements_names</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">elements_names</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">elements_names</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">elements_names</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Names should be a string or a NumPy array, not </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">elements_names</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="c1"># Ensure all provided Sequences have the same length</span>
+    <span class="n">lengths</span> <span class="o">=</span> <span class="p">{</span><span class="nb">len</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">}</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lengths</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;All input Sequences must have the same length.&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">elements_names</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../../index.html">
+    <img class="logo" src="../../../../_static/logos/gempy.png" alt="Logo" />
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=gempy-project&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../index.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/index.html">GemPy Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples/index.html">Examples</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../external/external_examples.html">External Examples</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api_reference.html">Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api_reference.html#data-classes">Data Classes</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2017-2025, Gempy Developers.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
