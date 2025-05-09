@@ -225,3 +225,21 @@ warnings.filterwarnings("ignore", category=UserWarning,
                         message='Matplotlib is currently using agg, which is a'
                                 ' non-GUI backend, so cannot show the figure.')
 # endregion
+
+extensions.append("sphinx_multiversion")
+
+# Optional: Control which branches/tags are included
+# Match exactly these two tags
+smv_tag_whitelist = r'^2025\.1\.0rc0$|^2024\.2\.0\.2$'
+
+# Match only the 'main' branch
+smv_branch_whitelist = r'^main$'
+
+# Optional: only use the origin remote
+smv_remote_whitelist = r'^origin$'
+
+# Mark tagged versions as "released"
+smv_released_pattern = r'^2025\.1\.0rc0$|^2024\.2\.0\.2$'
+
+# Optional: Add version to the HTML title
+html_title = f"GemPy Documentation ({version})"
