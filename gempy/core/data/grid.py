@@ -118,11 +118,11 @@ class Grid:
         return bounding_box_points
 
     @property
-    def active_grids(self):
+    def active_grids(self) -> GridTypes:
         return self._active_grids
 
     @active_grids.setter
-    def active_grids(self, value):
+    def active_grids(self, value: GridTypes):
         self._active_grids = value
         self._update_values()
 
