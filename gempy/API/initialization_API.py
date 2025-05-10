@@ -1,5 +1,5 @@
 ﻿import warnings
-from typing import Union, Hashable
+from typing import Union, Hashable, Literal
 
 import numpy as np
 from numpy import ndarray
@@ -104,7 +104,9 @@ def create_geomodel(
 
 def structural_elements_from_borehole_set(
         borehole_set: "subsurface.core.geological_formats.BoreholeSet",
-        elements_dict: dict) -> list[StructuralElement]:
+        elements_dict: dict,
+        group_by: Literal['component lith', 'lith_ids'] = 'lith_ids'
+) -> list[StructuralElement]:
     """Creates a list of StructuralElements from a BoreholeSet.
 
     Args:
@@ -123,7 +125,7 @@ def structural_elements_from_borehole_set(
     borehole_set: ss.core.geological_formats.BoreholeSet
 
     elements = []
-    component_lith: dict[Hashable, np.ndarray] = borehole_set.get_bottom_coords_for_each_lith()
+    component_lith: dict[Hashable, np.ndarray] = borehole_set.get_bottom_coords_for_each_lith(group_by=group_by)
 
     for name, properties in elements_dict.items():
         top_coordinates = component_lith.get(properties['id'])
