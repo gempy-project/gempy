@@ -1,7 +1,7 @@
 ﻿import pprint
 import warnings
 from dataclasses import dataclass, field
-from pydantic import BaseModel, ConfigDict, Field, PrivateAttr
+from pydantic import BaseModel, ConfigDict, Field, PrivateAttr, computed_field
 from typing import Sequence, Optional
 
 import numpy as np
@@ -99,13 +99,15 @@ class GeoModel(BaseModel):
             orientations=structural_frame.orientations_copy
         )
 
-        return GeoModel(
+        model = GeoModel(
             meta=meta,
             structural_frame=structural_frame,
-            grid=grid,
-            _interpolation_options=_interpolation_options,
+            grid=grid, 
             input_transform=input_transform
         )
+        
+        model._interpolation_options = interpolation_options
+        return model
 
     def __repr__(self):
         # TODO: Improve this
@@ -130,6 +132,7 @@ class GeoModel(BaseModel):
 
         self.input_transform.apply_anisotropy(anisotropy_type=auto_anisotropy, anisotropy_limit=anisotropy_limit)
 
+    @computed_field
     @property
     def interpolation_options(self) -> InterpolationOptions:
         n_octree_lvl = self._interpolation_options.number_octree_levels  # * we access the private one because we do not care abot the extract mesh octree level
