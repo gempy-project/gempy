@@ -1,4 +1,5 @@
 import dataclasses
+from pydantic import model_validator
 
 from typing import Optional, Sequence
 
@@ -20,7 +21,7 @@ class RegularGrid:
     extent: np.ndarray  #: this is the ORTHOGONAL extent. If the grid is rotated, the extent will be different
     values: np.ndarray
     mask_topo: np.ndarray
-    _transform: Transform  #: If a transform exists, it will be applied to the grid
+    _transform: Transform | None   #: If a transform exists, it will be applied to the grid
 
     def __init__(self, extent: np.ndarray, resolution: np.ndarray, transform: Optional[Transform] = None):
         self.resolution = np.ones((0, 3), dtype='int64')
@@ -29,7 +30,14 @@ class RegularGrid:
         self.mask_topo = np.zeros((0, 3), dtype=bool)
 
         self.set_regular_grid(extent, resolution, transform)
-
+        
+    @model_validator(mode="before")
+    def convert_arrays(cls, values):
+        for key in ["values", "mask_topo", "extent", "resolution"]: 
+            if key in values and not isinstance(values[key], np.ndarray):
+                values[key] = np.array(values[key])
+        return values
+    
     def _create_regular_grid_3d(self):
         coords = self.x_coord, self.y_coord, self.z_coord
 

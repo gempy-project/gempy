@@ -1,6 +1,7 @@
 import os
 
 import pprint
+from pydantic_core import from_json
 
 import gempy as gp
 from gempy.core.data.enumerators import ExampleModel
@@ -14,7 +15,7 @@ from verify_helper import verify_json
 def test_generate_horizontal_stratigraphic_model():
     model: gp.data.GeoModel = gp.generate_example_model(ExampleModel.HORIZONTAL_STRAT, compute_model=False)
 
-    model_json = model.model_dump_json()
+    model_json = model.model_dump_json(by_alias=True)
     # Pretty print JSON
     pprint.pp(model_json)
     
@@ -27,7 +28,13 @@ def test_generate_horizontal_stratigraphic_model():
     with open(file_path, "w") as f:
         f.write(model_json)
 
-    foo = gp.data.GeoModel.model_validate_json(model_json)
+    if False: # * Use this to debug which fields are giving problems
+        # model_deserialized = gp.data.GeoModel.model_validate(from_json(model_json, allow_partial=True))
+        pass
+    else:
+        model_deserialized = gp.data.GeoModel.model_validate_json(model_json)
+        
+    assert model_deserialized.__str__() == model.__str__()
     
     # # Validate json against schema
     if False:

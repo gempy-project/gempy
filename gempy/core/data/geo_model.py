@@ -1,7 +1,9 @@
-﻿import pprint
+﻿import datetime
+
+import pprint
 import warnings
 from dataclasses import dataclass, field
-from pydantic import BaseModel, ConfigDict, Field, PrivateAttr, computed_field
+from pydantic import BaseModel, ConfigDict, Field, PrivateAttr, computed_field, model_validator, field_validator
 from typing import Sequence, Optional
 
 import numpy as np
@@ -44,8 +46,8 @@ class GeoModelMeta:
 
     name: str
     creation_date: str
-    last_modification_date: str
-    owner: str
+    last_modification_date: str | None
+    owner: str | None
 
 
 # @dataclass(init=False)
@@ -64,11 +66,34 @@ class GeoModel(BaseModel):
     )
 
     meta: GeoModelMeta = Field(exclude=False)  #: Meta-information about the geological model, like its name, creation and modification dates, and owner.
-    structural_frame: StructuralFrame = Field(exclude=True)  #: The structural information of the geological model.
-    grid: Grid = Field(exclude=True)  #: The general grid used in the geological model.
+    
+    # BUG: Remove None option for structural frame
+    structural_frame: Optional[StructuralFrame] | None = Field(exclude=True, default=None)  #: The structural information of the geological model.
+    grid: Grid = Field(exclude=False)  #: The general grid used in the geological model.
 
     # region GemPy engine data types
-    _interpolation_options: InterpolationOptions = PrivateAttr()  #: The interpolation options provided by the user.
+    _interpolation_options: InterpolationOptions  #: The interpolation options provided by the user.
+    foo: InterpolationOptions = Field(alias="_interpolation_options", default=None)
+    
+    def __init__(self, **data):
+        super().__init__(**data)
+        
+        key = "_interpolation_options"
+        if key in data and not isinstance(data[key], InterpolationOptions):
+            data[key] = InterpolationOptions(**data[key])
+        self._interpolation_options = data.get("_interpolation_options")
+
+    @computed_field(alias="_interpolation_options")
+    @property
+    def interpolation_options(self) -> InterpolationOptions:
+        self._infer_dense_grid_solution()
+        self._interpolation_options.cache_model_name = self.meta.name
+        return self._interpolation_options
+
+    @interpolation_options.setter
+    def interpolation_options(self, value):
+        self._interpolation_options = value
+
     geophysics_input: GeophysicsInput = Field(default=None, exclude=True)  #: The geophysics input of the geological model.
 
     input_transform: Transform = Field(default=None, exclude=True)  #: The transformation used in the geological model for input points.
@@ -85,7 +110,7 @@ class GeoModel(BaseModel):
         # TODO: Fill the arguments properly
         meta = GeoModelMeta(
             name=name,
-            creation_date=None,
+            creation_date=datetime.datetime.now().isoformat(),
             last_modification_date=None,
             owner=None
         )
@@ -103,10 +128,10 @@ class GeoModel(BaseModel):
             meta=meta,
             structural_frame=structural_frame,
             grid=grid,
-            input_transform=input_transform
+            input_transform=input_transform,
+            _interpolation_options=_interpolation_options
         )
 
-        model._interpolation_options = interpolation_options
         return model
 
     def __repr__(self):
@@ -131,17 +156,6 @@ class GeoModel(BaseModel):
         )
 
         self.input_transform.apply_anisotropy(anisotropy_type=auto_anisotropy, anisotropy_limit=anisotropy_limit)
-
-    @computed_field
-    @property
-    def interpolation_options(self) -> InterpolationOptions:
-        self._infer_dense_grid_solution()
-        self._interpolation_options.cache_model_name = self.meta.name
-        return self._interpolation_options
-
-    @interpolation_options.setter
-    def interpolation_options(self, value):
-        self._interpolation_options = value
 
     @property
     def solutions(self) -> Solutions:

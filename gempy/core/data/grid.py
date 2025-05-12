@@ -3,6 +3,7 @@ import warnings
 import dataclasses
 import enum
 import numpy as np
+from pydantic import model_validator
 from typing import Optional
 
 from gempy_engine.core.data.centered_grid import CenteredGrid
@@ -27,7 +28,7 @@ class Grid:
 
     values: np.ndarray
     length: np.ndarray
-    
+
     _octree_grid: Optional[RegularGrid] = None
     _dense_grid: Optional[RegularGrid] = None
     _custom_grid: Optional[CustomGrid] = None
@@ -40,15 +41,21 @@ class Grid:
 
     _octree_levels: int = -1
 
+    @model_validator(mode="before")
+    def convert_arrays(cls, values):
+        for key in ["values", "length"]:
+            if key in values and not isinstance(values[key], np.ndarray):
+                values[key] = np.array(values[key])
+        return values
+
     def __init__(self, extent=None, resolution=None):
-        
+
         self.values = np.empty((0, 3))
         self.length = np.empty(0)
-        
+
         # Init basic grid empty
         if extent is not None and resolution is not None:
             self.dense_grid = RegularGrid(extent, resolution)
-    
 
     @classmethod
     def init_octree_grid(cls, extent, octree_levels):
@@ -157,11 +164,11 @@ class Grid:
         self._octree_grid = regular_grid
         self.active_grids |= self.GridTypes.OCTREE
         self._update_values()
-    
+
     def set_octree_grid_by_levels(self, octree_levels: int, evaluation_options: EvaluationOptions, extent: Optional[np.ndarray] = None):
         if extent is None:
             extent = self.extent
-        
+
         self._octree_grid = RegularGrid(
             extent=extent,
             resolution=np.array([2 ** octree_levels] * 3),
@@ -169,11 +176,11 @@ class Grid:
         evaluation_options.number_octree_levels = octree_levels
         self.active_grids |= self.GridTypes.OCTREE
         self._update_values()
-    
+
     @property
     def octree_levels(self):
         return self._octree_levels
-    
+
     @octree_levels.setter
     def octree_levels(self, value):
         raise AttributeError('Octree levels are not allowed to be set directly. Use set_octree_grid instead')
@@ -254,11 +261,11 @@ class Grid:
         if self.GridTypes.CENTERED in self.active_grids:
             if self.centered_grid is None: raise AttributeError('Centered grid is active but not defined')
             values.append(self.centered_grid.values)
-        
+
         # make sure values is not empty
         if len(values) == 0:
             return self.values
-        
+
         self.values = np.concatenate(values)
 
         return self.values
