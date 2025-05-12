@@ -17,6 +17,7 @@ def test_generate_horizontal_stratigraphic_model():
     model_json = model.model_dump_json()
     # Pretty print JSON
     pprint.pp(model_json)
+    
 
     # Ensure the 'verify/' directory exists
     os.makedirs("verify", exist_ok=True)
@@ -26,6 +27,8 @@ def test_generate_horizontal_stratigraphic_model():
     with open(file_path, "w") as f:
         f.write(model_json)
 
+    foo = gp.data.GeoModel.model_validate_json(model_json)
+    
     # # Validate json against schema
     if False:
         verify_json(model_json, name="verify/Horizontal Stratigraphic Model serialization")

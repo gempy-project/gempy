@@ -65,7 +65,7 @@ class GeoModel(BaseModel):
 
     meta: GeoModelMeta = Field(exclude=False)  #: Meta-information about the geological model, like its name, creation and modification dates, and owner.
     structural_frame: StructuralFrame = Field(exclude=True)  #: The structural information of the geological model.
-    grid: Grid = Field(exclude=False)  #: The general grid used in the geological model.
+    grid: Grid = Field(exclude=True)  #: The general grid used in the geological model.
 
     # region GemPy engine data types
     _interpolation_options: InterpolationOptions = PrivateAttr()  #: The interpolation options provided by the user.
@@ -102,10 +102,10 @@ class GeoModel(BaseModel):
         model = GeoModel(
             meta=meta,
             structural_frame=structural_frame,
-            grid=grid, 
+            grid=grid,
             input_transform=input_transform
         )
-        
+
         model._interpolation_options = interpolation_options
         return model
 
@@ -135,25 +135,7 @@ class GeoModel(BaseModel):
     @computed_field
     @property
     def interpolation_options(self) -> InterpolationOptions:
-        n_octree_lvl = self._interpolation_options.number_octree_levels  # * we access the private one because we do not care abot the extract mesh octree level
-
-        octrees_set: bool = Grid.GridTypes.OCTREE in self.grid.active_grids
-        dense_set: bool = Grid.GridTypes.DENSE in self.grid.active_grids
-
-        # Create a tuple representing the conditions
-        match (octrees_set, dense_set):
-            case (True, False):
-                self._interpolation_options.block_solutions_type = RawArraysSolution.BlockSolutionType.OCTREE
-            case (True, True):
-                warnings.warn("Both octree levels and resolution are set. The default grid for the `raw_array_solution`"
-                              "and plots will be the dense regular grid. To use octrees instead, set resolution to None in the "
-                              "regular grid.")
-                self._interpolation_options.block_solutions_type = RawArraysSolution.BlockSolutionType.DENSE_GRID
-            case (False, True):
-                self._interpolation_options.block_solutions_type = RawArraysSolution.BlockSolutionType.DENSE_GRID
-            case (False, False):
-                self._interpolation_options.block_solutions_type = RawArraysSolution.BlockSolutionType.NONE
-
+        self._infer_dense_grid_solution()
         self._interpolation_options.cache_model_name = self.meta.name
         return self._interpolation_options
 
@@ -296,3 +278,20 @@ class GeoModel(BaseModel):
     def add_surface_points(self, X: Sequence[float], Y: Sequence[float], Z: Sequence[float],
                            surface: Sequence[str], nugget: Optional[Sequence[float]] = None) -> None:
         raise NotImplementedError("This method is deprecated. Use `gp.add_surface_points` instead")
+
+    def _infer_dense_grid_solution(self):
+        octrees_set: bool = Grid.GridTypes.OCTREE in self.grid.active_grids
+        dense_set: bool = Grid.GridTypes.DENSE in self.grid.active_grids
+        # Create a tuple representing the conditions
+        match (octrees_set, dense_set):
+            case (True, False):
+                self._interpolation_options.block_solutions_type = RawArraysSolution.BlockSolutionType.OCTREE
+            case (True, True):
+                warnings.warn("Both octree levels and resolution are set. The default grid for the `raw_array_solution`"
+                              "and plots will be the dense regular grid. To use octrees instead, set resolution to None in the "
+                              "regular grid.")
+                self._interpolation_options.block_solutions_type = RawArraysSolution.BlockSolutionType.DENSE_GRID
+            case (False, True):
+                self._interpolation_options.block_solutions_type = RawArraysSolution.BlockSolutionType.DENSE_GRID
+            case (False, False):
+                self._interpolation_options.block_solutions_type = RawArraysSolution.BlockSolutionType.NONE
