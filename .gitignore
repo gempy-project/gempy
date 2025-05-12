@@ -181,3 +181,4 @@ examples/tutorials/z_other_tutorials/json_io/multiple_series_faults_computed.jso
 # Generated JSON files from examples
 examples/tutorials/z_other_tutorials/json_io/combination_model.json
 examples/tutorials/z_other_tutorials/json_io/combination_model_computed.json
+/test/temp/

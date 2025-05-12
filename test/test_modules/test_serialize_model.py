@@ -1,3 +1,5 @@
+import os
+
 import pprint
 
 import gempy as gp
@@ -10,18 +12,28 @@ from verify_helper import verify_json
 
 
 def test_generate_horizontal_stratigraphic_model():
+    import json
     model: gp.data.GeoModel = gp.generate_example_model(ExampleModel.HORIZONTAL_STRAT, compute_model=False)
 
-    json = model.model_dump(mode='json')
+    model_json = model.model_dump(
+        mode='json',
+        # mode='python'
+    )
     # Pretty print json
-    pprint.pp(json)
-    
-    # write json to disk
-    # with open("horizontal_stratigraphic_model.json", "w") as f:
-    #     f.write(json)
+    pprint.pp(model_json)
+
+    # Ensure the 'verify/' directory exists
+    os.makedirs("verify", exist_ok=True)
+
+    # Write the JSON to disk
+    file_path = os.path.join("temp", "horizontal_stratigraphic_model.json")
+    with open(file_path, "w") as f:
+        f.write(json.dumps(model_json, indent=4))
+
+
     # 
     # # Validate json against schema
-    # verify_json(json, name="Horizontal Stratigraphic Model serialization")
+    verify_json(model_json, name="verify/Horizontal Stratigraphic Model serialization")
     
     
 

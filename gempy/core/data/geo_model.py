@@ -14,6 +14,7 @@ from gempy_engine.core.data import InterpolationOptions
 from gempy_engine.core.data.input_data_descriptor import InputDataDescriptor
 from gempy_engine.core.data.interpolation_input import InterpolationInput
 from gempy_engine.core.data.transforms import Transform, GlobalAnisotropy
+from .encoder.json_geomodel_encoder import encode_numpy_array
 
 from .orientations import OrientationsTable
 from .surface_points import SurfacePointsTable
@@ -58,22 +59,23 @@ class GeoModel(BaseModel):
         arbitrary_types_allowed=True,
         use_enum_values=False,
         json_encoders={
+                np.ndarray: encode_numpy_array
         }
     )
-    
+
     meta: GeoModelMeta = Field(exclude=False)  #: Meta-information about the geological model, like its name, creation and modification dates, and owner.
-    structural_frame: StructuralFrame  = Field(exclude=True) #: The structural information of the geological model.
-    grid: Grid  = Field(exclude=False)  #: The general grid used in the geological model.
+    structural_frame: StructuralFrame = Field(exclude=True)  #: The structural information of the geological model.
+    grid: Grid = Field(exclude=False)  #: The general grid used in the geological model.
 
     # region GemPy engine data types
-    _interpolation_options: InterpolationOptions = PrivateAttr()   #: The interpolation options provided by the user.
-    geophysics_input: GeophysicsInput =  Field(default=None, exclude=True)   #: The geophysics input of the geological model.
+    _interpolation_options: InterpolationOptions = PrivateAttr()  #: The interpolation options provided by the user.
+    geophysics_input: GeophysicsInput = Field(default=None, exclude=True)  #: The geophysics input of the geological model.
 
     input_transform: Transform = Field(default=None, exclude=True)  #: The transformation used in the geological model for input points.
 
     interpolation_grid: EngineGrid = Field(default=None, exclude=True)  #: ptional grid used for interpolation. Can be seen as a cache field.
     _interpolationInput: InterpolationInput = PrivateAttr(default=None)  #: Input data for interpolation. Fed by the structural frame and can be seen as a cache field.
-    _input_data_descriptor: InputDataDescriptor = PrivateAttr(default=None)   #: Descriptor of the input data. Fed by the structural frame and can be seen as a cache field.
+    _input_data_descriptor: InputDataDescriptor = PrivateAttr(default=None)  #: Descriptor of the input data. Fed by the structural frame and can be seen as a cache field.
 
     # endregion
     _solutions: Solutions = PrivateAttr(init=False, default=None)  #: The computed solutions of the geological model. 
@@ -96,7 +98,7 @@ class GeoModel(BaseModel):
             surface_points=structural_frame.surface_points_copy,
             orientations=structural_frame.orientations_copy
         )
-        
+
         return GeoModel(
             meta=meta,
             structural_frame=structural_frame,
@@ -163,7 +165,7 @@ class GeoModel(BaseModel):
     @solutions.setter
     def solutions(self, value: Solutions):
         # * This is set  from the gempy engine
-        
+
         self._solutions = value
 
         # * Set solutions per group
@@ -177,7 +179,7 @@ class GeoModel(BaseModel):
         # * Set solutions per element
         for e, element in enumerate(self.structural_frame.structural_elements[:-1]):  # * Ignore basement
             element.scalar_field_at_interface = value.scalar_field_at_surface_points[e]
-            
+
             if self._solutions.dc_meshes is None:
                 continue
             dc_mesh = self._solutions.dc_meshes[e]
