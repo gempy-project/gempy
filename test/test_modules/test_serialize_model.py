@@ -16,7 +16,7 @@ def test_interpolation_options():
         range=1.7,
         c_o=10.
     )
-    json = options.model_dump()
+    json = options.model_dump(mode="json")
     # Pretty print json
     pprint.pp(json)
     
