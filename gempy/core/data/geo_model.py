@@ -1,7 +1,7 @@
 ﻿import pprint
 import warnings
 from dataclasses import dataclass, field
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field, PrivateAttr
 from typing import Sequence, Optional
 
 import numpy as np
@@ -61,24 +61,22 @@ class GeoModel(BaseModel):
         }
     )
     
-    meta: GeoModelMeta  #: Meta-information about the geological model, like its name, creation and modification dates, and owner.
-    structural_frame: StructuralFrame  #: The structural information of the geological model.
-    grid: Grid  #: The general grid used in the geological model.
+    meta: GeoModelMeta = Field(exclude=True)  #: Meta-information about the geological model, like its name, creation and modification dates, and owner.
+    structural_frame: StructuralFrame  = Field(exclude=True) #: The structural information of the geological model.
+    grid: Grid  = Field(exclude=True)  #: The general grid used in the geological model.
 
     # region GemPy engine data types
-    _interpolation_options: InterpolationOptions  #: The interpolation options provided by the user.
-    geophysics_input: GeophysicsInput = None  #: The geophysics input of the geological model.
+    _interpolation_options: InterpolationOptions = PrivateAttr()   #: The interpolation options provided by the user.
+    geophysics_input: GeophysicsInput =  Field(default=None, exclude=True)   #: The geophysics input of the geological model.
 
-    input_transform: Transform = None  #: The transformation used in the geological model for input points.
+    input_transform: Transform = Field(default=None, exclude=True)  #: The transformation used in the geological model for input points.
 
-    interpolation_grid: EngineGrid = None  #: Optional grid used for interpolation. Can be seen as a cache field.
-    _interpolationInput: InterpolationInput = None  #: Input data for interpolation. Fed by the structural frame and can be seen as a cache field.
-    _input_data_descriptor: InputDataDescriptor = None  #: Descriptor of the input data. Fed by the structural frame and can be seen as a cache field.
+    interpolation_grid: EngineGrid = Field(default=None, exclude=True)  #: ptional grid used for interpolation. Can be seen as a cache field.
+    _interpolationInput: InterpolationInput = PrivateAttr(default=None)  #: Input data for interpolation. Fed by the structural frame and can be seen as a cache field.
+    _input_data_descriptor: InputDataDescriptor = PrivateAttr(default=None)   #: Descriptor of the input data. Fed by the structural frame and can be seen as a cache field.
 
     # endregion
-    _solutions: Solutions = field(init=False, default=None)  #: The computed solutions of the geological model. 
-
-    legacy_model: "gpl.Project" = None  #: Legacy model (if available). Allows for backward compatibility.
+    _solutions: Solutions = PrivateAttr(init=False, default=None)  #: The computed solutions of the geological model. 
 
     @classmethod
     def from_args(cls, name: str, structural_frame: StructuralFrame, grid: Grid, interpolation_options: InterpolationOptions):

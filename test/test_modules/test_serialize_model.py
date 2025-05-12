@@ -7,8 +7,8 @@ from gempy_engine.core.data import InterpolationOptions
 
 def test_generate_horizontal_stratigraphic_model():
     model: gp.data.GeoModel = gp.generate_example_model(ExampleModel.HORIZONTAL_STRAT, compute_model=False)
-    print(model.structural_frame)
-    options: InterpolationOptions = model.interpolation_options
+    # print(model.structural_frame)
+    # options: InterpolationOptions = model.interpolation_options
     pass
 
 def test_interpolation_options():
