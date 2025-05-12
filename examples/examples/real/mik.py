@@ -312,7 +312,7 @@ geo_model = gp.data.GeoModel(
         extent=[extent_from_data[0][0], extent_from_data[1][0], extent_from_data[0][1], extent_from_data[1][1], extent_from_data[0][2], extent_from_data[1][2]],
         resolution=(50, 50, 50)
     ),
-    interpolation_options=gp.data.InterpolationOptions(
+    interpolation_options=gp.data.InterpolationOptions.from_args(
         range=5,
         c_o=10,
         mesh_extraction=True,

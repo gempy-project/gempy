@@ -94,7 +94,7 @@ def test_create_structural_frame() -> StructuralFrame:
 
 def test_create_interpolation_options() -> InterpolationOptions:
     range_ = 1000.0
-    interpolation_options: InterpolationOptions = InterpolationOptions(
+    interpolation_options: InterpolationOptions = InterpolationOptions.from_args(
         range=range_,
         c_o=(range_ ** 2) / 14 / 3,
     )

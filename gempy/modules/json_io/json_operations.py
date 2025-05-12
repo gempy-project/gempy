@@ -155,7 +155,7 @@ class JsonIO:
         default_range = 1.7  # Match standard GemPy default
         
         # Create interpolation options with defaults if not provided
-        interpolation_options = InterpolationOptions(
+        interpolation_options = InterpolationOptions.from_args(
             range=data.get('interpolation_options', {}).get('kernel_options', {}).get('range', default_range),
             c_o=data.get('interpolation_options', {}).get('kernel_options', {}).get('c_o', 10),
             mesh_extraction=data.get('interpolation_options', {}).get('mesh_extraction', True),
