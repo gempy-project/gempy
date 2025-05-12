@@ -61,9 +61,9 @@ class GeoModel(BaseModel):
         }
     )
     
-    meta: GeoModelMeta = Field(exclude=True)  #: Meta-information about the geological model, like its name, creation and modification dates, and owner.
+    meta: GeoModelMeta = Field(exclude=False)  #: Meta-information about the geological model, like its name, creation and modification dates, and owner.
     structural_frame: StructuralFrame  = Field(exclude=True) #: The structural information of the geological model.
-    grid: Grid  = Field(exclude=True)  #: The general grid used in the geological model.
+    grid: Grid  = Field(exclude=False)  #: The general grid used in the geological model.
 
     # region GemPy engine data types
     _interpolation_options: InterpolationOptions = PrivateAttr()   #: The interpolation options provided by the user.

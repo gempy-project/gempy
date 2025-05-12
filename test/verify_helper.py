@@ -1,8 +1,6 @@
 import numpy as np
-from approvaltests import Options, verify
 from approvaltests.core import Comparator
 from approvaltests.namer import NamerFactory
-from approvaltests.reporters import GenericDiffReporter
 
 
 def gempy_verify_array(item, name: str, rtol: float = 1e-5, atol: float = 1e-5, ):
@@ -21,6 +19,17 @@ def gempy_verify_array(item, name: str, rtol: float = 1e-5, atol: float = 1e-5, 
     
     
     verify(np.asarray(item), options=parameters)
+
+def verify_json(item, name: str):
+    parameters: Options = NamerFactory \
+        .with_parameters(name) \
+        .with_reporter(
+            reporter=GenericDiffReporter.create(
+                diff_tool_path=r"/usr/bin/meld"
+            )
+    )
+    
+    verify(item, options=parameters)
 
 
 class ArrayComparator(Comparator):
@@ -57,3 +66,16 @@ class ArrayComparator(Comparator):
             return allclose
         except BaseException:
             return False
+import json
+from approvaltests import verify, Options
+from approvaltests.namer import NamerFactory
+from approvaltests.reporters import GenericDiffReporter
+
+class JsonSerializer:
+    """Serializer that writes JSON with an indent and declares its own extension."""
+    def get_default_extension(self) -> str:
+        return "json"
+
+    def write(self, received, received_path: str) -> None:
+        with open(received_path, "w", encoding="utf-8") as f:
+            json.dump(received, f, indent=2, ensure_ascii=False)

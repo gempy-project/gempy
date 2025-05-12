@@ -4,12 +4,26 @@ import gempy as gp
 from gempy.core.data.enumerators import ExampleModel
 from gempy_engine.core.data import InterpolationOptions
 
+from approvaltests import Options, verify
+
+from verify_helper import verify_json
+
 
 def test_generate_horizontal_stratigraphic_model():
     model: gp.data.GeoModel = gp.generate_example_model(ExampleModel.HORIZONTAL_STRAT, compute_model=False)
-    # print(model.structural_frame)
-    # options: InterpolationOptions = model.interpolation_options
-    pass
+
+    json = model.model_dump(mode='json')
+    # Pretty print json
+    pprint.pp(json)
+    
+    # write json to disk
+    # with open("horizontal_stratigraphic_model.json", "w") as f:
+    #     f.write(json)
+    # 
+    # # Validate json against schema
+    # verify_json(json, name="Horizontal Stratigraphic Model serialization")
+    
+    
 
 def test_interpolation_options():
     options = InterpolationOptions.from_args(
