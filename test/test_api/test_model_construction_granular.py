@@ -103,7 +103,7 @@ def test_create_interpolation_options() -> InterpolationOptions:
 
 
 def test_create_geomodel() -> GeoModel:
-    geo_model: GeoModel = GeoModel(
+    geo_model: GeoModel = GeoModel.from_args(
         name="horizontal",
         structural_frame=test_create_structural_frame(),
         grid=test_create_grid(),

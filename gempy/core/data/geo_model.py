@@ -1,6 +1,7 @@
 ﻿import pprint
 import warnings
 from dataclasses import dataclass, field
+from pydantic import BaseModel, ConfigDict
 from typing import Sequence, Optional
 
 import numpy as np
@@ -46,13 +47,20 @@ class GeoModelMeta:
     owner: str
 
 
-@dataclass(init=False)
-class GeoModel:
+# @dataclass(init=False)
+class GeoModel(BaseModel):
     """
     Class representing a geological model.
 
     """
 
+    model_config = ConfigDict(
+        arbitrary_types_allowed=True,
+        use_enum_values=False,
+        json_encoders={
+        }
+    )
+    
     meta: GeoModelMeta  #: Meta-information about the geological model, like its name, creation and modification dates, and owner.
     structural_frame: StructuralFrame  #: The structural information of the geological model.
     grid: Grid  #: The general grid used in the geological model.
@@ -72,22 +80,31 @@ class GeoModel:
 
     legacy_model: "gpl.Project" = None  #: Legacy model (if available). Allows for backward compatibility.
 
-    def __init__(self, name: str, structural_frame: StructuralFrame, grid: Grid, interpolation_options: InterpolationOptions):
+    @classmethod
+    def from_args(cls, name: str, structural_frame: StructuralFrame, grid: Grid, interpolation_options: InterpolationOptions):
         # TODO: Fill the arguments properly
-        self.meta = GeoModelMeta(
+        meta = GeoModelMeta(
             name=name,
             creation_date=None,
             last_modification_date=None,
             owner=None
         )
 
-        self.structural_frame = structural_frame  # ? This could be Optional
+        structural_frame = structural_frame  # ? This could be Optional
 
-        self.grid = grid
-        self._interpolation_options = interpolation_options
-        self.input_transform = Transform.from_input_points(
-            surface_points=self.surface_points_copy,
-            orientations=self.orientations_copy
+        grid = grid
+        _interpolation_options = interpolation_options
+        input_transform = Transform.from_input_points(
+            surface_points=structural_frame.surface_points_copy,
+            orientations=structural_frame.orientations_copy
+        )
+        
+        return GeoModel(
+            meta=meta,
+            structural_frame=structural_frame,
+            grid=grid,
+            _interpolation_options=_interpolation_options,
+            input_transform=input_transform
         )
 
     def __repr__(self):
