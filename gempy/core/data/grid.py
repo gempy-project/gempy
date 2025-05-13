@@ -9,6 +9,7 @@ from typing import Optional
 from gempy_engine.core.data.centered_grid import CenteredGrid
 from gempy_engine.core.data.options import EvaluationOptions
 from gempy_engine.core.data.transforms import Transform
+from .encoder.converters import convert_to_arrays
 from .grid_modules import RegularGrid, CustomGrid, Sections
 from .grid_modules.topography import Topography
 
@@ -43,10 +44,8 @@ class Grid:
 
     @model_validator(mode="before")
     def convert_arrays(cls, values):
-        for key in ["values", "length"]:
-            if key in values and not isinstance(values[key], np.ndarray):
-                values[key] = np.array(values[key])
-        return values
+        return convert_to_arrays(values, keys=["values", "length"])
+
 
     def __init__(self, extent=None, resolution=None):
 
