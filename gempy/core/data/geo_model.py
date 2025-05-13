@@ -16,7 +16,7 @@ from gempy_engine.core.data import InterpolationOptions
 from gempy_engine.core.data.input_data_descriptor import InputDataDescriptor
 from gempy_engine.core.data.interpolation_input import InterpolationInput
 from gempy_engine.core.data.transforms import Transform, GlobalAnisotropy
-from .encoder.json_geomodel_encoder import encode_numpy_array
+from .encoders.json_geomodel_encoder import encode_numpy_array
 
 from .orientations import OrientationsTable
 from .surface_points import SurfacePointsTable
@@ -65,24 +65,15 @@ class GeoModel(BaseModel):
         }
     )
 
-    meta: GeoModelMeta = Field(exclude=False)  #: Meta-information about the geological model, like its name, creation and modification dates, and owner.
+    meta: GeoModelMeta | None = Field(exclude=False)  #: Meta-information about the geological model, like its name, creation and modification dates, and owner.
     
-    # BUG: Remove None option for structural frame
-    structural_frame: Optional[StructuralFrame] | None = Field(exclude=True, default=None)  #: The structural information of the geological model.
-    grid: Grid = Field(exclude=False)  #: The general grid used in the geological model.
+    # BUG: Remove None option for structural frame and meta
+    structural_frame: Optional[StructuralFrame] | None = Field(exclude=False, default=None)  #: The structural information of the geological model.
+    grid: Grid  = Field(exclude=True, default=None)  #: The general grid used in the geological model.
 
     # region GemPy engine data types
     _interpolation_options: InterpolationOptions  #: The interpolation options provided by the user.
-    
-    def __init__(self, **data):
-        super().__init__(**data)
-        
-        key = "_interpolation_options"
-        if key in data and not isinstance(data[key], InterpolationOptions):
-            data[key] = InterpolationOptions(**data[key])
-        self._interpolation_options = data.get("_interpolation_options")
-
-    @computed_field(alias="_interpolation_options")
+    # @computed_field(alias="_interpolation_options")
     @property
     def interpolation_options(self) -> InterpolationOptions:
         self._infer_dense_grid_solution()
@@ -94,8 +85,7 @@ class GeoModel(BaseModel):
         self._interpolation_options = value
 
     geophysics_input: GeophysicsInput = Field(default=None, exclude=True)  #: The geophysics input of the geological model.
-
-    input_transform: Transform = Field(default=None, exclude=False)  #: The transformation used in the geological model for input points.
+    input_transform: Transform = Field(default=None, exclude=True)  #: The transformation used in the geological model for input points.
 
     interpolation_grid: EngineGrid = Field(default=None, exclude=True)  #: ptional grid used for interpolation. Can be seen as a cache field.
     _interpolationInput: InterpolationInput = PrivateAttr(default=None)  #: Input data for interpolation. Fed by the structural frame and can be seen as a cache field.
@@ -103,6 +93,14 @@ class GeoModel(BaseModel):
 
     # endregion
     _solutions: Solutions = PrivateAttr(init=False, default=None)  #: The computed solutions of the geological model. 
+
+    def __init__(self, **data):
+        super().__init__(**data)
+
+        key = "_interpolation_options"
+        if key in data and not isinstance(data[key], InterpolationOptions):
+            data[key] = InterpolationOptions(**data[key])
+        self._interpolation_options = data.get("_interpolation_options")
 
     @classmethod
     def from_args(cls, name: str, structural_frame: StructuralFrame, grid: Grid, interpolation_options: InterpolationOptions):

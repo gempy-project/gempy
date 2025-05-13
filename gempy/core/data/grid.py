@@ -9,7 +9,7 @@ from typing import Optional
 from gempy_engine.core.data.centered_grid import CenteredGrid
 from gempy_engine.core.data.options import EvaluationOptions
 from gempy_engine.core.data.transforms import Transform
-from .encoder.converters import convert_to_arrays
+from .encoders.converters import convert_to_arrays
 from .grid_modules import RegularGrid, CustomGrid, Sections
 from .grid_modules.topography import Topography
 

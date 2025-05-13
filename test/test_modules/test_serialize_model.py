@@ -15,6 +15,8 @@ from verify_helper import verify_json
 def test_generate_horizontal_stratigraphic_model():
     model: gp.data.GeoModel = gp.generate_example_model(ExampleModel.HORIZONTAL_STRAT, compute_model=False)
 
+    model.structural_frame.structural_elements[0].surface_points.xyz
+
     model_json = model.model_dump_json(by_alias=True)
     # Pretty print JSON
     pprint.pp(model_json)
@@ -34,6 +36,7 @@ def test_generate_horizontal_stratigraphic_model():
     else:
         model_deserialized = gp.data.GeoModel.model_validate_json(model_json)
         
+    model_deserialized.structural_frame.structural_elements[1].surface_points.xyz
     # TODO: [ ] Structural frame?
     # TODO: [ ] Input transform?
     assert model_deserialized.__str__() == model.__str__()

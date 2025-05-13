@@ -1,8 +1,10 @@
 ﻿from dataclasses import dataclass
-from typing import Optional, Union, Sequence
+from pydantic import field_validator
+from typing import Optional, Union, Sequence, Annotated
 import numpy as np
 
-from gempy.core.data._data_points_helpers import generate_ids_from_names
+from ._data_points_helpers import generate_ids_from_names
+from .encoders.converters import numpy_array_short_validator
 from gempy_engine.core.data.transforms import Transform
 from gempy.optional_dependencies import require_pandas
 
@@ -73,6 +75,13 @@ class SurfacePointsTable:
         """
         data, name_id_map = cls._data_from_arrays(x, y, z, names, nugget, name_id_map)
         return cls(data, name_id_map)
+
+    @field_validator('data', mode='before')
+    @classmethod
+    def parse_short_array(cls, value: list[list]) -> str:
+        # Now just build a structured array
+        return np.array(value, dtype=cls.dt)
+
 
     @classmethod
     def _data_from_arrays(cls, x: np.ndarray, y: np.ndarray, z: np.ndarray,
