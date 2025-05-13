@@ -52,6 +52,26 @@ class StructuralFrame:
         )
         
         return values
+    
+    @model_validator(mode="after")
+    def deserialize_orientations(values: "StructuralFrame"):
+        # Access the context variable to get injected data
+        context = loading_model_context.get()
+        if 'orientations_binary' not in context:
+            return values
+        
+        # Check if we have a binary payload to digest
+        binary_array = context['orientations_binary']
+        if not isinstance(binary_array, np.ndarray):
+            return values
+        
+        values.orientations = OrientationsTable(
+            data=binary_array,
+            name_id_map=values.orientations_copy.name_id_map
+        )
+        
+        return values
+            
 
     @computed_field
     @property
@@ -392,9 +412,7 @@ class StructuralFrame:
     def surface_points(self, modified_surface_points: SurfacePointsTable) -> None:
         """Distributes the modified surface points back to the structural elements."""
         for element in self.structural_elements:
-            element_id = element.id
-            surface_points_for_id: SurfacePointsTable = modified_surface_points.get_surface_points_by_id(element_id)
-            element.surface_points.data = surface_points_for_id.data
+            element.surface_points.data = modified_surface_points.get_surface_points_by_id(element.id).data
 
     @property
     def orientations_copy(self) -> OrientationsTable:
@@ -410,11 +428,8 @@ class StructuralFrame:
     @orientations.setter
     def orientations(self, modified_orientations: OrientationsTable) -> None:
         """Distributes the modified orientations back to the structural elements."""
-        start = 0
         for element in self.structural_elements:
-            length = len(element.orientations.data)
-            element.orientations.data = modified_orientations.data[start:start + length]
-            start += length
+            element.orientations.data = modified_orientations.get_orientations_by_id(element.id).data
 
     @property
     def element_id_name_map(self) -> dict[int, str]:

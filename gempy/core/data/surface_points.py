@@ -79,7 +79,7 @@ class SurfacePointsTable:
 
     @field_validator('data', mode='after')
     @classmethod
-    def parse_short_array(cls, value: list[list]) -> str:
+    def parse_short_array(cls, _: list[list]) -> str:
         # Now just build a structured array
         return np.zeros(0, dtype=SurfacePointsTable.dt)
 
