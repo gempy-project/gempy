@@ -1,4 +1,6 @@
+import numpy as np
 import os
+import pandas as pd
 
 import pprint
 from pydantic_core import from_json
@@ -20,7 +22,6 @@ def test_generate_horizontal_stratigraphic_model():
     model_json = model.model_dump_json(by_alias=True)
     # Pretty print JSON
     pprint.pp(model_json)
-    
 
     # Ensure the 'verify/' directory exists
     os.makedirs("verify", exist_ok=True)
@@ -30,20 +31,40 @@ def test_generate_horizontal_stratigraphic_model():
     with open(file_path, "w") as f:
         f.write(model_json)
 
-    if False: # * Use this to debug which fields are giving problems
+    if False:  # * Use this to debug which fields are giving problems
         # model_deserialized = gp.data.GeoModel.model_validate(from_json(model_json, allow_partial=True))
         pass
     else:
         model_deserialized = gp.data.GeoModel.model_validate_json(model_json)
-        
+
     model_deserialized.structural_frame.structural_elements[1].surface_points.xyz
     # TODO: [ ] Structural frame?
     # TODO: [ ] Input transform?
     assert model_deserialized.__str__() == model.__str__()
-    
+
     # # Validate json against schema
     if False:
         verify_json(model_json, name="verify/Horizontal Stratigraphic Model serialization")
+
+
+def test_generate_horizontal_stratigraphic_model_binary():
+    model: gp.data.GeoModel = gp.generate_example_model(ExampleModel.HORIZONTAL_STRAT, compute_model=False)
+    sp = model.surface_points_copy
+    element_id_map: dict[int, str] = model.structural_frame.element_id_name_map
+
+    # * So basically we have 12 elements of a very complex type
+    data = sp.data
+    assert data.shape[0] == 12
+    assert data.dtype == np.dtype([('X', 'f8'), ('Y', 'f8'), ('Z', 'f8'), ('id', 'i4'), ('nugget', 'f8')])  #: The custom data type for the data array.
+    
+    df = pd.DataFrame(data)
+    ds = df.to_xarray()
+    pass
+
+
+def test_split_input_data_tables():
+    model: gp.data.GeoModel = gp.generate_example_model(ExampleModel.HORIZONTAL_STRAT, compute_model=False)
+    sp: gp.data.SurfacePointsTable = model.surface_points_copy
 
 
 def test_interpolation_options():

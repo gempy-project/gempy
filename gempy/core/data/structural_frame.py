@@ -1,6 +1,7 @@
 ﻿import numpy as np
 import warnings
 from dataclasses import dataclass
+from pydantic import field_validator, model_validator
 from typing import Generator
 
 from gempy_engine.core.data.input_data_descriptor import InputDataDescriptor
@@ -24,10 +25,15 @@ class StructuralFrame:
         is_dirty (bool): Boolean flag indicating if the structural frame has been modified.
     """
 
-    structural_groups: list[StructuralGroup] 
-    color_generator: ColorsGenerator 
+    structural_groups: list[StructuralGroup]
+    color_generator: ColorsGenerator
     # ? Should I create some sort of structural options class? For example, the masking descriptor and faults relations pointer
-    is_dirty: bool = True 
+    is_dirty: bool = True
+
+    @model_validator(mode="after")
+    def convert_arrays(values: "StructuralFrame"):
+        # TODO: here I should diggest a numpy binary
+         return values
 
     def __init__(self, structural_groups: list[StructuralGroup], color_gen: ColorsGenerator):
         self.structural_groups = structural_groups  # ? This maybe could be optional
@@ -40,21 +46,20 @@ class StructuralFrame:
         if element is None:
             raise ValueError(f"Element with name {element_name} not found in the structural frame.")
         return element
-    
+
     def get_group_by_name(self, group_name: str) -> StructuralGroup:
         groups: Generator = (group for group in self.structural_groups if group.name == group_name)
         group = next(groups, None)
         if group is None:
             raise ValueError(f"Group with name {group_name} not found in the structural frame.")
         return group
-    
+
     def get_group_by_element(self, element: StructuralElement) -> StructuralGroup:
         groups: Generator = (group for group in self.structural_groups if element in group.elements)
         group = next(groups, None)
         if group is None:
             raise ValueError(f"Element {element.name} not found in any group in the structural frame.")
         return group
-        
 
     def append_group(self, group: StructuralGroup):
         self.structural_groups.append(group)
@@ -118,12 +123,12 @@ class StructuralFrame:
         structural_group = StructuralGroup(
             name="default_formations",
             elements=[
-                StructuralElement(
-                    name="surface1",
-                    surface_points=SurfacePointsTable.initialize_empty(),
-                    orientations=OrientationsTable.initialize_empty(),
-                    color=next(color_gen)
-                )
+                    StructuralElement(
+                        name="surface1",
+                        surface_points=SurfacePointsTable.initialize_empty(),
+                        orientations=OrientationsTable.initialize_empty(),
+                        color=next(color_gen)
+                    )
             ],
             structural_relation=StackRelationType.ERODE
         )
@@ -183,14 +188,14 @@ class StructuralFrame:
             elements.extend(group.elements)
         elements.append(self._basement_element)
         return elements
-    
+
     @property
     def n_elements(self) -> int:
         """Returns the total number of elements in the structural frame."""
         return len(self.structural_elements)
 
     basement_color: str = None
-    
+
     @property
     def _basement_element(self) -> StructuralElement:
         # Check if the basement color is already defined
@@ -198,14 +203,14 @@ class StructuralFrame:
         for group in self.structural_groups:
             elements.extend(group.elements)
         basement_color_in_elements = self.basement_color in [element.color for element in elements]
-        
+
         if self.basement_color is None or basement_color_in_elements:
             self.basement_color = self.color_generator.up_next()
-            
+
         if basement_color_in_elements:
             warnings.warn(f"The basement color was already used in the structural elements."
                           f"Changing the basement color to {self.basement_color}.")
-        
+
         basement = StructuralElement(
             name="basement",
             surface_points=SurfacePointsTable(data=np.zeros(0, dtype=SurfacePointsTable.dt)),
@@ -266,12 +271,12 @@ class StructuralFrame:
                 group.fault_relations = FaultsRelationSpecialCase.OFFSET_NONE
             else:  # * A specific set of groups are affected
                 group.fault_relations = [g for j, g in enumerate(self.structural_groups) if affected_groups[j]]
-    
+
     @property
     def group_is_fault(self) -> list[bool]:
         """Returns a list of booleans indicating if each structural element is a fault."""
         return [group.is_fault for group in self.structural_groups]
-    
+
     @property
     def group_is_lithology(self) -> list[bool]:
         """Returns a list of booleans indicating if each structural element is a lithology."""
@@ -374,7 +379,7 @@ class StructuralFrame:
     def orientations(self) -> OrientationsTable:
         raise AttributeError("This property can only be set, not read. You can access the copy with `orientations_copy` or"
                              "the original on the individual structural elements.")
-    
+
     @orientations.setter
     def orientations(self, modified_orientations: OrientationsTable) -> None:
         """Distributes the modified orientations back to the structural elements."""
