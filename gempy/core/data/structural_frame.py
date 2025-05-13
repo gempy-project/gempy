@@ -363,11 +363,10 @@ class StructuralFrame:
     @surface_points.setter
     def surface_points(self, modified_surface_points: SurfacePointsTable) -> None:
         """Distributes the modified surface points back to the structural elements."""
-        start = 0
         for element in self.structural_elements:
-            length = len(element.surface_points.data)
-            element.surface_points.data = modified_surface_points.data[start:start + length]
-            start += length
+            element_id = element.id
+            surface_points_for_id: SurfacePointsTable = modified_surface_points.get_surface_points_by_id(element_id)
+            element.surface_points.data = surface_points_for_id.data
 
     @property
     def orientations_copy(self) -> OrientationsTable:

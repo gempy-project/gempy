@@ -1,3 +1,5 @@
+import tempfile
+
 import numpy as np
 import os
 import pandas as pd
@@ -6,6 +8,7 @@ import pprint
 from pydantic_core import from_json
 
 import gempy as gp
+from gempy.core.data import SurfacePointsTable
 from gempy.core.data.enumerators import ExampleModel
 from gempy_engine.core.data import InterpolationOptions
 
@@ -20,6 +23,8 @@ def test_generate_horizontal_stratigraphic_model():
     model.structural_frame.structural_elements[0].surface_points.xyz
 
     model_json = model.model_dump_json(by_alias=True)
+    model.structural_frame.surface_points_copy
+    
     # Pretty print JSON
     pprint.pp(model_json)
 
@@ -65,6 +70,23 @@ def test_generate_horizontal_stratigraphic_model_binary():
 def test_split_input_data_tables():
     model: gp.data.GeoModel = gp.generate_example_model(ExampleModel.HORIZONTAL_STRAT, compute_model=False)
     sp: gp.data.SurfacePointsTable = model.surface_points_copy
+    # Temp save sp numpy array 
+
+    with tempfile.NamedTemporaryFile(delete=False, suffix='.npy') as temp:
+        np.save(
+            file=temp,
+            arr=sp.data
+        )
+        temp_path = temp.name
+    
+    # Load 
+    loaded_array = np.load(temp_path)
+    loaded_table = SurfacePointsTable(
+        data=loaded_array,
+        name_id_map=sp.name_id_map
+    )
+    
+    model.structural_frame.surface_points = loaded_table
 
 
 def test_interpolation_options():
