@@ -1,12 +1,13 @@
 ﻿import numpy as np
 import warnings
 from dataclasses import dataclass
-from pydantic import field_validator, model_validator
+from pydantic import model_validator, computed_field
 from typing import Generator
 
 from gempy_engine.core.data.input_data_descriptor import InputDataDescriptor
 from gempy_engine.core.data.kernel_classes.faults import FaultsData
 from gempy_engine.core.data.stack_relation_type import StackRelationType
+from .encoders.converters import loading_model_context
 from .orientations import OrientationsTable
 from .structural_element import StructuralElement
 from .structural_group import StructuralGroup, FaultsRelationSpecialCase
@@ -31,9 +32,36 @@ class StructuralFrame:
     is_dirty: bool = True
 
     @model_validator(mode="after")
-    def convert_arrays(values: "StructuralFrame"):
-        # TODO: here I should diggest a numpy binary
-         return values
+    def deserialize_surface_points(values: "StructuralFrame"):
+        # Access the context variable to get injected data
+        context = loading_model_context.get()
+
+        if 'surface_points_binary' not in context:
+            return values
+
+        # Check if we have a binary payload to digest
+        binary_array = context['surface_points_binary']
+        if not isinstance(binary_array, np.ndarray):
+            return values
+        if binary_array.shape[0] < 1:
+            return values
+        
+        values.surface_points = SurfacePointsTable(
+            data=binary_array,
+            name_id_map=values.surface_points_copy.name_id_map
+        )
+        
+        return values
+
+    @computed_field
+    @property
+    def serialize_sp(self) -> int:
+        return hash(self.surface_points_copy.data.tobytes())
+
+    @computed_field
+    @property
+    def serialize_orientations(self) -> int:
+        return hash(self.orientations_copy.data.tobytes())
 
     def __init__(self, structural_groups: list[StructuralGroup], color_gen: ColorsGenerator):
         self.structural_groups = structural_groups  # ? This maybe could be optional

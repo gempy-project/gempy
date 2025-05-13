@@ -1,29 +1,21 @@
-import tempfile
-
 import numpy as np
 import os
 import pandas as pd
-
 import pprint
-from pydantic_core import from_json
+import tempfile
 
 import gempy as gp
 from gempy.core.data import SurfacePointsTable
+from gempy.core.data.encoders.converters import loading_model_injection
 from gempy.core.data.enumerators import ExampleModel
 from gempy_engine.core.data import InterpolationOptions
-
-from approvaltests import Options, verify
-
 from verify_helper import verify_json
 
 
 def test_generate_horizontal_stratigraphic_model():
     model: gp.data.GeoModel = gp.generate_example_model(ExampleModel.HORIZONTAL_STRAT, compute_model=False)
 
-    model.structural_frame.structural_elements[0].surface_points.xyz
-
     model_json = model.model_dump_json(by_alias=True)
-    model.structural_frame.surface_points_copy
     
     # Pretty print JSON
     pprint.pp(model_json)
@@ -40,9 +32,21 @@ def test_generate_horizontal_stratigraphic_model():
         # model_deserialized = gp.data.GeoModel.model_validate(from_json(model_json, allow_partial=True))
         pass
     else:
-        model_deserialized = gp.data.GeoModel.model_validate_json(model_json)
+        with loading_model_injection(
+            surface_points_binary = model.structural_frame.surface_points_copy.data,# TODO: Here we need to pass the binary array
+            orientations_binary = model.structural_frame.orientations_copy.data
+        ):
+            model_deserialized = gp.data.GeoModel.model_validate_json(model_json)
 
-    model_deserialized.structural_frame.structural_elements[1].surface_points.xyz
+    a = hash(model.structural_frame.structural_elements[1].surface_points.data.tobytes())
+    b = hash(model_deserialized.structural_frame.structural_elements[1].surface_points.data.tobytes())
+    
+    o_a = hash(model.structural_frame.structural_elements[1].orientations.data.tobytes())
+    o_b = hash(model_deserialized.structural_frame.structural_elements[1].orientations.data.tobytes())
+    
+    assert a == b, "Hashes for surface points are not equal"
+    assert o_a == o_b, "Hashes for orientations are not equal"
+    
     # TODO: [ ] Structural frame?
     # TODO: [ ] Input transform?
     assert model_deserialized.__str__() == model.__str__()
@@ -50,6 +54,8 @@ def test_generate_horizontal_stratigraphic_model():
     # # Validate json against schema
     if False:
         verify_json(model_json, name="verify/Horizontal Stratigraphic Model serialization")
+
+
 
 
 def test_generate_horizontal_stratigraphic_model_binary():
