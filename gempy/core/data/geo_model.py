@@ -64,10 +64,8 @@ class GeoModel(BaseModel):
         }
     )
 
-    meta: GeoModelMeta | None = Field(exclude=False)  #: Meta-information about the geological model, like its name, creation and modification dates, and owner.
-
-    # BUG: Remove None option for structural frame and meta
-    structural_frame: Optional[StructuralFrame] | None = Field(exclude=False, default=None)  #: The structural information of the geological model.
+    meta: GeoModelMeta = Field(exclude=False)  #: Meta-information about the geological model, like its name, creation and modification dates, and owner.
+    structural_frame: StructuralFrame = Field(exclude=False)  #: The structural information of the geological model.
     grid: Grid = Field(exclude=False, default=None)  #: The general grid used in the geological model.
 
     # region GemPy engine data types
@@ -85,7 +83,7 @@ class GeoModel(BaseModel):
         self._interpolation_options = value
 
     geophysics_input: GeophysicsInput = Field(default=None, exclude=True)  #: The geophysics input of the geological model.
-    input_transform: Transform = Field(default=None, exclude=True)  #: The transformation used in the geological model for input points.
+    input_transform: Transform = Field(default=None, exclude=False)  #: The transformation used in the geological model for input points.
 
     interpolation_grid: EngineGrid = Field(default=None, exclude=True)  #: ptional grid used for interpolation. Can be seen as a cache field.
     _interpolationInput: InterpolationInput = PrivateAttr(default=None)  #: Input data for interpolation. Fed by the structural frame and can be seen as a cache field.
