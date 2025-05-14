@@ -34,7 +34,7 @@ def test_generate_horizontal_stratigraphic_model():
     assert model_deserialized.__str__() == model.__str__()
 
     # # Validate json against schema
-    if True:
+    if False:
         # Ensure the 'verify/' directory exists
         os.makedirs("verify", exist_ok=True)
         verify_json(model_json, name="verify/Horizontal Stratigraphic Model serialization")

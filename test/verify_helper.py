@@ -2,7 +2,6 @@ import subprocess
 
 import numpy as np
 from approvaltests.core import Comparator
-from approvaltests.namer import NamerFactory
 
 import json
 from approvaltests import verify, Options
