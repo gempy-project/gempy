@@ -1,27 +1,26 @@
 ﻿import datetime
-
+import numpy as np
 import pprint
 import warnings
-from dataclasses import dataclass, field
-from pydantic import BaseModel, ConfigDict, Field, PrivateAttr, computed_field, model_validator, field_validator
-from typing import Sequence, Optional
+from dataclasses import dataclass
+from pydantic import BaseModel, ConfigDict, Field, PrivateAttr, computed_field, model_validator, ValidationError
+from pydantic.functional_validators import ModelWrapValidatorHandler
+from typing import Sequence, Optional, Union
 
-import numpy as np
-
+from gempy_engine.core.data import InterpolationOptions
 from gempy_engine.core.data import Solutions
 from gempy_engine.core.data.engine_grid import EngineGrid
 from gempy_engine.core.data.geophysics_input import GeophysicsInput
-from gempy_engine.core.data.raw_arrays_solution import RawArraysSolution
-from gempy_engine.core.data import InterpolationOptions
 from gempy_engine.core.data.input_data_descriptor import InputDataDescriptor
 from gempy_engine.core.data.interpolation_input import InterpolationInput
+from gempy_engine.core.data.raw_arrays_solution import RawArraysSolution
 from gempy_engine.core.data.transforms import Transform, GlobalAnisotropy
+from .encoders.converters import instantiate_if_necessary
 from .encoders.json_geomodel_encoder import encode_numpy_array
-
-from .orientations import OrientationsTable
-from .surface_points import SurfacePointsTable
-from .structural_frame import StructuralFrame
 from .grid import Grid
+from .orientations import OrientationsTable
+from .structural_frame import StructuralFrame
+from .surface_points import SurfacePointsTable
 from ...modules.data_manipulation.engine_factory import interpolation_input_from_structural_frame
 
 """
@@ -66,14 +65,15 @@ class GeoModel(BaseModel):
     )
 
     meta: GeoModelMeta | None = Field(exclude=False)  #: Meta-information about the geological model, like its name, creation and modification dates, and owner.
-    
+
     # BUG: Remove None option for structural frame and meta
     structural_frame: Optional[StructuralFrame] | None = Field(exclude=False, default=None)  #: The structural information of the geological model.
-    grid: Grid  = Field(exclude=False, default=None)  #: The general grid used in the geological model.
+    grid: Grid = Field(exclude=False, default=None)  #: The general grid used in the geological model.
 
     # region GemPy engine data types
     _interpolation_options: InterpolationOptions  #: The interpolation options provided by the user.
-    # @computed_field(alias="_interpolation_options")
+
+    @computed_field(alias="_interpolation_options")
     @property
     def interpolation_options(self) -> InterpolationOptions:
         self._infer_dense_grid_solution()
@@ -94,13 +94,26 @@ class GeoModel(BaseModel):
     # endregion
     _solutions: Solutions = PrivateAttr(init=False, default=None)  #: The computed solutions of the geological model. 
 
-    def __init__(self, **data):
-        super().__init__(**data)
-
-        key = "_interpolation_options"
-        if key in data and not isinstance(data[key], InterpolationOptions):
-            data[key] = InterpolationOptions(**data[key])
-        self._interpolation_options = data.get("_interpolation_options")
+    @model_validator(mode='wrap')
+    @classmethod
+    def deserialize_properties(cls, data: Union["GeoModel", dict], constructor: ModelWrapValidatorHandler["GeoModel"]) -> "GeoModel":
+        try:
+            match data:
+                case GeoModel():
+                    return data
+                case dict():
+                    instance: GeoModel = constructor(data)
+                    instantiate_if_necessary(
+                        data=data,
+                        key="_interpolation_options",
+                        type=InterpolationOptions
+                    )
+                    instance._interpolation_options = data.get("_interpolation_options")
+                    return instance
+                case _:
+                    raise ValidationError
+        except ValidationError:
+            raise
 
     @classmethod
     def from_args(cls, name: str, structural_frame: StructuralFrame, grid: Grid, interpolation_options: InterpolationOptions):

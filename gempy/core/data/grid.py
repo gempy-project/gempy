@@ -58,7 +58,7 @@ class Grid:
                     return data
                 case dict():
                     grid: Grid = constructor(data)
-                    grid._active_grids = Grid.GridTypes(data["_active_grids"])
+                    grid._active_grids = Grid.GridTypes(data["active_grids"])
                     grid._update_values()
                     return grid
                 case _:
@@ -66,7 +66,7 @@ class Grid:
         except ValidationError:
             raise
 
-    @computed_field(alias="_active_grids")
+    @computed_field(alias="active_grids")
     @property
     def active_grids(self) -> GridTypes:
         return self._active_grids
