@@ -10,7 +10,7 @@ from verify_helper import verify_json
 
 def test_generate_horizontal_stratigraphic_model():
     model: gp.data.GeoModel = gp.generate_example_model(ExampleModel.HORIZONTAL_STRAT, compute_model=False)
-    model_json = model.model_dump_json(by_alias=True)
+    model_json = model.model_dump_json(by_alias=True, indent=4)
 
     # Write the JSON to disk
     file_path = os.path.join("temp", "horizontal_stratigraphic_model.json")
@@ -34,7 +34,7 @@ def test_generate_horizontal_stratigraphic_model():
     assert model_deserialized.__str__() == model.__str__()
 
     # # Validate json against schema
-    if False:
+    if True:
         # Ensure the 'verify/' directory exists
         os.makedirs("verify", exist_ok=True)
         verify_json(model_json, name="verify/Horizontal Stratigraphic Model serialization")
