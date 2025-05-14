@@ -1,6 +1,4 @@
 import json
-import numpy as np
-
 import os
 import pprint
 
@@ -8,7 +6,7 @@ import gempy as gp
 from gempy.core.data.encoders.converters import loading_model_injection
 from gempy.core.data.enumerators import ExampleModel
 from gempy_engine.core.data import InterpolationOptions
-from verify_helper import verify_json, verify_json_ignoring_dates
+from test.verify_helper import verify_json
 
 
 def test_generate_horizontal_stratigraphic_model():
