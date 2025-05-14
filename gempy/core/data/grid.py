@@ -1,15 +1,13 @@
-import warnings
-
 import dataclasses
 import enum
 import numpy as np
-from pydantic import model_validator
-from typing import Optional
+from pydantic import Field, model_validator, computed_field, ValidationError
+from pydantic.functional_validators import ModelWrapValidatorHandler
+from typing import Optional, Annotated, Union
 
 from gempy_engine.core.data.centered_grid import CenteredGrid
 from gempy_engine.core.data.options import EvaluationOptions
 from gempy_engine.core.data.transforms import Transform
-from .encoders.converters import convert_to_arrays
 from .grid_modules import RegularGrid, CustomGrid, Sections
 from .grid_modules.topography import Topography
 
@@ -27,8 +25,8 @@ class Grid:
 
     # ? What should we do with the extent?
 
-    values: np.ndarray
-    length: np.ndarray
+    values: Annotated[np.ndarray, Field(exclude=True)] = np.empty((0, 3))
+    length: Annotated[np.ndarray, Field(exclude=True)] = np.empty(0)
 
     _octree_grid: Optional[RegularGrid] = None
     _dense_grid: Optional[RegularGrid] = None
@@ -42,11 +40,6 @@ class Grid:
 
     _octree_levels: int = -1
 
-    @model_validator(mode="before")
-    def convert_arrays(cls, values):
-        return convert_to_arrays(values, keys=["values", "length"])
-
-
     def __init__(self, extent=None, resolution=None):
 
         self.values = np.empty((0, 3))
@@ -55,6 +48,33 @@ class Grid:
         # Init basic grid empty
         if extent is not None and resolution is not None:
             self.dense_grid = RegularGrid(extent, resolution)
+
+    @model_validator(mode='wrap')
+    @classmethod
+    def deserialize_properties(cls, data: Union["Grid", dict], constructor: ModelWrapValidatorHandler["Grid"]) -> "Grid":
+        try:
+            match data:
+                case Grid():
+                    return data
+                case dict():
+                    grid: Grid = constructor(data)
+                    grid._active_grids = Grid.GridTypes(data["_active_grids"])
+                    grid._update_values()
+                    return grid
+                case _:
+                    raise ValidationError
+        except ValidationError:
+            raise
+
+    @computed_field(alias="_active_grids")
+    @property
+    def active_grids(self) -> GridTypes:
+        return self._active_grids
+
+    @active_grids.setter
+    def active_grids(self, value: GridTypes):
+        self._active_grids = value
+        self._update_values()
 
     @classmethod
     def init_octree_grid(cls, extent, octree_levels):
@@ -122,15 +142,6 @@ class Grid:
                                         [extents[1], extents[3], extents[4]],  # max x, max y, min z
                                         [extents[1], extents[3], extents[5]]])  # max x, max y, max z
         return bounding_box_points
-
-    @property
-    def active_grids(self) -> GridTypes:
-        return self._active_grids
-
-    @active_grids.setter
-    def active_grids(self, value: GridTypes):
-        self._active_grids = value
-        self._update_values()
 
     @property
     def dense_grid(self) -> RegularGrid:

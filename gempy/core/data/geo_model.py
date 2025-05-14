@@ -69,7 +69,7 @@ class GeoModel(BaseModel):
     
     # BUG: Remove None option for structural frame and meta
     structural_frame: Optional[StructuralFrame] | None = Field(exclude=False, default=None)  #: The structural information of the geological model.
-    grid: Grid  = Field(exclude=True, default=None)  #: The general grid used in the geological model.
+    grid: Grid  = Field(exclude=False, default=None)  #: The general grid used in the geological model.
 
     # region GemPy engine data types
     _interpolation_options: InterpolationOptions  #: The interpolation options provided by the user.
