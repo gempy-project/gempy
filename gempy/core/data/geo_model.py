@@ -71,6 +71,7 @@ class GeoModel(BaseModel):
 
     # endregion
     _solutions: Solutions = PrivateAttr(init=False, default=None)  #: The computed solutions of the geological model. 
+    _taped_interpolation_input: InterpolationInput | None = PrivateAttr(default=None)
 
     def __repr__(self):
         # TODO: Improve this
@@ -220,6 +221,14 @@ class GeoModel(BaseModel):
     def input_data_descriptor(self) -> InputDataDescriptor:
         # TODO: This should have the exact same dirty logic as interpolation_input
         return self.structural_frame.input_data_descriptor
+    
+    @property
+    def taped_interpolation_input(self) -> InterpolationInput:
+        return self._taped_interpolation_input
+    
+    @taped_interpolation_input.setter
+    def taped_interpolation_input(self, value: InterpolationInput):
+        self._taped_interpolation_input = value
 
     # endregion
     # region Constructors
