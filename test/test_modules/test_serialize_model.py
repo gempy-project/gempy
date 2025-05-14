@@ -1,3 +1,6 @@
+import json
+import numpy as np
+
 import os
 import pprint
 
@@ -5,12 +8,12 @@ import gempy as gp
 from gempy.core.data.encoders.converters import loading_model_injection
 from gempy.core.data.enumerators import ExampleModel
 from gempy_engine.core.data import InterpolationOptions
-from verify_helper import verify_json
+from verify_helper import verify_json, verify_json_ignoring_dates
 
 
 def test_generate_horizontal_stratigraphic_model():
     model: gp.data.GeoModel = gp.generate_example_model(ExampleModel.HORIZONTAL_STRAT, compute_model=False)
-    model_json = model.model_dump_json(by_alias=True, indent=4)
+    model_json = model.model_dump_json(by_alias=True, indent=4, exclude={"*data"})
 
     # Write the JSON to disk
     file_path = os.path.join("temp", "horizontal_stratigraphic_model.json")
@@ -34,10 +37,13 @@ def test_generate_horizontal_stratigraphic_model():
     assert model_deserialized.__str__() == model.__str__()
 
     # # Validate json against schema
-    if False:
+    if True:
         # Ensure the 'verify/' directory exists
         os.makedirs("verify", exist_ok=True)
-        verify_json(model_json, name="verify/Horizontal Stratigraphic Model serialization")
+        verify_model = json.loads(model_json)
+        verify_model["meta"]["creation_date"] = "<DATE_IGNORED>"
+        verify_json(json.dumps(verify_model, indent=4), name="verify/Horizontal Stratigraphic Model serialization")
+        
 
 
 def test_interpolation_options():

@@ -1,12 +1,13 @@
-﻿from typing import Sequence
+﻿import hashlib
+
+from typing import Sequence
 
 import numpy as np
 
 
 def structural_element_hasher(i: int, name: str, hash_length: int = 8) -> int:
     # Get the last 'hash_length' digits from the hash
-    name_hash = abs(hash(name)) % (10 ** hash_length)
-
+    name_hash = int(hashlib.md5(name.encode('utf-8')).hexdigest(), 16) % (10 ** hash_length)
     return i * (10 ** hash_length) + name_hash
 
 

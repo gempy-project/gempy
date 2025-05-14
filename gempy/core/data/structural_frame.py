@@ -1,4 +1,6 @@
-﻿import numpy as np
+﻿import hashlib
+
+import numpy as np
 import warnings
 from dataclasses import dataclass
 from pydantic import model_validator, computed_field
@@ -76,12 +78,12 @@ class StructuralFrame:
     @computed_field
     @property
     def serialize_sp(self) -> int:
-        return hash(self.surface_points_copy.data.tobytes())
+        return int(hashlib.md5(self.surface_points_copy.data.tobytes()).hexdigest()[:8], 16)
 
     @computed_field
     @property
     def serialize_orientations(self) -> int:
-        return hash(self.orientations_copy.data.tobytes())
+        return int(hashlib.md5(self.orientations_copy.data.tobytes()).hexdigest()[:8], 16)
 
     def __init__(self, structural_groups: list[StructuralGroup], color_gen: ColorsGenerator):
         self.structural_groups = structural_groups  # ? This maybe could be optional

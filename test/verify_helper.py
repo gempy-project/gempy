@@ -35,6 +35,42 @@ def verify_json(item, name: str):
     verify(item, options=parameters)
 
 
+def verify_json_ignoring_dates(item, name: str, date_fields=None):
+    """
+    Verify JSON content while ignoring specified date fields.
+
+    Args:
+        item: The JSON object to verify
+        name: Name for the verification
+        date_fields: List of field names containing dates to ignore
+    """
+    # Deep copy to avoid modifying the original
+    import copy
+    item_copy = copy.deepcopy(item)
+
+    # Replace date fields with placeholders
+    date_fields = date_fields or ["date", "created_at", "updated_at", "timestamp"]
+    _replace_dates_recursive(item_copy, date_fields)
+
+    # Use your existing verify_json function
+    verify_json(item_copy, name)
+
+
+def _replace_dates_recursive(obj, date_fields):
+    """Helper function to recursively replace date values."""
+    if isinstance(obj, dict):
+        for key, value in obj.items():
+            if key in date_fields and isinstance(value, str):
+                obj[key] = "<DATE_IGNORED>"
+            elif isinstance(value, (dict, list)):
+                _replace_dates_recursive(value, date_fields)
+    elif isinstance(obj, list):
+        for item in obj:
+            if isinstance(item, (dict, list)):
+                _replace_dates_recursive(item, date_fields)
+    
+
+
 def gempy_verify_array(item, name: str, rtol: float = 1e-5, atol: float = 1e-5, ):
     # ! You will have to set the path to your diff tool
     reporter = GenericDiffReporter.create(
