@@ -49,20 +49,11 @@ class GeoModelMeta:
     owner: str | None
 
 
-# @dataclass(init=False)
 class GeoModel(BaseModel):
     """
     Class representing a geological model.
 
     """
-
-    model_config = ConfigDict(
-        arbitrary_types_allowed=True,
-        use_enum_values=False,
-        json_encoders={
-                np.ndarray: encode_numpy_array
-        }
-    )
 
     meta: GeoModelMeta = Field(exclude=False)  #: Meta-information about the geological model, like its name, creation and modification dates, and owner.
     structural_frame: StructuralFrame = Field(exclude=False)  #: The structural information of the geological model.
@@ -70,17 +61,6 @@ class GeoModel(BaseModel):
 
     # region GemPy engine data types
     _interpolation_options: InterpolationOptions  #: The interpolation options provided by the user.
-
-    @computed_field(alias="_interpolation_options")
-    @property
-    def interpolation_options(self) -> InterpolationOptions:
-        self._infer_dense_grid_solution()
-        self._interpolation_options.cache_model_name = self.meta.name
-        return self._interpolation_options
-
-    @interpolation_options.setter
-    def interpolation_options(self, value):
-        self._interpolation_options = value
 
     geophysics_input: GeophysicsInput = Field(default=None, exclude=True)  #: The geophysics input of the geological model.
     input_transform: Transform = Field(default=None, exclude=False)  #: The transformation used in the geological model for input points.
@@ -92,78 +72,22 @@ class GeoModel(BaseModel):
     # endregion
     _solutions: Solutions = PrivateAttr(init=False, default=None)  #: The computed solutions of the geological model. 
 
-    @model_validator(mode='wrap')
-    @classmethod
-    def deserialize_properties(cls, data: Union["GeoModel", dict], constructor: ModelWrapValidatorHandler["GeoModel"]) -> "GeoModel":
-        try:
-            match data:
-                case GeoModel():
-                    return data
-                case dict():
-                    instance: GeoModel = constructor(data)
-                    instantiate_if_necessary(
-                        data=data,
-                        key="_interpolation_options",
-                        type=InterpolationOptions
-                    )
-                    instance._interpolation_options = data.get("_interpolation_options")
-                    return instance
-                case _:
-                    raise ValidationError
-        except ValidationError:
-            raise
-
-    @classmethod
-    def from_args(cls, name: str, structural_frame: StructuralFrame, grid: Grid, interpolation_options: InterpolationOptions):
-        # TODO: Fill the arguments properly
-        meta = GeoModelMeta(
-            name=name,
-            creation_date=datetime.datetime.now().isoformat(),
-            last_modification_date=None,
-            owner=None
-        )
-
-        structural_frame = structural_frame  # ? This could be Optional
-
-        grid = grid
-        _interpolation_options = interpolation_options
-        input_transform = Transform.from_input_points(
-            surface_points=structural_frame.surface_points_copy,
-            orientations=structural_frame.orientations_copy
-        )
-
-        model = GeoModel(
-            meta=meta,
-            structural_frame=structural_frame,
-            grid=grid,
-            input_transform=input_transform,
-            _interpolation_options=_interpolation_options
-        )
-
-        return model
-
     def __repr__(self):
         # TODO: Improve this
         return pprint.pformat(self.__dict__)
 
-    def update_transform(self, auto_anisotropy: GlobalAnisotropy = GlobalAnisotropy.NONE, anisotropy_limit: Optional[np.ndarray] = None):
-        """Update the transformation of the geological model.
+    # region Properties
 
-            This function updates the transformation of the geological model using the provided surface points and orientations.
-            It also applies anisotropy based on the specified type and limit.
+    @computed_field(alias="_interpolation_options")
+    @property
+    def interpolation_options(self) -> InterpolationOptions:
+        self._infer_dense_grid_solution()
+        self._interpolation_options.cache_model_name = self.meta.name
+        return self._interpolation_options
 
-            Args:
-                auto_anisotropy (GlobalAnisotropy): The type of anisotropy to apply. Defaults to GlobalAnisotropy.NONE.
-                anisotropy_limit (Optional[np.ndarray]): Anisotropy limit values. If None, no limit is applied.
-
-        """
-
-        self.input_transform = Transform.from_input_points(
-            surface_points=self.surface_points_copy,
-            orientations=self.orientations_copy
-        )
-
-        self.input_transform.apply_anisotropy(anisotropy_type=auto_anisotropy, anisotropy_limit=anisotropy_limit)
+    @interpolation_options.setter
+    def interpolation_options(self, value):
+        self._interpolation_options = value
 
     @property
     def solutions(self) -> Solutions:
@@ -297,9 +221,97 @@ class GeoModel(BaseModel):
         # TODO: This should have the exact same dirty logic as interpolation_input
         return self.structural_frame.input_data_descriptor
 
+    # endregion
+    # region Constructors
+    @classmethod
+    def from_args(cls, name: str, structural_frame: StructuralFrame, grid: Grid, interpolation_options: InterpolationOptions):
+        # TODO: Fill the arguments properly
+        meta = GeoModelMeta(
+            name=name,
+            creation_date=datetime.datetime.now().isoformat(),
+            last_modification_date=None,
+            owner=None
+        )
+
+        structural_frame = structural_frame  # ? This could be Optional
+
+        grid = grid
+        _interpolation_options = interpolation_options
+        input_transform = Transform.from_input_points(
+            surface_points=structural_frame.surface_points_copy,
+            orientations=structural_frame.orientations_copy
+        )
+
+        model = GeoModel(
+            meta=meta,
+            structural_frame=structural_frame,
+            grid=grid,
+            input_transform=input_transform,
+            _interpolation_options=_interpolation_options
+        )
+
+        return model
+
+    # endregion
+
+    # region Methods
+    def update_transform(self, auto_anisotropy: GlobalAnisotropy = GlobalAnisotropy.NONE, anisotropy_limit: Optional[np.ndarray] = None):
+        """Update the transformation of the geological model.
+
+            This function updates the transformation of the geological model using the provided surface points and orientations.
+            It also applies anisotropy based on the specified type and limit.
+
+            Args:
+                auto_anisotropy (GlobalAnisotropy): The type of anisotropy to apply. Defaults to GlobalAnisotropy.NONE.
+                anisotropy_limit (Optional[np.ndarray]): Anisotropy limit values. If None, no limit is applied.
+
+        """
+
+        self.input_transform = Transform.from_input_points(
+            surface_points=self.surface_points_copy,
+            orientations=self.orientations_copy
+        )
+
+        self.input_transform.apply_anisotropy(anisotropy_type=auto_anisotropy, anisotropy_limit=anisotropy_limit)
+
     def add_surface_points(self, X: Sequence[float], Y: Sequence[float], Z: Sequence[float],
                            surface: Sequence[str], nugget: Optional[Sequence[float]] = None) -> None:
         raise NotImplementedError("This method is deprecated. Use `gp.add_surface_points` instead")
+
+    # endregion
+
+    # region Pydantic serialization
+
+    model_config = ConfigDict(
+        arbitrary_types_allowed=True,
+        use_enum_values=False,
+        json_encoders={
+                np.ndarray: encode_numpy_array
+        }
+    )
+
+    @model_validator(mode='wrap')
+    @classmethod
+    def deserialize_properties(cls, data: Union["GeoModel", dict], constructor: ModelWrapValidatorHandler["GeoModel"]) -> "GeoModel":
+        try:
+            match data:
+                case GeoModel():
+                    return data
+                case dict():
+                    instance: GeoModel = constructor(data)
+                    instantiate_if_necessary(
+                        data=data,
+                        key="_interpolation_options",
+                        type=InterpolationOptions
+                    )
+                    instance._interpolation_options = data.get("_interpolation_options")
+                    return instance
+                case _:
+                    raise ValidationError
+        except ValidationError:
+            raise
+
+    # endregion
 
     def _infer_dense_grid_solution(self):
         octrees_set: bool = Grid.GridTypes.OCTREE in self.grid.active_grids
