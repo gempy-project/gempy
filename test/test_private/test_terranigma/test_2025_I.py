@@ -6,7 +6,6 @@ import gempy as gp
 from gempy.API.io_API import read_surface_points
 import gempy_viewer as gpv
 
-
 dotenv.load_dotenv()
 
 
@@ -69,6 +68,10 @@ def test_2025_1():
         structural_frame=structural_frame,
     )
 
+    geo_model.interpolation_options.evaluation_options.number_octree_levels_surface = 4
+    geo_model.interpolation_options.kernel_options.range = range_
+
+
     if False:
         gpv.plot_3d(
             model=geo_model,
@@ -98,6 +101,8 @@ def test_2025_1():
         ),
     )
 
+ 
+    
     gpv.plot_3d(
         model=geo_model,
         ve=10,
