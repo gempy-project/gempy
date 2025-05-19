@@ -92,7 +92,7 @@ def test_2025_1():
     solution = gp.compute_model(
         geo_model,
         engine_config=gp.data.GemPyEngineConfig(
-            backend=gp.data.AvailableBackends.PYTORCH
+            backend=gp.data.AvailableBackends.numpy
         ),
     )
 
