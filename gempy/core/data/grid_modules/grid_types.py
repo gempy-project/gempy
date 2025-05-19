@@ -1,10 +1,12 @@
 import dataclasses
+from pydantic import model_validator, Field
 
-from typing import Optional, Sequence
+from typing import Optional, Sequence, Annotated
 
 import numpy as np
 
 from ..core_utils import calculate_line_coordinates_2points
+from ..encoders.converters import numpy_array_short_validator
 from .... import optional_dependencies
 from ....optional_dependencies import require_pandas
 from gempy_engine.core.data.transforms import Transform, TransformOpsOrder
@@ -16,11 +18,11 @@ class RegularGrid:
     Class with the methods and properties to manage 3D regular grids where the model will be interpolated.
 
     """
-    resolution: np.ndarray
-    extent: np.ndarray  #: this is the ORTHOGONAL extent. If the grid is rotated, the extent will be different
-    values: np.ndarray
-    mask_topo: np.ndarray
-    _transform: Transform  #: If a transform exists, it will be applied to the grid
+    resolution: Annotated[np.ndarray, numpy_array_short_validator] = np.ones((0, 3), dtype='int64')
+    extent: Annotated[np.ndarray, numpy_array_short_validator] = np.zeros(6, dtype='float64')  #: this is the ORTHOGONAL extent. If the grid is rotated, the extent will be different
+    values: Annotated[np.ndarray, Field(exclude=True)] = np.zeros((0, 3))
+    mask_topo: Annotated[np.ndarray, Field(exclude=True)] = np.zeros((0, 3), dtype=bool)
+    _transform: Transform | None = None  #: If a transform exists, it will be applied to the grid
 
     def __init__(self, extent: np.ndarray, resolution: np.ndarray, transform: Optional[Transform] = None):
         self.resolution = np.ones((0, 3), dtype='int64')
@@ -29,6 +31,13 @@ class RegularGrid:
         self.mask_topo = np.zeros((0, 3), dtype=bool)
 
         self.set_regular_grid(extent, resolution, transform)
+
+
+    @model_validator(mode="after")
+    def _validate_regular_grid(self):
+        self._create_regular_grid_3d()
+        return self
+
 
     def _create_regular_grid_3d(self):
         coords = self.x_coord, self.y_coord, self.z_coord
@@ -136,7 +145,6 @@ class RegularGrid:
 
         extent = np.array([xmin, xmax, ymin, ymax, zmin, zmax], dtype='float64')
 
-
         transform = Transform.from_matrix(inverted_rotation_matrix)
         transform.cached_pivot = origin_
         grid = cls(extent=extent, resolution=resolution, transform=transform)
@@ -198,7 +206,7 @@ class RegularGrid:
     @property
     def values_vtk_format(self) -> np.ndarray:
         return self.get_values_vtk_format()
-    
+
     def get_values_vtk_format(self, orthogonal: bool = False) -> np.ndarray:
         extent = self.extent
         resolution = self.resolution + 1
@@ -208,7 +216,6 @@ class RegularGrid:
         z = np.linspace(extent[4], extent[5], resolution[2], dtype="float64")
         xv, yv, zv = np.meshgrid(x, y, z, indexing="ij")
         g = np.vstack((xv.ravel(), yv.ravel(), zv.ravel())).T
-
 
         # Transform the values
         if self.transform is not None and orthogonal is False:

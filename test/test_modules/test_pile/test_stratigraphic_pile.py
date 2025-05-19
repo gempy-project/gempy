@@ -122,7 +122,7 @@ class TestStratigraphicPile:
         all_surface_points_coords: gp.data.SurfacePointsTable = structural_frame.surface_points_copy
         extent_from_data = all_surface_points_coords.xyz.min(axis=0), all_surface_points_coords.xyz.max(axis=0)
         
-        geo_model = gp.data.GeoModel(
+        geo_model = gp.data.GeoModel.from_args(
             name="Stratigraphic Pile",
             structural_frame=structural_frame,
             grid=gp.data.Grid(

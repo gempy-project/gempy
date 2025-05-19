@@ -1,8 +1,38 @@
+import subprocess
+
 import numpy as np
-from approvaltests import Options, verify
 from approvaltests.core import Comparator
+
+import json
+from approvaltests import verify, Options
 from approvaltests.namer import NamerFactory
-from approvaltests.reporters import GenericDiffReporter
+from approvaltests.reporters import GenericDiffReporter, GenericDiffReporterConfig
+
+
+class WSLWindowsDiffReporter(GenericDiffReporter):
+    def get_command(self, received, approved):
+        # Convert WSL paths to Windows paths
+        win_received = subprocess.check_output(['wslpath', '-w', received]).decode().strip()
+        win_approved = subprocess.check_output(['wslpath', '-w', approved]).decode().strip()
+
+        cmd = [self.path] + self.extra_args + [win_received, win_approved]
+        return cmd
+
+def verify_json(item, name: str):
+
+    config = GenericDiffReporterConfig(
+        name="custom",
+        path=r"pycharm",
+        extra_args= ["diff"]
+    )
+
+    parameters: Options = NamerFactory \
+        .with_parameters(name) \
+        .with_reporter(
+        reporter=(WSLWindowsDiffReporter(config))
+    )
+    
+    verify(item, options=parameters)
 
 
 def gempy_verify_array(item, name: str, rtol: float = 1e-5, atol: float = 1e-5, ):
@@ -10,16 +40,15 @@ def gempy_verify_array(item, name: str, rtol: float = 1e-5, atol: float = 1e-5, 
     reporter = GenericDiffReporter.create(
         diff_tool_path=r"/usr/bin/meld"
     )
-    
+
     parameters: Options = NamerFactory \
         .with_parameters(name) \
         .with_comparator(
-            comparator=ArrayComparator(atol=atol, rtol=rtol)
-        ).with_reporter(
-            reporter=reporter
+        comparator=ArrayComparator(atol=atol, rtol=rtol)
+    ).with_reporter(
+        reporter=reporter
     )
-    
-    
+
     verify(np.asarray(item), options=parameters)
 
 
@@ -57,3 +86,12 @@ class ArrayComparator(Comparator):
             return allclose
         except BaseException:
             return False
+
+class JsonSerializer:
+    """Serializer that writes JSON with an indent and declares its own extension."""
+    def get_default_extension(self) -> str:
+        return "json"
+
+    def write(self, received, received_path: str) -> None:
+        with open(received_path, "w", encoding="utf-8") as f:
+            json.dump(received, f, indent=2, ensure_ascii=False)

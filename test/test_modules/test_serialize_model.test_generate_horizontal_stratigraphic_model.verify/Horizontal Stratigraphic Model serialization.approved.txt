@@ -1,0 +1,334 @@
+{
+    "meta": {
+        "name": "horizontal",
+        "creation_date": "<DATE_IGNORED>",
+        "last_modification_date": null,
+        "owner": null
+    },
+    "structural_frame": {
+        "structural_groups": [
+            {
+                "name": "Strat_Series",
+                "elements": [
+                    {
+                        "name": "rock2",
+                        "is_active": true,
+                        "_color": "#9f0052",
+                        "surface_points": {
+                            "data": [
+                                [
+                                    100.0,
+                                    200.0,
+                                    600.0,
+                                    117776925,
+                                    2e-05
+                                ],
+                                [
+                                    500.0,
+                                    200.0,
+                                    600.0,
+                                    117776925,
+                                    2e-05
+                                ],
+                                [
+                                    900.0,
+                                    200.0,
+                                    600.0,
+                                    117776925,
+                                    2e-05
+                                ],
+                                [
+                                    100.0,
+                                    800.0,
+                                    600.0,
+                                    117776925,
+                                    2e-05
+                                ],
+                                [
+                                    500.0,
+                                    800.0,
+                                    600.0,
+                                    117776925,
+                                    2e-05
+                                ],
+                                [
+                                    900.0,
+                                    800.0,
+                                    600.0,
+                                    117776925,
+                                    2e-05
+                                ]
+                            ],
+                            "name_id_map": {
+                                "rock1": 67239155,
+                                "rock2": 117776925
+                            },
+                            "_model_transform": null
+                        },
+                        "orientations": {
+                            "data": [
+                                [
+                                    500.0,
+                                    500.0,
+                                    600.0,
+                                    0.0,
+                                    0.0,
+                                    1.0,
+                                    117776925,
+                                    0.01
+                                ]
+                            ],
+                            "name_id_map": {
+                                "rock1": 67239155,
+                                "rock2": 117776925
+                            },
+                            "_model_transform": null
+                        },
+                        "vertices": null,
+                        "edges": null,
+                        "scalar_field_at_interface": null,
+                        "_id": 117776925
+                    },
+                    {
+                        "name": "rock1",
+                        "is_active": true,
+                        "_color": "#015482",
+                        "surface_points": {
+                            "data": [
+                                [
+                                    100.0,
+                                    200.0,
+                                    400.0,
+                                    67239155,
+                                    2e-05
+                                ],
+                                [
+                                    500.0,
+                                    200.0,
+                                    400.0,
+                                    67239155,
+                                    2e-05
+                                ],
+                                [
+                                    900.0,
+                                    200.0,
+                                    400.0,
+                                    67239155,
+                                    2e-05
+                                ],
+                                [
+                                    100.0,
+                                    800.0,
+                                    400.0,
+                                    67239155,
+                                    2e-05
+                                ],
+                                [
+                                    500.0,
+                                    800.0,
+                                    400.0,
+                                    67239155,
+                                    2e-05
+                                ],
+                                [
+                                    900.0,
+                                    800.0,
+                                    400.0,
+                                    67239155,
+                                    2e-05
+                                ]
+                            ],
+                            "name_id_map": {
+                                "rock1": 67239155,
+                                "rock2": 117776925
+                            },
+                            "_model_transform": null
+                        },
+                        "orientations": {
+                            "data": [
+                                [
+                                    500.0,
+                                    500.0,
+                                    400.0,
+                                    0.0,
+                                    0.0,
+                                    1.0,
+                                    67239155,
+                                    0.01
+                                ]
+                            ],
+                            "name_id_map": {
+                                "rock1": 67239155,
+                                "rock2": 117776925
+                            },
+                            "_model_transform": null
+                        },
+                        "vertices": null,
+                        "edges": null,
+                        "scalar_field_at_interface": null,
+                        "_id": 67239155
+                    }
+                ],
+                "structural_relation": 1,
+                "fault_relations": null,
+                "faults_input_data": null,
+                "solution": null
+            }
+        ],
+        "color_generator": {
+            "hex_colors": [
+                "#015482",
+                "#9f0052",
+                "#ffbe00",
+                "#728f02",
+                "#443988",
+                "#ff3f20",
+                "#5DA629",
+                "#b271d0",
+                "#72e54a",
+                "#583bd1",
+                "#d0e63d",
+                "#b949e2",
+                "#95ce4b",
+                "#6d2b9f",
+                "#60eb91",
+                "#d746be",
+                "#52a22e",
+                "#5e63d8",
+                "#e5c339",
+                "#371970",
+                "#d3dc76",
+                "#4d478e",
+                "#43b665",
+                "#d14897",
+                "#59e5b8",
+                "#e5421d",
+                "#62dedb",
+                "#df344e",
+                "#9ce4a9",
+                "#d94077",
+                "#99c573",
+                "#842f74",
+                "#578131",
+                "#708de7",
+                "#df872f",
+                "#5a73b1",
+                "#ab912b",
+                "#321f4d",
+                "#e4bd7c",
+                "#142932",
+                "#cd4f30",
+                "#69aedd",
+                "#892a23",
+                "#aad6de",
+                "#5c1a34",
+                "#cfddb4",
+                "#381d29",
+                "#5da37c",
+                "#d8676e",
+                "#52a2a3",
+                "#9b405c",
+                "#346542",
+                "#de91c9",
+                "#555719",
+                "#bbaed6",
+                "#945624",
+                "#517c91",
+                "#de8a68",
+                "#3c4b64",
+                "#9d8a4d",
+                "#825f7e",
+                "#2c3821",
+                "#ddadaa",
+                "#5e3524",
+                "#a3a68e",
+                "#a2706b",
+                "#686d56"
+            ],
+            "_index": 2
+        },
+        "is_dirty": true,
+        "basement_color": "#ffbe00",
+        "serialize_sp": 3507338795,
+        "serialize_orientations": 553806131
+    },
+    "grid": {
+        "_octree_grid": null,
+        "_dense_grid": {
+            "resolution": [
+                50,
+                5,
+                50
+            ],
+            "extent": [
+                0.0,
+                1000.0,
+                0.0,
+                1000.0,
+                0.0,
+                1000.0
+            ],
+            "_transform": null
+        },
+        "_custom_grid": null,
+        "_topography": null,
+        "_sections": null,
+        "_centered_grid": null,
+        "_transform": null,
+        "_octree_levels": -1,
+        "active_grids": 1026
+    },
+    "input_transform": {
+        "position": [
+            -500.0,
+            -500.0,
+            -500.0
+        ],
+        "rotation": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "scale": [
+            0.000625,
+            0.000625,
+            0.000625
+        ],
+        "_is_default_transform": false,
+        "_cached_pivot": null
+    },
+    "_interpolation_options": {
+        "kernel_options": {
+            "range": 1.7,
+            "c_o": 10.0,
+            "uni_degree": 1,
+            "i_res": 4.0,
+            "gi_res": 2.0,
+            "number_dimensions": 3,
+            "kernel_function": "cubic",
+            "kernel_solver": 1,
+            "compute_condition_number": false,
+            "optimizing_condition_number": false,
+            "condition_number": null
+        },
+        "evaluation_options": {
+            "_number_octree_levels": 3,
+            "_number_octree_levels_surface": 4,
+            "octree_curvature_threshold": -1.0,
+            "octree_error_threshold": 1.0,
+            "octree_min_level": 2,
+            "mesh_extraction": true,
+            "mesh_extraction_masking_options": 3,
+            "mesh_extraction_fancy": true,
+            "evaluation_chunk_size": 500000,
+            "compute_scalar_gradient": false,
+            "verbose": false
+        },
+        "debug": true,
+        "cache_mode": 3,
+        "cache_model_name": "horizontal",
+        "block_solutions_type": 2,
+        "sigmoid_slope": 5000000,
+        "debug_water_tight": false
+    }
+}

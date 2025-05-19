@@ -166,7 +166,7 @@ class JsonIO:
         current_date = datetime.now().strftime("%Y-%m-%d")
         model_name = data.get('metadata', {}).get('name', "GemPy Model")
         
-        model = GeoModel(
+        model = GeoModel.from_args(
             name=model_name,
             structural_frame=structural_frame,
             grid=grid,

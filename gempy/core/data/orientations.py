@@ -1,9 +1,11 @@
 ﻿from dataclasses import dataclass
-from typing import Optional, Sequence, Union
+from pydantic import field_validator, SkipValidation
+from typing import Optional, Sequence, Union, Annotated
 
 import numpy as np
 
-from gempy.core.data._data_points_helpers import generate_ids_from_names
+from ._data_points_helpers import generate_ids_from_names
+from .encoders.converters import numpy_array_short_validator
 from gempy_engine.core.data.transforms import Transform
 from gempy.optional_dependencies import require_pandas
 
@@ -19,7 +21,7 @@ class OrientationsTable:
     A dataclass to represent a table of orientations in a geological model.
     
     """
-    data: np.ndarray  #: A structured NumPy array holding the X, Y, Z coordinates, gradients G_x, G_y, G_z, id, and nugget of each orientation.
+    data: SkipValidation[np.ndarray]  #: A structured NumPy array holding the X, Y, Z coordinates, gradients G_x, G_y, G_z, id, and nugget of each orientation.
     name_id_map: Optional[dict[str, int]] = None  #: A mapping between orientation names and ids.
 
     dt = np.dtype([('X', 'f8'), ('Y', 'f8'), ('Z', 'f8'), ('G_x', 'f8'), ('G_y', 'f8'), ('G_z', 'f8'), ('id', 'i4'), ('nugget', 'f8')])  #: The custom data type for the data array.
@@ -55,6 +57,12 @@ class OrientationsTable:
 
         data, name_id_map = cls._data_from_arrays(x, y, z, G_x, G_y, G_z, names, nugget, name_id_map)
         return cls(data, name_id_map)
+
+    @field_validator('data', mode='after')
+    @classmethod
+    def parse_short_array(cls, _: list[list]) -> str:
+        # Now just build a structured array
+        return np.zeros(0, dtype=OrientationsTable.dt)
 
     @classmethod
     def _data_from_arrays(cls, x, y, z, G_x, G_y, G_z, names, nugget, name_id_map=None) -> tuple[np.ndarray, dict[str, int]]:

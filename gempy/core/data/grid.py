@@ -1,9 +1,9 @@
-import warnings
-
 import dataclasses
 import enum
 import numpy as np
-from typing import Optional
+from pydantic import Field, model_validator, computed_field, ValidationError
+from pydantic.functional_validators import ModelWrapValidatorHandler
+from typing import Optional, Annotated, Union
 
 from gempy_engine.core.data.centered_grid import CenteredGrid
 from gempy_engine.core.data.options import EvaluationOptions
@@ -25,9 +25,9 @@ class Grid:
 
     # ? What should we do with the extent?
 
-    values: np.ndarray
-    length: np.ndarray
-    
+    values: Annotated[np.ndarray, Field(exclude=True)] = np.empty((0, 3))
+    length: Annotated[np.ndarray, Field(exclude=True)] = np.empty(0)
+
     _octree_grid: Optional[RegularGrid] = None
     _dense_grid: Optional[RegularGrid] = None
     _custom_grid: Optional[CustomGrid] = None
@@ -41,14 +41,40 @@ class Grid:
     _octree_levels: int = -1
 
     def __init__(self, extent=None, resolution=None):
-        
+
         self.values = np.empty((0, 3))
         self.length = np.empty(0)
-        
+
         # Init basic grid empty
         if extent is not None and resolution is not None:
             self.dense_grid = RegularGrid(extent, resolution)
-    
+
+    @model_validator(mode='wrap')
+    @classmethod
+    def deserialize_properties(cls, data: Union["Grid", dict], constructor: ModelWrapValidatorHandler["Grid"]) -> "Grid":
+        try:
+            match data:
+                case Grid():
+                    return data
+                case dict():
+                    grid: Grid = constructor(data)
+                    grid._active_grids = Grid.GridTypes(data["active_grids"])
+                    grid._update_values()
+                    return grid
+                case _:
+                    raise ValidationError
+        except ValidationError:
+            raise
+
+    @computed_field(alias="active_grids")
+    @property
+    def active_grids(self) -> GridTypes:
+        return self._active_grids
+
+    @active_grids.setter
+    def active_grids(self, value: GridTypes):
+        self._active_grids = value
+        self._update_values()
 
     @classmethod
     def init_octree_grid(cls, extent, octree_levels):
@@ -118,15 +144,6 @@ class Grid:
         return bounding_box_points
 
     @property
-    def active_grids(self) -> GridTypes:
-        return self._active_grids
-
-    @active_grids.setter
-    def active_grids(self, value: GridTypes):
-        self._active_grids = value
-        self._update_values()
-
-    @property
     def dense_grid(self) -> RegularGrid:
         return self._dense_grid
 
@@ -157,11 +174,11 @@ class Grid:
         self._octree_grid = regular_grid
         self.active_grids |= self.GridTypes.OCTREE
         self._update_values()
-    
+
     def set_octree_grid_by_levels(self, octree_levels: int, evaluation_options: EvaluationOptions, extent: Optional[np.ndarray] = None):
         if extent is None:
             extent = self.extent
-        
+
         self._octree_grid = RegularGrid(
             extent=extent,
             resolution=np.array([2 ** octree_levels] * 3),
@@ -169,11 +186,11 @@ class Grid:
         evaluation_options.number_octree_levels = octree_levels
         self.active_grids |= self.GridTypes.OCTREE
         self._update_values()
-    
+
     @property
     def octree_levels(self):
         return self._octree_levels
-    
+
     @octree_levels.setter
     def octree_levels(self, value):
         raise AttributeError('Octree levels are not allowed to be set directly. Use set_octree_grid instead')
@@ -254,11 +271,11 @@ class Grid:
         if self.GridTypes.CENTERED in self.active_grids:
             if self.centered_grid is None: raise AttributeError('Centered grid is active but not defined')
             values.append(self.centered_grid.values)
-        
+
         # make sure values is not empty
         if len(values) == 0:
             return self.values
-        
+
         self.values = np.concatenate(values)
 
         return self.values

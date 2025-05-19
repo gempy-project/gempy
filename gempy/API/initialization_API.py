@@ -92,7 +92,7 @@ def create_geomodel(
         case _:
             pass
 
-    geo_model: GeoModel = GeoModel(
+    geo_model: GeoModel = GeoModel.from_args(
         name=project_name,
         structural_frame=structural_frame,
         grid=grid,
