@@ -14,9 +14,10 @@ def test_generate_horizontal_stratigraphic_model():
     model_json = model.model_dump_json(by_alias=True, indent=4, exclude={"*data"})
 
     # Write the JSON to disk
-    file_path = os.path.join("temp", "horizontal_stratigraphic_model.json")
-    with open(file_path, "w") as f:
-        f.write(model_json)
+    if False:
+        file_path = os.path.join("temp", "horizontal_stratigraphic_model.json")
+        with open(file_path, "w") as f:
+            f.write(model_json)
 
     with loading_model_injection(
             surface_points_binary=model.structural_frame.surface_points_copy.data,  # TODO: Here we need to pass the binary array
