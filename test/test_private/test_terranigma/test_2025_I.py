@@ -72,6 +72,7 @@ def test_2025_1():
         gpv.plot_3d(
             model=geo_model,
             ve=10,
+            image=True,
             kwargs_pyvista_bounds={
                     'show_xlabels': False,
                     'show_ylabels': False,
@@ -100,7 +101,7 @@ def test_2025_1():
         model=geo_model,
         ve=10,
         show_lith=False,
-        image=False,
+        image=True,
         kwargs_pyvista_bounds={
                 'show_xlabels': False,
                 'show_ylabels': False,
