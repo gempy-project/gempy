@@ -10,6 +10,8 @@ from typing import Generator, Union
 from gempy_engine.core.data.input_data_descriptor import InputDataDescriptor
 from gempy_engine.core.data.kernel_classes.faults import FaultsData
 from gempy_engine.core.data.stack_relation_type import StackRelationType
+
+from .encoders.binary_encoder import deserialize_input_data_tables
 from .encoders.converters import loading_model_context
 from .orientations import OrientationsTable
 from .structural_element import StructuralElement
@@ -469,29 +471,15 @@ class StructuralFrame:
             case dict():
                 instance: StructuralFrame = constructor(data)
                 metadata = data.get('binary_meta_data', {})
-
                 context = loading_model_context.get()
 
                 if 'binary_body' not in context:
                     return instance
 
-                binary_array = context['binary_body']
-
-                sp_binary = binary_array[:metadata["sp_binary_length"]]
-                ori_binary = binary_array[metadata["sp_binary_length"]:]
-
-                # Reconstruct arrays
-                sp_data: np.ndarray = np.frombuffer(sp_binary, dtype=SurfacePointsTable.dt)
-                ori_data: np.ndarray = np.frombuffer(ori_binary, dtype=OrientationsTable.dt)
-
-                instance.surface_points = SurfacePointsTable(
-                    data=sp_data,
-                    name_id_map=instance.surface_points_copy.name_id_map
-                )
-
-                instance.orientations = OrientationsTable(
-                    data=ori_data,
-                    name_id_map=instance.orientations_copy.name_id_map
+                instance.orientations, instance.surface_points = deserialize_input_data_tables(
+                    binary_array=context['binary_body'],
+                    name_id_map=instance.surface_points_copy.name_id_map,
+                    sp_binary_length_=metadata["sp_binary_length"]
                 )
 
                 return instance
@@ -499,6 +487,7 @@ class StructuralFrame:
                 raise ValidationError(f"Invalid data type for StructuralFrame: {type(data)}")
 
         # Access the context variable to get injected data
+
 
     @model_validator(mode="after")
     def deserialize_surface_points(self: "StructuralFrame"):
@@ -545,26 +534,10 @@ class StructuralFrame:
 
     @computed_field
     def binary_meta_data(self) -> dict:
-        sp_data = self.surface_points_copy.data
-        ori_data = self.orientations_copy.data
         return {
-                'sp_shape'         : sp_data.shape,
-                'sp_dtype'         : str(sp_data.dtype),
-                'sp_binary_length' : len(sp_data.tobytes()),
-                'ori_shape'        : ori_data.shape,
-                'ori_dtype'        : str(ori_data.dtype),
-                'ori_binary_length': len(ori_data.tobytes())
+                'sp_binary_length': len(self.surface_points_copy.data.tobytes()),
+                # 'ori_binary_length': len(self.orientations_copy.data.tobytes()) * (miguel May 2025) This is not necessary at the moment
         }
-
-    @computed_field
-    @property
-    def serialize_sp(self) -> int:
-        return int(hashlib.md5(self.surface_points_copy.data.tobytes()).hexdigest()[:8], 16)
-
-    @computed_field
-    @property
-    def serialize_orientations(self) -> int:
-        return int(hashlib.md5(self.orientations_copy.data.tobytes()).hexdigest()[:8], 16)
 
     # endregion
 

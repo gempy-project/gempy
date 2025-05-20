@@ -20,6 +20,7 @@ def test_generate_horizontal_stratigraphic_model():
         with open(file_path, "w") as f:
             f.write(model_json)
 
+    # TODO: modify this for the binary
     with loading_model_injection(
             surface_points_binary=model.structural_frame.surface_points_copy.data,  # TODO: Here we need to pass the binary array
             orientations_binary=model.structural_frame.orientations_copy.data
