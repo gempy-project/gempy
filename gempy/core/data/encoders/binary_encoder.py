@@ -1,6 +1,7 @@
 import numpy as np
 
-from .. import SurfacePointsTable, OrientationsTable
+from ..surface_points import SurfacePointsTable
+from ..orientations import OrientationsTable
 
 
 def deserialize_input_data_tables(binary_array: bytes, name_id_map: dict, sp_binary_length_: int) -> tuple[OrientationsTable, SurfacePointsTable]:
