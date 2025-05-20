@@ -2,11 +2,12 @@ import json
 import os
 import pprint
 
+from gempy_engine.core.data import InterpolationOptions
+
 import gempy as gp
-from gempy.core.data.encoders.converters import loading_model_injection
+from gempy.core.data.encoders.converters import loading_model_from_binary
 from gempy.core.data.enumerators import ExampleModel
 from gempy.modules.serialization.save_load import save_model, load_model
-from gempy_engine.core.data import InterpolationOptions
 from test.verify_helper import verify_json
 
 
@@ -20,10 +21,8 @@ def test_generate_horizontal_stratigraphic_model():
         with open(file_path, "w") as f:
             f.write(model_json)
 
-    # TODO: modify this for the binary
-    with loading_model_injection(
-            surface_points_binary=model.structural_frame.surface_points_copy.data,  # TODO: Here we need to pass the binary array
-            orientations_binary=model.structural_frame.orientations_copy.data
+    with loading_model_from_binary(
+        binary_body=model.structural_frame.input_tables_binary
     ):
         model_deserialized = gp.data.GeoModel.model_validate_json(model_json)
 

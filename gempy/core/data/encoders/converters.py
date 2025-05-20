@@ -47,18 +47,6 @@ numpy_array_short_validator = BeforeValidator(validate_numpy_array)
 loading_model_context = ContextVar('loading_model_context', default={})
 
 @contextmanager
-def loading_model_injection(surface_points_binary: np.ndarray, orientations_binary: np.ndarray):
-    token = loading_model_context.set({
-            'surface_points_binary': surface_points_binary,
-            'orientations_binary'  : orientations_binary
-    })
-    try:
-        yield
-    finally:
-        loading_model_context.reset(token)
-
-
-@contextmanager
 def loading_model_from_binary(binary_body: bytes):
     token = loading_model_context.set({
             'binary_body': binary_body,

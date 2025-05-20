@@ -391,6 +391,10 @@ class StructuralFrame:
         """Distributes the modified orientations back to the structural elements."""
         for element in self.structural_elements:
             element.orientations.data = modified_orientations.get_orientations_by_id(element.id).data
+            
+    @property
+    def input_tables_binary(self):
+        return self.surface_points_copy.data.tobytes() + self.orientations_copy.data.tobytes()
 
     @property
     def element_id_name_map(self) -> dict[int, str]:
@@ -488,49 +492,6 @@ class StructuralFrame:
 
         # Access the context variable to get injected data
 
-
-    @model_validator(mode="after")
-    def deserialize_surface_points(self: "StructuralFrame"):
-        # Access the context variable to get injected data
-        context = loading_model_context.get()
-
-        if 'surface_points_binary' not in context:
-            return self
-
-        # Check if we have a binary payload to digest
-        binary_array = context['surface_points_binary']
-        if not isinstance(binary_array, np.ndarray):
-            return self
-        if binary_array.shape[0] < 1:
-            return self
-
-        self.surface_points = SurfacePointsTable(
-            data=binary_array,
-            name_id_map=self.surface_points_copy.name_id_map
-        )
-
-        return self
-
-    @model_validator(mode="after")
-    def deserialize_orientations(self: "StructuralFrame"):
-        # TODO: Check here the binary size of surface_points_binary
-
-        # Access the context variable to get injected data
-        context = loading_model_context.get()
-        if 'orientations_binary' not in context:
-            return self
-
-        # Check if we have a binary payload to digest
-        binary_array = context['orientations_binary']
-        if not isinstance(binary_array, np.ndarray):
-            return self
-
-        self.orientations = OrientationsTable(
-            data=binary_array,
-            name_id_map=self.orientations_copy.name_id_map
-        )
-
-        return self
 
     @computed_field
     def binary_meta_data(self) -> dict:

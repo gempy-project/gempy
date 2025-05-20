@@ -249,8 +249,9 @@
         },
         "is_dirty": true,
         "basement_color": "#ffbe00",
-        "serialize_sp": 3507338795,
-        "serialize_orientations": 553806131
+        "binary_meta_data": {
+            "sp_binary_length": 432
+        }
     },
     "grid": {
         "_octree_grid": null,
