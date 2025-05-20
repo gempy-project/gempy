@@ -1,12 +1,12 @@
-﻿from dataclasses import dataclass
+﻿import numpy as np
+from dataclasses import dataclass
 from pydantic import field_validator, SkipValidation
-from typing import Optional, Union, Sequence, Annotated
-import numpy as np
+from typing import Optional, Union, Sequence
 
-from ._data_points_helpers import generate_ids_from_names
-from .encoders.converters import numpy_array_short_validator
 from gempy_engine.core.data.transforms import Transform
-from gempy.optional_dependencies import require_pandas
+
+from ...optional_dependencies import require_pandas
+from ._data_points_helpers import generate_ids_from_names
 
 DEFAULT_SP_NUGGET = 0.00002
 

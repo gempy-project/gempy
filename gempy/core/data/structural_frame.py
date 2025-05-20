@@ -3,8 +3,9 @@
 import numpy as np
 import warnings
 from dataclasses import dataclass
-from pydantic import model_validator, computed_field
-from typing import Generator
+from pydantic import model_validator, computed_field, ValidationError
+from pydantic.functional_validators import ModelWrapValidatorHandler
+from typing import Generator, Union
 
 from gempy_engine.core.data.input_data_descriptor import InputDataDescriptor
 from gempy_engine.core.data.kernel_classes.faults import FaultsData
@@ -33,47 +34,101 @@ class StructuralFrame:
     # ? Should I create some sort of structural options class? For example, the masking descriptor and faults relations pointer
     is_dirty: bool = True
 
+    @model_validator(mode="wrap")
+    @classmethod
+    def deserialize_binary(cls, data: Union["StructuralFrame", dict], constructor: ModelWrapValidatorHandler["StructuralFrame"]) -> "StructuralFrame":
+        match data:
+            case StructuralFrame():
+                return data
+            case dict():
+                instance: StructuralFrame = constructor(data)
+                metadata = data.get('binary_meta_data', {})
+
+                context = loading_model_context.get()
+
+                if 'binary_body' not in context:
+                    return instance
+
+                binary_array = context['binary_body']
+
+                sp_binary = binary_array[:metadata["sp_binary_length"]]
+                ori_binary = binary_array[metadata["sp_binary_length"]:]
+
+                # Reconstruct arrays
+                sp_data: np.ndarray = np.frombuffer(sp_binary, dtype=SurfacePointsTable.dt)
+                ori_data: np.ndarray = np.frombuffer(ori_binary, dtype=OrientationsTable.dt)
+
+                instance.surface_points = SurfacePointsTable(
+                    data=sp_data,
+                    name_id_map=instance.surface_points_copy.name_id_map
+                )
+
+                instance.orientations = OrientationsTable(
+                    data=ori_data,
+                    name_id_map=instance.orientations_copy.name_id_map
+                )
+
+                return instance
+            case _:
+                raise ValidationError(f"Invalid data type for StructuralFrame: {type(data)}")
+
+        # Access the context variable to get injected data
+
     @model_validator(mode="after")
-    def deserialize_surface_points(values: "StructuralFrame"):
+    def deserialize_surface_points(self: "StructuralFrame"):
         # Access the context variable to get injected data
         context = loading_model_context.get()
 
         if 'surface_points_binary' not in context:
-            return values
+            return self
 
         # Check if we have a binary payload to digest
         binary_array = context['surface_points_binary']
         if not isinstance(binary_array, np.ndarray):
-            return values
+            return self
         if binary_array.shape[0] < 1:
-            return values
-        
-        values.surface_points = SurfacePointsTable(
+            return self
+
+        self.surface_points = SurfacePointsTable(
             data=binary_array,
-            name_id_map=values.surface_points_copy.name_id_map
+            name_id_map=self.surface_points_copy.name_id_map
         )
-        
-        return values
-    
+
+        return self
+
     @model_validator(mode="after")
-    def deserialize_orientations(values: "StructuralFrame"):
+    def deserialize_orientations(self: "StructuralFrame"):
+        # TODO: Check here the binary size of surface_points_binary
+
         # Access the context variable to get injected data
         context = loading_model_context.get()
         if 'orientations_binary' not in context:
-            return values
-        
+            return self
+
         # Check if we have a binary payload to digest
         binary_array = context['orientations_binary']
         if not isinstance(binary_array, np.ndarray):
-            return values
-        
-        values.orientations = OrientationsTable(
+            return self
+
+        self.orientations = OrientationsTable(
             data=binary_array,
-            name_id_map=values.orientations_copy.name_id_map
+            name_id_map=self.orientations_copy.name_id_map
         )
-        
-        return values
-            
+
+        return self
+
+    @computed_field
+    def binary_meta_data(self) -> dict:
+        sp_data = self.surface_points_copy.data
+        ori_data = self.orientations_copy.data
+        return {
+                'sp_shape'         : sp_data.shape,
+                'sp_dtype'         : str(sp_data.dtype),
+                'sp_binary_length' : len(sp_data.tobytes()),
+                'ori_shape'        : ori_data.shape,
+                'ori_dtype'        : str(ori_data.dtype),
+                'ori_binary_length': len(ori_data.tobytes())
+        }
 
     @computed_field
     @property

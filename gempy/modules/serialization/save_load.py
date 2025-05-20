@@ -3,7 +3,7 @@ import json
 import numpy as np
 
 from ...core.data import GeoModel
-from ...core.data.encoders.converters import loading_model_injection
+from ...core.data.encoders.converters import loading_model_injection, loading_model_from_binary
 from ...optional_dependencies import require_zlib
 
 
@@ -22,15 +22,15 @@ def save_model(model: GeoModel, path: str):
     compressed_binary = zlib.compress(sp_binary + ori_binary)
 
     # Add compression info to metadata
-    model_dict = model.model_dump(by_alias=True)
-    model_dict["_binary_metadata"] = {
-            "sp_shape"   : model.structural_frame.surface_points_copy.data.shape,
-            "sp_dtype"   : str(model.structural_frame.surface_points_copy.data.dtype),
-            "ori_shape"  : model.structural_frame.orientations_copy.data.shape,
-            "ori_dtype"  : str(model.structural_frame.orientations_copy.data.dtype),
-            "compression": "zlib",
-            "sp_length"  : len(sp_binary)  # Need this to split the arrays after decompression
-    }
+    # model_dict = model.model_dump(by_alias=True)
+    # model_dict["_binary_metadata"] = {
+    #         "sp_shape"   : model.structural_frame.surface_points_copy.data.shape,
+    #         "sp_dtype"   : str(model.structural_frame.surface_points_copy.data.dtype),
+    #         "ori_shape"  : model.structural_frame.orientations_copy.data.shape,
+    #         "ori_dtype"  : str(model.structural_frame.orientations_copy.data.dtype),
+    #         "compression": "zlib",
+    #         "sp_length"  : len(sp_binary)  # Need this to split the arrays after decompression
+    # }
     
     # TODO: Putting both together
     binary_file = _to_binary(model_json, compressed_binary)
@@ -48,14 +48,16 @@ def load_model(path: str) -> GeoModel:
     header_json = binary_file[4:4 + header_length].decode('utf-8')
     header_dict = json.loads(header_json)
 
-    metadata = header_dict.pop("_binary_metadata")
+    # metadata = header_dict.pop("_binary_metadata")
 
     # Decompress the binary data
-    ori_data, sp_data = _foo(binary_file, header_length, metadata)
+    # ori_data, sp_data = _foo(binary_file, header_length, metadata)
 
-    with loading_model_injection(
-            surface_points_binary=sp_data,
-            orientations_binary=ori_data
+    binary_body = binary_file[4 + header_length:]
+    zlib = require_zlib()
+    decompressed_binary = zlib.decompress(binary_body)
+    with loading_model_from_binary(
+        binary_body=decompressed_binary,
     ):
         model = GeoModel.model_validate_json(header_json)
 

@@ -57,3 +57,14 @@ def loading_model_injection(surface_points_binary: np.ndarray, orientations_bina
     finally:
         loading_model_context.reset(token)
 
+
+@contextmanager
+def loading_model_from_binary(binary_body: bytes):
+    token = loading_model_context.set({
+            'binary_body': binary_body,
+    })
+    try:
+        yield
+    finally:
+        loading_model_context.reset(token)
+
