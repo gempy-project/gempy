@@ -59,3 +59,10 @@ def require_subsurface():
     except ImportError:
         raise ImportError("The subsurface package is required to run this function.")
     return subsurface
+
+def require_zlib():
+    try:
+        import zlib
+    except ImportError:
+        raise ImportError("The zlib package is required to run this function.")
+    return zlib

@@ -6,3 +6,4 @@ gempy_plugins
 pooch 
 scipy
 scikit-image
+zlib
