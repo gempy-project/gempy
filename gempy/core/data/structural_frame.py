@@ -32,7 +32,6 @@ class StructuralFrame:
     """
 
     structural_groups: list[StructuralGroup]
-    color_generator: ColorsGenerator
     # ? Should I create some sort of structural options class? For example, the masking descriptor and faults relations pointer
     is_dirty: bool = True
 
