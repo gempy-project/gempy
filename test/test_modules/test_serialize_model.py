@@ -49,10 +49,10 @@ def _validate_serialization(original_model, model_deserialized):
 
 def test_save_model_to_disk():
     model = gp.generate_example_model(ExampleModel.COMBINATION, compute_model=False)
-    save_model(model, "temp/test_save_model_to_disk.json")
+    save_model(model, "temp/test_save_model_to_disk.gempy")
     
     # Load the model from disk
-    loaded_model = load_model("temp/test_save_model_to_disk.json")
+    loaded_model = load_model("temp/test_save_model_to_disk.gempy")
     _validate_serialization(model, loaded_model)
     
     gp.compute_model(loaded_model)
