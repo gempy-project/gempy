@@ -1,3 +1,5 @@
+from typing import Literal
+
 import warnings
 
 from ...core.data import GeoModel
@@ -23,10 +25,10 @@ def save_model(model: GeoModel, path: str | None = None, validate_serialization:
     ValueError
         If the file has an extension other than .gempy
     """
-    
+
     # Warning about preview
     warnings.warn("This function is still in development. It may not work as expected.")
-    
+
     # Define the valid extension for gempy models
     VALID_EXTENSION = ".gempy"
     if path is None:
@@ -89,7 +91,7 @@ def load_model(path: str) -> GeoModel:
 
     # Warning about preview
     warnings.warn("This function is still in development. It may not work as expected.")
-    
+
     VALID_EXTENSION = ".gempy"
 
     # Check if path has the valid extension
@@ -131,10 +133,70 @@ def _to_binary(header_json, body_) -> bytes:
 
 
 def _validate_serialization(original_model, model_deserialized):
+    if False:
+        _verify_models(model_deserialized, original_model)
+
     a = hash(original_model.structural_frame.surface_points_copy.data.tobytes())
     b = hash(model_deserialized.structural_frame.surface_points_copy.data.tobytes())
     o_a = hash(original_model.structural_frame.orientations_copy.data.tobytes())
     o_b = hash(model_deserialized.structural_frame.orientations_copy.data.tobytes())
     assert a == b, "Hashes for surface points are not equal"
     assert o_a == o_b, "Hashes for orientations are not equal"
-    assert model_deserialized.__str__() == original_model.__str__()
+    original_model___str__ = original_model.__str__()
+    deserialized___str__ = model_deserialized.__str__()
+    if original_model___str__ != deserialized___str__:
+        # Find first char that is not the same
+        for i in range(min(len(original_model___str__), len(deserialized___str__))):
+            if original_model___str__[i] != deserialized___str__[i]:
+                break
+        print(f"First difference at index {i}:")
+        i1 = 50
+        print(f"Original: {original_model___str__[i - i1:i + i1]}")
+        print(f"Deserialized: {deserialized___str__[i - i1:i + i1]}")
+
+    assert deserialized___str__ == original_model___str__
+
+
+def verify_model_serialization(model: GeoModel, verify_moment: Literal["before", "after"], file_name: str):
+    """
+    Verifies the serialization and deserialization process of a GeoModel instance
+    by ensuring the serialized JSON and binary data match during either the
+    initial or post-process phase, based on the specified verification moment.
+
+    Args:
+        model: The GeoModel instance to be verified.
+        verify_moment: A literal value specifying whether to verify the model
+            before or after the deserialization process. Accepts "before"
+            or "after" as valid inputs.
+        file_name: The filename to associate with the verification process for
+            logging or output purposes.
+
+    Raises:
+        ValueError: If `verify_moment` is not set to "before" or "after".
+    """
+    model_json = model.model_dump_json(by_alias=True, indent=4)
+
+    # Compress the binary data
+    zlib = require_zlib()
+    compressed_binary = zlib.compress(model.structural_frame.input_tables_binary)
+
+    binary_file = _to_binary(model_json, compressed_binary)
+
+    model_deserialized = _deserialize_binary_file(binary_file)
+
+    original_model = model
+    original_model.meta.creation_date = "<DATE_IGNORED>"
+    model_deserialized.meta.creation_date = "<DATE_IGNORED>"
+    from verify_helper import verify_json
+    if verify_moment == "before":
+        verify_json(
+            item=original_model.model_dump_json(by_alias=True, indent=4),
+            name=file_name
+        )
+    elif verify_moment == "after":
+        verify_json(
+            item=model_deserialized.model_dump_json(by_alias=True, indent=4),
+            name=file_name
+        )
+    else:
+        raise ValueError("Invalid model parameter")
