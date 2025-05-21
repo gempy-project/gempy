@@ -103,6 +103,14 @@
         "_octree_levels": -1,
         "active_grids": 1058
     },
+    "geophysics_input": {
+        "tz": [],
+        "densities": [
+            2.6,
+            2.4,
+            3.2
+        ]
+    },
     "input_transform": {
         "position": [
             -6.0,
