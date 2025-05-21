@@ -20,6 +20,8 @@ def test_section_grids():
         evaluation_options=geo_model.interpolation_options.evaluation_options
     )
 
+    model = geo_model
+    model_json = model.model_dump_json(by_alias=True, indent=4)
     gp.set_section_grid(
         grid=geo_model.grid,
         section_dict={
@@ -28,6 +30,7 @@ def test_section_grids():
         }
     )
 
+    model_json = model.model_dump_json(by_alias=True, indent=4)
     gp.set_topography_from_random(
         grid=geo_model.grid,
         fractal_dimension=1.2,
@@ -35,6 +38,7 @@ def test_section_grids():
         topography_resolution=np.array([60, 60])
     )
 
+    model_json = model.model_dump_json(by_alias=True, indent=4)
     gp.compute_model(geo_model)
     gpv.plot_2d(
         model=geo_model,
