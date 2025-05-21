@@ -4,6 +4,8 @@ import gempy as gp
 # Importing auxiliary libraries
 import numpy as np
 
+from gempy.modules.serialization.save_load import verify_model_serialization
+
 
 def test_gravity():
     color_generator = gp.data.ColorsGenerator()
@@ -64,9 +66,9 @@ def test_gravity():
 
     gp.set_centered_grid(
         grid=geo_model.grid,
-        centers=np.array([[6, 0, 4]]),
-        resolution=np.array([10, 10, 100]),
-        radius=np.array([16000, 16000, 16000]) # ? This radius makes 0 sense but it is the original one in gempy v2
+        centers=np.array([[6, 0, 4]], dtype="float"),
+        resolution=np.array([10, 10, 100], dtype="float"),
+        radius=np.array([16000, 16000, 16000], dtype="float")  # ? This radius makes 0 sense but it is the original one in gempy v2
     )
 
     gravity_gradient = gp.calculate_gravity_gradient(geo_model.grid.centered_grid)
@@ -75,15 +77,12 @@ def test_gravity():
         densities=np.array([2.6, 2.4, 3.2]),
     )
 
-    model_json = geo_model.model_dump_json(by_alias=True, indent=4)
+    verify_model_serialization(
+        model=geo_model,
+        verify_moment="after",
+        file_name=f"verify/{geo_model.meta.name}"
+    )
 
-    return 
-    from pydantic_core import from_json
-
-    json = from_json(model_json, allow_partial=True)
-    model_deserialized = gp.data.GeoModel.model_validate(json)
-
-    return 
     gp.compute_model(geo_model)
 
     print(geo_model.solutions.gravity)
