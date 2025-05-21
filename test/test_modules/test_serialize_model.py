@@ -22,7 +22,7 @@ def test_generate_horizontal_stratigraphic_model():
             f.write(model_json)
 
     with loading_model_from_binary(
-        binary_body=model.structural_frame.input_tables_binary
+            binary_body=model.structural_frame.input_tables_binary
     ):
         model_deserialized = gp.data.GeoModel.model_validate_json(model_json)
 
@@ -50,17 +50,22 @@ def _validate_serialization(original_model, model_deserialized):
 def test_save_model_to_disk():
     model = gp.generate_example_model(ExampleModel.COMBINATION, compute_model=False)
     save_model(model, "temp/test_save_model_to_disk.gempy")
-    
+
     # Load the model from disk
     loaded_model = load_model("temp/test_save_model_to_disk.gempy")
     _validate_serialization(model, loaded_model)
-    
+
     gp.compute_model(loaded_model)
     if True:
         import gempy_viewer as gpv
         gpv.plot_3d(loaded_model, image=True)
-    
 
+    # Test save after compute
+    save_model(
+        model=model,
+        path="temp/test_save_model_to_disk.gempy",
+        validate_serialization=True
+    )
 
 
 def test_interpolation_options():

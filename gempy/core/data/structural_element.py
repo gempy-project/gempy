@@ -1,5 +1,6 @@
 ﻿import re
 from dataclasses import dataclass, field
+from pydantic import Field
 from typing import Optional
 
 import numpy as np
@@ -29,9 +30,9 @@ class StructuralElement:
 
     # Output
     # ? Should we extract this to a separate class?
-    vertices: Optional[np.ndarray] = None  #: The vertices of the element in 3D space.
-    edges: Optional[np.ndarray] = None  #: The edges of the element in 3D space.
-    scalar_field_at_interface: Optional[float] = None  #: The scalar field value for the element.
+    vertices: np.ndarray | None = Field(default=None, exclude=True)  #: The vertices of the element in 3D space.
+    edges: np.ndarray | None = Field(default=None, exclude=True)  #: The edges of the element in 3D space.
+    scalar_field_at_interface: float | None = None  #: The scalar field value for the element.
 
     _id: int = -1
     
