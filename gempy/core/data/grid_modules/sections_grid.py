@@ -1,8 +1,26 @@
+from pydantic import Field, model_validator
+from typing import Tuple, Dict, List, Optional
+
 import dataclasses
 import numpy as np
 
 from gempy.core.data.core_utils import calculate_line_coordinates_2points
 from gempy.optional_dependencies import require_pandas
+
+try:
+   import pandas as pd
+except ImportError:
+   pandas = None
+
+
+@dataclasses.dataclass
+class SectionDefinition:
+    """
+    A single cross‐section’s raw parameters.
+    """
+    start: Tuple[float, float]
+    stop: Tuple[float, float]
+    resolution: Tuple[int, int]
 
 
 @dataclasses.dataclass
@@ -15,26 +33,74 @@ class Sections:
         section_dict: {'section name': ([p1_x, p1_y], [p2_x, p2_y], [xyres, zres])}
     """
 
-    def __init__(self, regular_grid=None, z_ext=None, section_dict=None):
+    """
+       Pydantic v2 model of your original Sections class.
+       All computed fields are initialized with model_validator.
+       """
+
+    # user‐provided inputs
+    
+    z_ext: Tuple[float, float]
+    section_dict: Dict[str, tuple[list[int]]]
+
+    # computed/internal (will be serialized too unless excluded)
+    names: List[str] = Field(default_factory=list)
+    points: List[List[Tuple[float, float]]] = Field(default_factory=list)
+    resolution: List[Tuple[int, int]] = Field(default_factory=list)
+    length: np.ndarray = Field(default_factory=lambda: np.array([0]), exclude=False)
+    dist: np.ndarray = Field(default_factory=lambda: np.array([]), exclude=False)
+    df: Optional[pd.DataFrame] = Field(default_factory=None, exclude=False)
+    values: np.ndarray = Field(default_factory=lambda: np.empty((0, 3)), exclude=False)
+    extent: Optional[np.ndarray] = None
+
+    # def __init__(self, regular_grid=None, z_ext=None, section_dict=None):
+    #     pd = require_pandas()
+    #     if regular_grid is not None:
+    #         self.z_ext = regular_grid.extent[4:]
+    #     else:
+    #         self.z_ext = z_ext
+    # 
+    #     self.section_dict = section_dict
+    #     self.names = []
+    #     self.points = []
+    #     self.resolution = []
+    #     self.length = [0]
+    #     self.dist = []
+    #     self.df = pd.DataFrame()
+    #     self.df['dist'] = self.dist
+    #     self.values = np.empty((0, 3))
+    #     self.extent = None
+    # 
+    #     if section_dict is not None:
+    #         self.set_sections(section_dict)
+    def __post_init__(self):
+        self.initialize_computations()
+
+    # @model_validator(mode="after")
+    # def init_class(self):
+    #     self.initialize_computations()
+    #     return self
+    
+    def initialize_computations(self):
+        # copy names
+        self.names = list(self.section_dict.keys())
+
+        # build points/resolution/length
+        self._get_section_params()
+        # compute distances
+        self._calculate_all_distances()
+        # re-build DataFrame
         pd = require_pandas()
-        if regular_grid is not None:
-            self.z_ext = regular_grid.extent[4:]
-        else:
-            self.z_ext = z_ext
+        df = pd.DataFrame.from_dict(
+            data=self.section_dict,
+            orient="index",
+            columns=["start", "stop", "resolution"],
+        )
+        df["dist"] = self.dist
+        self.df = df
 
-        self.section_dict = section_dict
-        self.names = []
-        self.points = []
-        self.resolution = []
-        self.length = [0]
-        self.dist = []
-        self.df = pd.DataFrame()
-        self.df['dist'] = self.dist
-        self.values = np.empty((0, 3))
-        self.extent = None
-
-        if section_dict is not None:
-            self.set_sections(section_dict)
+        # compute the XYZ grid
+        self._compute_section_coordinates()
 
     def _repr_html_(self):
         return self.df.to_html()
@@ -50,17 +116,10 @@ class Sections:
         self.section_dict = section_dict
         if regular_grid is not None:
             self.z_ext = regular_grid.extent[4:]
+            
+        self.initialize_computations()
 
-        self.names = np.array(list(self.section_dict.keys()))
-
-        self.get_section_params()
-        self.calculate_all_distances()
-        self.df = pd.DataFrame.from_dict(self.section_dict, orient='index', columns=['start', 'stop', 'resolution'])
-        self.df['dist'] = self.dist
-
-        self.compute_section_coordinates()
-
-    def get_section_params(self):
+    def _get_section_params(self):
         self.points = []
         self.resolution = []
         self.length = [0]
@@ -76,13 +135,13 @@ class Sections:
                                     self.section_dict[section][2][1])
         self.length = np.array(self.length).cumsum()
 
-    def calculate_all_distances(self):
+    def _calculate_all_distances(self):
         self.coordinates = np.array(self.points).ravel().reshape(-1,
                                                                  4)  # axis are x1,y1,x2,y2
         self.dist = np.sqrt(np.diff(self.coordinates[:, [0, 2]]) ** 2 + np.diff(
             self.coordinates[:, [1, 3]]) ** 2)
 
-    def compute_section_coordinates(self):
+    def _compute_section_coordinates(self):
         for i in range(len(self.names)):
             xy = calculate_line_coordinates_2points(self.coordinates[i, :2],
                                                     self.coordinates[i, 2:],

@@ -24,6 +24,8 @@ from .structural_frame import StructuralFrame
 from .surface_points import SurfacePointsTable
 from ...modules.data_manipulation.engine_factory import interpolation_input_from_structural_frame
 
+import pandas as pd
+
 """
 TODO:
     - [ ] StructuralFrame will all input points chunked on Elements. Here I will need a property to put all
@@ -296,7 +298,8 @@ class GeoModel(BaseModel):
         arbitrary_types_allowed=True,
         use_enum_values=False,
         json_encoders={
-                np.ndarray: encode_numpy_array
+                np.ndarray: encode_numpy_array,
+                pd.DataFrame: lambda df: df.to_dict(orient="list"),
         }
     )
 
