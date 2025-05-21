@@ -6,7 +6,7 @@ from typing import Optional, Tuple
 
 import numpy as np
 
-from .grid_types import RegularGrid
+from .regular_grid import RegularGrid
 from ....modules.grids.create_topography import _LoadDEMArtificial
 
 from ....optional_dependencies import require_skimage
