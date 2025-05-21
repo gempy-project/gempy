@@ -184,11 +184,10 @@ def verify_model_serialization(model: GeoModel, verify_moment: Literal["before",
 
     binary_file = _to_binary(model_json, compressed_binary)
 
-    model_deserialized = _deserialize_binary_file(binary_file)
 
     original_model = model
     original_model.meta.creation_date = "<DATE_IGNORED>"
-    model_deserialized.meta.creation_date = "<DATE_IGNORED>"
+
     from verify_helper import verify_json
     if verify_moment == "before":
         verify_json(
@@ -196,6 +195,8 @@ def verify_model_serialization(model: GeoModel, verify_moment: Literal["before",
             name=file_name
         )
     elif verify_moment == "after":
+        model_deserialized = _deserialize_binary_file(binary_file)
+        model_deserialized.meta.creation_date = "<DATE_IGNORED>"
         verify_json(
             item=model_deserialized.model_dump_json(by_alias=True, indent=4),
             name=file_name

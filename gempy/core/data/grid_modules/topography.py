@@ -11,6 +11,7 @@ from ....modules.grids.create_topography import _LoadDEMArtificial
 
 from ....optional_dependencies import require_skimage
 from dataclasses import field, dataclass
+from ..encoders.converters import short_array_type
 
 
 @dataclass
@@ -27,7 +28,7 @@ class Topography:
     source: Optional[str] = None
 
     # Fields managed internally
-    values: np.ndarray = field(init=False, default_factory=lambda: np.zeros((0, 3)))
+    values: short_array_type = field(init=False, default=np.zeros((0, 3)))
     resolution: Tuple[int, int] = field(init=False, default=(0, 0))
     raster_shape: Tuple[int, ...] = field(init=False, default=())
     _mask_topo: Optional[np.ndarray] = field(init=False, default=None, repr=False)

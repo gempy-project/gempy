@@ -4,6 +4,7 @@ import pytest
 import gempy as gp
 import gempy_viewer as gpv
 from gempy.core.data.enumerators import ExampleModel
+from gempy.modules.serialization.save_load import verify_model_serialization
 
 from test.conftest import TEST_SPEED, TestSpeed
 
@@ -20,8 +21,6 @@ def test_section_grids():
         evaluation_options=geo_model.interpolation_options.evaluation_options
     )
 
-    model = geo_model
-    model_json = model.model_dump_json(by_alias=True, indent=4)
     gp.set_section_grid(
         grid=geo_model.grid,
         section_dict={
@@ -30,7 +29,6 @@ def test_section_grids():
         }
     )
 
-    model_json = model.model_dump_json(by_alias=True, indent=4)
     gp.set_topography_from_random(
         grid=geo_model.grid,
         fractal_dimension=1.2,
@@ -38,7 +36,12 @@ def test_section_grids():
         topography_resolution=np.array([60, 60])
     )
 
-    model_json = model.model_dump_json(by_alias=True, indent=4)
+    verify_model_serialization(
+        model=geo_model,
+        verify_moment="after",
+        file_name=f"verify/{geo_model.meta.name}"
+    )
+    return 
     gp.compute_model(geo_model)
     gpv.plot_2d(
         model=geo_model,
