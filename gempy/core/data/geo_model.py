@@ -24,7 +24,6 @@ from .structural_frame import StructuralFrame
 from .surface_points import SurfacePointsTable
 from ...modules.data_manipulation.engine_factory import interpolation_input_from_structural_frame
 
-import pandas as pd
 
 """
 TODO:
@@ -299,7 +298,6 @@ class GeoModel(BaseModel):
         use_enum_values=False,
         json_encoders={
                 np.ndarray: encode_numpy_array,
-                pd.DataFrame: lambda df: df.to_dict(orient="list"),
         }
     )
 

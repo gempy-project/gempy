@@ -1,16 +1,13 @@
+from __future__ import annotations   # Python 3.7+ only
 import dataclasses
 import numpy as np
 from pydantic import Field
-from typing import Tuple, Dict, List, Optional
+from typing import Tuple, Dict, List, Optional, Any
 
 from ..core_utils import calculate_line_coordinates_2points
 from ..encoders.converters import short_array_type
 from ....optional_dependencies import require_pandas
 
-try:
-   import pandas as pd
-except ImportError:
-   pandas = None
 
 
 @dataclasses.dataclass
@@ -46,7 +43,7 @@ class Sections:
     resolution: List[Tuple[int, int]] = Field(default_factory=list, exclude=True)
     length: np.ndarray = Field(default_factory=lambda: np.array([0]), exclude=True)
     dist: np.ndarray = Field(default_factory=lambda: np.array([]), exclude=True)
-    df: Optional[pd.DataFrame] = Field(default=None, exclude=True)
+    df: Optional[Any] = Field(default=None, exclude=True)
     values: np.ndarray = Field(default_factory=lambda: np.empty((0, 3)), exclude=True)
     extent: Optional[np.ndarray] = Field(default=None, exclude=True)
 
