@@ -23,7 +23,7 @@ class Topography:
           This always assumes that the topography we pass fits perfectly the extent.
       """
 
-    regular_grid: RegularGrid
+    _regular_grid: RegularGrid
     values_2d: np.ndarray = Field(exclude=True, default_factory=lambda: np.zeros((0, 0, 3)))
     source: Optional[str] = None
 
