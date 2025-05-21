@@ -59,7 +59,7 @@ def set_topography_from_random(grid: Grid, fractal_dimension: float = 2.0, d_z: 
     )
 
     grid.topography = Topography(
-        regular_grid=grid.regular_grid,
+        _regular_grid=grid.regular_grid,
         values_2d=random_topography
     )
 
