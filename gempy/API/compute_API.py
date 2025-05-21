@@ -1,4 +1,7 @@
-﻿from typing import Optional
+﻿import dotenv
+import os
+
+from typing import Optional
 
 import numpy as np
 
@@ -13,6 +16,8 @@ from ..core.data.gempy_engine_config import GemPyEngineConfig
 from ..core.data.geo_model import GeoModel
 from ..modules.data_manipulation.engine_factory import interpolation_input_from_structural_frame
 from ..optional_dependencies import require_gempy_legacy
+
+dotenv.load_dotenv()
 
 
 def compute_model(gempy_model: GeoModel, engine_config: Optional[GemPyEngineConfig] = None) -> Solutions:
@@ -55,6 +60,12 @@ def compute_model(gempy_model: GeoModel, engine_config: Optional[GemPyEngineConf
             gempy_model.legacy_model = _legacy_compute_model(gempy_model)
         case _:
             raise ValueError(f'Backend {engine_config} not supported')
+
+    if os.getenv("VALIDATE_SERIALIZATION", False):
+        from ..modules.serialization.save_load import save_model
+        import tempfile
+        with tempfile.NamedTemporaryFile(mode='w+', delete=True) as tmp:
+            save_model(model=gempy_model, path=tmp.name, validate_serialization=True)
 
     return gempy_model.solutions
 
