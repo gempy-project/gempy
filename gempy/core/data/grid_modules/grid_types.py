@@ -255,6 +255,7 @@ class RegularGrid:
         plt.show()
 
 
+@dataclasses.dataclass
 class Sections:
     """
     Object that creates a grid of cross sections between two points.
@@ -364,6 +365,7 @@ class Sections:
         return self.values[l0:l1]
 
 
+@dataclasses.dataclass
 class CustomGrid:
     """Object that contains arbitrary XYZ coordinates.
 
@@ -374,26 +376,20 @@ class CustomGrid:
         values (np.ndarray): XYZ coordinates
     """
 
-    def __init__(self, xyx_coords: np.ndarray):
-        self.values = np.zeros((0, 3))
-        self.set_custom_grid(xyx_coords)
-
-    def set_custom_grid(self, custom_grid: np.ndarray):
-        """
-        Give the coordinates of an external generated grid
-
-        Args:
-            custom_grid (numpy.ndarray like): XYZ (in columns) of the desired coordinates
-
-        Returns:
-              numpy.ndarray: Unraveled 3D numpy array where every row correspond to the xyz coordinates of a regular
-               grid
-        """
-        custom_grid = np.atleast_2d(custom_grid)
+    values: np.ndarray = Field(
+        exclude=True, 
+        default_factory=lambda: np.zeros((0, 3)),
+        repr=False
+    )
+    
+       
+    def __post_init__(self):
+        custom_grid = np.atleast_2d(self.values)
         assert type(custom_grid) is np.ndarray and custom_grid.shape[1] == 3, \
             'The shape of new grid must be (n,3)  where n is the number of' \
             ' points of the grid'
 
-        self.values = custom_grid
-        self.length = self.values.shape[0]
-        return self.values
+    
+    @property
+    def length(self):
+        return self.values.shape[0]

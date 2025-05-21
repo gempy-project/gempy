@@ -1,3 +1,5 @@
+import re
+
 from typing import Literal
 
 import warnings
@@ -142,15 +144,15 @@ def _validate_serialization(original_model, model_deserialized):
     o_b = hash(model_deserialized.structural_frame.orientations_copy.data.tobytes())
     assert a == b, "Hashes for surface points are not equal"
     assert o_a == o_b, "Hashes for orientations are not equal"
-    original_model___str__ = original_model.__str__()
-    deserialized___str__ = model_deserialized.__str__()
+    original_model___str__ =  re.sub(r'\s+', ' ', original_model.__str__())
+    deserialized___str__ = re.sub(r'\s+', ' ', model_deserialized.__str__())
     if original_model___str__ != deserialized___str__:
         # Find first char that is not the same
         for i in range(min(len(original_model___str__), len(deserialized___str__))):
             if original_model___str__[i] != deserialized___str__[i]:
                 break
         print(f"First difference at index {i}:")
-        i1 = 50
+        i1 = 10
         print(f"Original: {original_model___str__[i - i1:i + i1]}")
         print(f"Deserialized: {deserialized___str__[i - i1:i + i1]}")
 

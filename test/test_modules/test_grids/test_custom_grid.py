@@ -1,6 +1,7 @@
 ﻿import numpy as np
 import pytest
 
+from gempy.modules.serialization.save_load import verify_model_serialization
 from test.conftest import TEST_SPEED, TestSpeed
 import gempy as gp
 from gempy.core.data.enumerators import ExampleModel
@@ -32,7 +33,13 @@ def test_custom_grid():
         xyz_coord=xyz_coord
     )
 
-    sol: gp.data.Solutions = gp.compute_model(geo_model)
+    verify_model_serialization(
+        model=geo_model,
+        verify_moment="after",
+        file_name=f"verify/{geo_model.meta.name}"
+    )
+    
+    sol: gp.data.Solutions = gp.compute_model(geo_model, validate_serialization=False)
     np.testing.assert_array_equal(
         sol.raw_arrays.custom,
         np.array([3., 3., 3., 3., 1., 1., 1., 1.])
