@@ -1,3 +1,5 @@
+from typing import Annotated
+
 from contextlib import contextmanager
 
 from contextvars import ContextVar
@@ -15,6 +17,9 @@ def convert_to_arrays(values, keys):
 
 def validate_numpy_array(v):
     return np.array(v) if v is not None else None
+
+
+short_array_type = Annotated[np.ndarray, (BeforeValidator(lambda v: np.array(v) if v is not None else None))]
 
 
 def instantiate_if_necessary(data: dict, key: str, type: type) -> None:
