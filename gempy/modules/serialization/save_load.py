@@ -5,7 +5,7 @@ import pathlib
 import os
 
 
-def save_model(model: GeoModel, path: str, validate_serialization: bool = True):
+def save_model(model: GeoModel, path: str | None = None, validate_serialization: bool = True):
     """
     Save a GeoModel to a file with proper extension validation.
     
@@ -23,6 +23,8 @@ def save_model(model: GeoModel, path: str, validate_serialization: bool = True):
     """
     # Define the valid extension for gempy models
     VALID_EXTENSION = ".gempy"
+    if path is None:
+        path = model.meta.name + VALID_EXTENSION
 
     # Check if path has an extension
     path_obj = pathlib.Path(path)
