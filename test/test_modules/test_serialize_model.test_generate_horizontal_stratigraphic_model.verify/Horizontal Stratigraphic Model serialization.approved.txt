@@ -28,8 +28,6 @@
                             },
                             "_model_transform": null
                         },
-                        "vertices": null,
-                        "edges": null,
                         "scalar_field_at_interface": null,
                         "_id": 117776925
                     },
@@ -51,8 +49,6 @@
                             },
                             "_model_transform": null
                         },
-                        "vertices": null,
-                        "edges": null,
                         "scalar_field_at_interface": null,
                         "_id": 67239155
                     }

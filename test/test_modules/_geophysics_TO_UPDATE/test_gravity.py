@@ -57,7 +57,7 @@ def test_gravity():
         structural_frame=frame,
     )
 
-    gp.compute_model(geo_model)
+    # gp.compute_model(geo_model)
 
     import gempy_viewer as gpv
     gpv.plot_2d(geo_model, cell_number=0)
@@ -75,6 +75,15 @@ def test_gravity():
         densities=np.array([2.6, 2.4, 3.2]),
     )
 
+    model_json = geo_model.model_dump_json(by_alias=True, indent=4)
+
+    return 
+    from pydantic_core import from_json
+
+    json = from_json(model_json, allow_partial=True)
+    model_deserialized = gp.data.GeoModel.model_validate(json)
+
+    return 
     gp.compute_model(geo_model)
 
     print(geo_model.solutions.gravity)

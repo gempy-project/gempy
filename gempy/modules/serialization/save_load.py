@@ -1,3 +1,5 @@
+import warnings
+
 from ...core.data import GeoModel
 from ...core.data.encoders.converters import loading_model_from_binary
 from ...optional_dependencies import require_zlib
@@ -21,6 +23,10 @@ def save_model(model: GeoModel, path: str | None = None, validate_serialization:
     ValueError
         If the file has an extension other than .gempy
     """
+    
+    # Warning about preview
+    warnings.warn("This function is still in development. It may not work as expected.")
+    
     # Define the valid extension for gempy models
     VALID_EXTENSION = ".gempy"
     if path is None:
@@ -80,6 +86,10 @@ def load_model(path: str) -> GeoModel:
     FileNotFoundError
         If the file doesn't exist
     """
+
+    # Warning about preview
+    warnings.warn("This function is still in development. It may not work as expected.")
+    
     VALID_EXTENSION = ".gempy"
 
     # Check if path has the valid extension
