@@ -63,7 +63,7 @@ class GeoModel(BaseModel):
     # region GemPy engine data types
     _interpolation_options: InterpolationOptions  #: The interpolation options provided by the user.
 
-    geophysics_input: GeophysicsInput = Field(default=None, exclude=False)  #: The geophysics input of the geological model.
+    geophysics_input: GeophysicsInput | None = Field(default=None, exclude=False)  #: The geophysics input of the geological model.
     input_transform: Transform = Field(default=None, exclude=False)  #: The transformation used in the geological model for input points.
 
     interpolation_grid: EngineGrid = Field(default=None, exclude=True)  #: ptional grid used for interpolation. Can be seen as a cache field.
