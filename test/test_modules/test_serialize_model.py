@@ -16,7 +16,7 @@ def test_generate_horizontal_stratigraphic_model():
     model_json = model.model_dump_json(by_alias=True, indent=4)
 
     # Write the JSON to disk
-    if True:
+    if False:
         file_path = os.path.join("temp", "horizontal_stratigraphic_model.json")
         with open(file_path, "w") as f:
             f.write(model_json)
@@ -58,7 +58,7 @@ def test_save_model_to_disk():
     gp.compute_model(loaded_model)
     if True:
         import gempy_viewer as gpv
-        gpv.plot_3d(loaded_model)
+        gpv.plot_3d(loaded_model, image=True)
     
 
 
