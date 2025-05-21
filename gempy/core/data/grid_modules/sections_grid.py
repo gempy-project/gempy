@@ -1,8 +1,7 @@
-from pydantic import Field, model_validator
-from typing import Tuple, Dict, List, Optional
-
 import dataclasses
 import numpy as np
+from pydantic import Field
+from typing import Tuple, Dict, List, Optional
 
 from ..core_utils import calculate_line_coordinates_2points
 from ..encoders.converters import short_array_type
@@ -42,7 +41,7 @@ class Sections:
     ]
 
     # computed/internal (will be serialized too unless excluded)
-    names: List[str] = Field(default_factory=list, exclude=True)
+    names: short_array_type = Field(default=np.array([]), exclude=True)
     points: List[List[Tuple[float, float]]] = Field(default_factory=list, exclude=True)
     resolution: List[Tuple[int, int]] = Field(default_factory=list, exclude=True)
     length: np.ndarray = Field(default_factory=lambda: np.array([0]), exclude=True)
@@ -51,38 +50,13 @@ class Sections:
     values: np.ndarray = Field(default_factory=lambda: np.empty((0, 3)), exclude=True)
     extent: Optional[np.ndarray] = Field(default=None, exclude=True)
 
-    # def __init__(self, regular_grid=None, z_ext=None, section_dict=None):
-    #     pd = require_pandas()
-    #     if regular_grid is not None:
-    #         self.z_ext = regular_grid.extent[4:]
-    #     else:
-    #         self.z_ext = z_ext
-    # 
-    #     self.section_dict = section_dict
-    #     self.names = []
-    #     self.points = []
-    #     self.resolution = []
-    #     self.length = [0]
-    #     self.dist = []
-    #     self.df = pd.DataFrame()
-    #     self.df['dist'] = self.dist
-    #     self.values = np.empty((0, 3))
-    #     self.extent = None
-    # 
-    #     if section_dict is not None:
-    #         self.set_sections(section_dict)
     def __post_init__(self):
         self.initialize_computations()
         pass
 
-    # @model_validator(mode="after")
-    # def init_class(self):
-    #     self.initialize_computations()
-    #     return self
-    # 
     def initialize_computations(self):
         # copy names
-        self.names = list(self.section_dict.keys())
+        self.names = np.array(list(self.section_dict.keys()))
 
         # build points/resolution/length
         self._get_section_params()

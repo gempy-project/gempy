@@ -41,8 +41,7 @@ def test_section_grids():
         verify_moment="after",
         file_name=f"verify/{geo_model.meta.name}"
     )
-    return 
-    gp.compute_model(geo_model)
+    gp.compute_model(geo_model, validate_serialization=False)
     gpv.plot_2d(
         model=geo_model,
         section_names=['section_SW-NE', 'section_NW-SE', 'topography'],
