@@ -496,7 +496,7 @@ class StructuralFrame:
     def binary_meta_data(self) -> dict:
         return {
                 'sp_binary_length': len(self.surface_points_copy.data.tobytes()),
-                # 'ori_binary_length': len(self.orientations_copy.data.tobytes()) * (miguel May 2025) This is not necessary at the moment
+                'ori_binary_length': len(self.orientations_copy.data.tobytes()) 
         }
 
     # endregion

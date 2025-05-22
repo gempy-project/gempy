@@ -59,12 +59,26 @@ class Grid:
                 case dict():
                     grid: Grid = constructor(data)
                     grid._active_grids = Grid.GridTypes(data["active_grids"])
+                    # TODO: Digest binary data
+                    
                     grid._update_values()
                     return grid
                 case _:
                     raise ValidationError
         except ValidationError:
             raise
+
+    @property
+    def grid_binary(self):
+        return self._custom_grid.values.tobytes() + self._topography.values.tobytes()
+
+
+    @computed_field
+    def binary_meta_data(self) -> dict:
+        return {
+                'custom_grid_binary_length': len(self._custom_grid.values.tobytes()),
+                'topography_binary_length': len(self._topography.values.tobytes())
+        }
 
     @computed_field(alias="active_grids")
     @property

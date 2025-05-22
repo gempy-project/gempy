@@ -48,9 +48,14 @@ def save_model(model: GeoModel, path: str | None = None, validate_serialization:
 
     # Compress the binary data
     zlib = require_zlib()
-    compressed_binary = zlib.compress(model.structural_frame.input_tables_binary)
+    compressed_binary_input = zlib.compress(model.structural_frame.input_tables_binary)
+    compressed_binary_grid = zlib.compress(model.grid.grid_binary)
 
-    binary_file = _to_binary(model_json, compressed_binary)
+    binary_file = _to_binary(
+        header_json=model_json,
+        body_input=compressed_binary_input,
+        body_grid=compressed_binary_grid
+    )
 
     if validate_serialization:
         model_deserialized = _deserialize_binary_file(binary_file)
@@ -124,25 +129,22 @@ def _deserialize_binary_file(binary_file):
     return model
 
 
-def _to_binary(header_json, body_) -> bytes:
+def _to_binary(header_json, body_input, body_grid) -> bytes:
     header_json_bytes = header_json.encode('utf-8')
     header_json_length = len(header_json_bytes)
     header_json_length_bytes = header_json_length.to_bytes(4, byteorder='little')
-    file = header_json_length_bytes + header_json_bytes + body_
+    file = header_json_length_bytes + header_json_bytes + body_input + body_grid
     return file
 
 
 def _validate_serialization(original_model, model_deserialized):
-    if False:
-        _verify_models(model_deserialized, original_model)
-
     a = hash(original_model.structural_frame.surface_points_copy.data.tobytes())
     b = hash(model_deserialized.structural_frame.surface_points_copy.data.tobytes())
     o_a = hash(original_model.structural_frame.orientations_copy.data.tobytes())
     o_b = hash(model_deserialized.structural_frame.orientations_copy.data.tobytes())
     assert a == b, "Hashes for surface points are not equal"
     assert o_a == o_b, "Hashes for orientations are not equal"
-    original_model___str__ =  re.sub(r'\s+', ' ', original_model.__str__())
+    original_model___str__ = re.sub(r'\s+', ' ', original_model.__str__())
     deserialized___str__ = re.sub(r'\s+', ' ', model_deserialized.__str__())
     if original_model___str__ != deserialized___str__:
         # Find first char that is not the same
