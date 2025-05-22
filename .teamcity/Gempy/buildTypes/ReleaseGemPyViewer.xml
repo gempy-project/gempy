@@ -6,21 +6,6 @@
     <parameters>
       <param name="env.org/repo" value="gempy-project/gempy_viewer" />
     </parameters>
-    <build-runners>
-      <runner id="Git_Tagging" name="Git Tagging" type="simpleRunner">
-        <parameters>
-          <param name="script.content"><![CDATA[whoami
-echo $HOME
-
-git config --global credential.helper "store --file=/home/leguark/.git-credentials"
-
-GIT_TRACE=1 GIT_CURL_VERBOSE=1 git tag v%env.PACKAGE_VERSION%
-git push origin v%env.PACKAGE_VERSION%]]></param>
-          <param name="teamcity.step.mode" value="default" />
-          <param name="use.custom.script" value="true" />
-        </parameters>
-      </runner>
-    </build-runners>
     <vcs-settings>
       <vcs-entry-ref root-id="GempyEngine_HttpsGithubComGempyProjectGempyViewerRefsHeadsMain" />
     </vcs-settings>
