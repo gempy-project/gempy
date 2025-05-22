@@ -64,7 +64,7 @@ def test_section_grids():
 
 
 @pytest.mark.skipif(TEST_SPEED.value < TestSpeed.MINUTES.value, reason="Global test speed below this test value.")
-def test_topogrphy_II():
+def test_topography_II():
     geo_model: gp.data.GeoModel = gp.generate_example_model(
         example_model=ExampleModel.TWO_AND_A_HALF_D,
         compute_model=False
@@ -77,7 +77,12 @@ def test_topogrphy_II():
         show_lith=False,
         image=True
     )
-    
+
+    verify_model_serialization(
+        model=geo_model,
+        verify_moment="after",
+        file_name=f"verify/{geo_model.meta.name}"
+    )
     gp.compute_model(geo_model)
 
     gpv.plot_2d(geo_model, show_boundaries=False, section_names=['topography'])
