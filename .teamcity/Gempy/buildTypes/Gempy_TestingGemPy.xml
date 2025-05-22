@@ -36,7 +36,7 @@ ls -la requirements
 # Install requirements and teamcity-messages package
 if [ "%USE_PRERELEASE%" = "true" ]; then
   echo "Installing pre-release version of gempy_engine"
-  venv/bin/pip install --pre --verbose -r requirements/dev-requirements.txt
+  venv/bin/pip install --pre --upgrade --verbose -r requirements/dev-requirements.txt
 else
   echo "Installing stable version of gempy_engine"
   venv/bin/pip install --verbose -r requirements/dev-requirements.txt
