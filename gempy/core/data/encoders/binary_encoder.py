@@ -69,7 +69,7 @@ def deserialize_grid(binary_array:bytes, custom_grid_length: int, topography_len
 
     custom_grid_binary = binary_array[custom_grid_start:custom_grid_end]
     topography_binary = binary_array[topography_grid_start:topography_grid_end]
-    custom_grid = np.frombuffer(custom_grid_binary)
+    custom_grid = np.frombuffer(custom_grid_binary, dtype=np.float64)
     topography = np.frombuffer(topography_binary)
     
     
