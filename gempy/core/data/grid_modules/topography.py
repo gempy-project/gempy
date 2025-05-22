@@ -154,6 +154,9 @@ class Topography:
         # n,3 array
         self.values = values_2d.reshape((-1, 3), order='C')
         return self
+    
+    def set_values2d(self, values: np.ndarray):
+        self.values_2d = values.reshape(self.resolution)
 
     @property
     def topography_mask(self):

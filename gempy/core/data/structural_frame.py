@@ -482,7 +482,8 @@ class StructuralFrame:
                 instance.orientations, instance.surface_points = deserialize_input_data_tables(
                     binary_array=context['binary_body'],
                     name_id_map=instance.surface_points_copy.name_id_map,
-                    sp_binary_length_=metadata["sp_binary_length"]
+                    sp_binary_length_=metadata["sp_binary_length"],
+                    ori_binary_length_=metadata["ori_binary_length"]
                 )
 
                 return instance

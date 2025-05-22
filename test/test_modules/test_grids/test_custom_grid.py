@@ -39,7 +39,7 @@ def test_custom_grid():
         file_name=f"verify/{geo_model.meta.name}"
     )
     
-    sol: gp.data.Solutions = gp.compute_model(geo_model, validate_serialization=False)
+    sol: gp.data.Solutions = gp.compute_model(geo_model, validate_serialization=True)
     np.testing.assert_array_equal(
         sol.raw_arrays.custom,
         np.array([3., 3., 3., 3., 1., 1., 1., 1.])

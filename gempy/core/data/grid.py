@@ -8,6 +8,8 @@ from typing import Optional, Annotated, Union
 from gempy_engine.core.data.centered_grid import CenteredGrid
 from gempy_engine.core.data.options import EvaluationOptions
 from gempy_engine.core.data.transforms import Transform
+from .encoders.binary_encoder import deserialize_grid
+from .encoders.converters import loading_model_context
 from .grid_modules import RegularGrid, CustomGrid, Sections
 from .grid_modules.topography import Topography
 
@@ -61,6 +63,24 @@ class Grid:
                     grid._active_grids = Grid.GridTypes(data["active_grids"])
                     # TODO: Digest binary data
 
+                    metadata = data.get('binary_meta_data', {})
+                    context = loading_model_context.get()
+
+                    if 'binary_body' not in context:
+                        return grid
+                    
+                    custom_grid_vals, topography_vals = deserialize_grid(
+                        binary_array=context['binary_body'],
+                        custom_grid_length=metadata["custom_grid_binary_length"],
+                        topography_length=metadata["topography_binary_length"]
+                    )
+                    
+                    if grid.custom_grid is not None:
+                        grid.custom_grid.values = custom_grid_vals.reshape(-1, 3)
+                    
+                    if grid.topography is not None:
+                        grid.topography.set_values2d(values=topography_vals)
+                    
                     grid._update_values()
                     return grid
                 case _:
