@@ -60,7 +60,7 @@ class Grid:
                     grid: Grid = constructor(data)
                     grid._active_grids = Grid.GridTypes(data["active_grids"])
                     # TODO: Digest binary data
-                    
+
                     grid._update_values()
                     return grid
                 case _:
@@ -70,14 +70,15 @@ class Grid:
 
     @property
     def grid_binary(self):
-        return self._custom_grid.values.tobytes() + self._topography.values.tobytes()
-
+        custom_grid_bytes = self._custom_grid.values.tobytes() if self._custom_grid else b''
+        topography_bytes = self._topography.values.tobytes() if self._topography else b''
+        return custom_grid_bytes + topography_bytes
 
     @computed_field
     def binary_meta_data(self) -> dict:
         return {
-                'custom_grid_binary_length': len(self._custom_grid.values.tobytes()),
-                'topography_binary_length': len(self._topography.values.tobytes())
+                'custom_grid_binary_length': len(self._custom_grid.values.tobytes()) if self._custom_grid else 0,
+                'topography_binary_length': len(self._topography.values.tobytes()) if self._topography else 0
         }
 
     @computed_field(alias="active_grids")
