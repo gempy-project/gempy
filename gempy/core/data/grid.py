@@ -90,15 +90,16 @@ class Grid:
 
     @property
     def grid_binary(self):
-        custom_grid_bytes = self._custom_grid.values.tobytes() if self._custom_grid else b''
-        topography_bytes = self._topography.values.tobytes() if self._topography else b''
+        astype = self._custom_grid.values.astype("float64")
+        custom_grid_bytes = astype.tobytes() if self._custom_grid else b''
+        topography_bytes = self._topography.values.astype("float64").tobytes() if self._topography else b''
         return custom_grid_bytes + topography_bytes
 
     @computed_field
     def binary_meta_data(self) -> dict:
         return {
-                'custom_grid_binary_length': len(self._custom_grid.values.tobytes()) if self._custom_grid else 0,
-                'topography_binary_length': len(self._topography.values.tobytes()) if self._topography else 0
+                'custom_grid_binary_length': len(self._custom_grid.values.astype("float64").tobytes()) if self._custom_grid else 0,
+                'topography_binary_length': len(self._topography.values.astype("float64").tobytes()) if self._topography else 0
         }
 
     @computed_field(alias="active_grids")
