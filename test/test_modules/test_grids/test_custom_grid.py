@@ -1,7 +1,7 @@
 ﻿import numpy as np
 import pytest
 
-from gempy.modules.serialization.save_load import verify_model_serialization
+from test.verify_helper import verify_model_serialization
 from test.conftest import TEST_SPEED, TestSpeed
 import gempy as gp
 from gempy.core.data.enumerators import ExampleModel

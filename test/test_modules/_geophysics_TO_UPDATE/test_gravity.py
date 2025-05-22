@@ -4,7 +4,7 @@ import gempy as gp
 # Importing auxiliary libraries
 import numpy as np
 
-from gempy.modules.serialization.save_load import verify_model_serialization
+from test.verify_helper import verify_model_serialization
 
 
 def test_gravity():
