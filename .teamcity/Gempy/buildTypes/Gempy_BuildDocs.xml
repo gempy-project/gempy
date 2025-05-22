@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<build-type xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" uuid="00c27404-7069-4acf-83b9-f1d246fbf0e3" xsi:noNamespaceSchemaLocation="https://www.jetbrains.com/teamcity/schemas/2025.3/project-config.xsd">
+  <name>BuildDocs</name>
+  <description />
+  <settings>
+    <options>
+      <option name="allowExternalStatus" value="true" />
+      <option name="artifactRules" value="docs_site.zip =&gt; docs" />
+    </options>
+    <disabled-settings>
+      <setting-ref ref="TRIGGER_4" />
+    </disabled-settings>
+    <parameters>
+      <param name="REQUIREMENT_LEVEL" value="READ_MESH" />
+      <param name="env.LIQUID_EARTH_API_TOKEN" value="credentialsJSON:f48d57e0-a522-475f-a94d-333cbb99703e" spec="password display='normal'" />
+      <param name="env.MPLBACKEND" value="Agg" />
+    </parameters>
+    <build-runners>
+      <runner id="Setup" name="Setup" type="simpleRunner">
+        <parameters>
+          <param name="script.content"><![CDATA[#!/bin/bash
+set -ex  # enable debug output and exit on error
+
+# Create virtual environment using Python 3
+python3 -m venv venv
+
+# Activate the virtual environment
+source venv/bin/activate
+
+# Upgrade pip
+venv/bin/python -m pip install --upgrade pip
+
+echo "Checking directory contents..."
+ls -la
+ls -la requirements
+
+# Install requirements and teamcity-messages package
+venv/bin/pip install --verbose --pre --upgrade -r requirements/docs_requirements.txt
+venv/bin/pip install --verbose teamcity-messages]]></param>
+          <param name="teamcity.step.mode" value="default" />
+          <param name="use.custom.script" value="true" />
+        </parameters>
+      </runner>
+      <runner id="Run_Test" name="Run Test: Core" type="simpleRunner">
+        <parameters>
+          <param name="script.content"><![CDATA[#!/bin/bash
+ set -ex  # Exit immediately if a command exits with a non-zero status, and print commands
+
+# Run pytest with the teamcity reporter enabled
+venv/bin/python -m sphinx -b html docs/source docs/build/html]]></param>
+          <param name="teamcity.step.mode" value="default" />
+          <param name="use.custom.script" value="true" />
+        </parameters>
+      </runner>
+      <runner id="Zip_Docs" name="Zip Docs" type="simpleRunner">
+        <parameters>
+          <param name="script.content" value="zip -r docs_site.zip docs/build/html" />
+          <param name="teamcity.step.mode" value="default" />
+          <param name="use.custom.script" value="true" />
+        </parameters>
+      </runner>
+    </build-runners>
+    <vcs-settings>
+      <vcs-entry-ref root-id="Gempy_HttpsGithubComGempyProjectGempyRefsHeadsMain1" />
+    </vcs-settings>
+    <requirements>
+      <exists id="RQ_4" name="env.WSLENV" />
+    </requirements>
+    <build-triggers>
+      <build-trigger id="TRIGGER_4" type="vcsTrigger">
+        <parameters>
+          <param name="branchFilter"><![CDATA[+pr:draft=false
+-:refs/heads/main
+-:<default>]]></param>
+          <param name="enableQueueOptimization" value="true" />
+          <param name="quietPeriodMode" value="DO_NOT_USE" />
+        </parameters>
+      </build-trigger>
+    </build-triggers>
+    <build-extensions>
+      <extension id="perfmon" type="perfmon">
+        <parameters>
+          <param name="teamcity.perfmon.feature.enabled" value="true" />
+        </parameters>
+      </extension>
+      <extension id="BUILD_EXT_5" type="commit-status-publisher">
+        <parameters>
+          <param name="github_authentication_type" value="storedToken" />
+          <param name="github_host" value="https://api.github.com" />
+          <param name="publisherId" value="githubStatusPublisher" />
+          <param name="tokenId" value="tc_token_id:CID_3b89bdfbf109f1ab1de7ca93ee1e7c9f:-1:ca909c18-3845-403b-bf03-43f880307532" />
+          <param name="vcsRootId" value="Gempy_HttpsGithubComGempyProjectGempyRefsHeadsMain1" />
+        </parameters>
+      </extension>
+      <extension id="BUILD_EXT_6" type="pullRequests">
+        <parameters>
+          <param name="authenticationType" value="token" />
+          <param name="filterAuthorRole" value="EVERYBODY" />
+          <param name="ignoreDrafts" value="true" />
+          <param name="providerType" value="github" />
+          <param name="secure:accessToken" value="credentialsJSON:4df4bdb0-1278-4834-a702-18ae3a286003" />
+          <param name="vcsRootId" value="Gempy_HttpsGithubComGempyProjectGempyRefsHeadsMain1" />
+        </parameters>
+      </extension>
+    </build-extensions>
+  </settings>
+</build-type>
+
