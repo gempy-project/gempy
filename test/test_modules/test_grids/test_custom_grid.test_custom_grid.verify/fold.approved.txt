@@ -62,7 +62,8 @@
         "is_dirty": true,
         "basement_color": "#ffbe00",
         "binary_meta_data": {
-            "sp_binary_length": 1296
+            "sp_binary_length": 1296,
+            "ori_binary_length": 120
         }
     },
     "grid": {
@@ -89,6 +90,10 @@
         "_centered_grid": null,
         "_transform": null,
         "_octree_levels": -1,
+        "binary_meta_data": {
+            "custom_grid_binary_length": 192,
+            "topography_binary_length": 0
+        },
         "active_grids": 1029
     },
     "geophysics_input": null,
