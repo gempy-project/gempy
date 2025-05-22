@@ -105,7 +105,8 @@ class TestStratigraphicPile:
                             "id"   : 62_000,
                             "color": "#bb825b"
                     }
-            }
+            },
+            group_by="component lith"
         )
 
         group = gp.data.StructuralGroup(
