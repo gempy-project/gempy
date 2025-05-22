@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vcs-root xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" uuid="46efada4-e3ad-45ca-8870-324d4f18f972" type="jetbrains.git" xsi:noNamespaceSchemaLocation="https://www.jetbrains.com/teamcity/schemas/2025.3/project-config.xsd">
+  <name>Caching docs vcs</name>
+  <param name="agentCleanFilesPolicy" value="ALL_UNTRACKED" />
+  <param name="agentCleanPolicy" value="NEVER" />
+  <param name="authMethod" value="PASSWORD" />
+  <param name="branch" value="refs/heads/main" />
+  <param name="ignoreKnownHosts" value="true" />
+  <param name="secure:password" value="credentialsJSON:b27e49f2-8756-4fd4-86ae-fdabf1514f42" />
+  <param name="submoduleCheckout" value="CHECKOUT" />
+  <param name="url" value="https://github.com/gempy-project/gempy" />
+  <param name="useAlternates" value="SHALLOW_CLONE" />
+  <param name="username" value="Leguark" />
+  <param name="usernameStyle" value="USERID" />
+</vcs-root>
+
