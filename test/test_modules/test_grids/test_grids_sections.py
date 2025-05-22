@@ -4,7 +4,7 @@ import pytest
 import gempy as gp
 import gempy_viewer as gpv
 from gempy.core.data.enumerators import ExampleModel
-from gempy.modules.serialization.save_load import verify_model_serialization
+from test.verify_helper import verify_model_serialization
 
 from test.conftest import TEST_SPEED, TestSpeed
 
