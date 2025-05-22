@@ -44,18 +44,7 @@ def save_model(model: GeoModel, path: str | None = None, validate_serialization:
         # If no extension, add the valid extension
         path = str(path_obj) + VALID_EXTENSION
 
-    model_json = model.model_dump_json(by_alias=True, indent=4)
-
-    # Compress the binary data
-    zlib = require_zlib()
-    compressed_binary_input = zlib.compress(model.structural_frame.input_tables_binary)
-    compressed_binary_grid = zlib.compress(model.grid.grid_binary)
-
-    binary_file = _to_binary(
-        header_json=model_json,
-        body_input=compressed_binary_input,
-        body_grid=compressed_binary_grid
-    )
+    binary_file = model_to_binary(model)
 
     if validate_serialization:
         model_deserialized = _deserialize_binary_file(binary_file)
@@ -70,6 +59,20 @@ def save_model(model: GeoModel, path: str | None = None, validate_serialization:
         f.write(binary_file)
 
     return path  # Return the actual path used (helpful if extension was added)
+
+
+def model_to_binary(model: GeoModel) -> bytes:
+    model_json = model.model_dump_json(by_alias=True, indent=4)
+    # Compress the binary data
+    zlib = require_zlib()
+    compressed_binary_input = zlib.compress(model.structural_frame.input_tables_binary)
+    compressed_binary_grid = zlib.compress(model.grid.grid_binary)
+    binary_file = _to_binary(
+        header_json=model_json,
+        body_input=compressed_binary_input,
+        body_grid=compressed_binary_grid
+    )
+    return binary_file
 
 
 def load_model(path: str) -> GeoModel:
