@@ -10,9 +10,9 @@
       <param name="REQUIREMENT_LEVEL" value="READ_MESH" />
       <param name="USE_PRERELEASE" value="true" spec="checkbox checkedValue='true' display='prompt'" />
       <param name="env.MPLBACKEND" value="Agg" />
-      <param name="env.TEST_DATA" value="/mnt/d/OneDrive - Terranigma Solutions GmbH/Documents - Terranigma Base/DevOps/GemPyTestData/1" />
-      <param name="env.TERRA_PATH_DEVOPS" value="/mnt/d/OneDrive - Terranigma Solutions GmbH/Documents - Terranigma Base/DevOps/" />
       <param name="env.PATH_TO_SPREMBERG" value="%env.TERRA_PATH_DEVOPS%SubsurfaceTestData/boreholes/Spremberg/" />
+      <param name="env.TERRA_PATH_DEVOPS" value="/mnt/d/OneDrive - Terranigma Solutions GmbH/Documents - Terranigma Base/DevOps/" />
+      <param name="env.TEST_DATA" value="/mnt/d/OneDrive - Terranigma Solutions GmbH/Documents - Terranigma Base/DevOps/GemPyTestData/1" />
     </parameters>
     <build-runners>
       <runner id="Setup" name="Setup" type="simpleRunner">
@@ -36,7 +36,7 @@ ls -la requirements
 # Install requirements and teamcity-messages package
 if [ "%USE_PRERELEASE%" = "true" ]; then
   echo "Installing pre-release version of gempy_engine"
-  venv/bin/pip install --pre --verbose -r requirements/dev-requirements.txt
+  venv/bin/pip install --pre --upgrade --verbose -r requirements/dev-requirements.txt
 else
   echo "Installing stable version of gempy_engine"
   venv/bin/pip install --verbose -r requirements/dev-requirements.txt
