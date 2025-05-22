@@ -26,7 +26,7 @@
                             },
                             "_model_transform": null
                         },
-                        "scalar_field_at_interface": null,
+                        "scalar_field_at_interface": 0.09000000000000002,
                         "_id": -1
                     },
                     {
@@ -43,7 +43,7 @@
                             "name_id_map": null,
                             "_model_transform": null
                         },
-                        "scalar_field_at_interface": null,
+                        "scalar_field_at_interface": -0.2483333333333333,
                         "_id": -1
                     }
                 ],
@@ -154,7 +154,7 @@
             "mesh_extraction_masking_options": 3,
             "mesh_extraction_fancy": true,
             "evaluation_chunk_size": 500000,
-            "compute_scalar_gradient": false,
+            "compute_scalar_gradient": true,
             "verbose": false
         },
         "debug": true,
