@@ -129,8 +129,11 @@
         ],
         "is_dirty": true,
         "basement_color": "#728f02",
+        "_input_binary_size": 211,
         "binary_meta_data": {
-            "sp_binary_length": 792
+            "sp_binary_length": 792,
+            "ori_binary_length": 300,
+            "input_binary_size": 211
         }
     },
     "grid": {
