@@ -13,7 +13,6 @@ radius = np.array([500, 100, 200]) / 2
 k = np.array([1, 1, 1]) * 1
 
 PLOT = False
-# TODO: Add the approval test check
 
 
 @pytest.mark.skipif(TEST_SPEED.value < TestSpeed.SECONDS.value, reason="Global test speed below this test value.")
