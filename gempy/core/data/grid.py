@@ -95,13 +95,11 @@ class Grid:
         return custom_grid_bytes + topography_bytes
 
 
-    _grid_binary_size: int = 0
     @computed_field
     def binary_meta_data(self) -> dict:
         return {
                 'custom_grid_binary_length': len(self._custom_grid.values.astype("float64").tobytes()) if self._custom_grid else 0,
                 'topography_binary_length': len(self._topography.values.astype("float64").tobytes()) if self._topography else 0,
-                'grid_binary_size': self._grid_binary_size
         }
 
     @computed_field(alias="active_grids")
