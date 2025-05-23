@@ -492,13 +492,11 @@ class StructuralFrame:
 
         # Access the context variable to get injected data
 
-    _input_binary_size: int = 0
     @computed_field
     def binary_meta_data(self) -> dict:
         return {
                 'sp_binary_length': len(self.surface_points_copy.data.tobytes()),
                 'ori_binary_length': len(self.orientations_copy.data.tobytes()) ,
-                'input_binary_size': self._input_binary_size
         }
 
     # endregion
