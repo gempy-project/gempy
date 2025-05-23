@@ -68,6 +68,13 @@ def model_to_binary(model: GeoModel) -> bytes:
     compressed_binary_input = zlib.compress(model.structural_frame.input_tables_binary)
     compressed_binary_grid = zlib.compress(model.grid.grid_binary)
 
+    compressed_binary_grid = zlib.compress(model.grid.grid_binary, level=6)
+
+    import hashlib
+    print("raw bytes hash:", hashlib.sha256(model.grid.grid_binary).hexdigest())
+    print("compressed length:", len(compressed_binary_grid))
+    print("zlib version:", zlib.ZLIB_VERSION)
+
     # * Add here the serialization meta parameters like: len_bytes
     model.structural_frame._input_binary_size = len(compressed_binary_input)
     model.grid._grid_binary_size = len(compressed_binary_grid)
