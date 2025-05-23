@@ -1,6 +1,6 @@
 {
     "meta": {
-        "name": "horizontal",
+        "name": "Model1",
         "creation_date": "<DATE_IGNORED>",
         "last_modification_date": null,
         "owner": null
@@ -8,49 +8,84 @@
     "structural_frame": {
         "structural_groups": [
             {
-                "name": "Strat_Series",
+                "name": "Fault1",
                 "elements": [
                     {
-                        "name": "rock2",
+                        "name": "fault1",
+                        "is_active": true,
+                        "_color": "#728f02",
+                        "surface_points": {
+                            "name_id_map": {
+                                "fault1": 26244822
+                            },
+                            "_model_transform": null
+                        },
+                        "orientations": {
+                            "name_id_map": {
+                                "fault1": 26244822
+                            },
+                            "_model_transform": null
+                        },
+                        "scalar_field_at_interface": null,
+                        "_id": -1
+                    }
+                ],
+                "structural_relation": 3,
+                "fault_relations": 3,
+                "faults_input_data": null,
+                "solution": null
+            },
+            {
+                "name": "default_formations",
+                "elements": [
+                    {
+                        "name": "surface1",
+                        "is_active": true,
+                        "_color": "#015482",
+                        "surface_points": {
+                            "name_id_map": {},
+                            "_model_transform": null
+                        },
+                        "orientations": {
+                            "name_id_map": null,
+                            "_model_transform": null
+                        },
+                        "scalar_field_at_interface": null,
+                        "_id": -1
+                    },
+                    {
+                        "name": "surface2",
                         "is_active": true,
                         "_color": "#9f0052",
                         "surface_points": {
                             "name_id_map": {
-                                "rock1": 67239155,
-                                "rock2": 117776925
+                                "surface2": 21816406
                             },
                             "_model_transform": null
                         },
                         "orientations": {
-                            "name_id_map": {
-                                "rock1": 67239155,
-                                "rock2": 117776925
-                            },
+                            "name_id_map": null,
                             "_model_transform": null
                         },
                         "scalar_field_at_interface": null,
-                        "_id": 117776925
+                        "_id": -1
                     },
                     {
-                        "name": "rock1",
+                        "name": "surface3",
                         "is_active": true,
-                        "_color": "#015482",
+                        "_color": "#ffbe00",
                         "surface_points": {
                             "name_id_map": {
-                                "rock1": 67239155,
-                                "rock2": 117776925
+                                "surface3": 98435767
                             },
                             "_model_transform": null
                         },
                         "orientations": {
-                            "name_id_map": {
-                                "rock1": 67239155,
-                                "rock2": 117776925
-                            },
+                            "name_id_map": null,
                             "_model_transform": null
                         },
                         "scalar_field_at_interface": null,
-                        "_id": 67239155
+                        "_id": -1
                     }
                 ],
                 "structural_relation": 1,
@@ -60,12 +95,9 @@
             }
         ],
         "is_dirty": true,
-        "basement_color": "#ffbe00",
-        "_input_binary_size": 0,
+        "basement_color": "#443988",
         "binary_meta_data": {
-            "sp_binary_length": 432,
-            "ori_binary_length": 120,
-            "input_binary_size": 0
+            "sp_binary_length": 360
         }
     },
     "grid": {
@@ -73,39 +105,60 @@
         "_dense_grid": {
             "resolution": [
                 50,
-                5,
+                50,
                 50
             ],
             "extent": [
                 0.0,
-                1000.0,
-                0.0,
-                1000.0,
-                0.0,
-                1000.0
+                791.0,
+                -200.0,
+                200.0,
+                -582.0,
+                0.0
             ],
             "_transform": null
         },
         "_custom_grid": null,
-        "_topography": null,
+        "_topography": {
+            "_regular_grid": {
+                "resolution": [
+                    50,
+                    50,
+                    50
+                ],
+                "extent": [
+                    0.0,
+                    791.0,
+                    -200.0,
+                    200.0,
+                    -582.0,
+                    0.0
+                ],
+                "_transform": null
+            },
+            "source": null,
+            "values": [],
+            "resolution": [
+                0,
+                0
+            ],
+            "raster_shape": [],
+            "_mask_topo": null,
+            "_x": null,
+            "_y": null
+        },
         "_sections": null,
         "_centered_grid": null,
         "_transform": null,
         "_octree_levels": -1,
-        "_grid_binary_size": 0,
-        "binary_meta_data": {
-            "custom_grid_binary_length": 0,
-            "topography_binary_length": 0,
-            "grid_binary_size": 0
-        },
-        "active_grids": 1026
+        "active_grids": 1034
     },
     "geophysics_input": null,
     "input_transform": {
         "position": [
-            -500.0,
-            -500.0,
-            -500.0
+            -417.5,
+            -0.5,
+            157.0
         ],
         "rotation": [
             0.0,
@@ -113,9 +166,9 @@
             0.0
         ],
         "scale": [
-            0.000625,
-            0.000625,
-            0.000625
+            0.0012853470437017994,
+            0.0012853470437017994,
+            0.0012853470437017994
         ],
         "_is_default_transform": false,
         "_cached_pivot": null
@@ -135,7 +188,7 @@
             "condition_number": null
         },
         "evaluation_options": {
-            "_number_octree_levels": 3,
+            "_number_octree_levels": 1,
             "_number_octree_levels_surface": 4,
             "octree_curvature_threshold": -1.0,
             "octree_error_threshold": 1.0,
@@ -149,7 +202,7 @@
         },
         "debug": true,
         "cache_mode": 3,
-        "cache_model_name": "horizontal",
+        "cache_model_name": "Model1",
         "block_solutions_type": 2,
         "sigmoid_slope": 5000000,
         "debug_water_tight": false

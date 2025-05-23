@@ -24,7 +24,9 @@ def test_generate_horizontal_stratigraphic_model():
             f.write(model_json)
 
     with loading_model_from_binary(
-            binary_body=model.structural_frame.input_tables_binary
+            input_binary=model.structural_frame.input_tables_binary,
+            grid_binary=model.grid.grid_binary
+            # binary_body=model.structural_frame.input_tables_binary
     ):
         model_deserialized = gp.data.GeoModel.model_validate_json(model_json)
 
