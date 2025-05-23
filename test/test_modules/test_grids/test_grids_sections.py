@@ -4,6 +4,7 @@ import pytest
 import gempy as gp
 import gempy_viewer as gpv
 from gempy.core.data.enumerators import ExampleModel
+from gempy.modules.serialization.save_load import verify_model_serialization
 
 from test.conftest import TEST_SPEED, TestSpeed
 
@@ -35,7 +36,12 @@ def test_section_grids():
         topography_resolution=np.array([60, 60])
     )
 
-    gp.compute_model(geo_model)
+    verify_model_serialization(
+        model=geo_model,
+        verify_moment="after",
+        file_name=f"verify/{geo_model.meta.name}"
+    )
+    gp.compute_model(geo_model, validate_serialization=False)
     gpv.plot_2d(
         model=geo_model,
         section_names=['section_SW-NE', 'section_NW-SE', 'topography'],

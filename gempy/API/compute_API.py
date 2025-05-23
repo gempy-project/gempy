@@ -1,4 +1,7 @@
-﻿from typing import Optional
+﻿import dotenv
+import os
+
+from typing import Optional
 
 import numpy as np
 
@@ -14,8 +17,11 @@ from ..core.data.geo_model import GeoModel
 from ..modules.data_manipulation.engine_factory import interpolation_input_from_structural_frame
 from ..optional_dependencies import require_gempy_legacy
 
+dotenv.load_dotenv()
 
-def compute_model(gempy_model: GeoModel, engine_config: Optional[GemPyEngineConfig] = None) -> Solutions:
+
+def compute_model(gempy_model: GeoModel, engine_config: Optional[GemPyEngineConfig] = None,
+                  **kwargs) -> Solutions:
     """
     Compute the geological model given the provided GemPy model.
 
@@ -56,6 +62,12 @@ def compute_model(gempy_model: GeoModel, engine_config: Optional[GemPyEngineConf
         case _:
             raise ValueError(f'Backend {engine_config} not supported')
 
+    if os.getenv("VALIDATE_SERIALIZATION", False) and kwargs.get("validate_serialization", True):
+        from ..modules.serialization.save_load import save_model
+        import tempfile
+        with tempfile.NamedTemporaryFile(mode='w+', delete=True) as tmp:
+            save_model(model=gempy_model, path=tmp.name, validate_serialization=True)
+
     return gempy_model.solutions
 
 
@@ -79,7 +91,7 @@ def compute_model_at(gempy_model: GeoModel, at: np.ndarray,
         xyz_coord=at
     )
 
-    sol = compute_model(gempy_model, engine_config)
+    sol = compute_model(gempy_model, engine_config, validate_serialization=False)
     return sol.raw_arrays.custom
 
 

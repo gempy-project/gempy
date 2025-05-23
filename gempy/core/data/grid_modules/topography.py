@@ -1,49 +1,45 @@
+import dataclasses
+
 import warnings
-from typing import Optional
+from pydantic import Field
+from typing import Optional, Tuple
 
 import numpy as np
 
-from .grid_types import RegularGrid
+from .regular_grid import RegularGrid
 from ....modules.grids.create_topography import _LoadDEMArtificial
 
 from ....optional_dependencies import require_skimage
+from dataclasses import field, dataclass
+from ..encoders.converters import short_array_type
 
 
+@dataclass
 class Topography:
-    """
-    Object to include topography in the model.
-
-    Notes:
-        This always assumes that the topography we pass fits perfectly the extent
 
     """
+      Object to include topography in the model.
+      Notes:
+          This always assumes that the topography we pass fits perfectly the extent.
+      """
 
-    def __init__(self, regular_grid: RegularGrid, values_2d: Optional[np.ndarray] = None):
+    _regular_grid: RegularGrid
+    values_2d: np.ndarray = Field(exclude=True, default_factory=lambda: np.zeros((0, 0, 3)))
+    source: Optional[str] = None
 
-        self._mask_topo = None
-        self._regular_grid = regular_grid
+    # Fields managed internally
+    values: short_array_type = field(init=False, default=np.zeros((0, 3)))
+    resolution: Tuple[int, int] = field(init=False, default=(0, 0))
+    raster_shape: Tuple[int, ...] = field(init=False, default=())
+    _mask_topo: Optional[np.ndarray] = field(init=False, default=None, repr=False)
+    _x: Optional[np.ndarray] = field(init=False, default=None, repr=False)
+    _y: Optional[np.ndarray] = field(init=False, default=None, repr=False)
 
-        # Values (n, 3)
-        self.values = np.zeros((0, 3))
+    def __post_init__(self):
+        # if a non-empty array was provided, initialize the flattened values
+        if self.values_2d.size:
+            self.set_values(self.values_2d)
 
-        # Values (n, n, 3)
-        self.values_2d = np.zeros((0, 0, 3))
-
-        # Shape original
-        self.raster_shape = tuple()
-
-        # Topography Resolution
-        self.resolution = np.zeros((0, 3))
-
-        # Source for the
-        self.source = None
-
-        # Coords
-        self._x = None
-        self._y = None
-
-        if values_2d is not None:
-            self.set_values(values_2d)
 
     @classmethod
     def from_subsurface_structured_data(cls, structured_data: 'subsurface.StructuredData', regular_grid: RegularGrid):
