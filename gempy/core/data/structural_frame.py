@@ -476,11 +476,11 @@ class StructuralFrame:
                 metadata = data.get('binary_meta_data', {})
                 context = loading_model_context.get()
 
-                if 'binary_body' not in context:
+                if 'input_binary' not in context:
                     return instance
 
                 instance.orientations, instance.surface_points = deserialize_input_data_tables(
-                    binary_array=context['binary_body'],
+                    binary_array=context['input_binary'],
                     name_id_map=instance.surface_points_copy.name_id_map,
                     sp_binary_length_=metadata["sp_binary_length"],
                     ori_binary_length_=metadata["ori_binary_length"]
@@ -492,12 +492,13 @@ class StructuralFrame:
 
         # Access the context variable to get injected data
 
-
+    _input_binary_size: int = 0
     @computed_field
     def binary_meta_data(self) -> dict:
         return {
                 'sp_binary_length': len(self.surface_points_copy.data.tobytes()),
-                'ori_binary_length': len(self.orientations_copy.data.tobytes()) 
+                'ori_binary_length': len(self.orientations_copy.data.tobytes()) ,
+                'input_binary_size': self._input_binary_size
         }
 
     # endregion

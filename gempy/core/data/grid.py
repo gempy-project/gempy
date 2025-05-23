@@ -66,11 +66,11 @@ class Grid:
                     metadata = data.get('binary_meta_data', {})
                     context = loading_model_context.get()
 
-                    if 'binary_body' not in context:
+                    if 'grid_binary' not in context:
                         return grid
                     
                     custom_grid_vals, topography_vals = deserialize_grid(
-                        binary_array=context['binary_body'],
+                        binary_array=context['grid_binary'],
                         custom_grid_length=metadata["custom_grid_binary_length"],
                         topography_length=metadata["topography_binary_length"]
                     )
@@ -90,16 +90,18 @@ class Grid:
 
     @property
     def grid_binary(self):
-        astype = self._custom_grid.values.astype("float64")
-        custom_grid_bytes = astype.tobytes() if self._custom_grid else b''
+        custom_grid_bytes = self._custom_grid.values.astype("float64").tobytes() if self._custom_grid else b''
         topography_bytes = self._topography.values.astype("float64").tobytes() if self._topography else b''
         return custom_grid_bytes + topography_bytes
 
+
+    _grid_binary_size: int = 0
     @computed_field
     def binary_meta_data(self) -> dict:
         return {
                 'custom_grid_binary_length': len(self._custom_grid.values.astype("float64").tobytes()) if self._custom_grid else 0,
-                'topography_binary_length': len(self._topography.values.astype("float64").tobytes()) if self._topography else 0
+                'topography_binary_length': len(self._topography.values.astype("float64").tobytes()) if self._topography else 0,
+                'grid_binary_size': self._grid_binary_size
         }
 
     @computed_field(alias="active_grids")
