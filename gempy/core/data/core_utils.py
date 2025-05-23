@@ -4,9 +4,9 @@ from gempy.optional_dependencies import require_scipy
 
 
 def calculate_line_coordinates_2points(p1, p2, res):
-    if isinstance(p1, list):
+    if isinstance(p1, list) or isinstance(p1, tuple):
         p1 = np.array(p1)
-    if isinstance(p2, list):
+    if isinstance(p2, list) or isinstance(p2, tuple):
         p2 = np.array(p2)
     v = p2 - p1  # vector pointing from p1 to p2
     u = v / np.linalg.norm(v)  # normalize it

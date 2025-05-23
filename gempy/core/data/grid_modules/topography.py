@@ -29,7 +29,7 @@ class Topography:
 
     # Fields managed internally
     values: short_array_type = field(init=False, default=np.zeros((0, 3)))
-    resolution: Tuple[int, int] = field(init=False, default=(0, 0))
+    resolution: Tuple[int, int] = Field(init=True, default=(0, 0))
     raster_shape: Tuple[int, ...] = field(init=False, default=())
     _mask_topo: Optional[np.ndarray] = field(init=False, default=None, repr=False)
     _x: Optional[np.ndarray] = field(init=False, default=None, repr=False)
@@ -95,7 +95,7 @@ class Topography:
         # Reshape the grid for compatibility with existing structure
         values_2d = np.stack((x_regular, y_regular, z_regular), axis=-1)
 
-        return cls(regular_grid=regular_grid, values_2d=values_2d)
+        return cls(_regular_grid=regular_grid, values_2d=values_2d)
     
     
     @classmethod
@@ -107,7 +107,7 @@ class Topography:
         topography_vals = height_values.values[:, :, np.newaxis]  # shape (73, 34, 1)
         # Stack along the last dimension
         result = np.concatenate([x_vals, y_vals, topography_vals], axis=2)  # shape (73, 34, 3)
-        return cls(regular_grid=regular_grid, values_2d=result)
+        return cls(_regular_grid=regular_grid, values_2d=result)
 
     @property
     def extent(self):
@@ -154,9 +154,34 @@ class Topography:
         # n,3 array
         self.values = values_2d.reshape((-1, 3), order='C')
         return self
-    
-    def set_values2d(self, values: np.ndarray):
-        self.values_2d = values.reshape(self.resolution)
+
+    def set_values2d(self, values: np.ndarray) -> "Topography":
+        """
+        Reconstruct the 2D topography (shape = resolution + [3]) from
+        a flat Nx3 array (or from self.values if none is provided).
+        """
+        # default to the already-flattened XYZ array
+        
+        # compute expected size
+        nx, ny = self.resolution
+        expected = nx * ny * 3
+        if values.size != expected:
+            raise ValueError(
+                f"Cannot reshape array of size {values.size} into shape {(nx, ny, 3)}."
+            )
+
+        # reshape in C-order to (nx, ny, 3)
+        self.set_values(
+            values_2d=values.reshape(nx, ny, 3, order="C")
+        )
+
+        # invalidate any cached mask
+        self._mask_topo = None
+        return self
+
+    def set_values2d_(self, values: np.ndarray):
+        resolution = (60, 60)
+        self.values_2d = values.reshape(*resolution, 3)
 
     @property
     def topography_mask(self):
