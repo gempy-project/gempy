@@ -13,6 +13,9 @@
       <param name="env.PATH_TO_SPREMBERG" value="%env.TERRA_PATH_DEVOPS%SubsurfaceTestData/boreholes/Spremberg/" />
       <param name="env.TERRA_PATH_DEVOPS" value="/mnt/d/OneDrive - Terranigma Solutions GmbH/Documents - Terranigma Base/DevOps/" />
       <param name="env.TEST_DATA" value="/mnt/d/OneDrive - Terranigma Solutions GmbH/Documents - Terranigma Base/DevOps/GemPyTestData/1" />
+      <param name="env.OMP_NUM_THREADS" value="1"/>
+      <param name="env.MKL_NUM_THREADS" value="1"/>
+      <param name="env.OPENBLAS_NUM_THREADS" value="1"/>
     </parameters>
     <build-runners>
       <runner id="Setup" name="Setup" type="simpleRunner">
