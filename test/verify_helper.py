@@ -11,9 +11,7 @@ from approvaltests.namer import NamerFactory
 from approvaltests.reporters import GenericDiffReporter, GenericDiffReporterConfig
 
 from gempy.core.data import GeoModel
-from gempy.modules.serialization.save_load import _to_binary, _deserialize_binary_file, model_to_binary
-from gempy.optional_dependencies import require_zlib
-
+from gempy.modules.serialization.save_load import _load_model_from_bytes, model_to_bytes
 
 class WSLWindowsDiffReporter(GenericDiffReporter):
     def get_command(self, received, approved):
@@ -120,7 +118,7 @@ def verify_model_serialization(model: GeoModel, verify_moment: Literal["before",
     Raises:
         ValueError: If `verify_moment` is not set to "before" or "after".
     """
-    binary_file = model_to_binary(model)
+    binary_file = model_to_bytes(model)
 
     original_model = model
     original_model.meta.creation_date = "<DATE_IGNORED>"
@@ -131,7 +129,7 @@ def verify_model_serialization(model: GeoModel, verify_moment: Literal["before",
             name=file_name
         )
     elif verify_moment == "after":
-        model_deserialized = _deserialize_binary_file(binary_file)
+        model_deserialized = _load_model_from_bytes(binary_file)
         model_deserialized.meta.creation_date = "<DATE_IGNORED>"
         verify_json(
             item=model_deserialized.model_dump_json(by_alias=True, indent=4),
