@@ -24,8 +24,8 @@ def test_section_grids():
     gp.set_section_grid(
         grid=geo_model.grid,
         section_dict={
-            'section_SW-NE': ([250, 250], [1750, 1750], [100, 100]),
-            'section_NW-SE': ([250, 1750], [1750, 250], [100, 100])
+            'section_SW-NE': ((250., 250.), (1750., 1750.), (100, 100)),
+            'section_NW-SE': ((250., 1750.), (1750., 250.), (100, 100))
         }
     )
 
@@ -41,7 +41,8 @@ def test_section_grids():
         verify_moment="after",
         file_name=f"verify/{geo_model.meta.name}"
     )
-    gp.compute_model(geo_model, validate_serialization=False)
+    
+    gp.compute_model(geo_model, validate_serialization=True)
     gpv.plot_2d(
         model=geo_model,
         section_names=['section_SW-NE', 'section_NW-SE', 'topography'],
