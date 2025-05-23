@@ -4,7 +4,7 @@ import gempy as gp
 # Importing auxiliary libraries
 import numpy as np
 
-from gempy.modules.serialization.save_load import verify_model_serialization
+from test.verify_helper import verify_model_serialization
 
 
 def test_gravity():
@@ -59,7 +59,7 @@ def test_gravity():
         structural_frame=frame,
     )
 
-    # gp.compute_model(geo_model)
+    gp.compute_model(geo_model, validate_serialization=False)
 
     import gempy_viewer as gpv
     gpv.plot_2d(geo_model, cell_number=0)

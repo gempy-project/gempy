@@ -17,7 +17,7 @@ import gempy_viewer as gpv
 
 # Check if PATH_TO_SPREMBERG_STRATIGRAPHY is set if not skip the test
 @pytest.mark.skipif(
-    os.getenv("PATH_TO_SPREMBERG_STRATIGRAPHY") is None,
+    os.getenv("PATH_TO_SPREMBERG") is None,
     reason="PATH_TO_SPREMBERG_STRATIGRAPHY is not set"
 )
 
@@ -25,7 +25,7 @@ class TestStratigraphicPile:
     @pytest.fixture(autouse=True)
     def borehole_set(self):
         reader: GenericReaderFilesHelper = GenericReaderFilesHelper(
-            file_or_buffer=os.getenv("PATH_TO_SPREMBERG_STRATIGRAPHY"),
+            file_or_buffer=os.getenv("PATH_TO_SPREMBERG") + "Spremberg_stratigraphy.csv",
             columns_map={
                     'hole_id'   : 'id',
                     'depth_from': 'top',
@@ -36,7 +36,7 @@ class TestStratigraphicPile:
 
         lith: pd.DataFrame = read_lith(reader)
         reader: GenericReaderFilesHelper = GenericReaderFilesHelper(
-            file_or_buffer=os.getenv("PATH_TO_SPREMBERG_SURVEY"),
+            file_or_buffer=os.getenv("PATH_TO_SPREMBERG") + "Spremberg_survey.csv",
             columns_map={
                     'depth'  : 'md',
                     'dip'    : 'dip',
@@ -49,7 +49,7 @@ class TestStratigraphicPile:
         survey.update_survey_with_lith(lith)
 
         reader_collar: GenericReaderFilesHelper = GenericReaderFilesHelper(
-            file_or_buffer=os.getenv("PATH_TO_SPREMBERG_COLLAR"),
+            file_or_buffer=os.getenv("PATH_TO_SPREMBERG") + "Spremberg_collar_updated.csv",
             header=0,
             usecols=[0, 1, 2, 4],
             columns_map={
