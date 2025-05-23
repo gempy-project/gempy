@@ -71,6 +71,8 @@ def model_to_binary(model: GeoModel) -> bytes:
     compressed_binary_grid = zlib.compress(model.grid.grid_binary, level=6)
 
     import hashlib
+    print("len raw bytes:", len(model.grid.grid_binary))
+    
     print("raw bytes hash:", hashlib.sha256(model.grid.grid_binary).hexdigest())
     print("compressed length:", len(compressed_binary_grid))
     print("zlib version:", zlib.ZLIB_VERSION)
