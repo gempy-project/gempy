@@ -62,11 +62,17 @@ def save_model(model: GeoModel, path: str | None = None, validate_serialization:
 
 
 def model_to_binary(model: GeoModel) -> bytes:
-    model_json = model.model_dump_json(by_alias=True, indent=4)
+
     # Compress the binary data
     zlib = require_zlib()
     compressed_binary_input = zlib.compress(model.structural_frame.input_tables_binary)
     compressed_binary_grid = zlib.compress(model.grid.grid_binary)
+
+    # * Add here the serialization meta parameters like: len_bytes
+    model.structural_frame._input_binary_size = len(compressed_binary_input)
+    model.grid._grid_binary_size = len(compressed_binary_grid)
+    
+    model_json = model.model_dump_json(by_alias=True, indent=4)
     binary_file = _to_binary(
         header_json=model_json,
         body_input=compressed_binary_input,
@@ -118,15 +124,29 @@ def load_model(path: str) -> GeoModel:
 
 
 def _deserialize_binary_file(binary_file):
+    import json
     # Get header length from first 4 bytes
     header_length = int.from_bytes(binary_file[:4], byteorder='little')
     # Split header and body
-    header_json = binary_file[4:4 + header_length].decode('utf-8')
-    binary_body = binary_file[4 + header_length:]
+    header_json= binary_file[4:4 + header_length].decode('utf-8')
+    header = json.loads(header_json)
+    input_metadata = header["structural_frame"]["binary_meta_data"]
+    input_size = input_metadata["input_binary_size"]
+    
+    grid_metadata = header["grid"]["binary_meta_data"]
+    grid_size = grid_metadata["grid_binary_size"]
+    
+    input_binary = binary_file[4 + header_length: 4 + header_length + input_size]
+    all_sections_length = 4 + header_length + input_size + grid_size
+    if all_sections_length != len(binary_file):
+        raise  ValueError("Binary file is corrupted")
+    
+    grid_binary = binary_file[4 + header_length + input_size: all_sections_length]
     zlib = require_zlib()
-    decompressed_binary = zlib.decompress(binary_body)
+    
     with loading_model_from_binary(
-            binary_body=decompressed_binary,
+            input_binary=(zlib.decompress(input_binary)),
+            grid_binary=(zlib.decompress(grid_binary))
     ):
         model = GeoModel.model_validate_json(header_json)
     return model

@@ -60,15 +60,10 @@ def deserialize_grid(binary_array:bytes, custom_grid_length: int, topography_len
         ValueError: If input lengths do not match the specified boundaries or binary data.
     """
 
-    total_length = len(binary_array)
-    custom_grid_start = total_length - custom_grid_length - topography_length
-    custom_grid_end = total_length - topography_length
     
-    topography_grid_start = total_length - topography_length
-    topography_grid_end = total_length
 
-    custom_grid_binary = binary_array[custom_grid_start:custom_grid_end]
-    topography_binary = binary_array[topography_grid_start:topography_grid_end]
+    custom_grid_binary = binary_array[:custom_grid_length]
+    topography_binary = binary_array[custom_grid_length:custom_grid_length + topography_length]
     custom_grid = np.frombuffer(custom_grid_binary, dtype=np.float64)
     topography = np.frombuffer(topography_binary)
     
