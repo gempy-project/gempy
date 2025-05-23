@@ -3,6 +3,7 @@ from functools import cached_property
 from typing import Optional
 
 import numpy as np
+from pydantic import Field
 
 
 @dataclass
@@ -10,11 +11,8 @@ class ColorsGenerator:
     """
     Object that handles the color management.
     """
-    hex_colors: list[str]
-    _index: int = 0
-    
-    def __init__(self):
-        self._gempy_default_colors = [
+
+    _gempy_default_colors = [
             '#015482', '#9f0052', '#ffbe00', '#728f02', '#443988',
             '#ff3f20', '#5DA629', '#b271d0', '#72e54a', '#583bd1',
             '#d0e63d', '#b949e2', '#95ce4b', '#6d2b9f', '#60eb91',
@@ -29,10 +27,16 @@ class ColorsGenerator:
             '#945624', '#517c91', '#de8a68', '#3c4b64', '#9d8a4d',
             '#825f7e', '#2c3821', '#ddadaa', '#5e3524', '#a3a68e',
             '#a2706b', '#686d56'
-        ]  # source: https://medialab.github.io/iwanthue/
-        
-        self.regenerate_color_palette()
+    ]  # source: https://medialab.github.io/iwanthue/
 
+    hex_colors: list[str] = Field(
+        default=_gempy_default_colors,
+        exclude=True
+    )
+    _index: int = 0
+
+    def __init__(self):
+        self.regenerate_color_palette()
 
     @staticmethod
     def _random_hexcolor() -> str:
@@ -50,7 +54,7 @@ class ColorsGenerator:
             hex_colors = []
             for palette in seaborn_palettes:  # for each palette
                 hex_colors += sns.color_palette(palette).as_hex()  # get all colors in palette and add to list
-                
+
         elif seaborn_palettes and not seaborn_installed:
             raise ImportError("Seaborn is not installed. Please install it to use color palettes.")
         else:
@@ -58,11 +62,10 @@ class ColorsGenerator:
 
         self.hex_colors = hex_colors
 
-
     def __iter__(self) -> 'ColorsGenerator':
         """Returns the object itself as an iterator."""
         return self
-    
+
     def __next__(self) -> str:
         """Generator that yields the next color."""
         color = self.up_next()
