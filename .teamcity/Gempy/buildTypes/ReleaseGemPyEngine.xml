@@ -9,6 +9,9 @@
     <vcs-settings>
       <vcs-entry-ref root-id="GempyEngine_HttpsGithubComGempyProjectGempyEngineRefsHeadsMain" />
     </vcs-settings>
+    <requirements>
+      <exists id="RQ_9" name="env.WSLENV" />
+    </requirements>
   </settings>
 </build-type>
 
