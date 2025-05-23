@@ -9,7 +9,6 @@
     <parameters>
       <param name="REQUIREMENT_LEVEL" value="READ_MESH" />
       <param name="USE_PRERELEASE" value="true" spec="checkbox checkedValue='true' display='prompt'" />
-      <param name="env.MKL_NUM_THREADS" value="1" />
       <param name="env.MPLBACKEND" value="Agg" />
       <param name="env.OMP_NUM_THREADS" value="1" />
       <param name="env.OPENBLAS_NUM_THREADS" value="1" />
