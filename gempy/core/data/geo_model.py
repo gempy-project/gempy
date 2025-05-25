@@ -15,6 +15,7 @@ from gempy_engine.core.data.input_data_descriptor import InputDataDescriptor
 from gempy_engine.core.data.interpolation_input import InterpolationInput
 from gempy_engine.core.data.raw_arrays_solution import RawArraysSolution
 from gempy_engine.core.data.transforms import Transform, GlobalAnisotropy
+from gempy_engine.modules.geophysics.gravity_gradient import calculate_gravity_gradient
 from .encoders.converters import instantiate_if_necessary
 from .encoders.json_geomodel_encoder import encode_numpy_array
 from .grid import Grid
@@ -22,6 +23,7 @@ from .orientations import OrientationsTable
 from .structural_frame import StructuralFrame
 from .surface_points import SurfacePointsTable
 from ...modules.data_manipulation.engine_factory import interpolation_input_from_structural_frame
+
 
 """
 TODO:
@@ -62,7 +64,7 @@ class GeoModel(BaseModel):
     # region GemPy engine data types
     _interpolation_options: InterpolationOptions  #: The interpolation options provided by the user.
 
-    geophysics_input: GeophysicsInput = Field(default=None, exclude=True)  #: The geophysics input of the geological model.
+    geophysics_input: GeophysicsInput | None = Field(default=None, exclude=False)  #: The geophysics input of the geological model.
     input_transform: Transform = Field(default=None, exclude=False)  #: The transformation used in the geological model for input points.
 
     interpolation_grid: EngineGrid = Field(default=None, exclude=True)  #: ptional grid used for interpolation. Can be seen as a cache field.
@@ -295,7 +297,7 @@ class GeoModel(BaseModel):
         arbitrary_types_allowed=True,
         use_enum_values=False,
         json_encoders={
-                np.ndarray: encode_numpy_array
+                np.ndarray: encode_numpy_array,
         }
     )
 
@@ -303,9 +305,9 @@ class GeoModel(BaseModel):
     @classmethod
     def deserialize_properties(cls, data: Union["GeoModel", dict], constructor: ModelWrapValidatorHandler["GeoModel"]) -> "GeoModel":
         match data:
-            case GeoModel():
+            case GeoModel(): 
                 return data
-            case dict():
+            case dict(): # 
                 instance: GeoModel = constructor(data)
                 instantiate_if_necessary(
                     data=data,
@@ -313,6 +315,12 @@ class GeoModel(BaseModel):
                     type=InterpolationOptions
                 )
                 instance._interpolation_options = data.get("_interpolation_options")
+                
+                # * Reset geophysics if necessary
+                centered_grid = instance.grid.centered_grid
+                if centered_grid is not None and instance.geophysics_input is not None:
+                    instance.geophysics_input.tz = calculate_gravity_gradient(centered_grid)
+                
                 return instance
             case _:
                 raise ValidationError

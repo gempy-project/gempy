@@ -4,6 +4,8 @@ import gempy as gp
 # Importing auxiliary libraries
 import numpy as np
 
+from gempy.modules.serialization.save_load import verify_model_serialization
+
 
 def test_gravity():
     color_generator = gp.data.ColorsGenerator()
@@ -57,22 +59,28 @@ def test_gravity():
         structural_frame=frame,
     )
 
-    gp.compute_model(geo_model)
+    # gp.compute_model(geo_model)
 
     import gempy_viewer as gpv
     gpv.plot_2d(geo_model, cell_number=0)
 
     gp.set_centered_grid(
         grid=geo_model.grid,
-        centers=np.array([[6, 0, 4]]),
-        resolution=np.array([10, 10, 100]),
-        radius=np.array([16000, 16000, 16000]) # ? This radius makes 0 sense but it is the original one in gempy v2
+        centers=np.array([[6, 0, 4]], dtype="float"),
+        resolution=np.array([10, 10, 100], dtype="float"),
+        radius=np.array([16000, 16000, 16000], dtype="float")  # ? This radius makes 0 sense but it is the original one in gempy v2
     )
 
     gravity_gradient = gp.calculate_gravity_gradient(geo_model.grid.centered_grid)
     geo_model.geophysics_input = gp.data.GeophysicsInput(
         tz=gravity_gradient,
         densities=np.array([2.6, 2.4, 3.2]),
+    )
+
+    verify_model_serialization(
+        model=geo_model,
+        verify_moment="after",
+        file_name=f"verify/{geo_model.meta.name}"
     )
 
     gp.compute_model(geo_model)
