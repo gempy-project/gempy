@@ -302,23 +302,20 @@ class GeoModel(BaseModel):
     @model_validator(mode='wrap')
     @classmethod
     def deserialize_properties(cls, data: Union["GeoModel", dict], constructor: ModelWrapValidatorHandler["GeoModel"]) -> "GeoModel":
-        try:
-            match data:
-                case GeoModel():
-                    return data
-                case dict():
-                    instance: GeoModel = constructor(data)
-                    instantiate_if_necessary(
-                        data=data,
-                        key="_interpolation_options",
-                        type=InterpolationOptions
-                    )
-                    instance._interpolation_options = data.get("_interpolation_options")
-                    return instance
-                case _:
-                    raise ValidationError
-        except ValidationError:
-            raise
+        match data:
+            case GeoModel():
+                return data
+            case dict():
+                instance: GeoModel = constructor(data)
+                instantiate_if_necessary(
+                    data=data,
+                    key="_interpolation_options",
+                    type=InterpolationOptions
+                )
+                instance._interpolation_options = data.get("_interpolation_options")
+                return instance
+            case _:
+                raise ValidationError
 
     # endregion
 
