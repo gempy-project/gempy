@@ -113,6 +113,7 @@ def optimize_and_compute(geo_model: GeoModel, engine_config: GemPyEngineConfig, 
     geo_model.taped_interpolation_input = interpolation_input
 
     nugget_effect_scalar: torch.Tensor = geo_model.taped_interpolation_input.surface_points.nugget_effect_scalar
+    nugget_effect_scalar.requires_grad = True
 
     optimizer = torch.optim.Adam(
         params=[nugget_effect_scalar],
