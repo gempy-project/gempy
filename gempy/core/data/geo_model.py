@@ -22,7 +22,7 @@ from .grid import Grid
 from .orientations import OrientationsTable
 from .structural_frame import StructuralFrame
 from .surface_points import SurfacePointsTable
-from ...modules.data_manipulation.engine_factory import interpolation_input_from_structural_frame
+from ...modules.data_manipulation import interpolation_input_from_structural_frame
 
 
 """

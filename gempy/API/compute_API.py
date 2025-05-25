@@ -102,10 +102,10 @@ def optimize_and_compute(geo_model: GeoModel, engine_config: GemPyEngineConfig, 
         raise ValueError(f'Only PyTorch backend is supported for optimization. Received {engine_config.backend}')
 
     geo_model = nugget_optimizer(
-        convergence_criteria=convergence_criteria,
-        engine_config=engine_config,
-        geo_model=geo_model,
-        max_epochs=max_epochs
+        target_cond_num=convergence_criteria,
+        engine_cfg=engine_config,
+        model=geo_model,
+        max_epochs=max_epochs,
     )
 
     geo_model.solutions = gempy_engine.compute_model(
