@@ -110,4 +110,15 @@ def test_optimize_nugget_effect():
             point_size=25,
         )
 
+        if False:
+            ori_cloud = pv.PolyData(geo_model.orientations_copy.df[['X', 'Y', 'Z']].to_numpy())
+            ori_cloud['values2'] = geo_model.taped_interpolation_input.orientations.nugget_effect_grad.detach().numpy()
+            
+            gempy_vista.p.add_mesh(
+                ori_cloud,
+                scalars='values2',
+                cmap='viridis',
+                point_size=20,
+            )
+
         gempy_vista.p.show()
