@@ -7,6 +7,8 @@ from ...core.data.encoders.converters import loading_model_from_binary
 from ...optional_dependencies import require_zlib
 import pathlib
 import os
+import io
+import zipfile
 
 
 def save_model(model: GeoModel, path: str | None = None, validate_serialization: bool = True):
@@ -44,10 +46,10 @@ def save_model(model: GeoModel, path: str | None = None, validate_serialization:
         # If no extension, add the valid extension
         path = str(path_obj) + VALID_EXTENSION
 
-    binary_file = model_to_binary(model)
+    binary_file = model_to_bytes(model)
 
     if validate_serialization:
-        model_deserialized = _deserialize_binary_file(binary_file)
+        model_deserialized = _load_model_from_bytes(binary_file)
         _validate_serialization(model, model_deserialized)
 
     # Create directory if it doesn't exist
@@ -129,8 +131,62 @@ def load_model(path: str) -> GeoModel:
     with open(path, 'rb') as f:
         binary_file = f.read()
 
-    return _deserialize_binary_file(binary_file)
+    return _load_model_from_bytes(binary_file)
 
+def model_to_bytes(model: GeoModel) -> bytes:
+    # 1) Make a fully deterministic JSON header
+    # header_dict = model.model_dump(by_alias=True)
+    # header_json = json.dumps(
+    #     header_dict,
+    #     sort_keys=True,          # always sort object keys
+    #     separators=(",", ":"),   # no extra whitespace
+    # ).encode("utf-8")
+    
+    header_json = model.model_dump_json(by_alias=True, indent=4)
+
+    # 2) Raw binary chunks (no additional zlib.compress here)
+    input_raw = model.structural_frame.input_tables_binary
+    grid_raw  = model.grid.grid_binary
+
+    # 3) Pack into a ZIP archive in a fixed order:
+    
+    buf = io.BytesIO()
+    with zipfile.ZipFile(
+            buf, mode="w",
+            compression=zipfile.ZIP_DEFLATED,
+            compresslevel=6
+    ) as zf:
+        # Force a fixed timestamp (1980-01-01) so the file headers don't vary
+        def make_info(name):
+            zi = zipfile.ZipInfo(name, date_time=(1980,1,1,0,0,0))
+            zi.external_attr = 0  # clear OS-specific file permissions
+            return zi
+
+        zf.writestr(make_info("header.json"), header_json)
+        zf.writestr(make_info("input.bin"),   input_raw)
+        zf.writestr(make_info("grid.bin"),    grid_raw)
+
+    return buf.getvalue()
+
+def _load_model_from_bytes(data: bytes) -> GeoModel:
+    import json, zlib
+    from ...core.data.encoders.converters import loading_model_from_binary
+
+    buf = io.BytesIO(data)
+    with zipfile.ZipFile(buf, "r") as zf:
+        header_json = zf.read("header.json").decode("utf-8")
+        # header      = json.loads(header_json)
+        input_raw   = zf.read("input.bin")
+        grid_raw    = zf.read("grid.bin")
+
+    # If you want to validate or decompress further, do it here…
+    with loading_model_from_binary(
+            input_binary=input_raw,
+            grid_binary= grid_raw
+    ):
+        model = GeoModel.model_validate_json(header_json)
+
+    return model
 
 def _deserialize_binary_file(binary_file):
     import json
