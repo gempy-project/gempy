@@ -11,7 +11,7 @@ from approvaltests.namer import NamerFactory
 from approvaltests.reporters import GenericDiffReporter, GenericDiffReporterConfig
 
 from gempy.core.data import GeoModel
-from gempy.modules.serialization.save_load import _to_binary, _deserialize_binary_file
+from gempy.modules.serialization.save_load import _to_binary, _deserialize_binary_file, model_to_binary
 from gempy.optional_dependencies import require_zlib
 
 
@@ -120,14 +120,7 @@ def verify_model_serialization(model: GeoModel, verify_moment: Literal["before",
     Raises:
         ValueError: If `verify_moment` is not set to "before" or "after".
     """
-    model_json = model.model_dump_json(by_alias=True, indent=4)
-
-    # Compress the binary data
-    zlib = require_zlib()
-    compressed_binary = zlib.compress(model.structural_frame.input_tables_binary)
-
-    binary_file = _to_binary(model_json, compressed_binary)
-
+    binary_file = model_to_binary(model)
 
     original_model = model
     original_model.meta.creation_date = "<DATE_IGNORED>"

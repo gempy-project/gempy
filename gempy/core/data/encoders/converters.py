@@ -52,9 +52,10 @@ numpy_array_short_validator = BeforeValidator(validate_numpy_array)
 loading_model_context = ContextVar('loading_model_context', default={})
 
 @contextmanager
-def loading_model_from_binary(binary_body: bytes):
+def loading_model_from_binary(input_binary: bytes, grid_binary: bytes):
     token = loading_model_context.set({
-            'binary_body': binary_body,
+            'input_binary': input_binary,
+            'grid_binary': grid_binary
     })
     try:
         yield

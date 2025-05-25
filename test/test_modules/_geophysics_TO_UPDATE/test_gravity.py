@@ -59,7 +59,7 @@ def test_gravity():
         structural_frame=frame,
     )
 
-    gp.compute_model(geo_model, validate_serialization=False)
+    gp.compute_model(geo_model, validate_serialization=True)
 
     import gempy_viewer as gpv
     gpv.plot_2d(geo_model, cell_number=0)

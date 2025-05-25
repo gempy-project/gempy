@@ -24,7 +24,9 @@ def test_generate_horizontal_stratigraphic_model():
             f.write(model_json)
 
     with loading_model_from_binary(
-            binary_body=model.structural_frame.input_tables_binary
+            input_binary=model.structural_frame.input_tables_binary,
+            grid_binary=model.grid.grid_binary
+            # binary_body=model.structural_frame.input_tables_binary
     ):
         model_deserialized = gp.data.GeoModel.model_validate_json(model_json)
 
@@ -37,16 +39,6 @@ def test_generate_horizontal_stratigraphic_model():
         verify_model = json.loads(model_json)
         verify_model["meta"]["creation_date"] = "<DATE_IGNORED>"
         verify_json(json.dumps(verify_model, indent=4), name="verify/Horizontal Stratigraphic Model serialization")
-
-
-def _validate_serialization(original_model, model_deserialized):
-    a = hash(original_model.structural_frame.surface_points_copy.data.tobytes())
-    b = hash(model_deserialized.structural_frame.surface_points_copy.data.tobytes())
-    o_a = hash(original_model.structural_frame.orientations_copy.data.tobytes())
-    o_b = hash(model_deserialized.structural_frame.orientations_copy.data.tobytes())
-    assert a == b, "Hashes for surface points are not equal"
-    assert o_a == o_b, "Hashes for orientations are not equal"
-    assert model_deserialized.__str__() == original_model.__str__()
 
 
 def test_save_model_to_disk():
@@ -63,7 +55,6 @@ def test_save_model_to_disk():
     if True:
         import gempy_viewer as gpv
         gpv.plot_3d(loaded_model, image=True)
-
 
     # Test save after compute
     with tempfile.NamedTemporaryFile(mode='w+', delete=True) as tmp:
@@ -87,3 +78,13 @@ def test_interpolation_options():
     # Deserialize with pydantic
     options2 = InterpolationOptions.model_validate(json)
     assert options.__str__() == options2.__str__()
+
+
+def _validate_serialization(original_model, model_deserialized):
+    a = hash(original_model.structural_frame.surface_points_copy.data.tobytes())
+    b = hash(model_deserialized.structural_frame.surface_points_copy.data.tobytes())
+    o_a = hash(original_model.structural_frame.orientations_copy.data.tobytes())
+    o_b = hash(model_deserialized.structural_frame.orientations_copy.data.tobytes())
+    assert a == b, "Hashes for surface points are not equal"
+    assert o_a == o_b, "Hashes for orientations are not equal"
+    assert model_deserialized.__str__() == original_model.__str__()

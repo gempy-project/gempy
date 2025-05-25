@@ -129,8 +129,11 @@
         ],
         "is_dirty": true,
         "basement_color": "#728f02",
+        "_input_binary_size": 211,
         "binary_meta_data": {
-            "sp_binary_length": 792
+            "sp_binary_length": 792,
+            "ori_binary_length": 300,
+            "input_binary_size": 211
         }
     },
     "grid": {
@@ -157,6 +160,12 @@
         "_centered_grid": null,
         "_transform": null,
         "_octree_levels": -1,
+        "_grid_binary_size": 8,
+        "binary_meta_data": {
+            "custom_grid_binary_length": 0,
+            "topography_binary_length": 0,
+            "grid_binary_size": 8
+        },
         "active_grids": 1025
     },
     "geophysics_input": null,

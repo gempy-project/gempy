@@ -8,6 +8,8 @@ from typing import Optional, Annotated, Union
 from gempy_engine.core.data.centered_grid import CenteredGrid
 from gempy_engine.core.data.options import EvaluationOptions
 from gempy_engine.core.data.transforms import Transform
+from .encoders.binary_encoder import deserialize_grid
+from .encoders.converters import loading_model_context
 from .grid_modules import RegularGrid, CustomGrid, Sections
 from .grid_modules.topography import Topography
 
@@ -59,12 +61,48 @@ class Grid:
                 case dict():
                     grid: Grid = constructor(data)
                     grid._active_grids = Grid.GridTypes(data["active_grids"])
+                    # TODO: Digest binary data
+
+                    metadata = data.get('binary_meta_data', {})
+                    context = loading_model_context.get()
+
+                    if 'grid_binary' not in context:
+                        return grid
+                    
+                    custom_grid_vals, topography_vals = deserialize_grid(
+                        binary_array=context['grid_binary'],
+                        custom_grid_length=metadata["custom_grid_binary_length"],
+                        topography_length=metadata["topography_binary_length"]
+                    )
+                    
+                    if grid.custom_grid is not None:
+                        grid.custom_grid.values = custom_grid_vals.reshape(-1, 3)
+                    
+                    if grid.topography is not None:
+                        grid.topography.set_values2d(values=topography_vals)
+                    
                     grid._update_values()
                     return grid
                 case _:
                     raise ValidationError
         except ValidationError:
             raise
+
+    @property
+    def grid_binary(self):
+        custom_grid_bytes = self._custom_grid.values.astype("float64").tobytes() if self._custom_grid else b''
+        topography_bytes = self._topography.values.astype("float64").tobytes() if self._topography else b''
+        return custom_grid_bytes + topography_bytes
+
+
+    _grid_binary_size: int = 0
+    @computed_field
+    def binary_meta_data(self) -> dict:
+        return {
+                'custom_grid_binary_length': len(self._custom_grid.values.astype("float64").tobytes()) if self._custom_grid else 0,
+                'topography_binary_length': len(self._topography.values.astype("float64").tobytes()) if self._topography else 0,
+                'grid_binary_size': self._grid_binary_size
+        }
 
     @computed_field(alias="active_grids")
     @property
