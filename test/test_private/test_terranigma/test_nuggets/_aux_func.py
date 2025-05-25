@@ -43,9 +43,14 @@ def initialize_geo_model(structural_elements: list[gp.data.StructuralElement], e
         structural_relation=gp.data.StackRelationType.ERODE
     )
 
-    structural_groups = [structural_group_intrusion, structural_group_green, structural_group_blue, structural_group_red]
+    structural_groups = [
+            # structural_group_intrusion, 
+            # structural_group_green, 
+            # structural_group_blue, 
+            structural_group_red
+    ]
     structural_frame = gp.data.StructuralFrame(
-        structural_groups=structural_groups[2:],
+        structural_groups=structural_groups,
         color_gen=gp.data.ColorsGenerator()
     )
     # TODO: If elements do not have color maybe loop them on structural frame constructor?
@@ -53,7 +58,7 @@ def initialize_geo_model(structural_elements: list[gp.data.StructuralElement], e
     geo_model: gp.data.GeoModel = gp.create_geomodel(
         project_name='Tutorial_ch1_1_Basics',
         extent=extent,
-        resolution=[20, 10, 20],
+        # resolution=[20, 10, 20],
         refinement=5,  # * Here we define the number of octree levels. If octree levels are defined, the resolution is ignored.
         structural_frame=structural_frame
     )
