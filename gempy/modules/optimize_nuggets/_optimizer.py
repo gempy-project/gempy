@@ -68,8 +68,8 @@ def nugget_optimizer(
                 print(f"Outliers sp: {torch.nonzero(mask_sp)}")
                 print(f"Outliers ori: {torch.nonzero(mask_ori)}")
 
-            _gradient_foo(nugget_effect_scalar=nugget, mask=mask_sp)
-            _gradient_foo(nugget_effect_scalar=nugget_ori, mask=mask_ori)
+            _apply_outlier_gradients(tensor=nugget, mask=mask_sp)
+            _apply_outlier_gradients(tensor=nugget_ori, mask=mask_ori)
 
             # Step & clamp safely
             opt.step()
@@ -88,19 +88,20 @@ def nugget_optimizer(
     return model
 
 
-def _mask_iqr(grads):
+def _mask_iqr(grads, multiplier: float = 1.5) -> torch.BoolTensor:
     q1, q3 = grads.quantile(0.25), grads.quantile(0.75)
-    iqr = q3 - q1
-    thresh = q3 + 1.5 * iqr
-    mask = grads > thresh
-    return mask
+    thresh = q3 + multiplier * (q3 - q1)
+    return grads > thresh
 
+def _apply_outlier_gradients(
+        tensor: torch.Tensor,
+        mask: torch.BoolTensor,
+        amplification: float = 5.0,
+):
+    # wrap in no_grad if you prefer, but .grad modifications are fine
+    tensor.grad.view(-1)[mask] *= amplification
+    tensor.grad.view(-1)[~mask] = 0
 
-def _gradient_foo(nugget_effect_scalar: torch.Tensor, mask):
-    # amplify outliers if you want bigger jumps
-    nugget_effect_scalar.grad[mask] *= 5.0
-    # zero all other gradients
-    nugget_effect_scalar.grad[~mask] = 0
 
 
 def _gradient_masking(nugget, focus=0.01):
