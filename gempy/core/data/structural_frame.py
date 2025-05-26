@@ -33,6 +33,7 @@ class StructuralFrame:
 
     structural_groups: list[StructuralGroup]
     color_generator: ColorsGenerator =  Field(default_factory=ColorsGenerator)
+    basement_color: str = None
     # ? Should I create some sort of structural options class? For example, the masking descriptor and faults relations pointer
     is_dirty: bool = True
 
@@ -41,6 +42,9 @@ class StructuralFrame:
     def __init__(self, structural_groups: list[StructuralGroup], color_gen: ColorsGenerator):
         self.structural_groups = structural_groups  # ? This maybe could be optional
         self.color_generator = color_gen
+        
+    def __post_init__(self):
+        pass
 
     @classmethod
     def from_data_tables(cls, surface_points: SurfacePointsTable, orientations: OrientationsTable):
@@ -203,22 +207,28 @@ class StructuralFrame:
         """Returns the total number of elements in the structural frame."""
         return len(self.structural_elements)
 
-    basement_color: str = None
 
     @property
     def _basement_element(self) -> StructuralElement:
-        # Check if the basement color is already defined
+        """Returns the basement structural element with a unique color."""
+
+        def _get_unique_basement_color(color_generator: ColorsGenerator, used_colors: list[str]) -> str:
+            color = next(color_generator)
+            if color in used_colors:
+                return _get_unique_basement_color(color_generator, used_colors)
+            return color
+
         elements = []
         for group in self.structural_groups:
             elements.extend(group.elements)
-        basement_color_in_elements = self.basement_color in [element.color for element in elements]
 
-        if self.basement_color is None or basement_color_in_elements:
-            self.basement_color = self.color_generator.up_next()
+        used_colors = [element.color for element in elements]
 
-        if basement_color_in_elements:
-            warnings.warn(f"The basement color was already used in the structural elements."
-                          f"Changing the basement color to {self.basement_color}.")
+        if self.basement_color is None or self.basement_color in used_colors:
+            self.basement_color = _get_unique_basement_color(
+                color_generator=self.color_generator, 
+                used_colors=used_colors
+            )
 
         basement = StructuralElement(
             name="basement",

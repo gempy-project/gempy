@@ -59,8 +59,11 @@
                 "solution": null
             }
         ],
-        "is_dirty": true,
+        "color_generator": {
+            "_index": 2
+        },
         "basement_color": "#ffbe00",
+        "is_dirty": true,
         "binary_meta_data": {
             "sp_binary_length": 432,
             "ori_binary_length": 120
