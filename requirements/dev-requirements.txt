@@ -4,6 +4,7 @@ pytest
 pyvista
 subsurface-terra
 wellpathpy
+torch
 
 # Testing
 pytest-approvaltests

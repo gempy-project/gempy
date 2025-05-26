@@ -15,14 +15,13 @@ from gempy_engine.core.data.input_data_descriptor import InputDataDescriptor
 from gempy_engine.core.data.interpolation_input import InterpolationInput
 from gempy_engine.core.data.raw_arrays_solution import RawArraysSolution
 from gempy_engine.core.data.transforms import Transform, GlobalAnisotropy
-from gempy_engine.modules.geophysics.gravity_gradient import calculate_gravity_gradient
 from .encoders.converters import instantiate_if_necessary
 from .encoders.json_geomodel_encoder import encode_numpy_array
 from .grid import Grid
 from .orientations import OrientationsTable
 from .structural_frame import StructuralFrame
 from .surface_points import SurfacePointsTable
-from ...modules.data_manipulation.engine_factory import interpolation_input_from_structural_frame
+from ...modules.data_manipulation import interpolation_input_from_structural_frame
 
 
 """
@@ -319,6 +318,7 @@ class GeoModel(BaseModel):
                 # * Reset geophysics if necessary
                 centered_grid = instance.grid.centered_grid
                 if centered_grid is not None and instance.geophysics_input is not None:
+                    from gempy_engine.modules.geophysics.gravity_gradient import calculate_gravity_gradient
                     instance.geophysics_input.tz = calculate_gravity_gradient(centered_grid)
                 
                 return instance
