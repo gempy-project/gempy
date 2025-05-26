@@ -9,7 +9,7 @@ from typing import Optional
 
 import numpy as np
 
-from gempy.optional_dependencies import require_scipy
+from ...core.data.grid_modules.topography import _LoadDEMArtificial
 
 
 def create_random_topography(extent: np.array, resolution: np.array, dz: Optional[np.array] = None,

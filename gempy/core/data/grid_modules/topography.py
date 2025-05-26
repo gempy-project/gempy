@@ -8,7 +8,7 @@ import numpy as np
 
 from .regular_grid import RegularGrid
 
-from ....optional_dependencies import require_skimage
+from ....optional_dependencies import require_skimage, require_scipy
 from dataclasses import field, dataclass
 from ..encoders.converters import short_array_type
 
