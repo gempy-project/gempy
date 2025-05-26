@@ -46,39 +46,26 @@ def test_optimize_nugget_effect():
         topography=(xr.open_dataset(os.path.join(path, "Topography.nc")))
     )
 
-    if False:
-        gpv.plot_3d(geo_model, show_data=True, image=True)
-
     geo_model.interpolation_options.cache_mode = gp.data.InterpolationOptions.CacheMode.NO_CACHE
     geo_model.interpolation_options.kernel_options.range = 0.5
 
-    if True:
-        gp.API.compute_API.optimize_nuggets(
-            geo_model=geo_model,
-            engine_config=gp.data.GemPyEngineConfig(
-                backend=gp.data.AvailableBackends.PYTORCH,
-            ),
-            max_epochs=100,
-            convergence_criteria=1e5,
-            only_groups=[geo_model.structural_frame.get_group_by_name("Red")]
-        )
+    gp.API.compute_API.optimize_nuggets(
+        geo_model=geo_model,
+        engine_config=gp.data.GemPyEngineConfig(
+            backend=gp.data.AvailableBackends.PYTORCH,
+        ),
+        max_epochs=100,
+        convergence_criteria=1e5,
+        only_groups=[geo_model.structural_frame.get_group_by_name("Red")]
+    )
 
-        gp.compute_model(
-            gempy_model=geo_model,
-            engine_config=gp.data.GemPyEngineConfig(
-                backend=gp.data.AvailableBackends.PYTORCH,
-            ),
-            validate_serialization=False
-        )
-    else:
-        gp.API.compute_API.optimize_and_compute(
-            geo_model=geo_model,
-            engine_config=gp.data.GemPyEngineConfig(
-                backend=gp.data.AvailableBackends.PYTORCH,
-            ),
-            max_epochs=100,
-            convergence_criteria=1e5
-        )
+    gp.compute_model(
+        gempy_model=geo_model,
+        engine_config=gp.data.GemPyEngineConfig(
+            backend=gp.data.AvailableBackends.PYTORCH,
+        ),
+        validate_serialization=False
+    )
 
     print(f"Final cond number: {geo_model.interpolation_options.kernel_options.condition_number}")
     nugget_effect = geo_model.taped_interpolation_input.surface_points.nugget_effect_scalar.detach().numpy()
@@ -96,7 +83,7 @@ def test_optimize_nugget_effect():
         import gempy_viewer as gpv
         import pyvista as pv
 
-        image = False
+        image = True
         gempy_vista = gpv.plot_3d(
             model=geo_model,
             show=False,
