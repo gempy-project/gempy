@@ -3,10 +3,8 @@ import os
 import dotenv
 import numpy as np
 import torch
-import pyro
 import time
 import gempy as gp
-import gempy_viewer as gpv
 
 from ._aux_func import process_file, initialize_geo_model
 
@@ -16,7 +14,6 @@ dotenv.load_dotenv()
 # Config
 seed = 123456
 torch.manual_seed(seed)
-pyro.set_rng_seed(seed)
 
 # %%
 # Start the timer for benchmarking purposes
