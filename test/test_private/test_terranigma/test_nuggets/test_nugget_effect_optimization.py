@@ -61,8 +61,10 @@ def test_optimize_nugget_effect():
         engine_config=gp.data.GemPyEngineConfig(
             backend=gp.data.AvailableBackends.PYTORCH,
         ),
-        validate_serialization=False
+        validate_serialization=True
     )
+    
+    # TODO: Save model
 
     print(f"Final cond number: {geo_model.interpolation_options.kernel_options.condition_number}")
     nugget_effect = geo_model.taped_interpolation_input.surface_points.nugget_effect_scalar.detach().numpy()

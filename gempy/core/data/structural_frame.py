@@ -3,7 +3,7 @@
 import numpy as np
 import warnings
 from dataclasses import dataclass
-from pydantic import model_validator, computed_field, ValidationError
+from pydantic import model_validator, computed_field, ValidationError, Field
 from pydantic.functional_validators import ModelWrapValidatorHandler
 from typing import Generator, Union
 
@@ -32,11 +32,12 @@ class StructuralFrame:
     """
 
     structural_groups: list[StructuralGroup]
+    color_generator: ColorsGenerator =  Field(default_factory=ColorsGenerator)
     # ? Should I create some sort of structural options class? For example, the masking descriptor and faults relations pointer
     is_dirty: bool = True
 
     # region Constructor
-
+    # 
     def __init__(self, structural_groups: list[StructuralGroup], color_gen: ColorsGenerator):
         self.structural_groups = structural_groups  # ? This maybe could be optional
         self.color_generator = color_gen

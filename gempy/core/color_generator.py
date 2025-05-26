@@ -35,7 +35,7 @@ class ColorsGenerator:
     )
     _index: int = 0
 
-    def __init__(self):
+    def __post_init__(self):
         self.regenerate_color_palette()
 
     @staticmethod
