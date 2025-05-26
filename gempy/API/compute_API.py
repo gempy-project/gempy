@@ -56,9 +56,6 @@ def compute_model(gempy_model: GeoModel, engine_config: Optional[GemPyEngineConf
                 data_descriptor=gempy_model.input_data_descriptor,
                 geophysics_input=gempy_model.geophysics_input,
             )
-
-        case AvailableBackends.aesara | AvailableBackends.legacy:
-            gempy_model.legacy_model = _legacy_compute_model(gempy_model)
         case _:
             raise ValueError(f'Backend {engine_config} not supported')
 
@@ -189,9 +186,3 @@ def optimize_and_compute(geo_model: GeoModel, engine_config: GemPyEngineConfig, 
     return geo_model.solutions
 
 
-def _legacy_compute_model(gempy_model: GeoModel) -> 'gempy_legacy.Project':
-    gpl = require_gempy_legacy()
-    legacy_model: gpl.Project = gempy3_to_gempy2(gempy_model)
-    gpl.set_interpolator(legacy_model)
-    gpl.compute_model(legacy_model)
-    return legacy_model
