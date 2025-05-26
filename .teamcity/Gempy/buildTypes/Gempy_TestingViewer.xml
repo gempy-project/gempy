@@ -10,6 +10,8 @@
       <param name="REQUIREMENT_LEVEL" value="READ_MESH" />
       <param name="USE_PRERELEASE" value="true" spec="text display='prompt' validationMode='any'" />
       <param name="env.MPLBACKEND" value="Agg" />
+      <param name="env.TERRA_PATH_DEVOPS" value="/mnt/d/OneDrive - Terranigma Solutions GmbH/Documents - Terranigma Base/DevOps/" />
+      <param name="env.PATH_TO_NUGGET_TEST_MODEL" value="%env.TERRA_PATH_DEVOPS%GemPyTestData/Stonepark" />
     </parameters>
     <build-runners>
       <runner id="Setup" name="Setup" type="simpleRunner">
