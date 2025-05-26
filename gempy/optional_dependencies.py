@@ -66,3 +66,10 @@ def require_zlib():
     except ImportError:
         raise ImportError("The zlib package is required to run this function.")
     return zlib
+
+def require_torch():
+    try:
+        import torch
+    except ImportError:
+        raise ImportError("The torch package is required to run this function.")
+    return torch

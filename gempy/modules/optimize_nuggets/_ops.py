@@ -1,10 +1,10 @@
-import torch
-
 import gempy_engine
+from gempy.optional_dependencies import require_torch
 from gempy_engine.core.data.continue_epoch import ContinueEpoch
 
 
 def run_optimization(lr, max_epochs, min_impr, model, nugget, patience, target_cond_num):
+    torch = require_torch()
     opt = torch.optim.Adam(
         params=[
                 nugget,
@@ -32,7 +32,7 @@ def run_optimization(lr, max_epochs, min_impr, model, nugget, patience, target_c
                 _apply_outlier_gradients(tensor=nugget, mask=mask_sp)
 
             # Step & clamp safely
-            opt.step()
+            opt.step()                                                                       
             with torch.no_grad():
                 nugget.clamp_(min=1e-7)
 
@@ -47,14 +47,14 @@ def run_optimization(lr, max_epochs, min_impr, model, nugget, patience, target_c
     return nugget
 
 
-def _mask_iqr(grads, multiplier: float = 1.5) -> torch.BoolTensor:
+def _mask_iqr(grads, multiplier: float = 1.5) -> "torch.BoolTensor":
     q1, q3 = grads.quantile(0.25), grads.quantile(0.75)
     thresh = q3 + multiplier * (q3 - q1)
     return grads > thresh
 
 def _apply_outlier_gradients(
-        tensor: torch.Tensor,
-        mask: torch.BoolTensor,
+        tensor: "torch.Tensor",
+        mask: "torch.BoolTensor",
         amplification: float = 1.0,
 ):
     # wrap in no_grad if you prefer, but .grad modifications are fine
@@ -65,6 +65,7 @@ def _apply_outlier_gradients(
 
 def _gradient_masking(nugget, focus=0.01):
     """Old way of avoiding exploding gradients."""
+    torch = require_torch()
     grads = nugget.grad.abs()
     k = int(grads.numel() * focus)
     top_vals, top_idx = torch.topk(grads, k, largest=True)
