@@ -45,8 +45,8 @@ def initialize_geo_model(structural_elements: list[gp.data.StructuralElement], e
 
     structural_groups = [
             # structural_group_intrusion, 
-            # structural_group_green, 
-            # structural_group_blue, 
+            structural_group_green, 
+            structural_group_blue, 
             structural_group_red
     ]
     structural_frame = gp.data.StructuralFrame(

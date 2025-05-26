@@ -1,17 +1,15 @@
 ﻿import dotenv
+import numpy as np
 import os
-
 from typing import Optional
 
-import numpy as np
-
 import gempy_engine
-from gempy_engine.core.backend_tensor import BackendTensor
 from gempy.API.gp2_gp3_compatibility.gp3_to_gp2_input import gempy3_to_gempy2
 from gempy_engine.config import AvailableBackends
+from gempy_engine.core.backend_tensor import BackendTensor
 from gempy_engine.core.data import Solutions
-from gempy_engine.core.data.interpolation_input import InterpolationInput
 from .grid_API import set_custom_grid
+from ..core.data import StructuralGroup
 from ..core.data.gempy_engine_config import GemPyEngineConfig
 from ..core.data.geo_model import GeoModel
 from ..modules.data_manipulation import interpolation_input_from_structural_frame
@@ -96,18 +94,29 @@ def compute_model_at(gempy_model: GeoModel, at: np.ndarray,
     return sol.raw_arrays.custom
 
 
-def optimize_and_compute(geo_model: GeoModel, engine_config: GemPyEngineConfig, max_epochs: int = 10,
-                         convergence_criteria: float = 1e5):
+def optimize_nuggets(geo_model: GeoModel, engine_config: GemPyEngineConfig, max_epochs: int = 10,
+                     convergence_criteria: float = 1e5, only_groups:list[StructuralGroup] | None = None) -> GeoModel:
+    """
+    Optimize the nuggets of the interpolation input of the provided model.  
+    """
+
     if engine_config.backend != AvailableBackends.PYTORCH:
         raise ValueError(f'Only PyTorch backend is supported for optimization. Received {engine_config.backend}')
-
+    
     geo_model = nugget_optimizer(
         target_cond_num=convergence_criteria,
         engine_cfg=engine_config,
         model=geo_model,
         max_epochs=max_epochs,
+        only_groups=only_groups
     )
 
+    return geo_model
+
+def optimize_and_compute(geo_model: GeoModel, engine_config: GemPyEngineConfig, max_epochs: int = 10,
+                         convergence_criteria: float = 1e5):
+    
+    optimize_nuggets(geo_model, engine_config, max_epochs, convergence_criteria)
     geo_model.solutions = gempy_engine.compute_model(
         interpolation_input=geo_model.taped_interpolation_input,
         options=geo_model.interpolation_options,
