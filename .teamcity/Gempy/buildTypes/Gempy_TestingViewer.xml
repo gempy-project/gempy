@@ -62,6 +62,9 @@ venv/bin/python -m pytest --teamcity -v]]></param>
     <vcs-settings>
       <vcs-entry-ref root-id="GempyEngine_HttpsGithubComGempyProjectGempyViewerRefsHeadsMain" />
     </vcs-settings>
+    <requirements>
+      <exists id="RQ_10" name="env.WSLENV" />
+    </requirements>
     <build-triggers>
       <build-trigger id="TRIGGER_4" type="vcsTrigger">
         <parameters>
