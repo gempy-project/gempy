@@ -59,6 +59,8 @@ from ..modules.data_manipulation.manipulate_structural_frame import (
     remove_element_by_name
 )
 
+from ..modules.serialization.save_load import save_model, load_model
+
 # Geophysics
 from gempy_engine.modules.geophysics.gravity_gradient import calculate_gravity_gradient
 
@@ -71,5 +73,6 @@ __all__ = [
         'add_surface_points', 'add_orientations', 'delete_surface_points', 'delete_orientations',
         'create_orientations_from_surface_points_coords', 'modify_surface_points', 'modify_orientations',
         'add_structural_group', 'remove_structural_group_by_index', 'remove_structural_group_by_name', 'remove_element_by_name',
-        'calculate_gravity_gradient'
+        'calculate_gravity_gradient',
+        'save_model', 'load_model'
 ]
