@@ -60,7 +60,7 @@
             }
         ],
         "color_generator": {
-            "_index": 2
+            "_index": 3
         },
         "basement_color": "#ffbe00",
         "is_dirty": true,

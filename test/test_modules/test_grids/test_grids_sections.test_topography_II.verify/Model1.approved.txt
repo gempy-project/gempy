@@ -13,7 +13,7 @@
                     {
                         "name": "fault1",
                         "is_active": true,
-                        "_color": "#728f02",
+                        "_color": "#443988",
                         "surface_points": {
                             "name_id_map": {
                                 "fault1": 26244822
@@ -56,7 +56,7 @@
                     {
                         "name": "surface2",
                         "is_active": true,
-                        "_color": "#9f0052",
+                        "_color": "#ffbe00",
                         "surface_points": {
                             "name_id_map": {
                                 "surface2": 21816406
@@ -73,7 +73,7 @@
                     {
                         "name": "surface3",
                         "is_active": true,
-                        "_color": "#ffbe00",
+                        "_color": "#728f02",
                         "surface_points": {
                             "name_id_map": {
                                 "surface3": 98435767
@@ -94,8 +94,11 @@
                 "solution": null
             }
         ],
+        "color_generator": {
+            "_index": 5
+        },
+        "basement_color": "#9f0052",
         "is_dirty": true,
-        "basement_color": "#443988",
         "binary_meta_data": {
             "sp_binary_length": 360,
             "ori_binary_length": 120
