@@ -39,26 +39,29 @@
           <div class="body" role="main">
             
   <h1>Source code for gempy.core.data.geo_model</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pprint</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Optional</span>
-
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pprint</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">ConfigDict</span><span class="p">,</span> <span class="n">Field</span><span class="p">,</span> <span class="n">PrivateAttr</span><span class="p">,</span> <span class="n">computed_field</span><span class="p">,</span> <span class="n">model_validator</span><span class="p">,</span> <span class="n">ValidationError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic.functional_validators</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelWrapValidatorHandler</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">gempy_engine.core.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">InterpolationOptions</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gempy_engine.core.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Solutions</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gempy_engine.core.data.engine_grid</span><span class="w"> </span><span class="kn">import</span> <span class="n">EngineGrid</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gempy_engine.core.data.geophysics_input</span><span class="w"> </span><span class="kn">import</span> <span class="n">GeophysicsInput</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">gempy_engine.core.data.raw_arrays_solution</span><span class="w"> </span><span class="kn">import</span> <span class="n">RawArraysSolution</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">gempy_engine.core.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">InterpolationOptions</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gempy_engine.core.data.input_data_descriptor</span><span class="w"> </span><span class="kn">import</span> <span class="n">InputDataDescriptor</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gempy_engine.core.data.interpolation_input</span><span class="w"> </span><span class="kn">import</span> <span class="n">InterpolationInput</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gempy_engine.core.data.raw_arrays_solution</span><span class="w"> </span><span class="kn">import</span> <span class="n">RawArraysSolution</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gempy_engine.core.data.transforms</span><span class="w"> </span><span class="kn">import</span> <span class="n">Transform</span><span class="p">,</span> <span class="n">GlobalAnisotropy</span>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">.orientations</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrientationsTable</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.surface_points</span><span class="w"> </span><span class="kn">import</span> <span class="n">SurfacePointsTable</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.structural_frame</span><span class="w"> </span><span class="kn">import</span> <span class="n">StructuralFrame</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.encoders.converters</span><span class="w"> </span><span class="kn">import</span> <span class="n">instantiate_if_necessary</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.encoders.json_geomodel_encoder</span><span class="w"> </span><span class="kn">import</span> <span class="n">encode_numpy_array</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.grid</span><span class="w"> </span><span class="kn">import</span> <span class="n">Grid</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.orientations</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrientationsTable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.structural_frame</span><span class="w"> </span><span class="kn">import</span> <span class="n">StructuralFrame</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.surface_points</span><span class="w"> </span><span class="kn">import</span> <span class="n">SurfacePointsTable</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">...modules.data_manipulation.engine_factory</span><span class="w"> </span><span class="kn">import</span> <span class="n">interpolation_input_from_structural_frame</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
@@ -83,106 +86,46 @@
 
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">creation_date</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">last_modification_date</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">owner</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">last_modification_date</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span>
+    <span class="n">owner</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span>
 
 
 <div class="viewcode-block" id="GeoModel">
 <a class="viewcode-back" href="../../../../Modeling%20Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel">[docs]</a>
-<span class="nd">@dataclass</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">GeoModel</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">GeoModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class representing a geological model.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">meta</span><span class="p">:</span> <span class="n">GeoModelMeta</span>  <span class="c1">#: Meta-information about the geological model, like its name, creation and modification dates, and owner.</span>
-    <span class="n">structural_frame</span><span class="p">:</span> <span class="n">StructuralFrame</span>  <span class="c1">#: The structural information of the geological model.</span>
-    <span class="n">grid</span><span class="p">:</span> <span class="n">Grid</span>  <span class="c1">#: The general grid used in the geological model.</span>
+    <span class="n">meta</span><span class="p">:</span> <span class="n">GeoModelMeta</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1">#: Meta-information about the geological model, like its name, creation and modification dates, and owner.</span>
+    <span class="n">structural_frame</span><span class="p">:</span> <span class="n">StructuralFrame</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1">#: The structural information of the geological model.</span>
+    <span class="n">grid</span><span class="p">:</span> <span class="n">Grid</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>  <span class="c1">#: The general grid used in the geological model.</span>
 
     <span class="c1"># region GemPy engine data types</span>
     <span class="n">_interpolation_options</span><span class="p">:</span> <span class="n">InterpolationOptions</span>  <span class="c1">#: The interpolation options provided by the user.</span>
-    <span class="n">geophysics_input</span><span class="p">:</span> <span class="n">GeophysicsInput</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1">#: The geophysics input of the geological model.</span>
 
-    <span class="n">input_transform</span><span class="p">:</span> <span class="n">Transform</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1">#: The transformation used in the geological model for input points.</span>
+    <span class="n">geophysics_input</span><span class="p">:</span> <span class="n">GeophysicsInput</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1">#: The geophysics input of the geological model.</span>
+    <span class="n">input_transform</span><span class="p">:</span> <span class="n">Transform</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1">#: The transformation used in the geological model for input points.</span>
 
-    <span class="n">interpolation_grid</span><span class="p">:</span> <span class="n">EngineGrid</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1">#: Optional grid used for interpolation. Can be seen as a cache field.</span>
-    <span class="n">_interpolationInput</span><span class="p">:</span> <span class="n">InterpolationInput</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1">#: Input data for interpolation. Fed by the structural frame and can be seen as a cache field.</span>
-    <span class="n">_input_data_descriptor</span><span class="p">:</span> <span class="n">InputDataDescriptor</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1">#: Descriptor of the input data. Fed by the structural frame and can be seen as a cache field.</span>
+    <span class="n">interpolation_grid</span><span class="p">:</span> <span class="n">EngineGrid</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1">#: ptional grid used for interpolation. Can be seen as a cache field.</span>
+    <span class="n">_interpolationInput</span><span class="p">:</span> <span class="n">InterpolationInput</span> <span class="o">=</span> <span class="n">PrivateAttr</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>  <span class="c1">#: Input data for interpolation. Fed by the structural frame and can be seen as a cache field.</span>
+    <span class="n">_input_data_descriptor</span><span class="p">:</span> <span class="n">InputDataDescriptor</span> <span class="o">=</span> <span class="n">PrivateAttr</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>  <span class="c1">#: Descriptor of the input data. Fed by the structural frame and can be seen as a cache field.</span>
 
     <span class="c1"># endregion</span>
-    <span class="n">_solutions</span><span class="p">:</span> <span class="n">Solutions</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>  <span class="c1">#: The computed solutions of the geological model. </span>
-
-    <span class="n">legacy_model</span><span class="p">:</span> <span class="s2">&quot;gpl.Project&quot;</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1">#: Legacy model (if available). Allows for backward compatibility.</span>
-
-<div class="viewcode-block" id="GeoModel.__init__">
-<a class="viewcode-back" href="../../../../Modeling%20Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel.__init__">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">structural_frame</span><span class="p">:</span> <span class="n">StructuralFrame</span><span class="p">,</span> <span class="n">grid</span><span class="p">:</span> <span class="n">Grid</span><span class="p">,</span> <span class="n">interpolation_options</span><span class="p">:</span> <span class="n">InterpolationOptions</span><span class="p">):</span>
-        <span class="c1"># TODO: Fill the arguments properly</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">meta</span> <span class="o">=</span> <span class="n">GeoModelMeta</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
-            <span class="n">creation_date</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">last_modification_date</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">owner</span><span class="o">=</span><span class="kc">None</span>
-        <span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">structural_frame</span> <span class="o">=</span> <span class="n">structural_frame</span>  <span class="c1"># ? This could be Optional</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">grid</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_interpolation_options</span> <span class="o">=</span> <span class="n">interpolation_options</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">input_transform</span> <span class="o">=</span> <span class="n">Transform</span><span class="o">.</span><span class="n">from_input_points</span><span class="p">(</span>
-            <span class="n">surface_points</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">surface_points_copy</span><span class="p">,</span>
-            <span class="n">orientations</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">orientations_copy</span>
-        <span class="p">)</span></div>
-
+    <span class="n">_solutions</span><span class="p">:</span> <span class="n">Solutions</span> <span class="o">=</span> <span class="n">PrivateAttr</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>  <span class="c1">#: The computed solutions of the geological model. </span>
+    <span class="n">_taped_interpolation_input</span><span class="p">:</span> <span class="n">InterpolationInput</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">PrivateAttr</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># TODO: Improve this</span>
         <span class="k">return</span> <span class="n">pprint</span><span class="o">.</span><span class="n">pformat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
 
-<div class="viewcode-block" id="GeoModel.update_transform">
-<a class="viewcode-back" href="../../../../Modeling%20Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel.update_transform">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">update_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">auto_anisotropy</span><span class="p">:</span> <span class="n">GlobalAnisotropy</span> <span class="o">=</span> <span class="n">GlobalAnisotropy</span><span class="o">.</span><span class="n">NONE</span><span class="p">,</span> <span class="n">anisotropy_limit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the transformation of the geological model.</span>
+    <span class="c1"># region Properties</span>
 
-<span class="sd">            This function updates the transformation of the geological model using the provided surface points and orientations.</span>
-<span class="sd">            It also applies anisotropy based on the specified type and limit.</span>
-
-<span class="sd">            Args:</span>
-<span class="sd">                auto_anisotropy (GlobalAnisotropy): The type of anisotropy to apply. Defaults to GlobalAnisotropy.NONE.</span>
-<span class="sd">                anisotropy_limit (Optional[np.ndarray]): Anisotropy limit values. If None, no limit is applied.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">input_transform</span> <span class="o">=</span> <span class="n">Transform</span><span class="o">.</span><span class="n">from_input_points</span><span class="p">(</span>
-            <span class="n">surface_points</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">surface_points_copy</span><span class="p">,</span>
-            <span class="n">orientations</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">orientations_copy</span>
-        <span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">input_transform</span><span class="o">.</span><span class="n">apply_anisotropy</span><span class="p">(</span><span class="n">anisotropy_type</span><span class="o">=</span><span class="n">auto_anisotropy</span><span class="p">,</span> <span class="n">anisotropy_limit</span><span class="o">=</span><span class="n">anisotropy_limit</span><span class="p">)</span></div>
-
-
+    <span class="nd">@computed_field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">&quot;_interpolation_options&quot;</span><span class="p">)</span>
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">interpolation_options</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">InterpolationOptions</span><span class="p">:</span>
-        <span class="n">n_octree_lvl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_interpolation_options</span><span class="o">.</span><span class="n">number_octree_levels</span>  <span class="c1"># * we access the private one because we do not care abot the extract mesh octree level</span>
-
-        <span class="n">octrees_set</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Grid</span><span class="o">.</span><span class="n">GridTypes</span><span class="o">.</span><span class="n">OCTREE</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">active_grids</span>
-        <span class="n">dense_set</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Grid</span><span class="o">.</span><span class="n">GridTypes</span><span class="o">.</span><span class="n">DENSE</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">active_grids</span>
-
-        <span class="c1"># Create a tuple representing the conditions</span>
-        <span class="k">match</span> <span class="p">(</span><span class="n">octrees_set</span><span class="p">,</span> <span class="n">dense_set</span><span class="p">):</span>
-            <span class="k">case</span> <span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_interpolation_options</span><span class="o">.</span><span class="n">block_solutions_type</span> <span class="o">=</span> <span class="n">RawArraysSolution</span><span class="o">.</span><span class="n">BlockSolutionType</span><span class="o">.</span><span class="n">OCTREE</span>
-            <span class="k">case</span> <span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>
-                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Both octree levels and resolution are set. The default grid for the `raw_array_solution`&quot;</span>
-                              <span class="s2">&quot;and plots will be the dense regular grid. To use octrees instead, set resolution to None in the &quot;</span>
-                              <span class="s2">&quot;regular grid.&quot;</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_interpolation_options</span><span class="o">.</span><span class="n">block_solutions_type</span> <span class="o">=</span> <span class="n">RawArraysSolution</span><span class="o">.</span><span class="n">BlockSolutionType</span><span class="o">.</span><span class="n">DENSE_GRID</span>
-            <span class="k">case</span> <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_interpolation_options</span><span class="o">.</span><span class="n">block_solutions_type</span> <span class="o">=</span> <span class="n">RawArraysSolution</span><span class="o">.</span><span class="n">BlockSolutionType</span><span class="o">.</span><span class="n">DENSE_GRID</span>
-            <span class="k">case</span> <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_interpolation_options</span><span class="o">.</span><span class="n">block_solutions_type</span> <span class="o">=</span> <span class="n">RawArraysSolution</span><span class="o">.</span><span class="n">BlockSolutionType</span><span class="o">.</span><span class="n">NONE</span>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">_infer_dense_grid_solution</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_interpolation_options</span><span class="o">.</span><span class="n">cache_model_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">name</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_interpolation_options</span>
 
@@ -197,7 +140,7 @@
     <span class="nd">@solutions</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">solutions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Solutions</span><span class="p">):</span>
         <span class="c1"># * This is set  from the gempy engine</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_solutions</span> <span class="o">=</span> <span class="n">value</span>
 
         <span class="c1"># * Set solutions per group</span>
@@ -211,7 +154,7 @@
         <span class="c1"># * Set solutions per element</span>
         <span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">element</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">structural_frame</span><span class="o">.</span><span class="n">structural_elements</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>  <span class="c1"># * Ignore basement</span>
             <span class="n">element</span><span class="o">.</span><span class="n">scalar_field_at_interface</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">scalar_field_at_surface_points</span><span class="p">[</span><span class="n">e</span><span class="p">]</span>
-            
+
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_solutions</span><span class="o">.</span><span class="n">dc_meshes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">continue</span>
             <span class="n">dc_mesh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_solutions</span><span class="o">.</span><span class="n">dc_meshes</span><span class="p">[</span><span class="n">e</span><span class="p">]</span>
@@ -321,10 +264,126 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">input_data_descriptor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">InputDataDescriptor</span><span class="p">:</span>
         <span class="c1"># TODO: This should have the exact same dirty logic as interpolation_input</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">structural_frame</span><span class="o">.</span><span class="n">input_data_descriptor</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">taped_interpolation_input</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">InterpolationInput</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_taped_interpolation_input</span>
+    
+    <span class="nd">@taped_interpolation_input</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">taped_interpolation_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">InterpolationInput</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_taped_interpolation_input</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="c1"># endregion</span>
+    <span class="c1"># region Constructors</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_args</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">structural_frame</span><span class="p">:</span> <span class="n">StructuralFrame</span><span class="p">,</span> <span class="n">grid</span><span class="p">:</span> <span class="n">Grid</span><span class="p">,</span> <span class="n">interpolation_options</span><span class="p">:</span> <span class="n">InterpolationOptions</span><span class="p">):</span>
+        <span class="c1"># TODO: Fill the arguments properly</span>
+        <span class="n">meta</span> <span class="o">=</span> <span class="n">GeoModelMeta</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">creation_date</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+            <span class="n">last_modification_date</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">owner</span><span class="o">=</span><span class="kc">None</span>
+        <span class="p">)</span>
+
+        <span class="n">structural_frame</span> <span class="o">=</span> <span class="n">structural_frame</span>  <span class="c1"># ? This could be Optional</span>
+
+        <span class="n">grid</span> <span class="o">=</span> <span class="n">grid</span>
+        <span class="n">_interpolation_options</span> <span class="o">=</span> <span class="n">interpolation_options</span>
+        <span class="n">input_transform</span> <span class="o">=</span> <span class="n">Transform</span><span class="o">.</span><span class="n">from_input_points</span><span class="p">(</span>
+            <span class="n">surface_points</span><span class="o">=</span><span class="n">structural_frame</span><span class="o">.</span><span class="n">surface_points_copy</span><span class="p">,</span>
+            <span class="n">orientations</span><span class="o">=</span><span class="n">structural_frame</span><span class="o">.</span><span class="n">orientations_copy</span>
+        <span class="p">)</span>
+
+        <span class="n">model</span> <span class="o">=</span> <span class="n">GeoModel</span><span class="p">(</span>
+            <span class="n">meta</span><span class="o">=</span><span class="n">meta</span><span class="p">,</span>
+            <span class="n">structural_frame</span><span class="o">=</span><span class="n">structural_frame</span><span class="p">,</span>
+            <span class="n">grid</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span>
+            <span class="n">input_transform</span><span class="o">=</span><span class="n">input_transform</span><span class="p">,</span>
+            <span class="n">_interpolation_options</span><span class="o">=</span><span class="n">_interpolation_options</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">model</span>
+
+    <span class="c1"># endregion</span>
+
+    <span class="c1"># region Methods</span>
+<div class="viewcode-block" id="GeoModel.update_transform">
+<a class="viewcode-back" href="../../../../Modeling%20Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel.update_transform">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">auto_anisotropy</span><span class="p">:</span> <span class="n">GlobalAnisotropy</span> <span class="o">=</span> <span class="n">GlobalAnisotropy</span><span class="o">.</span><span class="n">NONE</span><span class="p">,</span> <span class="n">anisotropy_limit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the transformation of the geological model.</span>
+
+<span class="sd">            This function updates the transformation of the geological model using the provided surface points and orientations.</span>
+<span class="sd">            It also applies anisotropy based on the specified type and limit.</span>
+
+<span class="sd">            Args:</span>
+<span class="sd">                auto_anisotropy (GlobalAnisotropy): The type of anisotropy to apply. Defaults to GlobalAnisotropy.NONE.</span>
+<span class="sd">                anisotropy_limit (Optional[np.ndarray]): Anisotropy limit values. If None, no limit is applied.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_transform</span> <span class="o">=</span> <span class="n">Transform</span><span class="o">.</span><span class="n">from_input_points</span><span class="p">(</span>
+            <span class="n">surface_points</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">surface_points_copy</span><span class="p">,</span>
+            <span class="n">orientations</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">orientations_copy</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_transform</span><span class="o">.</span><span class="n">apply_anisotropy</span><span class="p">(</span><span class="n">anisotropy_type</span><span class="o">=</span><span class="n">auto_anisotropy</span><span class="p">,</span> <span class="n">anisotropy_limit</span><span class="o">=</span><span class="n">anisotropy_limit</span><span class="p">)</span></div>
+
 
     <span class="k">def</span><span class="w"> </span><span class="nf">add_surface_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">Y</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">Z</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
                            <span class="n">surface</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">nugget</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;This method is deprecated. Use `gp.add_surface_points` instead&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;This method is deprecated. Use `gp.add_surface_points` instead&quot;</span><span class="p">)</span>
+
+    <span class="c1"># endregion</span>
+
+    <span class="c1"># region Pydantic serialization</span>
+
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span>
+        <span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">use_enum_values</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">json_encoders</span><span class="o">=</span><span class="p">{</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span> <span class="n">encode_numpy_array</span>
+        <span class="p">}</span>
+    <span class="p">)</span>
+
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;wrap&#39;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">deserialize_properties</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s2">&quot;GeoModel&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">],</span> <span class="n">constructor</span><span class="p">:</span> <span class="n">ModelWrapValidatorHandler</span><span class="p">[</span><span class="s2">&quot;GeoModel&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;GeoModel&quot;</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">match</span> <span class="n">data</span><span class="p">:</span>
+                <span class="k">case</span> <span class="n">GeoModel</span><span class="p">():</span>
+                    <span class="k">return</span> <span class="n">data</span>
+                <span class="k">case</span> <span class="nb">dict</span><span class="p">():</span>
+                    <span class="n">instance</span><span class="p">:</span> <span class="n">GeoModel</span> <span class="o">=</span> <span class="n">constructor</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                    <span class="n">instantiate_if_necessary</span><span class="p">(</span>
+                        <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                        <span class="n">key</span><span class="o">=</span><span class="s2">&quot;_interpolation_options&quot;</span><span class="p">,</span>
+                        <span class="nb">type</span><span class="o">=</span><span class="n">InterpolationOptions</span>
+                    <span class="p">)</span>
+                    <span class="n">instance</span><span class="o">.</span><span class="n">_interpolation_options</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_interpolation_options&quot;</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">instance</span>
+                <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">ValidationError</span>
+        <span class="k">except</span> <span class="n">ValidationError</span><span class="p">:</span>
+            <span class="k">raise</span>
+
+    <span class="c1"># endregion</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_infer_dense_grid_solution</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">octrees_set</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Grid</span><span class="o">.</span><span class="n">GridTypes</span><span class="o">.</span><span class="n">OCTREE</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">active_grids</span>
+        <span class="n">dense_set</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Grid</span><span class="o">.</span><span class="n">GridTypes</span><span class="o">.</span><span class="n">DENSE</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">active_grids</span>
+        <span class="c1"># Create a tuple representing the conditions</span>
+        <span class="k">match</span> <span class="p">(</span><span class="n">octrees_set</span><span class="p">,</span> <span class="n">dense_set</span><span class="p">):</span>
+            <span class="k">case</span> <span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_interpolation_options</span><span class="o">.</span><span class="n">block_solutions_type</span> <span class="o">=</span> <span class="n">RawArraysSolution</span><span class="o">.</span><span class="n">BlockSolutionType</span><span class="o">.</span><span class="n">OCTREE</span>
+            <span class="k">case</span> <span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Both octree levels and resolution are set. The default grid for the `raw_array_solution`&quot;</span>
+                              <span class="s2">&quot;and plots will be the dense regular grid. To use octrees instead, set resolution to None in the &quot;</span>
+                              <span class="s2">&quot;regular grid.&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_interpolation_options</span><span class="o">.</span><span class="n">block_solutions_type</span> <span class="o">=</span> <span class="n">RawArraysSolution</span><span class="o">.</span><span class="n">BlockSolutionType</span><span class="o">.</span><span class="n">DENSE_GRID</span>
+            <span class="k">case</span> <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_interpolation_options</span><span class="o">.</span><span class="n">block_solutions_type</span> <span class="o">=</span> <span class="n">RawArraysSolution</span><span class="o">.</span><span class="n">BlockSolutionType</span><span class="o">.</span><span class="n">DENSE_GRID</span>
+            <span class="k">case</span> <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_interpolation_options</span><span class="o">.</span><span class="n">block_solutions_type</span> <span class="o">=</span> <span class="n">RawArraysSolution</span><span class="o">.</span><span class="n">BlockSolutionType</span><span class="o">.</span><span class="n">NONE</span></div>
 
 </pre></div>
 

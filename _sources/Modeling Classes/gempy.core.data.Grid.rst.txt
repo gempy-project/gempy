@@ -19,6 +19,7 @@
    .. autosummary::
    
       ~Grid.__init__
+      ~Grid.deserialize_properties
       ~Grid.get_section_args
       ~Grid.init_dense_grid
       ~Grid.init_octree_grid
@@ -41,6 +42,7 @@
       ~Grid.custom_grid
       ~Grid.dense_grid
       ~Grid.extent
+      ~Grid.length
       ~Grid.octree_grid
       ~Grid.octree_levels
       ~Grid.regular_grid
@@ -48,7 +50,6 @@
       ~Grid.topography
       ~Grid.transform
       ~Grid.values
-      ~Grid.length
    
    
 

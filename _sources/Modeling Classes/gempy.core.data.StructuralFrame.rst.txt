@@ -20,6 +20,8 @@
    
       ~StructuralFrame.__init__
       ~StructuralFrame.append_group
+      ~StructuralFrame.deserialize_orientations
+      ~StructuralFrame.deserialize_surface_points
       ~StructuralFrame.from_data_tables
       ~StructuralFrame.get_element_by_name
       ~StructuralFrame.get_group_by_element
@@ -61,6 +63,8 @@
       ~StructuralFrame.orientations
       ~StructuralFrame.orientations_colors_per_item
       ~StructuralFrame.orientations_copy
+      ~StructuralFrame.serialize_orientations
+      ~StructuralFrame.serialize_sp
       ~StructuralFrame.structural_elements
       ~StructuralFrame.surface_points
       ~StructuralFrame.surface_points_colors_per_item

@@ -76,43 +76,7 @@ We import a model from an existing folder.
 
  .. code-block:: none
 
-    {'_interpolation_options': InterpolationOptions(kernel_options={'range': 1.7, 'c_o': 10, 'uni_degree': 1, 'i_res': 4, 'gi_res': 2, 'number_dimensions': 3, 'kernel_function': <AvailableKernelFunctions.cubic: KernelFunction(base_function=<function cubic_function at 0x7fc5ccbea320>, derivative_div_r=<function cubic_function_p_div_r at 0x7fc5ccbea560>, second_derivative=<function cubic_function_a at 0x7fc5ccbea5f0>, consume_sq_distance=False)>, 'kernel_solver': <Solvers.DEFAULT: 1>, 'compute_condition_number': False, 'optimizing_condition_number': False, 'condition_number': None}, evaluation_options={'_number_octree_levels': 6, '_number_octree_levels_surface': 4, 'octree_curvature_threshold': -1, 'octree_error_threshold': 1.0, 'octree_min_level': 2, 'mesh_extraction': True, 'mesh_extraction_masking_options': <MeshExtractionMaskingOptions.INTERSECT: 3>, 'mesh_extraction_fancy': True, 'evaluation_chunk_size': 500000, 'compute_scalar_gradient': False, 'verbose': False}, temp_interpolation_values=<gempy_engine.core.data.options.temp_interpolation_values.TempInterpolationValues object at 0x7fc5bd96ed10>, debug=True, cache_mode=CacheMode.IN_MEMORY_CACHE, cache_model_name=, block_solutions_type=BlockSolutionType.OCTREE, sigmoid_slope=5000000, debug_water_tight=False),
-     'grid': Grid(values=array([[  25.,   25., -985.],
-           [  25.,   25., -955.],
-           [  25.,   25., -925.],
-           ...,
-           [ 975.,  975., -475.],
-           [ 975.,  975., -445.],
-           [ 975.,  975., -415.]], shape=(8000, 3)),
-                  length=array([], dtype=float64),
-                  _octree_grid=None,
-                  _dense_grid=RegularGrid(resolution=array([20, 20, 20]),
-                                          extent=array([    0.,  1000.,     0.,  1000., -1000.,  -400.]),
-                                          values=array([[  25.,   25., -985.],
-           [  25.,   25., -955.],
-           [  25.,   25., -925.],
-           ...,
-           [ 975.,  975., -475.],
-           [ 975.,  975., -445.],
-           [ 975.,  975., -415.]], shape=(8000, 3)),
-                                          mask_topo=array([], shape=(0, 3), dtype=bool),
-                                          _transform=None),
-                  _custom_grid=None,
-                  _topography=None,
-                  _sections=None,
-                  _centered_grid=None,
-                  _transform=None,
-                  _octree_levels=-1),
-     'input_transform': {'_cached_pivot': None,
-     '_is_default_transform': False,
-     'position': array([-500., -500.,  650.]),
-     'rotation': array([0., 0., 0.]),
-     'scale': array([0.000625, 0.000625, 0.000625])},
-     'meta': GeoModelMeta(name='Faults_relations',
-                          creation_date=None,
-                          last_modification_date=None,
-                          owner=None),
-     'structural_frame': StructuralFrame(
+    meta=GeoModelMeta(name='Faults_relations', creation_date='2025-05-21T11:32:27.213985', last_modification_date=None, owner=None) structural_frame=StructuralFrame(
             structural_groups=[
     StructuralGroup(
             name=default_formation,
@@ -153,7 +117,23 @@ We import a model from an existing folder.
     ],
             fault_relations=
     [[False]],
-    }
+     grid=Grid(values=array([[  25.,   25., -985.],
+           [  25.,   25., -955.],
+           [  25.,   25., -925.],
+           ...,
+           [ 975.,  975., -475.],
+           [ 975.,  975., -445.],
+           [ 975.,  975., -415.]], shape=(8000, 3)), length=array([], dtype=float64), _octree_grid=None, _dense_grid=RegularGrid(resolution=array([20, 20, 20]), extent=array([    0.,  1000.,     0.,  1000., -1000.,  -400.]), values=array([[  25.,   25., -985.],
+           [  25.,   25., -955.],
+           [  25.,   25., -925.],
+           ...,
+           [ 975.,  975., -475.],
+           [ 975.,  975., -445.],
+           [ 975.,  975., -415.]], shape=(8000, 3)), mask_topo=array([], shape=(0, 3), dtype=bool), _transform=None), _custom_grid=None, _topography=None, _sections=None, _centered_grid=None, _transform=None, _octree_levels=-1) geophysics_input=None input_transform={'_cached_pivot': None,
+     '_is_default_transform': False,
+     'position': array([-500., -500.,  650.]),
+     'rotation': array([0., 0., 0.]),
+     'scale': array([0.000625, 0.000625, 0.000625])} interpolation_grid=None interpolation_options=InterpolationOptions(kernel_options=KernelOptions(range=1.7, c_o=10.0, uni_degree=1, i_res=4.0, gi_res=2.0, number_dimensions=3, kernel_function=AvailableKernelFunctions.cubic, kernel_solver=Solvers.DEFAULT, compute_condition_number=False, optimizing_condition_number=False, condition_number=None), evaluation_options=EvaluationOptions(_number_octree_levels=6, _number_octree_levels_surface=4, octree_curvature_threshold=-1.0, octree_error_threshold=1.0, octree_min_level=2, mesh_extraction=True, mesh_extraction_masking_options=<MeshExtractionMaskingOptions.INTERSECT: 3>, mesh_extraction_fancy=True, evaluation_chunk_size=500000, compute_scalar_gradient=False, verbose=False), debug=True, cache_mode=<CacheMode.IN_MEMORY_CACHE: 3>, cache_model_name='Faults_relations', block_solutions_type=<BlockSolutionType.DENSE_GRID: 2>, sigmoid_slope=5000000, debug_water_tight=False, temp_interpolation_values=TempInterpolationValues(current_octree_level=0))
 
 
 
@@ -264,10 +244,14 @@ Setting the structural frame
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.numpy
+    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
+      return 1.0 / (1.0 + bt.t.exp(x))
     Chunking done: 6 chunks
     Chunking done: 31 chunks
     Chunking done: 6 chunks
     Chunking done: 31 chunks
+    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
+      return 1.0 / (1.0 + bt.t.exp(x))
 
 
 .. raw:: html
@@ -329,7 +313,7 @@ Setting the structural frame
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fc5bd904ee0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7ff2af877fa0>
 
 
 
@@ -414,12 +398,18 @@ Setting the structural frame
      [False, False, False]],
 
     Setting Backend To: AvailableBackends.numpy
+    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
+      return 1.0 / (1.0 + bt.t.exp(x))
     Chunking done: 7 chunks
     Chunking done: 7 chunks
     Chunking done: 38 chunks
     Chunking done: 7 chunks
     Chunking done: 7 chunks
     Chunking done: 38 chunks
+    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
+      return 1.0 / (1.0 + bt.t.exp(x))
+    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
+      return 1.0 / (1.0 + bt.t.exp(x))
 
 
 .. raw:: html
@@ -456,7 +446,7 @@ Setting the structural frame
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fc5be212920>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7ff2a5440670>
 
 
 
@@ -501,7 +491,7 @@ Setting the structural frame
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc5bab74ca0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff2a53bcbe0>
 
 
 
@@ -640,6 +630,8 @@ Let's split the formations in two groups
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.numpy
+    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
+      return 1.0 / (1.0 + bt.t.exp(x))
     Chunking done: 7 chunks
     Chunking done: 7 chunks
     Chunking done: 23 chunks
@@ -648,6 +640,12 @@ Let's split the formations in two groups
     Chunking done: 7 chunks
     Chunking done: 22 chunks
     Chunking done: 17 chunks
+    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
+      return 1.0 / (1.0 + bt.t.exp(x))
+    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
+      return 1.0 / (1.0 + bt.t.exp(x))
+    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
+      return 1.0 / (1.0 + bt.t.exp(x))
 
 
 .. raw:: html
@@ -683,14 +681,14 @@ Let's split the formations in two groups
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fc5bb056aa0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7ff2a55e83d0>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (2 minutes 54.155 seconds)
+   **Total running time of the script:** (2 minutes 55.261 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_5_fault_relations.py:

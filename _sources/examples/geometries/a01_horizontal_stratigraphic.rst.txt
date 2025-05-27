@@ -162,7 +162,7 @@ Note: The boundaries are hidden in the latter plots for a cleaner visualization.
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc56d645780>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff2a29f3490>
 
 
 
@@ -511,7 +511,7 @@ which is a simple text file with one point per line.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.399 seconds)
+   **Total running time of the script:** (0 minutes 3.425 seconds)
 
 
 .. _sphx_glr_download_examples_geometries_a01_horizontal_stratigraphic.py:

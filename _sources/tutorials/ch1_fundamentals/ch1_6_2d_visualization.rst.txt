@@ -85,7 +85,7 @@ Data Preparation
 
     Active grids: GridTypes.NONE|TOPOGRAPHY|DENSE
 
-    <gempy.core.data.grid_modules.topography.Topography object at 0x7fc5bb225030>
+    <gempy.core.data.grid_modules.topography.Topography object at 0x7ff2a5524490>
 
 
 
@@ -109,7 +109,7 @@ Data Preparation
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc5bb224550>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff2a5527550>
 
 
 
@@ -150,7 +150,7 @@ Data Preparation
 
     Active grids: GridTypes.NONE|SECTIONS|TOPOGRAPHY|DENSE
 
-    <function plot_section_traces at 0x7fc5c4704b80>
+    <function plot_section_traces at 0x7ff2ac8252d0>
 
 
 
@@ -312,6 +312,10 @@ Data Preparation
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.numpy
+    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
+      return 1.0 / (1.0 + bt.t.exp(x))
+    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
+      return 1.0 / (1.0 + bt.t.exp(x))
 
 
 .. raw:: html
@@ -348,7 +352,7 @@ new plotting api
     /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:106: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
       warnings.warn(
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc5bab94700>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff2a27ca530>
 
 
 
@@ -410,7 +414,7 @@ any combination of the above:
     /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:106: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
       warnings.warn(
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc5be22fb80>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff2a53ecf40>
 
 
 
@@ -436,7 +440,7 @@ any combination of the above:
     /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:106: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
       warnings.warn(
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc5bd904910>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff2a56e59c0>
 
 
 
@@ -462,7 +466,7 @@ any combination of the above:
     /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:106: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
       warnings.warn(
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc5bd97d9c0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff2a55bb1c0>
 
 
 
@@ -487,14 +491,14 @@ any combination of the above:
     /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:106: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
       warnings.warn(
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc5bad57f40>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff2a27c9f30>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.423 seconds)
+   **Total running time of the script:** (0 minutes 2.388 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_6_2d_visualization.py:

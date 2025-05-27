@@ -39,14 +39,18 @@
           <div class="body" role="main">
             
   <h1>Source code for gempy.core.data.structural_frame</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">hashlib</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">model_validator</span><span class="p">,</span> <span class="n">computed_field</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">gempy_engine.core.data.input_data_descriptor</span><span class="w"> </span><span class="kn">import</span> <span class="n">InputDataDescriptor</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gempy_engine.core.data.kernel_classes.faults</span><span class="w"> </span><span class="kn">import</span> <span class="n">FaultsData</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gempy_engine.core.data.stack_relation_type</span><span class="w"> </span><span class="kn">import</span> <span class="n">StackRelationType</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.encoders.converters</span><span class="w"> </span><span class="kn">import</span> <span class="n">loading_model_context</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.orientations</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrientationsTable</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.structural_element</span><span class="w"> </span><span class="kn">import</span> <span class="n">StructuralElement</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.structural_group</span><span class="w"> </span><span class="kn">import</span> <span class="n">StructuralGroup</span><span class="p">,</span> <span class="n">FaultsRelationSpecialCase</span>
@@ -67,10 +71,62 @@
 <span class="sd">        is_dirty (bool): Boolean flag indicating if the structural frame has been modified.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">structural_groups</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">StructuralGroup</span><span class="p">]</span> 
-    <span class="n">color_generator</span><span class="p">:</span> <span class="n">ColorsGenerator</span> 
+    <span class="n">structural_groups</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">StructuralGroup</span><span class="p">]</span>
+    <span class="n">color_generator</span><span class="p">:</span> <span class="n">ColorsGenerator</span>
     <span class="c1"># ? Should I create some sort of structural options class? For example, the masking descriptor and faults relations pointer</span>
-    <span class="n">is_dirty</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span> 
+    <span class="n">is_dirty</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">deserialize_surface_points</span><span class="p">(</span><span class="n">values</span><span class="p">:</span> <span class="s2">&quot;StructuralFrame&quot;</span><span class="p">):</span>
+        <span class="c1"># Access the context variable to get injected data</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="n">loading_model_context</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="s1">&#39;surface_points_binary&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">context</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">values</span>
+
+        <span class="c1"># Check if we have a binary payload to digest</span>
+        <span class="n">binary_array</span> <span class="o">=</span> <span class="n">context</span><span class="p">[</span><span class="s1">&#39;surface_points_binary&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">binary_array</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">values</span>
+        <span class="k">if</span> <span class="n">binary_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">values</span>
+        
+        <span class="n">values</span><span class="o">.</span><span class="n">surface_points</span> <span class="o">=</span> <span class="n">SurfacePointsTable</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">binary_array</span><span class="p">,</span>
+            <span class="n">name_id_map</span><span class="o">=</span><span class="n">values</span><span class="o">.</span><span class="n">surface_points_copy</span><span class="o">.</span><span class="n">name_id_map</span>
+        <span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">values</span>
+    
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">deserialize_orientations</span><span class="p">(</span><span class="n">values</span><span class="p">:</span> <span class="s2">&quot;StructuralFrame&quot;</span><span class="p">):</span>
+        <span class="c1"># Access the context variable to get injected data</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="n">loading_model_context</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+        <span class="k">if</span> <span class="s1">&#39;orientations_binary&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">context</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">values</span>
+        
+        <span class="c1"># Check if we have a binary payload to digest</span>
+        <span class="n">binary_array</span> <span class="o">=</span> <span class="n">context</span><span class="p">[</span><span class="s1">&#39;orientations_binary&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">binary_array</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">values</span>
+        
+        <span class="n">values</span><span class="o">.</span><span class="n">orientations</span> <span class="o">=</span> <span class="n">OrientationsTable</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">binary_array</span><span class="p">,</span>
+            <span class="n">name_id_map</span><span class="o">=</span><span class="n">values</span><span class="o">.</span><span class="n">orientations_copy</span><span class="o">.</span><span class="n">name_id_map</span>
+        <span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">values</span>
+            
+
+    <span class="nd">@computed_field</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">serialize_sp</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">surface_points_copy</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">tobytes</span><span class="p">())</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()[:</span><span class="mi">8</span><span class="p">],</span> <span class="mi">16</span><span class="p">)</span>
+
+    <span class="nd">@computed_field</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">serialize_orientations</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">orientations_copy</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">tobytes</span><span class="p">())</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()[:</span><span class="mi">8</span><span class="p">],</span> <span class="mi">16</span><span class="p">)</span>
 
 <div class="viewcode-block" id="StructuralFrame.__init__">
 <a class="viewcode-back" href="../../../../Modeling%20Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame.__init__">[docs]</a>
@@ -86,21 +142,20 @@
         <span class="k">if</span> <span class="n">element</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Element with name </span><span class="si">{</span><span class="n">element_name</span><span class="si">}</span><span class="s2"> not found in the structural frame.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">element</span>
-    
+
     <span class="k">def</span><span class="w"> </span><span class="nf">get_group_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StructuralGroup</span><span class="p">:</span>
         <span class="n">groups</span><span class="p">:</span> <span class="n">Generator</span> <span class="o">=</span> <span class="p">(</span><span class="n">group</span> <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">structural_groups</span> <span class="k">if</span> <span class="n">group</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">group_name</span><span class="p">)</span>
         <span class="n">group</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">groups</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">group</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Group with name </span><span class="si">{</span><span class="n">group_name</span><span class="si">}</span><span class="s2"> not found in the structural frame.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">group</span>
-    
+
     <span class="k">def</span><span class="w"> </span><span class="nf">get_group_by_element</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">StructuralElement</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StructuralGroup</span><span class="p">:</span>
         <span class="n">groups</span><span class="p">:</span> <span class="n">Generator</span> <span class="o">=</span> <span class="p">(</span><span class="n">group</span> <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">structural_groups</span> <span class="k">if</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">group</span><span class="o">.</span><span class="n">elements</span><span class="p">)</span>
         <span class="n">group</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">groups</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">group</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Element </span><span class="si">{</span><span class="n">element</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> not found in any group in the structural frame.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">group</span>
-        
 
     <span class="k">def</span><span class="w"> </span><span class="nf">append_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group</span><span class="p">:</span> <span class="n">StructuralGroup</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">structural_groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">group</span><span class="p">)</span>
@@ -166,12 +221,12 @@
         <span class="n">structural_group</span> <span class="o">=</span> <span class="n">StructuralGroup</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s2">&quot;default_formations&quot;</span><span class="p">,</span>
             <span class="n">elements</span><span class="o">=</span><span class="p">[</span>
-                <span class="n">StructuralElement</span><span class="p">(</span>
-                    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;surface1&quot;</span><span class="p">,</span>
-                    <span class="n">surface_points</span><span class="o">=</span><span class="n">SurfacePointsTable</span><span class="o">.</span><span class="n">initialize_empty</span><span class="p">(),</span>
-                    <span class="n">orientations</span><span class="o">=</span><span class="n">OrientationsTable</span><span class="o">.</span><span class="n">initialize_empty</span><span class="p">(),</span>
-                    <span class="n">color</span><span class="o">=</span><span class="nb">next</span><span class="p">(</span><span class="n">color_gen</span><span class="p">)</span>
-                <span class="p">)</span>
+                    <span class="n">StructuralElement</span><span class="p">(</span>
+                        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;surface1&quot;</span><span class="p">,</span>
+                        <span class="n">surface_points</span><span class="o">=</span><span class="n">SurfacePointsTable</span><span class="o">.</span><span class="n">initialize_empty</span><span class="p">(),</span>
+                        <span class="n">orientations</span><span class="o">=</span><span class="n">OrientationsTable</span><span class="o">.</span><span class="n">initialize_empty</span><span class="p">(),</span>
+                        <span class="n">color</span><span class="o">=</span><span class="nb">next</span><span class="p">(</span><span class="n">color_gen</span><span class="p">)</span>
+                    <span class="p">)</span>
             <span class="p">],</span>
             <span class="n">structural_relation</span><span class="o">=</span><span class="n">StackRelationType</span><span class="o">.</span><span class="n">ERODE</span>
         <span class="p">)</span>
@@ -232,14 +287,14 @@
             <span class="n">elements</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">elements</span><span class="p">)</span>
         <span class="n">elements</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_basement_element</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">elements</span>
-    
+
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">n_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the total number of elements in the structural frame.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">structural_elements</span><span class="p">)</span>
 
     <span class="n">basement_color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
-    
+
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_basement_element</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StructuralElement</span><span class="p">:</span>
         <span class="c1"># Check if the basement color is already defined</span>
@@ -247,14 +302,14 @@
         <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">structural_groups</span><span class="p">:</span>
             <span class="n">elements</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">elements</span><span class="p">)</span>
         <span class="n">basement_color_in_elements</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">basement_color</span> <span class="ow">in</span> <span class="p">[</span><span class="n">element</span><span class="o">.</span><span class="n">color</span> <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">elements</span><span class="p">]</span>
-        
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">basement_color</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">basement_color_in_elements</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">basement_color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">color_generator</span><span class="o">.</span><span class="n">up_next</span><span class="p">()</span>
-            
+
         <span class="k">if</span> <span class="n">basement_color_in_elements</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The basement color was already used in the structural elements.&quot;</span>
                           <span class="sa">f</span><span class="s2">&quot;Changing the basement color to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">basement_color</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-        
+
         <span class="n">basement</span> <span class="o">=</span> <span class="n">StructuralElement</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="s2">&quot;basement&quot;</span><span class="p">,</span>
             <span class="n">surface_points</span><span class="o">=</span><span class="n">SurfacePointsTable</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">SurfacePointsTable</span><span class="o">.</span><span class="n">dt</span><span class="p">)),</span>
@@ -315,12 +370,12 @@
                 <span class="n">group</span><span class="o">.</span><span class="n">fault_relations</span> <span class="o">=</span> <span class="n">FaultsRelationSpecialCase</span><span class="o">.</span><span class="n">OFFSET_NONE</span>
             <span class="k">else</span><span class="p">:</span>  <span class="c1"># * A specific set of groups are affected</span>
                 <span class="n">group</span><span class="o">.</span><span class="n">fault_relations</span> <span class="o">=</span> <span class="p">[</span><span class="n">g</span> <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">g</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">structural_groups</span><span class="p">)</span> <span class="k">if</span> <span class="n">affected_groups</span><span class="p">[</span><span class="n">j</span><span class="p">]]</span>
-    
+
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">group_is_fault</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">bool</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a list of booleans indicating if each structural element is a fault.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">group</span><span class="o">.</span><span class="n">is_fault</span> <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">structural_groups</span><span class="p">]</span>
-    
+
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">group_is_lithology</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">bool</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a list of booleans indicating if each structural element is a lithology.&quot;&quot;&quot;</span>
@@ -407,11 +462,8 @@
     <span class="nd">@surface_points</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">surface_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">modified_surface_points</span><span class="p">:</span> <span class="n">SurfacePointsTable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Distributes the modified surface points back to the structural elements.&quot;&quot;&quot;</span>
-        <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">structural_elements</span><span class="p">:</span>
-            <span class="n">length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">surface_points</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-            <span class="n">element</span><span class="o">.</span><span class="n">surface_points</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">modified_surface_points</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">start</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span>
-            <span class="n">start</span> <span class="o">+=</span> <span class="n">length</span>
+            <span class="n">element</span><span class="o">.</span><span class="n">surface_points</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">modified_surface_points</span><span class="o">.</span><span class="n">get_surface_points_by_id</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">orientations_copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OrientationsTable</span><span class="p">:</span>
@@ -423,15 +475,12 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">orientations</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OrientationsTable</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;This property can only be set, not read. You can access the copy with `orientations_copy` or&quot;</span>
                              <span class="s2">&quot;the original on the individual structural elements.&quot;</span><span class="p">)</span>
-    
+
     <span class="nd">@orientations</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">orientations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">modified_orientations</span><span class="p">:</span> <span class="n">OrientationsTable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Distributes the modified orientations back to the structural elements.&quot;&quot;&quot;</span>
-        <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">structural_elements</span><span class="p">:</span>
-            <span class="n">length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">orientations</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-            <span class="n">element</span><span class="o">.</span><span class="n">orientations</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">modified_orientations</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">start</span> <span class="o">+</span> <span class="n">length</span><span class="p">]</span>
-            <span class="n">start</span> <span class="o">+=</span> <span class="n">length</span>
+            <span class="n">element</span><span class="o">.</span><span class="n">orientations</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">modified_orientations</span><span class="o">.</span><span class="n">get_orientations_by_id</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">element_id_name_map</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>

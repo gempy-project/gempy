@@ -140,7 +140,7 @@ The first video introduces the concept of modeling faults with GemPy - please vi
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc565965d50>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff2a2f87d60>
 
 
 
@@ -361,7 +361,7 @@ The first video introduces the concept of modeling faults with GemPy - please vi
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc5be56a890>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff24ed089d0>
 
 
 
@@ -410,7 +410,7 @@ The first video introduces the concept of modeling faults with GemPy - please vi
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc566796b00>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff24ee3ba90>
 
 
 
@@ -716,7 +716,7 @@ Video tutorial 9: Fault relations
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc5bd6f0250>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff24eba3be0>
 
 
 
@@ -775,7 +775,7 @@ Video tutorial 9: Fault relations
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc5bd8760e0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff2a5eee1a0>
 
 
 
@@ -934,7 +934,7 @@ Video tutorial 9: Fault relations
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc5bd718b80>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff2a2aaace0>
 
 
 
@@ -1091,7 +1091,7 @@ Video tutorial 9: Fault relations
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc5bb0a6800>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff24ea2c7f0>
 
 
 
@@ -1384,7 +1384,7 @@ Video tutorial 10: Fault groups and cross-cutting faults
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc566686f80>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff2a5f09d50>
 
 
 
@@ -1444,14 +1444,14 @@ Video tutorial 10: Fault groups and cross-cutting faults
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc56592cee0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff2a2919b40>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (1 minutes 27.853 seconds)
+   **Total running time of the script:** (1 minutes 28.737 seconds)
 
 
 .. _sphx_glr_download_tutorials_z_other_tutorials_video_tutorial_model_2_faults.py:

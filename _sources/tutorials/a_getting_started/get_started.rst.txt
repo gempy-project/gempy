@@ -609,6 +609,8 @@ Alright, now we actually have sufficient input data to compute the first version
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.numpy
+    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
+      return 1.0 / (1.0 + bt.t.exp(x))
 
 
 .. raw:: html
@@ -647,7 +649,7 @@ Now, the model has been computed and is ready to be visualized. Let's see what i
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc5bd7184f0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff2a5525e10>
 
 
 
@@ -714,7 +716,7 @@ Now, let's look at our 3D model:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fc5bb1db190>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7ff2a5176b60>
 
 
 
@@ -869,6 +871,8 @@ decides how they affect each other via their individual scalar fields, as we wil
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.numpy
+    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
+      return 1.0 / (1.0 + bt.t.exp(x))
 
 
 .. raw:: html
@@ -967,6 +971,8 @@ First, we add the two missing points to the Siltstone
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.numpy
+    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
+      return 1.0 / (1.0 + bt.t.exp(x))
 
 
 .. raw:: html
@@ -1030,7 +1036,7 @@ First, we add the two missing points to the Siltstone
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fc5bb0769b0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7ff2a52f8460>
 
 
 
@@ -1196,6 +1202,10 @@ groups independently.
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.numpy
+    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
+      return 1.0 / (1.0 + bt.t.exp(x))
+    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
+      return 1.0 / (1.0 + bt.t.exp(x))
 
 
 .. raw:: html
@@ -1333,7 +1343,7 @@ how this younger structural group erodes all older elements and basically "cuts 
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fc5bb035ed0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7ff2a2a51db0>
 
 
 
@@ -1374,6 +1384,10 @@ Let's change the relation type from `ERODE` to `ONLAP` to achieve a different ty
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.numpy
+    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
+      return 1.0 / (1.0 + bt.t.exp(x))
+    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
+      return 1.0 / (1.0 + bt.t.exp(x))
 
 
 .. raw:: html
@@ -1437,7 +1451,7 @@ Let's change the relation type from `ERODE` to `ONLAP` to achieve a different ty
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fc5bab00b20>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7ff2a291a350>
 
 
 
@@ -1551,6 +1565,10 @@ Let's compute our model including the fault and see what that looks like.
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.numpy
+    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
+      return 1.0 / (1.0 + bt.t.exp(x))
+    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
+      return 1.0 / (1.0 + bt.t.exp(x))
 
 
 .. raw:: html
@@ -1614,7 +1632,7 @@ Let's compute our model including the fault and see what that looks like.
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fc5bb075840>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7ff2a2a53be0>
 
 
 
@@ -1689,7 +1707,7 @@ For demonstration, we'll create a random topography:
 
     Active grids: GridTypes.NONE|TOPOGRAPHY|DENSE
 
-    <gempy.core.data.grid_modules.topography.Topography object at 0x7fc5bd96f910>
+    <gempy.core.data.grid_modules.topography.Topography object at 0x7ff2a5660af0>
 
 
 
@@ -1713,7 +1731,7 @@ For demonstration, we'll create a random topography:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc5bd97ef80>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff2a554aec0>
 
 
 
@@ -1737,7 +1755,7 @@ For demonstration, we'll create a random topography:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fc56d644d90>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7ff2a2a53be0>
 
 
 
@@ -1763,6 +1781,10 @@ function as shown below.
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.numpy
+    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
+      return 1.0 / (1.0 + bt.t.exp(x))
+    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
+      return 1.0 / (1.0 + bt.t.exp(x))
 
 
 .. raw:: html
@@ -1795,7 +1817,7 @@ function as shown below.
     /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:106: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
       warnings.warn(
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc5bb2b70a0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff2a55ba680>
 
 
 
@@ -1819,7 +1841,7 @@ function as shown below.
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fc5bb075c60>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7ff2a559c790>
 
 
 
@@ -2054,20 +2076,20 @@ object via `geo_model.grid` as shown below.
  .. code-block:: none
 
 
-    array([[   0.        , -200.        ,  -25.52000001],
-           [   0.        , -197.98994975,  -24.37126955],
-           [   0.        , -195.9798995 ,  -23.10302398],
+    array([[   0.        , -200.        , -103.92301797],
+           [   0.        , -197.98994975, -104.04483853],
+           [   0.        , -195.9798995 , -105.20968466],
            ...,
-           [ 780.        ,  195.9798995 ,  -29.72084201],
-           [ 780.        ,  197.98994975,  -27.93247153],
-           [ 780.        ,  200.        ,  -25.57680583]], shape=(40000, 3))
+           [ 780.        ,  195.9798995 , -106.1938437 ],
+           [ 780.        ,  197.98994975, -104.64212323],
+           [ 780.        ,  200.        , -103.63462951]], shape=(40000, 3))
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 37.975 seconds)
+   **Total running time of the script:** (0 minutes 31.759 seconds)
 
 
 .. _sphx_glr_download_tutorials_a_getting_started_get_started.py:

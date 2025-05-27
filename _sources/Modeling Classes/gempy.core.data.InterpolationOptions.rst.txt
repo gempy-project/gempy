@@ -19,10 +19,34 @@
    .. autosummary::
    
       ~InterpolationOptions.__init__
+      ~InterpolationOptions.construct
+      ~InterpolationOptions.copy
+      ~InterpolationOptions.dict
+      ~InterpolationOptions.from_args
+      ~InterpolationOptions.from_orm
       ~InterpolationOptions.init_dense_grid_options
       ~InterpolationOptions.init_octree_options
+      ~InterpolationOptions.json
+      ~InterpolationOptions.model_construct
+      ~InterpolationOptions.model_copy
+      ~InterpolationOptions.model_dump
+      ~InterpolationOptions.model_dump_json
+      ~InterpolationOptions.model_json_schema
+      ~InterpolationOptions.model_parametrized_name
+      ~InterpolationOptions.model_post_init
+      ~InterpolationOptions.model_rebuild
+      ~InterpolationOptions.model_validate
+      ~InterpolationOptions.model_validate_json
+      ~InterpolationOptions.model_validate_strings
+      ~InterpolationOptions.parse_file
+      ~InterpolationOptions.parse_obj
+      ~InterpolationOptions.parse_raw
       ~InterpolationOptions.probabilistic_options
+      ~InterpolationOptions.schema
+      ~InterpolationOptions.schema_json
+      ~InterpolationOptions.update_forward_refs
       ~InterpolationOptions.update_options
+      ~InterpolationOptions.validate
    
    
 
@@ -32,30 +56,35 @@
 
    .. autosummary::
    
-      ~InterpolationOptions.kernel_options
-      ~InterpolationOptions.evaluation_options
-      ~InterpolationOptions.temp_interpolation_values
-      ~InterpolationOptions.debug
-      ~InterpolationOptions.cache_mode
-      ~InterpolationOptions.cache_model_name
-      ~InterpolationOptions.block_solutions_type
-      ~InterpolationOptions.sigmoid_slope
       ~InterpolationOptions.c_o
       ~InterpolationOptions.compute_corners
       ~InterpolationOptions.compute_scalar_gradient
-      ~InterpolationOptions.debug_water_tight
       ~InterpolationOptions.evaluation_chunk_size
       ~InterpolationOptions.gi_res
       ~InterpolationOptions.i_res
       ~InterpolationOptions.is_last_octree_level
       ~InterpolationOptions.kernel_function
       ~InterpolationOptions.mesh_extraction
+      ~InterpolationOptions.model_computed_fields
+      ~InterpolationOptions.model_config
+      ~InterpolationOptions.model_extra
+      ~InterpolationOptions.model_fields
+      ~InterpolationOptions.model_fields_set
       ~InterpolationOptions.n_uni_eq
       ~InterpolationOptions.number_dimensions
       ~InterpolationOptions.number_octree_levels
       ~InterpolationOptions.number_octree_levels_surface
       ~InterpolationOptions.range
       ~InterpolationOptions.uni_degree
+      ~InterpolationOptions.kernel_options
+      ~InterpolationOptions.evaluation_options
+      ~InterpolationOptions.debug
+      ~InterpolationOptions.cache_mode
+      ~InterpolationOptions.cache_model_name
+      ~InterpolationOptions.block_solutions_type
+      ~InterpolationOptions.sigmoid_slope
+      ~InterpolationOptions.debug_water_tight
+      ~InterpolationOptions.temp_interpolation_values
    
    
 

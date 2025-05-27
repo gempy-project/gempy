@@ -35,6 +35,8 @@
       ~RawArraysSolution.fw_gravity
       ~RawArraysSolution.fw_magnetic
       ~RawArraysSolution.geological_map
+      ~RawArraysSolution.n_surfaces
+      ~RawArraysSolution.scalar_field_at_surface_points
       ~RawArraysSolution.sections
       ~RawArraysSolution.topology_count
       ~RawArraysSolution.topology_edges

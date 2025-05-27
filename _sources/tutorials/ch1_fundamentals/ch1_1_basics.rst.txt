@@ -151,7 +151,7 @@ Using `structural_frame.element_id_name_map`, we can see which ID corresponds to
 .. raw:: html
 
     <div class="output_subarea output_html rendered_html output_result">
-    <table><tr><th>X</th><th>Y</th><th>Z</th><th>id</th><th>nugget</th></tr><tr><td>700.00</td><td>1000.00</td><td>300.00</td><td>62940319</td><td>0.00</td></tr><tr><td>600.00</td><td>1000.00</td><td>200.00</td><td>62940319</td><td>0.00</td></tr><tr><td>500.00</td><td>1000.00</td><td>100.00</td><td>62940319</td><td>0.00</td></tr><tr><td>1000.00</td><td>1000.00</td><td>600.00</td><td>62940319</td><td>0.00</td></tr><tr><td>1100.00</td><td>1000.00</td><td>700.00</td><td>62940319</td><td>0.00</td></tr><tr><td>1000.00</td><td>50.00</td><td>350.00</td><td>167242750</td><td>0.00</td></tr><tr><td>1000.00</td><td>150.00</td><td>333.33</td><td>167242750</td><td>0.00</td></tr><tr><td>1000.00</td><td>300.00</td><td>333.33</td><td>167242750</td><td>0.00</td></tr><tr><td>1000.00</td><td>500.00</td><td>366.67</td><td>167242750</td><td>0.00</td></tr><tr><td>1000.00</td><td>1000.00</td><td>433.33</td><td>167242750</td><td>0.00</td></tr><tr><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td></tr><tr><td>1100.00</td><td>1700.00</td><td>473.33</td><td>494735047</td><td>0.00</td></tr><tr><td>1100.00</td><td>1950.00</td><td>490.00</td><td>494735047</td><td>0.00</td></tr><tr><td>0.00</td><td>1000.00</td><td>433.33</td><td>494735047</td><td>0.00</td></tr><tr><td>300.00</td><td>1000.00</td><td>400.00</td><td>494735047</td><td>0.00</td></tr><tr><td>600.00</td><td>1000.00</td><td>366.67</td><td>494735047</td><td>0.00</td></tr><tr><td>1300.00</td><td>1000.00</td><td>566.67</td><td>494735047</td><td>0.00</td></tr><tr><td>1600.00</td><td>1000.00</td><td>550.00</td><td>494735047</td><td>0.00</td></tr><tr><td>1900.00</td><td>1000.00</td><td>566.67</td><td>494735047</td><td>0.00</td></tr><tr><td>1700.00</td><td>500.00</td><td>533.33</td><td>494735047</td><td>0.00</td></tr><tr><td>1700.00</td><td>1500.00</td><td>516.67</td><td>494735047</td><td>0.00</td></tr></table>
+    <table><tr><th>X</th><th>Y</th><th>Z</th><th>id</th><th>nugget</th></tr><tr><td>700.00</td><td>1000.00</td><td>300.00</td><td>49745034</td><td>0.00</td></tr><tr><td>600.00</td><td>1000.00</td><td>200.00</td><td>49745034</td><td>0.00</td></tr><tr><td>500.00</td><td>1000.00</td><td>100.00</td><td>49745034</td><td>0.00</td></tr><tr><td>1000.00</td><td>1000.00</td><td>600.00</td><td>49745034</td><td>0.00</td></tr><tr><td>1100.00</td><td>1000.00</td><td>700.00</td><td>49745034</td><td>0.00</td></tr><tr><td>1000.00</td><td>50.00</td><td>350.00</td><td>182903737</td><td>0.00</td></tr><tr><td>1000.00</td><td>150.00</td><td>333.33</td><td>182903737</td><td>0.00</td></tr><tr><td>1000.00</td><td>300.00</td><td>333.33</td><td>182903737</td><td>0.00</td></tr><tr><td>1000.00</td><td>500.00</td><td>366.67</td><td>182903737</td><td>0.00</td></tr><tr><td>1000.00</td><td>1000.00</td><td>433.33</td><td>182903737</td><td>0.00</td></tr><tr><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td></tr><tr><td>1100.00</td><td>1700.00</td><td>473.33</td><td>426259438</td><td>0.00</td></tr><tr><td>1100.00</td><td>1950.00</td><td>490.00</td><td>426259438</td><td>0.00</td></tr><tr><td>0.00</td><td>1000.00</td><td>433.33</td><td>426259438</td><td>0.00</td></tr><tr><td>300.00</td><td>1000.00</td><td>400.00</td><td>426259438</td><td>0.00</td></tr><tr><td>600.00</td><td>1000.00</td><td>366.67</td><td>426259438</td><td>0.00</td></tr><tr><td>1300.00</td><td>1000.00</td><td>566.67</td><td>426259438</td><td>0.00</td></tr><tr><td>1600.00</td><td>1000.00</td><td>550.00</td><td>426259438</td><td>0.00</td></tr><tr><td>1900.00</td><td>1000.00</td><td>566.67</td><td>426259438</td><td>0.00</td></tr><tr><td>1700.00</td><td>500.00</td><td>533.33</td><td>426259438</td><td>0.00</td></tr><tr><td>1700.00</td><td>1500.00</td><td>516.67</td><td>426259438</td><td>0.00</td></tr></table>
     </div>
     <br />
     <br />
@@ -171,7 +171,7 @@ Using `structural_frame.element_id_name_map`, we can see which ID corresponds to
 .. raw:: html
 
     <div class="output_subarea output_html rendered_html output_result">
-    <table><tr><th>X</th><th>Y</th><th>Z</th><th>G_x</th><th>G_y</th><th>G_z</th><th>id</th><th>nugget</th></tr><tr><td>500.00</td><td>1000.00</td><td>300.00</td><td>-0.95</td><td>-0.00</td><td>0.32</td><td>62940319</td><td>0.01</td></tr><tr><td>400.00</td><td>1000.00</td><td>420.00</td><td>0.32</td><td>0.00</td><td>0.95</td><td>214412715</td><td>0.01</td></tr><tr><td>1000.00</td><td>1000.00</td><td>300.00</td><td>0.32</td><td>0.00</td><td>0.95</td><td>380543859</td><td>0.01</td></tr></table>
+    <table><tr><th>X</th><th>Y</th><th>Z</th><th>G_x</th><th>G_y</th><th>G_z</th><th>id</th><th>nugget</th></tr><tr><td>500.00</td><td>1000.00</td><td>300.00</td><td>-0.95</td><td>-0.00</td><td>0.32</td><td>49745034</td><td>0.01</td></tr><tr><td>400.00</td><td>1000.00</td><td>420.00</td><td>0.32</td><td>0.00</td><td>0.95</td><td>247016868</td><td>0.01</td></tr><tr><td>1000.00</td><td>1000.00</td><td>300.00</td><td>0.32</td><td>0.00</td><td>0.95</td><td>332313703</td><td>0.01</td></tr></table>
     </div>
     <br />
     <br />
@@ -460,7 +460,7 @@ in GemPy requires [the Visualization Toolkit](https://www.vtk.org/) (VTK) to be 
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fc56d68b730>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7ff2537c2470>
 
 
 
@@ -501,19 +501,14 @@ Display the current interpolation options
 
 
 
+.. rst-class:: sphx-glr-script-out
 
-.. raw:: html
+ .. code-block:: none
 
-    <div class="output_subarea output_html rendered_html output_result">
 
-                    <table>
-                        <tr><td colspan='2' style='text-align:center'><b>InterpolationOptions</b></td></tr>
-                        <tr><td>kernel_options</td><td>{'range': 1.7, 'c_o': 10, 'uni_degree': 1, 'i_res': 4, 'gi_res': 2, 'number_dimensions': 3, 'kernel_function': <AvailableKernelFunctions.cubic: KernelFunction(base_function=<function cubic_function at 0x7fc5ccbea320>, derivative_div_r=<function cubic_function_p_div_r at 0x7fc5ccbea560>, second_derivative=<function cubic_function_a at 0x7fc5ccbea5f0>, consume_sq_distance=False)>, 'kernel_solver': <Solvers.DEFAULT: 1>, 'compute_condition_number': False, 'optimizing_condition_number': False, 'condition_number': None}</td></tr><tr><td>evaluation_options</td><td>{'_number_octree_levels': 6, '_number_octree_levels_surface': 4, 'octree_curvature_threshold': -1, 'octree_error_threshold': 1.0, 'octree_min_level': 2, 'mesh_extraction': True, 'mesh_extraction_masking_options': <MeshExtractionMaskingOptions.INTERSECT: 3>, 'mesh_extraction_fancy': True, 'evaluation_chunk_size': 500000, 'compute_scalar_gradient': False, 'verbose': False}</td></tr><tr><td>temp_interpolation_values</td><td><gempy_engine.core.data.options.temp_interpolation_values.TempInterpolationValues object at 0x7fc5be56b730></td></tr><tr><td>debug</td><td>True</td></tr><tr><td>cache_mode</td><td>CacheMode.IN_MEMORY_CACHE</td></tr><tr><td>cache_model_name</td><td>Tutorial_ch1_1_Basics</td></tr><tr><td>block_solutions_type</td><td>BlockSolutionType.OCTREE</td></tr><tr><td>sigmoid_slope</td><td>5000000</td></tr><tr><td>debug_water_tight</td><td>False</td></tr>
-                    </table>
-                
-    </div>
-    <br />
-    <br />
+    InterpolationOptions(kernel_options=KernelOptions(range=1.7, c_o=10.0, uni_degree=1, i_res=4.0, gi_res=2.0, number_dimensions=3, kernel_function=AvailableKernelFunctions.cubic, kernel_solver=Solvers.DEFAULT, compute_condition_number=False, optimizing_condition_number=False, condition_number=None), evaluation_options=EvaluationOptions(_number_octree_levels=6, _number_octree_levels_surface=4, octree_curvature_threshold=-1.0, octree_error_threshold=1.0, octree_min_level=2, mesh_extraction=True, mesh_extraction_masking_options=<MeshExtractionMaskingOptions.INTERSECT: 3>, mesh_extraction_fancy=True, evaluation_chunk_size=500000, compute_scalar_gradient=False, verbose=False), debug=True, cache_mode=<CacheMode.IN_MEMORY_CACHE: 3>, cache_model_name='Tutorial_ch1_1_Basics', block_solutions_type=<BlockSolutionType.OCTREE: 1>, sigmoid_slope=5000000, debug_water_tight=False, temp_interpolation_values=TempInterpolationValues(current_octree_level=0))
+
+
 
 .. GENERATED FROM PYTHON SOURCE LINES 200-204
 
@@ -542,8 +537,12 @@ Compute the geological model and get the solutions
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.numpy
+    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
+      return 1.0 / (1.0 + bt.t.exp(x))
     Chunking done: 20 chunks
     Chunking done: 20 chunks
+    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
+      return 1.0 / (1.0 + bt.t.exp(x))
 
 
 .. raw:: html
@@ -606,7 +605,7 @@ directly. Let's take a look at our lithology block:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc5bda51f90>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff2a5641810>
 
 
 
@@ -649,7 +648,7 @@ We can do the same with the underlying scalar-field solution:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc5be56b520>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff2af80eb30>
 
 
 
@@ -679,7 +678,7 @@ We can do the same with the underlying scalar-field solution:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc56d689a50>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff2a5643c10>
 
 
 
@@ -721,7 +720,7 @@ using dual contouring in the :obj:`gempy_engine`.
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fc5bd7e6ec0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7ff2a578c3d0>
 
 
 
@@ -776,10 +775,14 @@ surfaces as well as compute a high resolution geological mal.
 
     Active grids: GridTypes.NONE|TOPOGRAPHY|OCTREE
     Setting Backend To: AvailableBackends.numpy
+    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
+      return 1.0 / (1.0 + bt.t.exp(x))
     Chunking done: 20 chunks
     Chunking done: 20 chunks
+    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
+      return 1.0 / (1.0 + bt.t.exp(x))
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fc5bb2272e0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7ff2a2ba4b20>
 
 
 
@@ -812,8 +815,12 @@ This is done by modifying the grid to a custom grid and recomputing.
 
     Active grids: GridTypes.NONE|TOPOGRAPHY|CUSTOM|OCTREE
     Setting Backend To: AvailableBackends.numpy
+    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
+      return 1.0 / (1.0 + bt.t.exp(x))
     Chunking done: 20 chunks
     Chunking done: 20 chunks
+    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
+      return 1.0 / (1.0 + bt.t.exp(x))
 
     array([2.])
 
@@ -855,7 +862,7 @@ sphinx_gallery_thumbnail_number = -2
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (1 minutes 26.945 seconds)
+   **Total running time of the script:** (1 minutes 25.098 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_1_basics.py:

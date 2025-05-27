@@ -40,7 +40,7 @@
             
   <h1>Source code for gempy.API.initialization_API</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Hashable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Hashable</span><span class="p">,</span> <span class="n">Literal</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">ndarray</span>
@@ -135,7 +135,7 @@
         <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
             <span class="k">pass</span>
 
-    <span class="n">geo_model</span><span class="p">:</span> <span class="n">GeoModel</span> <span class="o">=</span> <span class="n">GeoModel</span><span class="p">(</span>
+    <span class="n">geo_model</span><span class="p">:</span> <span class="n">GeoModel</span> <span class="o">=</span> <span class="n">GeoModel</span><span class="o">.</span><span class="n">from_args</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="n">project_name</span><span class="p">,</span>
         <span class="n">structural_frame</span><span class="o">=</span><span class="n">structural_frame</span><span class="p">,</span>
         <span class="n">grid</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span>
@@ -150,7 +150,9 @@
 <a class="viewcode-back" href="../../../GemPy%20API/gempy.structural_elements_from_borehole_set.html#gempy.structural_elements_from_borehole_set">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">structural_elements_from_borehole_set</span><span class="p">(</span>
         <span class="n">borehole_set</span><span class="p">:</span> <span class="s2">&quot;subsurface.core.geological_formats.BoreholeSet&quot;</span><span class="p">,</span>
-        <span class="n">elements_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">StructuralElement</span><span class="p">]:</span>
+        <span class="n">elements_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+        <span class="n">group_by</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;component lith&#39;</span><span class="p">,</span> <span class="s1">&#39;lith_ids&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;lith_ids&#39;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">StructuralElement</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates a list of StructuralElements from a BoreholeSet.</span>
 
 <span class="sd">    Args:</span>
@@ -169,7 +171,7 @@
     <span class="n">borehole_set</span><span class="p">:</span> <span class="n">ss</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">geological_formats</span><span class="o">.</span><span class="n">BoreholeSet</span>
 
     <span class="n">elements</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">component_lith</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Hashable</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="n">borehole_set</span><span class="o">.</span><span class="n">get_bottom_coords_for_each_lith</span><span class="p">()</span>
+    <span class="n">component_lith</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Hashable</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="n">borehole_set</span><span class="o">.</span><span class="n">get_bottom_coords_for_each_lith</span><span class="p">(</span><span class="n">group_by</span><span class="o">=</span><span class="n">group_by</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">properties</span> <span class="ow">in</span> <span class="n">elements_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">top_coordinates</span> <span class="o">=</span> <span class="n">component_lith</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">properties</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])</span>

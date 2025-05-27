@@ -20,7 +20,32 @@
    
       ~GeoModel.__init__
       ~GeoModel.add_surface_points
+      ~GeoModel.construct
+      ~GeoModel.copy
+      ~GeoModel.deserialize_properties
+      ~GeoModel.dict
+      ~GeoModel.from_args
+      ~GeoModel.from_orm
+      ~GeoModel.json
+      ~GeoModel.model_construct
+      ~GeoModel.model_copy
+      ~GeoModel.model_dump
+      ~GeoModel.model_dump_json
+      ~GeoModel.model_json_schema
+      ~GeoModel.model_parametrized_name
+      ~GeoModel.model_post_init
+      ~GeoModel.model_rebuild
+      ~GeoModel.model_validate
+      ~GeoModel.model_validate_json
+      ~GeoModel.model_validate_strings
+      ~GeoModel.parse_file
+      ~GeoModel.parse_obj
+      ~GeoModel.parse_raw
+      ~GeoModel.schema
+      ~GeoModel.schema_json
+      ~GeoModel.update_forward_refs
       ~GeoModel.update_transform
+      ~GeoModel.validate
    
    
 
@@ -31,13 +56,14 @@
    .. autosummary::
    
       ~GeoModel.extent_transformed_transformed_by_input
-      ~GeoModel.geophysics_input
       ~GeoModel.input_data_descriptor
-      ~GeoModel.input_transform
-      ~GeoModel.interpolation_grid
       ~GeoModel.interpolation_input_copy
       ~GeoModel.interpolation_options
-      ~GeoModel.legacy_model
+      ~GeoModel.model_computed_fields
+      ~GeoModel.model_config
+      ~GeoModel.model_extra
+      ~GeoModel.model_fields
+      ~GeoModel.model_fields_set
       ~GeoModel.orientations
       ~GeoModel.orientations_copy
       ~GeoModel.orientations_copy_transformed
@@ -48,9 +74,13 @@
       ~GeoModel.surface_points
       ~GeoModel.surface_points_copy
       ~GeoModel.surface_points_copy_transformed
+      ~GeoModel.taped_interpolation_input
       ~GeoModel.meta
       ~GeoModel.structural_frame
       ~GeoModel.grid
+      ~GeoModel.geophysics_input
+      ~GeoModel.input_transform
+      ~GeoModel.interpolation_grid
    
    
 

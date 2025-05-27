@@ -26,6 +26,7 @@
       ~OrientationsTable.get_orientations_by_id_groups
       ~OrientationsTable.get_orientations_by_name
       ~OrientationsTable.initialize_empty
+      ~OrientationsTable.parse_short_array
    
    
 

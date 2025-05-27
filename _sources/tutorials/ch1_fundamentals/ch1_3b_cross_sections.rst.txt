@@ -261,7 +261,7 @@ Add topography
 
     Active grids: GridTypes.NONE|SECTIONS|TOPOGRAPHY|DENSE
 
-    <gempy.core.data.grid_modules.topography.Topography object at 0x7fc5bd4f6110>
+    <gempy.core.data.grid_modules.topography.Topography object at 0x7ff2a55ba590>
 
 
 
@@ -309,7 +309,7 @@ Active grids:
  .. code-block:: none
 
 
-    <function plot_section_traces at 0x7fc5c4704b80>
+    <function plot_section_traces at 0x7ff2ac8252d0>
 
 
 
@@ -329,6 +329,8 @@ Active grids:
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.numpy
+    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
+      return 1.0 / (1.0 + bt.t.exp(x))
     Chunking done: 8 chunks
 
 
@@ -356,7 +358,7 @@ Active grids:
     /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:106: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
       warnings.warn(
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc5bd4f66b0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff2a53bcd00>
 
 
 
@@ -382,7 +384,7 @@ Active grids:
     /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:106: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
       warnings.warn(
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc5bd4f4c40>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff2a53bff70>
 
 
 
@@ -414,14 +416,14 @@ Active grids:
     /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:106: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
       warnings.warn(
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc5ba9cd6c0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff2a55ba140>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.975 seconds)
+   **Total running time of the script:** (0 minutes 3.904 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_3b_cross_sections.py:

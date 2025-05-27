@@ -58,7 +58,7 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="GemPy%20API/gempy.map_stack_to_surfaces.html#gempy.map_stack_to_surfaces" title="gempy.map_stack_to_surfaces"><code class="xref py py-obj docutils literal notranslate"><span class="pre">map_stack_to_surfaces</span></code></a>(gempy_model, ...[, ...])</p></td>
 <td><p>Map stack (series) to surfaces by reorganizing elements between groups in a GeoModel's structural frame.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="GemPy%20API/gempy.structural_elements_from_borehole_set.html#gempy.structural_elements_from_borehole_set" title="gempy.structural_elements_from_borehole_set"><code class="xref py py-obj docutils literal notranslate"><span class="pre">structural_elements_from_borehole_set</span></code></a>(...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="GemPy%20API/gempy.structural_elements_from_borehole_set.html#gempy.structural_elements_from_borehole_set" title="gempy.structural_elements_from_borehole_set"><code class="xref py py-obj docutils literal notranslate"><span class="pre">structural_elements_from_borehole_set</span></code></a>(...[, ...])</p></td>
 <td><p>Creates a list of StructuralElements from a BoreholeSet.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="GemPy%20API/gempy.set_section_grid.html#gempy.set_section_grid" title="gempy.set_section_grid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_section_grid</span></code></a>(grid, section_dict)</p></td>
@@ -158,7 +158,7 @@
 <span id="modeling-classes"></span><h2>Modeling Classes<a class="headerlink" href="#module-gempy.core.data" title="Link to this heading">¶</a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="Modeling%20Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GeoModel</span></code></a>(name, structural_frame, grid, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="Modeling%20Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GeoModel</span></code></a>(*, meta, structural_frame[, grid, ...])</p></td>
 <td><p>Class representing a geological model.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="Modeling%20Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StructuralFrame</span></code></a>(structural_groups, color_gen)</p></td>
@@ -176,7 +176,7 @@
 <tr class="row-even"><td><p><a class="reference internal" href="Modeling%20Classes/gempy.core.data.OrientationsTable.html#gempy.core.data.OrientationsTable" title="gempy.core.data.OrientationsTable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OrientationsTable</span></code></a>(data[, name_id_map, ...])</p></td>
 <td><p>A dataclass to represent a table of orientations in a geological model.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="Modeling%20Classes/gempy.core.data.InterpolationOptions.html#gempy.core.data.InterpolationOptions" title="gempy.core.data.InterpolationOptions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InterpolationOptions</span></code></a>(range, c_o, uni_degree, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="Modeling%20Classes/gempy.core.data.InterpolationOptions.html#gempy.core.data.InterpolationOptions" title="gempy.core.data.InterpolationOptions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InterpolationOptions</span></code></a>(*, kernel_options, ...)</p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="Modeling%20Classes/gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Grid</span></code></a>([extent, resolution])</p></td>
@@ -191,13 +191,13 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="Modeling%20Classes/gempy.core.data.RawArraysSolution.html#gempy.core.data.RawArraysSolution" title="gempy.core.data.RawArraysSolution"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RawArraysSolution</span></code></a>(lith_block, fault_block, ...)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="Modeling%20Classes/gempy.core.data.FaultsData.html#gempy.core.data.FaultsData" title="gempy.core.data.FaultsData"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FaultsData</span></code></a>([fault_values_everywhere, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="Modeling%20Classes/gempy.core.data.FaultsData.html#gempy.core.data.FaultsData" title="gempy.core.data.FaultsData"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FaultsData</span></code></a>(fault_values_everywhere, ...)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="Modeling%20Classes/gempy.core.data.GeophysicsInput.html#gempy.core.data.GeophysicsInput" title="gempy.core.data.GeophysicsInput"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GeophysicsInput</span></code></a>(tz, densities)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="Modeling%20Classes/gempy.core.data.GeophysicsInput.html#gempy.core.data.GeophysicsInput" title="gempy.core.data.GeophysicsInput"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GeophysicsInput</span></code></a>(tz, BeforeValidator], ...)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="Modeling%20Classes/gempy.core.data.Transform.html#gempy.core.data.Transform" title="gempy.core.data.Transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Transform</span></code></a>(position, rotation, scale[, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="Modeling%20Classes/gempy.core.data.Transform.html#gempy.core.data.Transform" title="gempy.core.data.Transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Transform</span></code></a>(position, BeforeValidator], ...)</p></td>
 <td><p></p></td>
 </tr>
 </tbody>

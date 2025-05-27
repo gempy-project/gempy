@@ -175,7 +175,7 @@ and we will label the boreholes using their IDs.
  .. code-block:: none
 
 
-    <pyvista.plotting.plotter.Plotter object at 0x7fc56681ad10>
+    <pyvista.plotting.plotter.Plotter object at 0x7ff24e9d5930>
 
 
 
@@ -220,7 +220,7 @@ Create the Survey object
            19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
            36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52,
            53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68],
-          dtype=object), survey_trajectory=<subsurface.core.structs.unstructured_elements.line_set.LineSet object at 0x7fc566818c10>, well_id_mapper={'KCL12': 0, 'KCL_B45': 1, 'Russell1': 2, 'CallowayXX': 3, 'KCL15': 4, 'KCL_1144': 5, 'Kramer1': 6, 'Davies1': 7, 'Tidewater_Capital_Co.XX': 8, 'Westates44': 9, 'Roe3': 10, 'RoeXX': 11, 'Helbling1': 12, 'PACIFIC_STATESXX': 13, 'KerncoXX': 14, 'Amalgamated_Happold2': 15, 'DearingerXX': 16, 'St._Anthony1': 17, 'BALD_EAGLE74': 18, 'CURRY1': 19, 'KCL87_25': 20, 'Del_Fortuna1': 21, 'XX32_15': 22, 'Wright_Bloemer74': 23, 'MARQUIS1': 24, 'Famosa12_1': 25, 'Kuhn81_15': 26, 'Bergman_Trust1': 27, 'KCL_A58_8': 28, 'Steele_Petroleum_Co4_1': 29, 'Gow1': 30, 'RUSSELLXX': 31, 'KCL_G1': 32, '33XX': 33, 'Sharples_Marathon_BillingtonXX': 34, 'Mobil_Pan_Petroleum_KCL31_15': 35, 'Mobil_Pan_Pet_KCL86_35': 36, 'Roberts_Cox23_1': 37, 'Law_et_alXX': 38, 'TennecoXX': 39, '11': 40, 'Cities_Service_TennecoXX': 41, 'USLXX': 42, 'HayesXX': 43, 'SUPERIOR_TENNECO_GAUTXX': 44, 'TWIXX': 45, 'Tenneco_Ladd_Rio_Bravo_North87': 46, 'Tenneco_Rio_Bravo32': 47, 'McCulloch_Camp_et_al1_36': 48, 'West_Rio_Bravo1': 49, 'Shell_Magee_GlideXX': 50, 'XXXX': 51, 'Wiedman55_26': 52, 'R.A._Shafter_A1': 53, 'KerrXX': 54, 'Bishop_FeeXX': 55, 'API_BartellXX': 56, 'Kimberlina1': 57, 'Kern_AXX': 58, 'Tenneco_Sun11x_31': 59, 'Bishop_FeeXXX': 60, 'Bellevue_Deep1': 61, 'S_&_D_Killingwoth_EPM1': 62, 'Arkelian23_26': 63, 'Ingram13_73': 64, 'Union_Tribe_BXX': 65, 'JewettaXX': 66, 'Golden_State_VintnersXX': 67, 'USLXXX': 68})
+          dtype=object), survey_trajectory=<subsurface.core.structs.unstructured_elements.line_set.LineSet object at 0x7ff24e9d63b0>, well_id_mapper={'KCL12': 0, 'KCL_B45': 1, 'Russell1': 2, 'CallowayXX': 3, 'KCL15': 4, 'KCL_1144': 5, 'Kramer1': 6, 'Davies1': 7, 'Tidewater_Capital_Co.XX': 8, 'Westates44': 9, 'Roe3': 10, 'RoeXX': 11, 'Helbling1': 12, 'PACIFIC_STATESXX': 13, 'KerncoXX': 14, 'Amalgamated_Happold2': 15, 'DearingerXX': 16, 'St._Anthony1': 17, 'BALD_EAGLE74': 18, 'CURRY1': 19, 'KCL87_25': 20, 'Del_Fortuna1': 21, 'XX32_15': 22, 'Wright_Bloemer74': 23, 'MARQUIS1': 24, 'Famosa12_1': 25, 'Kuhn81_15': 26, 'Bergman_Trust1': 27, 'KCL_A58_8': 28, 'Steele_Petroleum_Co4_1': 29, 'Gow1': 30, 'RUSSELLXX': 31, 'KCL_G1': 32, '33XX': 33, 'Sharples_Marathon_BillingtonXX': 34, 'Mobil_Pan_Petroleum_KCL31_15': 35, 'Mobil_Pan_Pet_KCL86_35': 36, 'Roberts_Cox23_1': 37, 'Law_et_alXX': 38, 'TennecoXX': 39, '11': 40, 'Cities_Service_TennecoXX': 41, 'USLXX': 42, 'HayesXX': 43, 'SUPERIOR_TENNECO_GAUTXX': 44, 'TWIXX': 45, 'Tenneco_Ladd_Rio_Bravo_North87': 46, 'Tenneco_Rio_Bravo32': 47, 'McCulloch_Camp_et_al1_36': 48, 'West_Rio_Bravo1': 49, 'Shell_Magee_GlideXX': 50, 'XXXX': 51, 'Wiedman55_26': 52, 'R.A._Shafter_A1': 53, 'KerrXX': 54, 'Bishop_FeeXX': 55, 'API_BartellXX': 56, 'Kimberlina1': 57, 'Kern_AXX': 58, 'Tenneco_Sun11x_31': 59, 'Bishop_FeeXXX': 60, 'Bellevue_Deep1': 61, 'S_&_D_Killingwoth_EPM1': 62, 'Arkelian23_26': 63, 'Ingram13_73': 64, 'Union_Tribe_BXX': 65, 'JewettaXX': 66, 'Golden_State_VintnersXX': 67, 'USLXXX': 68})
 
 
 
@@ -291,11 +291,9 @@ Your code here:
           <th>top</th>
           <th>base</th>
           <th>component lith</th>
-          <th>lith_ids</th>
         </tr>
         <tr>
           <th>name</th>
-          <th></th>
           <th></th>
           <th></th>
           <th></th>
@@ -307,39 +305,33 @@ Your code here:
           <td>0.00</td>
           <td>1035.60</td>
           <td>topo</td>
-          <td>0</td>
         </tr>
         <tr>
           <th>KCL12</th>
           <td>1035.60</td>
           <td>1652.25</td>
           <td>etchegoin</td>
-          <td>1</td>
         </tr>
         <tr>
           <th>KCL12</th>
           <td>1652.25</td>
           <td>2109.99</td>
           <td>macoma</td>
-          <td>2</td>
         </tr>
         <tr>
           <th>KCL12</th>
           <td>2109.98</td>
           <td>2799.03</td>
           <td>fruitvale</td>
-          <td>3</td>
         </tr>
         <tr>
           <th>KCL12</th>
           <td>2109.99</td>
           <td>2110.00</td>
           <td>mclure</td>
-          <td>4</td>
         </tr>
         <tr>
           <th>...</th>
-          <td>...</td>
           <td>...</td>
           <td>...</td>
           <td>...</td>
@@ -349,39 +341,34 @@ Your code here:
           <td>601.20</td>
           <td>753.11</td>
           <td>vedder</td>
-          <td>7</td>
         </tr>
         <tr>
           <th>USLXXX</th>
           <td>753.11</td>
           <td>1197.41</td>
           <td>cretaceous</td>
-          <td>10</td>
         </tr>
         <tr>
           <th>USLXXX</th>
           <td>1197.41</td>
           <td>1623.97</td>
           <td>basement</td>
-          <td>11</td>
         </tr>
         <tr>
           <th>USLXXX</th>
           <td>1623.97</td>
           <td>1623.98</td>
           <td>NaN</td>
-          <td>-1</td>
         </tr>
         <tr>
           <th>USLXXX</th>
           <td>1656.92</td>
           <td>1656.93</td>
           <td>topo</td>
-          <td>0</td>
         </tr>
       </tbody>
     </table>
-    <p>721 rows × 4 columns</p>
+    <p>721 rows × 3 columns</p>
     </div>
     </div>
     <br />
@@ -610,14 +597,14 @@ balance between performance and model detail.
     all_surface_points_coords: gp.data.SurfacePointsTable = structural_frame.surface_points_copy
     extent_from_data = all_surface_points_coords.xyz.min(axis=0), all_surface_points_coords.xyz.max(axis=0)
     # Initialize GeoModel
-    geo_model = gp.data.GeoModel(
+    geo_model = gp.data.GeoModel.from_args(
         name="Stratigraphic Pile",
         structural_frame=structural_frame,
         grid=gp.data.Grid(
             extent=[extent_from_data[0][0], extent_from_data[1][0], extent_from_data[0][1], extent_from_data[1][1], extent_from_data[0][2], extent_from_data[1][2]],
             resolution=(50, 50, 50)
         ),
-        interpolation_options=gp.data.InterpolationOptions(
+        interpolation_options=gp.data.InterpolationOptions.from_args(
             range=5,
             c_o=10,
             mesh_extraction=True,
@@ -879,19 +866,14 @@ Now that we have the necessary surface points and orientations, we can compute t
 
 
 
+.. rst-class:: sphx-glr-script-out
 
-.. raw:: html
+ .. code-block:: none
 
-    <div class="output_subarea output_html rendered_html output_result">
 
-                    <table>
-                        <tr><td colspan='2' style='text-align:center'><b>InterpolationOptions</b></td></tr>
-                        <tr><td>kernel_options</td><td>{'range': 5, 'c_o': 10, 'uni_degree': 1, 'i_res': 4, 'gi_res': 2, 'number_dimensions': 3, 'kernel_function': <AvailableKernelFunctions.cubic: KernelFunction(base_function=<function cubic_function at 0x7fc5ccbea320>, derivative_div_r=<function cubic_function_p_div_r at 0x7fc5ccbea560>, second_derivative=<function cubic_function_a at 0x7fc5ccbea5f0>, consume_sq_distance=False)>, 'kernel_solver': <Solvers.DEFAULT: 1>, 'compute_condition_number': False, 'optimizing_condition_number': False, 'condition_number': None}</td></tr><tr><td>evaluation_options</td><td>{'_number_octree_levels': 3, '_number_octree_levels_surface': 4, 'octree_curvature_threshold': -1, 'octree_error_threshold': 1.0, 'octree_min_level': 2, 'mesh_extraction': True, 'mesh_extraction_masking_options': <MeshExtractionMaskingOptions.INTERSECT: 3>, 'mesh_extraction_fancy': True, 'evaluation_chunk_size': 500000, 'compute_scalar_gradient': False, 'verbose': False}</td></tr><tr><td>temp_interpolation_values</td><td><gempy_engine.core.data.options.temp_interpolation_values.TempInterpolationValues object at 0x7fc55bb19e70></td></tr><tr><td>debug</td><td>True</td></tr><tr><td>cache_mode</td><td>CacheMode.IN_MEMORY_CACHE</td></tr><tr><td>cache_model_name</td><td>Stratigraphic Pile</td></tr><tr><td>block_solutions_type</td><td>BlockSolutionType.DENSE_GRID</td></tr><tr><td>sigmoid_slope</td><td>5000000</td></tr><tr><td>debug_water_tight</td><td>False</td></tr>
-                    </table>
-                
-    </div>
-    <br />
-    <br />
+    InterpolationOptions(kernel_options=KernelOptions(range=5, c_o=10, uni_degree=1, i_res=4.0, gi_res=2.0, number_dimensions=3, kernel_function=AvailableKernelFunctions.cubic, kernel_solver=Solvers.DEFAULT, compute_condition_number=False, optimizing_condition_number=False, condition_number=None), evaluation_options=EvaluationOptions(_number_octree_levels=3, _number_octree_levels_surface=4, octree_curvature_threshold=-1.0, octree_error_threshold=1.0, octree_min_level=2, mesh_extraction=True, mesh_extraction_masking_options=<MeshExtractionMaskingOptions.INTERSECT: 3>, mesh_extraction_fancy=True, evaluation_chunk_size=500000, compute_scalar_gradient=False, verbose=False), debug=True, cache_mode=<CacheMode.IN_MEMORY_CACHE: 3>, cache_model_name='Stratigraphic Pile', block_solutions_type=<BlockSolutionType.DENSE_GRID: 2>, sigmoid_slope=5000000, debug_water_tight=False, temp_interpolation_values=TempInterpolationValues(current_octree_level=0))
+
+
 
 .. GENERATED FROM PYTHON SOURCE LINES 438-440
 
@@ -908,7 +890,7 @@ Now that we have the necessary surface points and orientations, we can compute t
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.numpy
-    Chunking done: 36 chunks
+    Chunking done: 38 chunks
 
 
 .. raw:: html
@@ -983,7 +965,7 @@ https://www.terranigma-solutions.com/
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 9.298 seconds)
+   **Total running time of the script:** (0 minutes 10.262 seconds)
 
 
 .. _sphx_glr_download_examples_real_mik.py:

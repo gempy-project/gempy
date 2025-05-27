@@ -356,15 +356,25 @@ activate them.
      |  ----------------------------------------------------------------------
      |  Data and other attributes defined here:
      |  
-     |  __annotations__ = {'_transform': <class 'gempy_engine.core.data.transf...
+     |  __annotations__ = {'_transform': gempy_engine.core.data.transforms.Tra...
      |  
-     |  __dataclass_fields__ = {'_transform': Field(name='_transform',type=<cl...
+     |  __dataclass_fields__ = {'_transform': Field(name='_transform',type=gem...
      |  
      |  __dataclass_params__ = _DataclassParams(init=True,repr=True,eq=True,or...
      |  
      |  __hash__ = None
      |  
      |  __match_args__ = ('resolution', 'extent', 'values', 'mask_topo', '_tra...
+     |  
+     |  __pydantic_decorators__ = DecoratorInfos(validators={}, field_validato...
+     |  
+     |  extent = array([0., 0., 0., 0., 0., 0.])
+     |  
+     |  mask_topo = array([], shape=(0, 3), dtype=bool)
+     |  
+     |  resolution = array([], shape=(0, 3), dtype=int64)
+     |  
+     |  values = array([], shape=(0, 3), dtype=float64)
 
 
 
@@ -531,7 +541,7 @@ Completely free XYZ values.
 
     Active grids: GridTypes.NONE|CUSTOM|DENSE
 
-    <gempy.core.data.grid_modules.grid_types.CustomGrid object at 0x7fc5bac5cfa0>
+    <gempy.core.data.grid_modules.grid_types.CustomGrid object at 0x7ff2a28c1990>
 
 
 
@@ -625,7 +635,7 @@ slicing args:
 
  .. code-block:: none
 
-    <gempy.core.data.grid_modules.grid_types.CustomGrid object at 0x7fc5bac5cfa0>
+    <gempy.core.data.grid_modules.grid_types.CustomGrid object at 0x7ff2a28c1990>
 
 
 
@@ -678,7 +688,7 @@ dealing with raster data. By default, we will create a random topography:
     [-20.   0.]
     Active grids: GridTypes.NONE|TOPOGRAPHY|CUSTOM|DENSE
 
-    <gempy.core.data.grid_modules.topography.Topography object at 0x7fc5bac5c2b0>
+    <gempy.core.data.grid_modules.topography.Topography object at 0x7ff2a28c1750>
 
 
 
@@ -1027,7 +1037,7 @@ This grid type has its own tutorial. See :doc:`ch1_3b_cross_sections`
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 0.116 seconds)
+   **Total running time of the script:** (0 minutes 0.113 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_3a_grids.py:

@@ -104,6 +104,8 @@
     <span class="n">topology_count</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># ? I am not 100% sure the type is correct</span>
 
     <span class="c1"># endregion</span>
+    <span class="n">scalar_field_at_surface_points</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">n_surfaces</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
 
     <span class="c1"># ? TODO: This could be just the init</span>
     <span class="nd">@classmethod</span>
@@ -153,9 +155,11 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_set_scalar_field_at_surface_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">octree_output</span><span class="p">:</span> <span class="n">OctreeLevel</span><span class="p">):</span>
         <span class="n">temp_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_surfaces</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">octree_output</span><span class="o">.</span><span class="n">number_of_outputs</span><span class="p">):</span>
             <span class="n">at_surface_points</span> <span class="o">=</span> <span class="n">octree_output</span><span class="o">.</span><span class="n">outputs_centers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">scalar_fields</span><span class="o">.</span><span class="n">exported_fields</span><span class="o">.</span><span class="n">scalar_field_at_surface_points</span>
             <span class="n">temp_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">BackendTensor</span><span class="o">.</span><span class="n">t</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(</span><span class="n">at_surface_points</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">n_surfaces</span> <span class="o">+=</span> <span class="n">at_surface_points</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">scalar_field_at_surface_points</span> <span class="o">=</span> <span class="n">temp_list</span>
 

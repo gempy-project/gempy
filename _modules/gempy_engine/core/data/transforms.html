@@ -41,11 +41,14 @@
   <h1>Source code for gempy_engine.core.data.transforms</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pprint</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">auto</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.encoders.converters</span><span class="w"> </span><span class="kn">import</span> <span class="n">numpy_array_short_validator</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">TransformOpsOrder</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
@@ -56,22 +59,22 @@
 <div class="viewcode-block" id="GlobalAnisotropy">
 <a class="viewcode-back" href="../../../../Modeling%20Classes/gempy.core.data.GlobalAnisotropy.html#gempy.core.data.GlobalAnisotropy">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">GlobalAnisotropy</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-    <span class="n">CUBE</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span> <span class="c1"># * Transform data to be as close as possible to a cube</span>
-    <span class="n">NONE</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span> <span class="c1"># * Do not transform data</span>
-    <span class="n">MANUAL</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span> <span class="c1"># * Use the user defined transform</span></div>
+    <span class="n">CUBE</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># * Transform data to be as close as possible to a cube</span>
+    <span class="n">NONE</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># * Do not transform data</span>
+    <span class="n">MANUAL</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># * Use the user defined transform</span></div>
 
-    
+
 
 <div class="viewcode-block" id="Transform">
 <a class="viewcode-back" href="../../../../Modeling%20Classes/gempy.core.data.Transform.html#gempy.core.data.Transform">[docs]</a>
 <span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Transform</span><span class="p">:</span>
-    <span class="n">position</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
-    <span class="n">rotation</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
-    <span class="n">scale</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="n">position</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">numpy_array_short_validator</span><span class="p">]</span>
+    <span class="n">rotation</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">numpy_array_short_validator</span><span class="p">]</span>
+    <span class="n">scale</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">numpy_array_short_validator</span><span class="p">]</span>
 
     <span class="n">_is_default_transform</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="n">_cached_pivot</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_cached_pivot</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">numpy_array_short_validator</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">pprint</span><span class="o">.</span><span class="n">pformat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
@@ -114,14 +117,13 @@
         <span class="p">])</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">rotation_degrees</span><span class="p">,</span> <span class="n">scale</span><span class="p">)</span>
 
-
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">cached_pivot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cached_pivot</span>
-    
+
     <span class="nd">@cached_pivot</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">cached_pivot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pivot</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_cached_pivot</span> <span class="o">=</span> <span class="n">pivot</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cached_pivot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pivot</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cached_pivot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pivot</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_input_points</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">surface_points</span><span class="p">:</span> <span class="s1">&#39;gempy.data.SurfacePointsTable&#39;</span><span class="p">,</span> <span class="n">orientations</span><span class="p">:</span> <span class="s1">&#39;gempy.data.OrientationsTable&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Transform&#39;</span><span class="p">:</span>
@@ -142,7 +144,7 @@
 
         <span class="c1"># The scaling factor for each dimension is the inverse of its range</span>
         <span class="n">scaling_factors</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">range_coord</span>
-        
+
         <span class="c1"># ! Be careful with toy models</span>
         <span class="n">center</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="p">(</span><span class="n">max_coord</span> <span class="o">+</span> <span class="n">min_coord</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
@@ -173,14 +175,14 @@
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-        
+
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_adjust_scale_to_limit_ratio</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">anisotropic_limit</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">])):</span>
         <span class="c1"># Calculate the ratios</span>
         <span class="n">ratios</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
-            <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
-            <span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                <span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="p">]</span>
 
         <span class="c1"># Adjust the scales based on the index of the max ratio</span>
@@ -204,9 +206,9 @@
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_max_scale_ratio</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
         <span class="n">ratios</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
-            <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
-            <span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                <span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="p">]</span>
         <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">ratios</span><span class="p">)</span>
 
@@ -269,7 +271,7 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">scale_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">points</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span>
-    
+
     <span class="k">def</span><span class="w"> </span><span class="nf">apply_inverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">transform_op_order</span><span class="p">:</span> <span class="n">TransformOpsOrder</span> <span class="o">=</span> <span class="n">TransformOpsOrder</span><span class="o">.</span><span class="n">SRT</span><span class="p">):</span>
         <span class="c1"># * NOTE: to compare with legacy we would have to add 0.5 to the coords</span>
         <span class="k">assert</span> <span class="n">points</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span>
@@ -279,12 +281,11 @@
         <span class="n">transformed_points</span> <span class="o">=</span> <span class="p">(</span><span class="n">inv</span> <span class="o">@</span> <span class="n">homogeneous_points</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
         <span class="k">return</span> <span class="n">transformed_points</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">3</span><span class="p">]</span>
 
-    
     <span class="k">def</span><span class="w"> </span><span class="nf">apply_with_cached_pivot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">transform_op_order</span><span class="p">:</span> <span class="n">TransformOpsOrder</span> <span class="o">=</span> <span class="n">TransformOpsOrder</span><span class="o">.</span><span class="n">SRT</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cached_pivot</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;A pivot must be set before calling this method&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">apply_with_pivot</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cached_pivot</span><span class="p">,</span> <span class="n">transform_op_order</span><span class="p">)</span>
-    
+
     <span class="k">def</span><span class="w"> </span><span class="nf">apply_inverse_with_cached_pivot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">transform_op_order</span><span class="p">:</span> <span class="n">TransformOpsOrder</span> <span class="o">=</span> <span class="n">TransformOpsOrder</span><span class="o">.</span><span class="n">SRT</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cached_pivot</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;A pivot must be set before calling this method&quot;</span><span class="p">)</span>
@@ -318,7 +319,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">apply_inverse_with_pivot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">pivot</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
                                  <span class="n">transform_op_order</span><span class="p">:</span> <span class="n">TransformOpsOrder</span> <span class="o">=</span> <span class="n">TransformOpsOrder</span><span class="o">.</span><span class="n">SRT</span><span class="p">):</span>
         <span class="k">assert</span> <span class="n">points</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span>
-        
+
         <span class="c1"># Translation matrices to and from the pivot</span>
         <span class="n">T_to_origin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_translation_matrix</span><span class="p">(</span><span class="o">-</span><span class="n">pivot</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">-</span><span class="n">pivot</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="o">-</span><span class="n">pivot</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
         <span class="n">T_back</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_translation_matrix</span><span class="p">(</span><span class="o">*</span><span class="n">pivot</span><span class="p">)</span>
@@ -333,10 +334,10 @@
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_translation_matrix</span><span class="p">(</span><span class="n">tx</span><span class="p">,</span> <span class="n">ty</span><span class="p">,</span> <span class="n">tz</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
-            <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">tx</span><span class="p">],</span>
-            <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">ty</span><span class="p">],</span>
-            <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">tz</span><span class="p">],</span>
-            <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">tx</span><span class="p">],</span>
+                <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">ty</span><span class="p">],</span>
+                <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">tz</span><span class="p">],</span>
+                <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
         <span class="p">])</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">transform_gradient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gradients</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">transform_op_order</span><span class="p">:</span> <span class="n">TransformOpsOrder</span> <span class="o">=</span> <span class="n">TransformOpsOrder</span><span class="o">.</span><span class="n">SRT</span><span class="p">,</span>

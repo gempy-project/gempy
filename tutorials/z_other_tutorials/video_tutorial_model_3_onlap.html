@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Video Tutorial “code-along”: Onlap relations &#8212; GemPy 2024.2.0.3.dev0+gf344a731.d20240626 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=686e5160" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=e15417cb" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <script src="../../_static/documentation_options.js?v=bd57e1ea"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <link rel="icon" href="../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Examples" href="../../examples/index.html" />
+    <link rel="prev" title="Video Tutorial “code-along”: Faults" href="video_tutorial_model_2_faults.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#sphx-glr-download-tutorials-z-other-tutorials-video-tutorial-model-3-onlap-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code.</p>
+</div>
+<section class="sphx-glr-example-title" id="video-tutorial-code-along-onlap-relations">
+<span id="sphx-glr-tutorials-z-other-tutorials-video-tutorial-model-3-onlap-py"></span><h1>Video Tutorial “code-along”: Onlap relations<a class="headerlink" href="#video-tutorial-code-along-onlap-relations" title="Link to this heading">¶</a></h1>
+<p>This tutorial demonstrates step-by-step how to incorporate onlap relations to our geological models created with gempy.
+It follows the Video tutorial series available on the [gempy YouTube channel](<a class="reference external" href="https://www.youtube.com/&#64;GemPy3D">https://www.youtube.com/&#64;GemPy3D</a>).
+Please follow the first and second part of the tutorials to learn the basics of modeling with gempy before diving into this tutorial.</p>
+<section id="video-tutorial-11-basic-onlap-scenario">
+<h2>Video tutorial 11: Basic onlap scenario<a class="headerlink" href="#video-tutorial-11-basic-onlap-scenario" title="Link to this heading">¶</a></h2>
+<iframe width="560" height="315"
+        src="https://www.youtube.com/embed/80QjnrFxubQ"
+        title="YouTube video player"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen>
+</iframe><div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Required imports</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">gempy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">gempy_viewer</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gpv</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Path to input data</span>
+<span class="n">data_path</span> <span class="o">=</span> <span class="s2">&quot;https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/&quot;</span>
+<span class="n">path_to_data</span> <span class="o">=</span> <span class="n">data_path</span> <span class="o">+</span> <span class="s2">&quot;/data/input_data/video_tutorials_v3/&quot;</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create instance of geomodel</span>
+<a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model_onlap</span></a> <span class="o">=</span> <a href="../../GemPy API/gempy.create_geomodel.html#gempy.create_geomodel" title="gempy.create_geomodel" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">create_geomodel</span></a><span class="p">(</span>
+    <span class="n">project_name</span> <span class="o">=</span> <span class="s1">&#39;tutorial_model_onlap_1&#39;</span><span class="p">,</span>
+    <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2000</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1000</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1000</span><span class="p">],</span>
+    <span class="n">resolution</span><span class="o">=</span><span class="p">[</span><span class="mi">100</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">50</span><span class="p">],</span>
+    <span class="n">importer_helper</span><span class="o">=</span><a href="../../Helper Classes/gempy.core.data.ImporterHelper.html#gempy.core.data.ImporterHelper" title="gempy.core.data.ImporterHelper" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class"><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">ImporterHelper</span></a><span class="p">(</span>
+        <span class="n">path_to_orientations</span><span class="o">=</span><span class="n">path_to_data</span><span class="o">+</span><span class="s2">&quot;tutorial_model_onlap_1_orientations.csv&quot;</span><span class="p">,</span>
+        <span class="n">path_to_surface_points</span><span class="o">=</span><span class="n">path_to_data</span><span class="o">+</span><span class="s2">&quot;tutorial_model_onlap_1_surface_points.csv&quot;</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Surface points hash:  2de2814bb46c6cbaa69572685aff54886e4ce3e3620384a0c70e3c52b71c0bd1
+Orientations hash:  059fe82183b03d9c50b4eb8249e2ea99297a704ce85138678a7d93e7d19b7b12
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Map geological series to surfaces</span>
+<a href="../../GemPy API/gempy.map_stack_to_surfaces.html#gempy.map_stack_to_surfaces" title="gempy.map_stack_to_surfaces" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">map_stack_to_surfaces</span></a><span class="p">(</span>
+    <span class="n">gempy_model</span><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model_onlap</span></a><span class="p">,</span>
+    <span class="n">mapping_object</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;Young_Series&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;basin_fill_2&quot;</span><span class="p">,</span> <span class="s2">&quot;basin_fill_1&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;Old_Series&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;basin_top&quot;</span><span class="p">,</span> <span class="s2">&quot;basin_bottom&quot;</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+
+<span class="c1"># Alternative way of mapping geological series to surfaces</span>
+<span class="c1"># gp.map_stack_to_surfaces(</span>
+<span class="c1">#     gempy_model=geo_model_onlap,</span>
+<span class="c1">#     mapping_object={</span>
+<span class="c1">#         &quot;Young_Series&quot;: (&quot;basin_fill_2&quot;, &quot;basin_fill_1&quot;),</span>
+<span class="c1">#         &quot;Onlap_Series&quot;: (&quot;basin_top&quot;),</span>
+<span class="c1">#         &quot;Old_Series&quot;: (&quot;basin_bottom&quot;)</span>
+<span class="c1">#     }</span>
+<span class="c1"># )</span>
+</pre></div>
+</div>
+<div class="output_subarea output_html rendered_html output_result">
+
+        <table>
+          <tr><td>Structural Groups:</td><td>
+    <table style="border-left:1.2px solid black;>
+      <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+      <tr><td>Name:</td><td>Young_Series</td></tr>
+      <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+      <tr><td>Elements:</td><td>
+    <table width="50%" style="border-left:15px solid #ffbe00;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>basin_fill_2</td></tr>
+    </table>
+        <br>
+    <table width="50%" style="border-left:15px solid #9f0052;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>basin_fill_1</td></tr>
+    </table>
+        </td></tr>
+    </table>
+        <br>
+    <table style="border-left:1.2px solid black;>
+      <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+      <tr><td>Name:</td><td>Old_Series</td></tr>
+      <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+      <tr><td>Elements:</td><td>
+    <table width="50%" style="border-left:15px solid #728f02;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>basin_top</td></tr>
+    </table>
+        <br>
+    <table width="50%" style="border-left:15px solid #015482;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>basin_bottom</td></tr>
+    </table>
+        </td></tr>
+    </table>
+        </td></tr>
+          <tr><td>Fault Relations:</td><td><table style="border-collapse: collapse; table-layout: fixed;"><th></th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Young_Seri...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Old_Series</th><tr><th>Young_Series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>Old_Series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr></table></td></tr>
+          <tr><td></td><td>
+        <table>
+          <tr>
+            <td><div style="display: inline-block; background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></div> True</td>
+            <td><div style="display: inline-block; background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></div> False</td>
+          </tr>
+        </table>
+        </td></tr>
+        </table>
+
+</div>
+<br />
+<br /><div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Display a basic cross section of input data</span>
+<span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model_onlap</span></a><span class="p">,</span> <span class="n">show_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_video_tutorial_model_3_onlap_001.png" srcset="../../_images/sphx_glr_video_tutorial_model_3_onlap_001.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fbcfde10730&gt;
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compute a solution for the model</span>
+<a href="../../GemPy API/gempy.compute_model.html#gempy.compute_model" title="gempy.compute_model" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span></a><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model_onlap</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting Backend To: AvailableBackends.numpy
+Chunking done: 10 chunks
+/home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
+  return 1.0 / (1.0 + bt.t.exp(x))
+Chunking done: 19 chunks
+/home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
+  return 1.0 / (1.0 + bt.t.exp(x))
+</pre></div>
+</div>
+<div class="output_subarea output_html rendered_html output_result">
+<b>Solutions:</b> 4 Octree Levels, 4 DualContouringMeshes
+</div>
+<br />
+<br /><div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Display the result in 2d section</span>
+<span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model_onlap</span></a><span class="p">,</span> <span class="n">show_boundaries</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_video_tutorial_model_3_onlap_002.png" srcset="../../_images/sphx_glr_video_tutorial_model_3_onlap_002.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fbcb6905270&gt;
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set the relation of the youngest group to Onlap</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gempy_engine.core.data.stack_relation_type</span><span class="w"> </span><span class="kn">import</span> <span class="n">StackRelationType</span>
+<a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model_onlap</span><span class="o">.</span><span class="n">structural_frame</span></a><span class="o">.</span><span class="n">structural_groups</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">structural_relation</span> <span class="o">=</span> <span class="n">StackRelationType</span><span class="o">.</span><span class="n">ONLAP</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Display updated strucutral frame</span>
+<a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model_onlap</span><span class="o">.</span><span class="n">structural_frame</span></a>
+</pre></div>
+</div>
+<div class="output_subarea output_html rendered_html output_result">
+
+        <table>
+          <tr><td>Structural Groups:</td><td>
+    <table style="border-left:1.2px solid black;>
+      <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+      <tr><td>Name:</td><td>Young_Series</td></tr>
+      <tr><td>Structural Relation:</td><td>StackRelationType.ONLAP</td></tr>
+      <tr><td>Elements:</td><td>
+    <table width="50%" style="border-left:15px solid #ffbe00;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>basin_fill_2</td></tr>
+    </table>
+        <br>
+    <table width="50%" style="border-left:15px solid #9f0052;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>basin_fill_1</td></tr>
+    </table>
+        </td></tr>
+    </table>
+        <br>
+    <table style="border-left:1.2px solid black;>
+      <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+      <tr><td>Name:</td><td>Old_Series</td></tr>
+      <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+      <tr><td>Elements:</td><td>
+    <table width="50%" style="border-left:15px solid #728f02;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>basin_top</td></tr>
+    </table>
+        <br>
+    <table width="50%" style="border-left:15px solid #015482;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>basin_bottom</td></tr>
+    </table>
+        </td></tr>
+    </table>
+        </td></tr>
+          <tr><td>Fault Relations:</td><td><table style="border-collapse: collapse; table-layout: fixed;"><th></th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Young_Seri...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Old_Series</th><tr><th>Young_Series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>Old_Series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr></table></td></tr>
+          <tr><td></td><td>
+        <table>
+          <tr>
+            <td><div style="display: inline-block; background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></div> True</td>
+            <td><div style="display: inline-block; background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></div> False</td>
+          </tr>
+        </table>
+        </td></tr>
+        </table>
+
+</div>
+<br />
+<br /><div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compute a solution for the model</span>
+<a href="../../GemPy API/gempy.compute_model.html#gempy.compute_model" title="gempy.compute_model" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span></a><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model_onlap</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting Backend To: AvailableBackends.numpy
+Chunking done: 10 chunks
+/home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
+  return 1.0 / (1.0 + bt.t.exp(x))
+Chunking done: 19 chunks
+/home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
+  return 1.0 / (1.0 + bt.t.exp(x))
+</pre></div>
+</div>
+<div class="output_subarea output_html rendered_html output_result">
+<b>Solutions:</b> 4 Octree Levels, 4 DualContouringMeshes
+</div>
+<br />
+<br /><div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Display the result in 2d section</span>
+<span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model_onlap</span></a><span class="p">,</span> <span class="n">show_boundaries</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_video_tutorial_model_3_onlap_003.png" srcset="../../_images/sphx_glr_video_tutorial_model_3_onlap_003.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fbcb67c81f0&gt;
+</pre></div>
+</div>
+</section>
+<section id="video-tutorial-12-advanced-onlap-subduction-zone">
+<h2>Video tutorial 12: Advanced onlap - Subduction zone<a class="headerlink" href="#video-tutorial-12-advanced-onlap-subduction-zone" title="Link to this heading">¶</a></h2>
+<iframe width="560" height="315"
+        src="https://www.youtube.com/embed/R-vUld4V-OQ"
+        title="YouTube video player"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen>
+</iframe><div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create instance of geomodel</span>
+<a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model_subduction</span></a> <span class="o">=</span> <a href="../../GemPy API/gempy.create_geomodel.html#gempy.create_geomodel" title="gempy.create_geomodel" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">create_geomodel</span></a><span class="p">(</span>
+    <span class="n">project_name</span> <span class="o">=</span> <span class="s1">&#39;tutorial_model_onlap_2&#39;</span><span class="p">,</span>
+    <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2000</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1000</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1000</span><span class="p">],</span>
+    <span class="n">resolution</span><span class="o">=</span><span class="p">[</span><span class="mi">100</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">50</span><span class="p">],</span>
+    <span class="n">importer_helper</span><span class="o">=</span><a href="../../Helper Classes/gempy.core.data.ImporterHelper.html#gempy.core.data.ImporterHelper" title="gempy.core.data.ImporterHelper" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class"><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">ImporterHelper</span></a><span class="p">(</span>
+        <span class="n">path_to_orientations</span><span class="o">=</span><span class="n">path_to_data</span><span class="o">+</span><span class="s2">&quot;tutorial_model_onlap_2_orientations.csv?&quot;</span><span class="p">,</span>
+        <span class="n">path_to_surface_points</span><span class="o">=</span><span class="n">path_to_data</span><span class="o">+</span><span class="s2">&quot;tutorial_model_onlap_2_surface_points.csv?&quot;</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Surface points hash:  d0999adb1b7cfca54abd040f517aeba042d7f43a69b507c69ac6ad8cd6682e13
+Orientations hash:  ebada610b5a68730bf1d03323594e755fbe986cd07857ee99d8b758716e3dfaa
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Display a basic cross section of input data</span>
+<span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model_subduction</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_video_tutorial_model_3_onlap_004.png" srcset="../../_images/sphx_glr_video_tutorial_model_3_onlap_004.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fbcb691b1f0&gt;
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Map geological series to surfaces</span>
+<a href="../../GemPy API/gempy.map_stack_to_surfaces.html#gempy.map_stack_to_surfaces" title="gempy.map_stack_to_surfaces" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">map_stack_to_surfaces</span></a><span class="p">(</span>
+    <span class="n">gempy_model</span><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model_subduction</span></a><span class="p">,</span>
+    <span class="n">mapping_object</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;Top&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;continental_top&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;Continental_Series&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;continental_shallow&quot;</span><span class="p">,</span> <span class="s2">&quot;continental_deep&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;Oceanic_Series&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;oceanic_top&quot;</span><span class="p">,</span> <span class="s2">&quot;oceanic_bottom&quot;</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="output_subarea output_html rendered_html output_result">
+
+        <table>
+          <tr><td>Structural Groups:</td><td>
+    <table style="border-left:1.2px solid black;>
+      <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+      <tr><td>Name:</td><td>Top</td></tr>
+      <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+      <tr><td>Elements:</td><td>
+    <table width="50%" style="border-left:15px solid #ffbe00;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>continental_top</td></tr>
+    </table>
+        </td></tr>
+    </table>
+        <br>
+    <table style="border-left:1.2px solid black;>
+      <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+      <tr><td>Name:</td><td>Continental_Series</td></tr>
+      <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+      <tr><td>Elements:</td><td>
+    <table width="50%" style="border-left:15px solid #9f0052;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>continental_shallow</td></tr>
+    </table>
+        <br>
+    <table width="50%" style="border-left:15px solid #015482;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>continental_deep</td></tr>
+    </table>
+        </td></tr>
+    </table>
+        <br>
+    <table style="border-left:1.2px solid black;>
+      <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+      <tr><td>Name:</td><td>Oceanic_Series</td></tr>
+      <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+      <tr><td>Elements:</td><td>
+    <table width="50%" style="border-left:15px solid #443988;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>oceanic_top</td></tr>
+    </table>
+        <br>
+    <table width="50%" style="border-left:15px solid #728f02;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>oceanic_bottom</td></tr>
+    </table>
+        </td></tr>
+    </table>
+        </td></tr>
+          <tr><td>Fault Relations:</td><td><table style="border-collapse: collapse; table-layout: fixed;"><th></th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Top</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Continenta...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Oceanic_Se...</th><tr><th>Top</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>Continental_Series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>Oceanic_Series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr></table></td></tr>
+          <tr><td></td><td>
+        <table>
+          <tr>
+            <td><div style="display: inline-block; background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></div> True</td>
+            <td><div style="display: inline-block; background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></div> False</td>
+          </tr>
+        </table>
+        </td></tr>
+        </table>
+
+</div>
+<br />
+<br /><div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set the realtion of the youngest and second youngest group to Onlap</span>
+<a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model_subduction</span><span class="o">.</span><span class="n">structural_frame</span></a><span class="o">.</span><span class="n">structural_groups</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">structural_relation</span> <span class="o">=</span> <span class="n">StackRelationType</span><span class="o">.</span><span class="n">ONLAP</span>
+<a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model_subduction</span><span class="o">.</span><span class="n">structural_frame</span></a><span class="o">.</span><span class="n">structural_groups</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">structural_relation</span> <span class="o">=</span> <span class="n">StackRelationType</span><span class="o">.</span><span class="n">ONLAP</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Display updated structural frame</span>
+<a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model_subduction</span><span class="o">.</span><span class="n">structural_frame</span></a>
+</pre></div>
+</div>
+<div class="output_subarea output_html rendered_html output_result">
+
+        <table>
+          <tr><td>Structural Groups:</td><td>
+    <table style="border-left:1.2px solid black;>
+      <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+      <tr><td>Name:</td><td>Top</td></tr>
+      <tr><td>Structural Relation:</td><td>StackRelationType.ONLAP</td></tr>
+      <tr><td>Elements:</td><td>
+    <table width="50%" style="border-left:15px solid #ffbe00;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>continental_top</td></tr>
+    </table>
+        </td></tr>
+    </table>
+        <br>
+    <table style="border-left:1.2px solid black;>
+      <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+      <tr><td>Name:</td><td>Continental_Series</td></tr>
+      <tr><td>Structural Relation:</td><td>StackRelationType.ONLAP</td></tr>
+      <tr><td>Elements:</td><td>
+    <table width="50%" style="border-left:15px solid #9f0052;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>continental_shallow</td></tr>
+    </table>
+        <br>
+    <table width="50%" style="border-left:15px solid #015482;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>continental_deep</td></tr>
+    </table>
+        </td></tr>
+    </table>
+        <br>
+    <table style="border-left:1.2px solid black;>
+      <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
+      <tr><td>Name:</td><td>Oceanic_Series</td></tr>
+      <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
+      <tr><td>Elements:</td><td>
+    <table width="50%" style="border-left:15px solid #443988;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>oceanic_top</td></tr>
+    </table>
+        <br>
+    <table width="50%" style="border-left:15px solid #728f02;">
+      <tr><th colspan="2"><b>StructuralElement:</b></th></tr>
+      <tr><td>Name:</td><td>oceanic_bottom</td></tr>
+    </table>
+        </td></tr>
+    </table>
+        </td></tr>
+          <tr><td>Fault Relations:</td><td><table style="border-collapse: collapse; table-layout: fixed;"><th></th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Top</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Continenta...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Oceanic_Se...</th><tr><th>Top</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>Continental_Series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>Oceanic_Series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr></table></td></tr>
+          <tr><td></td><td>
+        <table>
+          <tr>
+            <td><div style="display: inline-block; background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></div> True</td>
+            <td><div style="display: inline-block; background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></div> False</td>
+          </tr>
+        </table>
+        </td></tr>
+        </table>
+
+</div>
+<br />
+<br /><div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a simple topography using numpy</span>
+
+<span class="c1"># Define grid spacing</span>
+<span class="n">spacing</span> <span class="o">=</span> <span class="mi">20</span>
+
+<span class="c1"># Generate grid</span>
+<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">x</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.arange.html#numpy.arange" title="numpy.arange" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">arange</span></a><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model_subduction</span><span class="o">.</span><span class="n">grid</span></a><span class="o">.</span><span class="n">regular_grid</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <a href="../../Modeling Classes/gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model_subduction</span><span class="o">.</span><span class="n">grid</span></a><span class="o">.</span><span class="n">regular_grid</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">spacing</span><span class="p">,</span> <span class="n">spacing</span><span class="p">)</span>
+<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.arange.html#numpy.arange" title="numpy.arange" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">arange</span></a><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model_subduction</span><span class="o">.</span><span class="n">grid</span></a><span class="o">.</span><span class="n">regular_grid</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <a href="../../Modeling Classes/gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model_subduction</span><span class="o">.</span><span class="n">grid</span></a><span class="o">.</span><span class="n">regular_grid</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="n">spacing</span><span class="p">,</span> <span class="n">spacing</span><span class="p">)</span>
+<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Y</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.meshgrid.html#numpy.meshgrid" title="numpy.meshgrid" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">x</span></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">y</span></a><span class="p">)</span>
+
+<span class="c1"># Define elevation (z) based on x, creating a simple mountain range</span>
+<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Z</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ones_like.html#numpy.ones_like" title="numpy.ones_like" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">ones_like</span></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a><span class="p">)</span> <span class="o">*</span> <span class="mi">590</span>  <span class="c1"># Default elevation</span>
+<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Z</span></a><span class="p">[(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a> <span class="o">&gt;=</span> <span class="mi">570</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a> <span class="o">&lt;</span> <span class="mi">1000</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">590</span> <span class="o">+</span> <span class="p">(</span><span class="mi">200</span> <span class="o">*</span> <span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a><span class="p">[(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a> <span class="o">&gt;=</span> <span class="mi">570</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a> <span class="o">&lt;</span> <span class="mi">1000</span><span class="p">)]</span> <span class="o">-</span> <span class="mi">600</span><span class="p">)</span> <span class="o">/</span> <span class="mi">400</span><span class="p">)</span>
+<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Z</span></a><span class="p">[(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a> <span class="o">&gt;=</span> <span class="mi">1000</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a> <span class="o">&lt;</span> <span class="mi">1300</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">810</span> <span class="o">-</span> <span class="p">(</span><span class="mi">250</span> <span class="o">*</span> <span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a><span class="p">[(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a> <span class="o">&gt;=</span> <span class="mi">1000</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a> <span class="o">&lt;</span> <span class="mi">1300</span><span class="p">)]</span> <span class="o">-</span> <span class="mi">1000</span><span class="p">)</span> <span class="o">/</span> <span class="mi">300</span><span class="p">)</span>
+<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Z</span></a><span class="p">[</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a> <span class="o">&gt;=</span> <span class="mi">1300</span><span class="p">]</span> <span class="o">=</span> <span class="mi">540</span>
+
+<span class="c1"># Flatten the data into (N,3) shape</span>
+<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">topography_points</span></a> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.vstack.html#numpy.vstack" title="numpy.vstack" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">vstack</span></a><span class="p">((</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Y</span></a><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">Z</span></a><span class="o">.</span><span class="n">ravel</span><span class="p">()))</span><span class="o">.</span><span class="n">T</span>
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set topography from numpy array</span>
+<a href="../../GemPy API/gempy.set_topography_from_arrays.html#gempy.set_topography_from_arrays" title="gempy.set_topography_from_arrays" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">set_topography_from_arrays</span></a><span class="p">(</span><span class="n">grid</span><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model_subduction</span><span class="o">.</span><span class="n">grid</span></a><span class="p">,</span> <span class="n">xyz_vertices</span><span class="o">=</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">topography_points</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Active grids: GridTypes.NONE|TOPOGRAPHY|DENSE
+
+&lt;gempy.core.data.grid_modules.topography.Topography object at 0x7fbcb6c87550&gt;
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compute a solution for the model</span>
+<a href="../../GemPy API/gempy.compute_model.html#gempy.compute_model" title="gempy.compute_model" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span></a><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model_subduction</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting Backend To: AvailableBackends.numpy
+Chunking done: 14 chunks
+/home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
+  return 1.0 / (1.0 + bt.t.exp(x))
+Chunking done: 10 chunks
+Chunking done: 12 chunks
+/home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
+  return 1.0 / (1.0 + bt.t.exp(x))
+/home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
+  return 1.0 / (1.0 + bt.t.exp(x))
+</pre></div>
+</div>
+<div class="output_subarea output_html rendered_html output_result">
+<b>Solutions:</b> 4 Octree Levels, 5 DualContouringMeshes
+</div>
+<br />
+<br /><div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Display the result in 2d section</span>
+<span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model_subduction</span></a><span class="p">,</span> <span class="n">show_topography</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show_boundaries</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_video_tutorial_model_3_onlap_005.png" srcset="../../_images/sphx_glr_video_tutorial_model_3_onlap_005.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fbcb6bf32e0&gt;
+</pre></div>
+</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Display 3d plot of final model</span>
+<span class="n">gpv</span><span class="o">.</span><span class="n">plot_3d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model_subduction</span></a><span class="p">,</span> <span class="n">show_topography</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># sphinx_gallery_thumbnail_number = -1</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_video_tutorial_model_3_onlap_006.png" srcset="../../_images/sphx_glr_video_tutorial_model_3_onlap_006.png" alt="video tutorial model 3 onlap" class = "sphx-glr-single-img"/><img src="../../_images/sphx_glr_video_tutorial_model_3_onlap_007.png" srcset="../../_images/sphx_glr_video_tutorial_model_3_onlap_007.png" alt="video tutorial model 3 onlap" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fbcbca71ab0&gt;
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 35.931 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-tutorials-z-other-tutorials-video-tutorial-model-3-onlap-py">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/d9156151a7b6a03579eae5ee89357a04/video_tutorial_model_3_onlap.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">video_tutorial_model_3_onlap.ipynb</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/4039385f764c664bcb1a709a3918678b/video_tutorial_model_3_onlap.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">video_tutorial_model_3_onlap.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/2815303798a02208978b3745401d1068/video_tutorial_model_3_onlap.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">video_tutorial_model_3_onlap.zip</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../index.html">
+    <img class="logo" src="../../_static/logos/gempy.png" alt="Logo" />
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=gempy-project&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">GemPy Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/index.html">Examples</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../external/external_examples.html">External Examples</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api_reference.html">Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_reference.html#data-classes">Data Classes</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">GemPy Tutorials</a><ul>
+  <li><a href="index.html">Video tutorials</a><ul>
+      <li>Previous: <a href="video_tutorial_model_2_faults.html" title="previous chapter">Video Tutorial “code-along”: Faults</a></li>
+      <li>Next: <a href="../../examples/index.html" title="next chapter">Examples</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2017-2025, Gempy Developers.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../../_sources/tutorials/z_other_tutorials/video_tutorial_model_3_onlap.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

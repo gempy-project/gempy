@@ -308,7 +308,7 @@ Plotting the 2D model
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc55f3da590>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fbcb5ad3df0>
 
 
 
@@ -336,7 +336,7 @@ Plotting section traces
  .. code-block:: none
 
 
-    <function plot_section_traces at 0x7fc5c4704b80>
+    <function plot_section_traces at 0x7fbd043bb010>
 
 
 
@@ -486,7 +486,7 @@ Setting topography from file
 
     Active grids: GridTypes.NONE|SECTIONS|TOPOGRAPHY|OCTREE
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fc566745000>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fbcb6c18070>
 
 
 
@@ -1118,8 +1118,10 @@ Plotting the 2D model with and without topography
 
  .. code-block:: none
 
+    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:106: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
+      warnings.warn(
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc55b8eb670>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fbc9ea0bf70>
 
 
 
@@ -1147,14 +1149,14 @@ sphinx_gallery_thumbnail_number = -1
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fc55bf7c670>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fbcac3b7190>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 52.086 seconds)
+   **Total running time of the script:** (0 minutes 53.019 seconds)
 
 
 .. _sphx_glr_download_examples_real_Alesmodel.py:

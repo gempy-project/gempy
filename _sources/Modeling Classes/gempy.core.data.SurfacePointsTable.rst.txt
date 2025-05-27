@@ -25,6 +25,7 @@
       ~SurfacePointsTable.get_surface_points_by_name
       ~SurfacePointsTable.id_to_name
       ~SurfacePointsTable.initialize_empty
+      ~SurfacePointsTable.parse_short_array
    
    
 

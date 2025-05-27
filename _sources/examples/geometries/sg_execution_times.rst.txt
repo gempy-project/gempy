@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**01:28.177** total execution time for 8 files **from examples/geometries**:
+**00:19.911** total execution time for 8 files **from examples/geometries**:
 
 .. container::
 
@@ -32,27 +32,27 @@ Computation times
    * - Example
      - Time
      - Mem (MB)
-   * - :ref:`sphx_glr_examples_geometries_g07_combination.py` (``g07_combination.py``)
-     - 00:32.341
-     - 0.0
    * - :ref:`sphx_glr_examples_geometries_h08_more_examples.py` (``h08_more_examples.py``)
-     - 00:19.625
-     - 0.0
-   * - :ref:`sphx_glr_examples_geometries_c03_recumbent_fold.py` (``c03_recumbent_fold.py``)
-     - 00:15.076
-     - 0.0
-   * - :ref:`sphx_glr_examples_geometries_e05_fault.py` (``e05_fault.py``)
-     - 00:06.190
-     - 0.0
-   * - :ref:`sphx_glr_examples_geometries_d04_pinchout.py` (``d04_pinchout.py``)
-     - 00:04.334
-     - 0.0
-   * - :ref:`sphx_glr_examples_geometries_f06_unconformity.py` (``f06_unconformity.py``)
-     - 00:03.885
+     - 00:19.911
      - 0.0
    * - :ref:`sphx_glr_examples_geometries_a01_horizontal_stratigraphic.py` (``a01_horizontal_stratigraphic.py``)
-     - 00:03.399
+     - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_examples_geometries_b02_fold.py` (``b02_fold.py``)
-     - 00:03.327
+     - 00:00.000
+     - 0.0
+   * - :ref:`sphx_glr_examples_geometries_c03_recumbent_fold.py` (``c03_recumbent_fold.py``)
+     - 00:00.000
+     - 0.0
+   * - :ref:`sphx_glr_examples_geometries_d04_pinchout.py` (``d04_pinchout.py``)
+     - 00:00.000
+     - 0.0
+   * - :ref:`sphx_glr_examples_geometries_e05_fault.py` (``e05_fault.py``)
+     - 00:00.000
+     - 0.0
+   * - :ref:`sphx_glr_examples_geometries_f06_unconformity.py` (``f06_unconformity.py``)
+     - 00:00.000
+     - 0.0
+   * - :ref:`sphx_glr_examples_geometries_g07_combination.py` (``g07_combination.py``)
+     - 00:00.000
      - 0.0

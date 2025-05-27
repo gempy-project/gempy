@@ -182,7 +182,7 @@ Importing gempy
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc5bad3d8d0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff2a27a42e0>
 
 
 
@@ -417,6 +417,8 @@ model as follows:
 
     Setting Backend To: AvailableBackends.numpy
     Chunking done: 166 chunks
+    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
+      return 1.0 / (1.0 + bt.t.exp(x))
     Chunking done: 52 chunks
     Chunking done: 90 chunks
 
@@ -443,7 +445,7 @@ model as follows:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc5bd4b0940>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff2a2c67340>
 
 
 
@@ -467,7 +469,7 @@ model as follows:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fc5bd8ac640>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff2a557d720>
 
 
 
@@ -546,7 +548,7 @@ gravity overlying):
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 59.630 seconds)
+   **Total running time of the script:** (1 minutes 5.027 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch2-Geophysics_ch2_1_gravity.py:

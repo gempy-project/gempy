@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**30:37.616** total execution time for 1 file **from tutorials/ch3-Interpolations**:
+**31:08.546** total execution time for 1 file **from tutorials/ch3-Interpolations**:
 
 .. container::
 
@@ -33,5 +33,5 @@ Computation times
      - Time
      - Mem (MB)
    * - :ref:`sphx_glr_tutorials_ch3-Interpolations_ch3_1_kriging_interpolation_and_simulation.py` (``ch3_1_kriging_interpolation_and_simulation.py``)
-     - 30:37.616
+     - 31:08.546
      - 0.0

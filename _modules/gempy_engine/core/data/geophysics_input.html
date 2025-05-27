@@ -40,16 +40,19 @@
             
   <h1>Source code for gempy_engine.core.data.geophysics_input</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">..backend_tensor</span><span class="w"> </span><span class="kn">import</span> <span class="n">BackendTensor</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.encoders.converters</span><span class="w"> </span><span class="kn">import</span> <span class="n">numpy_array_short_validator</span>
 
 
 <div class="viewcode-block" id="GeophysicsInput">
 <a class="viewcode-back" href="../../../../Modeling%20Classes/gempy.core.data.GeophysicsInput.html#gempy.core.data.GeophysicsInput">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">GeophysicsInput</span><span class="p">():</span>
-    <span class="n">tz</span><span class="p">:</span> <span class="n">BackendTensor</span><span class="o">.</span><span class="n">t</span>
-    <span class="n">densities</span><span class="p">:</span> <span class="n">BackendTensor</span><span class="o">.</span><span class="n">t</span></div>
+<span class="k">class</span><span class="w"> </span><span class="nc">GeophysicsInput</span><span class="p">:</span>
+    <span class="n">tz</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>  <span class="n">numpy_array_short_validator</span><span class="p">]</span>
+    <span class="n">densities</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>  <span class="n">numpy_array_short_validator</span><span class="p">]</span></div>
 
 </pre></div>
 
