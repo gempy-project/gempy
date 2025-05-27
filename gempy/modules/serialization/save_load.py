@@ -169,7 +169,6 @@ def model_to_bytes(model: GeoModel) -> bytes:
     return buf.getvalue()
 
 def _load_model_from_bytes(data: bytes) -> GeoModel:
-    import json, zlib
     from ...core.data.encoders.converters import loading_model_from_binary
 
     buf = io.BytesIO(data)

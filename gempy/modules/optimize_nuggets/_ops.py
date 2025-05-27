@@ -43,7 +43,9 @@ def run_optimization(lr, max_epochs, min_impr, model, nugget, patience, target_c
         if _has_converged(cur_cond, prev_cond, target_cond_num, epoch, min_impr, patience):
             break
         prev_cond = cur_cond
-        
+
+    # Condition number to numpy
+    model.interpolation_options.kernel_options.condition_number = model.interpolation_options.kernel_options.condition_number.detach().numpy()
     return nugget
 
 
