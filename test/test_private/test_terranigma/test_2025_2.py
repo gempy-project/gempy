@@ -1,5 +1,4 @@
 import os
-import pathlib
 import dotenv
 
 import gempy as gp
@@ -13,12 +12,11 @@ dotenv.load_dotenv()
 def test_2025_2():
     rescale = 20
     range_ = 2.4
-    orientation_loc = -286 * rescale
-    # path_to_data = os.getenv("TEST_DATA")
-    path_to_data = r"C:/Users/Benjamink/OneDrive - Mira Geoscience Limited/Documents/projects/implicit modelling/Nutrien/demo_terranigma/from_miguel"
+    orientation_loc = -690 * rescale
+    path_to_data = os.getenv("TEST_DATA")
 
     data = {
-            "a": read_surface_points(f"{path_to_data}/a_cleaned.dat"),
+            "a": read_surface_points(f"{path_to_data}/a.dat"),
             "b": read_surface_points(f"{path_to_data}/b.dat"),
             "c": read_surface_points(f"{path_to_data}/c.dat"),
             "d": read_surface_points(f"{path_to_data}/d.dat"),
@@ -31,7 +29,7 @@ def test_2025_2():
         k: SurfacePointsTable.from_arrays(
             x=v.data["X"],
             y=v.data["Y"],
-            z=rescale * v.data["Z"],
+            z=rescale * v.data["Z"],  # rescaling the z values
             names=[k] * len(v.data),
             nugget=v.data["nugget"]
         )
@@ -95,7 +93,7 @@ def test_2025_2():
 
     geo_model.interpolation_options.evaluation_options.number_octree_levels_surface = 4
     geo_model.interpolation_options.kernel_options.range = range_
-
+    gp.modify_surface_points(geo_model, nugget=1e-5)
     gp.add_orientations(
         geo_model=geo_model,
         x=[525825],
