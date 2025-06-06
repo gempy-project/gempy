@@ -10,6 +10,7 @@ from .gempy_engine_config import GemPyEngineConfig
 from .structural_group import FaultsRelationSpecialCase
 from ..color_generator import ColorsGenerator
 
+from gempy_engine.core.data.interpolation_input import InterpolationInput
 from gempy_engine.core.data.stack_relation_type import StackRelationType
 from gempy_engine.core.data.options import InterpolationOptions
 from gempy_engine.core.data.solutions import Solutions
@@ -26,6 +27,6 @@ __all__ = [
     'Grid', 'Topography',
     'ImporterHelper', 'GemPyEngineConfig', 'FaultsRelationSpecialCase', 'ColorsGenerator',
     # From gempy engine
-    'StackRelationType', 'InterpolationOptions', 'Solutions', 'RawArraysSolution', 'GlobalAnisotropy', 'Transform',
+    'InterpolationInput','StackRelationType', 'InterpolationOptions', 'Solutions', 'RawArraysSolution', 'GlobalAnisotropy', 'Transform',
     'FaultsData', 'FiniteFaultData', 'AvailableBackends', 'GeophysicsInput'
 ]

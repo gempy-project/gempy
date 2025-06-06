@@ -2,9 +2,9 @@
 
 import numpy as np
 
-from gempy.core.data import GeoModel, StructuralFrame, SurfacePointsTable, StructuralElement, OrientationsTable
-from gempy.core.data.orientations import DEFAULT_ORI_NUGGET
-from gempy.core.data.surface_points import DEFAULT_SP_NUGGET
+from ...core.data import GeoModel, StructuralFrame, SurfacePointsTable, StructuralElement, OrientationsTable
+from ...core.data.orientations import DEFAULT_ORI_NUGGET
+from ...core.data.surface_points import DEFAULT_SP_NUGGET
 
 
 def add_surface_points(

@@ -4,6 +4,7 @@ import pytest
 import gempy as gp
 import gempy_viewer as gpv
 from gempy.core.data.enumerators import ExampleModel
+from test.verify_helper import verify_model_serialization
 from gempy_viewer.optional_dependencies import require_pyvista
 from test.conftest import TEST_SPEED, TestSpeed
 
@@ -12,7 +13,6 @@ radius = np.array([500, 100, 200]) / 2
 k = np.array([1, 1, 1]) * 1
 
 PLOT = False
-# TODO: Add the approval test check
 
 
 @pytest.mark.skipif(TEST_SPEED.value < TestSpeed.SECONDS.value, reason="Global test speed below this test value.")
@@ -32,13 +32,11 @@ def test_finite_fault_scalar_field_on_fault():
         radius=scaled_radius,
         max_slope=k  # * This controls the speed of the transition
     )
-
     transform = gp.data.Transform(
         position=np.array([0, 0, 0]),
         rotation=np.array([0, 60, 0]),
         scale=np.ones(3)
     )
-
     faults_data = gp.data.FaultsData(
         fault_values_everywhere=np.zeros(0),
         fault_values_on_sp=np.zeros(0),
@@ -53,10 +51,16 @@ def test_finite_fault_scalar_field_on_fault():
     )
 
     geo_model.structural_frame.structural_groups[0].faults_input_data = faults_data
+
+    verify_model_serialization(
+        model=geo_model,
+        verify_moment="after",
+        file_name=f"verify/{geo_model.meta.name}"
+    )
+    
     gp.compute_model(geo_model)
 
     # TODO: Try to do this afterwards
-    # scalar_fault = scalar_funtion(regular_grid.values)
 
     if plot_pyvista := True:
         plot3d = gpv.plot_3d(

@@ -11,7 +11,10 @@ from ..optional_dependencies import require_subsurface
 
 def set_section_grid(grid: Grid, section_dict: dict):
     if grid.sections is None:
-        grid.sections = Sections(regular_grid=grid.regular_grid, section_dict=section_dict)
+        grid.sections = Sections(
+            z_ext=grid.regular_grid.extent[4:],
+            section_dict=section_dict
+        )
     else:
         grid.sections.set_sections(section_dict,
                                    regular_grid=grid.regular_grid)
@@ -54,9 +57,9 @@ def set_topography_from_random(grid: Grid, fractal_dimension: float = 2.0, d_z: 
         dz=d_z,
         fractal_dimension=fractal_dimension
     )
-    
+
     grid.topography = Topography(
-        regular_grid=grid.regular_grid,
+        _regular_grid=grid.regular_grid,
         values_2d=random_topography
     )
 
@@ -70,7 +73,7 @@ def set_topography_from_subsurface_structured_grid(grid: Grid, struct: "subsurfa
     return grid.topography
 
 
-def set_topography_from_arrays(grid: Grid,  xyz_vertices: np.ndarray):
+def set_topography_from_arrays(grid: Grid, xyz_vertices: np.ndarray):
     grid.topography = Topography.from_unstructured_mesh(grid.regular_grid, xyz_vertices)
     set_active_grid(grid, [Grid.GridTypes.TOPOGRAPHY])
     return grid.topography
@@ -86,9 +89,9 @@ def set_topography_from_file(grid: Grid, filepath: str, crop_to_extent: Union[Se
 
 
 def set_custom_grid(grid: Grid, xyz_coord: np.ndarray):
-    custom_grid = CustomGrid(xyx_coords=xyz_coord)
+    custom_grid = CustomGrid(values=xyz_coord)
     grid.custom_grid = custom_grid
-    
+
     set_active_grid(grid, [Grid.GridTypes.CUSTOM])
     return grid.custom_grid
 

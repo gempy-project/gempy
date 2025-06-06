@@ -3,12 +3,15 @@
 import numpy as np
 import warnings
 from dataclasses import dataclass
-from pydantic import model_validator, computed_field
-from typing import Generator
+from pydantic import model_validator, computed_field, ValidationError, Field
+from pydantic.functional_validators import ModelWrapValidatorHandler
+from typing import Generator, Union
 
 from gempy_engine.core.data.input_data_descriptor import InputDataDescriptor
 from gempy_engine.core.data.kernel_classes.faults import FaultsData
 from gempy_engine.core.data.stack_relation_type import StackRelationType
+
+from .encoders.binary_encoder import deserialize_input_data_tables
 from .encoders.converters import loading_model_context
 from .orientations import OrientationsTable
 from .structural_element import StructuralElement
@@ -29,93 +32,19 @@ class StructuralFrame:
     """
 
     structural_groups: list[StructuralGroup]
-    color_generator: ColorsGenerator
+    color_generator: ColorsGenerator =  Field(default_factory=ColorsGenerator)
+    basement_color: str = None
     # ? Should I create some sort of structural options class? For example, the masking descriptor and faults relations pointer
     is_dirty: bool = True
 
-    @model_validator(mode="after")
-    def deserialize_surface_points(values: "StructuralFrame"):
-        # Access the context variable to get injected data
-        context = loading_model_context.get()
-
-        if 'surface_points_binary' not in context:
-            return values
-
-        # Check if we have a binary payload to digest
-        binary_array = context['surface_points_binary']
-        if not isinstance(binary_array, np.ndarray):
-            return values
-        if binary_array.shape[0] < 1:
-            return values
-        
-        values.surface_points = SurfacePointsTable(
-            data=binary_array,
-            name_id_map=values.surface_points_copy.name_id_map
-        )
-        
-        return values
-    
-    @model_validator(mode="after")
-    def deserialize_orientations(values: "StructuralFrame"):
-        # Access the context variable to get injected data
-        context = loading_model_context.get()
-        if 'orientations_binary' not in context:
-            return values
-        
-        # Check if we have a binary payload to digest
-        binary_array = context['orientations_binary']
-        if not isinstance(binary_array, np.ndarray):
-            return values
-        
-        values.orientations = OrientationsTable(
-            data=binary_array,
-            name_id_map=values.orientations_copy.name_id_map
-        )
-        
-        return values
-            
-
-    @computed_field
-    @property
-    def serialize_sp(self) -> int:
-        return int(hashlib.md5(self.surface_points_copy.data.tobytes()).hexdigest()[:8], 16)
-
-    @computed_field
-    @property
-    def serialize_orientations(self) -> int:
-        return int(hashlib.md5(self.orientations_copy.data.tobytes()).hexdigest()[:8], 16)
-
+    # region Constructor
+    # 
     def __init__(self, structural_groups: list[StructuralGroup], color_gen: ColorsGenerator):
         self.structural_groups = structural_groups  # ? This maybe could be optional
         self.color_generator = color_gen
-
-    def get_element_by_name(self, element_name: str) -> StructuralElement:
-        elements: Generator = (group.get_element_by_name(element_name) for group in self.structural_groups)
-        valid_elements: Generator = (element for element in elements if element is not None)
-        element = next(valid_elements, None)
-        if element is None:
-            raise ValueError(f"Element with name {element_name} not found in the structural frame.")
-        return element
-
-    def get_group_by_name(self, group_name: str) -> StructuralGroup:
-        groups: Generator = (group for group in self.structural_groups if group.name == group_name)
-        group = next(groups, None)
-        if group is None:
-            raise ValueError(f"Group with name {group_name} not found in the structural frame.")
-        return group
-
-    def get_group_by_element(self, element: StructuralElement) -> StructuralGroup:
-        groups: Generator = (group for group in self.structural_groups if element in group.elements)
-        group = next(groups, None)
-        if group is None:
-            raise ValueError(f"Element {element.name} not found in any group in the structural frame.")
-        return group
-
-    def append_group(self, group: StructuralGroup):
-        self.structural_groups.append(group)
-
-    def insert_group(self, index: int, group: StructuralGroup):
-        self.structural_groups.insert(index, group)
+        
+    def __post_init__(self):
+        pass
 
     @classmethod
     def from_data_tables(cls, surface_points: SurfacePointsTable, orientations: OrientationsTable):
@@ -190,6 +119,37 @@ class StructuralFrame:
 
         return structural_frame
 
+    # endregion
+
+    # region Methods
+    def get_element_by_name(self, element_name: str) -> StructuralElement:
+        elements: Generator = (group.get_element_by_name(element_name) for group in self.structural_groups)
+        valid_elements: Generator = (element for element in elements if element is not None)
+        element = next(valid_elements, None)
+        if element is None:
+            raise ValueError(f"Element with name {element_name} not found in the structural frame.")
+        return element
+
+    def get_group_by_name(self, group_name: str) -> StructuralGroup:
+        groups: Generator = (group for group in self.structural_groups if group.name == group_name)
+        group = next(groups, None)
+        if group is None:
+            raise ValueError(f"Group with name {group_name} not found in the structural frame.")
+        return group
+
+    def get_group_by_element(self, element: StructuralElement) -> StructuralGroup:
+        groups: Generator = (group for group in self.structural_groups if element in group.elements)
+        group = next(groups, None)
+        if group is None:
+            raise ValueError(f"Element {element.name} not found in any group in the structural frame.")
+        return group
+
+    def append_group(self, group: StructuralGroup):
+        self.structural_groups.append(group)
+
+    def insert_group(self, index: int, group: StructuralGroup):
+        self.structural_groups.insert(index, group)
+
     def __repr__(self):
         structural_groups_repr = ',\n'.join([repr(g) for g in self.structural_groups])
         fault_relations_str = np.array2string(self.fault_relations, precision=2, separator=', ', suppress_small=True) if self.fault_relations is not None else 'None'
@@ -230,6 +190,9 @@ class StructuralFrame:
         """
         return html
 
+    # endregion
+
+    # region Properties
     @property
     def structural_elements(self) -> list[StructuralElement]:
         """Returns a list of all structural elements across the structural groups."""
@@ -244,22 +207,28 @@ class StructuralFrame:
         """Returns the total number of elements in the structural frame."""
         return len(self.structural_elements)
 
-    basement_color: str = None
 
     @property
     def _basement_element(self) -> StructuralElement:
-        # Check if the basement color is already defined
+        """Returns the basement structural element with a unique color."""
+
+        def _get_unique_basement_color(color_generator: ColorsGenerator, used_colors: list[str]) -> str:
+            color = next(color_generator)
+            if color in used_colors:
+                return _get_unique_basement_color(color_generator, used_colors)
+            return color
+
         elements = []
         for group in self.structural_groups:
             elements.extend(group.elements)
-        basement_color_in_elements = self.basement_color in [element.color for element in elements]
 
-        if self.basement_color is None or basement_color_in_elements:
-            self.basement_color = self.color_generator.up_next()
+        used_colors = [element.color for element in elements]
 
-        if basement_color_in_elements:
-            warnings.warn(f"The basement color was already used in the structural elements."
-                          f"Changing the basement color to {self.basement_color}.")
+        if self.basement_color is None or self.basement_color in used_colors:
+            self.basement_color = _get_unique_basement_color(
+                color_generator=self.color_generator, 
+                used_colors=used_colors
+            )
 
         basement = StructuralElement(
             name="basement",
@@ -432,6 +401,10 @@ class StructuralFrame:
         """Distributes the modified orientations back to the structural elements."""
         for element in self.structural_elements:
             element.orientations.data = modified_orientations.get_orientations_by_id(element.id).data
+            
+    @property
+    def input_tables_binary(self):
+        return self.surface_points_copy.data.tobytes() + self.orientations_copy.data.tobytes()
 
     @property
     def element_id_name_map(self) -> dict[int, str]:
@@ -497,6 +470,45 @@ class StructuralFrame:
         # TODO: The columns have to be ['element, 'group', 'color']
 
         raise NotImplementedError
+
+    # endregion
+
+    # endregion
+    # region Pydantic
+
+    @model_validator(mode="wrap")
+    @classmethod
+    def deserialize_binary(cls, data: Union["StructuralFrame", dict], constructor: ModelWrapValidatorHandler["StructuralFrame"]) -> "StructuralFrame":
+        match data:
+            case StructuralFrame():
+                return data
+            case dict():
+                instance: StructuralFrame = constructor(data)
+                metadata = data.get('binary_meta_data', {})
+                context = loading_model_context.get()
+
+                if 'input_binary' not in context:
+                    return instance
+
+                instance.orientations, instance.surface_points = deserialize_input_data_tables(
+                    binary_array=context['input_binary'],
+                    name_id_map=instance.surface_points_copy.name_id_map,
+                    sp_binary_length_=metadata["sp_binary_length"],
+                    ori_binary_length_=metadata["ori_binary_length"]
+                )
+
+                return instance
+            case _:
+                raise ValidationError(f"Invalid data type for StructuralFrame: {type(data)}")
+
+        # Access the context variable to get injected data
+
+    @computed_field
+    def binary_meta_data(self) -> dict:
+        return {
+                'sp_binary_length': len(self.surface_points_copy.data.tobytes()),
+                'ori_binary_length': len(self.orientations_copy.data.tobytes()) ,
+        }
 
     # endregion
 

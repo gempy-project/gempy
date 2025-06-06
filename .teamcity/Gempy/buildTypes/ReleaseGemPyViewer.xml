@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<build-type xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" uuid="f46e0551-c5cf-4249-97e1-38bb3298a1b6" xsi:noNamespaceSchemaLocation="https://www.jetbrains.com/teamcity/schemas/2025.3/project-config.xsd">
+  <name>Release GemPy Viewer</name>
+  <description />
+  <settings ref="ReleasePythonPackage">
+    <parameters>
+      <param name="env.org/repo" value="gempy-project/gempy_viewer" />
+    </parameters>
+    <vcs-settings>
+      <vcs-entry-ref root-id="GempyEngine_HttpsGithubComGempyProjectGempyViewerRefsHeadsMain" />
+    </vcs-settings>
+    <requirements>
+      <exists id="RQ_8" name="env.WSLENV" />
+    </requirements>
+  </settings>
+</build-type>
+

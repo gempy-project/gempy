@@ -1,3 +1,5 @@
+from typing import Annotated
+
 from contextlib import contextmanager
 
 from contextvars import ContextVar
@@ -15,6 +17,9 @@ def convert_to_arrays(values, keys):
 
 def validate_numpy_array(v):
     return np.array(v) if v is not None else None
+
+
+short_array_type = Annotated[np.ndarray, (BeforeValidator(lambda v: np.array(v) if v is not None else None))]
 
 
 def instantiate_if_necessary(data: dict, key: str, type: type) -> None:
@@ -47,10 +52,10 @@ numpy_array_short_validator = BeforeValidator(validate_numpy_array)
 loading_model_context = ContextVar('loading_model_context', default={})
 
 @contextmanager
-def loading_model_injection(surface_points_binary: np.ndarray, orientations_binary: np.ndarray):
+def loading_model_from_binary(input_binary: bytes, grid_binary: bytes):
     token = loading_model_context.set({
-            'surface_points_binary': surface_points_binary,
-            'orientations_binary'  : orientations_binary
+            'input_binary': input_binary,
+            'grid_binary': grid_binary
     })
     try:
         yield

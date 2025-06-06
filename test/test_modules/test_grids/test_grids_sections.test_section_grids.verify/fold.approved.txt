@@ -1,0 +1,218 @@
+{
+    "meta": {
+        "name": "fold",
+        "creation_date": "<DATE_IGNORED>",
+        "last_modification_date": null,
+        "owner": null
+    },
+    "structural_frame": {
+        "structural_groups": [
+            {
+                "name": "Strat_Series",
+                "elements": [
+                    {
+                        "name": "rock2",
+                        "is_active": true,
+                        "_color": "#9f0052",
+                        "surface_points": {
+                            "name_id_map": {
+                                "rock1": 67239155,
+                                "rock2": 117776925
+                            },
+                            "_model_transform": null
+                        },
+                        "orientations": {
+                            "name_id_map": {
+                                "rock1": 67239155,
+                                "rock2": 117776925
+                            },
+                            "_model_transform": null
+                        },
+                        "scalar_field_at_interface": null,
+                        "_id": 117776925
+                    },
+                    {
+                        "name": "rock1",
+                        "is_active": true,
+                        "_color": "#015482",
+                        "surface_points": {
+                            "name_id_map": {
+                                "rock1": 67239155,
+                                "rock2": 117776925
+                            },
+                            "_model_transform": null
+                        },
+                        "orientations": {
+                            "name_id_map": {
+                                "rock1": 67239155,
+                                "rock2": 117776925
+                            },
+                            "_model_transform": null
+                        },
+                        "scalar_field_at_interface": null,
+                        "_id": 67239155
+                    }
+                ],
+                "structural_relation": 1,
+                "fault_relations": null,
+                "faults_input_data": null,
+                "solution": null
+            }
+        ],
+        "color_generator": {
+            "_index": 3
+        },
+        "basement_color": "#ffbe00",
+        "is_dirty": true,
+        "binary_meta_data": {
+            "sp_binary_length": 1296,
+            "ori_binary_length": 120
+        }
+    },
+    "grid": {
+        "_octree_grid": {
+            "resolution": [
+                4,
+                4,
+                4
+            ],
+            "extent": [
+                0.0,
+                1000.0,
+                0.0,
+                1000.0,
+                0.0,
+                1000.0
+            ],
+            "_transform": null
+        },
+        "_dense_grid": null,
+        "_custom_grid": null,
+        "_topography": {
+            "_regular_grid": {
+                "resolution": [
+                    4,
+                    4,
+                    4
+                ],
+                "extent": [
+                    0.0,
+                    1000.0,
+                    0.0,
+                    1000.0,
+                    0.0,
+                    1000.0
+                ],
+                "_transform": null
+            },
+            "source": null,
+            "values": [],
+            "resolution": [
+                60,
+                60
+            ],
+            "raster_shape": [],
+            "_mask_topo": null,
+            "_x": null,
+            "_y": null
+        },
+        "_sections": {
+            "z_ext": [
+                0.0,
+                1000.0
+            ],
+            "section_dict": {
+                "section_SW-NE": [
+                    [
+                        250.0,
+                        250.0
+                    ],
+                    [
+                        1750.0,
+                        1750.0
+                    ],
+                    [
+                        100,
+                        100
+                    ]
+                ],
+                "section_NW-SE": [
+                    [
+                        250.0,
+                        1750.0
+                    ],
+                    [
+                        1750.0,
+                        250.0
+                    ],
+                    [
+                        100,
+                        100
+                    ]
+                ]
+            }
+        },
+        "_centered_grid": null,
+        "_transform": null,
+        "_octree_levels": -1,
+        "binary_meta_data": {
+            "custom_grid_binary_length": 0,
+            "topography_binary_length": 86400
+        },
+        "active_grids": 1049
+    },
+    "geophysics_input": null,
+    "input_transform": {
+        "position": [
+            -500.0,
+            -500.0,
+            -510.0
+        ],
+        "rotation": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "scale": [
+            0.0005,
+            0.0005,
+            0.0005
+        ],
+        "_is_default_transform": false,
+        "_cached_pivot": null
+    },
+    "_interpolation_options": {
+        "kernel_options": {
+            "range": 1.7,
+            "c_o": 10.0,
+            "uni_degree": 1,
+            "i_res": 4.0,
+            "gi_res": 2.0,
+            "number_dimensions": 3,
+            "kernel_function": "cubic",
+            "kernel_solver": 1,
+            "compute_condition_number": false,
+            "optimizing_condition_number": false,
+            "condition_number": null
+        },
+        "evaluation_options": {
+            "_number_octree_levels": 2,
+            "_number_octree_levels_surface": 4,
+            "octree_curvature_threshold": -1.0,
+            "octree_error_threshold": 1.0,
+            "octree_min_level": 2,
+            "mesh_extraction": true,
+            "mesh_extraction_masking_options": 3,
+            "mesh_extraction_fancy": true,
+            "evaluation_chunk_size": 500000,
+            "compute_scalar_gradient": false,
+            "verbose": false
+        },
+        "debug": true,
+        "cache_mode": 3,
+        "cache_model_name": "fold",
+        "block_solutions_type": 1,
+        "sigmoid_slope": 5000000,
+        "debug_water_tight": false
+    }
+}

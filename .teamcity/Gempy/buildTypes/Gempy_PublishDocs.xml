@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<build-type xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" uuid="ce84f581-c0f0-4b63-97d5-5343313670e8" xsi:noNamespaceSchemaLocation="https://www.jetbrains.com/teamcity/schemas/2025.3/project-config.xsd">
+  <name>Publish Docs</name>
+  <description />
+  <settings>
+    <disabled-settings>
+      <setting-ref ref="Push" />
+    </disabled-settings>
+    <build-runners>
+      <runner id="Publish_GemPy_Docs" name="Publish GemPy Docs" type="simpleRunner">
+        <parameters>
+          <param name="script.content"><![CDATA[#!/usr/bin/env bash
+set -euo pipefail
+
+# 0. Sanity check
+echo "Branch:" $(git rev-parse --abbrev-ref HEAD)   # should be gh-pages
+ls -la                                           # should list docs.zip
+
+# 1. Remove *tracked* files but leave .git/
+git rm -rf .                                     # removes tracked files
+# remove untracked (including dirs), but leave docs.zip intact
+git clean -xfd -e docs_site.zip
+
+# 2. Unzip new HTML over the top
+unzip docs_site.zip
+# 3. Move the rendered HTML into the root
+mv docs/build/html/* .                                 # move all html files & folders
+# (if you have hidden files under html, you can optionally do)
+# mv build/html/.* . 2>/dev/null || true
+
+# 4. Cleanup build artifacts before commit
+rm -rf build docs_site.zip
+
+# 3. Prevent Jekyll from ignoring files
+touch .nojekyll
+
+# after mv build/html/* . and before git add
+echo "docs.gempy.org" > CNAME
+
+# 4. Commit & push
+git add -A
+git commit -m "Publish docs from build %build.counter%"
+git push origin gh-pages]]></param>
+          <param name="teamcity.step.mode" value="default" />
+          <param name="use.custom.script" value="true" />
+        </parameters>
+      </runner>
+      <runner id="Push" name="Push" type="simpleRunner">
+        <parameters>
+          <param name="script.content"><![CDATA[# 5. Commit & force-push
+git add -A
+git commit -m "Update docs from build %teamcity.build.number%"
+git push --force origin gh-pages]]></param>
+          <param name="teamcity.step.mode" value="default" />
+          <param name="use.custom.script" value="true" />
+        </parameters>
+      </runner>
+    </build-runners>
+    <vcs-settings>
+      <vcs-entry-ref root-id="Gempy_HttpsGithubComGempyProjectGempyRefsHeadsMain2" />
+    </vcs-settings>
+    <requirements>
+      <exists id="RQ_5" name="env.WSLENV" />
+    </requirements>
+    <build-extensions>
+      <extension id="perfmon" type="perfmon">
+        <parameters>
+          <param name="teamcity.perfmon.feature.enabled" value="true" />
+        </parameters>
+      </extension>
+    </build-extensions>
+    <artifact-dependencies>
+      <dependency id="ARTIFACT_DEPENDENCY_1" sourceBuildTypeId="Gempy_BuildDocs" cleanDestination="false">
+        <revisionRule name="buildTag" revision="Published.tcbuildtag" />
+        <artifact sourcePath="docs/docs_site.zip =&gt; ." />
+      </dependency>
+    </artifact-dependencies>
+  </settings>
+</build-type>
+

@@ -1,3 +1,5 @@
+from typing import Literal
+
 import subprocess
 
 import numpy as np
@@ -8,6 +10,8 @@ from approvaltests import verify, Options
 from approvaltests.namer import NamerFactory
 from approvaltests.reporters import GenericDiffReporter, GenericDiffReporterConfig
 
+from gempy.core.data import GeoModel
+from gempy.modules.serialization.save_load import _load_model_from_bytes, model_to_bytes
 
 class WSLWindowsDiffReporter(GenericDiffReporter):
     def get_command(self, received, approved):
@@ -95,3 +99,41 @@ class JsonSerializer:
     def write(self, received, received_path: str) -> None:
         with open(received_path, "w", encoding="utf-8") as f:
             json.dump(received, f, indent=2, ensure_ascii=False)
+
+
+def verify_model_serialization(model: GeoModel, verify_moment: Literal["before", "after"], file_name: str):
+    """
+    Verifies the serialization and deserialization process of a GeoModel instance
+    by ensuring the serialized JSON and binary data match during either the
+    initial or post-process phase, based on the specified verification moment.
+
+    Args:
+        model: The GeoModel instance to be verified.
+        verify_moment: A literal value specifying whether to verify the model
+            before or after the deserialization process. Accepts "before"
+            or "after" as valid inputs.
+        file_name: The filename to associate with the verification process for
+            logging or output purposes.
+
+    Raises:
+        ValueError: If `verify_moment` is not set to "before" or "after".
+    """
+    binary_file = model_to_bytes(model)
+
+    original_model = model
+    original_model.meta.creation_date = "<DATE_IGNORED>"
+
+    if verify_moment == "before":
+        verify_json(
+            item=original_model.model_dump_json(by_alias=True, indent=4),
+            name=file_name
+        )
+    elif verify_moment == "after":
+        model_deserialized = _load_model_from_bytes(binary_file)
+        model_deserialized.meta.creation_date = "<DATE_IGNORED>"
+        verify_json(
+            item=model_deserialized.model_dump_json(by_alias=True, indent=4),
+            name=file_name
+        )
+    else:
+        raise ValueError("Invalid model parameter")

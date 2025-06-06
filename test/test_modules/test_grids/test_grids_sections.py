@@ -4,6 +4,7 @@ import pytest
 import gempy as gp
 import gempy_viewer as gpv
 from gempy.core.data.enumerators import ExampleModel
+from test.verify_helper import verify_model_serialization
 
 from test.conftest import TEST_SPEED, TestSpeed
 
@@ -23,8 +24,8 @@ def test_section_grids():
     gp.set_section_grid(
         grid=geo_model.grid,
         section_dict={
-            'section_SW-NE': ([250, 250], [1750, 1750], [100, 100]),
-            'section_NW-SE': ([250, 1750], [1750, 250], [100, 100])
+            'section_SW-NE': ((250., 250.), (1750., 1750.), (100, 100)),
+            'section_NW-SE': ((250., 1750.), (1750., 250.), (100, 100))
         }
     )
 
@@ -35,7 +36,13 @@ def test_section_grids():
         topography_resolution=np.array([60, 60])
     )
 
-    gp.compute_model(geo_model)
+    verify_model_serialization(
+        model=geo_model,
+        verify_moment="after",
+        file_name=f"verify/{geo_model.meta.name}"
+    )
+    
+    gp.compute_model(geo_model, validate_serialization=True)
     gpv.plot_2d(
         model=geo_model,
         section_names=['section_SW-NE', 'section_NW-SE', 'topography'],
@@ -58,7 +65,7 @@ def test_section_grids():
 
 
 @pytest.mark.skipif(TEST_SPEED.value < TestSpeed.MINUTES.value, reason="Global test speed below this test value.")
-def test_topogrphy_II():
+def test_topography_II():
     geo_model: gp.data.GeoModel = gp.generate_example_model(
         example_model=ExampleModel.TWO_AND_A_HALF_D,
         compute_model=False
@@ -71,7 +78,12 @@ def test_topogrphy_II():
         show_lith=False,
         image=True
     )
-    
+
+    verify_model_serialization(
+        model=geo_model,
+        verify_moment="after",
+        file_name=f"verify/{geo_model.meta.name}"
+    )
     gp.compute_model(geo_model)
 
     gpv.plot_2d(geo_model, show_boundaries=False, section_names=['topography'])

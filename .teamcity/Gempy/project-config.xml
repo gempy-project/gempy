@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" uuid="1f17aa59-a77e-40c1-9d79-271ed47736fb" xsi:noNamespaceSchemaLocation="https://www.jetbrains.com/teamcity/schemas/2025.3/project-config.xsd">
+  <name>Gempy</name>
+  <parameters>
+    <param name="foo" value="" />
+  </parameters>
+  <project-extensions>
+    <extension id="PROJECT_EXT_11" type="UntrustedBuildsSettings">
+      <parameters>
+        <param name="defaultAction" value="approve" />
+        <param name="enableLog" value="false" />
+        <param name="rules" value="user:leguark" />
+      </parameters>
+    </extension>
+    <extension id="PROJECT_EXT_17" type="versionedSettings">
+      <parameters>
+        <param name="buildSettings" value="ALWAYS_USE_CURRENT" />
+        <param name="credentialsStorageType" value="credentialsJSON" />
+        <param name="enabled" value="true" />
+        <param name="ignoreChangesInDependenciesAndVcsSettings" value="false" />
+        <param name="rootId" value="Gempy_HttpsGithubComGempyProjectGempyRefsHeadsMain" />
+        <param name="showChanges" value="false" />
+      </parameters>
+    </extension>
+    <extension id="PROJECT_EXT_9" type="IssueTracker">
+      <parameters>
+        <param name="authType" value="anonymous" />
+        <param name="name" value="gempy-project/gempy_engine" />
+        <param name="pattern" value="#(\d+)" />
+        <param name="repository" value="https://github.com/gempy-project/gempy_engine" />
+        <param name="secure:accessToken" value="" />
+        <param name="secure:password" value="" />
+        <param name="tokenId" value="" />
+        <param name="type" value="GithubIssues" />
+        <param name="username" value="" />
+      </parameters>
+    </extension>
+  </project-extensions>
+</project>
+

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<build-type xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" uuid="5b8c088b-270d-4839-ae26-d0f4482dd1a9" xsi:noNamespaceSchemaLocation="https://www.jetbrains.com/teamcity/schemas/2025.3/project-config.xsd">
+  <name>Release GemPy Engine</name>
+  <description />
+  <settings ref="ReleasePythonPackage">
+    <parameters>
+      <param name="env.org/repo" value="gempy-project/gempy_engine" />
+    </parameters>
+    <vcs-settings>
+      <vcs-entry-ref root-id="GempyEngine_HttpsGithubComGempyProjectGempyEngineRefsHeadsMain" />
+    </vcs-settings>
+    <requirements>
+      <exists id="RQ_9" name="env.WSLENV" />
+    </requirements>
+  </settings>
+</build-type>
+

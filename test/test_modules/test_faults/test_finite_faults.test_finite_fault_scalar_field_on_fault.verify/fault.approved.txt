@@ -1,0 +1,224 @@
+{
+    "meta": {
+        "name": "fault",
+        "creation_date": "<DATE_IGNORED>",
+        "last_modification_date": null,
+        "owner": null
+    },
+    "structural_frame": {
+        "structural_groups": [
+            {
+                "name": "Fault_Series",
+                "elements": [
+                    {
+                        "name": "fault",
+                        "is_active": true,
+                        "_color": "#527682",
+                        "surface_points": {
+                            "name_id_map": {
+                                "fault": 65970106,
+                                "rock1": 167239155,
+                                "rock2": 217776925
+                            },
+                            "_model_transform": null
+                        },
+                        "orientations": {
+                            "name_id_map": {
+                                "fault": 65970106,
+                                "rock1": 167239155,
+                                "rock2": 217776925
+                            },
+                            "_model_transform": null
+                        },
+                        "scalar_field_at_interface": null,
+                        "_id": 65970106
+                    }
+                ],
+                "structural_relation": 3,
+                "fault_relations": 1,
+                "faults_input_data": {
+                    "fault_values_everywhere": [],
+                    "fault_values_on_sp": [],
+                    "fault_values_ref": [],
+                    "fault_values_rest": [],
+                    "thickness": null,
+                    "finite_fault_data": {
+                        "implicit_function_transform": {
+                            "position": [
+                                0,
+                                0,
+                                0
+                            ],
+                            "rotation": [
+                                0,
+                                60,
+                                0
+                            ],
+                            "scale": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "_is_default_transform": false,
+                            "_cached_pivot": null
+                        },
+                        "pivot": [
+                            0.0,
+                            0.0,
+                            0.0
+                        ]
+                    }
+                },
+                "solution": null
+            },
+            {
+                "name": "Strat_Series",
+                "elements": [
+                    {
+                        "name": "rock2",
+                        "is_active": true,
+                        "_color": "#ffbe00",
+                        "surface_points": {
+                            "name_id_map": {
+                                "fault": 65970106,
+                                "rock1": 167239155,
+                                "rock2": 217776925
+                            },
+                            "_model_transform": null
+                        },
+                        "orientations": {
+                            "name_id_map": {
+                                "fault": 65970106,
+                                "rock1": 167239155,
+                                "rock2": 217776925
+                            },
+                            "_model_transform": null
+                        },
+                        "scalar_field_at_interface": null,
+                        "_id": 217776925
+                    },
+                    {
+                        "name": "rock1",
+                        "is_active": true,
+                        "_color": "#9f0052",
+                        "surface_points": {
+                            "name_id_map": {
+                                "fault": 65970106,
+                                "rock1": 167239155,
+                                "rock2": 217776925
+                            },
+                            "_model_transform": null
+                        },
+                        "orientations": {
+                            "name_id_map": {
+                                "fault": 65970106,
+                                "rock1": 167239155,
+                                "rock2": 217776925
+                            },
+                            "_model_transform": null
+                        },
+                        "scalar_field_at_interface": null,
+                        "_id": 167239155
+                    }
+                ],
+                "structural_relation": 1,
+                "fault_relations": 3,
+                "faults_input_data": null,
+                "solution": null
+            }
+        ],
+        "color_generator": {
+            "_index": 4
+        },
+        "basement_color": "#728f02",
+        "is_dirty": true,
+        "binary_meta_data": {
+            "sp_binary_length": 792,
+            "ori_binary_length": 300
+        }
+    },
+    "grid": {
+        "_octree_grid": {
+            "resolution": [
+                64,
+                64,
+                64
+            ],
+            "extent": [
+                0.0,
+                1000.0,
+                0.0,
+                1000.0,
+                0.0,
+                1000.0
+            ],
+            "_transform": null
+        },
+        "_dense_grid": null,
+        "_custom_grid": null,
+        "_topography": null,
+        "_sections": null,
+        "_centered_grid": null,
+        "_transform": null,
+        "_octree_levels": -1,
+        "binary_meta_data": {
+            "custom_grid_binary_length": 0,
+            "topography_binary_length": 0
+        },
+        "active_grids": 1025
+    },
+    "geophysics_input": null,
+    "input_transform": {
+        "position": [
+            -500.0,
+            -500.0,
+            -500.0
+        ],
+        "rotation": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "scale": [
+            0.0005,
+            0.0005,
+            0.0005
+        ],
+        "_is_default_transform": false,
+        "_cached_pivot": null
+    },
+    "_interpolation_options": {
+        "kernel_options": {
+            "range": 1.7,
+            "c_o": 10.0,
+            "uni_degree": 1,
+            "i_res": 4.0,
+            "gi_res": 2.0,
+            "number_dimensions": 3,
+            "kernel_function": "cubic",
+            "kernel_solver": 1,
+            "compute_condition_number": false,
+            "optimizing_condition_number": false,
+            "condition_number": null
+        },
+        "evaluation_options": {
+            "_number_octree_levels": 6,
+            "_number_octree_levels_surface": 4,
+            "octree_curvature_threshold": -1.0,
+            "octree_error_threshold": 1.0,
+            "octree_min_level": 2,
+            "mesh_extraction": true,
+            "mesh_extraction_masking_options": 3,
+            "mesh_extraction_fancy": true,
+            "evaluation_chunk_size": 500000,
+            "compute_scalar_gradient": false,
+            "verbose": false
+        },
+        "debug": true,
+        "cache_mode": 3,
+        "cache_model_name": "fault",
+        "block_solutions_type": 1,
+        "sigmoid_slope": 5000000,
+        "debug_water_tight": false
+    }
+}
