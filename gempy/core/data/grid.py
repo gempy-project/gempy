@@ -27,8 +27,8 @@ class Grid:
 
     # ? What should we do with the extent?
 
-    values: Annotated[np.ndarray, Field(exclude=True)] = np.empty((0, 3))
-    length: Annotated[np.ndarray, Field(exclude=True)] = np.empty(0)
+    values: Annotated[np.ndarray, Field(exclude=True)] = dataclasses.field(default_factory=lambda: np.empty((0, 3)))
+    length: Annotated[np.ndarray, Field(exclude=True)] = dataclasses.field(default_factory=lambda: np.empty(0))
 
     _octree_grid: Optional[RegularGrid] = None
     _dense_grid: Optional[RegularGrid] = None
