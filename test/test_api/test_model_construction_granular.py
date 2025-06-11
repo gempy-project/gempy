@@ -107,7 +107,7 @@ def _generate_interpolation_options():
     return interpolation_options
 
 
-def test_create_geomodel() -> GeoModel:
+def _create_geomodel() -> GeoModel:
     geo_model: GeoModel = GeoModel.from_args(
         name="horizontal",
         structural_frame=_create_structural_frame(),
@@ -124,8 +124,8 @@ def test_structural_frame_surface_points():
     pass
 
 
-def test_interpolate_numpy() -> GeoModel:
-    geo_model: GeoModel = test_create_geomodel()
+def _interpolate_numpy() -> GeoModel:
+    geo_model: GeoModel = _create_geomodel()
 
     solutions: gempy_engine.core.data.solutions.Solutions = gempy_engine.compute_model(
         interpolation_input=geo_model.interpolation_input_copy,
@@ -152,11 +152,11 @@ def test_interpolate_numpy() -> GeoModel:
 
 
 def test_interpolate_aesara():
-    geo_model: GeoModel = test_create_geomodel()
+    geo_model: GeoModel = _create_geomodel()
 
 
 def test_plot_input():
-    geo_model: GeoModel = test_create_geomodel()
+    geo_model: GeoModel = _create_geomodel()
     gp_viewer: gempy_viewer = require_gempy_viewer()
     # TODO: Add all the plot data in a plot options class
 
@@ -169,7 +169,7 @@ def test_plot_input():
 
 
 def test_plot_results():
-    solved_geo_model: GeoModel = test_interpolate_numpy()
+    solved_geo_model: GeoModel = _interpolate_numpy()
     gp_viewer: gempy_viewer = require_gempy_viewer()
 
     gp_viewer.plot_2d(
