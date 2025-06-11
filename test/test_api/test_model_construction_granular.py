@@ -26,7 +26,7 @@ def test_read_input_points():
     _, _ = _read_data()
 
 
-def _read_data() -> tuple[OrientationsTable, SurfacePointsTable]:
+def _read_data() -> tuple[SurfacePointsTable, OrientationsTable]:
     data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
     surface_points_file = pooch.retrieve(
         url=data_path + "data/input_data/jan_models/model1_surface_points.csv",
@@ -44,7 +44,7 @@ def _read_data() -> tuple[OrientationsTable, SurfacePointsTable]:
     orientations: OrientationsTable = read_orientations(
         path=orientations_file
     )
-    return orientations, surface_points
+    return surface_points, orientations
 
 
 def test_create_grid():
