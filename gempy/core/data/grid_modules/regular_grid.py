@@ -16,10 +16,10 @@ class RegularGrid:
     Class with the methods and properties to manage 3D regular grids where the model will be interpolated.
 
     """
-    resolution: Annotated[np.ndarray, numpy_array_short_validator] = np.ones((0, 3), dtype='int64')
-    extent: Annotated[np.ndarray, numpy_array_short_validator] = np.zeros(6, dtype='float64')  #: this is the ORTHOGONAL extent. If the grid is rotated, the extent will be different
-    values: Annotated[np.ndarray, Field(exclude=True)] = np.zeros((0, 3))
-    mask_topo: Annotated[np.ndarray, Field(exclude=True)] = np.zeros((0, 3), dtype=bool)
+    resolution: Annotated[np.ndarray, numpy_array_short_validator] = dataclasses.field(default_factory=lambda: np.ones((0, 3), dtype='int64'))
+    extent: Annotated[np.ndarray, numpy_array_short_validator] = dataclasses.field(default_factory=lambda: np.zeros(6, dtype='float64'))  #: this is the ORTHOGONAL extent. If the grid is rotated, the extent will be different
+    values: Annotated[np.ndarray, Field(exclude=True)] = dataclasses.field(default_factory=lambda: np.zeros((0, 3)))
+    mask_topo: Annotated[np.ndarray, Field(exclude=True)] = dataclasses.field(default_factory=lambda: np.zeros((0, 3), dtype=bool))
     _transform: Transform | None = None  #: If a transform exists, it will be applied to the grid
 
     def __init__(self, extent: np.ndarray, resolution: np.ndarray, transform: Optional[Transform] = None):

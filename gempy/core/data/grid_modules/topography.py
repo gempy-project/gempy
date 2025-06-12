@@ -27,9 +27,9 @@ class Topography:
     source: Optional[str] = None
 
     # Fields managed internally
-    values: short_array_type = field(init=False, default=np.zeros((0, 3)))
+    values: short_array_type = field(init=False, default_factory=lambda: np.zeros((0, 3)))
     resolution: Tuple[int, int] = Field(init=True, default=(0, 0))
-    raster_shape: Tuple[int, ...] = field(init=False, default=())
+    raster_shape: Tuple[int, ...] = field(init=False, default_factory=tuple)
     _mask_topo: Optional[np.ndarray] = field(init=False, default=None, repr=False)
     _x: Optional[np.ndarray] = field(init=False, default=None, repr=False)
     _y: Optional[np.ndarray] = field(init=False, default=None, repr=False)

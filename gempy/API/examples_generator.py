@@ -180,7 +180,7 @@ def _generate_anticline_model(compute_model: bool) -> gp.data.GeoModel:
         )
     )
 
-    # Map geological series to surfaces
+    # Map geological series to surfaces 
     gp.map_stack_to_surfaces(
         gempy_model=geo_data,
         mapping_object={"Strat_Series": ('rock2', 'rock1')}

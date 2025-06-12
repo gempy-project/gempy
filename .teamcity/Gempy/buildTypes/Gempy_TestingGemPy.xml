@@ -10,9 +10,9 @@
       <param name="REQUIREMENT_LEVEL" value="READ_MESH" />
       <param name="USE_PRERELEASE" value="true" spec="checkbox checkedValue='true' display='prompt'" />
       <param name="env.MPLBACKEND" value="Agg" />
-      <param name="env.TERRA_PATH_DEVOPS" value="/mnt/d/OneDrive - Terranigma Solutions GmbH/Documents - Terranigma Base/DevOps/" />
       <param name="env.PATH_TO_NUGGET_TEST_MODEL" value="%env.TERRA_PATH_DEVOPS%GemPyTestData/Stonepark" />
       <param name="env.PATH_TO_SPREMBERG" value="%env.TERRA_PATH_DEVOPS%SubsurfaceTestData/boreholes/Spremberg/" />
+      <param name="env.TERRA_PATH_DEVOPS" value="/mnt/d/OneDrive - Terranigma Solutions GmbH/Documents - Terranigma Base/DevOps/" />
       <param name="env.TEST_DATA" value="/mnt/d/OneDrive - Terranigma Solutions GmbH/Documents - Terranigma Base/DevOps/GemPyTestData/1" />
       <param name="env.VALIDATE_SERIALIZATION" value="True" />
     </parameters>
@@ -23,7 +23,7 @@
 set -ex  # enable debug output and exit on error
 
 # Create virtual environment using Python 3
-python3 -m venv venv
+python3.12 -m venv venv
 
 # Activate the virtual environment
 source venv/bin/activate
