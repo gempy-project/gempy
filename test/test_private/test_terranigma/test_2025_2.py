@@ -10,9 +10,14 @@ dotenv.load_dotenv()
 
 
 def test_2025_2():
-    rescale = 20
+    # * Here I just leave as variable both, the manual that
+    # * you did and "the proper" that injects it to gempy 
+    # * before interpolation without modifying anything else
+    manual_rescale = 1
+    proper_rescale = 20.
+    
     range_ = 2.4
-    orientation_loc = -690 * rescale
+    orientation_loc = -690 * manual_rescale
     path_to_data = os.getenv("TEST_DATA")
 
     data = {
@@ -29,7 +34,7 @@ def test_2025_2():
         k: SurfacePointsTable.from_arrays(
             x=v.data["X"],
             y=v.data["Y"],
-            z=rescale * v.data["Z"],  # rescaling the z values
+            z=manual_rescale * v.data["Z"],  # rescaling the z values
             names=[k] * len(v.data),
             nugget=v.data["nugget"]
         )
@@ -62,8 +67,8 @@ def test_2025_2():
     xmax = 543233
     ymin = 5652470
     ymax = 5657860
-    zmin = -780 * rescale
-    zmax = -636 * rescale
+    zmin = -780 * manual_rescale
+    zmax = -636 * manual_rescale
 
     # * Add 20% to extent
     xmin -= 0.2 * (xmax - xmin)
@@ -79,17 +84,23 @@ def test_2025_2():
         refinement=5,
         structural_frame=structural_frame,
     )
+   
+    # * Here it is the way of rescaling one of the axis. Input transform
+    # * is used (by default) to rescale data into a unit cube but it accepts any transformation matrix.  
+    geo_model.input_transform.scale[2] *= proper_rescale
 
-    if False:
+    if True:
         gpv.plot_3d(
             model=geo_model,
-            ve=40,
-            image=True,
+            ve=1,
+            image=False,
             kwargs_pyvista_bounds={
                     'show_xlabels': False,
                     'show_ylabels': False,
-            }
+            },
+            transformed_data=True # * This is interesting, transformed data shows the data as it goes to the interpolation (after applying the transform)
         )
+        
 
     geo_model.interpolation_options.evaluation_options.number_octree_levels_surface = 4
     geo_model.interpolation_options.kernel_options.range = range_
@@ -111,7 +122,7 @@ def test_2025_2():
 
     gpv.plot_3d(
         model=geo_model,
-        ve=2,
+        ve=proper_rescale,
         show_lith=True,
         image=False,
         kwargs_pyvista_bounds={
