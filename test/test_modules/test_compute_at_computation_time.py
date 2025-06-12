@@ -56,5 +56,19 @@ def test_compute_at_computation_time():
     end_time = time.perf_counter()
     computation_time_topo = end_time - start_time
 
-    print(f"Computation time without topography: {computation_time_model:.2f} seconds")
-    print(f"Computation time with topography: {computation_time_topo:.2f} seconds")
+    # numpy array with random coordinates within the extent of the model
+    custom_coordinates = np.random.uniform(
+        low=geo_model.grid.extent[:3],
+        high=geo_model.grid.extent[3:],
+        size=(1000, 3)
+    )
+
+    start_time = time.perf_counter()
+    gp.compute_model_at(geo_model, custom_coordinates)
+    end_time = time.perf_counter()
+    computation_time_at = end_time - start_time
+
+    print(f"Computation only model dense grid 125*50*50: {computation_time_model:.2f} seconds")
+    print(f"Computation time with topography 125*50: {computation_time_topo:.2f} seconds")
+    print(f"Computation compute_at with 1000 custom points: {computation_time_at:.2f} seconds")
+
