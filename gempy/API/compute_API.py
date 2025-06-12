@@ -82,11 +82,14 @@ def compute_model_at(gempy_model: GeoModel, at: np.ndarray,
     Returns:
         np.ndarray: The computed geological model at the specified coordinates.
     """
+    
+    print("WARNING: This function sets a custom grid and computes the model so be wary of side effects.")
     set_custom_grid(
         grid=gempy_model.grid,
-        xyz_coord=at
+        xyz_coord=at,
+        reset=True
     )
-
+    
     sol = compute_model(gempy_model, engine_config, validate_serialization=True)
     return sol.raw_arrays.custom
 
