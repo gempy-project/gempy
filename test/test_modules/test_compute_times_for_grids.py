@@ -4,6 +4,9 @@ import gempy as gp
 import time
 
 PLOT = True
+# DENSE_RESOLUTION = [125, 50, 50]
+DENSE_RESOLUTION = [20,20,20]
+
 
 def test_compute_time_dense_dense():
 
@@ -178,7 +181,7 @@ def _setup_model():
     geo_model = gp.create_geomodel(
         project_name='EGU_example',
         extent=[0, 2500, 0, 1000, 0, 1000],
-        resolution=[125, 50, 50],
+        resolution=DENSE_RESOLUTION,
         importer_helper=gp.data.ImporterHelper(
             path_to_orientations=path_to_data + "model7_orientations.csv",
             path_to_surface_points=path_to_data + "model7_surface_points.csv"
