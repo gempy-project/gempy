@@ -90,7 +90,7 @@ def compute_model_at(gempy_model: GeoModel, at: np.ndarray,
         reset=True
     )
     
-    sol = compute_model(gempy_model, engine_config, validate_serialization=True)
+    sol = compute_model(gempy_model, engine_config, validate_serialization=False)
     return sol.raw_arrays.custom
 
 
