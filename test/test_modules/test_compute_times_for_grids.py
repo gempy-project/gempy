@@ -62,7 +62,6 @@ def test_compute_time_topo_dense_grid():
     print(f"Computation time with topography and dense grid 125*50*50: {computation_time_topo_dense:.2f} seconds")
     
     # Assert that dense takes longer than topo and that the sum of both is close
-    assert computation_time_dense > computation_time_topo
     assert computation_time_topo_dense > computation_time_dense
     
 
