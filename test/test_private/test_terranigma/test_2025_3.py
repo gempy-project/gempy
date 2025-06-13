@@ -12,7 +12,7 @@ dotenv.load_dotenv()
 def test_2025_3():
 
     path_to_data = os.getenv("TEST_DATA")
-    path_to_data = r"C:/Users/Benjamink/OneDrive - Mira Geoscience Limited/Documents/projects/implicit modelling/Nutrien/demo_terranigma/from_miguel"
+    # path_to_data = r"C:/Users/Benjamink/OneDrive - Mira Geoscience Limited/Documents/projects/implicit modelling/Nutrien/demo_terranigma/from_miguel"
 
     data = {
         "a": read_surface_points(f"{path_to_data}/a.dat"),
@@ -96,6 +96,14 @@ def test_2025_3():
     elapsed = toc - tic
     print(f"Octree interpolation runtime: {int(elapsed / 60)} minutes {int(elapsed % 60)} seconds.")
 
+    octrees_outputs = solution.octrees_output
+    n_cells = 0
+    for octree_output in octrees_outputs:
+        n_cells += octree_output.outputs_centers[0].exported_fields.scalar_field.size().numel()
+        if len(octree_output.outputs_corners)>0: 
+            n_cells += octree_output.outputs_corners[0].exported_fields.scalar_field.size().numel()
+    print(f"Number of cells evaluated: {n_cells}")
+
     # Time extra interpolation on regular grid centers.  I was expecting/hoping that this second step
     # would just be an evaluation of the continuous scalar field solution from first step.
 
@@ -111,3 +119,4 @@ def test_2025_3():
     toc = time.perf_counter()
     elapsed = toc - tic
     print(f"Evaluate model on regular grid centers: {int(elapsed / 60)} minutes {int(elapsed % 60)} seconds")
+    print(f"Number of cells evaluated: {centers.shape[0]}")
