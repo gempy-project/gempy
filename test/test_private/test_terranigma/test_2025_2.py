@@ -143,6 +143,14 @@ def test_2025_2():
     # * The scalar fields can be found for dense and octree grids:
     print(geo_model.solutions.raw_arrays.scalar_field_matrix)
     
+    # * For custom grids so far we do not have a property that gives it directly, but it can be accessed here
+    
+    octree_lvl = 0  # * All the grids that are not octree are computed on octree level 0
+    stack_number = -1  # * Here we choose the stack that we need. At the moment boolean operations--for erosion-- are not calculated on the scalar field
+    gempy_output = geo_model.solutions.octrees_output[octree_lvl].outputs_centers[stack_number]
+    slice_ = gempy_output.grid.custom_grid_slice
+    scalar_field = gempy_output.scalar_fields.exported_fields.scalar_field[slice_]
+    print(scalar_field)
     # endregion
     
 
