@@ -122,7 +122,7 @@ def test_2025_2():
     
     gpv.plot_3d(
         model=geo_model,
-        ve=proper_rescale,
+        ve=1.,
         show_lith=True,
         image=True,
         kwargs_pyvista_bounds={
@@ -130,6 +130,7 @@ def test_2025_2():
             'show_ylabels': False,
             'show_zlabels': False,
         },
+        transformed_data=True
     )
     
     
