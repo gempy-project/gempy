@@ -88,11 +88,11 @@ def set_topography_from_file(grid: Grid, filepath: str, crop_to_extent: Union[Se
     return set_topography_from_subsurface_structured_grid(grid, struct)
 
 
-def set_custom_grid(grid: Grid, xyz_coord: np.ndarray):
+def set_custom_grid(grid: Grid, xyz_coord: np.ndarray, reset: bool = False):
     custom_grid = CustomGrid(values=xyz_coord)
     grid.custom_grid = custom_grid
 
-    set_active_grid(grid, [Grid.GridTypes.CUSTOM])
+    set_active_grid(grid, grid_type=[Grid.GridTypes.CUSTOM], reset=reset)
     return grid.custom_grid
 
 
