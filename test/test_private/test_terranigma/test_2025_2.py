@@ -93,7 +93,7 @@ def test_2025_2():
         gpv.plot_3d(
             model=geo_model,
             ve=1,
-            image=False,
+            image=True,
             kwargs_pyvista_bounds={
                     'show_xlabels': False,
                     'show_ylabels': False,
@@ -119,18 +119,32 @@ def test_2025_2():
             backend=gp.data.AvailableBackends.numpy
         ),
     )
-
+    
     gpv.plot_3d(
         model=geo_model,
         ve=proper_rescale,
         show_lith=True,
-        image=False,
+        image=True,
         kwargs_pyvista_bounds={
             'show_xlabels': False,
             'show_ylabels': False,
             'show_zlabels': False,
         },
     )
+    
+    
+    # region Exporting scalar field
+    gpv.plot_2d(
+        geo_model,
+        show_scalar=True,
+        series_n=0
+    )
+    
+    # * The scalar fields can be found for dense and octree grids:
+    print(geo_model.solutions.raw_arrays.scalar_field_matrix)
+    
+    # endregion
+    
 
 if __name__ == "__main__":
     test_2025_2()
