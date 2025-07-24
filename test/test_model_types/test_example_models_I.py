@@ -80,4 +80,13 @@ def test_generate_combination_model():
         model=model,
         name="Combination Scalar Field"
     )
-    
+
+
+def test_generate_greenstone_model():
+    model = gp.generate_example_model(ExampleModel.GREENSTONE, compute_model=True)
+    print(model.structural_frame)
+
+    if PLOT:
+        gpv = require_gempy_viewer()
+        gpv.plot_3d(model, image=True)
+
