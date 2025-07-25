@@ -42,11 +42,18 @@ def interpolation_input_from_structural_frame(geo_model: "gempy.data.GeoModel") 
         extent_transformed=geo_model.extent_transformed_transformed_by_input
     )
 
+    weights = []
+    if geo_model.solutions is not None:
+        for stack_sol in geo_model.solutions.root_output.outputs_centers:
+            weights.append(stack_sol.weights)
+    
+
     interpolation_input: InterpolationInput = InterpolationInput(
         surface_points=surface_points,
         orientations=orientations,
         grid=grid,
-        unit_values=structural_frame.elements_ids  # TODO: Here we will need to pass densities etc.
+        unit_values=structural_frame.elements_ids,  # TODO: Here we will need to pass densities etc.
+        weights=weights
     )
 
     return interpolation_input
