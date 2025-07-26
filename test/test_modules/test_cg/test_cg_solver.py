@@ -20,7 +20,7 @@ def test_solve_with_cg():
         engine_config=gp.data.GemPyEngineConfig(
             backend=gp.data.AvailableBackends.PYTORCH,
             use_gpu=True,
-            dtype='float32'
+            dtype='float64'
         )
     )
 
@@ -48,6 +48,26 @@ def test_save_weights():
     WeightCache.clear_cache()
     BackendTensor.PYKEOPS = True
 
+    sol = gp.compute_model(
+        gempy_model=model,
+        engine_config=gp.data.GemPyEngineConfig(
+            backend=gp.data.AvailableBackends.PYTORCH,
+            use_gpu=False,
+            dtype='float32'
+        )
+    )
+
+    if PLOT:
+        gpv = require_gempy_viewer()
+        gpv.plot_3d(model, image=True)
+
+
+def test_keops_x_torch():
+    model = gp.generate_example_model(ExampleModel.GREENSTONE, compute_model=False)
+    print(model.structural_frame)
+
+    WeightCache.clear_cache()
+    BackendTensor.PYKEOPS = True
     sol = gp.compute_model(
         gempy_model=model,
         engine_config=gp.data.GemPyEngineConfig(
