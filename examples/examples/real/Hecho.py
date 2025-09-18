@@ -127,7 +127,7 @@ geo_model: gp.data.GeoModel = gp.create_geomodel(
 gp.set_section_grid(
     grid=geo_model.grid,
     section_dict={
-            'section': ([0, 0], [16, 0], [321, 91])
+            'section': ((0., 0.), (16., 0.), (321, 91))
     },
 )
 
@@ -218,10 +218,6 @@ geo_model.interpolation_options.kernel_options.range *= 0.2
 # Setting verbose and condition number options for debugging
 geo_model.interpolation_options.kernel_options.compute_condition_number = True
 
-gp.save_model(geo_model, 'Hecho.gempy')
-model_deserialized = gp.load_model('Hecho.gempy')
-
-_validate_serialization(geo_model, model_deserialized)
 
 # %% 
 gp.compute_model(
@@ -230,7 +226,7 @@ gp.compute_model(
         backend=gp.data.AvailableBackends.PYTORCH,
         dtype='float64'
     ),
-    validate_serialization=False
+    validate_serialization=True
 )
 
 # %% 
