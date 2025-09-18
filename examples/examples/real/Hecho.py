@@ -12,6 +12,7 @@ import numpy as np
 
 # Aux imports
 import pandas as pn
+from gempy.modules.serialization.save_load import _validate_serialization
 
 # Importing gempy
 import gempy as gp
@@ -149,7 +150,8 @@ for fn in f_names:
         y=new_orientations.data['Y'],
         z=new_orientations.data['Z'],
         pole_vector=new_orientations.grads,
-        elements_names=fn
+        elements_names=fn,
+        name_id_map=element.surface_points.name_id_map 
     )
 
 # %%
@@ -215,6 +217,11 @@ geo_model.interpolation_options.kernel_options.range *= 0.2
 # %%
 # Setting verbose and condition number options for debugging
 geo_model.interpolation_options.kernel_options.compute_condition_number = True
+
+gp.save_model(geo_model, 'Hecho.gempy')
+model_deserialized = gp.load_model('Hecho.gempy')
+
+_validate_serialization(geo_model, model_deserialized)
 
 # %% 
 gp.compute_model(
