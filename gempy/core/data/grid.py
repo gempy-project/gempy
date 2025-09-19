@@ -275,9 +275,9 @@ class Grid:
 
         if dense_grid_exists_and_active and octree_grid_exists_and_active:
             raise AttributeError('Both dense_grid and octree_grid are active. This is not possible.')
-        elif self.dense_grid is not None:
+        elif dense_grid_exists_and_active:
             return self.dense_grid
-        elif self.octree_grid is not None:
+        elif octree_grid_exists_and_active:
             return self.octree_grid
         else:
             return None
