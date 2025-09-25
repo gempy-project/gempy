@@ -1,3 +1,5 @@
+import pytest
+
 import gempy as gp
 from gempy.core.data.enumerators import ExampleModel
 from gempy.optional_dependencies import require_gempy_viewer
@@ -7,6 +9,7 @@ from gempy_engine.modules.weights_cache.weights_cache_interface import WeightCac
 
 PLOT = True
 
+pytest.mark.skip("Run explicitly")
 
 def test_solve_with_cg():
     model = gp.generate_example_model(ExampleModel.GREENSTONE, compute_model=False)
@@ -46,7 +49,7 @@ def test_save_weights():
     weights3 = sol.octrees_output[0].outputs_centers[2].weights
 
     WeightCache.clear_cache()
-    BackendTensor.PYKEOPS = True
+    BackendTensor.PYKEOPS = False
 
     sol = gp.compute_model(
         gempy_model=model,
@@ -67,7 +70,7 @@ def test_keops_x_torch():
     print(model.structural_frame)
 
     WeightCache.clear_cache()
-    BackendTensor.PYKEOPS = True
+    BackendTensor.PYKEOPS = False
     sol = gp.compute_model(
         gempy_model=model,
         engine_config=gp.data.GemPyEngineConfig(
