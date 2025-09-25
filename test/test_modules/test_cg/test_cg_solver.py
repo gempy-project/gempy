@@ -13,7 +13,7 @@ def test_solve_with_cg():
     print(model.structural_frame)
 
     WeightCache.clear_cache()
-    BackendTensor.PYKEOPS = True
+    BackendTensor.PYKEOPS = False
     
     sol = gp.compute_model(
         gempy_model=model,
