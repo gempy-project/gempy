@@ -215,12 +215,6 @@ geo_model.interpolation_options.kernel_options.range *= 0.2
 # %%
 # Setting verbose and condition number options for debugging
 geo_model.interpolation_options.kernel_options.compute_condition_number = True
-# %%
-# Observations and parameter adjustments
-# The octree refinement is making the octree grid almost dense, and smaller chunks are needed to avoid running out of memory.
-# Adjusting parameters accordingly:
-
-geo_model.interpolation_options.evaluation_options.evaluation_chunk_size = 50_000
 
 # %% 
 gp.compute_model(
@@ -228,7 +222,8 @@ gp.compute_model(
     engine_config=gp.data.GemPyEngineConfig(
         backend=gp.data.AvailableBackends.PYTORCH,
         dtype='float64'
-    )
+    ),
+    validate_serialization=False
 )
 
 # %% 
