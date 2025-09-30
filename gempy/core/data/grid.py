@@ -203,9 +203,6 @@ class Grid:
         if not np.all(regular_grid_resolution == regular_grid_resolution[0]):
             raise AttributeError('Octree resolution must be isotropic')
         octree_levels = int(np.log2(regular_grid_resolution[0]))
-        # Check if octrree levels are the same
-        if octree_levels != evaluation_options.number_octree_levels:
-            raise AttributeError('Regular grid resolution does not match octree levels. Resolution must be 2^n')
 
         self._octree_grid = regular_grid
         self.active_grids |= self.GridTypes.OCTREE
