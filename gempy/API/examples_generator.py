@@ -25,6 +25,8 @@ def generate_example_model(example_model: ExampleModel, compute_model: bool = Tr
             return _generate_one_fault_model_gravity(compute_model)
         case ExampleModel.GRABEN:
             return _generate_graben_model(compute_model)
+        case ExampleModel.GREENSTONE:
+            return _generate_greenstone_model(compute_model)
         case _:
             raise NotImplementedError(f"Example model {example_model} not implemented.")
 
@@ -481,4 +483,27 @@ def _generate_graben_model(compute_model: bool) -> gp.data.GeoModel:
         sol = gp.compute_model(gempy_model=geo_data)
 
     return geo_data
+
+
+def _generate_greenstone_model(compute_model: bool) -> gp.data.GeoModel:
+    test_dir = os.path.dirname(os.path.abspath(__file__))
+
+    # Build the path relative to the test file location
+    path = os.path.join(test_dir, '..', '..', 'examples', 'data', 'gempy_models', 'Greenstone.gempy')
+    with open(path, 'rb') as f:
+        binary_file = f.read()
+
+    from gempy.modules.serialization.save_load import _load_model_from_bytes
+    geo_model: gp.data.GeoModel = _load_model_from_bytes(binary_file)
+    
+    if compute_model:
+        sol = gp.compute_model(
+            gempy_model=geo_model,
+            engine_config=gp.data.GemPyEngineConfig(
+                backend=gp.data.AvailableBackends.numpy,
+                dtype='float32'
+            )
+    )
+    return geo_model
+        
 

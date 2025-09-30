@@ -4,7 +4,6 @@ import os
 from typing import Optional
 
 import gempy_engine
-from gempy.API.gp2_gp3_compatibility.gp3_to_gp2_input import gempy3_to_gempy2
 from gempy_engine.config import AvailableBackends
 from gempy_engine.core.backend_tensor import BackendTensor
 from gempy_engine.core.data import Solutions
@@ -14,7 +13,6 @@ from ..core.data.gempy_engine_config import GemPyEngineConfig
 from ..core.data.geo_model import GeoModel
 from ..modules.data_manipulation import interpolation_input_from_structural_frame
 from ..modules.optimize_nuggets import nugget_optimizer
-from ..optional_dependencies import require_gempy_legacy
 
 dotenv.load_dotenv()
 

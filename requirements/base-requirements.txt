@@ -1,5 +1,5 @@
 -r requirements.txt
 
 # This install matplotlib
-gempy_viewer~=2025.1.0
+gempy_viewer~=2025.1.4
 pandas

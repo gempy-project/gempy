@@ -25,6 +25,7 @@ def nugget_optimizer(
         engine_backend=engine_cfg.backend,
         use_gpu=engine_cfg.use_gpu,
         dtype=engine_cfg.dtype,
+        grads=True
     )
 
     # 2) Prepare data
