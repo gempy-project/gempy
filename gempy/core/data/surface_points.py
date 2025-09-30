@@ -22,12 +22,12 @@ class SurfacePointsTable:
     A dataclass to represent a table of surface points in a geological model.
     
     """
-    dt = np.dtype([('X', 'f8'), ('Y', 'f8'), ('Z', 'f8'), ('id', 'i4'), ('nugget', 'f8')])  #: The custom data type for the data array.
+    dt = np.dtype([('X', 'f8'), ('Y', 'f8'), ('Z', 'f8'), ('id', 'i4'), ('nugget', 'f8'), ('formation', 'U20')])  #: The custom data type for the data array.
     
     data: np.ndarray = Field(
         default=np.zeros(0, dtype=dt),
         exclude=True,
-        description="A structured NumPy array holding the X, Y, Z coordinates, id, and nugget of each surface point."
+        description="A structured NumPy array holding the X, Y, Z coordinates, id, nugget and formation of each surface point."
     )  #: A structured NumPy array holding the X, Y, Z coordinates, id, and nugget of each surface point.
     name_id_map: Optional[dict[str, int]] = None  #: A mapping between surface point names and ids.
     _model_transform: Optional[Transform] = None
@@ -94,7 +94,7 @@ class SurfacePointsTable:
             ids = np.array([name_id_map[name] for name in names])
 
         data = np.zeros(len(x), dtype=SurfacePointsTable.dt)
-        data['X'], data['Y'], data['Z'], data['id'], data['nugget'] = x, y, z, ids, nugget
+        data['X'], data['Y'], data['Z'], data['id'], data['nugget'], data['formation'] = x, y, z, ids, nugget, names
         return data, name_id_map
 
     @classmethod
@@ -115,7 +115,8 @@ class SurfacePointsTable:
         Returns:
             str: The name of the surface point.
         """
-        return list(self.name_id_map.keys())[id]
+        #list(self.name_id_map.keys())[id]
+        return [key for key, value in self.name_id_map.items() if value == 	id][0]
 
     @property
     def xyz(self) -> np.ndarray:
@@ -136,6 +137,10 @@ class SurfacePointsTable:
     @nugget.setter
     def nugget(self, value: np.ndarray):
         self.data['nugget'] = value
+
+    @property
+    def formation(self) -> np.ndarray:
+        return self.data['formation']
 
     @property
     def model_transform(self) -> Transform:

@@ -59,7 +59,7 @@ class StructuralFrame:
                 orientation_i = OrientationsTable.empty_orientation(id_)
 
             structural_element: StructuralElement = StructuralElement(
-                name=surface_points.id_to_name(i),
+                name=surface_points.id_to_name(surface_points_groups[i].df['id'].unique()),
                 id=id_,
                 surface_points=surface_points_groups[i],
                 orientations=orientation_i,
