@@ -96,7 +96,8 @@ def add_orientations(geo_model: GeoModel,
         elements_names: Sequence[str],
         pole_vector: Optional[Union[Sequence[np.ndarray], np.ndarray]] = None,
         orientation: Optional[Union[Sequence[np.ndarray], np.ndarray]] = None,
-        nugget: Optional[Sequence[float]] = None
+        nugget: Optional[Sequence[float]] = None,
+        name_id_map: Optional[dict[str, int]] = None  #: A mapping between orientation names and ids.
 ) -> StructuralFrame:
     """Add orientation data to the geological model.
 
@@ -176,6 +177,7 @@ def add_orientations(geo_model: GeoModel,
             G_z=data['pole_vector'][..., 2],
             names=[element_name] * len(data['x']),
             nugget=data['nugget'],
+            name_id_map=name_id_map
         )
 
         element: StructuralElement = geo_model.structural_frame.get_element_by_name(element_name)
