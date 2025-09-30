@@ -115,7 +115,6 @@ class SurfacePointsTable:
         Returns:
             str: The name of the surface point.
         """
-
         return [key for key, value in self.name_id_map.items() if value == 	id][0]
 
     @property
