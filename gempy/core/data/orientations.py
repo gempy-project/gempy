@@ -21,11 +21,11 @@ class OrientationsTable:
     
     """
 
-    dt = np.dtype([('X', 'f8'), ('Y', 'f8'), ('Z', 'f8'), ('G_x', 'f8'), ('G_y', 'f8'), ('G_z', 'f8'), ('id', 'i4'), ('nugget', 'f8')])  #: The custom data type for the data array.
+    dt = np.dtype([('X', 'f8'), ('Y', 'f8'), ('Z', 'f8'), ('G_x', 'f8'), ('G_y', 'f8'), ('G_z', 'f8'), ('id', 'i4'), ('nugget', 'f8'), ('formation', 'U20')])  #: The custom data type for the data array.
     data: np.ndarray = Field(
         default=np.zeros(0, dtype=dt),
         exclude=True,
-        description="A structured NumPy array holding the X, Y, Z coordinates, gradients G_x, G_y, G_z, id, and nugget of each orientation.",
+        description="A structured NumPy array holding the X, Y, Z coordinates, gradients G_x, G_y, G_z, id, nugget and formation of each orientation.",
     )  #: A structured NumPy array holding the X, Y, Z coordinates, id, and nugget of each surface point.
     name_id_map: Optional[dict[str, int]] = None  #: A mapping between orientation names and ids.
 
@@ -73,7 +73,7 @@ class OrientationsTable:
         else:
             ids = np.array([name_id_map[name] for name in names])
         data = np.zeros(len(x), dtype=OrientationsTable.dt)
-        data['X'], data['Y'], data['Z'], data['G_x'], data['G_y'], data['G_z'], data['id'], data['nugget'] = x, y, z, G_x, G_y, G_z, ids, nugget
+        data['X'], data['Y'], data['Z'], data['G_x'], data['G_y'], data['G_z'], data['id'], data['nugget'], data['formation'] = x, y, z, G_x, G_y, G_z, ids, nugget, names
         return data, name_id_map
 
     @classmethod
@@ -142,6 +142,10 @@ class OrientationsTable:
             np.ndarray: The nugget values.
         """
         return self.data['nugget']
+
+    @property
+    def formation(self) -> np.ndarray:
+        return self.data['formation']
 
     @property
     def ids(self) -> np.ndarray:
