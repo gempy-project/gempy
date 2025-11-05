@@ -73,29 +73,23 @@ def extract_mesh_for_element(structural_element: StructuralElement,
     mask : np.ndarray, optional
         Optional mask to restrict the mesh extraction to specific regions.
     """
-    if os.environ["DEFAULT_BACKEND"] == "PYTORCH":
+    if type(scalar_field).__module__ == 'torch':
         import torch
         scalar_field = torch.to_numpy(scalar_field)
-        if mask.dtype == torch.bool:
-            mask = torch.to_numpy(mask)
-        verts, faces, _, _ = measure.marching_cubes(
+    if type(mask).__module__ == "torch":
+        import torch
+        mask = torch.to_numpy(mask)
+
+
+    # Extract mesh using marching cubes
+    verts, faces, _, _ = measure.marching_cubes(
         volume=scalar_field.reshape(regular_grid.resolution),
         level=structural_element.scalar_field_at_interface,
         spacing=(regular_grid.dx, regular_grid.dy, regular_grid.dz),
         mask=mask.reshape(regular_grid.resolution) if mask is not None else None,
         allow_degenerate=False,
         method="lewiner"
-    ) 
-    else:
-        # Extract mesh using marching cubes
-        verts, faces, _, _ = measure.marching_cubes(
-            volume=scalar_field.reshape(regular_grid.resolution),
-            level=structural_element.scalar_field_at_interface,
-            spacing=(regular_grid.dx, regular_grid.dy, regular_grid.dz),
-            mask=mask.reshape(regular_grid.resolution) if mask is not None else None,
-            allow_degenerate=False,
-            method="lewiner"
-        )
+    )
 
     # Adjust vertices to correct coordinates in the model's extent
     verts = (verts + [regular_grid.extent[0],

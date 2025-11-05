@@ -34,7 +34,6 @@ def test_marching_cubes_implementation():
         grid_type=[model.grid.GridTypes.DENSE],
         reset=True
     )
-    print("here")
     model.interpolation_options = gp.data.InterpolationOptions.init_dense_grid_options()
     gp.compute_model(model)
 
@@ -57,7 +56,6 @@ def test_marching_cubes_implementation():
 
     if PLOT:
         gpv = require_gempy_viewer()
-        gpv.plot_2d(model=model)
         gtv: gpv.GemPyToVista = gpv.plot_3d(
             model=model,
             show_data=True,
