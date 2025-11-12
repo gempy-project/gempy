@@ -15,8 +15,7 @@
       <param name="env.MPLBACKEND" value="Agg" />
       <param name="env.PATH_TO_NUGGET_TEST_MODEL" value="%env.TERRA_PATH_DEVOPS%GemPyTestData/Stonepark" />
       <param name="env.PATH_TO_SPREMBERG" value="%env.TERRA_PATH_DEVOPS%SubsurfaceTestData/boreholes/Spremberg/" />
-      <param name="env.TERRA_PATH_DEVOPS" value="/home/leguark/DevOps/DevOps/SubsurfaceTestData/" />
-      <param name="env.TEST_DATA" value="/home/leguark/DevOps/DevOps/GemPyTestData/1" />
+      <param name="env.TERRA_PATH_DEVOPS" value="/home/leguark/DevOps/DevOps/" />
       <param name="env.VALIDATE_SERIALIZATION" value="True" />
     </parameters>
     <build-runners>
