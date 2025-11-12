@@ -75,7 +75,7 @@ def extract_mesh_for_element(structural_element: StructuralElement,
     """
     if type(scalar_field).__module__ == 'torch':
         import torch
-        scalar_field = torch.to_numpy(scalar_field)
+        scalar_field = scalar_field.detach().numpy()
     if type(mask).__module__ == "torch":
         import torch
         mask = torch.to_numpy(mask)
