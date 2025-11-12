@@ -6,6 +6,9 @@
     <options>
       <option name="allowExternalStatus" value="true" />
     </options>
+    <disabled-settings>
+      <setting-ref ref="RQ_11" />
+    </disabled-settings>
     <parameters>
       <param name="REQUIREMENT_LEVEL" value="READ_MESH" />
       <param name="env.MPLBACKEND" value="Agg" />
