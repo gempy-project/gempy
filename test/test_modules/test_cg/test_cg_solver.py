@@ -11,18 +11,19 @@ PLOT = True
 
 pytest.mark.skip("Run explicitly")
 
+
 def test_solve_with_cg():
     model = gp.generate_example_model(ExampleModel.GREENSTONE, compute_model=False)
     print(model.structural_frame)
 
     WeightCache.clear_cache()
     BackendTensor.PYKEOPS = False
-    
+
     sol = gp.compute_model(
         gempy_model=model,
         engine_config=gp.data.GemPyEngineConfig(
             backend=gp.data.AvailableBackends.PYTORCH,
-            use_gpu=True,
+            use_gpu=False,
             dtype='float64'
         )
     )
