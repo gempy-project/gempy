@@ -6,6 +6,9 @@
     <options>
       <option name="allowExternalStatus" value="true" />
     </options>
+    <disabled-settings>
+      <setting-ref ref="RQ_6" />
+    </disabled-settings>
     <parameters>
       <param name="REQUIREMENT_LEVEL" value="READ_MESH" />
       <param name="USE_PRERELEASE" value="true" spec="checkbox checkedValue='true' display='prompt'" />
