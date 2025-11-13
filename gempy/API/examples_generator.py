@@ -27,6 +27,8 @@ def generate_example_model(example_model: ExampleModel, compute_model: bool = Tr
             return _generate_graben_model(compute_model)
         case ExampleModel.GREENSTONE:
             return _generate_greenstone_model(compute_model)
+        case ExampleModel.FAULT_RELATION:
+            return _generate_fault_relation_model(compute_model)
         case _:
             raise NotImplementedError(f"Example model {example_model} not implemented.")
 
@@ -496,6 +498,56 @@ def _generate_greenstone_model(compute_model: bool) -> gp.data.GeoModel:
     from gempy.modules.serialization.save_load import _load_model_from_bytes
     geo_model: gp.data.GeoModel = _load_model_from_bytes(binary_file)
     
+    if compute_model:
+        sol = gp.compute_model(
+            gempy_model=geo_model,
+            engine_config=gp.data.GemPyEngineConfig(
+                backend=gp.data.AvailableBackends.numpy,
+                dtype='float32'
+            )
+    )
+    return geo_model
+
+def _generate_fault_relation_model(compute_model: bool) -> gp.data.GeoModel:
+    # Path to input data
+    test_dir = os.path.dirname(os.path.abspath(__file__))
+    data_path = os.path.join(test_dir, "..\\..\\examples\\data\\input_data\\tests\\")
+    
+    # Create instance of new geomodel
+    geo_model = gp.create_geomodel(
+    project_name = 'fault_reations_test',
+    extent=[0, 1000, 0, 1000, -1000, -400],
+    resolution=[20, 20, 20],
+    refinement=6,
+    importer_helper=gp.data.ImporterHelper(
+        path_to_orientations=data_path + "fault_relations_test_ori.csv",
+        path_to_surface_points=data_path + "fault_relations_test_surf.csv"
+        )
+        )   
+    # Map geological series to surfaces
+    gp.map_stack_to_surfaces(
+    gempy_model=geo_model,
+    mapping_object={
+        "fault_series_1" : ('fault1'),
+        "fault_series_2" : ('fault2'),
+        "series_1": ('rock4', 'rock3'),
+        "default_series": ('rock2', 'rock1')
+    }
+    )
+    
+    gp.set_is_fault(geo_model, ["fault_series_1", "fault_series_2"])
+
+    gp.set_fault_relation(
+    frame=geo_model.structural_frame,
+    rel_matrix=np.array([
+        [0, 1, 1, 1],
+        [0, 0, 0, 1],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0]
+    ]
+    )
+)
+    geo_model.input_transform.apply_anisotropy(gp.data.GlobalAnisotropy.NONE)
     if compute_model:
         sol = gp.compute_model(
             gempy_model=geo_model,
