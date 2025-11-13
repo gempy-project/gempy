@@ -182,3 +182,4 @@ examples/tutorials/z_other_tutorials/json_io/multiple_series_faults_computed.jso
 examples/tutorials/z_other_tutorials/json_io/combination_model.json
 examples/tutorials/z_other_tutorials/json_io/combination_model_computed.json
 /test/temp/
+test/test_modules/run_test.py

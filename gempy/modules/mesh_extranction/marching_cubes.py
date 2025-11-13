@@ -1,3 +1,4 @@
+import os
 import numpy as np
 from typing import Optional
 from skimage import measure
@@ -72,6 +73,14 @@ def extract_mesh_for_element(structural_element: StructuralElement,
     mask : np.ndarray, optional
         Optional mask to restrict the mesh extraction to specific regions.
     """
+    if type(scalar_field).__module__ == 'torch':
+        import torch
+        scalar_field = scalar_field.detach().numpy()
+    if type(mask).__module__ == "torch":
+        import torch
+        mask = torch.to_numpy(mask)
+
+
     # Extract mesh using marching cubes
     verts, faces, _, _ = measure.marching_cubes(
         volume=scalar_field.reshape(regular_grid.resolution),
