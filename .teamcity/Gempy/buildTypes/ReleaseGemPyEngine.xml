@@ -9,35 +9,6 @@
     <parameters>
       <param name="env.org/repo" value="gempy-project/gempy_engine" />
     </parameters>
-    <build-runners>
-      <runner id="Build" name="Build" type="simpleRunner">
-        <parameters>
-          <param name="script.content"><![CDATA[#!/usr/bin/env bash
-set -euo pipefail
-
-echo "Cleaning build artifacts..."
-rm -rf dist build
-echo "Clean complete."
-
-# Check if virtualenv exists, if not create it
-if [ ! -d "venv" ]; then
-    echo "Creating virtual environment..."
-    python3 -m venv venv
-fi
-
-# Activate the virtual environment
-source venv/bin/activate
-
-# ensure build tooling is up to date
-python -m pip install --upgrade build
-
-# run the build
-python -m build]]></param>
-          <param name="teamcity.step.mode" value="default" />
-          <param name="use.custom.script" value="true" />
-        </parameters>
-      </runner>
-    </build-runners>
     <vcs-settings>
       <vcs-entry-ref root-id="GempyEngine_HttpsGithubComGempyProjectGempyEngineRefsHeadsMain" />
     </vcs-settings>
