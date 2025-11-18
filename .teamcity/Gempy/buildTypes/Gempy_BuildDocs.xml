@@ -8,6 +8,7 @@
       <option name="artifactRules" value="docs_site.zip =&gt; docs" />
     </options>
     <disabled-settings>
+      <setting-ref ref="RQ_4" />
       <setting-ref ref="TRIGGER_4" />
     </disabled-settings>
     <parameters>
