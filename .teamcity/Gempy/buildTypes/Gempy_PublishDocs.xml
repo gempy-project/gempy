@@ -5,6 +5,7 @@
   <settings>
     <disabled-settings>
       <setting-ref ref="Push" />
+      <setting-ref ref="RQ_5" />
     </disabled-settings>
     <build-runners>
       <runner id="Publish_GemPy_Docs" name="Publish GemPy Docs" type="simpleRunner">
