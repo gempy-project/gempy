@@ -3,6 +3,9 @@
   <name>Release GemPy Viewer</name>
   <description />
   <settings ref="ReleasePythonPackage">
+    <disabled-settings>
+      <setting-ref ref="RQ_8" />
+    </disabled-settings>
     <parameters>
       <param name="env.org/repo" value="gempy-project/gempy_viewer" />
     </parameters>
