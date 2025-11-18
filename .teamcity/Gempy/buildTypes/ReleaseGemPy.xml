@@ -3,6 +3,9 @@
   <name>Release GemPy</name>
   <description />
   <settings ref="ReleasePythonPackage">
+    <disabled-settings>
+      <setting-ref ref="RQ_7" />
+    </disabled-settings>
     <parameters>
       <param name="env.org/repo" value="gempy-project/gempy" />
     </parameters>
