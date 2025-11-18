@@ -10,3 +10,4 @@ class ExampleModel(Enum):
     ONE_FAULT_GRAVITY = auto()
     GRABEN = auto()
     GREENSTONE = auto()
+    FAULT_RELATION = auto()
