@@ -27,6 +27,3 @@ def test_fault_relations_implementation():
             image=True,
             show=True
         )
-
-if __name__ == "__main__":
-    test_fault_relations_implementation()  
