@@ -2,4 +2,4 @@
 
 # This install matplotlib
 gempy_viewer~=2025.1.4
-pandas
+pandas>=2.2.0,<3.0.0
