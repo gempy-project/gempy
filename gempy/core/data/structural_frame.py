@@ -265,6 +265,7 @@ class StructuralFrame:
                         j = self.structural_groups.index(fault_group)
                         if j <= i:  # Only consider groups that are 
                             raise ValueError(f"Fault {group.name} cannot affect older fault {fault_group.name}")
+                        fault_relations[i, j] = True
                 case (StackRelationType.FAULT, _):
                     raise ValueError(f"Fault {group.name} has an invalid fault relation")
                 case _:
