@@ -37,6 +37,14 @@ python3 -m build]]></param>
           <param name="use.custom.script" value="true" />
         </parameters>
       </runner>
+      <runner id="Push_to_PyPi" name="Push to PyPi" type="simpleRunner">
+        <parameters>
+          <param name="script.content"><![CDATA[python3 -m pip install --upgrade twine
+python3 -m twine upload dist/* -u __token__ -p %env.TWINE_PASSWORD%]]></param>
+          <param name="teamcity.step.mode" value="default" />
+          <param name="use.custom.script" value="true" />
+        </parameters>
+      </runner>
     </build-runners>
     <vcs-settings>
       <vcs-entry-ref root-id="Gempy_HttpsGithubComGempyProjectGempyRefsHeadsMain" />
