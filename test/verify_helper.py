@@ -1,3 +1,4 @@
+import os
 from typing import Literal
 
 import subprocess
@@ -13,6 +14,7 @@ from approvaltests.reporters import GenericDiffReporter, GenericDiffReporterConf
 from gempy.core.data import GeoModel
 from gempy.modules.serialization.save_load import _load_model_from_bytes, model_to_bytes
 
+
 class WSLWindowsDiffReporter(GenericDiffReporter):
     def get_command(self, received, approved):
         # Convert WSL paths to Windows paths
@@ -22,20 +24,27 @@ class WSLWindowsDiffReporter(GenericDiffReporter):
         cmd = [self.path] + self.extra_args + [win_received, win_approved]
         return cmd
 
-def verify_json(item, name: str):
 
+class LinuxDiffReporter(GenericDiffReporter):
+    pass
+
+
+def verify_json(item, name: str):
     config = GenericDiffReporterConfig(
         name="custom",
         path=r"pycharm",
-        extra_args= ["diff"]
+        extra_args=["diff"]
     )
 
+    if os.environ.get("WSL_DISTRO_NAME"):
+        reporter = WSLWindowsDiffReporter(config)
+    else:
+        reporter = LinuxDiffReporter(config)
+        
     parameters: Options = NamerFactory \
         .with_parameters(name) \
-        .with_reporter(
-        reporter=(WSLWindowsDiffReporter(config))
-    )
-    
+        .with_reporter(reporter)
+
     verify(item, options=parameters)
 
 
@@ -91,8 +100,10 @@ class ArrayComparator(Comparator):
         except BaseException:
             return False
 
+
 class JsonSerializer:
     """Serializer that writes JSON with an indent and declares its own extension."""
+
     def get_default_extension(self) -> str:
         return "json"
 

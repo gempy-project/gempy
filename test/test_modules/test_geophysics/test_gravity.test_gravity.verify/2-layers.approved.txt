@@ -112,12 +112,15 @@
         "active_grids": 1058
     },
     "geophysics_input": {
-        "tz": [],
-        "densities": [
-            2.6,
-            2.4,
-            3.2
-        ]
+        "gravity_input": {
+            "tz": [],
+            "densities": [
+                2.6,
+                2.4,
+                3.2
+            ]
+        },
+        "magnetics_input": null
     },
     "input_transform": {
         "position": [

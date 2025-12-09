@@ -1,4 +1,5 @@
 ﻿import hashlib
+import sys
 
 from typing import Sequence
 
@@ -16,6 +17,8 @@ def generate_ids_from_names(name_id_map, names, x):
     if isinstance(names, str):
         ids = np.array([name_id_map[names]] * len(x))
     elif isinstance(names, Sequence) or isinstance(names, np.ndarray):
+        ids = np.array([name_id_map[name] for name in names])
+    elif type(names).__module__.startswith('pandas') and type(names).__name__ == 'StringArray':
         ids = np.array([name_id_map[name] for name in names])
     else:
         raise TypeError(f"Names should be a string or a NumPy array, not {type(names)}")
