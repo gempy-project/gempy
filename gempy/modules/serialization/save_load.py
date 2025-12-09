@@ -133,6 +133,7 @@ def load_model(path: str) -> GeoModel:
 
     return _load_model_from_bytes(binary_file)
 
+
 def model_to_bytes(model: GeoModel) -> bytes:
     # 1) Make a fully deterministic JSON header
     # header_dict = model.model_dump(by_alias=True)

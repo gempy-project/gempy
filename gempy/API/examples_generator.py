@@ -554,6 +554,7 @@ def _generate_fault_relation_model(compute_model: bool) -> gp.data.GeoModel:
             engine_config=gp.data.GemPyEngineConfig(
                 backend=gp.data.AvailableBackends.numpy,
                 dtype='float32'
-            )
+            ),
+            validate_serialization=False
         )
     return geo_model

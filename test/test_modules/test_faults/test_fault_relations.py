@@ -7,6 +7,7 @@ PLOT = True
 
 
 def test_fault_relations_implementation():
+    # TODO! (Miguel Dec25) These fault description are not serializing!
     model = gp.generate_example_model(ExampleModel.FAULT_RELATION, compute_model=True)
 
     correct_relations = np.array([
