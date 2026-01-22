@@ -88,7 +88,7 @@ def _apply_input_transform_to_grids(grid: Grid, input_transform: Transform, exte
         )
     octree_grid = engine_grid.RegularGrid(
         orthogonal_extent=new_extents,
-        regular_grid_shape=np.array([2, 2, 2])
+        regular_grid_shape=grid.octree_grid.base_resolution
     )
     grid: engine_grid.EngineGrid = engine_grid.EngineGrid(  # * Here we convert the GemPy grid to the
         octree_grid=octree_grid,  # BUG: Adapt the engine to deal with this

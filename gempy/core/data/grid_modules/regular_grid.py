@@ -17,6 +17,7 @@ class RegularGrid:
 
     """
     resolution: Annotated[np.ndarray, numpy_array_short_validator] = dataclasses.field(default_factory=lambda: np.ones((0, 3), dtype='int64'))
+    base_resolution: Annotated[np.ndarray, numpy_array_short_validator] = dataclasses.field(default_factory=lambda: np.ones((0, 3), dtype='int64'))
     extent: Annotated[np.ndarray, numpy_array_short_validator] = dataclasses.field(default_factory=lambda: np.zeros(6, dtype='float64'))  #: this is the ORTHOGONAL extent. If the grid is rotated, the extent will be different
     values: Annotated[np.ndarray, Field(exclude=True)] = dataclasses.field(default_factory=lambda: np.zeros((0, 3)))
     mask_topo: Annotated[np.ndarray, Field(exclude=True)] = dataclasses.field(default_factory=lambda: np.zeros((0, 3), dtype=bool))
@@ -29,6 +30,16 @@ class RegularGrid:
         self.mask_topo = np.zeros((0, 3), dtype=bool)
 
         self.set_regular_grid(extent, resolution, transform)
+    
+    @classmethod
+    def octree_init(cls, extent: np.ndarray, octree_levels: int, base_resolution: np.ndarray, transform: Optional[Transform] = None):
+        grid = cls(
+            extent=extent,
+            resolution=base_resolution * 2 ** (octree_levels - 1),
+            transform=transform
+        )
+        grid.base_resolution = base_resolution
+        return grid
 
 
     @model_validator(mode="after")

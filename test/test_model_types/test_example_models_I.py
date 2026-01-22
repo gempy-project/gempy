@@ -78,15 +78,14 @@ def test_generate_combination_model():
 
     if PLOT:
         gpv = require_gempy_viewer()
+        gpv.plot_2d(model)
         pd3 = gpv.plot_3d(
             model,
-            image=False,
-            show_lith=False,
+            image=True,
+            show_lith=True,
             show_octree=True,
             show=True
         )
-
-    return
 
     _verify_scalar_field(
         model=model,
