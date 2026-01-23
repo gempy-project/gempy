@@ -17,7 +17,7 @@ class RegularGrid:
 
     """
     resolution: Annotated[np.ndarray, numpy_array_short_validator] = dataclasses.field(default_factory=lambda: np.ones((0, 3), dtype='int64'))
-    base_resolution: Annotated[np.ndarray, numpy_array_short_validator] = dataclasses.field(default_factory=lambda: np.ones((0, 3), dtype='int64'))
+    _base_resolution: Annotated[np.ndarray, numpy_array_short_validator] = dataclasses.field(default_factory=lambda: np.array([2,2,2], dtype='int64'))
     extent: Annotated[np.ndarray, numpy_array_short_validator] = dataclasses.field(default_factory=lambda: np.zeros(6, dtype='float64'))  #: this is the ORTHOGONAL extent. If the grid is rotated, the extent will be different
     values: Annotated[np.ndarray, Field(exclude=True)] = dataclasses.field(default_factory=lambda: np.zeros((0, 3)))
     mask_topo: Annotated[np.ndarray, Field(exclude=True)] = dataclasses.field(default_factory=lambda: np.zeros((0, 3), dtype=bool))
@@ -28,9 +28,10 @@ class RegularGrid:
         self.extent = np.zeros(6, dtype='float64')
         self.values = np.zeros((0, 3))
         self.mask_topo = np.zeros((0, 3), dtype=bool)
+        self._base_resolution = np.array([2,2,2])
 
         self.set_regular_grid(extent, resolution, transform)
-    
+
     @classmethod
     def octree_init(cls, extent: np.ndarray, octree_levels: int, base_resolution: np.ndarray, transform: Optional[Transform] = None):
         grid = cls(
@@ -38,15 +39,21 @@ class RegularGrid:
             resolution=base_resolution * 2 ** (octree_levels - 1),
             transform=transform
         )
-        grid.base_resolution = base_resolution
+        grid._base_resolution = base_resolution
         return grid
 
+    @property
+    def base_resolution(self):
+        return self._base_resolution
+
+    @base_resolution.setter
+    def base_resolution(self, value):
+        self._base_resolution = value
 
     @model_validator(mode="after")
     def _validate_regular_grid(self):
         self._create_regular_grid_3d()
         return self
-
 
     def _create_regular_grid_3d(self):
         coords = self.x_coord, self.y_coord, self.z_coord
@@ -262,5 +269,3 @@ class RegularGrid:
         values = regular_grid.values
         plt.scatter(values[:, 0], values[:, 1], c='g')
         plt.show()
-
-
