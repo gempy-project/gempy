@@ -27,6 +27,7 @@ def create_geomodel(
         structural_frame: StructuralFrame = None,
         importer_helper: ImporterHelper = None,
         intpolation_options_tye: InterpolationOptionsType = InterpolationOptionsType.OCTREE,
+        **kwargs
 ) -> GeoModel:  # ? Do I need to pass pandas read kwargs?
     """
     Creates a geological model based on input parameters, spatial configuration, and interpolation options.
@@ -66,7 +67,8 @@ def create_geomodel(
     if resolution is None:
         grid: Grid = Grid.init_octree_grid(
             extent=extent,
-            octree_levels=refinement
+            octree_levels=refinement,
+            legacy=kwargs.get('legacy_octree_init', False)
         )
     else:
         grid: Grid = Grid.init_dense_grid(

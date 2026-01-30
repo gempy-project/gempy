@@ -15,7 +15,7 @@ def process_file(filename, global_extent, color_generator: gp.data.ColorsGenerat
 
     return structural_element, global_extent
 def initialize_geo_model(structural_elements: list[gp.data.StructuralElement], extent: list[float],
-                         topography: xr.Dataset, load_nuggets: bool = False
+                         topography: xr.Dataset, **create_geomod_kwargs
                          ) -> gp.data.GeoModel:
     structural_group_red = gp.data.StructuralGroup(
         name="Red",
@@ -60,7 +60,8 @@ def initialize_geo_model(structural_elements: list[gp.data.StructuralElement], e
         extent=extent,
         # resolution=[20, 10, 20],
         refinement=5,  # * Here we define the number of octree levels. If octree levels are defined, the resolution is ignored.
-        structural_frame=structural_frame
+        structural_frame=structural_frame,
+        **create_geomod_kwargs
     )
 
     if topography is not None:

@@ -40,7 +40,8 @@ def test_optimize_nugget_effect():
     geo_model: gp.data.GeoModel = initialize_geo_model(
         structural_elements=structural_elements,
         extent=(np.array(global_extent)),
-        topography=(xr.open_dataset(os.path.join(path, "Topography.nc")))
+        topography=(xr.open_dataset(os.path.join(path, "Topography.nc"))),
+        legacy_octree_init=True
     )
 
     geo_model.interpolation_options.cache_mode = gp.data.InterpolationOptions.CacheMode.NO_CACHE

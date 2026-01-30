@@ -102,7 +102,7 @@ def test_plot_transformed_data_including_grid_transform_octree():
     options = model.interpolation_options
     options.number_octree_levels = 4
 
-    model.grid.set_octree_grid(regular_grid, model.interpolation_options.evaluation_options)
+    model.grid.set_octree_grid(regular_grid)
     
     gp.compute_model(model)
 

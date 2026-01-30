@@ -12,7 +12,7 @@ from gempy_engine.core.data.transforms import Transform
 
 
 def interpolation_input_from_structural_frame(geo_model: "gempy.data.GeoModel") -> InterpolationInput:
-    import gempy # ! This is important for type safety
+    import gempy  # ! This is important for type safety
     geo_model: gempy.data.GeoModel = geo_model
 
     _legacy_factor = 0
@@ -46,7 +46,6 @@ def interpolation_input_from_structural_frame(geo_model: "gempy.data.GeoModel") 
     if geo_model.solutions is not None:
         for stack_sol in geo_model.solutions.root_output.outputs_centers:
             weights.append(stack_sol.weights)
-    
 
     interpolation_input: InterpolationInput = InterpolationInput(
         surface_points=surface_points,
@@ -86,9 +85,14 @@ def _apply_input_transform_to_grids(grid: Grid, input_transform: Transform, exte
             radius=input_transform.scale_points(np.atleast_2d(grid.centered_grid.radius))[0],
             resolution=grid.centered_grid.resolution
         )
+    if grid.octree_grid is not None:
+        base_grid_resolution = grid.octree_grid.base_resolution
+    else:
+        base_grid_resolution = np.array([2, 2, 2])
+
     octree_grid = engine_grid.RegularGrid(
         orthogonal_extent=new_extents,
-        regular_grid_shape=np.array([2, 2, 2])
+        regular_grid_shape=base_grid_resolution
     )
     grid: engine_grid.EngineGrid = engine_grid.EngineGrid(  # * Here we convert the GemPy grid to the
         octree_grid=octree_grid,  # BUG: Adapt the engine to deal with this

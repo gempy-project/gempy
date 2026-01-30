@@ -19,7 +19,6 @@ import gempy_viewer as gpv
     os.getenv("PATH_TO_SPREMBERG") is None,
     reason="PATH_TO_SPREMBERG_STRATIGRAPHY is not set"
 )
-
 class TestStratigraphicPile:
     @pytest.fixture(autouse=True)
     def borehole_set(self):
@@ -41,6 +40,7 @@ class TestStratigraphicPile:
                     'dip'    : 'dip',
                     'azimuth': 'azi'
             },
+            encoding="latin-1"
         )
         df = read_survey(reader)
 
@@ -121,7 +121,7 @@ class TestStratigraphicPile:
 
         all_surface_points_coords: gp.data.SurfacePointsTable = structural_frame.surface_points_copy
         extent_from_data = all_surface_points_coords.xyz.min(axis=0), all_surface_points_coords.xyz.max(axis=0)
-        
+
         geo_model = gp.data.GeoModel.from_args(
             name="Stratigraphic Pile",
             structural_frame=structural_frame,
@@ -147,4 +147,3 @@ class TestStratigraphicPile:
             show=True,
             image=True
         )
-        

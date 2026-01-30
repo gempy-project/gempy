@@ -68,19 +68,19 @@ class Grid:
 
                     if 'grid_binary' not in context:
                         return grid
-                    
+
                     custom_grid_vals, topography_vals = deserialize_grid(
                         binary_array=context['grid_binary'],
                         custom_grid_length=metadata["custom_grid_binary_length"],
                         topography_length=metadata["topography_binary_length"]
                     )
-                    
+
                     if grid.custom_grid is not None:
                         grid.custom_grid.values = custom_grid_vals.reshape(-1, 3)
-                    
+
                     if grid.topography is not None:
                         grid.topography.set_values2d(values=topography_vals)
-                    
+
                     grid._update_values()
                     return grid
                 case _:
@@ -94,12 +94,11 @@ class Grid:
         topography_bytes = self._topography.values.astype("float64").tobytes() if self._topography else b''
         return custom_grid_bytes + topography_bytes
 
-
     @computed_field
     def binary_meta_data(self) -> dict:
         return {
                 'custom_grid_binary_length': len(self._custom_grid.values.astype("float64").tobytes()) if self._custom_grid else 0,
-                'topography_binary_length': len(self._topography.values.astype("float64").tobytes()) if self._topography else 0,
+                'topography_binary_length' : len(self._topography.values.astype("float64").tobytes()) if self._topography else 0,
         }
 
     @computed_field(alias="active_grids")
@@ -113,12 +112,28 @@ class Grid:
         self._update_values()
 
     @classmethod
-    def init_octree_grid(cls, extent, octree_levels):
+    def init_octree_grid(cls, extent, octree_levels, legacy:bool=False):
         grid = cls()
-        grid._octree_grid = RegularGrid(
+
+        if legacy:
+            base_resolution = (np.array([2,2,2]))
+        else:
+            lengths = np.array([
+                    extent[1] - extent[0],  # x
+                    extent[3] - extent[2],  # y
+                    extent[5] - extent[4]   # z
+            ])
+
+            min_length = np.min(lengths)
+            base_resolution = np.round(lengths / min_length).astype(int)
+            base_resolution = np.maximum(base_resolution, 2)
+        
+        grid._octree_grid = RegularGrid.octree_init(
             extent=extent,
-            resolution=np.array([2 ** octree_levels] * 3),
+            octree_levels=octree_levels,
+            base_resolution=base_resolution
         )
+
         grid.active_grids |= grid.GridTypes.OCTREE
         grid._update_values()
         return grid
@@ -197,12 +212,11 @@ class Grid:
     def octree_grid(self, value):
         raise AttributeError('Octree grid is not allowed to be set directly. Use init_octree_grid instead')
 
-    def set_octree_grid(self, regular_grid: RegularGrid, evaluation_options: EvaluationOptions):
+    def set_octree_grid(self, regular_grid: RegularGrid):
         regular_grid_resolution = regular_grid.resolution
         # Check all directions has the same res
         if not np.all(regular_grid_resolution == regular_grid_resolution[0]):
             raise AttributeError('Octree resolution must be isotropic')
-        octree_levels = int(np.log2(regular_grid_resolution[0]))
 
         self._octree_grid = regular_grid
         self.active_grids |= self.GridTypes.OCTREE
