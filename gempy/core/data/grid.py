@@ -116,7 +116,7 @@ class Grid:
         grid = cls()
 
         if legacy:
-            base_resolution = (np.array([1, 1, 1]))
+            base_resolution = (np.array([2,2,2]))
         else:
             lengths = np.array([
                     extent[1] - extent[0],  # x
@@ -126,7 +126,7 @@ class Grid:
 
             min_length = np.min(lengths)
             base_resolution = np.round(lengths / min_length).astype(int)
-            base_resolution = np.maximum(base_resolution, 1)
+            base_resolution = np.maximum(base_resolution, 2)
         
         grid._octree_grid = RegularGrid.octree_init(
             extent=extent,

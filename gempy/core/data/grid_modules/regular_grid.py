@@ -17,11 +17,11 @@ class RegularGrid:
 
     """
     resolution: Annotated[np.ndarray, numpy_array_short_validator] = dataclasses.field(default_factory=lambda: np.ones((0, 3), dtype='int64'))
-    _base_resolution: Annotated[np.ndarray, numpy_array_short_validator] = dataclasses.field(default_factory=lambda: np.array([2,2,2], dtype='int64'))
     extent: Annotated[np.ndarray, numpy_array_short_validator] = dataclasses.field(default_factory=lambda: np.zeros(6, dtype='float64'))  #: this is the ORTHOGONAL extent. If the grid is rotated, the extent will be different
     values: Annotated[np.ndarray, Field(exclude=True)] = dataclasses.field(default_factory=lambda: np.zeros((0, 3)))
     mask_topo: Annotated[np.ndarray, Field(exclude=True)] = dataclasses.field(default_factory=lambda: np.zeros((0, 3), dtype=bool))
     _transform: Transform | None = None  #: If a transform exists, it will be applied to the grid
+    _base_resolution: Annotated[np.ndarray,  Field(exclude=True)] = dataclasses.field(default_factory=lambda: np.array([2,2,2], dtype='int64'))
 
     def __init__(self, extent: np.ndarray, resolution: np.ndarray, transform: Optional[Transform] = None):
         self.resolution = np.ones((0, 3), dtype='int64')
