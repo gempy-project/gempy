@@ -40,6 +40,7 @@ class TestStratigraphicPile:
                     'dip'    : 'dip',
                     'azimuth': 'azi'
             },
+            encoding="latin-1"
         )
         df = read_survey(reader)
 
