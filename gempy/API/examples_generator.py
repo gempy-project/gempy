@@ -258,7 +258,8 @@ def _generate_combination_model(compute_model: bool) -> gp.data.GeoModel:
         importer_helper=gp.data.ImporterHelper(
             path_to_orientations=path_to_data + "model7_orientations.csv",
             path_to_surface_points=path_to_data + "model7_surface_points.csv"
-        )
+        ),
+        legacy_octree_init=False
     )
     geo_data.interpolation_options.evaluation_options.number_octree_levels_surface = 4
 
