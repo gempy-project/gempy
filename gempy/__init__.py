@@ -5,6 +5,7 @@ Created on 06.19.2023
 @author: Miguel de la Varga
 """
 import sys
+from . import config
 
 # =================== CORE ===================
 from .core import data

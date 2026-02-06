@@ -56,7 +56,7 @@ def compute_model(gempy_model: GeoModel, engine_config: Optional[GemPyEngineConf
         case _:
             raise ValueError(f'Backend {engine_config} not supported')
 
-    if os.getenv("VALIDATE_SERIALIZATION", False) and kwargs.get("validate_serialization", True):
+    if os.getenv("VALIDATE_SERIALIZATION", "False") == "True" and kwargs.get("validate_serialization", True):
         from ..modules.serialization.save_load import save_model
         import tempfile
         with tempfile.NamedTemporaryFile(mode='w+', delete=True) as tmp:
