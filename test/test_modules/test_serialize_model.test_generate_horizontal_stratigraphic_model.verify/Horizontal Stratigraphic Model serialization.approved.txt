@@ -85,7 +85,12 @@
                 0.0,
                 1000.0
             ],
-            "_transform": null
+            "_transform": null,
+            "_base_resolution": [
+                2,
+                2,
+                2
+            ]
         },
         "_custom_grid": null,
         "_topography": null,
