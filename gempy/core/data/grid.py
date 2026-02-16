@@ -125,8 +125,7 @@ class Grid:
             ])
 
             min_length = np.min(lengths)
-            base_resolution = np.round(lengths / min_length).astype(int)
-            base_resolution = np.maximum(base_resolution, 2)
+            base_resolution = np.round(lengths / min_length).astype(int) * 2
         
         grid._octree_grid = RegularGrid.octree_init(
             extent=extent,
@@ -213,11 +212,6 @@ class Grid:
         raise AttributeError('Octree grid is not allowed to be set directly. Use init_octree_grid instead')
 
     def set_octree_grid(self, regular_grid: RegularGrid):
-        regular_grid_resolution = regular_grid.resolution
-        # Check all directions has the same res
-        if not np.all(regular_grid_resolution == regular_grid_resolution[0]):
-            raise AttributeError('Octree resolution must be isotropic')
-
         self._octree_grid = regular_grid
         self.active_grids |= self.GridTypes.OCTREE
         self._update_values()
