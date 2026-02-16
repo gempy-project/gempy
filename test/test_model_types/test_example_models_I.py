@@ -81,7 +81,7 @@ def test_generate_combination_model():
         gpv.plot_2d(model)
         pd3 = gpv.plot_3d(
             model,
-            image=False,
+            image=True,
             show_lith=True,
             show_octree=True,
             show=True
