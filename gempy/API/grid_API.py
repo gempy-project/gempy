@@ -122,6 +122,7 @@ def set_active_grid(grid: Grid, grid_type: list[Grid.GridTypes], reset: bool = F
     for grid_type in grid_type:
         grid.active_grids |= grid_type
 
+    grid._update_values()
+    
     print(f'Active grids: {grid.active_grids}')
-
     return grid
