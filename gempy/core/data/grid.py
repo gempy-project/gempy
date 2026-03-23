@@ -60,27 +60,33 @@ class Grid:
                     return data
                 case dict():
                     grid: Grid = constructor(data)
-                    grid._active_grids = Grid.GridTypes(data["active_grids"])
                     # TODO: Digest binary data
 
                     metadata = data.get('binary_meta_data', {})
                     context = loading_model_context.get()
 
-                    if 'grid_binary' not in context:
-                        return grid
+                    if 'grid_binary' in context:
+                        custom_grid_vals, topography_vals = deserialize_grid(
+                            binary_array=context['grid_binary'],
+                            custom_grid_length=metadata["custom_grid_binary_length"],
+                            topography_length=metadata["topography_binary_length"]
+                        )
 
-                    custom_grid_vals, topography_vals = deserialize_grid(
-                        binary_array=context['grid_binary'],
-                        custom_grid_length=metadata["custom_grid_binary_length"],
-                        topography_length=metadata["topography_binary_length"]
-                    )
+                        if grid.custom_grid is not None:
+                            grid.custom_grid.values = custom_grid_vals.reshape(-1, 3)
 
-                    if grid.custom_grid is not None:
-                        grid.custom_grid.values = custom_grid_vals.reshape(-1, 3)
+                        if grid.topography is not None:
+                            grid.topography.set_values2d(values=topography_vals)
 
-                    if grid.topography is not None:
-                        grid.topography.set_values2d(values=topography_vals)
+                    if grid.octree_grid is not None:
+                        # * Update the octree grid values. In the future we should also serialize them.
+                        grid.octree_grid.set_regular_grid(
+                            extent=grid.octree_grid.extent,
+                            resolution=grid.octree_grid.resolution,
+                            transform=grid.octree_grid.transform
+                        )
 
+                    grid.active_grids = Grid.GridTypes(data["active_grids"])
                     grid._update_values()
                     return grid
                 case _:
@@ -112,21 +118,21 @@ class Grid:
         self._update_values()
 
     @classmethod
-    def init_octree_grid(cls, extent, octree_levels, legacy:bool=False):
+    def init_octree_grid(cls, extent, octree_levels, legacy: bool = False):
         grid = cls()
 
         if legacy:
-            base_resolution = (np.array([2,2,2]))
+            base_resolution = (np.array([2, 2, 2]))
         else:
             lengths = np.array([
                     extent[1] - extent[0],  # x
                     extent[3] - extent[2],  # y
-                    extent[5] - extent[4]   # z
+                    extent[5] - extent[4]  # z
             ])
 
             min_length = np.min(lengths)
             base_resolution = np.round(lengths / min_length).astype(int) * 2
-        
+
         grid._octree_grid = RegularGrid.octree_init(
             extent=extent,
             octree_levels=octree_levels,
