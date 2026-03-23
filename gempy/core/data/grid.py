@@ -51,6 +51,13 @@ class Grid:
         if extent is not None and resolution is not None:
             self.dense_grid = RegularGrid(extent, resolution)
 
+    def __setattr__(self, name, value):
+        if name == 'active_grids':
+            self._active_grids = value
+            self._update_values()
+        else:
+            super().__setattr__(name, value)
+            
     @model_validator(mode='wrap')
     @classmethod
     def deserialize_properties(cls, data: Union["Grid", dict], constructor: ModelWrapValidatorHandler["Grid"]) -> "Grid":
