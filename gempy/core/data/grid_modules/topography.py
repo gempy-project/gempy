@@ -2,7 +2,7 @@ import dataclasses
 
 import warnings
 from pydantic import Field
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Annotated
 
 import numpy as np
 
@@ -23,7 +23,7 @@ class Topography:
       """
 
     _regular_grid: RegularGrid
-    values_2d: np.ndarray = Field(exclude=True, default_factory=lambda: np.zeros((0, 0, 3)))
+    values_2d: Annotated[np.ndarray, Field(exclude=True)] = field(default_factory=lambda: np.zeros((0, 0, 3)))
     source: Optional[str] = None
 
     # Fields managed internally
