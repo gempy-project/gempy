@@ -60,6 +60,7 @@ class Grid:
                     return data
                 case dict():
                     grid: Grid = constructor(data)
+                    grid._active_grids = Grid.GridTypes(data["active_grids"])
                     # TODO: Digest binary data
 
                     metadata = data.get('binary_meta_data', {})
@@ -86,7 +87,6 @@ class Grid:
                             transform=grid.octree_grid.transform
                         )
 
-                    grid.active_grids = Grid.GridTypes(data["active_grids"])
                     grid._update_values()
                     return grid
                 case _:
