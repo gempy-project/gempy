@@ -215,6 +215,7 @@
             "mesh_extraction_masking_options": 3,
             "mesh_extraction_fancy": true,
             "evaluation_chunk_size": 500000,
+            "compute_scalar": true,
             "compute_scalar_gradient": false,
             "verbose": false
         },
@@ -222,7 +223,6 @@
         "cache_mode": 3,
         "cache_model_name": "fold",
         "block_solutions_type": 1,
-        "sigmoid_slope": 5000000,
-        "debug_water_tight": false
+        "sigmoid_slope": 5000000
     }
 }
