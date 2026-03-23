@@ -10,6 +10,7 @@
       <setting-ref ref="RQ_6" />
     </disabled-settings>
     <parameters>
+      <param name="DUAL_CONTOURING_VERTEX_OVERLAP" value="pretty" />
       <param name="REQUIREMENT_LEVEL" value="READ_MESH" />
       <param name="USE_PRERELEASE" value="true" spec="checkbox checkedValue='true' display='prompt'" />
       <param name="env.MPLBACKEND" value="Agg" />
