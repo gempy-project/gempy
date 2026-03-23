@@ -11,6 +11,8 @@
     </disabled-settings>
     <parameters>
       <param name="REQUIREMENT_LEVEL" value="READ_MESH" />
+      <param name="env.CI" value="None" />
+      <param name="env.DUAL_CONTOURING_VERTEX_OVERLAP" value="pretty" />
       <param name="env.MPLBACKEND" value="Agg" />
     </parameters>
     <build-runners>
