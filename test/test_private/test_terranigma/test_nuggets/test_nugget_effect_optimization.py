@@ -26,8 +26,8 @@ start_time = time.time()
 # Load necessary configuration and paths from environment variables
 path = os.getenv("PATH_TO_NUGGET_TEST_MODEL")
 
+
 # Skip if not torch
-@pytest.mark.skipif(gp.data.AvailableBackends.PYTORCH not in gp.data.available_backends(), reason="Torch not available")
 def test_optimize_nugget_effect():
     # Initialize lists to store structural elements for the geological model
     structural_elements = []
@@ -68,7 +68,7 @@ def test_optimize_nugget_effect():
         ),
         validate_serialization=True
     )
-    
+
     print(f"Final cond number: {geo_model.interpolation_options.kernel_options.condition_number}")
     nugget_effect = geo_model.taped_interpolation_input.surface_points.nugget_effect_scalar.detach().numpy()
 
@@ -112,7 +112,7 @@ def test_optimize_nugget_effect():
             if False:
                 ori_cloud = pv.PolyData(geo_model.orientations_copy.df[['X', 'Y', 'Z']].to_numpy())
                 ori_cloud['values2'] = geo_model.taped_interpolation_input.orientations.nugget_effect_grad.detach().numpy()
-                
+
                 gempy_vista.p.add_mesh(
                     ori_cloud,
                     scalars='values2',
