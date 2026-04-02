@@ -2,8 +2,11 @@ import os
 
 import dotenv
 import numpy as np
-import torch
 import time
+import pytest
+
+torch = pytest.importorskip("torch")
+
 import gempy as gp
 
 from ._aux_func import process_file, initialize_geo_model
@@ -23,7 +26,8 @@ start_time = time.time()
 # Load necessary configuration and paths from environment variables
 path = os.getenv("PATH_TO_NUGGET_TEST_MODEL")
 
-
+# Skip if not torch
+@pytest.mark.skipif(gp.data.AvailableBackends.PYTORCH not in gp.data.available_backends(), reason="Torch not available")
 def test_optimize_nugget_effect():
     # Initialize lists to store structural elements for the geological model
     structural_elements = []
