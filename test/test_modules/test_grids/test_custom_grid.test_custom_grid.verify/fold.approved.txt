@@ -152,7 +152,7 @@
             "compute_scalar_gradient": false,
             "verbose": false
         },
-        "debug": true,
+        "debug": false,
         "cache_mode": 3,
         "cache_model_name": "fold",
         "block_solutions_type": 1,

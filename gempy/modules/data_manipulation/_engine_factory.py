@@ -44,7 +44,7 @@ def interpolation_input_from_structural_frame(geo_model: "gempy.data.GeoModel") 
 
     weights = []
     if geo_model.solutions is not None:
-        for stack_sol in geo_model.solutions.root_output.outputs_centers:
+        for stack_sol in geo_model.solutions.root_output.outputs:
             weights.append(stack_sol.weights)
 
     interpolation_input: InterpolationInput = InterpolationInput(

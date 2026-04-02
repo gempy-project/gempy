@@ -45,9 +45,9 @@ def test_save_weights():
             dtype='float32'
         )
     )
-    weights1 = sol.octrees_output[0].outputs_centers[0].weights
-    weights2 = sol.octrees_output[0].outputs_centers[1].weights
-    weights3 = sol.octrees_output[0].outputs_centers[2].weights
+    weights1 = sol.octrees_output[0].outputs[0].weights
+    weights2 = sol.octrees_output[0].outputs[1].weights
+    weights3 = sol.octrees_output[0].outputs[2].weights
 
     WeightCache.clear_cache()
     BackendTensor.PYKEOPS = False

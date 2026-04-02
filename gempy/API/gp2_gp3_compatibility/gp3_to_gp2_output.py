@@ -55,7 +55,7 @@ def _set_surfaces_meshes(geo_model: Project, meshes: list[DualContouringMesh]) -
 def _set_block_matrix(geo_model: Project, octree_output: OctreeLevel) -> Project:
     temp_list = []
     for i in range(octree_output.number_of_outputs):
-        temp_list.append(octree_output.outputs_centers[i].values_block)
+        temp_list.append(octree_output.outputs[i].values_block)
 
     block_matrix_stacked = np.vstack(temp_list)
     geo_model.solutions.block_matrix = block_matrix_stacked
@@ -65,7 +65,7 @@ def _set_block_matrix(geo_model: Project, octree_output: OctreeLevel) -> Project
 def _set_scalar_field(geo_model: Project, octree_output: OctreeLevel) -> Project:
     temp_list = []
     for i in range(octree_output.number_of_outputs):
-        temp_list.append(octree_output.outputs_centers[i].scalar_fields.exported_fields.scalar_field)
+        temp_list.append(octree_output.outputs[i].scalar_fields.exported_fields.scalar_field)
 
     scalar_field_stacked = np.vstack(temp_list)
     geo_model.solutions.scalar_field_matrix = scalar_field_stacked
@@ -75,7 +75,7 @@ def _set_scalar_field(geo_model: Project, octree_output: OctreeLevel) -> Project
 def _set_scalar_field_at_surface_points(geo_model: Project, octree_output: OctreeLevel) -> Project:
     temp_list = []
     for i in range(octree_output.number_of_outputs):
-        temp_list.append(octree_output.outputs_centers[i].scalar_fields.exported_fields.scalar_field_at_surface_points)
+        temp_list.append(octree_output.outputs[i].scalar_fields.exported_fields.scalar_field_at_surface_points)
     
     geo_model.solutions.scalar_field_at_surface_points = temp_list
     return geo_model

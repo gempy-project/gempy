@@ -30,10 +30,10 @@ def set_meshes_with_marching_cubes(model: GeoModel) -> None:
     regular_grid: RegularGrid = model.grid.regular_grid
     structural_groups: list[StructuralGroup] = model.structural_frame.structural_groups
 
-    if not model.solutions.octrees_output or not model.solutions.octrees_output[0].outputs_centers:
+    if not model.solutions.octrees_output or not model.solutions.octrees_output[0].outputs:
         raise ValueError("No interpolation outputs available for mesh extraction.")
 
-    output_lvl0: list[InterpOutput] = model.solutions.octrees_output[0].outputs_centers
+    output_lvl0: list[InterpOutput] = model.solutions.octrees_output[0].outputs
 
     for e, structural_group in enumerate(structural_groups):
         if e >= len(output_lvl0):
