@@ -25,11 +25,8 @@
           <param name="script.content"><![CDATA[#!/bin/bash
 set -ex  # enable debug output and exit on error
 
-# Force the shell to load mise for this script
-eval "$(~/.local/bin/mise activate bash)"
-
-# Create virtual environment using Python 3
-python3.13 -m venv venv
+# 1. Use the absolute path to the Python binary directly
+/home/leguark/.local/share/mise/installs/python/3.13.9/bin/python3 -m venv venv
 
 # Activate the virtual environment
 source venv/bin/activate
