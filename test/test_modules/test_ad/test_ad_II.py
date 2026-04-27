@@ -62,13 +62,14 @@ def _add_gradient_glyphs(plotter, sp_coords, geo_data, arrow_scale=0.5):
         glyphs,
         scalars="gradient_norm",
         cmap="plasma",
-        scalar_bar_args={"title": "‖∇‖", "title_font_size": 12,
+        scalar_bar_args={"title": "‖∇Z‖  (vertex → surface pts)",
+                         "title_font_size": 10,
                          "label_font_size": 9, "n_labels": 3,
                          "fmt": "%.1e",
-                         "position_x": 0.85, "position_y": 0.25,
-                         "width": 0.10, "height": 0.3,
+                         "position_x": 0.75, "position_y": 0.02,
+                         "width": 0.22, "height": 0.06,
                          "color": "black",
-                         "vertical": True},
+                         "vertical": False},
         label="Gradient (Z-vertex w.r.t. SP)",
     )
 
@@ -112,10 +113,13 @@ def _highlight_vertex_and_triangles(plotter, geo_data, mesh, vertex_idx):
         )
 
     vertex_pos = vertices_world[vertex_idx].reshape(1, 3) + z_offset
+    cone_height = 20.0
+    tip_pos = vertex_pos.flatten()
+    cone_center = tip_pos + np.array([0, 0, cone_height / 2.0])
     marker = pyvista.Cone(
-        center=vertex_pos.flatten(),
+        center=cone_center,
         direction=(0, 0, -1),
-        height=20.0,
+        height=cone_height,
         radius=8.0,
         resolution=30,
     )
@@ -169,7 +173,8 @@ def test_generate_fold_model():
     # --- Visualisation ---
     sp_coords = geo_data.taped_interpolation_input.surface_points.sp_coords
     p3d = gpv.plot_3d(geo_data, show_surfaces=True, show_data=True,
-                      show=False, show_lith=False)
+                      show=False, show_lith=False,
+                      kwargs_plot_surfaces={"opacity": 0.7})
     plotter = p3d.p
 
     mesh = geo_data.solutions.dc_meshes[0]
@@ -218,7 +223,8 @@ def test_generate_combination_model():
     sp_coords = geo_data.taped_interpolation_input.surface_points.sp_coords
     
     p3d = gpv.plot_3d(geo_data, show_surfaces=True, show_data=True,
-                      show=False, show_lith=False)
+                      show=False, show_lith=False,
+                      kwargs_plot_surfaces={"opacity": 0.7})
     plotter = p3d.p
 
     mesh = geo_data.solutions.dc_meshes[mesh_id]
