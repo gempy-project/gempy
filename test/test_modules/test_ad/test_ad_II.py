@@ -185,7 +185,8 @@ def test_generate_combination_model():
 
     geo_data = generate_example_model(ExampleModel.COMBINATION,
                                       compute_model=False)
-    geo_data.interpolation_options.number_octree_levels = 4
+    geo_data.interpolation_options.number_octree_levels = 5
+    geo_data.interpolation_options.number_octree_levels_surface = 5
     gp.compute_model(
         gempy_model=geo_data,
         engine_config=gp.data.GemPyEngineConfig(
@@ -197,7 +198,7 @@ def test_generate_combination_model():
     )
 
     # --- Backward pass ---
-    vertex_idx = 25
+    vertex_idx = 1_000
     mesh_id = 2
     vertices_tensor = geo_data.solutions.dc_meshes[mesh_id].vertices_tensor
     vertices_tensor[vertex_idx, 2].backward(retain_graph=True,
@@ -205,6 +206,7 @@ def test_generate_combination_model():
 
     # --- Visualisation ---
     sp_coords = geo_data.taped_interpolation_input.surface_points.sp_coords
+    
     p3d = gpv.plot_3d(geo_data, show_surfaces=True, show_data=True,
                       show=False, show_lith=False)
     plotter = p3d.p
