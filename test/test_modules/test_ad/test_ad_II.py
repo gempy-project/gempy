@@ -173,7 +173,7 @@ def test_generate_fold_model():
     # --- Visualisation ---
     sp_coords = geo_data.taped_interpolation_input.surface_points.sp_coords
     p3d = gpv.plot_3d(geo_data, show_surfaces=True, show_data=True,
-                      show=False, show_lith=False,
+                      show=False, show_lith=False, image=True,
                       kwargs_plot_surfaces={"opacity": 0.7})
     plotter = p3d.p
 
@@ -223,7 +223,7 @@ def test_generate_combination_model():
     sp_coords = geo_data.taped_interpolation_input.surface_points.sp_coords
     
     p3d = gpv.plot_3d(geo_data, show_surfaces=True, show_data=True,
-                      show=False, show_lith=False,
+                      show=False, show_lith=False, image=True,
                       kwargs_plot_surfaces={"opacity": 0.7})
     plotter = p3d.p
 
