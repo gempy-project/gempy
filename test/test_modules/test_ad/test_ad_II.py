@@ -39,7 +39,7 @@ def test_generate_fold_model():
 
     # --- Backward Pass ---
     # We choose a specific vertex to compute the gradient with respect to
-    vertex_idx = 40
+    vertex_idx = 14
     vertices_tensor = geo_data.solutions.dc_meshes[0].vertices_tensor
     # Backward on the Z-coordinate of the chosen vertex
     vertices_tensor[vertex_idx, 2].backward(retain_graph=True, create_graph=True)
@@ -127,7 +127,7 @@ def test_generate_fold_model():
     p3d.p.add_mesh(
         glyphs, 
         scalars='gradient_norm',
-        cmap='viridis',
+        cmap='plasma',
         scalar_bar_args={'title': 'Gradient Norm'},
         label='Gradient (Z-vertex wrt SP)'
     )
