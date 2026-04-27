@@ -57,19 +57,19 @@ def _add_gradient_glyphs(plotter, sp_coords, geo_data, arrow_scale=0.5):
     arrows_poly["scaled_mag"] = scaled_mag
 
     glyphs = arrows_poly.glyph(orient="vectors", scale="scaled_mag",
-                                factor=arrow_scale)
+                               factor=arrow_scale)
     plotter.add_mesh(
         glyphs,
         scalars="gradient_norm",
         cmap="plasma",
-        scalar_bar_args={"title": "‖∇Z‖  (vertex → surface pts)",
+        scalar_bar_args={"title"          : "‖∇Z‖  (vertex → surface pts)",
                          "title_font_size": 10,
                          "label_font_size": 9, "n_labels": 3,
-                         "fmt": "%.1e",
-                         "position_x": 0.75, "position_y": 0.02,
-                         "width": 0.22, "height": 0.06,
-                         "color": "black",
-                         "vertical": False},
+                         "fmt"            : "%.1e",
+                         "position_x"     : 0.75, "position_y": 0.02,
+                         "width"          : 0.22, "height": 0.06,
+                         "color"          : "black",
+                         "vertical"       : False},
         label="Gradient (Z-vertex w.r.t. SP)",
     )
 
@@ -168,18 +168,19 @@ def test_generate_fold_model():
     vertex_idx = 14
     vertices_tensor = geo_data.solutions.dc_meshes[0].vertices_tensor
     vertices_tensor[vertex_idx, 2].backward(retain_graph=True,
-                                             create_graph=True)
+                                            create_graph=True)
 
     # --- Visualisation ---
+    image = True
     sp_coords = geo_data.taped_interpolation_input.surface_points.sp_coords
     p3d = gpv.plot_3d(geo_data, show_surfaces=True, show_data=True,
-                      show=False, show_lith=False, image=True,
+                      show=False, show_lith=False, image=image,
                       kwargs_plot_surfaces={"opacity": 0.7})
     plotter = p3d.p
 
     mesh = geo_data.solutions.dc_meshes[0]
     vtx_world = _highlight_vertex_and_triangles(plotter, geo_data, mesh,
-                                                 vertex_idx)
+                                                vertex_idx)
 
     # Mocked borehole through the chosen vertex
     _add_borehole(plotter, vtx_world, extent_z=(0, 1000))
@@ -188,7 +189,8 @@ def test_generate_fold_model():
     _add_gradient_glyphs(plotter, sp_coords, geo_data)
 
     _style_plotter(plotter, title="Fold model – AD gradients")
-    plotter.show()
+    if not image:
+        plotter.show()
 
 
 # ---------------------------------------------------------------------------
@@ -217,19 +219,20 @@ def test_generate_combination_model():
     mesh_id = 2
     vertices_tensor = geo_data.solutions.dc_meshes[mesh_id].vertices_tensor
     vertices_tensor[vertex_idx, 2].backward(retain_graph=True,
-                                             create_graph=True)
+                                            create_graph=True)
 
     # --- Visualisation ---
     sp_coords = geo_data.taped_interpolation_input.surface_points.sp_coords
-    
+
+    image = True
     p3d = gpv.plot_3d(geo_data, show_surfaces=True, show_data=True,
-                      show=False, show_lith=False, image=True,
+                      show=False, show_lith=False, image=image,
                       kwargs_plot_surfaces={"opacity": 0.7})
     plotter = p3d.p
 
     mesh = geo_data.solutions.dc_meshes[mesh_id]
     vtx_world = _highlight_vertex_and_triangles(plotter, geo_data, mesh,
-                                                 vertex_idx)
+                                                vertex_idx)
 
     # Mocked borehole through the chosen vertex
     extent = geo_data.grid.regular_grid.extent
@@ -239,4 +242,5 @@ def test_generate_combination_model():
     _add_gradient_glyphs(plotter, sp_coords, geo_data)
 
     _style_plotter(plotter, title="Combination model – AD gradients")
-    plotter.show()
+    if not image:
+        plotter.show()
