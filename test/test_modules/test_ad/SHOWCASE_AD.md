@@ -96,3 +96,217 @@ Reference context in neighboring projects:
    objectives to surface-point coordinates; include stability and sanity constraints.
 4. **Phase 4 (publication figure):** generate vertex displacement sensitivity panels and
    comparative plots against Phase-1 edge sensitivities.
+
+## 9) Most Important Lessons Learned (for the next engineer)
+
+This section distills the highest-value implementation lessons from the AD planning and code-review pass.
+If you only read one part of this document before coding, read this one.
+
+### 9.1 Lesson 1 — Start from AD plumbing invariants, not from plots
+
+Before implementing any new scenario, lock down the minimum AD invariants in tests:
+
+- `compute_grads=True` must be enabled in engine config.
+- Backend must be `PYTORCH` for autograd behavior expected in this plan.
+- The objective scalar/tensor used for `backward(...)` must be explicitly selected and documented.
+- Gradients must be asserted as:
+  - not `None`
+  - finite (`isfinite`)
+  - reproducible enough for CI tolerance windows.
+
+Why this matters:
+
+- Most failures in differentiable pipelines come from graph disconnects or silent non-differentiable boundaries,
+  not from plotting code.
+- If these invariants are not validated first, downstream sensitivity figures are not scientifically defensible.
+
+### 9.2 Lesson 2 — Separate “scientific objective” from “differentiable objective”
+
+For each scenario, write two statements:
+
+1. Scientific question (e.g., “where is the model spatially most sensitive?”)
+2. Computational objective (e.g., “sum/mean/selected voxel value from scalar field for `backward`”)
+
+Why this matters:
+
+- Reviewers and presentation audiences care about scientific interpretation.
+- Autograd requires an explicit computational scalar/tensor path.
+- Mixing both in one vague objective leads to unstable or non-comparable experiments.
+
+### 9.3 Lesson 3 — Jacobian/full-grid scenarios need strict shape bookkeeping
+
+For Scenario B (full-grid sensitivity wrt all surface points), define shape contracts early and assert them:
+
+- Grid target shape (`n_voxels` or `(nx, ny, nz)` flattened convention).
+- Parameter shape (`n_points x 3` for coordinates).
+- Jacobian shape convention (`n_outputs x n_params` or structured equivalent).
+
+Why this matters:
+
+- Without fixed conventions, heatmaps and ranking panels become inconsistent between runs/branches.
+- Shape mismatches can silently transpose interpretation (important for paper figures).
+
+### 9.4 Lesson 4 — Numerical-vs-autograd comparisons are mandatory for credibility
+
+Scenario C is not optional if the output is intended for publication.
+
+Implementation guidance:
+
+- Use finite differences on a selected subset of points/voxels first (not full combinatorial sweep).
+- Fix perturbation magnitudes and record them in the test.
+- Report both:
+  - absolute/relative error
+  - ranking agreement of influential parameters.
+
+Why this matters:
+
+- AD correctness is often assumed but not demonstrated.
+- A compact numerical check dramatically increases confidence for paper reviewers and conference audiences.
+
+### 9.5 Lesson 5 — Dual contouring has two tracks: feasible-now vs research-track
+
+Do not treat dual contouring sensitivity as one homogeneous task.
+
+Current practical split:
+
+- **Ready now (Tier A / Scenario E):** sensitivity through edge/intersection and gradient-related intermediate quantities.
+- **Research-track (Tier B / Scenario F):** end-to-end gradient from final mesh vertices to geological inputs.
+
+Why this matters:
+
+- Trying to directly implement vertex-position gradients now will likely fail due to graph breaks at output conversion boundaries.
+- You can still deliver meaningful sensitivity science immediately via intermediate contouring diagnostics.
+
+### 9.6 Lesson 6 — The autograd boundary in dual contouring is the critical blocker
+
+The most important technical blocker identified is:
+
+- Conversion of mesh outputs to NumPy at extraction boundary breaks PyTorch graph lineage.
+
+Consequence:
+
+- `dc_mesh.vertices` cannot currently serve as an end-to-end differentiable target in the present API path.
+
+Actionable implication:
+
+- Implement a tensor-preserving output mode in engine APIs before claiming Scenario F as “ready”.
+
+### 9.7 Lesson 7 — Deliverables are tests + figures + narrative, not tests alone
+
+For each scenario, maintain a 3-part deliverable:
+
+1. Test assertions (technical correctness)
+2. Visualization artifact (communication)
+3. Interpretation text snippet (scientific meaning)
+
+Why this matters:
+
+- This project output is intended for both CI and scientific dissemination (paper + EGU).
+- A passing test without interpretable visualization is insufficient for the stated objective.
+
+### 9.8 Lesson 8 — Incremental rollout is safer than broad implementation
+
+Recommended strict order remains:
+
+1. A: baseline regression guards
+2. B: Jacobian/full-grid
+3. C: numerical validation
+4. D: multi-target extension
+5. E: dual contouring intermediates
+6. F: vertex-gradient research milestone
+
+Why this matters:
+
+- Each stage de-risks the next.
+- Failing to complete B/C before D/E/F increases debugging ambiguity and weakens scientific traceability.
+
+### 9.9 Lesson 9 — Keep experiment metadata explicit for reproducibility
+
+In each test and figure generation script, log/store:
+
+- model setup and input dataset references
+- backend + dtype + `compute_grads`
+- objective definition used for `backward`
+- perturbation scale (for finite differences)
+- random seeds (if any stochastic component is introduced)
+
+Why this matters:
+
+- These details are often forgotten and later required for figure regeneration and reviewer responses.
+
+### 9.10 Lesson 10 — Define “done” per scenario before coding
+
+For every scenario, predefine:
+
+- technical pass criteria (assertions + thresholds)
+- expected artifact(s)
+- interpretation sentence template
+
+Why this matters:
+
+- Avoids open-ended implementation loops.
+- Enables handoff between engineers without losing direction.
+
+## 10) File Address Map (high-priority references)
+
+Use these as primary navigation anchors while implementing.
+
+### 10.1 In this repository (`gempy`)
+
+- Main showcase document (this file):
+  - `/home/leguark/PycharmProjects/gempy/test/test_modules/test_ad/SHOWCASE_AD.md`
+- Existing AD smoke test entry point:
+  - `/home/leguark/PycharmProjects/gempy/test/test_modules/test_ad/test_ad_I.py`
+
+### 10.2 In `gempy_probability` (gradient/Jacobian patterns)
+
+- Gradient tests used as reference style:
+  - `/home/leguark/PycharmProjects/gempy_probability/tests/test_gradients/test_gradients_I.py`
+
+### 10.3 In `gempy_engine` (autograd and dual contouring internals)
+
+- PyTorch gradient baseline tests:
+  - `/home/leguark/PycharmProjects/gempy_engine/tests/test_pytorch/test_pytorch_gradients.py`
+- Dual contouring module tests:
+  - `/home/leguark/PycharmProjects/gempy_engine/tests/test_common/test_modules/test_dual.py`
+- Dual contouring integration tests:
+  - `/home/leguark/PycharmProjects/gempy_engine/tests/test_common/test_integrations/test_multi_fields_dual_contouring.py`
+- Dual contouring API path (key feasibility boundary context):
+  - `/home/leguark/PycharmProjects/gempy_engine/gempy_engine/API/dual_contouring/multi_scalar_dual_contouring.py`
+
+## 11) Practical Implementation Checklist (handoff-ready)
+
+Copy/paste this checklist into each PR description for AD showcase work.
+
+- [ ] Scenario ID is explicitly stated (A/B/C/D/E/F).
+- [ ] Scientific objective and differentiable objective are both written.
+- [ ] `compute_grads=True` and `PYTORCH` backend usage is explicit.
+- [ ] Gradient existence + finiteness assertions added.
+- [ ] Shape contracts asserted for outputs/parameters/Jacobian.
+- [ ] If Scenario C or validation step: finite-difference comparison reported.
+- [ ] Figure artifact(s) generated and linked/saved.
+- [ ] Interpretation note added (what the sensitivity means geologically).
+- [ ] Tier classification respected (A-ready vs B-research).
+- [ ] If dual contouring vertices are targeted, graph-lineage feasibility is explicitly documented.
+
+## 12) Open Questions to Resolve Before Scenario F
+
+These should be resolved before allocating a full sprint to vertex-gradient sensitivity:
+
+1. What exact API contract should expose tensor-preserving mesh outputs?
+2. Should tensor-preserving mode be default or opt-in?
+3. What memory/performance budget is acceptable for keeping graph lineage in mesh extraction?
+4. Which vertex objective(s) are scientifically most meaningful (L2 displacement, directional projection, curvature proxy)?
+5. What numerical sanity checks are mandatory before claiming end-to-end differentiability?
+
+## 13) Recommended First PR for the next engineer
+
+To maximize impact quickly:
+
+- Implement Scenario A as strict regression guard assertions in
+  `/home/leguark/PycharmProjects/gempy/test/test_modules/test_ad/test_ad_I.py`.
+- Implement Scenario B minimal Jacobian workflow (single model, moderate grid, stable shape assertions).
+- Produce one reproducible 2D sensitivity map and one ranking panel.
+- Add a short result note to this markdown with observed gradient statistics.
+
+This gives immediate scientific value while establishing the foundation for C/D/E and future F.
