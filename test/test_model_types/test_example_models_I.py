@@ -1,17 +1,12 @@
-﻿from typing import Any
-
-from numpy import dtype, ndarray
+﻿import pytest
+from gempy_viewer import GemPyToVista
 
 import gempy as gp
-from gempy.core.data import GeoModel
 from gempy.core.data.enumerators import ExampleModel
 from gempy.optional_dependencies import require_gempy_viewer
 from gempy_engine.core.data.interp_output import InterpOutput
-from gempy_viewer import GemPyToVista
-
-from test.verify_helper import gempy_verify_array
-import pytest
 from test.conftest import TEST_SPEED, TestSpeed
+from test.verify_helper import gempy_verify_array
 
 # ! When importing the model is computed
 
