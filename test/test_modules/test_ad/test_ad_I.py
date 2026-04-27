@@ -1,13 +1,7 @@
 import torch
-import pytest
-from gempy_viewer import GemPyToVista
 
 import gempy as gp
-from gempy.core.data.enumerators import ExampleModel
 from gempy.optional_dependencies import require_gempy_viewer
-from gempy_engine.core.data.interp_output import InterpOutput
-from test.conftest import TEST_SPEED, TestSpeed
-from test.verify_helper import gempy_verify_array
 
 PLOT = True
 
