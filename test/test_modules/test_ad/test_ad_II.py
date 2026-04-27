@@ -1,4 +1,5 @@
 import pyvista
+import numpy as np
 
 import gempy as gp
 import gempy_viewer as gpv
@@ -36,13 +37,57 @@ def test_generate_fold_model():
         )
     )
 
-    foo = geo_data.solutions.dc_meshes[0].vertices_tensor
-    triangle_idx = 0
-    foo[triangle_idx, 2].backward(retain_graph=True, create_graph=True)
-    pass
+    # --- Backward Pass ---
+    # We choose a specific vertex to compute the gradient with respect to
+    vertex_idx = 0
+    vertices_tensor = geo_data.solutions.dc_meshes[0].vertices_tensor
+    # Backward on the Z-coordinate of the chosen vertex
+    vertices_tensor[vertex_idx, 2].backward(retain_graph=True, create_graph=True)
 
+    # --- Visualization ---
     sp_coords = geo_data.taped_interpolation_input.surface_points.sp_coords
+    p3d = gpv.plot_3d(geo_data, show_surfaces=True, show_data=True, show=False)
     
-    p3d = gpv.plot_3d(geo_data)
-    # p3d.p: pyvista.Plotter()
-    p3d.p.add
+    # 1. Highlight the specific triangle(s) associated with the vertex
+    mesh = geo_data.solutions.dc_meshes[0]
+    vertices = mesh.vertices
+    triangles = mesh.edges
+    
+    # Find triangles that contain the vertex_idx
+    # In GemPy dc_meshes, edges are actually the faces (triangles)
+    mask_triangles = np.any(triangles == vertex_idx, axis=1)
+    highlight_faces = triangles[mask_triangles]
+    
+    if len(highlight_faces) > 0:
+        # Create a pyvista mesh for the highlighted triangles
+        # pv.PolyData faces format: [n_points, p1_idx, p2_idx, ..., pn_idx, n_points, ...]
+        faces_pv = np.column_stack((np.full(len(highlight_faces), 3), highlight_faces)).flatten()
+        highlight_mesh = pyvista.PolyData(vertices, faces_pv)
+        p3d.p.add_mesh(highlight_mesh, color='red', label=f'Triangles sharing vertex {vertex_idx}', line_width=5)
+    
+    # 2. Show the gradient at surface points
+    grad = sp_coords.grad.detach().numpy()
+    sp_pos = geo_data.surface_points_copy.df[['X', 'Y', 'Z']].to_numpy()
+    
+    # Normalize gradients for visualization if they are too small or too large
+    grad_norm = np.linalg.norm(grad, axis=1)
+    mask = grad_norm > 1e-10
+    
+    if np.any(mask):
+        grad_filtered = grad[mask]
+        sp_pos_filtered = sp_pos[mask]
+        
+        # Scale arrows for better visibility
+        max_grad = grad_norm.max()
+        scale_factor = 50 / max_grad if max_grad > 0 else 1
+        
+        p3d.p.add_arrows(
+            cent=sp_pos_filtered, 
+            direction=grad_filtered, 
+            mag=scale_factor, 
+            color='blue', 
+            label='Gradient (Z-vertex wrt SP)'
+        )
+
+    p3d.p.add_legend()
+    p3d.p.show()
