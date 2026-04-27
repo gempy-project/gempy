@@ -23,6 +23,7 @@ as it depends on tensor-lineage-preserving outputs in the dual contouring pipeli
 
 import os
 
+os.environ.setdefault("DEFAULT_BACKEND", "PYTORCH")
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
@@ -30,7 +31,6 @@ import torch
 import gempy as gp
 from gempy.optional_dependencies import require_gempy_viewer
 
-os.environ.setdefault("DEFAULT_BACKEND", "PYTORCH")
 
 PLOT_3D = False
 MAX_VOXELS_FOR_JACOBIAN = 350
@@ -79,8 +79,8 @@ def _get_scalar_field(geo_data: gp.data.GeoModel):
 
 
 def _beautiful_sensitivity_plot(jacobian: torch.Tensor, save_path: str) -> None:
-    point_influence = torch.sum(torch.abs(jacobian), dim=(0, 2)).detach().numpy()
-    coord_influence = torch.sum(torch.abs(jacobian), dim=(0, 1)).detach().numpy()
+    point_influence = torch.sum(torch.abs(jacobian), axis=(0, 2)).detach().numpy()
+    coord_influence = torch.sum(torch.abs(jacobian), axis=(0, 1)).detach().numpy()
 
     fig, axes = plt.subplots(1, 2, figsize=(14, 5))
 
@@ -157,7 +157,7 @@ assert jacobian_b.shape == (n_voxels, n_points, 3)
 assert torch.isfinite(jacobian_b).all(), "Jacobian contains non-finite values"
 
 density_b = (torch.count_nonzero(jacobian_b) / jacobian_b.numel()).item()
-point_influence_b = torch.sum(torch.abs(jacobian_b), dim=(0, 2))
+point_influence_b = torch.sum(torch.abs(jacobian_b), axis=(0, 2))
 top_k = min(5, n_points)
 top_k_idx = torch.topk(point_influence_b, k=top_k).indices.tolist()
 
