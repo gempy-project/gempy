@@ -3,134 +3,222 @@ import numpy as np
 
 import gempy as gp
 import gempy_viewer as gpv
+from gempy.core.data.enumerators import ExampleModel
 
+
+# ---------------------------------------------------------------------------
+# Shared helpers
+# ---------------------------------------------------------------------------
+
+def _add_borehole(plotter, vertex_pos, extent_z, radius=8.0, n_segments=40,
+                  color="white", opacity=0.55):
+    """Add a mocked vertical borehole cylinder passing through *vertex_pos*.
+
+    The borehole spans the full vertical extent of the model so it looks like
+    a real well trajectory.
+    """
+    center = np.array([vertex_pos[0], vertex_pos[1],
+                       (extent_z[0] + extent_z[1]) / 2.0])
+    height = extent_z[1] - extent_z[0]
+    borehole = pyvista.Cylinder(
+        center=center,
+        direction=(0, 0, 1),
+        radius=radius,
+        height=height,
+        resolution=n_segments,
+    )
+    plotter.add_mesh(
+        borehole,
+        color=color,
+        opacity=opacity,
+        label="Borehole",
+    )
+
+
+def _add_gradient_glyphs(plotter, sp_coords, geo_data, arrow_scale=1.0):
+    """Create gradient arrows at every surface-point location."""
+    grad = sp_coords.grad.detach().numpy()
+    sp_pos = geo_data.surface_points_copy.df[["X", "Y", "Z"]].to_numpy()
+
+    grad_norms = np.linalg.norm(grad, axis=1)
+
+    # Logarithmic scaling so that very different magnitudes are still visible
+    log_norms = np.log10(grad_norms + 1e-15)
+    lo, hi = log_norms.min(), log_norms.max()
+    if hi > lo:
+        scaled_mag = (log_norms - lo) / (hi - lo) * 50 + 10
+    else:
+        scaled_mag = np.full_like(grad_norms, 30)
+
+    arrows_poly = pyvista.PolyData(sp_pos)
+    arrows_poly["gradient_norm"] = grad_norms
+    grad_dir = grad / (grad_norms[:, np.newaxis] + 1e-15)
+    arrows_poly["vectors"] = grad_dir
+    arrows_poly["scaled_mag"] = scaled_mag
+
+    glyphs = arrows_poly.glyph(orient="vectors", scale="scaled_mag",
+                                factor=arrow_scale)
+    plotter.add_mesh(
+        glyphs,
+        scalars="gradient_norm",
+        cmap="plasma",
+        scalar_bar_args={"title": "‖∇‖", "title_font_size": 14,
+                         "label_font_size": 11, "n_labels": 4,
+                         "position_x": 0.85, "position_y": 0.25,
+                         "width": 0.08, "height": 0.45},
+        label="Gradient (Z-vertex w.r.t. SP)",
+    )
+
+
+def _style_plotter(plotter, title=""):
+    """Apply a clean, talk-friendly style to the plotter."""
+    plotter.set_background("white", top="aliceblue")
+    plotter.add_text(title, font_size=14, color="black",
+                     position="upper_left")
+    plotter.add_legend(bcolor=(1, 1, 1, 0.6), border=True,
+                       size=(0.18, 0.18))
+    plotter.camera.zoom(1.1)
+
+
+def _highlight_vertex_and_triangles(plotter, geo_data, mesh, vertex_idx):
+    """Highlight the triangles sharing *vertex_idx* and the vertex itself."""
+    triangles = mesh.edges
+    vertices_world = geo_data.input_transform.apply_inverse(mesh.vertices)
+
+    mask = np.any(triangles == vertex_idx, axis=1)
+    highlight_faces = triangles[mask]
+
+    z_offset = np.array([0, 0, 2.0])
+
+    if len(highlight_faces) > 0:
+        faces_pv = np.column_stack(
+            (np.full(len(highlight_faces), 3), highlight_faces)
+        ).flatten()
+        hmesh = pyvista.PolyData(vertices_world, faces_pv)
+        hmesh.points += z_offset
+        plotter.add_mesh(
+            hmesh,
+            color="red",
+            style="surface",
+            opacity=1.0,
+            label=f"Triangles @ vertex {vertex_idx}",
+            line_width=6,
+            render_lines_as_tubes=True,
+        )
+
+    vertex_pos = vertices_world[vertex_idx].reshape(1, 3) + z_offset
+    plotter.add_mesh(
+        pyvista.PolyData(vertex_pos),
+        color="gold",
+        point_size=22,
+        render_points_as_spheres=True,
+        label=f"Vertex {vertex_idx}",
+    )
+    return vertices_world[vertex_idx]
+
+
+# ---------------------------------------------------------------------------
+# Test 1 – Fold model (original, now prettier + borehole)
+# ---------------------------------------------------------------------------
 
 def test_generate_fold_model():
-    data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
+    data_path = "https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/"
     path_to_data = data_path + "/data/input_data/jan_models/"
 
-    # Create a GeoModel instance
     geo_data: gp.data.GeoModel = gp.create_geomodel(
-        project_name='fold',
+        project_name="fold",
         extent=[0, 1000, 0, 1000, 0, 1000],
         refinement=3,
         importer_helper=gp.data.ImporterHelper(
             path_to_orientations=path_to_data + "model2_orientations.csv",
-            path_to_surface_points=path_to_data + "model2_surface_points.csv"
-        )
+            path_to_surface_points=path_to_data + "model2_surface_points.csv",
+        ),
     )
 
-    # Map geological series to surfaces 
     gp.map_stack_to_surfaces(
         gempy_model=geo_data,
-        mapping_object={"Strat_Series": ('rock2', 'rock1')}
+        mapping_object={"Strat_Series": ("rock2", "rock1")},
     )
 
-    # Compute the geological model
     gp.compute_model(
         gempy_model=geo_data,
         engine_config=gp.data.GemPyEngineConfig(
             backend=gp.data.AvailableBackends.PYTORCH,
             use_gpu=False,
-            dtype='float64',
-            compute_grads=True
-        )
+            dtype="float64",
+            compute_grads=True,
+        ),
     )
 
-    # --- Backward Pass ---
-    # We choose a specific vertex to compute the gradient with respect to
+    # --- Backward pass ---
     vertex_idx = 14
     vertices_tensor = geo_data.solutions.dc_meshes[0].vertices_tensor
-    # Backward on the Z-coordinate of the chosen vertex
-    vertices_tensor[vertex_idx, 2].backward(retain_graph=True, create_graph=True)
+    vertices_tensor[vertex_idx, 2].backward(retain_graph=True,
+                                             create_graph=True)
 
-    # --- Visualization ---
+    # --- Visualisation ---
     sp_coords = geo_data.taped_interpolation_input.surface_points.sp_coords
-    p3d = gpv.plot_3d(geo_data, show_surfaces=True, show_data=True, show=False, show_lith=False)
-    
-    # 1. Highlight the specific triangle(s) associated with the vertex
+    p3d = gpv.plot_3d(geo_data, show_surfaces=True, show_data=True,
+                      show=False, show_lith=False)
+    plotter = p3d.p
+
     mesh = geo_data.solutions.dc_meshes[0]
-    triangles = mesh.edges
-    
-    # Transform vertices from normalized (engine) space to world space
-    vertices_world = geo_data.input_transform.apply_inverse(mesh.vertices)
-    
-    # Find triangles that contain the vertex_idx
-    mask_triangles = np.any(triangles == vertex_idx, axis=1)
-    highlight_faces = triangles[mask_triangles]
-    
-    if len(highlight_faces) > 0:
-        # Create a pyvista mesh for the highlighted triangles in world coordinates
-        faces_pv = np.column_stack((np.full(len(highlight_faces), 3), highlight_faces)).flatten()
-        highlight_mesh = pyvista.PolyData(vertices_world, faces_pv)
-        # Small Z-offset to avoid Z-fighting
-        highlight_mesh.points += np.array([0, 0, 2.0]) 
-        p3d.p.add_mesh(
-            highlight_mesh, 
-            color='red', 
-            style='surface',
-            opacity=1.0,
-            label=f'Triangles sharing vertex {vertex_idx}',
-            line_width=10, 
-            render_lines_as_tubes=True
-        )
+    vtx_world = _highlight_vertex_and_triangles(plotter, geo_data, mesh,
+                                                 vertex_idx)
 
-    # 2. Mark the vertex itself
-    vertex_pos = vertices_world[vertex_idx].reshape(1, 3) + np.array([0, 0, 2.0])
-    p3d.p.add_mesh(
-        pyvista.PolyData(vertex_pos),
-        color='yellow',
-        point_size=20,
-        render_points_as_spheres=True,
-        label=f'Vertex {vertex_idx}'
-    )
-    
-    # 3. Show the gradient at every surface point
-    grad = sp_coords.grad.detach().numpy()
-    
-    # Use world-space positions for the arrow locations
-    sp_pos = geo_data.surface_points_copy.df[['X', 'Y', 'Z']].to_numpy()
-    
-    # Scale arrows for better visibility relative to the model extent
-    grad_norms = np.linalg.norm(grad, axis=1)
-    
-    # Use logarithmic scaling for magnitudes to handle large ranges
-    # We use log10(norm + epsilon) to avoid log(0)
-    log_grad_norms = np.log10(grad_norms + 1e-15)
-    # Normalize log norms to a reasonable range for arrow sizes
-    min_log = log_grad_norms.min()
-    max_log = log_grad_norms.max()
-    if max_log > min_log:
-        scaled_mag = (log_grad_norms - min_log) / (max_log - min_log) * 50 + 10
-    else:
-        scaled_mag = np.full_like(grad_norms, 30)
+    # Mocked borehole through the chosen vertex
+    _add_borehole(plotter, vtx_world, extent_z=(0, 1000))
 
-    # Create arrows with color mapping
-    # We need to create a PolyData object for the arrows to use scalars for coloring
-    arrows_poly = pyvista.PolyData(sp_pos)
-    arrows_poly['gradient_norm'] = grad_norms
-    
-    # Normalize directions for arrows (magnitudes are handled by 'mag' parameter or glyph)
-    grad_dir = grad / (grad_norms[:, np.newaxis] + 1e-15)
-    arrows_poly['vectors'] = grad_dir
-    
-    # Create glyphs (arrows)
-    glyphs = arrows_poly.glyph(orient='vectors', scale=False, factor=1.0)
-    
-    # Scale each arrow glyph according to its corresponding scaled_mag
-    # Since we can't easily scale points of individual glyphs in one go without a loop 
-    # if they are already combined into one PolyData, we can use the 'scale' parameter in glyph() 
-    # by adding the scaled magnitudes as a scalar array to the arrows_poly.
-    arrows_poly['scaled_mag'] = scaled_mag
-    glyphs = arrows_poly.glyph(orient='vectors', scale='scaled_mag', factor=1.0)
-    
-    p3d.p.add_mesh(
-        glyphs, 
-        scalars='gradient_norm',
-        cmap='plasma',
-        scalar_bar_args={'title': 'Gradient Norm'},
-        label='Gradient (Z-vertex wrt SP)'
+    # Gradient arrows
+    _add_gradient_glyphs(plotter, sp_coords, geo_data)
+
+    _style_plotter(plotter, title="Fold model – AD gradients")
+    plotter.show()
+
+
+# ---------------------------------------------------------------------------
+# Test 2 – Combination model (fold + unconformity + fault)
+# ---------------------------------------------------------------------------
+
+def test_generate_combination_model():
+    from gempy.API.examples_generator import generate_example_model
+
+    geo_data = generate_example_model(ExampleModel.COMBINATION,
+                                      compute_model=False)
+    geo_data.interpolation_options.number_octree_levels = 4
+    gp.compute_model(
+        gempy_model=geo_data,
+        engine_config=gp.data.GemPyEngineConfig(
+            backend=gp.data.AvailableBackends.PYTORCH,
+            use_gpu=False,
+            dtype="float32",
+            compute_grads=True,
+        ),
     )
 
-    p3d.p.add_legend()
-    p3d.p.show()
+    # --- Backward pass ---
+    vertex_idx = 25
+    mesh_id = 2
+    vertices_tensor = geo_data.solutions.dc_meshes[mesh_id].vertices_tensor
+    vertices_tensor[vertex_idx, 2].backward(retain_graph=True,
+                                             create_graph=True)
+
+    # --- Visualisation ---
+    sp_coords = geo_data.taped_interpolation_input.surface_points.sp_coords
+    p3d = gpv.plot_3d(geo_data, show_surfaces=True, show_data=True,
+                      show=False, show_lith=False)
+    plotter = p3d.p
+
+    mesh = geo_data.solutions.dc_meshes[mesh_id]
+    vtx_world = _highlight_vertex_and_triangles(plotter, geo_data, mesh,
+                                                 vertex_idx)
+
+    # Mocked borehole through the chosen vertex
+    extent = geo_data.grid.regular_grid.extent
+    _add_borehole(plotter, vtx_world, extent_z=(extent[4], extent[5]))
+
+    # Gradient arrows
+    _add_gradient_glyphs(plotter, sp_coords, geo_data)
+
+    _style_plotter(plotter, title="Combination model – AD gradients")
+    plotter.show()
