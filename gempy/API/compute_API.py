@@ -32,7 +32,7 @@ def compute_model(gempy_model: GeoModel, engine_config: Optional[GemPyEngineConf
     Returns:
         Solutions: The computed geological model.
     """
-    engine_config = engine_config or GemPyEngineConfig(use_gpu=False)
+    engine_config: GemPyEngineConfig = engine_config or GemPyEngineConfig(use_gpu=False)
 
     match engine_config.backend:
         case AvailableBackends.numpy | AvailableBackends.PYTORCH:
@@ -40,7 +40,8 @@ def compute_model(gempy_model: GeoModel, engine_config: Optional[GemPyEngineConf
             BackendTensor.change_backend_gempy(
                 engine_backend=engine_config.backend,
                 use_gpu=engine_config.use_gpu,
-                dtype=engine_config.dtype
+                dtype=engine_config.dtype,
+                grads=engine_config.compute_grads
             )
 
             # TODO: To decide what to do with this.

@@ -32,11 +32,6 @@ def test_generate_fold_model():
         mapping_object={"Strat_Series": ('rock2', 'rock1')}
     )
 
-    # from gempy_engine.core.backend_tensor import BackendTensor
-    # BackendTensor.change_backend_gempy(
-    #     engine_backend=gp.data.AvailableBackends.PYTORCH,
-    #     grads=True
-    # )
     # Compute the geological model
     gp.compute_model(
         gempy_model=geo_data,
@@ -49,6 +44,9 @@ def test_generate_fold_model():
     )
 
     foo = geo_data.solutions.octrees_output[0].last_output_center.exported_fields.scalar_field[0]
+    foo.backward(retain_graph=True, create_graph=True)
+    geo_data.taped_interpolation_input.surface_points
+                 
 
     if PLOT or False:
         gpv = require_gempy_viewer()
