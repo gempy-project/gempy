@@ -21,12 +21,20 @@ def nugget_optimizer(
     Returns the final nugget effect value.
     """
     # 1) Backend setup (ideally done once, not every call)
-    BackendTensor.change_backend_gempy(
-        engine_backend=engine_cfg.backend,
-        use_gpu=engine_cfg.use_gpu,
-        dtype=engine_cfg.dtype,
-        grads=True
-    )
+    BackendTensor.COMPUTE_GRADS = True
+    try:
+        BackendTensor.change_backend_gempy(
+            engine_backend=engine_cfg.backend,
+            use_gpu=engine_cfg.use_gpu,
+            dtype=engine_cfg.dtype,
+            grads=True
+        )
+    except TypeError:
+        BackendTensor.change_backend_gempy(
+            engine_backend=engine_cfg.backend,
+            use_gpu=engine_cfg.use_gpu,
+            dtype=engine_cfg.dtype
+        )
 
     # 2) Prepare data
 
