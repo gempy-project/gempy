@@ -11,7 +11,7 @@ from gempy.core.data.enumerators import ExampleModel
 # ---------------------------------------------------------------------------
 
 def _add_borehole(plotter, vertex_pos, extent_z, radius=8.0, n_segments=40,
-                  color="white", opacity=0.55):
+                  color="white", opacity=0.25):
     """Add a mocked vertical borehole cylinder passing through *vertex_pos*.
 
     The borehole spans the full vertical extent of the model so it looks like
@@ -35,7 +35,7 @@ def _add_borehole(plotter, vertex_pos, extent_z, radius=8.0, n_segments=40,
     )
 
 
-def _add_gradient_glyphs(plotter, sp_coords, geo_data, arrow_scale=1.0):
+def _add_gradient_glyphs(plotter, sp_coords, geo_data, arrow_scale=0.5):
     """Create gradient arrows at every surface-point location."""
     grad = sp_coords.grad.detach().numpy()
     sp_pos = geo_data.surface_points_copy.df[["X", "Y", "Z"]].to_numpy()
@@ -62,10 +62,13 @@ def _add_gradient_glyphs(plotter, sp_coords, geo_data, arrow_scale=1.0):
         glyphs,
         scalars="gradient_norm",
         cmap="plasma",
-        scalar_bar_args={"title": "‖∇‖", "title_font_size": 14,
-                         "label_font_size": 11, "n_labels": 4,
+        scalar_bar_args={"title": "‖∇‖", "title_font_size": 12,
+                         "label_font_size": 9, "n_labels": 3,
+                         "fmt": "%.1e",
                          "position_x": 0.85, "position_y": 0.25,
-                         "width": 0.08, "height": 0.45},
+                         "width": 0.10, "height": 0.3,
+                         "color": "black",
+                         "vertical": True},
         label="Gradient (Z-vertex w.r.t. SP)",
     )
 
@@ -98,20 +101,27 @@ def _highlight_vertex_and_triangles(plotter, geo_data, mesh, vertex_idx):
         hmesh.points += z_offset
         plotter.add_mesh(
             hmesh,
-            color="red",
+            color="white",
             style="surface",
-            opacity=1.0,
+            opacity=0.85,
             label=f"Triangles @ vertex {vertex_idx}",
-            line_width=6,
+            line_width=4,
             render_lines_as_tubes=True,
+            edge_color="black",
+            show_edges=True,
         )
 
     vertex_pos = vertices_world[vertex_idx].reshape(1, 3) + z_offset
+    marker = pyvista.Cone(
+        center=vertex_pos.flatten(),
+        direction=(0, 0, -1),
+        height=20.0,
+        radius=8.0,
+        resolution=30,
+    )
     plotter.add_mesh(
-        pyvista.PolyData(vertex_pos),
+        marker,
         color="gold",
-        point_size=22,
-        render_points_as_spheres=True,
         label=f"Vertex {vertex_idx}",
     )
     return vertices_world[vertex_idx]
