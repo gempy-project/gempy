@@ -74,8 +74,18 @@ def test_generate_fold_model():
             line_width=10, 
             render_lines_as_tubes=True
         )
+
+    # 2. Mark the vertex itself
+    vertex_pos = vertices_world[vertex_idx].reshape(1, 3) + np.array([0, 0, 2.0])
+    p3d.p.add_mesh(
+        pyvista.PolyData(vertex_pos),
+        color='yellow',
+        point_size=20,
+        render_points_as_spheres=True,
+        label=f'Vertex {vertex_idx}'
+    )
     
-    # 2. Show the gradient at every surface point
+    # 3. Show the gradient at every surface point
     grad = sp_coords.grad.detach().numpy()
     
     # Use world-space positions for the arrow locations
@@ -83,14 +93,42 @@ def test_generate_fold_model():
     
     # Scale arrows for better visibility relative to the model extent
     grad_norms = np.linalg.norm(grad, axis=1)
-    max_grad = grad_norms.max()
-    scale_factor = 100.0 / max_grad if max_grad > 0 else 1.0
     
-    p3d.p.add_arrows(
-        cent=sp_pos, 
-        direction=grad, 
-        mag=scale_factor, 
-        color='blue', 
+    # Use logarithmic scaling for magnitudes to handle large ranges
+    # We use log10(norm + epsilon) to avoid log(0)
+    log_grad_norms = np.log10(grad_norms + 1e-15)
+    # Normalize log norms to a reasonable range for arrow sizes
+    min_log = log_grad_norms.min()
+    max_log = log_grad_norms.max()
+    if max_log > min_log:
+        scaled_mag = (log_grad_norms - min_log) / (max_log - min_log) * 50 + 10
+    else:
+        scaled_mag = np.full_like(grad_norms, 30)
+
+    # Create arrows with color mapping
+    # We need to create a PolyData object for the arrows to use scalars for coloring
+    arrows_poly = pyvista.PolyData(sp_pos)
+    arrows_poly['gradient_norm'] = grad_norms
+    
+    # Normalize directions for arrows (magnitudes are handled by 'mag' parameter or glyph)
+    grad_dir = grad / (grad_norms[:, np.newaxis] + 1e-15)
+    arrows_poly['vectors'] = grad_dir
+    
+    # Create glyphs (arrows)
+    glyphs = arrows_poly.glyph(orient='vectors', scale=False, factor=1.0)
+    
+    # Scale each arrow glyph according to its corresponding scaled_mag
+    # Since we can't easily scale points of individual glyphs in one go without a loop 
+    # if they are already combined into one PolyData, we can use the 'scale' parameter in glyph() 
+    # by adding the scaled magnitudes as a scalar array to the arrows_poly.
+    arrows_poly['scaled_mag'] = scaled_mag
+    glyphs = arrows_poly.glyph(orient='vectors', scale='scaled_mag', factor=1.0)
+    
+    p3d.p.add_mesh(
+        glyphs, 
+        scalars='gradient_norm',
+        cmap='viridis',
+        scalar_bar_args={'title': 'Gradient Norm'},
         label='Gradient (Z-vertex wrt SP)'
     )
 
