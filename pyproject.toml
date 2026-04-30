@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools>=80", "setuptools-scm>=8"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gempy"
+description = "An Open-source, Python-based 3-D structural geological modeling software"
+readme = "README.md"
+authors = [
+    {name = "Miguel de la Varga"},
+    {name = "Alexander Zimmerman"},
+    {name = "Elisa Heim"},
+    {name = "Alexander Schaaf"},
+    {name = "Fabian Stamm"},
+    {name = "Florian Wellmann"},
+    {name = "Jan Niederau"},
+    {name = "Andrew Annex"},
+]
+keywords = ["geology", "3-D modeling", "structural geology", "uncertainty"]
+license = "EUPL-1.2"
+license-files = ["LICENSE", "AUTHORS.rst"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+requires-python = ">=3.10"
+dynamic = ["version", "dependencies", "optional-dependencies"]
+
+[project.urls]
+Homepage = "https://www.gempy.org/"
+"Source Code" = "https://github.com/gempy-project/gempy"
+
+[tool.setuptools.dynamic]
+dependencies = {file = "requirements/requirements.txt"}
+
+[tool.setuptools.dynamic.optional-dependencies.opt]
+file = "requirements/optional-requirements.txt"
+
+[tool.setuptools.dynamic.optional-dependencies.base]
+file = "requirements/base-requirements.txt"
+
+[tool.setuptools.packages.find]
+include = ["gempy", "gempy.*"]
+
+[tool.setuptools_scm]
+version_file = "gempy/_version.py"
+
