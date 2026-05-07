@@ -176,8 +176,9 @@ Follow these [guidelines](https://github.com/cgre-aachen/gempy/blob/WIP_readme-u
 
 ## Publications using GemPy
 
-* Marquetto, L.,  Jüstel, A., Troian, G.C., Reginato, P.A.R & Simões, J.C. (2024). [Developing a 3D hydrostratigraphical model of the emerged part of the Pelotas Basin along the northern coast of Rio Grande do Sul state, Brazil](https://link.springer.com/article/10.1007/s12665-024-11609-y). Environmental Earth Sciences, 83, 329. 
+* Montaño-Caro, J.C. & Morales-Casique, E. (2026). [Implicit 3D structural geological modeling of the Mexico Basin: a scalable and reproducible open-source workflow](https://link.springer.com/article/10.1007/s12145-025-02064-9). Earth Science Informatics, 19, 12.
 
+* Marquetto, L.,  Jüstel, A., Troian, G.C., Reginato, P.A.R & Simões, J.C. (2024). [Developing a 3D hydrostratigraphical model of the emerged part of the Pelotas Basin along the northern coast of Rio Grande do Sul state, Brazil](https://link.springer.com/article/10.1007/s12665-024-11609-y). Environmental Earth Sciences, 83, 329. 
 
 * Brisson, S., Wellmann, F., Chudalla, N., von Harten, J., & von Hagke, C. (2023). [Estimating uncertainties in 3-D models of complex fold-and-thrust belts: A case study of the Eastern Alps triangle zone](https://www.sciencedirect.com/science/article/pii/S2590197423000046). Applied Computing and Geosciences, 18, 100115.
 
