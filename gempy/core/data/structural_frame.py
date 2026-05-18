@@ -32,7 +32,7 @@ class StructuralFrame:
     """
 
     structural_groups: list[StructuralGroup]
-    color_generator: ColorsGenerator =  Field(default_factory=ColorsGenerator)
+    color_generator: ColorsGenerator = Field(default_factory=ColorsGenerator)
     basement_color: str = None
     # ? Should I create some sort of structural options class? For example, the masking descriptor and faults relations pointer
     is_dirty: bool = True
@@ -42,7 +42,7 @@ class StructuralFrame:
     def __init__(self, structural_groups: list[StructuralGroup], color_gen: ColorsGenerator):
         self.structural_groups = structural_groups  # ? This maybe could be optional
         self.color_generator = color_gen
-        
+
     def __post_init__(self):
         pass
 
@@ -207,7 +207,6 @@ class StructuralFrame:
         """Returns the total number of elements in the structural frame."""
         return len(self.structural_elements)
 
-
     @property
     def _basement_element(self) -> StructuralElement:
         """Returns the basement structural element with a unique color."""
@@ -226,7 +225,7 @@ class StructuralFrame:
 
         if self.basement_color is None or self.basement_color in used_colors:
             self.basement_color = _get_unique_basement_color(
-                color_generator=self.color_generator, 
+                color_generator=self.color_generator,
                 used_colors=used_colors
             )
 
@@ -365,9 +364,14 @@ class StructuralFrame:
         return [element.name for element in self.structural_elements]
 
     @property
+    def elements_enumerator(self) -> np.ndarray:
+        """Returns an array of enumeration for all structural elements."""
+        return np.arange(len(self.structural_elements)) + 1
+
+    @property
     def elements_ids(self) -> np.ndarray:
         """Returns an array of IDs for all structural elements."""
-        return np.arange(len(self.structural_elements)) + 1
+        return [element.id for element in self.structural_elements]
 
     @property
     def surface_points_copy(self) -> SurfacePointsTable:
@@ -402,7 +406,7 @@ class StructuralFrame:
         """Distributes the modified orientations back to the structural elements."""
         for element in self.structural_elements:
             element.orientations.data = modified_orientations.get_orientations_by_id(element.id).data
-            
+
     @property
     def input_tables_binary(self):
         return self.surface_points_copy.data.tobytes() + self.orientations_copy.data.tobytes()
@@ -507,8 +511,8 @@ class StructuralFrame:
     @computed_field
     def binary_meta_data(self) -> dict:
         return {
-                'sp_binary_length': len(self.surface_points_copy.data.tobytes()),
-                'ori_binary_length': len(self.orientations_copy.data.tobytes()) ,
+                'sp_binary_length' : len(self.surface_points_copy.data.tobytes()),
+                'ori_binary_length': len(self.orientations_copy.data.tobytes()),
         }
 
     # endregion
