@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<build-type xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" uuid="4c59851f-4e72-4f3c-99ae-210e24fbdeb7" xsi:noNamespaceSchemaLocation="https://www.jetbrains.com/teamcity/schemas/2025.3/project-config.xsd">
+  <name>TestingEngine_All</name>
+  <description />
+  <settings />
+</build-type>
+
