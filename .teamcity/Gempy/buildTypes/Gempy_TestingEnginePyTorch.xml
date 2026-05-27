@@ -41,8 +41,7 @@ venv/bin/pip install --verbose teamcity-messages]]></param>
           <param name="script.content"><![CDATA[#!/bin/bash
  set -ex
 
-venv/bin/pip install pytest-xdist
-venv/bin/python -m pytest --teamcity -v -n 6]]></param>
+venv/bin/python -m pytest --teamcity -v]]></param>
           <param name="teamcity.step.mode" value="default" />
           <param name="use.custom.script" value="true" />
         </parameters>
