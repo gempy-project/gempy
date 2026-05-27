@@ -2,6 +2,34 @@
 <build-type xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" uuid="dc30d9dd-0ecd-4dfe-9552-43857c358983" xsi:noNamespaceSchemaLocation="https://www.jetbrains.com/teamcity/schemas/2025.3/project-config.xsd">
   <name>TestingEngine_Numpy</name>
   <description />
-  <settings />
+  <settings>
+    <build-runners>
+      <runner id="RUNNER_3" name="Setup" type="simpleRunner">
+        <parameters>
+          <param name="script.content"><![CDATA[#!/bin/bash
+set -ex  # enable debug output and exit on error
+
+# Create virtual environment using Python 3
+python3 -m venv venv
+
+# Activate the virtual environment
+source venv/bin/activate
+
+# Upgrade pip
+venv/bin/python -m pip install --upgrade pip
+
+echo "Checking directory contents..."
+ls -la
+ls -la requirements
+
+# Install requirements and teamcity-messages package
+venv/bin/pip install --verbose -r requirements/dev-requirements.txt
+venv/bin/pip install --verbose teamcity-messages]]></param>
+          <param name="teamcity.step.mode" value="default" />
+          <param name="use.custom.script" value="true" />
+        </parameters>
+      </runner>
+    </build-runners>
+  </settings>
 </build-type>
 
