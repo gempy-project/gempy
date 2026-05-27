@@ -41,6 +41,17 @@ venv/bin/python -m pytest --teamcity -v -n auto]]></param>
         </parameters>
       </runner>
     </build-runners>
+    <build-extensions>
+      <extension id="BUILD_EXT_12" type="commit-status-publisher">
+        <parameters>
+          <param name="github_authentication_type" value="storedToken" />
+          <param name="github_host" value="https://api.github.com" />
+          <param name="publisherId" value="githubStatusPublisher" />
+          <param name="tokenId" value="tc_token_id:CID_3b89bdfbf109f1ab1de7ca93ee1e7c9f:-1:883b6205-e11c-4802-ba96-a93ee511dafc" />
+          <param name="vcsRootId" value="GempyEngine_HttpsGithubComGempyProjectGempyEngineRefsHeadsMain" />
+        </parameters>
+      </extension>
+    </build-extensions>
   </settings>
 </build-type>
 
