@@ -2,6 +2,14 @@
 <build-type xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" uuid="7a0c2716-8d5e-4f6a-82f8-cb209ea3f090" xsi:noNamespaceSchemaLocation="https://www.jetbrains.com/teamcity/schemas/2025.3/project-config.xsd">
   <name>TestingEngine_PyTorch</name>
   <description />
-  <settings />
+  <settings>
+    <parameters>
+      <param name="REQUIREMENT_LEVEL" value="READ_MESH" />
+      <param name="env.CI" value="None" />
+      <param name="env.DEFAULT_BACKEND" value="PYTORCH" />
+      <param name="env.DUAL_CONTOURING_VERTEX_OVERLAP" value="pretty" />
+      <param name="env.MPLBACKEND" value="Agg" />
+    </parameters>
+  </settings>
 </build-type>
 
