@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<build-type xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" uuid="dc30d9dd-0ecd-4dfe-9552-43857c358983" xsi:noNamespaceSchemaLocation="https://www.jetbrains.com/teamcity/schemas/2025.3/project-config.xsd">
+  <name>TestingEngine_Numpy</name>
+  <description />
+  <settings />
+</build-type>
+
