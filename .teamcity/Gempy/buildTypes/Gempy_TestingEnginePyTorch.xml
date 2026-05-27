@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<build-type xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" uuid="7a0c2716-8d5e-4f6a-82f8-cb209ea3f090" xsi:noNamespaceSchemaLocation="https://www.jetbrains.com/teamcity/schemas/2025.3/project-config.xsd">
+  <name>TestingEngine_PyTorch</name>
+  <description />
+  <settings />
+</build-type>
+
