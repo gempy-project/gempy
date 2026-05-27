@@ -51,6 +51,15 @@ venv/bin/python -m pytest --teamcity -v -n auto]]></param>
     <vcs-settings>
       <vcs-entry-ref root-id="GempyEngine_HttpsGithubComGempyProjectGempyEngineRefsHeadsMain" />
     </vcs-settings>
+    <build-triggers>
+      <build-trigger id="TRIGGER_12" type="vcsTrigger">
+        <parameters>
+          <param name="branchFilter" value="+pr:draft=false" />
+          <param name="enableQueueOptimization" value="true" />
+          <param name="quietPeriodMode" value="DO_NOT_USE" />
+        </parameters>
+      </build-trigger>
+    </build-triggers>
   </settings>
 </build-type>
 
