@@ -51,6 +51,11 @@ venv/bin/python -m pytest --teamcity -v -n auto]]></param>
           <param name="vcsRootId" value="GempyEngine_HttpsGithubComGempyProjectGempyEngineRefsHeadsMain" />
         </parameters>
       </extension>
+      <extension id="perfmon" type="perfmon">
+        <parameters>
+          <param name="teamcity.perfmon.feature.enabled" value="true" />
+        </parameters>
+      </extension>
     </build-extensions>
   </settings>
 </build-type>
