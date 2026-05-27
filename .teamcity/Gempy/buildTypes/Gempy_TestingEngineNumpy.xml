@@ -29,6 +29,17 @@ venv/bin/pip install --verbose teamcity-messages]]></param>
           <param name="use.custom.script" value="true" />
         </parameters>
       </runner>
+      <runner id="RUNNER_4" name="Run Test: Core" type="simpleRunner">
+        <parameters>
+          <param name="script.content"><![CDATA[#!/bin/bash
+ set -ex
+
+venv/bin/pip install pytest-xdist
+venv/bin/python -m pytest --teamcity -v -n auto]]></param>
+          <param name="teamcity.step.mode" value="default" />
+          <param name="use.custom.script" value="true" />
+        </parameters>
+      </runner>
     </build-runners>
   </settings>
 </build-type>
