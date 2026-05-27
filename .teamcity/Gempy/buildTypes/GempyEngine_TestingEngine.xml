@@ -47,7 +47,7 @@ venv/bin/pip install --verbose teamcity-messages]]></param>
  set -ex  # Exit immediately if a command exits with a non-zero status, and print commands
 
 # Run pytest with the teamcity reporter enabled
-venv/bin/python -m pytest --teamcity -v]]></param>
+venv/bin/python -m pytest --teamcity -v -n auto]]></param>
           <param name="teamcity.step.mode" value="default" />
           <param name="use.custom.script" value="true" />
         </parameters>
