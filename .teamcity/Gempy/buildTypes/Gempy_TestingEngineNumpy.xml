@@ -4,7 +4,7 @@
   <description />
   <settings>
     <parameters>
-      <param name="env.DEFAULT_BACKEND" value="" />
+      <param name="env.DEFAULT_BACKEND" value="numpy" />
     </parameters>
   </settings>
 </build-type>
