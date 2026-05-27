@@ -44,9 +44,9 @@ venv/bin/pip install --verbose teamcity-messages]]></param>
       <runner id="Run_Test" name="Run Test: Core" type="simpleRunner">
         <parameters>
           <param name="script.content"><![CDATA[#!/bin/bash
- set -ex  # Exit immediately if a command exits with a non-zero status, and print commands
+ set -ex
 
-# Run pytest with the teamcity reporter enabled
+venv/bin/pip install pytest-xdist
 venv/bin/python -m pytest --teamcity -v -n auto]]></param>
           <param name="teamcity.step.mode" value="default" />
           <param name="use.custom.script" value="true" />
