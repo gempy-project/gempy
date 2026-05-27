@@ -3,6 +3,33 @@
   <name>TestingEngine_PyTorch</name>
   <description />
   <settings>
+    <build-runners>
+      <runner id="RUNNER_1" name="Setup" type="simpleRunner">
+        <parameters>
+          <param name="script.content"><![CDATA[#!/bin/bash
+set -ex  # enable debug output and exit on error
+
+# Create virtual environment using Python 3
+python3 -m venv venv
+
+# Activate the virtual environment
+source venv/bin/activate
+
+# Upgrade pip
+venv/bin/python -m pip install --upgrade pip
+
+echo "Checking directory contents..."
+ls -la
+ls -la requirements
+
+# Install requirements and teamcity-messages package
+venv/bin/pip install --verbose -r requirements/dev-requirements.txt
+venv/bin/pip install --verbose teamcity-messages]]></param>
+          <param name="teamcity.step.mode" value="default" />
+          <param name="use.custom.script" value="true" />
+        </parameters>
+      </runner>
+    </build-runners>
     <vcs-settings>
       <vcs-entry-ref root-id="GempyEngine_HttpsGithubComGempyProjectGempyEngineRefsHeadsMain" />
     </vcs-settings>
