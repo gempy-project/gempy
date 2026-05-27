@@ -41,6 +41,9 @@ venv/bin/python -m pytest --teamcity -v -n auto]]></param>
         </parameters>
       </runner>
     </build-runners>
+    <vcs-settings>
+      <vcs-entry-ref root-id="GempyEngine_HttpsGithubComGempyProjectGempyEngineRefsHeadsMain" />
+    </vcs-settings>
     <build-triggers>
       <build-trigger id="TRIGGER_11" type="vcsTrigger">
         <parameters>
