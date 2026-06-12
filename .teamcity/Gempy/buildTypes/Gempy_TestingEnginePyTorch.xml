@@ -91,3 +91,4 @@ venv/bin/python -m pytest --teamcity -v]]></param>
     </build-extensions>
   </settings>
 </build-type>
+
