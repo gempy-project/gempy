@@ -108,7 +108,7 @@ class RegularGrid:
         def _calculate_rotated_box_val(v1, v2):
             # Check if the points are collinear
             # noinspection PyUnreachableCode
-            cross = np.cross(v1[:2], v2[:2])
+            cross = np.cross(v1, v2)[2]
             if np.isclose(cross, 0):
                 raise ValueError("The points are collinear")
             # Check if v1 and v2 are perpendicular

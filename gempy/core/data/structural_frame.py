@@ -371,7 +371,7 @@ class StructuralFrame:
     @property
     def elements_ids(self) -> np.ndarray:
         """Returns an array of IDs for all structural elements."""
-        return [element.id for element in self.structural_elements]
+        return np.array([element.id for element in self.structural_elements])
 
     @property
     def surface_points_copy(self) -> SurfacePointsTable:
