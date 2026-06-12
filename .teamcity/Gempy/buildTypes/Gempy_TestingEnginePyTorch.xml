@@ -5,7 +5,6 @@
   <settings>
     <parameters>
       <param name="REQUIREMENT_LEVEL" value="CORE" />
-      <param name="env.CI" value="None" />
       <param name="env.DEFAULT_BACKEND" value="PYTORCH" />
       <param name="env.DEFAULT_PYKEOPS" value="False" />
       <param name="env.DUAL_CONTOURING_VERTEX_OVERLAP" value="none" />
