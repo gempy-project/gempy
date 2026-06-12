@@ -5,6 +5,7 @@
   <settings>
     <parameters>
       <param name="env.DEFAULT_BACKEND" value="numpy" />
+      <param name="env.DEFAULT_PYKEOPS" value="False" />
     </parameters>
     <build-runners>
       <runner id="RUNNER_3" name="Setup" type="simpleRunner">
