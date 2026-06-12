@@ -7,6 +7,7 @@
       <depend-on sourceBuildTypeId="Gempy_TestingEngineNumpy" />
       <depend-on sourceBuildTypeId="Gempy_TestingEnginePyTorch" />
       <depend-on sourceBuildTypeId="Gempy_TestingEnginePyTorchPyKeOps" />
+      <depend-on sourceBuildTypeId="Gempy_TestingEnginePyTorchPyKeOpsFlat" />
     </dependencies>
   </settings>
 </build-type>
