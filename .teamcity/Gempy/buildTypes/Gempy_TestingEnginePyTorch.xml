@@ -9,6 +9,7 @@
       <param name="env.DEFAULT_BACKEND" value="PYTORCH" />
       <param name="env.DEFAULT_PYKEOPS" value="False" />
       <param name="env.DUAL_CONTOURING_VERTEX_OVERLAP" value="pretty" />
+      <param name="env.GEMPY_FLAT_STACKS" value="False" />
       <param name="env.MPLBACKEND" value="Agg" />
     </parameters>
     <build-runners>
