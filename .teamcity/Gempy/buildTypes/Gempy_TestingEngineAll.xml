@@ -8,6 +8,7 @@
       <depend-on sourceBuildTypeId="Gempy_TestingEnginePyTorch" />
       <depend-on sourceBuildTypeId="Gempy_TestingEnginePyTorchPyKeOps" />
       <depend-on sourceBuildTypeId="Gempy_TestingEnginePyTorchPyKeOpsFlat" />
+      <depend-on sourceBuildTypeId="Gempy_TestingEngineDualContouringPretty" />
     </dependencies>
   </settings>
 </build-type>
