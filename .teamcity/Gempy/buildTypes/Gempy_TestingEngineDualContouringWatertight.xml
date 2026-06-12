@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<build-type xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" uuid="042ff563-3657-46ea-8cf6-bbb251430fb6" xsi:noNamespaceSchemaLocation="https://www.jetbrains.com/teamcity/schemas/2025.3/project-config.xsd">
+  <name>TestingEngine_DualContouringWatertight</name>
+  <description />
+  <settings>
+    <parameters>
+      <param name="env.DEFAULT_BACKEND" value="numpy" />
+      <param name="env.DEFAULT_PYKEOPS" value="False" />
+      <param name="env.DUAL_CONTOURING_VERTEX_OVERLAP" value="none" />
+      <param name="env.GEMPY_FLAT_STACKS" value="False" />
+      <param name="env.MPLBACKEND" value="Agg" />
+    </parameters>
+    <build-runners>
+      <runner id="RUNNER_3" name="Setup" type="simpleRunner">
+        <parameters>
+          <param name="script.content"><![CDATA[#!/bin/bash
+set -ex  # enable debug output and exit on error
+
+# Create virtual environment using Python 3
+python3 -m venv venv
+
+# Activate the virtual environment
+source venv/bin/activate
+
+# Upgrade pip
+venv/bin/python -m pip install --upgrade pip
+
+echo "Checking directory contents..."
+ls -la
+ls -la requirements
+
+# Install requirements and teamcity-messages package
+venv/bin/pip install --verbose -r requirements/dev-requirements.txt
+venv/bin/pip install --verbose teamcity-messages]]></param>
+          <param name="teamcity.step.mode" value="default" />
+          <param name="use.custom.script" value="true" />
+        </parameters>
+      </runner>
+      <runner id="RUNNER_4" name="Run Test: Core" type="simpleRunner">
+        <parameters>
+          <param name="script.content"><![CDATA[#!/bin/bash
+ set -ex
+
+venv/bin/pip install pytest-xdist
+venv/bin/python -m pytest --teamcity -v -n 6]]></param>
+          <param name="teamcity.step.mode" value="default" />
+          <param name="use.custom.script" value="true" />
+        </parameters>
+      </runner>
+    </build-runners>
+    <vcs-settings>
+      <vcs-entry-ref root-id="GempyEngine_HttpsGithubComGempyProjectGempyEngineRefsHeadsMain" />
+    </vcs-settings>
+    <build-triggers>
+      <build-trigger id="TRIGGER_11" type="vcsTrigger">
+        <parameters>
+          <param name="branchFilter" value="+pr:draft=false" />
+          <param name="enableQueueOptimization" value="true" />
+          <param name="quietPeriodMode" value="DO_NOT_USE" />
+        </parameters>
+      </build-trigger>
+    </build-triggers>
+    <build-extensions>
+      <extension id="BUILD_EXT_12" type="commit-status-publisher">
+        <parameters>
+          <param name="github_authentication_type" value="storedToken" />
+          <param name="github_host" value="https://api.github.com" />
+          <param name="publisherId" value="githubStatusPublisher" />
+          <param name="tokenId" value="tc_token_id:CID_3b89bdfbf109f1ab1de7ca93ee1e7c9f:-1:883b6205-e11c-4802-ba96-a93ee511dafc" />
+          <param name="vcsRootId" value="GempyEngine_HttpsGithubComGempyProjectGempyEngineRefsHeadsMain" />
+        </parameters>
+      </extension>
+      <extension id="perfmon" type="perfmon">
+        <parameters>
+          <param name="teamcity.perfmon.feature.enabled" value="true" />
+        </parameters>
+      </extension>
+    </build-extensions>
+  </settings>
+</build-type>
+
