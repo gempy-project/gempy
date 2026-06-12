@@ -6,7 +6,7 @@
     <parameters>
       <param name="env.DEFAULT_BACKEND" value="numpy" />
       <param name="env.DEFAULT_PYKEOPS" value="False" />
-      <param name="env.DUAL_CONTOURING_VERTEX_OVERLAP" value="none" />
+      <param name="env.DUAL_CONTOURING_VERTEX_OVERLAP" value="watertight" />
       <param name="env.GEMPY_FLAT_STACKS" value="False" />
       <param name="env.MPLBACKEND" value="Agg" />
     </parameters>
