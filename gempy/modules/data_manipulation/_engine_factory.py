@@ -51,7 +51,7 @@ def interpolation_input_from_structural_frame(geo_model: "gempy.data.GeoModel") 
         surface_points=surface_points,
         orientations=orientations,
         grid=grid,
-        unit_values=structural_frame.elements_ids,  # TODO: Here we will need to pass densities etc.
+        unit_values=structural_frame.elements_enumerator,  # TODO: Here we will need to pass densities etc.
         weights=weights
     )
 

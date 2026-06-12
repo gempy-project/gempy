@@ -125,12 +125,12 @@ class Grid:
         self._update_values()
 
     @classmethod
-    def init_octree_grid(cls, extent, octree_levels, legacy: bool = False):
+    def init_octree_grid(cls, extent, octree_levels, base_resolution: Optional[np.ndarray] = None, legacy: bool = False):
         grid = cls()
 
         if legacy:
             base_resolution = (np.array([2, 2, 2]))
-        else:
+        elif base_resolution is None:
             lengths = np.array([
                     extent[1] - extent[0],  # x
                     extent[3] - extent[2],  # y
