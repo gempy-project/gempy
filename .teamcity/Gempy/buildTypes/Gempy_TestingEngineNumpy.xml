@@ -8,6 +8,7 @@
       <param name="env.DEFAULT_PYKEOPS" value="False" />
       <param name="env.DUAL_CONTOURING_VERTEX_OVERLAP" value="none" />
       <param name="env.GEMPY_FLAT_STACKS" value="False" />
+      <param name="env.MPLBACKEND" value="Agg" />
     </parameters>
     <build-runners>
       <runner id="RUNNER_3" name="Setup" type="simpleRunner">
