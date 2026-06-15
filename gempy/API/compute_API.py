@@ -32,17 +32,30 @@ def compute_model(gempy_model: GeoModel, engine_config: Optional[GemPyEngineConf
     Returns:
         Solutions: The computed geological model.
     """
-    engine_config: GemPyEngineConfig = engine_config or GemPyEngineConfig(use_gpu=False)
+    engine_config: GemPyEngineConfig = engine_config or GemPyEngineConfig()
 
     match engine_config.backend:
         case AvailableBackends.numpy | AvailableBackends.PYTORCH:
 
-            BackendTensor.change_backend_gempy(
-                engine_backend=engine_config.backend,
-                use_gpu=engine_config.use_gpu,
-                dtype=engine_config.dtype,
-                grads=engine_config.compute_grads
-            )
+            try:
+                BackendTensor.change_backend_gempy(
+                    engine_backend=engine_config.backend,
+                    use_gpu=engine_config.use_gpu,
+                    dtype=engine_config.dtype,
+                    grads=engine_config.compute_grads
+                )
+            except RuntimeError:
+                if engine_config.use_gpu and os.getenv("GEMPY_GPU_FALLBACK", "False") == "True":
+                    print("GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)")
+                    engine_config.use_gpu = False
+                    BackendTensor.change_backend_gempy(
+                        engine_backend=engine_config.backend,
+                        use_gpu=False,
+                        dtype=engine_config.dtype,
+                        grads=engine_config.compute_grads
+                    )
+                else:
+                    raise
 
             # TODO: To decide what to do with this.
             interpolation_input = interpolation_input_from_structural_frame(gempy_model)

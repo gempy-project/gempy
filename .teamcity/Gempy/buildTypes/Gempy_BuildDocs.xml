@@ -13,8 +13,14 @@
     </disabled-settings>
     <parameters>
       <param name="REQUIREMENT_LEVEL" value="READ_MESH" />
+      <param name="env.DEFAULT_BACKEND" value="PYTORCH" />
+      <param name="env.DEFAULT_PYKEOPS" value="True" />
+      <param name="env.GEMPY_FLAT_STACKS" value="True" />
+      <param name="env.GEMPY_USE_GPU" value="True" />
+      <param name="env.GEMPY_GPU_FALLBACK" value="True" />
       <param name="env.LIQUID_EARTH_API_TOKEN" value="credentialsJSON:f48d57e0-a522-475f-a94d-333cbb99703e" spec="password display='normal'" />
       <param name="env.MPLBACKEND" value="Agg" />
+      <param name="env.PYVISTA_OFF_SCREEN" value="true" />
     </parameters>
     <build-runners>
       <runner id="Setup" name="Setup" type="simpleRunner">
