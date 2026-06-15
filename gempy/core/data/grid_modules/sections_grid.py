@@ -10,6 +10,17 @@ from ....optional_dependencies import require_pandas
 
 
 
+def _normalize_section_dict(section_dict):
+    return {
+        name: (
+            tuple(float(v) for v in start),
+            tuple(float(v) for v in stop),
+            tuple(int(v) for v in resolution),
+        )
+        for name, (start, stop, resolution) in section_dict.items()
+    }
+
+
 @dataclasses.dataclass
 class Sections:
     """
@@ -48,8 +59,8 @@ class Sections:
     extent: Optional[np.ndarray] = Field(default=None, exclude=True)
 
     def __post_init__(self):
+        self.section_dict = _normalize_section_dict(self.section_dict)
         self.initialize_computations()
-        pass
 
     def initialize_computations(self):
         # copy names
@@ -83,7 +94,7 @@ class Sections:
 
     def set_sections(self, section_dict, regular_grid=None, z_ext=None):
         pd = require_pandas()
-        self.section_dict = section_dict
+        self.section_dict = _normalize_section_dict(section_dict)
         if regular_grid is not None:
             self.z_ext = regular_grid.extent[4:]
             
