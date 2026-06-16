@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<build-type xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" uuid="7189123e-35c4-4780-839e-4cfa3d7c79ea" xsi:noNamespaceSchemaLocation="https://www.jetbrains.com/teamcity/schemas/2025.3/project-config.xsd">
+  <name>Release GemPy Plugins</name>
+  <description />
+  <settings ref="ReleasePythonPackage">
+    <disabled-settings>
+      <setting-ref ref="RQ_PLUGINS" />
+    </disabled-settings>
+    <parameters>
+      <param name="env.org/repo" value="gempy-project/gempy_plugins" />
+    </parameters>
+    <vcs-settings>
+      <vcs-entry-ref root-id="Gempy_HttpsGithubComGempyProjectGempyPluginsRefsHeadsMain" />
+    </vcs-settings>
+    <requirements>
+      <exists id="RQ_PLUGINS" name="env.WSLENV" />
+    </requirements>
+  </settings>
+</build-type>
