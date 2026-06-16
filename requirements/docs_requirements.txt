@@ -2,6 +2,7 @@
 
 torch
 rasterio
+pykeops
 
 sphinx
 sphinx-gallery
