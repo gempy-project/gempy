@@ -85,7 +85,7 @@ p.orientations_mesh.save('orientations.vtk')  # Save the orientations mesh
 p.surface_points_mesh.save('surface_points.vtk')  # Save the surface points mesh
 
 # Retrieve and export the regular grid (volume representation) of the model
-box = p.regular_grid_actor.GetMapper().GetInput()
+box = pv.wrap(p.regular_grid_actor.GetMapper().GetInput())
 box.save('box.vtk')
 
 # %%
