@@ -12,3 +12,5 @@ liquid-earth-sdk
 wellpathpy
 
 openpyxl
+
+gempy_plugins @ git+https://github.com/gempy-project/gempy_plugins.git@2024.1.1
