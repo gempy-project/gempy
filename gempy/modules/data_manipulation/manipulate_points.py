@@ -67,16 +67,16 @@ def add_surface_points(
 
     # * Loop per element_name
     for element_name, data in grouped_data.items():
+        element: StructuralElement = geo_model.structural_frame.get_element_by_name(element_name)
         formatted_data, _ = SurfacePointsTable._data_from_arrays(
             x=data['x'],
             y=data['y'],
             z=data['z'],
             names=[element_name] * len(data['x']),
             nugget=data['nugget'],
-            name_id_map=None
+            name_id_map=element.surface_points.name_id_map
         )
 
-        element: StructuralElement = geo_model.structural_frame.get_element_by_name(element_name)
         element.surface_points.data = np.concatenate([
                 element.surface_points.data,
                 formatted_data
