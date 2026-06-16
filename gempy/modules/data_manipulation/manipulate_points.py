@@ -168,6 +168,12 @@ def add_orientations(geo_model: GeoModel,
 
     # * Loop per element_name
     for element_name, data in grouped_data.items():
+        element: StructuralElement = geo_model.structural_frame.get_element_by_name(element_name)
+
+        ori_name_id_map = element.orientations.name_id_map
+        if ori_name_id_map is None or element_name not in ori_name_id_map:
+            ori_name_id_map = {**(ori_name_id_map or {}), element_name: element.id}
+
         formatted_data, _ = OrientationsTable._data_from_arrays(
             x=data['x'],
             y=data['y'],
@@ -177,10 +183,9 @@ def add_orientations(geo_model: GeoModel,
             G_z=data['pole_vector'][..., 2],
             names=[element_name] * len(data['x']),
             nugget=data['nugget'],
-            name_id_map=name_id_map
+            name_id_map=ori_name_id_map
         )
 
-        element: StructuralElement = geo_model.structural_frame.get_element_by_name(element_name)
         element.orientations.data = np.concatenate([
                 element.orientations.data,
                 formatted_data
