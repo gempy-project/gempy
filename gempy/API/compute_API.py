@@ -70,7 +70,10 @@ def compute_model(gempy_model: GeoModel, engine_config: Optional[GemPyEngineConf
         case _:
             raise ValueError(f'Backend {engine_config} not supported')
 
-    if os.getenv("VALIDATE_SERIALIZATION", "False") == "True" and kwargs.get("validate_serialization", True):
+    validate_serialization = os.getenv("VALIDATE_SERIALIZATION", "False") == "True"
+    if "validate_serialization" in kwargs:
+        validate_serialization = kwargs["validate_serialization"]
+    if validate_serialization:
         from ..modules.serialization.save_load import save_model
         import tempfile
         with tempfile.NamedTemporaryFile(mode='w+', delete=True) as tmp:
@@ -102,7 +105,7 @@ def compute_model_at(gempy_model: GeoModel, at: np.ndarray,
         reset=True
     )
     
-    sol = compute_model(gempy_model, engine_config, validate_serialization=True)
+    sol = compute_model(gempy_model, engine_config)
     return sol.raw_arrays.custom
 
 

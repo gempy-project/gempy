@@ -22,6 +22,7 @@ class CustomGrid:
     
        
     def __post_init__(self):
+        self.values = np.asarray(self.values, dtype=np.float64)
         custom_grid = np.atleast_2d(self.values)
         assert type(custom_grid) is np.ndarray and custom_grid.shape[1] == 3, \
             'The shape of new grid must be (n,3)  where n is the number of' \
