@@ -67,7 +67,7 @@ def test_gravity():
     gp.set_centered_grid(
         grid=geo_model.grid,
         centers=np.array([[6, 0, 4]], dtype="float"),
-        resolution=np.array([10, 10, 100], dtype="float"),
+        resolution=np.array([10, 10, 100]),
         radius=np.array([16000, 16000, 16000], dtype="float")  # ? This radius makes 0 sense but it is the original one in gempy v2
     )
 

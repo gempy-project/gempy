@@ -95,6 +95,7 @@
         "_custom_grid": null,
         "_topography": null,
         "_sections": null,
+        "_centered_grid": null,
         "_transform": null,
         "_octree_levels": -1,
         "binary_meta_data": {
