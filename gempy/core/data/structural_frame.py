@@ -1,4 +1,5 @@
 ﻿import hashlib
+from contextlib import contextmanager
 
 import numpy as np
 import warnings
@@ -526,3 +527,49 @@ class StructuralFrame:
                 raise ValueError("The fault relations matrix is not given")
             if self.fault_relations.shape != (len(self.structural_groups), len(self.structural_groups)):
                 raise ValueError("The fault relations matrix is not the right shape")
+
+    # region Fault relation serialization helpers
+
+    def _prepare_fault_relations_for_serialization(self):
+        """Convert list[StructuralGroup] references to list[str] names before JSON serialization."""
+        for group in self.structural_groups:
+            names = group._fault_relation_names_for_json()
+            if names is not group.fault_relations:
+                group._fr_serialization_backup = group.fault_relations
+                group.fault_relations = names
+
+    def _restore_fault_relations_after_serialization(self):
+        """Restore list[StructuralGroup] references after serialization."""
+        for group in self.structural_groups:
+            if hasattr(group, '_fr_serialization_backup'):
+                group.fault_relations = group._fr_serialization_backup
+                del group._fr_serialization_backup
+
+    @contextmanager
+    def serialized_fault_relations(self):
+        """Context manager that temporarily converts fault_relations for safe JSON serialization."""
+        self._prepare_fault_relations_for_serialization()
+        try:
+            yield
+        finally:
+            self._restore_fault_relations_after_serialization()
+
+    def restore_fault_relations_from_names(self, pending: dict[int, list[str]]):
+        """Resolve fault_relation group names back to StructuralGroup references after deserialization."""
+        if not pending:
+            return
+        for i, names in pending.items():
+            self.structural_groups[i].fault_relations = [self.get_group_by_name(name) for name in names]
+
+    @staticmethod
+    def _extract_and_clear_fault_relation_names(structural_groups_data: list[dict]) -> dict[int, list[str]]:
+        """Pre-process serialized group data: extract name lists and clear for Pydantic validation."""
+        pending = {}
+        for i, group_data in enumerate(structural_groups_data):
+            fr = group_data.get('fault_relations')
+            if isinstance(fr, list) and fr and isinstance(fr[0], str):
+                pending[i] = fr
+                group_data['fault_relations'] = None
+        return pending
+
+    # endregion

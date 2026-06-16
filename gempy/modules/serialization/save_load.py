@@ -1,14 +1,15 @@
+import io
+import json
+import zipfile
 import re
-
 import warnings
 
 from ...core.data import GeoModel
+from ...core.data.structural_frame import StructuralFrame
 from ...core.data.encoders.converters import loading_model_from_binary
 from ...optional_dependencies import require_zlib
 import pathlib
 import os
-import io
-import zipfile
 
 
 def save_model(model: GeoModel, path: str | None = None, validate_serialization: bool = True):
@@ -135,15 +136,10 @@ def load_model(path: str) -> GeoModel:
 
 
 def model_to_bytes(model: GeoModel) -> bytes:
-    # 1) Make a fully deterministic JSON header
-    # header_dict = model.model_dump(by_alias=True)
-    # header_json = json.dumps(
-    #     header_dict,
-    #     sort_keys=True,          # always sort object keys
-    #     separators=(",", ":"),   # no extra whitespace
-    # ).encode("utf-8")
-    
-    header_json = model.model_dump_json(by_alias=True, indent=4)
+    with model.structural_frame.serialized_fault_relations():
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", message="Pydantic serializer warnings")
+            header_json = model.model_dump_json(by_alias=True, indent=4)
 
     # 2) Raw binary chunks (no additional zlib.compress here)
     input_raw = model.structural_frame.input_tables_binary
@@ -175,17 +171,21 @@ def _load_model_from_bytes(data: bytes) -> GeoModel:
     buf = io.BytesIO(data)
     with zipfile.ZipFile(buf, "r") as zf:
         header_json = zf.read("header.json").decode("utf-8")
-        # header      = json.loads(header_json)
         input_raw   = zf.read("input.bin")
         grid_raw    = zf.read("grid.bin")
 
-    # If you want to validate or decompress further, do it here…
+    header_dict = json.loads(header_json)
+    pending = StructuralFrame._extract_and_clear_fault_relation_names(
+        header_dict.get('structural_frame', {}).get('structural_groups', [])
+    )
+
     with loading_model_from_binary(
             input_binary=input_raw,
             grid_binary= grid_raw
     ):
-        model = GeoModel.model_validate_json(header_json)
+        model = GeoModel.model_validate(header_dict)
 
+    model.structural_frame.restore_fault_relations_from_names(pending)
     return model
 
 def _deserialize_binary_file(binary_file):
@@ -209,11 +209,17 @@ def _deserialize_binary_file(binary_file):
     grid_binary = binary_file[4 + header_length + input_size: all_sections_length]
     zlib = require_zlib()
     
+    pending = StructuralFrame._extract_and_clear_fault_relation_names(
+        header.get('structural_frame', {}).get('structural_groups', [])
+    )
+    
     with loading_model_from_binary(
             input_binary=(zlib.decompress(input_binary)),
             grid_binary=(zlib.decompress(grid_binary))
     ):
-        model = GeoModel.model_validate_json(header_json)
+        model = GeoModel.model_validate(header)
+    
+    model.structural_frame.restore_fault_relations_from_names(pending)
     return model
 
 

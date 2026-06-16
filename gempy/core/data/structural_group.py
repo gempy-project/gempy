@@ -94,6 +94,13 @@ class StructuralGroup(ABC):
         matched_elements: Generator = (element for element in self.elements if element.name == element_name)
         return next(matched_elements, None)
 
+    def _fault_relation_names_for_json(self):
+        """Convert list[StructuralGroup] to list[str] names for JSON-safe serialization."""
+        fr = self.fault_relations
+        if isinstance(fr, list) and fr:
+            return [g.name if hasattr(g, 'name') else g for g in fr]
+        return fr
+
 
 # ? I think these two subclasses are not necessary
 @dataclass
