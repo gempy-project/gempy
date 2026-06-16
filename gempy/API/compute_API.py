@@ -74,10 +74,10 @@ def compute_model(gempy_model: GeoModel, engine_config: Optional[GemPyEngineConf
     if "validate_serialization" in kwargs:
         validate_serialization = kwargs["validate_serialization"]
     if validate_serialization:
-        from ..modules.serialization.save_load import save_model
-        import tempfile
-        with tempfile.NamedTemporaryFile(mode='w+', delete=True) as tmp:
-            save_model(model=gempy_model, path=tmp.name, validate_serialization=True)
+        from ..modules.serialization.save_load import model_to_bytes, _load_model_from_bytes, _validate_serialization
+        binary_file = model_to_bytes(gempy_model)
+        model_deserialized = _load_model_from_bytes(binary_file)
+        _validate_serialization(gempy_model, model_deserialized)
 
     return gempy_model.solutions
 
