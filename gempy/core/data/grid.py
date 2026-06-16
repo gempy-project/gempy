@@ -35,7 +35,7 @@ class Grid:
     _custom_grid: Optional[CustomGrid] = None
     _topography: Optional[Topography] = None
     _sections: Optional[Sections] = None
-    _centered_grid: Optional[CenteredGrid] = None
+    _centered_grid: Optional[CenteredGrid] = Field(default=None, exclude=True)
 
     _active_grids = GridTypes.NONE
     _transform: Optional[Transform] = None
@@ -94,6 +94,32 @@ class Grid:
                             transform=grid.octree_grid.transform
                         )
 
+                    if 'centered_grid_centers_length' in metadata and 'grid_binary' in context:
+                        total_offset = metadata['custom_grid_binary_length'] + metadata['topography_binary_length']
+                        binary = context['grid_binary']
+                        c_len = metadata['centered_grid_centers_length']
+                        r_len = metadata['centered_grid_resolution_length']
+                        rad_len = metadata['centered_grid_radius_length']
+
+                        centers_data = np.frombuffer(
+                            binary[total_offset:total_offset + c_len], dtype=np.float64
+                        )
+                        total_offset += c_len
+                        resolution_data = np.frombuffer(
+                            binary[total_offset:total_offset + r_len], dtype=np.float64
+                        )
+                        total_offset += r_len
+                        radius_data = np.frombuffer(
+                            binary[total_offset:total_offset + rad_len], dtype=np.float64
+                        )
+
+                        grid._centered_grid = CenteredGrid(
+                            centers=centers_data.reshape(-1, 3),
+                            resolution=resolution_data,
+                            radius=radius_data,
+                        )
+                        grid.active_grids |= Grid.GridTypes.CENTERED
+
                     grid._update_values()
                     return grid
                 case _:
@@ -105,14 +131,33 @@ class Grid:
     def grid_binary(self):
         custom_grid_bytes = self._custom_grid.values.astype("float64").tobytes() if self._custom_grid else b''
         topography_bytes = self._topography.values.astype("float64").tobytes() if self._topography else b''
-        return custom_grid_bytes + topography_bytes
+        centered_grid_bytes = b''
+        if self._centered_grid:
+            cg = self._centered_grid
+            centers_bytes = np.atleast_2d(cg.centers).astype("float64").tobytes()
+            resolution_bytes = np.atleast_1d(cg.resolution).astype("float64").tobytes()
+            radius = np.atleast_1d(cg.radius).astype("float64")
+            if radius.size == 1:
+                radius = np.repeat(radius, 3)
+            radius_bytes = radius.tobytes()
+            centered_grid_bytes = centers_bytes + resolution_bytes + radius_bytes
+        return custom_grid_bytes + topography_bytes + centered_grid_bytes
 
     @computed_field
     def binary_meta_data(self) -> dict:
-        return {
-                'custom_grid_binary_length': len(self._custom_grid.values.astype("float64").tobytes()) if self._custom_grid else 0,
-                'topography_binary_length' : len(self._topography.values.astype("float64").tobytes()) if self._topography else 0,
+        meta = {
+            'custom_grid_binary_length': len(self._custom_grid.values.astype("float64").tobytes()) if self._custom_grid else 0,
+            'topography_binary_length' : len(self._topography.values.astype("float64").tobytes()) if self._topography else 0,
         }
+        if self._centered_grid:
+            cg = self._centered_grid
+            meta['centered_grid_centers_length'] = len(np.atleast_2d(cg.centers).astype("float64").tobytes())
+            meta['centered_grid_resolution_length'] = len(np.atleast_1d(cg.resolution).astype("float64").tobytes())
+            radius = np.atleast_1d(cg.radius).astype("float64")
+            if radius.size == 1:
+                radius = np.repeat(radius, 3)
+            meta['centered_grid_radius_length'] = len(radius.tobytes())
+        return meta
 
     @computed_field(alias="active_grids")
     @property
@@ -323,8 +368,8 @@ class Grid:
             if self.sections is None: raise AttributeError('Sections grid is active but not defined')
             values.append(self.sections.values)
         if self.GridTypes.CENTERED in self.active_grids:
-            if self.centered_grid is None: raise AttributeError('Centered grid is active but not defined')
-            values.append(self.centered_grid.values)
+            if self.centered_grid is not None:
+                values.append(self.centered_grid.values)
 
         # make sure values is not empty
         if len(values) == 0:
