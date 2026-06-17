@@ -448,6 +448,31 @@ class StructuralFrame:
         return orientations_
 
     @property
+    def volume_elements(self) -> list[StructuralElement]:
+        """Returns structural elements that have lithology volume (excludes fault elements, includes basement)."""
+        elements = []
+        for group in self.structural_groups:
+            if not group.is_fault:
+                elements.extend(group.elements)
+        elements.append(self._basement_element)
+        return elements
+
+    @property
+    def volume_elements_names(self) -> list[str]:
+        """Returns names of volume elements in structural order."""
+        return [e.name for e in self.volume_elements]
+
+    @property
+    def volume_elements_colors(self) -> list[str]:
+        """Returns colors of volume elements in structural order."""
+        return [e.color for e in self.volume_elements]
+
+    @property
+    def volume_elements_enumerator(self) -> np.ndarray:
+        """Returns 1-based sequential enumeration for volume elements."""
+        return np.arange(len(self.volume_elements)) + 1
+
+    @property
     def surface_points_colors_per_item(self) -> list[str]:
         """Returns a list of colors assigned to each surface point across structural elements. Used in matplotlib"""
         surface_points_colors = [element.color for element in self.structural_elements for _ in range(element.number_of_points)]
