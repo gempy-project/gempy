@@ -216,7 +216,7 @@ Video tutorial 11: Basic onlap scenario
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fbcfde10730>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f58216baa50>
 
 
 
@@ -236,13 +236,11 @@ Video tutorial 11: Basic onlap scenario
 
  .. code-block:: none
 
-    Setting Backend To: AvailableBackends.numpy
+    Setting Backend To: AvailableBackends.PYTORCH
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
     Chunking done: 10 chunks
-    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
-      return 1.0 / (1.0 + bt.t.exp(x))
     Chunking done: 19 chunks
-    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
-      return 1.0 / (1.0 + bt.t.exp(x))
 
 
 .. raw:: html
@@ -275,7 +273,7 @@ Video tutorial 11: Basic onlap scenario
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fbcb6905270>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f57780539d0>
 
 
 
@@ -379,13 +377,11 @@ Video tutorial 11: Basic onlap scenario
 
  .. code-block:: none
 
-    Setting Backend To: AvailableBackends.numpy
+    Setting Backend To: AvailableBackends.PYTORCH
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
     Chunking done: 10 chunks
-    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
-      return 1.0 / (1.0 + bt.t.exp(x))
     Chunking done: 19 chunks
-    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
-      return 1.0 / (1.0 + bt.t.exp(x))
 
 
 .. raw:: html
@@ -418,7 +414,7 @@ Video tutorial 11: Basic onlap scenario
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fbcb67c81f0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f580ed8a4d0>
 
 
 
@@ -493,7 +489,7 @@ Video tutorial 12: Advanced onlap - Subduction zone
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fbcb691b1f0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f57781087d0>
 
 
 
@@ -727,9 +723,70 @@ Video tutorial 12: Advanced onlap - Subduction zone
 
  .. code-block:: none
 
-    Active grids: GridTypes.NONE|TOPOGRAPHY|DENSE
+    Active grids: GridTypes.DENSE|TOPOGRAPHY|NONE
 
-    <gempy.core.data.grid_modules.topography.Topography object at 0x7fbcb6c87550>
+    Topography(_regular_grid=RegularGrid(resolution=array([100,  50,  50]), extent=array([   0., 2000.,    0., 1000.,    0., 1000.]), values=array([[  10.,   10.,   10.],
+           [  10.,   10.,   30.],
+           [  10.,   10.,   50.],
+           ...,
+           [1990.,  990.,  950.],
+           [1990.,  990.,  970.],
+           [1990.,  990.,  990.]], shape=(250000, 3)), mask_topo=array([], shape=(0, 3), dtype=bool), _transform=None, _base_resolution=array([2, 2, 2])), values_2d=array([[[   0.        ,    0.        ,  590.        ],
+            [   0.        ,   20.40816327,  590.        ],
+            [   0.        ,   40.81632653,  590.        ],
+            ...,
+            [   0.        ,  959.18367347,  590.        ],
+            [   0.        ,  979.59183673,  590.        ],
+            [   0.        , 1000.        ,  590.        ]],
+
+           [[  20.2020202 ,    0.        ,  590.        ],
+            [  20.2020202 ,   20.40816327,  590.        ],
+            [  20.2020202 ,   40.81632653,  590.        ],
+            ...,
+            [  20.2020202 ,  959.18367347,  590.        ],
+            [  20.2020202 ,  979.59183673,  590.        ],
+            [  20.2020202 , 1000.        ,  590.        ]],
+
+           [[  40.4040404 ,    0.        ,  590.        ],
+            [  40.4040404 ,   20.40816327,  590.        ],
+            [  40.4040404 ,   40.81632653,  590.        ],
+            ...,
+            [  40.4040404 ,  959.18367347,  590.        ],
+            [  40.4040404 ,  979.59183673,  590.        ],
+            [  40.4040404 , 1000.        ,  590.        ]],
+
+           ...,
+
+           [[1959.5959596 ,    0.        ,  540.        ],
+            [1959.5959596 ,   20.40816327,  540.        ],
+            [1959.5959596 ,   40.81632653,  540.        ],
+            ...,
+            [1959.5959596 ,  959.18367347,  540.        ],
+            [1959.5959596 ,  979.59183673,  540.        ],
+            [1959.5959596 , 1000.        ,  540.        ]],
+
+           [[1979.7979798 ,    0.        ,  540.        ],
+            [1979.7979798 ,   20.40816327,  540.        ],
+            [1979.7979798 ,   40.81632653,  540.        ],
+            ...,
+            [1979.7979798 ,  959.18367347,  540.        ],
+            [1979.7979798 ,  979.59183673,  540.        ],
+            [1979.7979798 , 1000.        ,  540.        ]],
+
+           [[2000.        ,    0.        ,  540.        ],
+            [2000.        ,   20.40816327,  540.        ],
+            [2000.        ,   40.81632653,  540.        ],
+            ...,
+            [2000.        ,  959.18367347,  540.        ],
+            [2000.        ,  979.59183673,  540.        ],
+            [2000.        , 1000.        ,  540.        ]]],
+          shape=(100, 50, 3)), source=None, values=array([[   0.        ,    0.        ,  590.        ],
+           [   0.        ,   20.40816327,  590.        ],
+           [   0.        ,   40.81632653,  590.        ],
+           ...,
+           [2000.        ,  959.18367347,  540.        ],
+           [2000.        ,  979.59183673,  540.        ],
+           [2000.        , 1000.        ,  540.        ]], shape=(5000, 3)), resolution=(100, 50), raster_shape=())
 
 
 
@@ -749,16 +806,12 @@ Video tutorial 12: Advanced onlap - Subduction zone
 
  .. code-block:: none
 
-    Setting Backend To: AvailableBackends.numpy
+    Setting Backend To: AvailableBackends.PYTORCH
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
     Chunking done: 14 chunks
-    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
-      return 1.0 / (1.0 + bt.t.exp(x))
     Chunking done: 10 chunks
     Chunking done: 12 chunks
-    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
-      return 1.0 / (1.0 + bt.t.exp(x))
-    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
-      return 1.0 / (1.0 + bt.t.exp(x))
 
 
 .. raw:: html
@@ -791,7 +844,7 @@ Video tutorial 12: Advanced onlap - Subduction zone
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fbcb6bf32e0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f57ec7a7450>
 
 
 
@@ -824,14 +877,14 @@ Video tutorial 12: Advanced onlap - Subduction zone
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fbcbca71ab0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f578039bcb0>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 35.931 seconds)
+   **Total running time of the script:** (0 minutes 10.838 seconds)
 
 
 .. _sphx_glr_download_tutorials_z_other_tutorials_video_tutorial_model_3_onlap.py:

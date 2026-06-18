@@ -20,14 +20,15 @@
    
       ~StructuralFrame.__init__
       ~StructuralFrame.append_group
-      ~StructuralFrame.deserialize_orientations
-      ~StructuralFrame.deserialize_surface_points
+      ~StructuralFrame.deserialize_binary
       ~StructuralFrame.from_data_tables
       ~StructuralFrame.get_element_by_name
       ~StructuralFrame.get_group_by_element
       ~StructuralFrame.get_group_by_name
       ~StructuralFrame.initialize_default_structure
       ~StructuralFrame.insert_group
+      ~StructuralFrame.restore_fault_relations_from_names
+      ~StructuralFrame.serialized_fault_relations
    
    
 
@@ -38,12 +39,15 @@
    .. autosummary::
    
       ~StructuralFrame.basement_color
+      ~StructuralFrame.binary_meta_data
+      ~StructuralFrame.color_generator
       ~StructuralFrame.element_id_name_map
       ~StructuralFrame.element_name_id_map
       ~StructuralFrame.elements_colors
       ~StructuralFrame.elements_colors_contacts
       ~StructuralFrame.elements_colors_orientations
       ~StructuralFrame.elements_colors_volumes
+      ~StructuralFrame.elements_enumerator
       ~StructuralFrame.elements_ids
       ~StructuralFrame.elements_names
       ~StructuralFrame.fault_relations
@@ -53,6 +57,7 @@
       ~StructuralFrame.groups_structural_relation
       ~StructuralFrame.groups_to_mapper
       ~StructuralFrame.input_data_descriptor
+      ~StructuralFrame.input_tables_binary
       ~StructuralFrame.is_dirty
       ~StructuralFrame.n_elements
       ~StructuralFrame.number_of_elements
@@ -63,16 +68,17 @@
       ~StructuralFrame.orientations
       ~StructuralFrame.orientations_colors_per_item
       ~StructuralFrame.orientations_copy
-      ~StructuralFrame.serialize_orientations
-      ~StructuralFrame.serialize_sp
       ~StructuralFrame.structural_elements
       ~StructuralFrame.surface_points
       ~StructuralFrame.surface_points_colors_per_item
       ~StructuralFrame.surface_points_copy
       ~StructuralFrame.surfaces
       ~StructuralFrame.surfaces_df
+      ~StructuralFrame.volume_elements
+      ~StructuralFrame.volume_elements_colors
+      ~StructuralFrame.volume_elements_enumerator
+      ~StructuralFrame.volume_elements_names
       ~StructuralFrame.structural_groups
-      ~StructuralFrame.color_generator
    
    
 

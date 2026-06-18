@@ -28,6 +28,8 @@
       ~Topography.resize_topo
       ~Topography.save
       ~Topography.set_values
+      ~Topography.set_values2d
+      ~Topography.set_values2d_
    
    
 
@@ -39,9 +41,14 @@
    
       ~Topography.extent
       ~Topography.regular_grid_resolution
+      ~Topography.resolution
+      ~Topography.source
       ~Topography.topography_mask
       ~Topography.x
       ~Topography.y
+      ~Topography.values_2d
+      ~Topography.values
+      ~Topography.raster_shape
    
    
 

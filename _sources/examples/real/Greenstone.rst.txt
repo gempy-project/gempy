@@ -95,7 +95,7 @@ Greenstone.
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff02ef0e110>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f56f41b68d0>
 
 
 
@@ -199,13 +199,18 @@ Greenstone.
 
  .. code-block:: none
 
-    Setting Backend To: AvailableBackends.numpy
-    Chunking done: 32 chunks
+    Setting Backend To: AvailableBackends.PYTORCH
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
+    Chunking done: 9 chunks
     Chunking done: 10 chunks
-    Chunking done: 18 chunks
-    Chunking done: 31 chunks
-    Chunking done: 10 chunks
-    Chunking done: 17 chunks
+    Chunking done: 6 chunks
+    Chunking done: 44 chunks
+    Chunking done: 14 chunks
+    Chunking done: 24 chunks
+    Chunking done: 22 chunks
+    Chunking done: 7 chunks
+    Chunking done: 12 chunks
 
 
 .. raw:: html
@@ -236,7 +241,7 @@ Greenstone.
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff24e95a050>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f5820e9cf50>
 
 
 
@@ -260,7 +265,7 @@ Greenstone.
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff24e95ab30>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f57783b7750>
 
 
 
@@ -287,14 +292,14 @@ sphinx_gallery_thumbnail_number = -1
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7ff24efd8d60>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f5780105710>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 27.274 seconds)
+   **Total running time of the script:** (0 minutes 7.876 seconds)
 
 
 .. _sphx_glr_download_examples_real_Greenstone.py:

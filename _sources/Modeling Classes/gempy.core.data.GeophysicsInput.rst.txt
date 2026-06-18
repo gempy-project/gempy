@@ -28,8 +28,10 @@
 
    .. autosummary::
    
-      ~GeophysicsInput.tz
       ~GeophysicsInput.densities
+      ~GeophysicsInput.gravity_input
+      ~GeophysicsInput.magnetics_input
+      ~GeophysicsInput.tz
    
    
 

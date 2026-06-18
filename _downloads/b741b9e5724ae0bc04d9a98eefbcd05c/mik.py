@@ -212,55 +212,55 @@ elements = gp.structural_elements_from_borehole_set(
     borehole_set=borehole_set,
     elements_dict={
         "Basement": {
-            "id": -1,
-            "color": next(colors_generator)
-        },
-        "etchgoin": {
             "id": 1,
             "color": next(colors_generator)
         },
-        "macoma": {
-            "id": 2,
-            "color": next(colors_generator)
-        },
-        "chanac": {
-            "id": 3,
-            "color": next(colors_generator)
-        },
-        "mclure": {
-            "id": 4,
-            "color": next(colors_generator)
-        },
-        "santa_margarita": {
+        "etchgoin": {
             "id": 5,
             "color": next(colors_generator)
         },
-        "fruitvale": {
-            "id": 6,
-            "color": next(colors_generator)
-        },
-        "round_mountain": {
-            "id": 7,
-            "color": next(colors_generator)
-        },
-        "olcese": {
+        "macoma": {
             "id": 8,
             "color": next(colors_generator)
         },
-        "freeman_jewett": {
+        "chanac": {
+            "id": 2,
+            "color": next(colors_generator)
+        },
+        "mclure": {
             "id": 9,
             "color": next(colors_generator)
         },
-        "vedder": {
-            "id": 10,
+        "santa_margarita": {
+            "id": 12,
             "color": next(colors_generator)
         },
-        "eocene": {
+        "fruitvale": {
+            "id": 7,
+            "color": next(colors_generator)
+        },
+        "round_mountain": {
             "id": 11,
             "color": next(colors_generator)
         },
+        "olcese": {
+            "id": 10,
+            "color": next(colors_generator)
+        },
+        "freeman_jewett": {
+            "id": 6,
+            "color": next(colors_generator)
+        },
+        "vedder": {
+            "id": 14,
+            "color": next(colors_generator)
+        },
+        "eocene": {
+            "id": 4,
+            "color": next(colors_generator)
+        },
         "cretaceous": {
-            "id": 12,
+            "id": 3,
             "color": next(colors_generator)
         },
     }

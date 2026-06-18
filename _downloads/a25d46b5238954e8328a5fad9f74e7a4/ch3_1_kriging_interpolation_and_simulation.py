@@ -52,8 +52,8 @@ geo_data: gp.data.GeoModel = gp.create_geomodel(
 gp.map_stack_to_surfaces(
     gempy_model=geo_data,
     mapping_object={
-        "Strat_Series": ('rock2', 'rock1'),
-        "Basement_Series": ('basement')
+            "Strat_Series"   : ('rock2', 'rock1'),
+            "Basement_Series": ('basement')
     }
 )
 
@@ -137,7 +137,6 @@ kriging_solution = kriging.create_kriged_field(domain, variogram_model)
 # %% 
 kriging_solution.results_df.head()
 
-
 # %%
 # It is also possible to plot the results in cross section similar to the
 # way gempy models are plotted.
@@ -152,7 +151,7 @@ plot_2d: Plot2D = gpv.plot_2d(
     cell_number=0,
     show_data=False,
     show=False,
-    kwargs_lithology={ 'alpha': 0.5 }
+    kwargs_lithology={'alpha': 0.5}
 )
 kriging.plot_kriging_results(
     geo_data=geo_data,
@@ -168,7 +167,7 @@ plot_2d_both = gpv.plot_2d(
     cell_number=[0, 0],
     show_data=False,
     show=False,
-    kwargs_lithology={ 'alpha': 0.5 }
+    kwargs_lithology={'alpha': 0.5}
 )
 
 kriging.plot_kriging_results(
@@ -189,7 +188,12 @@ kriging.plot_kriging_results(
 # 
 
 # %% 
-solution_sim = kriging.create_gaussian_field(domain, variogram_model)
+solution_sim = kriging.create_gaussian_field(
+    domain,
+    variogram_model,
+    moving_neighbourhood='n_closest',
+    n_closest_points=20
+)
 
 # %% 
 solution_sim.results_df.head()
@@ -203,7 +207,7 @@ plot_2d: Plot2D = gpv.plot_2d(
     cell_number=0,
     show_data=False,
     show=False,
-    kwargs_lithology={ 'alpha': 0.5 }
+    kwargs_lithology={'alpha': 0.5}
 )
 kriging.plot_kriging_results(
     geo_data=geo_data,
@@ -219,7 +223,7 @@ plot_2d_both = gpv.plot_2d(
     cell_number=[0, 0],
     show_data=False,
     show=False,
-    kwargs_lithology={ 'alpha': 0.5 }
+    kwargs_lithology={'alpha': 0.5}
 )
 
 kriging.plot_kriging_results(

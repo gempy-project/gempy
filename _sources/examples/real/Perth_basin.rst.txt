@@ -718,7 +718,7 @@ gp.set_fault_relation(geo_model, fr)
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fbcb67e2a40>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f57783b5550>
 
 
 
@@ -737,9 +737,72 @@ gp.set_fault_relation(geo_model, fr)
  .. code-block:: none
 
     [-2800.  1000.]
-    Active grids: GridTypes.NONE|TOPOGRAPHY|OCTREE
+    Active grids: GridTypes.OCTREE|TOPOGRAPHY|NONE
 
-    <gempy.core.data.grid_modules.topography.Topography object at 0x7fbcb67e1480>
+    Topography(_regular_grid=RegularGrid(resolution=array([192, 256,  64]), extent=array([ 3.37e+05,  4.00e+05,  6.64e+06,  6.71e+06, -1.80e+04,  1.00e+03]), values=array([[ 3.37164062e+05,  6.64013672e+06, -1.78515625e+04],
+           [ 3.37164062e+05,  6.64013672e+06, -1.75546875e+04],
+           [ 3.37164062e+05,  6.64013672e+06, -1.72578125e+04],
+           ...,
+           [ 3.99835938e+05,  6.70986328e+06,  2.57812500e+02],
+           [ 3.99835938e+05,  6.70986328e+06,  5.54687500e+02],
+           [ 3.99835938e+05,  6.70986328e+06,  8.51562500e+02]],
+          shape=(3145728, 3)), mask_topo=array([], shape=(0, 3), dtype=bool), _transform=None, _base_resolution=array([6, 8, 2])), values_2d=array([[[ 3.37000000e+05,  6.64000000e+06, -7.24533876e+02],
+            [ 3.37000000e+05,  6.64027451e+06, -6.91975885e+02],
+            [ 3.37000000e+05,  6.64054902e+06, -6.49628543e+02],
+            ...,
+            [ 3.37000000e+05,  6.70945098e+06, -8.00500255e+02],
+            [ 3.37000000e+05,  6.70972549e+06, -7.87422259e+02],
+            [ 3.37000000e+05,  6.71000000e+06, -7.58453496e+02]],
+
+           [[ 3.37329843e+05,  6.64000000e+06, -7.08916542e+02],
+            [ 3.37329843e+05,  6.64027451e+06, -6.65621167e+02],
+            [ 3.37329843e+05,  6.64054902e+06, -6.46360422e+02],
+            ...,
+            [ 3.37329843e+05,  6.70945098e+06, -7.99152490e+02],
+            [ 3.37329843e+05,  6.70972549e+06, -7.78012174e+02],
+            [ 3.37329843e+05,  6.71000000e+06, -7.50183615e+02]],
+
+           [[ 3.37659686e+05,  6.64000000e+06, -6.90007614e+02],
+            [ 3.37659686e+05,  6.64027451e+06, -6.59237003e+02],
+            [ 3.37659686e+05,  6.64054902e+06, -6.54247495e+02],
+            ...,
+            [ 3.37659686e+05,  6.70945098e+06, -7.80942756e+02],
+            [ 3.37659686e+05,  6.70972549e+06, -7.61042804e+02],
+            [ 3.37659686e+05,  6.71000000e+06, -7.37092870e+02]],
+
+           ...,
+
+           [[ 3.99340314e+05,  6.64000000e+06, -9.16985702e+02],
+            [ 3.99340314e+05,  6.64027451e+06, -9.03982997e+02],
+            [ 3.99340314e+05,  6.64054902e+06, -8.76185422e+02],
+            ...,
+            [ 3.99340314e+05,  6.70945098e+06, -9.48914474e+02],
+            [ 3.99340314e+05,  6.70972549e+06, -9.43398018e+02],
+            [ 3.99340314e+05,  6.71000000e+06, -9.34811451e+02]],
+
+           [[ 3.99670157e+05,  6.64000000e+06, -9.29659087e+02],
+            [ 3.99670157e+05,  6.64027451e+06, -9.06009121e+02],
+            [ 3.99670157e+05,  6.64054902e+06, -8.78979240e+02],
+            ...,
+            [ 3.99670157e+05,  6.70945098e+06, -9.59049251e+02],
+            [ 3.99670157e+05,  6.70972549e+06, -9.53763811e+02],
+            [ 3.99670157e+05,  6.71000000e+06, -9.43295879e+02]],
+
+           [[ 4.00000000e+05,  6.64000000e+06, -9.35136730e+02],
+            [ 4.00000000e+05,  6.64027451e+06, -9.10199958e+02],
+            [ 4.00000000e+05,  6.64054902e+06, -9.03445859e+02],
+            ...,
+            [ 4.00000000e+05,  6.70945098e+06, -9.95556706e+02],
+            [ 4.00000000e+05,  6.70972549e+06, -9.68392491e+02],
+            [ 4.00000000e+05,  6.71000000e+06, -9.52701595e+02]]],
+          shape=(192, 256, 3)), source=None, values=array([[ 3.37000000e+05,  6.64000000e+06, -7.24533876e+02],
+           [ 3.37000000e+05,  6.64027451e+06, -6.91975885e+02],
+           [ 3.37000000e+05,  6.64054902e+06, -6.49628543e+02],
+           ...,
+           [ 4.00000000e+05,  6.70945098e+06, -9.95556706e+02],
+           [ 4.00000000e+05,  6.70972549e+06, -9.68392491e+02],
+           [ 4.00000000e+05,  6.71000000e+06, -9.52701595e+02]],
+          shape=(49152, 3)), resolution=(192, 256), raster_shape=())
 
 
 
@@ -763,7 +826,7 @@ gp.set_fault_relation(geo_model, fr)
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fbcb6907c70>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f5778018830>
 
 
 
@@ -788,26 +851,38 @@ gp.set_fault_relation(geo_model, fr)
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.PYTORCH
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
+    Chunking done: 10 chunks
+    Chunking done: 11 chunks
+    Chunking done: 7 chunks
+    Chunking done: 10 chunks
+    Chunking done: 9 chunks
     Chunking done: 7 chunks
     Chunking done: 7 chunks
-    Chunking done: 6 chunks
+    Chunking done: 7 chunks
     Chunking done: 8 chunks
     Chunking done: 7 chunks
-    Chunking done: 6 chunks
-    Chunking done: 6 chunks
-    Chunking done: 6 chunks
-    Chunking done: 7 chunks
-    Chunking done: 6 chunks
-    Chunking done: 50 chunks
-    Chunking done: 6 chunks
-    Chunking done: 8 chunks
-    Chunking done: 7 chunks
-    Chunking done: 6 chunks
-    Chunking done: 6 chunks
-    Chunking done: 6 chunks
-    Chunking done: 7 chunks
-    Chunking done: 6 chunks
-    Chunking done: 50 chunks
+    Chunking done: 61 chunks
+    Chunking done: 36 chunks
+    Chunking done: 48 chunks
+    Chunking done: 45 chunks
+    Chunking done: 36 chunks
+    Chunking done: 36 chunks
+    Chunking done: 36 chunks
+    Chunking done: 42 chunks
+    Chunking done: 36 chunks
+    Chunking done: 317 chunks
+    Chunking done: 19 chunks
+    Chunking done: 25 chunks
+    Chunking done: 23 chunks
+    Chunking done: 19 chunks
+    Chunking done: 19 chunks
+    Chunking done: 19 chunks
+    Chunking done: 22 chunks
+    Chunking done: 19 chunks
+    Chunking done: 163 chunks
+    Chunking done: 26 chunks
 
 
 .. raw:: html
@@ -838,7 +913,7 @@ gp.set_fault_relation(geo_model, fr)
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fbcb6905180>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f57780e1cd0>
 
 
 
@@ -862,7 +937,7 @@ gp.set_fault_relation(geo_model, fr)
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fbcb5a9fa60>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f57801a1150>
 
 
 
@@ -886,7 +961,7 @@ gp.set_fault_relation(geo_model, fr)
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fbcb6919cc0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f57783b5050>
 
 
 
@@ -912,14 +987,14 @@ sphinx_gallery_thumbnail_number = 6
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fbcb5a16a40>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f57780c2eb0>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 14.206 seconds)
+   **Total running time of the script:** (1 minutes 33.817 seconds)
 
 
 .. _sphx_glr_download_examples_real_Perth_basin.py:

@@ -93,9 +93,69 @@ zone with onlap relationships.
 
  .. code-block:: none
 
-    Active grids: GridTypes.NONE|TOPOGRAPHY|DENSE
+    Active grids: GridTypes.DENSE|TOPOGRAPHY|NONE
 
-    <gempy.core.data.grid_modules.topography.Topography object at 0x7fbd07480220>
+    Topography(_regular_grid=RegularGrid(resolution=array([50, 50, 50]), extent=array([ -200.,  1000.,  -500.,   500., -1000.,     0.]), values=array([[-188., -490., -990.],
+           [-188., -490., -970.],
+           [-188., -490., -950.],
+           ...,
+           [ 988.,  490.,  -50.],
+           [ 988.,  490.,  -30.],
+           [ 988.,  490.,  -10.]], shape=(125000, 3)), mask_topo=array([], shape=(0, 3), dtype=bool), _transform=None, _base_resolution=array([2, 2, 2])), values_2d=array([[[-200.        , -500.        , -490.4200689 ],
+            [-200.        , -479.59183673, -484.26220389],
+            [-200.        , -459.18367347, -476.52762029],
+            ...,
+            [-200.        ,  459.18367347, -489.76830448],
+            [-200.        ,  479.59183673, -492.23434556],
+            [-200.        ,  500.        , -490.06537167]],
+
+           [[-175.51020408, -500.        , -473.34118994],
+            [-175.51020408, -479.59183673, -464.48125719],
+            [-175.51020408, -459.18367347, -453.72610953],
+            ...,
+            [-175.51020408,  459.18367347, -468.62465223],
+            [-175.51020408,  479.59183673, -462.58935295],
+            [-175.51020408,  500.        , -469.2636671 ]],
+
+           [[-151.02040816, -500.        , -449.61410534],
+            [-151.02040816, -479.59183673, -460.05248879],
+            [-151.02040816, -459.18367347, -447.43221692],
+            ...,
+            [-151.02040816,  459.18367347, -436.68329324],
+            [-151.02040816,  479.59183673, -438.01738023],
+            [-151.02040816,  500.        , -445.13576149]],
+
+           ...,
+
+           [[ 951.02040816, -500.        , -496.52896451],
+            [ 951.02040816, -479.59183673, -505.19573946],
+            [ 951.02040816, -459.18367347, -524.20538843],
+            ...,
+            [ 951.02040816,  459.18367347, -506.14201021],
+            [ 951.02040816,  479.59183673, -509.67069846],
+            [ 951.02040816,  500.        , -509.34420274]],
+
+           [[ 975.51020408, -500.        , -479.2213275 ],
+            [ 975.51020408, -479.59183673, -498.44163414],
+            [ 975.51020408, -459.18367347, -503.30361442],
+            ...,
+            [ 975.51020408,  459.18367347, -505.78969505],
+            [ 975.51020408,  479.59183673, -501.88634872],
+            [ 975.51020408,  500.        , -498.15612849]],
+
+           [[1000.        , -500.        , -482.92487316],
+            [1000.        , -479.59183673, -483.36398681],
+            [1000.        , -459.18367347, -489.07270116],
+            ...,
+            [1000.        ,  459.18367347, -508.13810685],
+            [1000.        ,  479.59183673, -499.68180865],
+            [1000.        ,  500.        , -498.66045422]]], shape=(50, 50, 3)), source=None, values=array([[-200.        , -500.        , -490.4200689 ],
+           [-200.        , -479.59183673, -484.26220389],
+           [-200.        , -459.18367347, -476.52762029],
+           ...,
+           [1000.        ,  459.18367347, -508.13810685],
+           [1000.        ,  479.59183673, -499.68180865],
+           [1000.        ,  500.        , -498.66045422]], shape=(2500, 3)), resolution=(50, 50), raster_shape=())
 
 
 
@@ -119,7 +179,7 @@ zone with onlap relationships.
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fbd07494520>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f5820c81bd0>
 
 
 
@@ -335,15 +395,9 @@ Raw structural frame
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.PYTORCH
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
     Chunking done: 6 chunks
-    Chunking done: 7 chunks
-    Chunking done: 9 chunks
-    Chunking done: 7 chunks
-    Chunking done: 7 chunks
-    Chunking done: 7 chunks
-    Chunking done: 8 chunks
-    Chunking done: 7 chunks
-    Chunking done: 7 chunks
 
 
 
@@ -381,7 +435,7 @@ Raw structural frame
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fbcb70b5ff0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f5820cd0bb0>
 
 
 
@@ -457,7 +511,7 @@ Raw structural frame
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fbcb6b62c50>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f582064e750>
 
 
 
@@ -532,14 +586,14 @@ Raw structural frame
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fbcb691af20>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f5820e76a50>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 5.955 seconds)
+   **Total running time of the script:** (0 minutes 7.439 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_4_onlap_relations.py:

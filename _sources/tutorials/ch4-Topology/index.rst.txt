@@ -9,6 +9,10 @@ One of the reasons to perform structural modeling is to analyse the topology
 of the system, i.e. the connectivity between layers. GemPy provide built-in
 functionality to calculate and analyse this aspect of each geological modeling
 
+.. raw:: html
+
+  <div id='sg-tag-list' class='sphx-glr-tag-list'></div>
+
 
 .. raw:: html
 
@@ -25,7 +29,7 @@ functionality to calculate and analyse this aspect of each geological modeling
   .. image:: /tutorials/ch4-Topology/images/thumb/sphx_glr_ch4-1-Topology_thumb.png
     :alt:
 
-  :ref:`sphx_glr_tutorials_ch4-Topology_ch4-1-Topology.py`
+  :doc:`/tutorials/ch4-Topology/ch4-1-Topology`
 
 .. raw:: html
 

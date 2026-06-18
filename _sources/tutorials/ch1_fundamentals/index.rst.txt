@@ -8,6 +8,10 @@ Chapter 1: GemPy fundamentals
 These examples show the basic functionality to create geometries.
 
 
+.. raw:: html
+
+  <div id='sg-tag-list' class='sphx-glr-tag-list'></div>
+
 
 .. raw:: html
 
@@ -24,7 +28,7 @@ These examples show the basic functionality to create geometries.
   .. image:: /tutorials/ch1_fundamentals/images/thumb/sphx_glr_ch1_1_basics_thumb.png
     :alt:
 
-  :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_1_basics.py`
+  :doc:`/tutorials/ch1_fundamentals/ch1_1_basics`
 
 .. raw:: html
 
@@ -41,7 +45,7 @@ These examples show the basic functionality to create geometries.
   .. image:: /tutorials/ch1_fundamentals/images/thumb/sphx_glr_ch1_3a_grids_thumb.png
     :alt:
 
-  :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_3a_grids.py`
+  :doc:`/tutorials/ch1_fundamentals/ch1_3a_grids`
 
 .. raw:: html
 
@@ -58,7 +62,7 @@ These examples show the basic functionality to create geometries.
   .. image:: /tutorials/ch1_fundamentals/images/thumb/sphx_glr_ch1_3b_cross_sections_thumb.png
     :alt:
 
-  :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_3b_cross_sections.py`
+  :doc:`/tutorials/ch1_fundamentals/ch1_3b_cross_sections`
 
 .. raw:: html
 
@@ -75,7 +79,7 @@ These examples show the basic functionality to create geometries.
   .. image:: /tutorials/ch1_fundamentals/images/thumb/sphx_glr_ch1_3c_topography_thumb.png
     :alt:
 
-  :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_3c_topography.py`
+  :doc:`/tutorials/ch1_fundamentals/ch1_3c_topography`
 
 .. raw:: html
 
@@ -92,7 +96,7 @@ These examples show the basic functionality to create geometries.
   .. image:: /tutorials/ch1_fundamentals/images/thumb/sphx_glr_ch1_4_onlap_relations_thumb.png
     :alt:
 
-  :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_4_onlap_relations.py`
+  :doc:`/tutorials/ch1_fundamentals/ch1_4_onlap_relations`
 
 .. raw:: html
 
@@ -109,7 +113,7 @@ These examples show the basic functionality to create geometries.
   .. image:: /tutorials/ch1_fundamentals/images/thumb/sphx_glr_ch1_5_fault_relations_thumb.png
     :alt:
 
-  :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_5_fault_relations.py`
+  :doc:`/tutorials/ch1_fundamentals/ch1_5_fault_relations`
 
 .. raw:: html
 
@@ -126,7 +130,7 @@ These examples show the basic functionality to create geometries.
   .. image:: /tutorials/ch1_fundamentals/images/thumb/sphx_glr_ch1_6_2d_visualization_thumb.png
     :alt:
 
-  :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_6_2d_visualization.py`
+  :doc:`/tutorials/ch1_fundamentals/ch1_6_2d_visualization`
 
 .. raw:: html
 
@@ -143,7 +147,7 @@ These examples show the basic functionality to create geometries.
   .. image:: /tutorials/ch1_fundamentals/images/thumb/sphx_glr_ch1_7_3d_visualization_thumb.png
     :alt:
 
-  :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_7_3d_visualization.py`
+  :doc:`/tutorials/ch1_fundamentals/ch1_7_3d_visualization`
 
 .. raw:: html
 

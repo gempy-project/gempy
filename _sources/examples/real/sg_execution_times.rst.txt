@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**02:56.539** total execution time for 7 files **from examples/real**:
+**07:45.307** total execution time for 7 files **from examples/real**:
 
 .. container::
 
@@ -32,24 +32,24 @@ Computation times
    * - Example
      - Time
      - Mem (MB)
-   * - :ref:`sphx_glr_examples_real_Hecho.py` (``Hecho.py``)
-     - 01:38.634
-     - 0.0
    * - :ref:`sphx_glr_examples_real_Alesmodel.py` (``Alesmodel.py``)
-     - 00:53.019
+     - 04:37.155
      - 0.0
    * - :ref:`sphx_glr_examples_real_Perth_basin.py` (``Perth_basin.py``)
-     - 00:14.206
-     - 0.0
-   * - :ref:`sphx_glr_examples_real_Moureze.py` (``Moureze.py``)
-     - 00:10.680
+     - 01:33.817
      - 0.0
    * - :ref:`sphx_glr_examples_real_Claudius.py` (``Claudius.py``)
-     - 00:00.000
+     - 00:48.673
+     - 0.0
+   * - :ref:`sphx_glr_examples_real_Hecho.py` (``Hecho.py``)
+     - 00:27.182
+     - 0.0
+   * - :ref:`sphx_glr_examples_real_Moureze.py` (``Moureze.py``)
+     - 00:08.314
      - 0.0
    * - :ref:`sphx_glr_examples_real_Greenstone.py` (``Greenstone.py``)
-     - 00:00.000
+     - 00:07.876
      - 0.0
    * - :ref:`sphx_glr_examples_real_mik.py` (``mik.py``)
-     - 00:00.000
+     - 00:02.291
      - 0.0

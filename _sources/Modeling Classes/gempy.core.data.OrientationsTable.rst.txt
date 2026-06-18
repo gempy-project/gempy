@@ -26,7 +26,6 @@
       ~OrientationsTable.get_orientations_by_id_groups
       ~OrientationsTable.get_orientations_by_name
       ~OrientationsTable.initialize_empty
-      ~OrientationsTable.parse_short_array
    
    
 
@@ -36,6 +35,7 @@
 
    .. autosummary::
    
+      ~OrientationsTable.data
       ~OrientationsTable.df
       ~OrientationsTable.dt
       ~OrientationsTable.grads
@@ -47,7 +47,6 @@
       ~OrientationsTable.nugget
       ~OrientationsTable.xyz
       ~OrientationsTable.xyz_view
-      ~OrientationsTable.data
    
    
 

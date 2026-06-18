@@ -540,7 +540,7 @@ Number of voxels:
 
  .. code-block:: none
 
-    meta=GeoModelMeta(name='Claudius', creation_date='2025-05-21T12:14:13.493986', last_modification_date=None, owner=None) structural_frame=StructuralFrame(
+    meta=GeoModelMeta(name='Claudius', creation_date='2026-06-18T08:40:32.287726', last_modification_date=None, owner=None) structural_frame=StructuralFrame(
             structural_groups=[
     StructuralGroup(
             name=Fault1,
@@ -597,11 +597,11 @@ Number of voxels:
            [ 552451.31578947, 7821950.90909091,   -8617.5       ],
            [ 552451.31578947, 7821950.90909091,   -8530.5       ],
            [ 552451.31578947, 7821950.90909091,   -8443.5       ]],
-          shape=(62700, 3)), mask_topo=array([], shape=(0, 3), dtype=bool), _transform=None), _custom_grid=None, _topography=None, _sections=None, _centered_grid=None, _transform=None, _octree_levels=-1) geophysics_input=None input_transform={'_cached_pivot': None,
+          shape=(62700, 3)), mask_topo=array([], shape=(0, 3), dtype=bool), _transform=None, _base_resolution=array([2, 2, 2])), _custom_grid=None, _topography=None, _sections=None, _centered_grid=None, _transform=None, _octree_levels=-1) geophysics_input=None input_transform={'_cached_pivot': None,
      '_is_default_transform': False,
      'position': array([ -550658.0605    , -7819213.97425586,     9824.6748045 ]),
      'rotation': array([0., 0., 0.]),
-     'scale': array([9.56397917e-05, 9.56397917e-05, 9.56397917e-05])} interpolation_grid=None interpolation_options=InterpolationOptions(kernel_options=KernelOptions(range=1.7, c_o=10.0, uni_degree=1, i_res=4.0, gi_res=2.0, number_dimensions=3, kernel_function=AvailableKernelFunctions.cubic, kernel_solver=Solvers.DEFAULT, compute_condition_number=False, optimizing_condition_number=False, condition_number=None), evaluation_options=EvaluationOptions(_number_octree_levels=5, _number_octree_levels_surface=4, octree_curvature_threshold=-1.0, octree_error_threshold=1.0, octree_min_level=2, mesh_extraction=True, mesh_extraction_masking_options=<MeshExtractionMaskingOptions.INTERSECT: 3>, mesh_extraction_fancy=True, evaluation_chunk_size=500000, compute_scalar_gradient=False, verbose=False), debug=True, cache_mode=<CacheMode.IN_MEMORY_CACHE: 3>, cache_model_name='Claudius', block_solutions_type=<BlockSolutionType.DENSE_GRID: 2>, sigmoid_slope=5000000, debug_water_tight=False, temp_interpolation_values=TempInterpolationValues(current_octree_level=0))
+     'scale': array([9.56397917e-05, 9.56397917e-05, 9.56397917e-05])} interpolation_grid=None interpolation_options=InterpolationOptions(kernel_options=KernelOptions(range=1.7, c_o=10.0, uni_degree=1, i_res=4.0, gi_res=2.0, number_dimensions=3, kernel_function=AvailableKernelFunctions.cubic, kernel_solver=Solvers.DEFAULT, compute_condition_number=False, optimizing_condition_number=False, condition_number=None), evaluation_options=EvaluationOptions(_number_octree_levels=5, _number_octree_levels_surface=4, octree_curvature_threshold=-1.0, octree_error_threshold=1.0, octree_min_level=2, mesh_extraction=True, mesh_extraction_masking_options=<MeshExtractionMaskingOptions.INTERSECT: 3>, mesh_extraction_fancy=True, evaluation_chunk_size=500000, compute_scalar=True, compute_scalar_gradient=False, verbose=False), debug=False, cache_mode=<CacheMode.IN_MEMORY_CACHE: 3>, cache_model_name='Claudius', block_solutions_type=<BlockSolutionType.DENSE_GRID: 2>, sigmoid_slope=5000000)
 
 
 
@@ -870,7 +870,7 @@ points availablle:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff24ea4b070>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f57780ec150>
 
 
 
@@ -1078,15 +1078,13 @@ So far we did not specify which series/faults are actula faults:
     Chunking done: 73 chunks
     Chunking done: 13 chunks
     Chunking done: 31 chunks
-    Chunking done: 6 chunks
-    Chunking done: 6 chunks
-    Chunking done: 36 chunks
     Chunking done: 7 chunks
-    Chunking done: 15 chunks
-    Chunking done: 35 chunks
+    Chunking done: 34 chunks
     Chunking done: 6 chunks
-    Chunking done: 15 chunks
-    Chunking done: 6 chunks
+    Chunking done: 14 chunks
+    Chunking done: 19 chunks
+    Chunking done: 8 chunks
+    Chunking done: 11 chunks
 
 
 .. raw:: html
@@ -1119,7 +1117,7 @@ So far we did not specify which series/faults are actula faults:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff24edbb4f0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f57780ef650>
 
 
 
@@ -1143,7 +1141,7 @@ So far we did not specify which series/faults are actula faults:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff253adca00>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f57780ec050>
 
 
 
@@ -1188,7 +1186,7 @@ So far we did not specify which series/faults are actula faults:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff24e95ca00>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f57783b73d0>
 
 
 
@@ -1212,7 +1210,7 @@ So far we did not specify which series/faults are actula faults:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff2a2c65000>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f57801313d0>
 
 
 
@@ -1237,14 +1235,14 @@ So far we did not specify which series/faults are actula faults:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7ff24e9283a0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f56f4192350>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (1 minutes 3.067 seconds)
+   **Total running time of the script:** (0 minutes 48.673 seconds)
 
 
 .. _sphx_glr_download_examples_real_Claudius.py:

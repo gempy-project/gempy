@@ -6,17 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>gempy.API.compute_API &#8212; GemPy 2024.2.0.3.dev0+gf344a731.d20240626 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/basic.css?v=686e5160" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/basic.css?v=b08954a9" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=e15417cb" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=fd6457a4" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <script src="../../../_static/documentation_options.js?v=bd57e1ea"></script>
-    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
     <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     <link rel="icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -39,26 +40,29 @@
           <div class="body" role="main">
             
   <h1>Source code for gempy.API.compute_API</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
-
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">dotenv</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">gempy_engine</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">gempy_engine.core.backend_tensor</span><span class="w"> </span><span class="kn">import</span> <span class="n">BackendTensor</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">gempy.API.gp2_gp3_compatibility.gp3_to_gp2_input</span><span class="w"> </span><span class="kn">import</span> <span class="n">gempy3_to_gempy2</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gempy_engine.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">AvailableBackends</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gempy_engine.core.backend_tensor</span><span class="w"> </span><span class="kn">import</span> <span class="n">BackendTensor</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gempy_engine.core.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">Solutions</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">gempy_engine.core.data.interpolation_input</span><span class="w"> </span><span class="kn">import</span> <span class="n">InterpolationInput</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.grid_API</span><span class="w"> </span><span class="kn">import</span> <span class="n">set_custom_grid</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..core.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">StructuralGroup</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">..core.data.gempy_engine_config</span><span class="w"> </span><span class="kn">import</span> <span class="n">GemPyEngineConfig</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">..core.data.geo_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">GeoModel</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">..modules.data_manipulation.engine_factory</span><span class="w"> </span><span class="kn">import</span> <span class="n">interpolation_input_from_structural_frame</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">..optional_dependencies</span><span class="w"> </span><span class="kn">import</span> <span class="n">require_gempy_legacy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..modules.data_manipulation</span><span class="w"> </span><span class="kn">import</span> <span class="n">interpolation_input_from_structural_frame</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..modules.optimize_nuggets</span><span class="w"> </span><span class="kn">import</span> <span class="n">nugget_optimizer</span>
+
+<span class="n">dotenv</span><span class="o">.</span><span class="n">load_dotenv</span><span class="p">()</span>
 
 
 <div class="viewcode-block" id="compute_model">
 <a class="viewcode-back" href="../../../GemPy%20API/gempy.compute_model.html#gempy.compute_model">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">compute_model</span><span class="p">(</span><span class="n">gempy_model</span><span class="p">:</span> <span class="n">GeoModel</span><span class="p">,</span> <span class="n">engine_config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">GemPyEngineConfig</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Solutions</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_model</span><span class="p">(</span><span class="n">gempy_model</span><span class="p">:</span> <span class="n">GeoModel</span><span class="p">,</span> <span class="n">engine_config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">GemPyEngineConfig</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                  <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Solutions</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the geological model given the provided GemPy model.</span>
 
@@ -72,16 +76,30 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        Solutions: The computed geological model.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">engine_config</span> <span class="o">=</span> <span class="n">engine_config</span> <span class="ow">or</span> <span class="n">GemPyEngineConfig</span><span class="p">(</span><span class="n">use_gpu</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">engine_config</span><span class="p">:</span> <span class="n">GemPyEngineConfig</span> <span class="o">=</span> <span class="n">engine_config</span> <span class="ow">or</span> <span class="n">GemPyEngineConfig</span><span class="p">()</span>
 
     <span class="k">match</span> <span class="n">engine_config</span><span class="o">.</span><span class="n">backend</span><span class="p">:</span>
         <span class="k">case</span> <span class="n">AvailableBackends</span><span class="o">.</span><span class="n">numpy</span> <span class="o">|</span> <span class="n">AvailableBackends</span><span class="o">.</span><span class="n">PYTORCH</span><span class="p">:</span>
 
-            <span class="n">BackendTensor</span><span class="o">.</span><span class="n">change_backend_gempy</span><span class="p">(</span>
-                <span class="n">engine_backend</span><span class="o">=</span><span class="n">engine_config</span><span class="o">.</span><span class="n">backend</span><span class="p">,</span>
-                <span class="n">use_gpu</span><span class="o">=</span><span class="n">engine_config</span><span class="o">.</span><span class="n">use_gpu</span><span class="p">,</span>
-                <span class="n">dtype</span><span class="o">=</span><span class="n">engine_config</span><span class="o">.</span><span class="n">dtype</span>
-            <span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">BackendTensor</span><span class="o">.</span><span class="n">change_backend_gempy</span><span class="p">(</span>
+                    <span class="n">engine_backend</span><span class="o">=</span><span class="n">engine_config</span><span class="o">.</span><span class="n">backend</span><span class="p">,</span>
+                    <span class="n">use_gpu</span><span class="o">=</span><span class="n">engine_config</span><span class="o">.</span><span class="n">use_gpu</span><span class="p">,</span>
+                    <span class="n">dtype</span><span class="o">=</span><span class="n">engine_config</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+                    <span class="n">grads</span><span class="o">=</span><span class="n">engine_config</span><span class="o">.</span><span class="n">compute_grads</span>
+                <span class="p">)</span>
+            <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">engine_config</span><span class="o">.</span><span class="n">use_gpu</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;GEMPY_GPU_FALLBACK&quot;</span><span class="p">,</span> <span class="s2">&quot;False&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;True&quot;</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)&quot;</span><span class="p">)</span>
+                    <span class="n">engine_config</span><span class="o">.</span><span class="n">use_gpu</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="n">BackendTensor</span><span class="o">.</span><span class="n">change_backend_gempy</span><span class="p">(</span>
+                        <span class="n">engine_backend</span><span class="o">=</span><span class="n">engine_config</span><span class="o">.</span><span class="n">backend</span><span class="p">,</span>
+                        <span class="n">use_gpu</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                        <span class="n">dtype</span><span class="o">=</span><span class="n">engine_config</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+                        <span class="n">grads</span><span class="o">=</span><span class="n">engine_config</span><span class="o">.</span><span class="n">compute_grads</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span>
 
             <span class="c1"># TODO: To decide what to do with this.</span>
             <span class="n">interpolation_input</span> <span class="o">=</span> <span class="n">interpolation_input_from_structural_frame</span><span class="p">(</span><span class="n">gempy_model</span><span class="p">)</span>
@@ -93,11 +111,17 @@
                 <span class="n">data_descriptor</span><span class="o">=</span><span class="n">gempy_model</span><span class="o">.</span><span class="n">input_data_descriptor</span><span class="p">,</span>
                 <span class="n">geophysics_input</span><span class="o">=</span><span class="n">gempy_model</span><span class="o">.</span><span class="n">geophysics_input</span><span class="p">,</span>
             <span class="p">)</span>
-
-        <span class="k">case</span> <span class="n">AvailableBackends</span><span class="o">.</span><span class="n">aesara</span> <span class="o">|</span> <span class="n">AvailableBackends</span><span class="o">.</span><span class="n">legacy</span><span class="p">:</span>
-            <span class="n">gempy_model</span><span class="o">.</span><span class="n">legacy_model</span> <span class="o">=</span> <span class="n">_legacy_compute_model</span><span class="p">(</span><span class="n">gempy_model</span><span class="p">)</span>
         <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Backend </span><span class="si">{</span><span class="n">engine_config</span><span class="si">}</span><span class="s1"> not supported&#39;</span><span class="p">)</span>
+
+    <span class="n">validate_serialization</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;VALIDATE_SERIALIZATION&quot;</span><span class="p">,</span> <span class="s2">&quot;False&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;True&quot;</span>
+    <span class="k">if</span> <span class="s2">&quot;validate_serialization&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="n">validate_serialization</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;validate_serialization&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">validate_serialization</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">..modules.serialization.save_load</span><span class="w"> </span><span class="kn">import</span> <span class="n">model_to_bytes</span><span class="p">,</span> <span class="n">_load_model_from_bytes</span><span class="p">,</span> <span class="n">_validate_serialization</span>
+        <span class="n">binary_file</span> <span class="o">=</span> <span class="n">model_to_bytes</span><span class="p">(</span><span class="n">gempy_model</span><span class="p">)</span>
+        <span class="n">model_deserialized</span> <span class="o">=</span> <span class="n">_load_model_from_bytes</span><span class="p">(</span><span class="n">binary_file</span><span class="p">)</span>
+        <span class="n">_validate_serialization</span><span class="p">(</span><span class="n">gempy_model</span><span class="p">,</span> <span class="n">model_deserialized</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">gempy_model</span><span class="o">.</span><span class="n">solutions</span></div>
 
@@ -118,100 +142,41 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        np.ndarray: The computed geological model at the specified coordinates.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING: This function sets a custom grid and computes the model so be wary of side effects.&quot;</span><span class="p">)</span>
     <span class="n">set_custom_grid</span><span class="p">(</span>
         <span class="n">grid</span><span class="o">=</span><span class="n">gempy_model</span><span class="o">.</span><span class="n">grid</span><span class="p">,</span>
-        <span class="n">xyz_coord</span><span class="o">=</span><span class="n">at</span>
+        <span class="n">xyz_coord</span><span class="o">=</span><span class="n">at</span><span class="p">,</span>
+        <span class="n">reset</span><span class="o">=</span><span class="kc">True</span>
     <span class="p">)</span>
-
+    
     <span class="n">sol</span> <span class="o">=</span> <span class="n">compute_model</span><span class="p">(</span><span class="n">gempy_model</span><span class="p">,</span> <span class="n">engine_config</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">sol</span><span class="o">.</span><span class="n">raw_arrays</span><span class="o">.</span><span class="n">custom</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">optimize_and_compute</span><span class="p">(</span><span class="n">geo_model</span><span class="p">:</span> <span class="n">GeoModel</span><span class="p">,</span> <span class="n">engine_config</span><span class="p">:</span> <span class="n">GemPyEngineConfig</span><span class="p">,</span> <span class="n">max_epochs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
-                         <span class="n">convergence_criteria</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e5</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">optimize_nuggets</span><span class="p">(</span><span class="n">geo_model</span><span class="p">:</span> <span class="n">GeoModel</span><span class="p">,</span> <span class="n">engine_config</span><span class="p">:</span> <span class="n">GemPyEngineConfig</span><span class="p">,</span> <span class="n">max_epochs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+                     <span class="n">convergence_criteria</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e5</span><span class="p">,</span> <span class="n">only_groups</span><span class="p">:</span><span class="nb">list</span><span class="p">[</span><span class="n">StructuralGroup</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GeoModel</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Optimize the nuggets of the interpolation input of the provided model.  </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">if</span> <span class="n">engine_config</span><span class="o">.</span><span class="n">backend</span> <span class="o">!=</span> <span class="n">AvailableBackends</span><span class="o">.</span><span class="n">PYTORCH</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Only PyTorch backend is supported for optimization. Received </span><span class="si">{</span><span class="n">engine_config</span><span class="o">.</span><span class="n">backend</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-
-    <span class="n">BackendTensor</span><span class="o">.</span><span class="n">change_backend_gempy</span><span class="p">(</span>
-        <span class="n">engine_backend</span><span class="o">=</span><span class="n">engine_config</span><span class="o">.</span><span class="n">backend</span><span class="p">,</span>
-        <span class="n">use_gpu</span><span class="o">=</span><span class="n">engine_config</span><span class="o">.</span><span class="n">use_gpu</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">engine_config</span><span class="o">.</span><span class="n">dtype</span>
+    
+    <span class="n">geo_model</span> <span class="o">=</span> <span class="n">nugget_optimizer</span><span class="p">(</span>
+        <span class="n">target_cond_num</span><span class="o">=</span><span class="n">convergence_criteria</span><span class="p">,</span>
+        <span class="n">engine_cfg</span><span class="o">=</span><span class="n">engine_config</span><span class="p">,</span>
+        <span class="n">model</span><span class="o">=</span><span class="n">geo_model</span><span class="p">,</span>
+        <span class="n">max_epochs</span><span class="o">=</span><span class="n">max_epochs</span><span class="p">,</span>
+        <span class="n">only_groups</span><span class="o">=</span><span class="n">only_groups</span>
     <span class="p">)</span>
 
-    <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">gempy_engine.core.data.continue_epoch</span><span class="w"> </span><span class="kn">import</span> <span class="n">ContinueEpoch</span>
-    <span class="n">interpolation_input</span><span class="p">:</span> <span class="n">InterpolationInput</span> <span class="o">=</span> <span class="n">interpolation_input_from_structural_frame</span><span class="p">(</span><span class="n">geo_model</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">geo_model</span>
 
-    <span class="n">geo_model</span><span class="o">.</span><span class="n">taped_interpolation_input</span> <span class="o">=</span> <span class="n">interpolation_input</span>
-
-    <span class="n">nugget_effect_scalar</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">=</span> <span class="n">geo_model</span><span class="o">.</span><span class="n">taped_interpolation_input</span><span class="o">.</span><span class="n">surface_points</span><span class="o">.</span><span class="n">nugget_effect_scalar</span>
-
-    <span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span>
-        <span class="n">params</span><span class="o">=</span><span class="p">[</span><span class="n">nugget_effect_scalar</span><span class="p">],</span>
-        <span class="n">lr</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
-    <span class="p">)</span>
-
-    <span class="c1"># Optimization loop</span>
-    <span class="n">geo_model</span><span class="o">.</span><span class="n">interpolation_options</span><span class="o">.</span><span class="n">kernel_options</span><span class="o">.</span><span class="n">optimizing_condition_number</span> <span class="o">=</span> <span class="kc">True</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_check_convergence_criterion</span><span class="p">(</span><span class="n">conditional_number</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">condition_number_old</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">conditional_number_target</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e5</span><span class="p">):</span>
-        <span class="n">reached_conditional_target</span> <span class="o">=</span> <span class="n">conditional_number</span> <span class="o">&lt;</span> <span class="n">conditional_number_target</span>
-        <span class="k">if</span> <span class="n">reached_conditional_target</span> <span class="o">==</span> <span class="kc">False</span> <span class="ow">and</span> <span class="n">epoch</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="p">:</span>
-            <span class="n">condition_number_change</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">conditional_number</span> <span class="o">-</span> <span class="n">condition_number_old</span><span class="p">)</span> <span class="o">/</span> <span class="n">condition_number_old</span>
-            <span class="k">if</span> <span class="n">condition_number_change</span> <span class="o">&lt;</span> <span class="mf">0.01</span><span class="p">:</span>
-                <span class="n">reached_conditional_target</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="k">return</span> <span class="n">reached_conditional_target</span>
-
-    <span class="n">previous_condition_number</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_epochs</span><span class="p">):</span>
-        <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="c1"># geo_model.taped_interpolation_input.grid = geo_model.interpolation_input_copy.grid</span>
-
-            <span class="n">gempy_engine</span><span class="o">.</span><span class="n">compute_model</span><span class="p">(</span>
-                <span class="n">interpolation_input</span><span class="o">=</span><span class="n">geo_model</span><span class="o">.</span><span class="n">taped_interpolation_input</span><span class="p">,</span>
-                <span class="n">options</span><span class="o">=</span><span class="n">geo_model</span><span class="o">.</span><span class="n">interpolation_options</span><span class="p">,</span>
-                <span class="n">data_descriptor</span><span class="o">=</span><span class="n">geo_model</span><span class="o">.</span><span class="n">input_data_descriptor</span><span class="p">,</span>
-                <span class="n">geophysics_input</span><span class="o">=</span><span class="n">geo_model</span><span class="o">.</span><span class="n">geophysics_input</span><span class="p">,</span>
-            <span class="p">)</span>
-        <span class="k">except</span> <span class="n">ContinueEpoch</span><span class="p">:</span>
-            <span class="c1"># Get absolute values of gradients</span>
-            <span class="n">grad_magnitudes</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">nugget_effect_scalar</span><span class="o">.</span><span class="n">grad</span><span class="p">)</span>
-
-            <span class="c1"># Get indices of the 10 largest gradients</span>
-            <span class="n">grad_magnitudes</span><span class="o">.</span><span class="n">size</span>
-
-            <span class="c1"># * This ignores 90 percent of the gradients</span>
-            <span class="c1"># To int</span>
-            <span class="n">n_values</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">grad_magnitudes</span><span class="o">.</span><span class="n">size</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.9</span><span class="p">)</span>
-            <span class="n">_</span><span class="p">,</span> <span class="n">indices</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">topk</span><span class="p">(</span><span class="n">grad_magnitudes</span><span class="p">,</span> <span class="n">n_values</span><span class="p">,</span> <span class="n">largest</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-
-            <span class="c1"># Zero out gradients that are not in the top 10</span>
-            <span class="n">mask</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">nugget_effect_scalar</span><span class="o">.</span><span class="n">grad</span><span class="p">)</span>
-            <span class="n">mask</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="n">nugget_effect_scalar</span><span class="o">.</span><span class="n">grad</span> <span class="o">*=</span> <span class="n">mask</span>
-
-            <span class="c1"># Update the vector</span>
-            <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
-            <span class="n">nugget_effect_scalar</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">nugget_effect_scalar</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">clamp_</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mf">1e-7</span><span class="p">)</span>  <span class="c1"># Replace negative values with 0</span>
-
-            <span class="c1"># optimizer.zero_grad()</span>
-        <span class="c1"># Monitor progress</span>
-        <span class="k">if</span> <span class="n">epoch</span> <span class="o">%</span> <span class="mi">1</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="c1"># print(f&quot;Epoch {epoch}: Condition Number = {condition_number.item()}&quot;)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Epoch </span><span class="si">{</span><span class="n">epoch</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">_check_convergence_criterion</span><span class="p">(</span>
-                <span class="n">conditional_number</span><span class="o">=</span><span class="n">geo_model</span><span class="o">.</span><span class="n">interpolation_options</span><span class="o">.</span><span class="n">kernel_options</span><span class="o">.</span><span class="n">condition_number</span><span class="p">,</span>
-                <span class="n">condition_number_old</span><span class="o">=</span><span class="n">previous_condition_number</span><span class="p">,</span>
-                <span class="n">conditional_number_target</span><span class="o">=</span><span class="n">convergence_criteria</span><span class="p">,</span>
-        <span class="p">):</span>
-            <span class="k">break</span>
-        <span class="n">previous_condition_number</span> <span class="o">=</span> <span class="n">geo_model</span><span class="o">.</span><span class="n">interpolation_options</span><span class="o">.</span><span class="n">kernel_options</span><span class="o">.</span><span class="n">condition_number</span>
-        <span class="k">continue</span>
-
-    <span class="n">geo_model</span><span class="o">.</span><span class="n">interpolation_options</span><span class="o">.</span><span class="n">kernel_options</span><span class="o">.</span><span class="n">optimizing_condition_number</span> <span class="o">=</span> <span class="kc">False</span>
-
+<span class="k">def</span><span class="w"> </span><span class="nf">optimize_and_compute</span><span class="p">(</span><span class="n">geo_model</span><span class="p">:</span> <span class="n">GeoModel</span><span class="p">,</span> <span class="n">engine_config</span><span class="p">:</span> <span class="n">GemPyEngineConfig</span><span class="p">,</span> <span class="n">max_epochs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+                         <span class="n">convergence_criteria</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e5</span><span class="p">):</span>
+    
+    <span class="n">optimize_nuggets</span><span class="p">(</span><span class="n">geo_model</span><span class="p">,</span> <span class="n">engine_config</span><span class="p">,</span> <span class="n">max_epochs</span><span class="p">,</span> <span class="n">convergence_criteria</span><span class="p">)</span>
     <span class="n">geo_model</span><span class="o">.</span><span class="n">solutions</span> <span class="o">=</span> <span class="n">gempy_engine</span><span class="o">.</span><span class="n">compute_model</span><span class="p">(</span>
         <span class="n">interpolation_input</span><span class="o">=</span><span class="n">geo_model</span><span class="o">.</span><span class="n">taped_interpolation_input</span><span class="p">,</span>
         <span class="n">options</span><span class="o">=</span><span class="n">geo_model</span><span class="o">.</span><span class="n">interpolation_options</span><span class="p">,</span>
@@ -221,12 +186,6 @@
     <span class="k">return</span> <span class="n">geo_model</span><span class="o">.</span><span class="n">solutions</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_legacy_compute_model</span><span class="p">(</span><span class="n">gempy_model</span><span class="p">:</span> <span class="n">GeoModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;gempy_legacy.Project&#39;</span><span class="p">:</span>
-    <span class="n">gpl</span> <span class="o">=</span> <span class="n">require_gempy_legacy</span><span class="p">()</span>
-    <span class="n">legacy_model</span><span class="p">:</span> <span class="n">gpl</span><span class="o">.</span><span class="n">Project</span> <span class="o">=</span> <span class="n">gempy3_to_gempy2</span><span class="p">(</span><span class="n">gempy_model</span><span class="p">)</span>
-    <span class="n">gpl</span><span class="o">.</span><span class="n">set_interpolator</span><span class="p">(</span><span class="n">legacy_model</span><span class="p">)</span>
-    <span class="n">gpl</span><span class="o">.</span><span class="n">compute_model</span><span class="p">(</span><span class="n">legacy_model</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">legacy_model</span>
 </pre></div>
 
           </div>
@@ -305,10 +264,10 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &#169;2017-2025, Gempy Developers.
+      &#169;2017-2026, Gempy Developers.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       
     </div>

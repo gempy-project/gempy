@@ -38,13 +38,14 @@ This model is part of a geomodeling benchmaring effort. More information (and, h
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 12-20
+.. GENERATED FROM PYTHON SOURCE LINES 12-21
 
 .. code-block:: Python
 
 
     # Aux imports
     import pandas as pn
+    from gempy.modules.serialization.save_load import _validate_serialization
 
     # Importing gempy
     import gempy as gp
@@ -57,7 +58,7 @@ This model is part of a geomodeling benchmaring effort. More information (and, h
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 21-27
+.. GENERATED FROM PYTHON SOURCE LINES 22-28
 
 Loading surface points from repository:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -66,7 +67,7 @@ With pandas we can do it directly from the web and with the right args
 we can directly tidy the data in gempy style:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 29-58
+.. GENERATED FROM PYTHON SOURCE LINES 30-59
 
 .. code-block:: Python
 
@@ -137,45 +138,45 @@ we can directly tidy the data in gempy style:
         <tr>
           <th>761</th>
           <td>6</td>
-          <td>11.143734</td>
-          <td>-0.172893</td>
-          <td>1.53226</td>
+          <td>11.14</td>
+          <td>-0.17</td>
+          <td>1.53</td>
           <td>NaN</td>
           <td>f3</td>
         </tr>
         <tr>
           <th>762</th>
           <td>7</td>
-          <td>11.171513</td>
-          <td>0.284198</td>
-          <td>1.68442</td>
+          <td>11.17</td>
+          <td>0.28</td>
+          <td>1.68</td>
           <td>NaN</td>
           <td>f3</td>
         </tr>
         <tr>
           <th>763</th>
           <td>8</td>
-          <td>11.159113</td>
-          <td>0.399711</td>
-          <td>1.81939</td>
+          <td>11.16</td>
+          <td>0.40</td>
+          <td>1.82</td>
           <td>NaN</td>
           <td>f3</td>
         </tr>
         <tr>
           <th>764</th>
           <td>9</td>
-          <td>11.069008</td>
-          <td>0.032232</td>
-          <td>1.92030</td>
+          <td>11.07</td>
+          <td>0.03</td>
+          <td>1.92</td>
           <td>NaN</td>
           <td>f3</td>
         </tr>
         <tr>
           <th>765</th>
           <td>10</td>
-          <td>10.885192</td>
-          <td>-0.428004</td>
-          <td>2.10412</td>
+          <td>10.89</td>
+          <td>-0.43</td>
+          <td>2.10</td>
           <td>NaN</td>
           <td>f3</td>
         </tr>
@@ -186,12 +187,12 @@ we can directly tidy the data in gempy style:
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 59-61
+.. GENERATED FROM PYTHON SOURCE LINES 60-62
 
 Now we do the same with the orientations:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 63-85
+.. GENERATED FROM PYTHON SOURCE LINES 64-86
 
 .. code-block:: Python
 
@@ -224,7 +225,7 @@ Now we do the same with the orientations:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 86-95
+.. GENERATED FROM PYTHON SOURCE LINES 87-96
 
 Data initialization:
 ~~~~~~~~~~~~~~~~~~~~
@@ -236,7 +237,7 @@ Suggested resolution: 0.05m (grid size 321 x 21 x 91)
 
 %%
 
-.. GENERATED FROM PYTHON SOURCE LINES 95-133
+.. GENERATED FROM PYTHON SOURCE LINES 96-134
 
 .. code-block:: Python
 
@@ -274,7 +275,7 @@ Suggested resolution: 0.05m (grid size 321 x 21 x 91)
     gp.set_section_grid(
         grid=geo_model.grid,
         section_dict={
-                'section': ([0, 0], [16, 0], [321, 91])
+                'section': ((0., 0.), (16., 0.), (321, 91))
         },
     )
 
@@ -286,7 +287,7 @@ Suggested resolution: 0.05m (grid size 321 x 21 x 91)
 
  .. code-block:: none
 
-    Active grids: GridTypes.NONE|SECTIONS|DENSE
+    Active grids: GridTypes.DENSE|SECTIONS|NONE
 
 
 .. raw:: html
@@ -305,9 +306,9 @@ Suggested resolution: 0.05m (grid size 321 x 21 x 91)
       <tbody>
         <tr>
           <th>section</th>
-          <td>[0, 0]</td>
-          <td>[16, 0]</td>
-          <td>[321, 91]</td>
+          <td>(0.0, 0.0)</td>
+          <td>(16.0, 0.0)</td>
+          <td>(321, 91)</td>
           <td>16.0</td>
         </tr>
       </tbody>
@@ -316,14 +317,14 @@ Suggested resolution: 0.05m (grid size 321 x 21 x 91)
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 134-138
+.. GENERATED FROM PYTHON SOURCE LINES 135-139
 
 We need an orientation per series/fault. The faults does not have
 orientation so the easiest is to create an orientation from the surface
 points availablle:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 140-155
+.. GENERATED FROM PYTHON SOURCE LINES 141-157
 
 .. code-block:: Python
 
@@ -339,7 +340,8 @@ points availablle:
             y=new_orientations.data['Y'],
             z=new_orientations.data['Z'],
             pole_vector=new_orientations.grads,
-            elements_names=fn
+            elements_names=fn,
+            name_id_map=element.surface_points.name_id_map 
         )
 
 
@@ -349,12 +351,12 @@ points availablle:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 156-158
+.. GENERATED FROM PYTHON SOURCE LINES 158-160
 
 Now we can see how the data looks so far:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 160-162
+.. GENERATED FROM PYTHON SOURCE LINES 162-164
 
 .. code-block:: Python
 
@@ -374,16 +376,16 @@ Now we can see how the data looks so far:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fbc9e9f4f10>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f57801a1750>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 163-165
+.. GENERATED FROM PYTHON SOURCE LINES 165-167
 
 By default all surfaces belong to one unique series.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 167-169
+.. GENERATED FROM PYTHON SOURCE LINES 169-171
 
 .. code-block:: Python
 
@@ -482,12 +484,12 @@ By default all surfaces belong to one unique series.
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 170-172
+.. GENERATED FROM PYTHON SOURCE LINES 172-174
 
 We will need to separate with surface belong to each series:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 174-179
+.. GENERATED FROM PYTHON SOURCE LINES 176-181
 
 .. code-block:: Python
 
@@ -610,18 +612,18 @@ We will need to separate with surface belong to each series:
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 180-183
+.. GENERATED FROM PYTHON SOURCE LINES 182-185
 
 However if we want the faults to offset the “Default series”, they will
 need to be more recent (higher on the pile). We can modify the order by:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 187-189
+.. GENERATED FROM PYTHON SOURCE LINES 189-191
 
 Lastly, so far we did not specify which series/faults are actula faults:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 191-196
+.. GENERATED FROM PYTHON SOURCE LINES 193-198
 
 .. code-block:: Python
 
@@ -744,14 +746,14 @@ Lastly, so far we did not specify which series/faults are actula faults:
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 197-201
+.. GENERATED FROM PYTHON SOURCE LINES 199-203
 
 The default range is always the diagonal of the extent. Since in this
 model data is very close we will need to reduce the range to 5-10% of
 that value:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 203-205
+.. GENERATED FROM PYTHON SOURCE LINES 205-207
 
 .. code-block:: Python
 
@@ -764,7 +766,7 @@ that value:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 206-214
+.. GENERATED FROM PYTHON SOURCE LINES 208-216
 
 Explanation of model characteristics and adjustments
 This model has characteristics that make it difficult to get the right default values:
@@ -775,11 +777,11 @@ To address these issues:
 - Reduce the std of the error parameter in octree refinement, which evaluates fewer voxels but may leave some without refinement
 Enable debugging options to help tune these parameters.
 
-.. GENERATED FROM PYTHON SOURCE LINES 216-217
+.. GENERATED FROM PYTHON SOURCE LINES 218-219
 
 Setting verbose and condition number options for debugging
 
-.. GENERATED FROM PYTHON SOURCE LINES 217-218
+.. GENERATED FROM PYTHON SOURCE LINES 219-222
 
 .. code-block:: Python
 
@@ -791,27 +793,9 @@ Setting verbose and condition number options for debugging
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 219-222
-
-Observations and parameter adjustments
-The octree refinement is making the octree grid almost dense, and smaller chunks are needed to avoid running out of memory.
-Adjusting parameters accordingly:
-
-.. GENERATED FROM PYTHON SOURCE LINES 222-225
-
-.. code-block:: Python
 
 
-    geo_model.interpolation_options.evaluation_options.evaluation_chunk_size = 50_000
-
-
-
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 226-234
+.. GENERATED FROM PYTHON SOURCE LINES 223-232
 
 .. code-block:: Python
 
@@ -820,7 +804,8 @@ Adjusting parameters accordingly:
         engine_config=gp.data.GemPyEngineConfig(
             backend=gp.data.AvailableBackends.PYTORCH,
             dtype='float64'
-        )
+        ),
+        validate_serialization=True
     )
 
 
@@ -832,31 +817,19 @@ Adjusting parameters accordingly:
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.PYTORCH
-    Condition number: 1546449.733468359.
-    Chunking done: 206 chunks
-    Condition number: 1545102.643054532.
-    Chunking done: 258 chunks
-    Condition number: 1447785.0114925415.
-    Chunking done: 206 chunks
-    Condition number: 40165630.352466166.
-    Chunking done: 10548 chunks
-    Chunking done: 14 chunks
-    Chunking done: 14 chunks
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
+    Condition number: 1546449.7334630876.
     Chunking done: 21 chunks
+    Condition number: 1545102.6430502783.
+    Chunking done: 26 chunks
+    Condition number: 1447785.0114887375.
     Chunking done: 21 chunks
-    Chunking done: 80 chunks
-    Chunking done: 80 chunks
-    Chunking done: 11 chunks
-    Chunking done: 14 chunks
-    Chunking done: 11 chunks
-    Chunking done: 550 chunks
-    Chunking done: 38 chunks
-    Chunking done: 35 chunks
-    Chunking done: 33 chunks
-    Chunking done: 8 chunks
-    Chunking done: 10 chunks
-    Chunking done: 8 chunks
-    Chunking done: 389 chunks
+    Condition number: 40165630.351970166.
+    Chunking done: 1052 chunks
+    Chunking done: 9 chunks
+    Chunking done: 59 chunks
+    Chunking done: 32 chunks
 
 
 .. raw:: html
@@ -867,7 +840,7 @@ Adjusting parameters accordingly:
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 235-237
+.. GENERATED FROM PYTHON SOURCE LINES 233-235
 
 .. code-block:: Python
 
@@ -887,11 +860,11 @@ Adjusting parameters accordingly:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fbc9e9f48b0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f57ec7a5ed0>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 238-240
+.. GENERATED FROM PYTHON SOURCE LINES 236-238
 
 .. code-block:: Python
 
@@ -911,11 +884,11 @@ Adjusting parameters accordingly:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fbc9e919ae0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f57783b6f50>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 241-243
+.. GENERATED FROM PYTHON SOURCE LINES 239-241
 
 .. code-block:: Python
 
@@ -934,18 +907,16 @@ Adjusting parameters accordingly:
 
  .. code-block:: none
 
-    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:106: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
-      warnings.warn(
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fbcb69b1600>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f5782d9c850>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 244-245
+.. GENERATED FROM PYTHON SOURCE LINES 242-243
 
 sphinx_gallery_thumbnail_number = 3
 
-.. GENERATED FROM PYTHON SOURCE LINES 245-246
+.. GENERATED FROM PYTHON SOURCE LINES 243-244
 
 .. code-block:: Python
 
@@ -964,14 +935,14 @@ sphinx_gallery_thumbnail_number = 3
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fbc9eb33310>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f577809c590>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (1 minutes 38.634 seconds)
+   **Total running time of the script:** (0 minutes 27.182 seconds)
 
 
 .. _sphx_glr_download_examples_real_Hecho.py:

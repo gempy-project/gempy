@@ -25,7 +25,6 @@
       ~SurfacePointsTable.get_surface_points_by_name
       ~SurfacePointsTable.id_to_name
       ~SurfacePointsTable.initialize_empty
-      ~SurfacePointsTable.parse_short_array
    
    
 
@@ -35,6 +34,7 @@
 
    .. autosummary::
    
+      ~SurfacePointsTable.data
       ~SurfacePointsTable.df
       ~SurfacePointsTable.dt
       ~SurfacePointsTable.id
@@ -44,7 +44,6 @@
       ~SurfacePointsTable.nugget
       ~SurfacePointsTable.xyz
       ~SurfacePointsTable.xyz_view
-      ~SurfacePointsTable.data
    
    
 

@@ -7,6 +7,10 @@ Video tutorials
 
 Compilation of tutorials for videos on the `gempy` YouTube channel https://www.youtube.com/@GemPy3D.
 
+.. raw:: html
+
+  <div id='sg-tag-list' class='sphx-glr-tag-list'></div>
+
 
 .. raw:: html
 
@@ -23,7 +27,7 @@ Compilation of tutorials for videos on the `gempy` YouTube channel https://www.y
   .. image:: /tutorials/z_other_tutorials/images/thumb/sphx_glr_video_tutorial_model_1_thumb.png
     :alt:
 
-  :ref:`sphx_glr_tutorials_z_other_tutorials_video_tutorial_model_1.py`
+  :doc:`/tutorials/z_other_tutorials/video_tutorial_model_1`
 
 .. raw:: html
 
@@ -40,7 +44,7 @@ Compilation of tutorials for videos on the `gempy` YouTube channel https://www.y
   .. image:: /tutorials/z_other_tutorials/images/thumb/sphx_glr_video_tutorial_model_2_faults_thumb.png
     :alt:
 
-  :ref:`sphx_glr_tutorials_z_other_tutorials_video_tutorial_model_2_faults.py`
+  :doc:`/tutorials/z_other_tutorials/video_tutorial_model_2_faults`
 
 .. raw:: html
 
@@ -57,7 +61,7 @@ Compilation of tutorials for videos on the `gempy` YouTube channel https://www.y
   .. image:: /tutorials/z_other_tutorials/images/thumb/sphx_glr_video_tutorial_model_3_onlap_thumb.png
     :alt:
 
-  :ref:`sphx_glr_tutorials_z_other_tutorials_video_tutorial_model_3_onlap.py`
+  :doc:`/tutorials/z_other_tutorials/video_tutorial_model_3_onlap`
 
 .. raw:: html
 

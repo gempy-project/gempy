@@ -7,19 +7,20 @@
 
     <title>1.1 -Basics of geological modeling with GemPy &#8212; GemPy 2024.2.0.3.dev0+gf344a731.d20240626 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=686e5160" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=b08954a9" />
     <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=e15417cb" />
     <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=fd6457a4" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <script src="../../_static/documentation_options.js?v=bd57e1ea"></script>
-    <script src="../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
-    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <link rel="icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -296,19 +297,19 @@ For instance, you can retrieve the coordinates of our modeling grid as follows:<
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../Modeling Classes/gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span><span class="o">.</span><span class="n">grid</span></a>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Grid(values=array([[  15.625   ,   15.625   ,    5.859375],
-       [  15.625   ,   15.625   ,   17.578125],
-       [  15.625   ,   15.625   ,   29.296875],
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Grid(values=array([[   5.20833333,    5.20833333,    5.859375  ],
+       [   5.20833333,    5.20833333,   17.578125  ],
+       [   5.20833333,    5.20833333,   29.296875  ],
        ...,
-       [1984.375   , 1984.375   ,  720.703125],
-       [1984.375   , 1984.375   ,  732.421875],
-       [1984.375   , 1984.375   ,  744.140625]], shape=(262144, 3)), length=array([], dtype=float64), _octree_grid=RegularGrid(resolution=array([64, 64, 64]), extent=array([   0., 2000.,    0., 2000.,    0.,  750.]), values=array([[  15.625   ,   15.625   ,    5.859375],
-       [  15.625   ,   15.625   ,   17.578125],
-       [  15.625   ,   15.625   ,   29.296875],
+       [1994.79166667, 1994.79166667,  720.703125  ],
+       [1994.79166667, 1994.79166667,  732.421875  ],
+       [1994.79166667, 1994.79166667,  744.140625  ]], shape=(2359296, 3)), length=array([], dtype=float64), _octree_grid=RegularGrid(resolution=array([192, 192,  64]), extent=array([   0., 2000.,    0., 2000.,    0.,  750.]), values=array([[   5.20833333,    5.20833333,    5.859375  ],
+       [   5.20833333,    5.20833333,   17.578125  ],
+       [   5.20833333,    5.20833333,   29.296875  ],
        ...,
-       [1984.375   , 1984.375   ,  720.703125],
-       [1984.375   , 1984.375   ,  732.421875],
-       [1984.375   , 1984.375   ,  744.140625]], shape=(262144, 3)), mask_topo=array([], shape=(0, 3), dtype=bool), _transform=None), _dense_grid=None, _custom_grid=None, _topography=None, _sections=None, _centered_grid=None, _transform=None, _octree_levels=-1)
+       [1994.79166667, 1994.79166667,  720.703125  ],
+       [1994.79166667, 1994.79166667,  732.421875  ],
+       [1994.79166667, 1994.79166667,  744.140625  ]], shape=(2359296, 3)), mask_topo=array([], shape=(0, 3), dtype=bool), _transform=None, _base_resolution=array([6, 6, 2])), _dense_grid=None, _custom_grid=None, _topography=None, _sections=None, _centered_grid=None, _transform=None, _octree_levels=-1)
 </pre></div>
 </div>
 </section>
@@ -326,7 +327,7 @@ in GemPy requires [the Visualization Toolkit](<a class="reference external" href
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_3d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">plotter_type</span><span class="o">=</span><span class="s1">&#39;basic&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_ch1_1_basics_002.png" srcset="../../_images/sphx_glr_ch1_1_basics_002.png" alt="ch1 1 basics" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7ff2537c2470&gt;
+<img src="../../_images/sphx_glr_ch1_1_basics_002.png" srcset="../../_images/sphx_glr_ch1_1_basics_002.png" alt="ch1 1 basics" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f58217b39b0&gt;
 </pre></div>
 </div>
 </section>
@@ -350,7 +351,7 @@ unless you fully understand their implications.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="o">.</span><span class="n">interpolation_options</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>InterpolationOptions(kernel_options=KernelOptions(range=1.7, c_o=10.0, uni_degree=1, i_res=4.0, gi_res=2.0, number_dimensions=3, kernel_function=AvailableKernelFunctions.cubic, kernel_solver=Solvers.DEFAULT, compute_condition_number=False, optimizing_condition_number=False, condition_number=None), evaluation_options=EvaluationOptions(_number_octree_levels=6, _number_octree_levels_surface=4, octree_curvature_threshold=-1.0, octree_error_threshold=1.0, octree_min_level=2, mesh_extraction=True, mesh_extraction_masking_options=&lt;MeshExtractionMaskingOptions.INTERSECT: 3&gt;, mesh_extraction_fancy=True, evaluation_chunk_size=500000, compute_scalar_gradient=False, verbose=False), debug=True, cache_mode=&lt;CacheMode.IN_MEMORY_CACHE: 3&gt;, cache_model_name=&#39;Tutorial_ch1_1_Basics&#39;, block_solutions_type=&lt;BlockSolutionType.OCTREE: 1&gt;, sigmoid_slope=5000000, debug_water_tight=False, temp_interpolation_values=TempInterpolationValues(current_octree_level=0))
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>InterpolationOptions(kernel_options=KernelOptions(range=1.7, c_o=10.0, uni_degree=1, i_res=4.0, gi_res=2.0, number_dimensions=3, kernel_function=AvailableKernelFunctions.cubic, kernel_solver=Solvers.DEFAULT, compute_condition_number=False, optimizing_condition_number=False, condition_number=None), evaluation_options=EvaluationOptions(_number_octree_levels=6, _number_octree_levels_surface=4, octree_curvature_threshold=-1.0, octree_error_threshold=1.0, octree_min_level=2, mesh_extraction=True, mesh_extraction_masking_options=&lt;MeshExtractionMaskingOptions.INTERSECT: 3&gt;, mesh_extraction_fancy=True, evaluation_chunk_size=500000, compute_scalar=True, compute_scalar_gradient=False, verbose=False), debug=False, cache_mode=&lt;CacheMode.IN_MEMORY_CACHE: 3&gt;, cache_model_name=&#39;Tutorial_ch1_1_Basics&#39;, block_solutions_type=&lt;BlockSolutionType.OCTREE: 1&gt;, sigmoid_slope=5000000)
 </pre></div>
 </div>
 <p>With all our prerequisites in place, we can now compute our complete geological model
@@ -361,13 +362,15 @@ using <a class="reference internal" href="../../GemPy%20API/gempy.compute_model.
 <span class="n">sol</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting Backend To: AvailableBackends.numpy
-/home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
-  return 1.0 / (1.0 + bt.t.exp(x))
-Chunking done: 20 chunks
-Chunking done: 20 chunks
-/home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
-  return 1.0 / (1.0 + bt.t.exp(x))
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting Backend To: AvailableBackends.PYTORCH
+GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+Setting Backend To: AvailableBackends.PYTORCH
+Chunking done: 18 chunks
+Chunking done: 16 chunks
+Chunking done: 89 chunks
+Chunking done: 7 chunks
+Chunking done: 41 chunks
+Chunking done: 7 chunks
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
@@ -390,7 +393,7 @@ directly. Let’s take a look at our lithology block:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">show_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="s2">&quot;mid&quot;</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_ch1_1_basics_003.png" srcset="../../_images/sphx_glr_ch1_1_basics_003.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff2a5641810&gt;
+<img src="../../_images/sphx_glr_ch1_1_basics_003.png" srcset="../../_images/sphx_glr_ch1_1_basics_003.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f57bff4f540&gt;
 </pre></div>
 </div>
 <p>With <code class="docutils literal notranslate"><span class="pre">cell_number=mid</span></code>, we have chosen a section going through
@@ -410,7 +413,7 @@ looking at different 2D planes.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_ch1_1_basics_004.png" srcset="../../_images/sphx_glr_ch1_1_basics_004.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff2af80eb30&gt;
+<img src="../../_images/sphx_glr_ch1_1_basics_004.png" srcset="../../_images/sphx_glr_ch1_1_basics_004.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f5820625630&gt;
 </pre></div>
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span>
@@ -422,7 +425,7 @@ looking at different 2D planes.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_ch1_1_basics_005.png" srcset="../../_images/sphx_glr_ch1_1_basics_005.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff2a5643c10&gt;
+<img src="../../_images/sphx_glr_ch1_1_basics_005.png" srcset="../../_images/sphx_glr_ch1_1_basics_005.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f5820dce990&gt;
 </pre></div>
 </div>
 </section>
@@ -443,7 +446,7 @@ together with octrees and suited better the new capabilities of gempy3.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_3d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">show_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">plotter_type</span><span class="o">=</span><span class="s1">&#39;basic&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_ch1_1_basics_006.png" srcset="../../_images/sphx_glr_ch1_1_basics_006.png" alt="ch1 1 basics" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7ff2a578c3d0&gt;
+<img src="../../_images/sphx_glr_ch1_1_basics_006.png" srcset="../../_images/sphx_glr_ch1_1_basics_006.png" alt="ch1 1 basics" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f58217fad50&gt;
 </pre></div>
 </div>
 </section>
@@ -472,16 +475,18 @@ surfaces as well as compute a high resolution geological mal.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_ch1_1_basics_007.png" srcset="../../_images/sphx_glr_ch1_1_basics_007.png" alt="ch1 1 basics" class = "sphx-glr-single-img"/><img src="../../_images/sphx_glr_ch1_1_basics_008.png" srcset="../../_images/sphx_glr_ch1_1_basics_008.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Active grids: GridTypes.NONE|TOPOGRAPHY|OCTREE
-Setting Backend To: AvailableBackends.numpy
-/home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
-  return 1.0 / (1.0 + bt.t.exp(x))
-Chunking done: 20 chunks
-Chunking done: 20 chunks
-/home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
-  return 1.0 / (1.0 + bt.t.exp(x))
+<img src="../../_images/sphx_glr_ch1_1_basics_007.png" srcset="../../_images/sphx_glr_ch1_1_basics_007.png" alt="ch1 1 basics" class = "sphx-glr-single-img"/><img src="../../_images/sphx_glr_ch1_1_basics_008.png" srcset="../../_images/sphx_glr_ch1_1_basics_008.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Active grids: GridTypes.OCTREE|TOPOGRAPHY|NONE
+Setting Backend To: AvailableBackends.PYTORCH
+GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+Setting Backend To: AvailableBackends.PYTORCH
+Chunking done: 18 chunks
+Chunking done: 16 chunks
+Chunking done: 89 chunks
+Chunking done: 7 chunks
+Chunking done: 41 chunks
+Chunking done: 7 chunks
 
-&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7ff2a2ba4b20&gt;
+&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f58217fa750&gt;
 </pre></div>
 </div>
 </section>
@@ -496,14 +501,17 @@ Chunking done: 20 chunks
 <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">lith_values_at_coords</span></a>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Active grids: GridTypes.NONE|TOPOGRAPHY|CUSTOM|OCTREE
-Setting Backend To: AvailableBackends.numpy
-/home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
-  return 1.0 / (1.0 + bt.t.exp(x))
-Chunking done: 20 chunks
-Chunking done: 20 chunks
-/home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
-  return 1.0 / (1.0 + bt.t.exp(x))
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>WARNING: This function sets a custom grid and computes the model so be wary of side effects.
+Active grids: GridTypes.CUSTOM|NONE
+Setting Backend To: AvailableBackends.PYTORCH
+GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+Setting Backend To: AvailableBackends.PYTORCH
+Chunking done: 18 chunks
+Chunking done: 16 chunks
+Chunking done: 89 chunks
+Chunking done: 7 chunks
+Chunking done: 41 chunks
+Chunking done: 7 chunks
 
 array([2.])
 </pre></div>
@@ -522,7 +530,7 @@ method to save the model. However, since now the data model should be completely
 <a class="reference internal" href="../../Modeling%20Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gempy.core.data.GeoModel</span></code></a> and all its attributes using the standard python library [pickle](<a class="reference external" href="https://docs.python.org/3/library/pickle.html">https://docs.python.org/3/library/pickle.html</a>)</p>
 </div>
 <p>sphinx_gallery_thumbnail_number = -2</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 25.098 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 33.480 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-tutorials-ch1-fundamentals-ch1-1-basics-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/1ef626a0812b526fc9f23dae6a073ffd/ch1_1_basics.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">ch1_1_basics.ipynb</span></code></a></p>
@@ -620,10 +628,10 @@ method to save the model. However, since now the data model should be completely
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &#169;2017-2025, Gempy Developers.
+      &#169;2017-2026, Gempy Developers.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       
       |

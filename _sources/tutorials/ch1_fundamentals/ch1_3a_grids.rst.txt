@@ -122,7 +122,7 @@ This is an enum now
 
  .. code-block:: none
 
-    <enum 'GridTypes'>
+    <flag 'GridTypes'>
 
 
 
@@ -283,98 +283,119 @@ activate them.
 
  .. code-block:: none
 
-    Help on class RegularGrid in module gempy.core.data.grid_modules.grid_types:
+    Help on class RegularGrid in module gempy.core.data.grid_modules.regular_grid:
 
     class RegularGrid(builtins.object)
-     |  RegularGrid(extent: numpy.ndarray, resolution: numpy.ndarray, transform: Optional[gempy_engine.core.data.transforms.Transform] = None)
-     |  
+     |  RegularGrid(
+     |      extent: np.ndarray,
+     |      resolution: np.ndarray,
+     |      transform: Optional[Transform] = None
+     |  )
+     |
      |  Class with the methods and properties to manage 3D regular grids where the model will be interpolated.
-     |  
+     |
      |  Methods defined here:
-     |  
+     |
      |  __eq__(self, other)
      |      Return self==value.
-     |  
-     |  __init__(self, extent: numpy.ndarray, resolution: numpy.ndarray, transform: Optional[gempy_engine.core.data.transforms.Transform] = None)
+     |
+     |  __init__(
+     |      self,
+     |      extent: np.ndarray,
+     |      resolution: np.ndarray,
+     |      transform: Optional[Transform] = None
+     |  )
      |      Initialize self.  See help(type(self)) for accurate signature.
-     |  
+     |
+     |  __replace__ = _replace(self, /, **changes) from dataclasses
+     |
      |  __repr__(self)
      |      Return repr(self).
-     |  
-     |  get_values_vtk_format(self, orthogonal: bool = False) -> numpy.ndarray
-     |  
-     |  set_regular_grid(self, extent: Sequence[float], resolution: Sequence[int], transform: Optional[gempy_engine.core.data.transforms.Transform] = None)
+     |
+     |  get_values_vtk_format(self, orthogonal: bool = False) -> np.ndarray
+     |
+     |  set_regular_grid(
+     |      self,
+     |      extent: Sequence[float],
+     |      resolution: Sequence[int],
+     |      transform: Optional[Transform] = None
+     |  )
      |      Set a regular grid into the values parameters for further computations
      |      Args:
      |          extent (list, np.ndarry):  [x_min, x_max, y_min, y_max, z_min, z_max]
      |          resolution (list, np.ndarray): [nx, ny, nz]
-     |  
+     |
      |  ----------------------------------------------------------------------
      |  Class methods defined here:
-     |  
-     |  from_corners_box(pivot: tuple, point_x_axis: tuple, distance_point3: float, zmin: float, zmax: float, resolution: numpy.ndarray, plot: bool = True) from builtins.type
-     |      Always rotate around the z axis towards the positive x axis. 
+     |
+     |  from_corners_box(
+     |      pivot: tuple,
+     |      point_x_axis: tuple,
+     |      distance_point3: float,
+     |      zmin: float,
+     |      zmax: float,
+     |      resolution: np.ndarray,
+     |      plot: bool = True
+     |  )
+     |      Always rotate around the z axis towards the positive x axis.
      |      The distance_point3 is the distance from the pivot to the point3.
-     |  
+     |
+     |  octree_init(
+     |      extent: np.ndarray,
+     |      octree_levels: int,
+     |      base_resolution: np.ndarray,
+     |      transform: Optional[Transform] = None
+     |  )
+     |
      |  ----------------------------------------------------------------------
      |  Static methods defined here:
-     |  
+     |
      |  plot_rotation(regular_grid, pivot, point_x_axis, point_y_axis)
-     |  
+     |
      |  ----------------------------------------------------------------------
      |  Readonly properties defined here:
-     |  
+     |
      |  bounding_box
-     |  
+     |
      |  dx
-     |  
+     |
      |  dx_dy_dz
-     |  
+     |
      |  dy
-     |  
+     |
      |  dz
-     |  
+     |
      |  values_vtk_format
-     |  
+     |
      |  x_coord
-     |  
+     |
      |  y_coord
-     |  
+     |
      |  z_coord
-     |  
+     |
      |  ----------------------------------------------------------------------
      |  Data descriptors defined here:
-     |  
+     |
      |  __dict__
-     |      dictionary for instance variables (if defined)
-     |  
+     |      dictionary for instance variables
+     |
      |  __weakref__
-     |      list of weak references to the object (if defined)
-     |  
+     |      list of weak references to the object
+     |
+     |  base_resolution
+     |
      |  transform
-     |  
+     |
      |  ----------------------------------------------------------------------
      |  Data and other attributes defined here:
-     |  
-     |  __annotations__ = {'_transform': gempy_engine.core.data.transforms.Tra...
-     |  
-     |  __dataclass_fields__ = {'_transform': Field(name='_transform',type=gem...
-     |  
+     |
+     |  __dataclass_fields__ = {'_base_resolution': Field(name='_base_resoluti...
+     |
      |  __dataclass_params__ = _DataclassParams(init=True,repr=True,eq=True,or...
-     |  
+     |
      |  __hash__ = None
-     |  
+     |
      |  __match_args__ = ('resolution', 'extent', 'values', 'mask_topo', '_tra...
-     |  
-     |  __pydantic_decorators__ = DecoratorInfos(validators={}, field_validato...
-     |  
-     |  extent = array([0., 0., 0., 0., 0., 0.])
-     |  
-     |  mask_topo = array([], shape=(0, 3), dtype=bool)
-     |  
-     |  resolution = array([], shape=(0, 3), dtype=int64)
-     |  
-     |  values = array([], shape=(0, 3), dtype=float64)
 
 
 
@@ -403,7 +424,7 @@ activate them.
            ...,
            [ 97.5,  97.5, -12.5],
            [ 97.5,  97.5,  -7.5],
-           [ 97.5,  97.5,  -2.5]], shape=(8000, 3)), mask_topo=array([], shape=(0, 3), dtype=bool), _transform=None)
+           [ 97.5,  97.5,  -2.5]], shape=(8000, 3)), mask_topo=array([], shape=(0, 3), dtype=bool), _transform=None, _base_resolution=array([2, 2, 2]))
 
 
 
@@ -458,7 +479,7 @@ case):
 
  .. code-block:: none
 
-    GridTypes.NONE|DENSE
+    GridTypes.DENSE|NONE
 
 
 
@@ -539,9 +560,11 @@ Completely free XYZ values.
 
  .. code-block:: none
 
-    Active grids: GridTypes.NONE|CUSTOM|DENSE
+    Active grids: GridTypes.DENSE|CUSTOM|NONE
 
-    <gempy.core.data.grid_modules.grid_types.CustomGrid object at 0x7ff2a28c1990>
+    CustomGrid(values=array([[1., 2., 3.],
+           [4., 5., 6.],
+           [7., 8., 9.]]))
 
 
 
@@ -565,9 +588,9 @@ composed object will contain values:
 
  .. code-block:: none
 
-    [[1 2 3]
-     [4 5 6]
-     [7 8 9]]
+    [[1. 2. 3.]
+     [4. 5. 6.]
+     [7. 8. 9.]]
 
 
 
@@ -591,7 +614,7 @@ And since it is active, it will be added to the grid.values stack:
 
  .. code-block:: none
 
-    GridTypes.NONE|CUSTOM|DENSE
+    GridTypes.DENSE|CUSTOM|NONE
 
 
 
@@ -635,7 +658,9 @@ slicing args:
 
  .. code-block:: none
 
-    <gempy.core.data.grid_modules.grid_types.CustomGrid object at 0x7ff2a28c1990>
+    CustomGrid(values=array([[1., 2., 3.],
+           [4., 5., 6.],
+           [7., 8., 9.]]))
 
 
 
@@ -654,9 +679,9 @@ slicing args:
 
  .. code-block:: none
 
-    [[1 2 3]
-     [4 5 6]
-     [7 8 9]]
+    [[1. 2. 3.]
+     [4. 5. 6.]
+     [7. 8. 9.]]
 
 
 
@@ -686,9 +711,69 @@ dealing with raster data. By default, we will create a random topography:
  .. code-block:: none
 
     [-20.   0.]
-    Active grids: GridTypes.NONE|TOPOGRAPHY|CUSTOM|DENSE
+    Active grids: GridTypes.DENSE|CUSTOM|TOPOGRAPHY|NONE
 
-    <gempy.core.data.grid_modules.topography.Topography object at 0x7ff2a28c1750>
+    Topography(_regular_grid=RegularGrid(resolution=array([20, 20, 20]), extent=array([   0.,  100.,    0.,  100., -100.,    0.]), values=array([[  2.5,   2.5, -97.5],
+           [  2.5,   2.5, -92.5],
+           [  2.5,   2.5, -87.5],
+           ...,
+           [ 97.5,  97.5, -12.5],
+           [ 97.5,  97.5,  -7.5],
+           [ 97.5,  97.5,  -2.5]], shape=(8000, 3)), mask_topo=array([], shape=(0, 3), dtype=bool), _transform=None, _base_resolution=array([2, 2, 2])), values_2d=array([[[  0.        ,   0.        , -14.23224119],
+            [  0.        ,   5.26315789, -14.18893341],
+            [  0.        ,  10.52631579, -13.54018217],
+            ...,
+            [  0.        ,  89.47368421, -14.10232315],
+            [  0.        ,  94.73684211, -15.97906862],
+            [  0.        , 100.        , -15.58400897]],
+
+           [[  5.26315789,   0.        , -14.52721785],
+            [  5.26315789,   5.26315789, -14.22915937],
+            [  5.26315789,  10.52631579, -13.45867197],
+            ...,
+            [  5.26315789,  89.47368421, -13.34811187],
+            [  5.26315789,  94.73684211, -15.11443974],
+            [  5.26315789, 100.        , -14.52547281]],
+
+           [[ 10.52631579,   0.        , -13.65408006],
+            [ 10.52631579,   5.26315789, -13.23683139],
+            [ 10.52631579,  10.52631579, -13.49274944],
+            ...,
+            [ 10.52631579,  89.47368421, -13.32002259],
+            [ 10.52631579,  94.73684211, -13.7826099 ],
+            [ 10.52631579, 100.        , -14.48798533]],
+
+           ...,
+
+           [[ 89.47368421,   0.        , -12.13503547],
+            [ 89.47368421,   5.26315789,  -9.84784194],
+            [ 89.47368421,  10.52631579,  -8.40705617],
+            ...,
+            [ 89.47368421,  89.47368421, -12.12691848],
+            [ 89.47368421,  94.73684211, -13.43682351],
+            [ 89.47368421, 100.        , -13.79901206]],
+
+           [[ 94.73684211,   0.        , -14.45668692],
+            [ 94.73684211,   5.26315789, -12.49042185],
+            [ 94.73684211,  10.52631579, -11.63385168],
+            ...,
+            [ 94.73684211,  89.47368421, -13.3671206 ],
+            [ 94.73684211,  94.73684211, -15.1039689 ],
+            [ 94.73684211, 100.        , -16.03406726]],
+
+           [[100.        ,   0.        , -14.195182  ],
+            [100.        ,   5.26315789, -13.15305405],
+            [100.        ,  10.52631579, -13.6931938 ],
+            ...,
+            [100.        ,  89.47368421, -14.13839552],
+            [100.        ,  94.73684211, -16.12793911],
+            [100.        , 100.        , -16.21462612]]], shape=(20, 20, 3)), source=None, values=array([[  0.        ,   0.        , -14.23224119],
+           [  0.        ,   5.26315789, -14.18893341],
+           [  0.        ,  10.52631579, -13.54018217],
+           ...,
+           [100.        ,  89.47368421, -14.13839552],
+           [100.        ,  94.73684211, -16.12793911],
+           [100.        , 100.        , -16.21462612]], shape=(400, 3)), resolution=(20, 20), raster_shape=())
 
 
 
@@ -706,7 +791,7 @@ dealing with raster data. By default, we will create a random topography:
 
  .. code-block:: none
 
-    GridTypes.NONE|TOPOGRAPHY|CUSTOM|DENSE
+    GridTypes.DENSE|CUSTOM|TOPOGRAPHY|NONE
 
 
 
@@ -835,9 +920,9 @@ Since now all grids are deactivated, the values will be empty:
 
  .. code-block:: none
 
-    [[1 2 3]
-     [4 5 6]
-     [7 8 9]]
+    [[1. 2. 3.]
+     [4. 5. 6.]
+     [7. 8. 9.]]
 
 
 
@@ -949,10 +1034,10 @@ decreases with distance (e.g. gravity: Check `tutorial 2.2-Cell-selection <https
 
  .. code-block:: none
 
-    Active grids: GridTypes.NONE|CENTERED|TOPOGRAPHY|CUSTOM|DENSE
+    Active grids: GridTypes.DENSE|CUSTOM|TOPOGRAPHY|CENTERED|NONE
 
-    CenteredGrid(centers=array([[300,   0,   0],
-           [  0,   0,   0]]), resolution=[10, 10, 20], radius=array([100, 100, 100]), kernel_grid_centers=array([[-100.        , -100.        ,   -6.        ],
+    CenteredGrid(centers=array([[300.,   0.,   0.],
+           [  0.,   0.,   0.]]), resolution=array([10, 10, 20]), radius=array([100., 100., 100.]), kernel_grid_centers=array([[-100.        , -100.        ,   -6.        ],
            [-100.        , -100.        ,   -7.2       ],
            [-100.        , -100.        ,   -7.52912998],
            ...,
@@ -1037,7 +1122,7 @@ This grid type has its own tutorial. See :doc:`ch1_3b_cross_sections`
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 0.113 seconds)
+   **Total running time of the script:** (0 minutes 0.093 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_3a_grids.py:

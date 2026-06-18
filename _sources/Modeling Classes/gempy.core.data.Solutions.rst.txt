@@ -36,6 +36,7 @@
       ~Solutions.raw_arrays
       ~Solutions.root_output
       ~Solutions.scalar_field_at_surface_points
+      ~Solutions.tmi
       ~Solutions.octrees_output
       ~Solutions.dc_meshes
       ~Solutions.block_solution_type

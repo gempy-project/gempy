@@ -103,7 +103,9 @@ Input data (orientations and surface points) are loaded from a remote repository
 
     Surface points hash:  6f1a39ed77e87a4057f03629c946b1876b87e24409cadfe0e1cf7ab1488f69e4
     Orientations hash:  04c307ae23f70252fe54144a2fb95ca7d96584a2d497ea539ed32dfd23e7cd5d
-    Setting Backend To: AvailableBackends.numpy
+    Setting Backend To: AvailableBackends.PYTORCH
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
 
 
 
@@ -162,7 +164,7 @@ Note: The boundaries are hidden in the latter plots for a cleaner visualization.
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff2a29f3490>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f580ed27350>
 
 
 
@@ -186,7 +188,7 @@ The generated 3D plot is also used to export various components of the model to 
     p.surface_points_mesh.save('surface_points.vtk')  # Save the surface points mesh
 
     # Retrieve and export the regular grid (volume representation) of the model
-    box = p.regular_grid_actor.GetMapper().GetInput()
+    box = pv.wrap(p.regular_grid_actor.GetMapper().GetInput())
     box.save('box.vtk')
 
 
@@ -511,7 +513,7 @@ which is a simple text file with one point per line.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.425 seconds)
+   **Total running time of the script:** (0 minutes 2.156 seconds)
 
 
 .. _sphx_glr_download_examples_geometries_a01_horizontal_stratigraphic.py:

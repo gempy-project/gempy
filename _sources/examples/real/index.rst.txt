@@ -8,6 +8,10 @@ Real case studies
 These models are built with real data
 
 
+.. raw:: html
+
+  <div id='sg-tag-list' class='sphx-glr-tag-list'></div>
+
 
 .. raw:: html
 
@@ -24,7 +28,7 @@ These models are built with real data
   .. image:: /examples/real/images/thumb/sphx_glr_Alesmodel_thumb.png
     :alt:
 
-  :ref:`sphx_glr_examples_real_Alesmodel.py`
+  :doc:`/examples/real/Alesmodel`
 
 .. raw:: html
 
@@ -41,7 +45,7 @@ These models are built with real data
   .. image:: /examples/real/images/thumb/sphx_glr_Claudius_thumb.png
     :alt:
 
-  :ref:`sphx_glr_examples_real_Claudius.py`
+  :doc:`/examples/real/Claudius`
 
 .. raw:: html
 
@@ -58,7 +62,7 @@ These models are built with real data
   .. image:: /examples/real/images/thumb/sphx_glr_Greenstone_thumb.png
     :alt:
 
-  :ref:`sphx_glr_examples_real_Greenstone.py`
+  :doc:`/examples/real/Greenstone`
 
 .. raw:: html
 
@@ -75,7 +79,7 @@ These models are built with real data
   .. image:: /examples/real/images/thumb/sphx_glr_Hecho_thumb.png
     :alt:
 
-  :ref:`sphx_glr_examples_real_Hecho.py`
+  :doc:`/examples/real/Hecho`
 
 .. raw:: html
 
@@ -92,7 +96,7 @@ These models are built with real data
   .. image:: /examples/real/images/thumb/sphx_glr_Moureze_thumb.png
     :alt:
 
-  :ref:`sphx_glr_examples_real_Moureze.py`
+  :doc:`/examples/real/Moureze`
 
 .. raw:: html
 
@@ -109,7 +113,7 @@ These models are built with real data
   .. image:: /examples/real/images/thumb/sphx_glr_Perth_basin_thumb.png
     :alt:
 
-  :ref:`sphx_glr_examples_real_Perth_basin.py`
+  :doc:`/examples/real/Perth_basin`
 
 .. raw:: html
 
@@ -126,7 +130,7 @@ These models are built with real data
   .. image:: /examples/real/images/thumb/sphx_glr_mik_thumb.png
     :alt:
 
-  :ref:`sphx_glr_examples_real_mik.py`
+  :doc:`/examples/real/mik`
 
 .. raw:: html
 

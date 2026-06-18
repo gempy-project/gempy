@@ -7,17 +7,18 @@
 
     <title>gempy.map_stack_to_surfaces &#8212; GemPy 2024.2.0.3.dev0+gf344a731.d20240626 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=686e5160" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
     <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=e15417cb" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=fd6457a4" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <script src="../_static/documentation_options.js?v=bd57e1ea"></script>
-    <script src="../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <link rel="icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -45,7 +46,7 @@
 <h1>gempy.map_stack_to_surfaces<a class="headerlink" href="#gempy-map-stack-to-surfaces" title="Link to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="gempy.map_stack_to_surfaces">
-<span class="sig-prename descclassname"><span class="pre">gempy.</span></span><span class="sig-name descname"><span class="pre">map_stack_to_surfaces</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gempy_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../Modeling%20Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.geo_model.GeoModel"><span class="pre">GeoModel</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">mapping_object</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set_series</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_unused_series</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">series_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../Modeling%20Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.structural_frame.StructuralFrame"><span class="pre">StructuralFrame</span></a></span></span><a class="reference internal" href="../_modules/gempy/API/map_stack_to_surfaces_API.html#map_stack_to_surfaces"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gempy.map_stack_to_surfaces" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">gempy.</span></span><span class="sig-name descname"><span class="pre">map_stack_to_surfaces</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gempy_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../Modeling%20Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.geo_model.GeoModel"><span class="pre">GeoModel</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">mapping_object</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set_series</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_unused_series</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">series_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../Modeling%20Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.structural_frame.StructuralFrame"><span class="pre">StructuralFrame</span></a></span></span><a class="reference internal" href="../_modules/gempy/API/map_stack_to_surfaces_API.html#map_stack_to_surfaces"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gempy.map_stack_to_surfaces" title="Link to this definition">¶</a></dt>
 <dd><p>Map stack (series) to surfaces by reorganizing elements between groups in a GeoModel’s structural frame.</p>
 <p>This function reorganizes structural elements (surfaces) based on a mapping object
 and updates the structural frame of the GeoModel. It can also create new series
@@ -71,20 +72,71 @@ and remove unused ones.</p>
 
 <section id="examples-using-gempy-map-stack-to-surfaces">
 <h2>Examples using <code class="docutils literal notranslate"><span class="pre">gempy.map_stack_to_surfaces</span></code><a class="headerlink" href="#examples-using-gempy-map-stack-to-surfaces" title="Link to this heading">¶</a></h2>
-<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="Video Tutorial &quot;code-along&quot;: Onlap relations"><img alt="" src="../_images/sphx_glr_video_tutorial_model_3_onlap_thumb.png" />
-<p><a class="reference internal" href="../tutorials/z_other_tutorials/video_tutorial_model_3_onlap.html#sphx-glr-tutorials-z-other-tutorials-video-tutorial-model-3-onlap-py"><span class="std std-ref">Video Tutorial “code-along”: Onlap relations</span></a></p>
+<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="1.1 -Basics of geological modeling with GemPy"><img alt="" src="../_images/sphx_glr_ch1_1_basics_thumb.png" />
+<p><a class="reference internal" href="../tutorials/ch1_fundamentals/ch1_1_basics.html"><span class="doc">1.1 -Basics of geological modeling with GemPy</span></a></p>
+  <div class="sphx-glr-thumbnail-title">1.1 -Basics of geological modeling with GemPy</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="1.3b: 2-D sections"><img alt="" src="../_images/sphx_glr_ch1_3b_cross_sections_thumb.png" />
+<p><a class="reference internal" href="../tutorials/ch1_fundamentals/ch1_3b_cross_sections.html"><span class="doc">1.3b: 2-D sections</span></a></p>
+  <div class="sphx-glr-thumbnail-title">1.3b: 2-D sections</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="1.6: 2D Visualization."><img alt="" src="../_images/sphx_glr_ch1_6_2d_visualization_thumb.png" />
+<p><a class="reference internal" href="../tutorials/ch1_fundamentals/ch1_6_2d_visualization.html"><span class="doc">1.6: 2D Visualization.</span></a></p>
+  <div class="sphx-glr-thumbnail-title">1.6: 2D Visualization.</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="2.1 Forward Gravity: Simple example"><img alt="" src="../_images/sphx_glr_ch2_1_gravity_thumb.png" />
+<p><a class="reference internal" href="../tutorials/ch2-Geophysics/ch2_1_gravity.html"><span class="doc">2.1 Forward Gravity: Simple example</span></a></p>
+  <div class="sphx-glr-thumbnail-title">2.1 Forward Gravity: Simple example</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="3.1: Simple example of kriging in gempy"><img alt="" src="../_images/sphx_glr_ch3_1_kriging_interpolation_and_simulation_thumb.png" />
+<p><a class="reference internal" href="../tutorials/ch3-Interpolations/ch3_1_kriging_interpolation_and_simulation.html"><span class="doc">3.1: Simple example of kriging in gempy</span></a></p>
+  <div class="sphx-glr-thumbnail-title">3.1: Simple example of kriging in gempy</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Chapter 4: Analyzing Geomodel Topology"><img alt="" src="../_images/sphx_glr_ch4-1-Topology_thumb.png" />
+<p><a class="reference internal" href="../tutorials/ch4-Topology/ch4-1-Topology.html"><span class="doc">Chapter 4: Analyzing Geomodel Topology</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Chapter 4: Analyzing Geomodel Topology</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Video Tutorial &quot;code-along&quot;: Modeling step by step"><img alt="" src="../_images/sphx_glr_video_tutorial_model_1_thumb.png" />
+<p><a class="reference internal" href="../tutorials/z_other_tutorials/video_tutorial_model_1.html"><span class="doc">Video Tutorial “code-along”: Modeling step by step</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Video Tutorial "code-along": Modeling step by step</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Video Tutorial &quot;code-along&quot;: Faults"><img alt="" src="../_images/sphx_glr_video_tutorial_model_2_faults_thumb.png" />
+<p><a class="reference internal" href="../tutorials/z_other_tutorials/video_tutorial_model_2_faults.html"><span class="doc">Video Tutorial “code-along”: Faults</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Video Tutorial "code-along": Faults</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Video Tutorial &quot;code-along&quot;: Onlap relations"><img alt="" src="../_images/sphx_glr_video_tutorial_model_3_onlap_thumb.png" />
+<p><a class="reference internal" href="../tutorials/z_other_tutorials/video_tutorial_model_3_onlap.html"><span class="doc">Video Tutorial “code-along”: Onlap relations</span></a></p>
   <div class="sphx-glr-thumbnail-title">Video Tutorial "code-along": Onlap relations</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to build a basic geological model with horizontally stacked layers using GemPy, an open-source Python library for implicit geological modeling. In this script, we will:"><img alt="" src="../_images/sphx_glr_a01_horizontal_stratigraphic_thumb.png" />
+<p><a class="reference internal" href="../examples/geometries/a01_horizontal_stratigraphic.html"><span class="doc">Model 1 - Horizontal Stratigraphy</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Model 1 - Horizontal Stratigraphy</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Simple model of an anticline"><img alt="" src="../_images/sphx_glr_b02_fold_thumb.png" />
+<p><a class="reference internal" href="../examples/geometries/b02_fold.html"><span class="doc">Model 2 - Anticline</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Model 2 - Anticline</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Modeling a recumbent fold"><img alt="" src="../_images/sphx_glr_c03_recumbent_fold_thumb.png" />
+<p><a class="reference internal" href="../examples/geometries/c03_recumbent_fold.html"><span class="doc">Model 3 - Recumbent Fold</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Model 3 - Recumbent Fold</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Modeling of a pinchout: combining scalar fields"><img alt="" src="../_images/sphx_glr_d04_pinchout_thumb.png" />
+<p><a class="reference internal" href="../examples/geometries/d04_pinchout.html"><span class="doc">Model 4 - Pinchout</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Model 4 - Pinchout</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Modeling a fault"><img alt="" src="../_images/sphx_glr_e05_fault_thumb.png" />
+<p><a class="reference internal" href="../examples/geometries/e05_fault.html"><span class="doc">Model 5 - Fault</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Model 5 - Fault</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Modeling unconformities through the combination of scalar fields"><img alt="" src="../_images/sphx_glr_f06_unconformity_thumb.png" />
+<p><a class="reference internal" href="../examples/geometries/f06_unconformity.html"><span class="doc">Model 6 - Unconformity</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Model 6 - Unconformity</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Combining faults and unconformities"><img alt="" src="../_images/sphx_glr_g07_combination_thumb.png" />
+<p><a class="reference internal" href="../examples/geometries/g07_combination.html"><span class="doc">Model 7 - Combination</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Model 7 - Combination</div>
 </div><div class="sphx-glr-thumbcontainer" tooltip="A set of more complex examples"><img alt="" src="../_images/sphx_glr_h08_more_examples_thumb.png" />
-<p><a class="reference internal" href="../examples/geometries/h08_more_examples.html#sphx-glr-examples-geometries-h08-more-examples-py"><span class="std std-ref">GemPy Models - Some More Complex Examples</span></a></p>
+<p><a class="reference internal" href="../examples/geometries/h08_more_examples.html"><span class="doc">GemPy Models - Some More Complex Examples</span></a></p>
   <div class="sphx-glr-thumbnail-title">GemPy Models - Some More Complex Examples</div>
 </div><div class="sphx-glr-thumbcontainer" tooltip="Model of Ales, France: Plotting Sections and Maps"><img alt="" src="../_images/sphx_glr_Alesmodel_thumb.png" />
-<p><a class="reference internal" href="../examples/real/Alesmodel.html#sphx-glr-examples-real-alesmodel-py"><span class="std std-ref">Model of Ales, France: Plotting Sections and Maps</span></a></p>
+<p><a class="reference internal" href="../examples/real/Alesmodel.html"><span class="doc">Model of Ales, France: Plotting Sections and Maps</span></a></p>
   <div class="sphx-glr-thumbnail-title">Model of Ales, France: Plotting Sections and Maps</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This model is part of a geomodeling benchmaring effort. More information (and, hopefully, publication) coming."><img alt="" src="../_images/sphx_glr_Claudius_thumb.png" />
+<p><a class="reference internal" href="../examples/real/Claudius.html"><span class="doc">Geomodeling benchmark: the “Claudius”-Model</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Geomodeling benchmark: the "Claudius"-Model</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Greenstone."><img alt="" src="../_images/sphx_glr_Greenstone_thumb.png" />
+<p><a class="reference internal" href="../examples/real/Greenstone.html"><span class="doc">Greenstone.</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Greenstone.</div>
 </div><div class="sphx-glr-thumbcontainer" tooltip="This model is part of a geomodeling benchmaring effort. More information (and, hopefully, publication) coming."><img alt="" src="../_images/sphx_glr_Hecho_thumb.png" />
-<p><a class="reference internal" href="../examples/real/Hecho.html#sphx-glr-examples-real-hecho-py"><span class="std std-ref">Geomodeling benchmark: the “Hecho”-Model</span></a></p>
+<p><a class="reference internal" href="../examples/real/Hecho.html"><span class="doc">Geomodeling benchmark: the “Hecho”-Model</span></a></p>
   <div class="sphx-glr-thumbnail-title">Geomodeling benchmark: the "Hecho"-Model</div>
 </div><div class="sphx-glr-thumbcontainer" tooltip="A geological model of the Perth basin, Australia"><img alt="" src="../_images/sphx_glr_Perth_basin_thumb.png" />
-<p><a class="reference internal" href="../examples/real/Perth_basin.html#sphx-glr-examples-real-perth-basin-py"><span class="std std-ref">A geological model of the Perth basin, Australia</span></a></p>
+<p><a class="reference internal" href="../examples/real/Perth_basin.html"><span class="doc">A geological model of the Perth basin, Australia</span></a></p>
   <div class="sphx-glr-thumbnail-title">A geological model of the Perth basin, Australia</div>
 </div></div><div class="sphx-glr-clear"></div></section>
 </section>
@@ -168,10 +220,10 @@ and remove unused ones.</p>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &#169;2017-2025, Gempy Developers.
+      &#169;2017-2026, Gempy Developers.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       
       |

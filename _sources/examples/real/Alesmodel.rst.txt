@@ -117,7 +117,7 @@ Setting up the section grid
 
  .. code-block:: none
 
-    Active grids: GridTypes.NONE|SECTIONS|OCTREE
+    Active grids: GridTypes.OCTREE|SECTIONS|NONE
 
 
 .. raw:: html
@@ -136,9 +136,9 @@ Setting up the section grid
       <tbody>
         <tr>
           <th>section1</th>
-          <td>[732000, 1916000]</td>
-          <td>[745000, 1916000]</td>
-          <td>[200, 150]</td>
+          <td>(732000.0, 1916000.0)</td>
+          <td>(745000.0, 1916000.0)</td>
+          <td>(200, 150)</td>
           <td>13000.0</td>
         </tr>
       </tbody>
@@ -308,7 +308,7 @@ Plotting the 2D model
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fbcb5ad3df0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f577872c850>
 
 
 
@@ -336,7 +336,7 @@ Plotting section traces
  .. code-block:: none
 
 
-    <function plot_section_traces at 0x7fbd043bb010>
+    <function plot_section_traces at 0x7f582f2ef8a0>
 
 
 
@@ -484,9 +484,9 @@ Setting topography from file
 
  .. code-block:: none
 
-    Active grids: GridTypes.NONE|SECTIONS|TOPOGRAPHY|OCTREE
+    Active grids: GridTypes.OCTREE|TOPOGRAPHY|SECTIONS|NONE
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fbcb6c18070>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f5778378590>
 
 
 
@@ -862,214 +862,48 @@ Computing the model with the adjusted settings
 
 
 
-.. rst-class:: sphx-glr-horizontal
-
-
-    *
-
-      .. image-sg:: /examples/real/images/sphx_glr_Alesmodel_005.png
-         :alt: Voxel Scalar Values with Refinement Status
-         :srcset: /examples/real/images/sphx_glr_Alesmodel_005.png
-         :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /examples/real/images/sphx_glr_Alesmodel_006.png
-         :alt: Voxel Scalar Values with Refinement Status
-         :srcset: /examples/real/images/sphx_glr_Alesmodel_006.png
-         :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /examples/real/images/sphx_glr_Alesmodel_007.png
-         :alt: Voxel Scalar Values with Refinement Status
-         :srcset: /examples/real/images/sphx_glr_Alesmodel_007.png
-         :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /examples/real/images/sphx_glr_Alesmodel_008.png
-         :alt: Voxel Scalar Values with Refinement Status
-         :srcset: /examples/real/images/sphx_glr_Alesmodel_008.png
-         :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /examples/real/images/sphx_glr_Alesmodel_009.png
-         :alt: Voxel Scalar Values with Refinement Status
-         :srcset: /examples/real/images/sphx_glr_Alesmodel_009.png
-         :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /examples/real/images/sphx_glr_Alesmodel_010.png
-         :alt: Voxel Scalar Values with Refinement Status
-         :srcset: /examples/real/images/sphx_glr_Alesmodel_010.png
-         :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /examples/real/images/sphx_glr_Alesmodel_011.png
-         :alt: Voxel Scalar Values with Refinement Status
-         :srcset: /examples/real/images/sphx_glr_Alesmodel_011.png
-         :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /examples/real/images/sphx_glr_Alesmodel_012.png
-         :alt: Voxel Scalar Values with Refinement Status
-         :srcset: /examples/real/images/sphx_glr_Alesmodel_012.png
-         :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /examples/real/images/sphx_glr_Alesmodel_013.png
-         :alt: Voxel Scalar Values with Refinement Status
-         :srcset: /examples/real/images/sphx_glr_Alesmodel_013.png
-         :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /examples/real/images/sphx_glr_Alesmodel_014.png
-         :alt: Voxel Scalar Values with Refinement Status
-         :srcset: /examples/real/images/sphx_glr_Alesmodel_014.png
-         :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /examples/real/images/sphx_glr_Alesmodel_015.png
-         :alt: Voxel Scalar Values with Refinement Status
-         :srcset: /examples/real/images/sphx_glr_Alesmodel_015.png
-         :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /examples/real/images/sphx_glr_Alesmodel_016.png
-         :alt: Voxel Scalar Values with Refinement Status
-         :srcset: /examples/real/images/sphx_glr_Alesmodel_016.png
-         :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /examples/real/images/sphx_glr_Alesmodel_017.png
-         :alt: Voxel Scalar Values with Refinement Status
-         :srcset: /examples/real/images/sphx_glr_Alesmodel_017.png
-         :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /examples/real/images/sphx_glr_Alesmodel_018.png
-         :alt: Voxel Scalar Values with Refinement Status
-         :srcset: /examples/real/images/sphx_glr_Alesmodel_018.png
-         :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /examples/real/images/sphx_glr_Alesmodel_019.png
-         :alt: Voxel Scalar Values with Refinement Status
-         :srcset: /examples/real/images/sphx_glr_Alesmodel_019.png
-         :class: sphx-glr-multi-img
-
 
 .. rst-class:: sphx-glr-script-out
 
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.PYTORCH
-    Condition number: 2917573.7407638184.
-    Chunking done: 19 chunks
-    Condition number: 1174481.1989654184.
-    Chunking done: 9 chunks
-    Condition number: 1642063.3117937546.
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
+    Condition number: 2917573.741854929.
+    Chunking done: 20 chunks
+    Condition number: 1174481.198953685.
+    Chunking done: 10 chunks
+    Condition number: 1642063.3120270486.
+    Chunking done: 12 chunks
+    Condition number: 1586673.951914971.
+    Chunking done: 265 chunks
+    Condition number: 1122611.6721622644.
+    Chunking done: 212 chunks
     Chunking done: 11 chunks
-    Condition number: 1586673.9519253937.
-    Chunking done: 248 chunks
-    Condition number: 1122611.6721707566.
-    Chunking done: 198 chunks
-    Chunking done: 32 chunks
-    Chunking done: 26 chunks
-    Number of voxels marked by stats: 136 of torch.Size([512]).
-     Number of voxels marked by corners : 328
-    Total voxels: 136
-    Dense Grid would be 512 voxels
-    Number of voxels marked by stats: 129 of torch.Size([512]).
-     Number of voxels marked by corners : 328
-    Total voxels: 186
-    Dense Grid would be 512 voxels
-    Number of voxels marked by stats: 152 of torch.Size([512]).
-     Number of voxels marked by corners : 328
-    Total voxels: 242
-    Dense Grid would be 512 voxels
-    Number of voxels marked by stats: 136 of torch.Size([512]).
-     Number of voxels marked by corners : 328
-    Total voxels: 314
-    Dense Grid would be 512 voxels
-    Number of voxels marked by stats: 170 of torch.Size([512]).
-     Number of voxels marked by corners : 328
-    Total voxels: 367
-    Dense Grid would be 512 voxels
-    Chunking done: 27 chunks
-    Chunking done: 22 chunks
-    Chunking done: 16 chunks
-    Chunking done: 8 chunks
-    Chunking done: 9 chunks
-    Chunking done: 205 chunks
-    Chunking done: 164 chunks
-    Number of voxels marked by stats: 1014 of torch.Size([3360]).
-     Number of voxels marked by corners : 1656
-    Total voxels: 1014
-    Dense Grid would be 4096 voxels
-    Number of voxels marked by stats: 976 of torch.Size([3360]).
-     Number of voxels marked by corners : 1656
-    Total voxels: 1429
-    Dense Grid would be 4096 voxels
-    Number of voxels marked by stats: 1135 of torch.Size([3360]).
-     Number of voxels marked by corners : 1656
-    Total voxels: 1852
-    Dense Grid would be 4096 voxels
-    Number of voxels marked by stats: 1051 of torch.Size([3360]).
-     Number of voxels marked by corners : 1656
-    Total voxels: 2390
-    Dense Grid would be 4096 voxels
-    Number of voxels marked by stats: 1247 of torch.Size([3360]).
-     Number of voxels marked by corners : 1656
-    Total voxels: 2741
-    Dense Grid would be 4096 voxels
-    Chunking done: 14 chunks
-    Chunking done: 7 chunks
-    Chunking done: 8 chunks
-    Chunking done: 184 chunks
-    Chunking done: 147 chunks
-    Chunking done: 108 chunks
-    Chunking done: 51 chunks
-    Chunking done: 62 chunks
-    Chunking done: 1459 chunks
-    Chunking done: 1167 chunks
-    Number of voxels marked by stats: 7902 of torch.Size([24048]).
-     Number of voxels marked by corners : 8203
-    Total voxels: 7902
-    Dense Grid would be 32768 voxels
-    Number of voxels marked by stats: 7629 of torch.Size([24048]).
-     Number of voxels marked by corners : 8203
-    Total voxels: 11219
-    Dense Grid would be 32768 voxels
-    Number of voxels marked by stats: 8784 of torch.Size([24048]).
-     Number of voxels marked by corners : 8203
-    Total voxels: 14630
-    Dense Grid would be 32768 voxels
-    Number of voxels marked by stats: 8070 of torch.Size([24048]).
-     Number of voxels marked by corners : 8203
-    Total voxels: 18800
-    Dense Grid would be 32768 voxels
-    Number of voxels marked by stats: 9624 of torch.Size([24048]).
-     Number of voxels marked by corners : 8203
-    Total voxels: 21430
-    Dense Grid would be 32768 voxels
-    Chunking done: 102 chunks
+    Chunking done: 6 chunks
+    Chunking done: 141 chunks
+    Chunking done: 113 chunks
+    Chunking done: 83 chunks
+    Chunking done: 39 chunks
     Chunking done: 48 chunks
-    Chunking done: 59 chunks
-    Chunking done: 1378 chunks
-    Chunking done: 1103 chunks
+    Chunking done: 1119 chunks
+    Chunking done: 895 chunks
+    Chunking done: 220 chunks
+    Chunking done: 102 chunks
+    Chunking done: 126 chunks
+    Chunking done: 2967 chunks
+    Chunking done: 2374 chunks
+    Chunking done: 964 chunks
+    Chunking done: 448 chunks
+    Chunking done: 551 chunks
+    Chunking done: 13033 chunks
+    Chunking done: 10427 chunks
+    Chunking done: 485 chunks
+    Chunking done: 225 chunks
+    Chunking done: 277 chunks
+    Chunking done: 6546 chunks
+    Chunking done: 5237 chunks
 
 
 
@@ -1094,23 +928,23 @@ Plotting the 2D model with and without topography
 
     *
 
-      .. image-sg:: /examples/real/images/sphx_glr_Alesmodel_020.png
+      .. image-sg:: /examples/real/images/sphx_glr_Alesmodel_005.png
          :alt: Geological map
-         :srcset: /examples/real/images/sphx_glr_Alesmodel_020.png
+         :srcset: /examples/real/images/sphx_glr_Alesmodel_005.png
          :class: sphx-glr-multi-img
 
     *
 
-      .. image-sg:: /examples/real/images/sphx_glr_Alesmodel_021.png
+      .. image-sg:: /examples/real/images/sphx_glr_Alesmodel_006.png
          :alt: Cell Number: 4 Direction: y
-         :srcset: /examples/real/images/sphx_glr_Alesmodel_021.png
+         :srcset: /examples/real/images/sphx_glr_Alesmodel_006.png
          :class: sphx-glr-multi-img
 
     *
 
-      .. image-sg:: /examples/real/images/sphx_glr_Alesmodel_022.png
+      .. image-sg:: /examples/real/images/sphx_glr_Alesmodel_007.png
          :alt: Cell Number: -4 Direction: y
-         :srcset: /examples/real/images/sphx_glr_Alesmodel_022.png
+         :srcset: /examples/real/images/sphx_glr_Alesmodel_007.png
          :class: sphx-glr-multi-img
 
 
@@ -1118,10 +952,8 @@ Plotting the 2D model with and without topography
 
  .. code-block:: none
 
-    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:106: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
-      warnings.warn(
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7fbc9ea0bf70>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f57bff681d0>
 
 
 
@@ -1138,9 +970,9 @@ sphinx_gallery_thumbnail_number = -1
 
 
 
-.. image-sg:: /examples/real/images/sphx_glr_Alesmodel_023.png
+.. image-sg:: /examples/real/images/sphx_glr_Alesmodel_008.png
    :alt: Alesmodel
-   :srcset: /examples/real/images/sphx_glr_Alesmodel_023.png
+   :srcset: /examples/real/images/sphx_glr_Alesmodel_008.png
    :class: sphx-glr-single-img
 
 
@@ -1149,14 +981,14 @@ sphinx_gallery_thumbnail_number = -1
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7fbcac3b7190>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f57780c0e50>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 53.019 seconds)
+   **Total running time of the script:** (4 minutes 37.155 seconds)
 
 
 .. _sphx_glr_download_examples_real_Alesmodel.py:

@@ -58,6 +58,7 @@
    
       ~InterpolationOptions.c_o
       ~InterpolationOptions.compute_corners
+      ~InterpolationOptions.compute_scalar
       ~InterpolationOptions.compute_scalar_gradient
       ~InterpolationOptions.evaluation_chunk_size
       ~InterpolationOptions.gi_res
@@ -83,7 +84,6 @@
       ~InterpolationOptions.cache_model_name
       ~InterpolationOptions.block_solutions_type
       ~InterpolationOptions.sigmoid_slope
-      ~InterpolationOptions.debug_water_tight
       ~InterpolationOptions.temp_interpolation_values
    
    

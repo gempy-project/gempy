@@ -98,8 +98,8 @@ Setting and ordering the units and series:
     gp.map_stack_to_surfaces(
         gempy_model=geo_data,
         mapping_object={
-            "Strat_Series": ('rock2', 'rock1'),
-            "Basement_Series": ('basement')
+                "Strat_Series"   : ('rock2', 'rock1'),
+                "Basement_Series": ('basement')
         }
     )
 
@@ -175,9 +175,9 @@ no mesh computed as basically 2D model
 
  .. code-block:: none
 
-    Setting Backend To: AvailableBackends.numpy
-    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
-      return 1.0 / (1.0 + bt.t.exp(x))
+    Setting Backend To: AvailableBackends.PYTORCH
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
 
 
 
@@ -207,7 +207,7 @@ So here is the very simple, basically 2D model that we created:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff25365c1f0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f578033d250>
 
 
 
@@ -338,12 +338,11 @@ containing an estimated value and the kriging variance for each point in
 the grid:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 138-141
+.. GENERATED FROM PYTHON SOURCE LINES 138-140
 
 .. code-block:: Python
 
     kriging_solution.results_df.head()
-
 
 
 
@@ -426,13 +425,13 @@ the grid:
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 142-145
+.. GENERATED FROM PYTHON SOURCE LINES 141-144
 
 It is also possible to plot the results in cross section similar to the
 way gempy models are plotted.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 148-165
+.. GENERATED FROM PYTHON SOURCE LINES 147-164
 
 .. code-block:: Python
 
@@ -443,7 +442,7 @@ way gempy models are plotted.
         cell_number=0,
         show_data=False,
         show=False,
-        kwargs_lithology={ 'alpha': 0.5 }
+        kwargs_lithology={'alpha': 0.5}
     )
     kriging.plot_kriging_results(
         geo_data=geo_data,
@@ -465,7 +464,7 @@ way gempy models are plotted.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 166-182
+.. GENERATED FROM PYTHON SOURCE LINES 165-181
 
 .. code-block:: Python
 
@@ -474,7 +473,7 @@ way gempy models are plotted.
         cell_number=[0, 0],
         show_data=False,
         show=False,
-        kwargs_lithology={ 'alpha': 0.5 }
+        kwargs_lithology={'alpha': 0.5}
     )
 
     kriging.plot_kriging_results(
@@ -497,7 +496,7 @@ way gempy models are plotted.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 183-190
+.. GENERATED FROM PYTHON SOURCE LINES 182-189
 
 4) Simulated field
 ------------------
@@ -507,11 +506,16 @@ field (stationary Gaussian Field) can be generated. A Sequential
 Gaussian Simulation approach is applied in this module:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 192-194
+.. GENERATED FROM PYTHON SOURCE LINES 191-198
 
 .. code-block:: Python
 
-    solution_sim = kriging.create_gaussian_field(domain, variogram_model)
+    solution_sim = kriging.create_gaussian_field(
+        domain,
+        variogram_model,
+        moving_neighbourhood='n_closest',
+        n_closest_points=20
+    )
 
 
 
@@ -520,7 +524,7 @@ Gaussian Simulation approach is applied in this module:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 195-197
+.. GENERATED FROM PYTHON SOURCE LINES 199-201
 
 .. code-block:: Python
 
@@ -565,7 +569,7 @@ Gaussian Simulation approach is applied in this module:
           <td>10.0</td>
           <td>2.5</td>
           <td>410.0</td>
-          <td>4.42</td>
+          <td>4.45</td>
           <td>0.12</td>
         </tr>
         <tr>
@@ -573,7 +577,7 @@ Gaussian Simulation approach is applied in this module:
           <td>10.0</td>
           <td>2.5</td>
           <td>430.0</td>
-          <td>4.89</td>
+          <td>4.91</td>
           <td>0.11</td>
         </tr>
         <tr>
@@ -581,7 +585,7 @@ Gaussian Simulation approach is applied in this module:
           <td>10.0</td>
           <td>2.5</td>
           <td>450.0</td>
-          <td>4.87</td>
+          <td>4.91</td>
           <td>0.18</td>
         </tr>
         <tr>
@@ -589,15 +593,15 @@ Gaussian Simulation approach is applied in this module:
           <td>10.0</td>
           <td>2.5</td>
           <td>470.0</td>
-          <td>4.98</td>
-          <td>0.22</td>
+          <td>5.12</td>
+          <td>0.23</td>
         </tr>
         <tr>
           <th>4528</th>
           <td>10.0</td>
           <td>2.5</td>
           <td>490.0</td>
-          <td>3.75</td>
+          <td>3.93</td>
           <td>0.11</td>
         </tr>
       </tbody>
@@ -607,7 +611,7 @@ Gaussian Simulation approach is applied in this module:
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 198-200
+.. GENERATED FROM PYTHON SOURCE LINES 202-204
 
 .. code-block:: Python
 
@@ -622,22 +626,22 @@ Gaussian Simulation approach is applied in this module:
  .. code-block:: none
 
 
-    1774    4.42
-    4701    4.89
-    3463    4.87
-    3227    4.98
-    4528    3.75
+    1774    4.45
+    4701    4.91
+    3463    4.91
+    3227    5.12
+    4528    3.93
             ... 
-    1712    3.54
-    390     3.86
-    1039    4.13
-    3379    3.14
-    4090    2.45
+    1712    3.22
+    390     3.70
+    1039    3.93
+    3379    2.84
+    4090    2.09
     Name: estimated value, Length: 5000, dtype: float64
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 201-216
+.. GENERATED FROM PYTHON SOURCE LINES 205-220
 
 .. code-block:: Python
 
@@ -646,7 +650,7 @@ Gaussian Simulation approach is applied in this module:
         cell_number=0,
         show_data=False,
         show=False,
-        kwargs_lithology={ 'alpha': 0.5 }
+        kwargs_lithology={'alpha': 0.5}
     )
     kriging.plot_kriging_results(
         geo_data=geo_data,
@@ -668,7 +672,7 @@ Gaussian Simulation approach is applied in this module:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 217-233
+.. GENERATED FROM PYTHON SOURCE LINES 221-237
 
 .. code-block:: Python
 
@@ -677,7 +681,7 @@ Gaussian Simulation approach is applied in this module:
         cell_number=[0, 0],
         show_data=False,
         show=False,
-        kwargs_lithology={ 'alpha': 0.5 }
+        kwargs_lithology={'alpha': 0.5}
     )
 
     kriging.plot_kriging_results(
@@ -703,7 +707,7 @@ Gaussian Simulation approach is applied in this module:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (31 minutes 8.546 seconds)
+   **Total running time of the script:** (0 minutes 1.806 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch3-Interpolations_ch3_1_kriging_interpolation_and_simulation.py:

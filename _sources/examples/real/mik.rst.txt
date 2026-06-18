@@ -175,7 +175,7 @@ and we will label the boreholes using their IDs.
  .. code-block:: none
 
 
-    <pyvista.plotting.plotter.Plotter object at 0x7ff24e9d5930>
+    <pyvista.plotting.plotter.Plotter object at 0x7f582135f250>
 
 
 
@@ -216,11 +216,7 @@ Create the Survey object
  .. code-block:: none
 
 
-    Survey(ids=array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
-           19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
-           36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52,
-           53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68],
-          dtype=object), survey_trajectory=<subsurface.core.structs.unstructured_elements.line_set.LineSet object at 0x7ff24e9d63b0>, well_id_mapper={'KCL12': 0, 'KCL_B45': 1, 'Russell1': 2, 'CallowayXX': 3, 'KCL15': 4, 'KCL_1144': 5, 'Kramer1': 6, 'Davies1': 7, 'Tidewater_Capital_Co.XX': 8, 'Westates44': 9, 'Roe3': 10, 'RoeXX': 11, 'Helbling1': 12, 'PACIFIC_STATESXX': 13, 'KerncoXX': 14, 'Amalgamated_Happold2': 15, 'DearingerXX': 16, 'St._Anthony1': 17, 'BALD_EAGLE74': 18, 'CURRY1': 19, 'KCL87_25': 20, 'Del_Fortuna1': 21, 'XX32_15': 22, 'Wright_Bloemer74': 23, 'MARQUIS1': 24, 'Famosa12_1': 25, 'Kuhn81_15': 26, 'Bergman_Trust1': 27, 'KCL_A58_8': 28, 'Steele_Petroleum_Co4_1': 29, 'Gow1': 30, 'RUSSELLXX': 31, 'KCL_G1': 32, '33XX': 33, 'Sharples_Marathon_BillingtonXX': 34, 'Mobil_Pan_Petroleum_KCL31_15': 35, 'Mobil_Pan_Pet_KCL86_35': 36, 'Roberts_Cox23_1': 37, 'Law_et_alXX': 38, 'TennecoXX': 39, '11': 40, 'Cities_Service_TennecoXX': 41, 'USLXX': 42, 'HayesXX': 43, 'SUPERIOR_TENNECO_GAUTXX': 44, 'TWIXX': 45, 'Tenneco_Ladd_Rio_Bravo_North87': 46, 'Tenneco_Rio_Bravo32': 47, 'McCulloch_Camp_et_al1_36': 48, 'West_Rio_Bravo1': 49, 'Shell_Magee_GlideXX': 50, 'XXXX': 51, 'Wiedman55_26': 52, 'R.A._Shafter_A1': 53, 'KerrXX': 54, 'Bishop_FeeXX': 55, 'API_BartellXX': 56, 'Kimberlina1': 57, 'Kern_AXX': 58, 'Tenneco_Sun11x_31': 59, 'Bishop_FeeXXX': 60, 'Bellevue_Deep1': 61, 'S_&_D_Killingwoth_EPM1': 62, 'Arkelian23_26': 63, 'Ingram13_73': 64, 'Union_Tribe_BXX': 65, 'JewettaXX': 66, 'Golden_State_VintnersXX': 67, 'USLXXX': 68})
+    Survey(ids=['11', '33XX', 'API_BartellXX', 'Amalgamated_Happold2', 'Arkelian23_26', 'BALD_EAGLE74', 'Bellevue_Deep1', 'Bergman_Trust1', 'Bishop_FeeXX', 'Bishop_FeeXXX', 'CURRY1', 'CallowayXX', 'Cities_Service_TennecoXX', 'Davies1', 'DearingerXX', 'Del_Fortuna1', 'Famosa12_1', 'Golden_State_VintnersXX', 'Gow1', 'HayesXX', 'Helbling1', 'Ingram13_73', 'JewettaXX', 'KCL12', 'KCL15', 'KCL87_25', 'KCL_1144', 'KCL_A58_8', 'KCL_B45', 'KCL_G1', 'Kern_AXX', 'KerncoXX', 'KerrXX', 'Kimberlina1', 'Kramer1', 'Kuhn81_15', 'Law_et_alXX', 'MARQUIS1', 'McCulloch_Camp_et_al1_36', 'Mobil_Pan_Pet_KCL86_35', 'Mobil_Pan_Petroleum_KCL31_15', 'PACIFIC_STATESXX', 'R.A._Shafter_A1', 'RUSSELLXX', 'Roberts_Cox23_1', 'Roe3', 'RoeXX', 'Russell1', 'SUPERIOR_TENNECO_GAUTXX', 'S_&_D_Killingwoth_EPM1', 'Sharples_Marathon_BillingtonXX', 'Shell_Magee_GlideXX', 'St._Anthony1', 'Steele_Petroleum_Co4_1', 'TWIXX', 'TennecoXX', 'Tenneco_Ladd_Rio_Bravo_North87', 'Tenneco_Rio_Bravo32', 'Tenneco_Sun11x_31', 'Tidewater_Capital_Co.XX', 'USLXX', 'USLXXX', 'Union_Tribe_BXX', 'West_Rio_Bravo1', 'Westates44', 'Wiedman55_26', 'Wright_Bloemer74', 'XX32_15', 'XXXX'], survey_trajectory=<subsurface.core.structs.unstructured_elements.line_set.LineSet object at 0x7f57801878c0>, well_id_mapper={'11': 0, '33XX': 1, 'API_BartellXX': 2, 'Amalgamated_Happold2': 3, 'Arkelian23_26': 4, 'BALD_EAGLE74': 5, 'Bellevue_Deep1': 6, 'Bergman_Trust1': 7, 'Bishop_FeeXX': 8, 'Bishop_FeeXXX': 9, 'CURRY1': 10, 'CallowayXX': 11, 'Cities_Service_TennecoXX': 12, 'Davies1': 13, 'DearingerXX': 14, 'Del_Fortuna1': 15, 'Famosa12_1': 16, 'Golden_State_VintnersXX': 17, 'Gow1': 18, 'HayesXX': 19, 'Helbling1': 20, 'Ingram13_73': 21, 'JewettaXX': 22, 'KCL12': 23, 'KCL15': 24, 'KCL87_25': 25, 'KCL_1144': 26, 'KCL_A58_8': 27, 'KCL_B45': 28, 'KCL_G1': 29, 'Kern_AXX': 30, 'KerncoXX': 31, 'KerrXX': 32, 'Kimberlina1': 33, 'Kramer1': 34, 'Kuhn81_15': 35, 'Law_et_alXX': 36, 'MARQUIS1': 37, 'McCulloch_Camp_et_al1_36': 38, 'Mobil_Pan_Pet_KCL86_35': 39, 'Mobil_Pan_Petroleum_KCL31_15': 40, 'PACIFIC_STATESXX': 41, 'R.A._Shafter_A1': 42, 'RUSSELLXX': 43, 'Roberts_Cox23_1': 44, 'Roe3': 45, 'RoeXX': 46, 'Russell1': 47, 'SUPERIOR_TENNECO_GAUTXX': 48, 'S_&_D_Killingwoth_EPM1': 49, 'Sharples_Marathon_BillingtonXX': 50, 'Shell_Magee_GlideXX': 51, 'St._Anthony1': 52, 'Steele_Petroleum_Co4_1': 53, 'TWIXX': 54, 'TennecoXX': 55, 'Tenneco_Ladd_Rio_Bravo_North87': 56, 'Tenneco_Rio_Bravo32': 57, 'Tenneco_Sun11x_31': 58, 'Tidewater_Capital_Co.XX': 59, 'USLXX': 60, 'USLXXX': 61, 'Union_Tribe_BXX': 62, 'West_Rio_Bravo1': 63, 'Westates44': 64, 'Wiedman55_26': 65, 'Wright_Bloemer74': 66, 'XX32_15': 67, 'XXXX': 68})
 
 
 
@@ -288,12 +284,14 @@ Your code here:
       <thead>
         <tr style="text-align: right;">
           <th></th>
-          <th>top</th>
           <th>base</th>
           <th>component lith</th>
+          <th>top</th>
+          <th>lith_ids</th>
         </tr>
         <tr>
           <th>name</th>
+          <th></th>
           <th></th>
           <th></th>
           <th></th>
@@ -302,73 +300,84 @@ Your code here:
       <tbody>
         <tr>
           <th>KCL12</th>
-          <td>0.00</td>
           <td>1035.60</td>
           <td>topo</td>
+          <td>0.00</td>
+          <td>13</td>
         </tr>
         <tr>
           <th>KCL12</th>
-          <td>1035.60</td>
           <td>1652.25</td>
           <td>etchegoin</td>
+          <td>1035.60</td>
+          <td>5</td>
         </tr>
         <tr>
           <th>KCL12</th>
-          <td>1652.25</td>
           <td>2109.99</td>
           <td>macoma</td>
+          <td>1652.25</td>
+          <td>8</td>
         </tr>
         <tr>
           <th>KCL12</th>
-          <td>2109.98</td>
           <td>2799.03</td>
           <td>fruitvale</td>
+          <td>2109.98</td>
+          <td>7</td>
         </tr>
         <tr>
           <th>KCL12</th>
-          <td>2109.99</td>
           <td>2110.00</td>
           <td>mclure</td>
+          <td>2109.99</td>
+          <td>9</td>
         </tr>
         <tr>
           <th>...</th>
           <td>...</td>
           <td>...</td>
           <td>...</td>
+          <td>...</td>
         </tr>
         <tr>
           <th>USLXXX</th>
-          <td>601.20</td>
           <td>753.11</td>
           <td>vedder</td>
+          <td>601.20</td>
+          <td>14</td>
         </tr>
         <tr>
           <th>USLXXX</th>
-          <td>753.11</td>
           <td>1197.41</td>
           <td>cretaceous</td>
+          <td>753.11</td>
+          <td>3</td>
         </tr>
         <tr>
           <th>USLXXX</th>
-          <td>1197.41</td>
           <td>1623.97</td>
           <td>basement</td>
+          <td>1197.41</td>
+          <td>1</td>
         </tr>
         <tr>
           <th>USLXXX</th>
-          <td>1623.97</td>
           <td>1623.98</td>
           <td>NaN</td>
+          <td>1623.97</td>
+          <td>0</td>
         </tr>
         <tr>
           <th>USLXXX</th>
-          <td>1656.92</td>
           <td>1656.93</td>
           <td>topo</td>
+          <td>1656.92</td>
+          <td>13</td>
         </tr>
       </tbody>
     </table>
-    <p>721 rows × 3 columns</p>
+    <p>721 rows × 4 columns</p>
     </div>
     </div>
     <br />
@@ -480,55 +489,55 @@ Initialize the color generator for formations
         borehole_set=borehole_set,
         elements_dict={
             "Basement": {
-                "id": -1,
-                "color": next(colors_generator)
-            },
-            "etchgoin": {
                 "id": 1,
                 "color": next(colors_generator)
             },
-            "macoma": {
-                "id": 2,
-                "color": next(colors_generator)
-            },
-            "chanac": {
-                "id": 3,
-                "color": next(colors_generator)
-            },
-            "mclure": {
-                "id": 4,
-                "color": next(colors_generator)
-            },
-            "santa_margarita": {
+            "etchgoin": {
                 "id": 5,
                 "color": next(colors_generator)
             },
-            "fruitvale": {
-                "id": 6,
-                "color": next(colors_generator)
-            },
-            "round_mountain": {
-                "id": 7,
-                "color": next(colors_generator)
-            },
-            "olcese": {
+            "macoma": {
                 "id": 8,
                 "color": next(colors_generator)
             },
-            "freeman_jewett": {
+            "chanac": {
+                "id": 2,
+                "color": next(colors_generator)
+            },
+            "mclure": {
                 "id": 9,
                 "color": next(colors_generator)
             },
-            "vedder": {
-                "id": 10,
+            "santa_margarita": {
+                "id": 12,
                 "color": next(colors_generator)
             },
-            "eocene": {
+            "fruitvale": {
+                "id": 7,
+                "color": next(colors_generator)
+            },
+            "round_mountain": {
                 "id": 11,
                 "color": next(colors_generator)
             },
+            "olcese": {
+                "id": 10,
+                "color": next(colors_generator)
+            },
+            "freeman_jewett": {
+                "id": 6,
+                "color": next(colors_generator)
+            },
+            "vedder": {
+                "id": 14,
+                "color": next(colors_generator)
+            },
+            "eocene": {
+                "id": 4,
+                "color": next(colors_generator)
+            },
             "cretaceous": {
-                "id": 12,
+                "id": 3,
                 "color": next(colors_generator)
             },
         }
@@ -871,7 +880,7 @@ Now that we have the necessary surface points and orientations, we can compute t
  .. code-block:: none
 
 
-    InterpolationOptions(kernel_options=KernelOptions(range=5, c_o=10, uni_degree=1, i_res=4.0, gi_res=2.0, number_dimensions=3, kernel_function=AvailableKernelFunctions.cubic, kernel_solver=Solvers.DEFAULT, compute_condition_number=False, optimizing_condition_number=False, condition_number=None), evaluation_options=EvaluationOptions(_number_octree_levels=3, _number_octree_levels_surface=4, octree_curvature_threshold=-1.0, octree_error_threshold=1.0, octree_min_level=2, mesh_extraction=True, mesh_extraction_masking_options=<MeshExtractionMaskingOptions.INTERSECT: 3>, mesh_extraction_fancy=True, evaluation_chunk_size=500000, compute_scalar_gradient=False, verbose=False), debug=True, cache_mode=<CacheMode.IN_MEMORY_CACHE: 3>, cache_model_name='Stratigraphic Pile', block_solutions_type=<BlockSolutionType.DENSE_GRID: 2>, sigmoid_slope=5000000, debug_water_tight=False, temp_interpolation_values=TempInterpolationValues(current_octree_level=0))
+    InterpolationOptions(kernel_options=KernelOptions(range=5.0, c_o=10.0, uni_degree=1, i_res=4.0, gi_res=2.0, number_dimensions=3, kernel_function=AvailableKernelFunctions.cubic, kernel_solver=Solvers.DEFAULT, compute_condition_number=False, optimizing_condition_number=False, condition_number=None), evaluation_options=EvaluationOptions(_number_octree_levels=3, _number_octree_levels_surface=4, octree_curvature_threshold=-1.0, octree_error_threshold=1.0, octree_min_level=2, mesh_extraction=True, mesh_extraction_masking_options=<MeshExtractionMaskingOptions.INTERSECT: 3>, mesh_extraction_fancy=True, evaluation_chunk_size=500000, compute_scalar=True, compute_scalar_gradient=False, verbose=False), debug=False, cache_mode=<CacheMode.IN_MEMORY_CACHE: 3>, cache_model_name='Stratigraphic Pile', block_solutions_type=<BlockSolutionType.DENSE_GRID: 2>, sigmoid_slope=5000000)
 
 
 
@@ -889,8 +898,10 @@ Now that we have the necessary surface points and orientations, we can compute t
 
  .. code-block:: none
 
-    Setting Backend To: AvailableBackends.numpy
-    Chunking done: 38 chunks
+    Setting Backend To: AvailableBackends.PYTORCH
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
+    Chunking done: 42 chunks
 
 
 .. raw:: html
@@ -965,7 +976,7 @@ https://www.terranigma-solutions.com/
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 10.262 seconds)
+   **Total running time of the script:** (0 minutes 2.291 seconds)
 
 
 .. _sphx_glr_download_examples_real_mik.py:

@@ -9,6 +9,10 @@ GemPy uses Kriging to interpolate the scalar field to construct the
 structural model. However to populate petrophysical data within each domain
 we also provide functionality to interpolate data in 3D.
 
+.. raw:: html
+
+  <div id='sg-tag-list' class='sphx-glr-tag-list'></div>
+
 
 .. raw:: html
 
@@ -25,7 +29,7 @@ we also provide functionality to interpolate data in 3D.
   .. image:: /tutorials/ch3-Interpolations/images/thumb/sphx_glr_ch3_1_kriging_interpolation_and_simulation_thumb.png
     :alt:
 
-  :ref:`sphx_glr_tutorials_ch3-Interpolations_ch3_1_kriging_interpolation_and_simulation.py`
+  :doc:`/tutorials/ch3-Interpolations/ch3_1_kriging_interpolation_and_simulation`
 
 .. raw:: html
 

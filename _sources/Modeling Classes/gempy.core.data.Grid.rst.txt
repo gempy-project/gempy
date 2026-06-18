@@ -35,6 +35,7 @@
    .. autosummary::
    
       ~Grid.active_grids
+      ~Grid.binary_meta_data
       ~Grid.bounding_box
       ~Grid.centered_grid
       ~Grid.corner_max
@@ -42,7 +43,7 @@
       ~Grid.custom_grid
       ~Grid.dense_grid
       ~Grid.extent
-      ~Grid.length
+      ~Grid.grid_binary
       ~Grid.octree_grid
       ~Grid.octree_levels
       ~Grid.regular_grid
@@ -50,6 +51,7 @@
       ~Grid.topography
       ~Grid.transform
       ~Grid.values
+      ~Grid.length
    
    
 

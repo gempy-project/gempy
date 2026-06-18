@@ -86,7 +86,7 @@
 
  .. code-block:: none
 
-    Active grids: GridTypes.NONE|SECTIONS|DENSE
+    Active grids: GridTypes.DENSE|SECTIONS|NONE
 
 
 .. raw:: html
@@ -105,9 +105,9 @@
       <tbody>
         <tr>
           <th>section1</th>
-          <td>[450000, 75000]</td>
-          <td>[460000, 75500]</td>
-          <td>[100, 100]</td>
+          <td>(450000.0, 75000.0)</td>
+          <td>(460000.0, 75500.0)</td>
+          <td>(100, 100)</td>
           <td>10012.492197</td>
         </tr>
       </tbody>
@@ -204,9 +204,9 @@ sphinx_gallery_thumbnail_number = 2
  .. code-block:: none
 
     [200. 500.]
-    Active grids: GridTypes.NONE|SECTIONS|TOPOGRAPHY|DENSE
+    Active grids: GridTypes.DENSE|TOPOGRAPHY|SECTIONS|NONE
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff253607250>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f5820e76bd0>
 
 
 
@@ -252,9 +252,70 @@ It has additional keywords to play around with:
 
  .. code-block:: none
 
-    Active grids: GridTypes.NONE|SECTIONS|TOPOGRAPHY|DENSE
+    Active grids: GridTypes.DENSE|TOPOGRAPHY|SECTIONS|NONE
 
-    <gempy.core.data.grid_modules.topography.Topography object at 0x7ff253605330>
+    Topography(_regular_grid=RegularGrid(resolution=array([50, 50, 50]), extent=array([450000., 460000.,  70000.,  80000.,  -1000.,    500.]), values=array([[ 4.501e+05,  7.010e+04, -9.850e+02],
+           [ 4.501e+05,  7.010e+04, -9.550e+02],
+           [ 4.501e+05,  7.010e+04, -9.250e+02],
+           ...,
+           [ 4.599e+05,  7.990e+04,  4.250e+02],
+           [ 4.599e+05,  7.990e+04,  4.550e+02],
+           [ 4.599e+05,  7.990e+04,  4.850e+02]], shape=(125000, 3)), mask_topo=array([], shape=(0, 3), dtype=bool), _transform=None, _base_resolution=array([2, 2, 2])), values_2d=array([[[4.50000000e+05, 7.00000000e+04, 7.34596488e+01],
+            [4.50000000e+05, 7.00502513e+04, 7.45243395e+01],
+            [4.50000000e+05, 7.01005025e+04, 7.40537449e+01],
+            ...,
+            [4.50000000e+05, 7.98994975e+04, 7.17858616e+01],
+            [4.50000000e+05, 7.99497487e+04, 7.21180006e+01],
+            [4.50000000e+05, 8.00000000e+04, 7.18977366e+01]],
+
+           [[4.50050251e+05, 7.00000000e+04, 7.41301941e+01],
+            [4.50050251e+05, 7.00502513e+04, 7.57891579e+01],
+            [4.50050251e+05, 7.01005025e+04, 7.58128020e+01],
+            ...,
+            [4.50050251e+05, 7.98994975e+04, 7.22948908e+01],
+            [4.50050251e+05, 7.99497487e+04, 7.24550446e+01],
+            [4.50050251e+05, 8.00000000e+04, 7.27198137e+01]],
+
+           [[4.50100503e+05, 7.00000000e+04, 7.70047586e+01],
+            [4.50100503e+05, 7.00502513e+04, 7.85454213e+01],
+            [4.50100503e+05, 7.01005025e+04, 7.88053122e+01],
+            ...,
+            [4.50100503e+05, 7.98994975e+04, 7.56069209e+01],
+            [4.50100503e+05, 7.99497487e+04, 7.45485308e+01],
+            [4.50100503e+05, 8.00000000e+04, 7.53339520e+01]],
+
+           ...,
+
+           [[4.59899497e+05, 7.00000000e+04, 7.03945990e+01],
+            [4.59899497e+05, 7.00502513e+04, 7.09087868e+01],
+            [4.59899497e+05, 7.01005025e+04, 6.98478265e+01],
+            ...,
+            [4.59899497e+05, 7.98994975e+04, 6.96395575e+01],
+            [4.59899497e+05, 7.99497487e+04, 6.99895606e+01],
+            [4.59899497e+05, 8.00000000e+04, 7.07340380e+01]],
+
+           [[4.59949749e+05, 7.00000000e+04, 7.19215392e+01],
+            [4.59949749e+05, 7.00502513e+04, 7.19567409e+01],
+            [4.59949749e+05, 7.01005025e+04, 7.00610252e+01],
+            ...,
+            [4.59949749e+05, 7.98994975e+04, 6.93208833e+01],
+            [4.59949749e+05, 7.99497487e+04, 7.05315350e+01],
+            [4.59949749e+05, 8.00000000e+04, 7.12593460e+01]],
+
+           [[4.60000000e+05, 7.00000000e+04, 7.31063746e+01],
+            [4.60000000e+05, 7.00502513e+04, 7.29276832e+01],
+            [4.60000000e+05, 7.01005025e+04, 7.20995963e+01],
+            ...,
+            [4.60000000e+05, 7.98994975e+04, 7.02957350e+01],
+            [4.60000000e+05, 7.99497487e+04, 7.17424679e+01],
+            [4.60000000e+05, 8.00000000e+04, 7.15484525e+01]]],
+          shape=(200, 200, 3)), source=None, values=array([[4.50000000e+05, 7.00000000e+04, 7.34596488e+01],
+           [4.50000000e+05, 7.00502513e+04, 7.45243395e+01],
+           [4.50000000e+05, 7.01005025e+04, 7.40537449e+01],
+           ...,
+           [4.60000000e+05, 7.98994975e+04, 7.02957350e+01],
+           [4.60000000e+05, 7.99497487e+04, 7.17424679e+01],
+           [4.60000000e+05, 8.00000000e+04, 7.15484525e+01]], shape=(40000, 3)), resolution=(200, 200), raster_shape=())
 
 
 
@@ -278,9 +339,9 @@ Compute model
 
  .. code-block:: none
 
-    Setting Backend To: AvailableBackends.numpy
-    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
-      return 1.0 / (1.0 + bt.t.exp(x))
+    Setting Backend To: AvailableBackends.PYTORCH
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
 
 
 .. raw:: html
@@ -320,7 +381,7 @@ It can be visualized using the 2D and 3D plotting functionality:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff2a57680a0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f57ec7a4e50>
 
 
 
@@ -343,10 +404,10 @@ It can be visualized using the 2D and 3D plotting functionality:
 
  .. code-block:: none
 
-    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:106: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
+    /opt/buildAgent/work/3a8738c25f60c3c9/venv/lib/python3.14/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:112: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
       warnings.warn(
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff253641e70>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f582169c250>
 
 
 
@@ -405,7 +466,7 @@ sphinx_gallery_thumbnail_number = 3
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 6.594 seconds)
+   **Total running time of the script:** (0 minutes 5.571 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_3c_topography.py:

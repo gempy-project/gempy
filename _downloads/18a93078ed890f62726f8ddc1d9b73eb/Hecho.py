@@ -12,6 +12,7 @@ import numpy as np
 
 # Aux imports
 import pandas as pn
+from gempy.modules.serialization.save_load import _validate_serialization
 
 # Importing gempy
 import gempy as gp
@@ -126,7 +127,7 @@ geo_model: gp.data.GeoModel = gp.create_geomodel(
 gp.set_section_grid(
     grid=geo_model.grid,
     section_dict={
-            'section': ([0, 0], [16, 0], [321, 91])
+            'section': ((0., 0.), (16., 0.), (321, 91))
     },
 )
 
@@ -149,7 +150,8 @@ for fn in f_names:
         y=new_orientations.data['Y'],
         z=new_orientations.data['Z'],
         pole_vector=new_orientations.grads,
-        elements_names=fn
+        elements_names=fn,
+        name_id_map=element.surface_points.name_id_map 
     )
 
 # %%
@@ -215,12 +217,7 @@ geo_model.interpolation_options.kernel_options.range *= 0.2
 # %%
 # Setting verbose and condition number options for debugging
 geo_model.interpolation_options.kernel_options.compute_condition_number = True
-# %%
-# Observations and parameter adjustments
-# The octree refinement is making the octree grid almost dense, and smaller chunks are needed to avoid running out of memory.
-# Adjusting parameters accordingly:
 
-geo_model.interpolation_options.evaluation_options.evaluation_chunk_size = 50_000
 
 # %% 
 gp.compute_model(
@@ -228,7 +225,8 @@ gp.compute_model(
     engine_config=gp.data.GemPyEngineConfig(
         backend=gp.data.AvailableBackends.PYTORCH,
         dtype='float64'
-    )
+    ),
+    validate_serialization=True
 )
 
 # %% 

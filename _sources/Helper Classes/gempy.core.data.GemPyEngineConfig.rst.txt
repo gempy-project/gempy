@@ -29,6 +29,7 @@
    .. autosummary::
    
       ~GemPyEngineConfig.backend
+      ~GemPyEngineConfig.compute_grads
       ~GemPyEngineConfig.dtype
       ~GemPyEngineConfig.use_gpu
    

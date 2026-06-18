@@ -190,7 +190,7 @@ every section:
 
  .. code-block:: none
 
-    Active grids: GridTypes.NONE|SECTIONS|DENSE
+    Active grids: GridTypes.DENSE|SECTIONS|NONE
 
 
 .. raw:: html
@@ -209,23 +209,23 @@ every section:
       <tbody>
         <tr>
           <th>section1</th>
-          <td>[0, 0]</td>
-          <td>[2000, 2000]</td>
-          <td>[100, 80]</td>
+          <td>(0.0, 0.0)</td>
+          <td>(2000.0, 2000.0)</td>
+          <td>(100, 80)</td>
           <td>2828.427125</td>
         </tr>
         <tr>
           <th>section2</th>
-          <td>[800, 0]</td>
-          <td>[800, 2000]</td>
-          <td>[150, 100]</td>
+          <td>(800.0, 0.0)</td>
+          <td>(800.0, 2000.0)</td>
+          <td>(150, 100)</td>
           <td>2000.000000</td>
         </tr>
         <tr>
           <th>section3</th>
-          <td>[0, 200]</td>
-          <td>[1500, 500]</td>
-          <td>[200, 150]</td>
+          <td>(0.0, 200.0)</td>
+          <td>(1500.0, 500.0)</td>
+          <td>(200, 150)</td>
           <td>1529.705854</td>
         </tr>
       </tbody>
@@ -259,9 +259,69 @@ Add topography
 
  .. code-block:: none
 
-    Active grids: GridTypes.NONE|SECTIONS|TOPOGRAPHY|DENSE
+    Active grids: GridTypes.DENSE|TOPOGRAPHY|SECTIONS|NONE
 
-    <gempy.core.data.grid_modules.topography.Topography object at 0x7ff2a55ba590>
+    Topography(_regular_grid=RegularGrid(resolution=array([20, 20, 20]), extent=array([   0., 2000.,    0., 2000.,    0.,  750.]), values=array([[  50.  ,   50.  ,   18.75],
+           [  50.  ,   50.  ,   56.25],
+           [  50.  ,   50.  ,   93.75],
+           ...,
+           [1950.  , 1950.  ,  656.25],
+           [1950.  , 1950.  ,  693.75],
+           [1950.  , 1950.  ,  731.25]], shape=(8000, 3)), mask_topo=array([], shape=(0, 3), dtype=bool), _transform=None, _base_resolution=array([2, 2, 2])), values_2d=array([[[   0.        ,    0.        ,  525.81364595],
+            [   0.        ,   40.81632653,  534.4311714 ],
+            [   0.        ,   81.63265306,  545.21138351],
+            ...,
+            [   0.        , 1918.36734694,  493.45417828],
+            [   0.        , 1959.18367347,  505.51902125],
+            [   0.        , 2000.        ,  516.62320964]],
+
+           [[  40.81632653,    0.        ,  520.02419799],
+            [  40.81632653,   40.81632653,  529.19849936],
+            [  40.81632653,   81.63265306,  540.73889549],
+            ...,
+            [  40.81632653, 1918.36734694,  485.70563878],
+            [  40.81632653, 1959.18367347,  498.13591443],
+            [  40.81632653, 2000.        ,  509.94870633]],
+
+           [[  81.63265306,    0.        ,  512.29034438],
+            [  81.63265306,   40.81632653,  522.38242549],
+            [  81.63265306,   81.63265306,  533.74749759],
+            ...,
+            [  81.63265306, 1918.36734694,  475.96047534],
+            [  81.63265306, 1959.18367347,  488.33556325],
+            [  81.63265306, 2000.        ,  500.75092545]],
+
+           ...,
+
+           [[1918.36734694,    0.        ,  536.8572301 ],
+            [1918.36734694,   40.81632653,  549.32197157],
+            [1918.36734694,   81.63265306,  561.72341993],
+            ...,
+            [1918.36734694, 1918.36734694,  503.24054915],
+            [1918.36734694, 1959.18367347,  513.73925164],
+            [1918.36734694, 2000.        ,  525.47837607]],
+
+           [[1959.18367347,    0.        ,  534.68908826],
+            [1959.18367347,   40.81632653,  545.65518713],
+            [1959.18367347,   81.63265306,  558.27313536],
+            ...,
+            [1959.18367347, 1918.36734694,  501.0502999 ],
+            [1959.18367347, 1959.18367347,  512.95973605],
+            [1959.18367347, 2000.        ,  524.20361683]],
+
+           [[2000.        ,    0.        ,  530.78028142],
+            [2000.        ,   40.81632653,  540.15206274],
+            [2000.        ,   81.63265306,  551.79148373],
+            ...,
+            [2000.        , 1918.36734694,  498.47649577],
+            [2000.        , 1959.18367347,  510.05476038],
+            [2000.        , 2000.        ,  521.16890329]]], shape=(50, 50, 3)), source=None, values=array([[   0.        ,    0.        ,  525.81364595],
+           [   0.        ,   40.81632653,  534.4311714 ],
+           [   0.        ,   81.63265306,  545.21138351],
+           ...,
+           [2000.        , 1918.36734694,  498.47649577],
+           [2000.        , 1959.18367347,  510.05476038],
+           [2000.        , 2000.        ,  521.16890329]], shape=(2500, 3)), resolution=(50, 50), raster_shape=())
 
 
 
@@ -285,7 +345,7 @@ Active grids:
  .. code-block:: none
 
 
-    <GridTypes.NONE|SECTIONS|TOPOGRAPHY|DENSE: 1050>
+    <GridTypes.DENSE|TOPOGRAPHY|SECTIONS|NONE: 1050>
 
 
 
@@ -309,7 +369,7 @@ Active grids:
  .. code-block:: none
 
 
-    <function plot_section_traces at 0x7ff2ac8252d0>
+    <function plot_section_traces at 0x7f582f2ef8a0>
 
 
 
@@ -328,9 +388,9 @@ Active grids:
 
  .. code-block:: none
 
-    Setting Backend To: AvailableBackends.numpy
-    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
-      return 1.0 / (1.0 + bt.t.exp(x))
+    Setting Backend To: AvailableBackends.PYTORCH
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
     Chunking done: 8 chunks
 
 
@@ -355,10 +415,10 @@ Active grids:
 
  .. code-block:: none
 
-    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:106: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
+    /opt/buildAgent/work/3a8738c25f60c3c9/venv/lib/python3.14/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:112: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
       warnings.warn(
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff2a53bcd00>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f5820cff3d0>
 
 
 
@@ -381,10 +441,10 @@ Active grids:
 
  .. code-block:: none
 
-    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:106: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
+    /opt/buildAgent/work/3a8738c25f60c3c9/venv/lib/python3.14/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:112: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
       warnings.warn(
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff2a53bff70>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f5820c4b450>
 
 
 
@@ -413,17 +473,17 @@ Active grids:
 
  .. code-block:: none
 
-    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:106: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
+    /opt/buildAgent/work/3a8738c25f60c3c9/venv/lib/python3.14/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:112: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
       warnings.warn(
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff2a55ba140>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f580ed83e50>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.904 seconds)
+   **Total running time of the script:** (0 minutes 3.310 seconds)
 
 
 .. _sphx_glr_download_tutorials_ch1_fundamentals_ch1_3b_cross_sections.py:

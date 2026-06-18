@@ -209,7 +209,7 @@ can retrieve the coordinates of our modeling grid as follows:
            ...,
            [ 772.2 ,  196.  ,  -29.1 ],
            [ 772.2 ,  196.  ,  -17.46],
-           [ 772.2 ,  196.  ,   -5.82]], shape=(125000, 3)), mask_topo=array([], shape=(0, 3), dtype=bool), _transform=None), _custom_grid=None, _topography=None, _sections=None, _centered_grid=None, _transform=None, _octree_levels=-1)
+           [ 772.2 ,  196.  ,   -5.82]], shape=(125000, 3)), mask_topo=array([], shape=(0, 3), dtype=bool), _transform=None, _base_resolution=array([2, 2, 2])), _custom_grid=None, _topography=None, _sections=None, _centered_grid=None, _transform=None, _octree_levels=-1)
 
 
 
@@ -608,9 +608,9 @@ Alright, now we actually have sufficient input data to compute the first version
 
  .. code-block:: none
 
-    Setting Backend To: AvailableBackends.numpy
-    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
-      return 1.0 / (1.0 + bt.t.exp(x))
+    Setting Backend To: AvailableBackends.PYTORCH
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
 
 
 .. raw:: html
@@ -649,7 +649,7 @@ Now, the model has been computed and is ready to be visualized. Let's see what i
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff2a5525e10>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f5820e19350>
 
 
 
@@ -716,7 +716,7 @@ Now, let's look at our 3D model:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7ff2a5176b60>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f5820c4e7b0>
 
 
 
@@ -870,9 +870,9 @@ decides how they affect each other via their individual scalar fields, as we wil
 
  .. code-block:: none
 
-    Setting Backend To: AvailableBackends.numpy
-    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
-      return 1.0 / (1.0 + bt.t.exp(x))
+    Setting Backend To: AvailableBackends.PYTORCH
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
 
 
 .. raw:: html
@@ -970,9 +970,9 @@ First, we add the two missing points to the Siltstone
 
  .. code-block:: none
 
-    Setting Backend To: AvailableBackends.numpy
-    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
-      return 1.0 / (1.0 + bt.t.exp(x))
+    Setting Backend To: AvailableBackends.PYTORCH
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
 
 
 .. raw:: html
@@ -1036,7 +1036,7 @@ First, we add the two missing points to the Siltstone
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7ff2a52f8460>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f5820e0ca50>
 
 
 
@@ -1201,11 +1201,9 @@ groups independently.
 
  .. code-block:: none
 
-    Setting Backend To: AvailableBackends.numpy
-    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
-      return 1.0 / (1.0 + bt.t.exp(x))
-    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
-      return 1.0 / (1.0 + bt.t.exp(x))
+    Setting Backend To: AvailableBackends.PYTORCH
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
 
 
 .. raw:: html
@@ -1343,7 +1341,7 @@ how this younger structural group erodes all older elements and basically "cuts 
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7ff2a2a51db0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f5820e9ae90>
 
 
 
@@ -1383,11 +1381,9 @@ Let's change the relation type from `ERODE` to `ONLAP` to achieve a different ty
 
  .. code-block:: none
 
-    Setting Backend To: AvailableBackends.numpy
-    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
-      return 1.0 / (1.0 + bt.t.exp(x))
-    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
-      return 1.0 / (1.0 + bt.t.exp(x))
+    Setting Backend To: AvailableBackends.PYTORCH
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
 
 
 .. raw:: html
@@ -1451,7 +1447,7 @@ Let's change the relation type from `ERODE` to `ONLAP` to achieve a different ty
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7ff2a291a350>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f5820e19ba0>
 
 
 
@@ -1564,11 +1560,9 @@ Let's compute our model including the fault and see what that looks like.
 
  .. code-block:: none
 
-    Setting Backend To: AvailableBackends.numpy
-    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
-      return 1.0 / (1.0 + bt.t.exp(x))
-    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
-      return 1.0 / (1.0 + bt.t.exp(x))
+    Setting Backend To: AvailableBackends.PYTORCH
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
 
 
 .. raw:: html
@@ -1632,7 +1626,7 @@ Let's compute our model including the fault and see what that looks like.
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7ff2a2a53be0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f58355708a0>
 
 
 
@@ -1705,9 +1699,70 @@ For demonstration, we'll create a random topography:
 
  .. code-block:: none
 
-    Active grids: GridTypes.NONE|TOPOGRAPHY|DENSE
+    Active grids: GridTypes.DENSE|TOPOGRAPHY|NONE
 
-    <gempy.core.data.grid_modules.topography.Topography object at 0x7ff2a5660af0>
+    Topography(_regular_grid=RegularGrid(resolution=array([50, 50, 50]), extent=array([   0.,  780., -200.,  200., -582.,    0.]), values=array([[   7.8 , -196.  , -576.18],
+           [   7.8 , -196.  , -564.54],
+           [   7.8 , -196.  , -552.9 ],
+           ...,
+           [ 772.2 ,  196.  ,  -29.1 ],
+           [ 772.2 ,  196.  ,  -17.46],
+           [ 772.2 ,  196.  ,   -5.82]], shape=(125000, 3)), mask_topo=array([], shape=(0, 3), dtype=bool), _transform=None, _base_resolution=array([2, 2, 2])), values_2d=array([[[   0.        , -200.        ,  -63.26327528],
+            [   0.        , -197.98994975,  -61.5467894 ],
+            [   0.        , -195.9798995 ,  -60.99415947],
+            ...,
+            [   0.        ,  195.9798995 ,  -68.16039394],
+            [   0.        ,  197.98994975,  -67.24453096],
+            [   0.        ,  200.        ,  -65.52292916]],
+
+           [[   3.91959799, -200.        ,  -63.33157582],
+            [   3.91959799, -197.98994975,  -62.41327538],
+            [   3.91959799, -195.9798995 ,  -61.30506439],
+            ...,
+            [   3.91959799,  195.9798995 ,  -67.60038957],
+            [   3.91959799,  197.98994975,  -66.94015532],
+            [   3.91959799,  200.        ,  -65.53099605]],
+
+           [[   7.83919598, -200.        ,  -64.66310395],
+            [   7.83919598, -197.98994975,  -62.84394334],
+            [   7.83919598, -195.9798995 ,  -61.72620964],
+            ...,
+            [   7.83919598,  195.9798995 ,  -67.17841556],
+            [   7.83919598,  197.98994975,  -66.6263553 ],
+            [   7.83919598,  200.        ,  -66.51928789]],
+
+           ...,
+
+           [[ 772.16080402, -200.        ,  -62.68113264],
+            [ 772.16080402, -197.98994975,  -62.31145391],
+            [ 772.16080402, -195.9798995 ,  -62.1387962 ],
+            ...,
+            [ 772.16080402,  195.9798995 ,  -66.04077214],
+            [ 772.16080402,  197.98994975,  -65.12253876],
+            [ 772.16080402,  200.        ,  -63.73901459]],
+
+           [[ 776.08040201, -200.        ,  -62.53855543],
+            [ 776.08040201, -197.98994975,  -61.22243102],
+            [ 776.08040201, -195.9798995 ,  -61.06334838],
+            ...,
+            [ 776.08040201,  195.9798995 ,  -67.17642884],
+            [ 776.08040201,  197.98994975,  -66.0493732 ],
+            [ 776.08040201,  200.        ,  -64.60645349]],
+
+           [[ 780.        , -200.        ,  -63.05411425],
+            [ 780.        , -197.98994975,  -61.28177864],
+            [ 780.        , -195.9798995 ,  -60.20599589],
+            ...,
+            [ 780.        ,  195.9798995 ,  -67.46156424],
+            [ 780.        ,  197.98994975,  -66.87958642],
+            [ 780.        ,  200.        ,  -65.23496731]]],
+          shape=(200, 200, 3)), source=None, values=array([[   0.        , -200.        ,  -63.26327528],
+           [   0.        , -197.98994975,  -61.5467894 ],
+           [   0.        , -195.9798995 ,  -60.99415947],
+           ...,
+           [ 780.        ,  195.9798995 ,  -67.46156424],
+           [ 780.        ,  197.98994975,  -66.87958642],
+           [ 780.        ,  200.        ,  -65.23496731]], shape=(40000, 3)), resolution=(200, 200), raster_shape=())
 
 
 
@@ -1731,7 +1786,7 @@ For demonstration, we'll create a random topography:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff2a554aec0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f580c3ee750>
 
 
 
@@ -1755,7 +1810,7 @@ For demonstration, we'll create a random topography:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7ff2a2a53be0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f580c34b1d0>
 
 
 
@@ -1780,11 +1835,9 @@ function as shown below.
 
  .. code-block:: none
 
-    Setting Backend To: AvailableBackends.numpy
-    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
-      return 1.0 / (1.0 + bt.t.exp(x))
-    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
-      return 1.0 / (1.0 + bt.t.exp(x))
+    Setting Backend To: AvailableBackends.PYTORCH
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
 
 
 .. raw:: html
@@ -1814,10 +1867,10 @@ function as shown below.
 
  .. code-block:: none
 
-    /home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:106: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
+    /opt/buildAgent/work/3a8738c25f60c3c9/venv/lib/python3.14/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:112: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
       warnings.warn(
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff2a55ba680>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f583564b290>
 
 
 
@@ -1841,7 +1894,7 @@ function as shown below.
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7ff2a559c790>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f57bfee2be0>
 
 
 
@@ -1885,13 +1938,13 @@ in our `structural_frame`, i.e., the index `[0]` will return the first and top s
 
  .. code-block:: none
 
-    <class 'numpy.ndarray'> [[ 0.45129359 -0.23915722 -0.63081408]
-     [ 0.43619337 -0.23915722 -0.58985021]
-     [ 0.45123358 -0.20726947 -0.63101987]
+    <class 'numpy.ndarray'> [[ 0.45125608 -0.23913328 -0.63074819]
+     [ 0.4361575  -0.23913329 -0.58978838]
+     [ 0.4511961  -0.20724871 -0.63095396]
      ...
-     [ 0.21781076  0.2072733  -0.04150489]
-     [ 0.23731025  0.23916798 -0.07939452]
-     [ 0.21703678  0.23916084 -0.04243479]] [[  3   1   2]
+     [ 0.21779507  0.20725281 -0.04149725]
+     [ 0.23729301  0.23914443 -0.07938313]
+     [ 0.21702129  0.23913719 -0.04242709]] [[  3   1   2]
      [  8   6   3]
      [  9   7   8]
      ...
@@ -1923,13 +1976,13 @@ corresponding to the original coordinate system, we can invert this transformati
  .. code-block:: none
 
 
-    array([[ 774.81417593, -187.49925971, -559.55823517],
-           [ 762.97560303, -187.49926005, -527.44256826],
-           [ 774.76712736, -162.49926701, -559.71957915],
+    array([[ 774.78476686, -187.48049221, -559.50657799],
+           [ 762.94748262, -187.48050162, -527.3940932 ],
+           [ 774.73774175, -162.48298666, -559.66790462],
            ...,
-           [ 591.76363561,  162.50226762,  -97.53983597],
-           [ 607.05123778,  187.5076957 , -127.24530088],
-           [ 591.15683725,  187.50209584,  -98.26887806]], shape=(338, 3))
+           [ 591.75133532,  162.48620227,  -97.53384549],
+           [ 607.03772032,  187.48923477, -127.23637251],
+           [ 591.14469153,  187.48355449,  -98.26284214]], shape=(338, 3))
 
 
 
@@ -2076,20 +2129,20 @@ object via `geo_model.grid` as shown below.
  .. code-block:: none
 
 
-    array([[   0.        , -200.        , -103.92301797],
-           [   0.        , -197.98994975, -104.04483853],
-           [   0.        , -195.9798995 , -105.20968466],
+    array([[   0.        , -200.        ,  -63.26327528],
+           [   0.        , -197.98994975,  -61.5467894 ],
+           [   0.        , -195.9798995 ,  -60.99415947],
            ...,
-           [ 780.        ,  195.9798995 , -106.1938437 ],
-           [ 780.        ,  197.98994975, -104.64212323],
-           [ 780.        ,  200.        , -103.63462951]], shape=(40000, 3))
+           [ 780.        ,  195.9798995 ,  -67.46156424],
+           [ 780.        ,  197.98994975,  -66.87958642],
+           [ 780.        ,  200.        ,  -65.23496731]], shape=(40000, 3))
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 31.759 seconds)
+   **Total running time of the script:** (0 minutes 18.103 seconds)
 
 
 .. _sphx_glr_download_tutorials_a_getting_started_get_started.py:

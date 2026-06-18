@@ -7,17 +7,18 @@
 
     <title>1.3c: Adding topography to geological models &#8212; GemPy 2024.2.0.3.dev0+gf344a731.d20240626 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=686e5160" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=b08954a9" />
     <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=e15417cb" />
     <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=fd6457a4" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
     <script src="../../_static/documentation_options.js?v=bd57e1ea"></script>
-    <script src="../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
     <link rel="icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -78,7 +79,7 @@ to download the full example code.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Active grids: GridTypes.NONE|SECTIONS|DENSE
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Active grids: GridTypes.DENSE|SECTIONS|NONE
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
@@ -95,9 +96,9 @@ to download the full example code.</p>
   <tbody>
     <tr>
       <th>section1</th>
-      <td>[450000, 75000]</td>
-      <td>[460000, 75500]</td>
-      <td>[100, 100]</td>
+      <td>(450000.0, 75000.0)</td>
+      <td>(460000.0, 75500.0)</td>
+      <td>(100, 100)</td>
       <td>10012.492197</td>
     </tr>
   </tbody>
@@ -146,9 +147,9 @@ to generate a random topography based on a fractal grid:</p>
 </pre></div>
 </div>
 <img src="../../_images/sphx_glr_ch1_3c_topography_001.png" srcset="../../_images/sphx_glr_ch1_3c_topography_001.png" alt="Geological map" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[200. 500.]
-Active grids: GridTypes.NONE|SECTIONS|TOPOGRAPHY|DENSE
+Active grids: GridTypes.DENSE|TOPOGRAPHY|SECTIONS|NONE
 
-&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff253607250&gt;
+&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f5820e76bd0&gt;
 </pre></div>
 </div>
 <p>It has additional keywords to play around with:</p>
@@ -187,9 +188,70 @@ much nicer geological maps!</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Active grids: GridTypes.NONE|SECTIONS|TOPOGRAPHY|DENSE
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Active grids: GridTypes.DENSE|TOPOGRAPHY|SECTIONS|NONE
 
-&lt;gempy.core.data.grid_modules.topography.Topography object at 0x7ff253605330&gt;
+Topography(_regular_grid=RegularGrid(resolution=array([50, 50, 50]), extent=array([450000., 460000.,  70000.,  80000.,  -1000.,    500.]), values=array([[ 4.501e+05,  7.010e+04, -9.850e+02],
+       [ 4.501e+05,  7.010e+04, -9.550e+02],
+       [ 4.501e+05,  7.010e+04, -9.250e+02],
+       ...,
+       [ 4.599e+05,  7.990e+04,  4.250e+02],
+       [ 4.599e+05,  7.990e+04,  4.550e+02],
+       [ 4.599e+05,  7.990e+04,  4.850e+02]], shape=(125000, 3)), mask_topo=array([], shape=(0, 3), dtype=bool), _transform=None, _base_resolution=array([2, 2, 2])), values_2d=array([[[4.50000000e+05, 7.00000000e+04, 7.34596488e+01],
+        [4.50000000e+05, 7.00502513e+04, 7.45243395e+01],
+        [4.50000000e+05, 7.01005025e+04, 7.40537449e+01],
+        ...,
+        [4.50000000e+05, 7.98994975e+04, 7.17858616e+01],
+        [4.50000000e+05, 7.99497487e+04, 7.21180006e+01],
+        [4.50000000e+05, 8.00000000e+04, 7.18977366e+01]],
+
+       [[4.50050251e+05, 7.00000000e+04, 7.41301941e+01],
+        [4.50050251e+05, 7.00502513e+04, 7.57891579e+01],
+        [4.50050251e+05, 7.01005025e+04, 7.58128020e+01],
+        ...,
+        [4.50050251e+05, 7.98994975e+04, 7.22948908e+01],
+        [4.50050251e+05, 7.99497487e+04, 7.24550446e+01],
+        [4.50050251e+05, 8.00000000e+04, 7.27198137e+01]],
+
+       [[4.50100503e+05, 7.00000000e+04, 7.70047586e+01],
+        [4.50100503e+05, 7.00502513e+04, 7.85454213e+01],
+        [4.50100503e+05, 7.01005025e+04, 7.88053122e+01],
+        ...,
+        [4.50100503e+05, 7.98994975e+04, 7.56069209e+01],
+        [4.50100503e+05, 7.99497487e+04, 7.45485308e+01],
+        [4.50100503e+05, 8.00000000e+04, 7.53339520e+01]],
+
+       ...,
+
+       [[4.59899497e+05, 7.00000000e+04, 7.03945990e+01],
+        [4.59899497e+05, 7.00502513e+04, 7.09087868e+01],
+        [4.59899497e+05, 7.01005025e+04, 6.98478265e+01],
+        ...,
+        [4.59899497e+05, 7.98994975e+04, 6.96395575e+01],
+        [4.59899497e+05, 7.99497487e+04, 6.99895606e+01],
+        [4.59899497e+05, 8.00000000e+04, 7.07340380e+01]],
+
+       [[4.59949749e+05, 7.00000000e+04, 7.19215392e+01],
+        [4.59949749e+05, 7.00502513e+04, 7.19567409e+01],
+        [4.59949749e+05, 7.01005025e+04, 7.00610252e+01],
+        ...,
+        [4.59949749e+05, 7.98994975e+04, 6.93208833e+01],
+        [4.59949749e+05, 7.99497487e+04, 7.05315350e+01],
+        [4.59949749e+05, 8.00000000e+04, 7.12593460e+01]],
+
+       [[4.60000000e+05, 7.00000000e+04, 7.31063746e+01],
+        [4.60000000e+05, 7.00502513e+04, 7.29276832e+01],
+        [4.60000000e+05, 7.01005025e+04, 7.20995963e+01],
+        ...,
+        [4.60000000e+05, 7.98994975e+04, 7.02957350e+01],
+        [4.60000000e+05, 7.99497487e+04, 7.17424679e+01],
+        [4.60000000e+05, 8.00000000e+04, 7.15484525e+01]]],
+      shape=(200, 200, 3)), source=None, values=array([[4.50000000e+05, 7.00000000e+04, 7.34596488e+01],
+       [4.50000000e+05, 7.00502513e+04, 7.45243395e+01],
+       [4.50000000e+05, 7.01005025e+04, 7.40537449e+01],
+       ...,
+       [4.60000000e+05, 7.98994975e+04, 7.02957350e+01],
+       [4.60000000e+05, 7.99497487e+04, 7.17424679e+01],
+       [4.60000000e+05, 8.00000000e+04, 7.15484525e+01]], shape=(40000, 3)), resolution=(200, 200), raster_shape=())
 </pre></div>
 </div>
 </section>
@@ -199,9 +261,9 @@ much nicer geological maps!</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../GemPy API/gempy.compute_model.html#gempy.compute_model" title="gempy.compute_model" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span></a><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting Backend To: AvailableBackends.numpy
-/home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_engine/modules/activator/_soft_segment.py:95: RuntimeWarning: overflow encountered in exp
-  return 1.0 / (1.0 + bt.t.exp(x))
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting Backend To: AvailableBackends.PYTORCH
+GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+Setting Backend To: AvailableBackends.PYTORCH
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
@@ -215,16 +277,16 @@ It can be visualized using the 2D and 3D plotting functionality:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">show_topography</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">section_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;topography&#39;</span><span class="p">],</span> <span class="n">show_boundaries</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_ch1_3c_topography_002.png" srcset="../../_images/sphx_glr_ch1_3c_topography_002.png" alt="Geological map" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff2a57680a0&gt;
+<img src="../../_images/sphx_glr_ch1_3c_topography_002.png" srcset="../../_images/sphx_glr_ch1_3c_topography_002.png" alt="Geological map" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f57ec7a4e50&gt;
 </pre></div>
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">show_topography</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">section_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;section1&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_ch1_3c_topography_003.png" srcset="../../_images/sphx_glr_ch1_3c_topography_003.png" alt="section1" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/leguark/TeamCity/work/3a8738c25f60c3c9/venv/lib/python3.10/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:106: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
+<img src="../../_images/sphx_glr_ch1_3c_topography_003.png" srcset="../../_images/sphx_glr_ch1_3c_topography_003.png" alt="section1" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/buildAgent/work/3a8738c25f60c3c9/venv/lib/python3.14/site-packages/gempy_viewer/API/_plot_2d_sections_api.py:112: UserWarning: Section contacts not implemented yet. We need to pass scalar field for the sections grid
   warnings.warn(
 
-&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff253641e70&gt;
+&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f582169c250&gt;
 </pre></div>
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">g3d</span> <span class="o">=</span> <span class="n">gpv</span><span class="o">.</span><span class="n">plot_3d</span><span class="p">(</span>
@@ -247,7 +309,7 @@ It can be visualized using the 2D and 3D plotting functionality:</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_ch1_3c_topography_005.png" srcset="../../_images/sphx_glr_ch1_3c_topography_005.png" alt="ch1 3c topography" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 6.594 seconds)</p>
+<img src="../../_images/sphx_glr_ch1_3c_topography_005.png" srcset="../../_images/sphx_glr_ch1_3c_topography_005.png" alt="ch1 3c topography" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 5.571 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-tutorials-ch1-fundamentals-ch1-3c-topography-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/5f79061946362a29ca439db5f144cba8/ch1_3c_topography.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">ch1_3c_topography.ipynb</span></code></a></p>
@@ -345,10 +407,10 @@ It can be visualized using the 2D and 3D plotting functionality:</p>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &#169;2017-2025, Gempy Developers.
+      &#169;2017-2026, Gempy Developers.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       
       |

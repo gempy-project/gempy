@@ -140,7 +140,7 @@ The first video introduces the concept of modeling faults with GemPy - please vi
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff2a2f87d60>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f57803cf4d0>
 
 
 
@@ -323,9 +323,10 @@ The first video introduces the concept of modeling faults with GemPy - please vi
 
  .. code-block:: none
 
-    Setting Backend To: AvailableBackends.numpy
+    Setting Backend To: AvailableBackends.PYTORCH
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
     Chunking done: 17 chunks
-    Chunking done: 6 chunks
 
 
 .. raw:: html
@@ -361,7 +362,7 @@ The first video introduces the concept of modeling faults with GemPy - please vi
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff24ed089d0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f5778327e50>
 
 
 
@@ -410,7 +411,7 @@ The first video introduces the concept of modeling faults with GemPy - please vi
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff24ee3ba90>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f5782d71350>
 
 
 
@@ -716,7 +717,7 @@ Video tutorial 9: Fault relations
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff24eba3be0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f5780242e50>
 
 
 
@@ -738,9 +739,11 @@ Video tutorial 9: Fault relations
 
  .. code-block:: none
 
-    Setting Backend To: AvailableBackends.numpy
+    Setting Backend To: AvailableBackends.PYTORCH
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
     Chunking done: 19 chunks
-    Chunking done: 7 chunks
+    Chunking done: 6 chunks
 
 
 .. raw:: html
@@ -775,7 +778,7 @@ Video tutorial 9: Fault relations
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff2a5eee1a0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f57803a17d0>
 
 
 
@@ -897,9 +900,11 @@ Video tutorial 9: Fault relations
 
  .. code-block:: none
 
-    Setting Backend To: AvailableBackends.numpy
+    Setting Backend To: AvailableBackends.PYTORCH
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
     Chunking done: 19 chunks
-    Chunking done: 7 chunks
+    Chunking done: 6 chunks
 
 
 .. raw:: html
@@ -934,7 +939,7 @@ Video tutorial 9: Fault relations
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff2a2aaace0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f5778346450>
 
 
 
@@ -1054,9 +1059,11 @@ Video tutorial 9: Fault relations
 
  .. code-block:: none
 
-    Setting Backend To: AvailableBackends.numpy
+    Setting Backend To: AvailableBackends.PYTORCH
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
     Chunking done: 18 chunks
-    Chunking done: 7 chunks
+    Chunking done: 6 chunks
 
 
 .. raw:: html
@@ -1091,7 +1098,7 @@ Video tutorial 9: Fault relations
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff24ea2c7f0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f57ec712dd0>
 
 
 
@@ -1384,7 +1391,7 @@ Video tutorial 10: Fault groups and cross-cutting faults
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff2a5f09d50>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f5953967a50>
 
 
 
@@ -1406,7 +1413,9 @@ Video tutorial 10: Fault groups and cross-cutting faults
 
  .. code-block:: none
 
-    Setting Backend To: AvailableBackends.numpy
+    Setting Backend To: AvailableBackends.PYTORCH
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
     Chunking done: 7 chunks
 
 
@@ -1444,14 +1453,14 @@ Video tutorial 10: Fault groups and cross-cutting faults
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7ff2a2919b40>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f5782d9fbd0>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (1 minutes 28.737 seconds)
+   **Total running time of the script:** (0 minutes 21.191 seconds)
 
 
 .. _sphx_glr_download_tutorials_z_other_tutorials_video_tutorial_model_2_faults.py:

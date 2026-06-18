@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**00:35.931** total execution time for 3 files **from tutorials/z_other_tutorials**:
+**00:46.964** total execution time for 3 files **from tutorials/z_other_tutorials**:
 
 .. container::
 
@@ -32,12 +32,12 @@ Computation times
    * - Example
      - Time
      - Mem (MB)
-   * - :ref:`sphx_glr_tutorials_z_other_tutorials_video_tutorial_model_3_onlap.py` (``video_tutorial_model_3_onlap.py``)
-     - 00:35.931
+   * - :ref:`sphx_glr_tutorials_z_other_tutorials_video_tutorial_model_2_faults.py` (``video_tutorial_model_2_faults.py``)
+     - 00:21.191
      - 0.0
    * - :ref:`sphx_glr_tutorials_z_other_tutorials_video_tutorial_model_1.py` (``video_tutorial_model_1.py``)
-     - 00:00.000
+     - 00:14.936
      - 0.0
-   * - :ref:`sphx_glr_tutorials_z_other_tutorials_video_tutorial_model_2_faults.py` (``video_tutorial_model_2_faults.py``)
-     - 00:00.000
+   * - :ref:`sphx_glr_tutorials_z_other_tutorials_video_tutorial_model_3_onlap.py` (``video_tutorial_model_3_onlap.py``)
+     - 00:10.838
      - 0.0

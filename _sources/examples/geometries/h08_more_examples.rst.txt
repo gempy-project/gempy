@@ -219,10 +219,8 @@ Discordant layering 1
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.PYTORCH
-    Chunking done: 7 chunks
-    Chunking done: 7 chunks
-    Chunking done: 7 chunks
-    Chunking done: 7 chunks
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
 
 
 .. raw:: html
@@ -321,9 +319,10 @@ Discordant layering 2
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.PYTORCH
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
     Chunking done: 6 chunks
     Chunking done: 9 chunks
-    Chunking done: 8 chunks
 
 
 .. raw:: html
@@ -415,7 +414,8 @@ Discordant layering 3
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.PYTORCH
-    Chunking done: 6 chunks
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
     Chunking done: 6 chunks
 
 
@@ -508,8 +508,9 @@ One normal Fault 1
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.PYTORCH
-    Chunking done: 9 chunks
-    Chunking done: 9 chunks
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
+    Chunking done: 7 chunks
 
 
 .. raw:: html
@@ -613,9 +614,10 @@ Fold
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.PYTORCH
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
     Chunking done: 7 chunks
-    Chunking done: 9 chunks
-    Chunking done: 8 chunks
+    Chunking done: 7 chunks
 
 
 .. raw:: html
@@ -707,9 +709,11 @@ Graben
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.PYTORCH
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
     Chunking done: 19 chunks
-    Chunking done: 36 chunks
-    Chunking done: 34 chunks
+    Chunking done: 21 chunks
+    Chunking done: 10 chunks
 
 
 .. raw:: html
@@ -825,9 +829,11 @@ One normal Fault 2
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.PYTORCH
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
     Chunking done: 11 chunks
-    Chunking done: 19 chunks
-    Chunking done: 18 chunks
+    Chunking done: 13 chunks
+    Chunking done: 7 chunks
 
 
 .. raw:: html
@@ -931,7 +937,8 @@ Horizontal tilted
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.PYTORCH
-    Chunking done: 6 chunks
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
     Chunking done: 6 chunks
 
 
@@ -1011,7 +1018,7 @@ Horizontal tilted
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 19.911 seconds)
+   **Total running time of the script:** (0 minutes 24.428 seconds)
 
 
 .. _sphx_glr_download_examples_geometries_h08_more_examples.py:
