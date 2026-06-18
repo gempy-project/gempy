@@ -1,2 +1,2 @@
 # This install also numpy
-gempy_engine>=2026.0.2dev0
+gempy_engine>=2026.0.3
