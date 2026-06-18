@@ -8,6 +8,7 @@ from .grid import Grid, Topography
 from .importer_helper import ImporterHelper
 from .gempy_engine_config import GemPyEngineConfig
 from .structural_group import FaultsRelationSpecialCase
+from .validation import ModelValidationError
 from ..color_generator import ColorsGenerator
 
 from gempy_engine.core.data.interpolation_input import InterpolationInput
@@ -25,7 +26,7 @@ __all__ = [
     # From gempy
     'GeoModel', 'StructuralFrame', 'StructuralGroup', 'StructuralElement', 'OrientationsTable', 'SurfacePointsTable',
     'Grid', 'Topography',
-    'ImporterHelper', 'GemPyEngineConfig', 'FaultsRelationSpecialCase', 'ColorsGenerator',
+    'ImporterHelper', 'GemPyEngineConfig', 'FaultsRelationSpecialCase', 'ColorsGenerator', 'ModelValidationError',
     # From gempy engine
     'InterpolationInput','StackRelationType', 'InterpolationOptions', 'Solutions', 'RawArraysSolution', 'GlobalAnisotropy', 'Transform',
     'FaultsData', 'FiniteFaultData', 'AvailableBackends', 'GeophysicsInput'

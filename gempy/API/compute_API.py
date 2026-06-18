@@ -18,6 +18,7 @@ dotenv.load_dotenv()
 
 
 def compute_model(gempy_model: GeoModel, engine_config: Optional[GemPyEngineConfig] = None,
+                  skip_validation: bool = False,
                   **kwargs) -> Solutions:
     """
     Compute the geological model given the provided GemPy model.
@@ -33,6 +34,9 @@ def compute_model(gempy_model: GeoModel, engine_config: Optional[GemPyEngineConf
         Solutions: The computed geological model.
     """
     engine_config: GemPyEngineConfig = engine_config or GemPyEngineConfig()
+
+    if not skip_validation:
+        gempy_model.validate()
 
     match engine_config.backend:
         case AvailableBackends.numpy | AvailableBackends.PYTORCH:
@@ -83,7 +87,8 @@ def compute_model(gempy_model: GeoModel, engine_config: Optional[GemPyEngineConf
 
 
 def compute_model_at(gempy_model: GeoModel, at: np.ndarray,
-                     engine_config: Optional[GemPyEngineConfig] = None) -> np.ndarray:
+                     engine_config: Optional[GemPyEngineConfig] = None,
+                     skip_validation: bool = False) -> np.ndarray:
     """
     Compute the geological model at specific coordinates.
     
@@ -105,7 +110,7 @@ def compute_model_at(gempy_model: GeoModel, at: np.ndarray,
         reset=True
     )
     
-    sol = compute_model(gempy_model, engine_config)
+    sol = compute_model(gempy_model, engine_config, skip_validation=skip_validation)
     return sol.raw_arrays.custom
 
 
