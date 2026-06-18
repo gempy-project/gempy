@@ -3,6 +3,9 @@
   <name>Release GemPy Viewer</name>
   <description />
   <settings ref="ReleasePythonPackage">
+    <options>
+      <option name="cleanBuild" value="true" />
+    </options>
     <disabled-settings>
       <setting-ref ref="RQ_8" />
     </disabled-settings>
