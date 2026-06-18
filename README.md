@@ -10,14 +10,13 @@
 [![DOI](https://zenodo.org/badge/96211155.svg)](https://zenodo.org/badge/latestdoi/96211155)
 
 
-## What's New: GemPy 2024.1 (a.k.a GemPy v3) Release!
+## What's New: GemPy 2026.0.3 — June 2026
 
+GemPy 2026.0.3 is the latest stable release of GemPy v3. It brings together matching releases of `gempy`, `gempy_engine`, and `gempy_viewer`, with updates across model setup, serialization, octree handling, PyTorch support, visualization, and example models.
 
-Welcome to the era of GemPy v3! We are thrilled to announce the release of the latest version, a product of meticulous planning, redesign, and rigorous testing. While the core essence remains intact, v3 brings significant enhancements and novelties that promise to revolutionize your geomodeling experience.
+For the full release notes, see the [GemPy 2026.0.3 release](https://github.com/gempy-project/gempy/releases/tag/v2026.0.3). For background on the GemPy v3 transition, see [What's New in GemPy v3](WhatsNewGemPy3.md).
 
- Delve into the exciting new features in the [What's New in GemPy v3](WhatsNewGemPy3.md). 
-
-The journey from GemPy v2 to v3 has been transformative. To ensure that our users don't lose out on any previous functionalities, we've shifted v2 to a package named [gempy_legacy](https://github.com/gempy-project/gempy_legacy). While the core team will not develop any new features for this version, we'll continue maintaining it based on community requests.
+GemPy v2 remains available as [gempy_legacy](https://github.com/gempy-project/gempy_legacy) for users who still depend on previous workflows. The core team is not developing new features for this version, but maintenance can continue based on community needs.
 
 ## Overview
 
