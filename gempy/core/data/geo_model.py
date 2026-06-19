@@ -351,6 +351,7 @@ class GeoModel(BaseModel):
             raise ModelValidationError(
                 field="input_data",
                 reason="empty_model",
+                message="The model has no surface points or orientations. Add input data before computing.",
                 context={"surface_points": 0, "orientations": 0}
             )
 
@@ -358,18 +359,28 @@ class GeoModel(BaseModel):
         for i, group in enumerate(self.structural_frame.structural_groups):
             if len(group.elements) == 0:
                 tag = "fault" if group.is_fault else "non_fault"
+                name = group.name
+                msg = (
+                    f"Fault group '{name}' has no surfaces assigned to it."
+                    if group.is_fault
+                    else f"Group '{name}' has no surfaces assigned to it."
+                )
                 raise ModelValidationError(
                     field=f"structural_groups[{i}]",
                     reason=f"empty_{tag}_group",
-                    context={"group_name": group.name}
+                    message=msg,
+                    context={"group_name": name}
                 )
 
         # R4: underdetermined input
-        if len(sp_data) <= 1 and len(ori_data) == 0:
+        n_sp = len(sp_data)
+        n_ori = len(ori_data)
+        if n_sp <= 1 and n_ori == 0:
             raise ModelValidationError(
                 field="input_data",
                 reason="underdetermined_input",
-                context={"surface_points": len(sp_data), "orientations": len(ori_data)}
+                message=f"Too few input data ({n_sp} surface points, {n_ori} orientations) to compute. Add more surface points or at least one orientation.",
+                context={"surface_points": n_sp, "orientations": n_ori}
             )
 
         # R5: basement relation on non-last group
@@ -379,5 +390,6 @@ class GeoModel(BaseModel):
                 raise ModelValidationError(
                     field=f"structural_groups[{i}].structural_relation",
                     reason="basement_relation_on_non_last_group",
+                    message=f"Group '{group.name}' has a Basement relation but is not the last group. Basement is only valid on the final group.",
                     context={"group_name": group.name}
                 )
