@@ -14,6 +14,7 @@ from gempy_engine.core.data.geophysics_input import GeophysicsInput
 from gempy_engine.core.data.input_data_descriptor import InputDataDescriptor
 from gempy_engine.core.data.interpolation_input import InterpolationInput
 from gempy_engine.core.data.raw_arrays_solution import RawArraysSolution
+from gempy_engine.core.data.stack_relation_type import StackRelationType
 from gempy_engine.core.data.transforms import Transform, GlobalAnisotropy
 from .encoders.converters import instantiate_if_necessary
 from .encoders.json_geomodel_encoder import encode_numpy_array
@@ -21,6 +22,7 @@ from .grid import Grid
 from .orientations import OrientationsTable
 from .structural_frame import StructuralFrame
 from .surface_points import SurfacePointsTable
+from .validation import ModelValidationError
 from ...modules.data_manipulation import interpolation_input_from_structural_frame
 
 
@@ -315,7 +317,7 @@ class GeoModel(BaseModel):
                 
                 return instance
             case _:
-                raise ValidationError
+                raise ValidationError(f"Unexpected data type in deserialize_properties: {type(data)}")
 
     # endregion
 
@@ -335,3 +337,59 @@ class GeoModel(BaseModel):
                 self._interpolation_options.block_solutions_type = RawArraysSolution.BlockSolutionType.DENSE_GRID
             case (False, False):
                 self._interpolation_options.block_solutions_type = RawArraysSolution.BlockSolutionType.NONE
+
+    def validate(self) -> None:
+        """Run semantic validation checks on the model.
+
+        Raises ModelValidationError on the first violation found.
+        """
+        sp_data = self.structural_frame.surface_points_copy.data
+        ori_data = self.structural_frame.orientations_copy.data
+
+        # R1: empty model
+        if len(sp_data) == 0 and len(ori_data) == 0:
+            raise ModelValidationError(
+                field="input_data",
+                reason="empty_model",
+                message="The model has no surface points or orientations. Add input data before computing.",
+                context={"surface_points": 0, "orientations": 0}
+            )
+
+        # R2/R3: empty groups
+        for i, group in enumerate(self.structural_frame.structural_groups):
+            if len(group.elements) == 0:
+                tag = "fault" if group.is_fault else "non_fault"
+                name = group.name
+                msg = (
+                    f"Fault group '{name}' has no surfaces assigned to it."
+                    if group.is_fault
+                    else f"Group '{name}' has no surfaces assigned to it."
+                )
+                raise ModelValidationError(
+                    field=f"structural_groups[{i}]",
+                    reason=f"empty_{tag}_group",
+                    message=msg,
+                    context={"group_name": name}
+                )
+
+        # R4: underdetermined input
+        n_sp = len(sp_data)
+        n_ori = len(ori_data)
+        if n_sp <= 1 and n_ori == 0:
+            raise ModelValidationError(
+                field="input_data",
+                reason="underdetermined_input",
+                message=f"Too few input data ({n_sp} surface points, {n_ori} orientations) to compute. Add more surface points or at least one orientation.",
+                context={"surface_points": n_sp, "orientations": n_ori}
+            )
+
+        # R5: basement relation on non-last group
+        groups = self.structural_frame.structural_groups
+        for i, group in enumerate(groups[:-1]):
+            if group.structural_relation == StackRelationType.BASEMENT:
+                raise ModelValidationError(
+                    field=f"structural_groups[{i}].structural_relation",
+                    reason="basement_relation_on_non_last_group",
+                    message=f"Group '{group.name}' has a Basement relation but is not the last group. Basement is only valid on the final group.",
+                    context={"group_name": group.name}
+                )

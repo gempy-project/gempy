@@ -10,6 +10,7 @@ from . import config
 # =================== CORE ===================
 from .core import data
 from .core.color_generator import ColorsGenerator
+from .core.data.validation import ModelValidationError
 
 # =================== API ===================
 
