@@ -1,6 +1,6 @@
 """
-GemPy Models - Some More Complex Examples
------------------------------------------
+Set of more complex examples
+-----------------------------
 
 A set of more complex examples
 
@@ -60,7 +60,7 @@ def create_example(name_model, plot_section=True):
     n_model = name_model[-1]
 
     # # Load right gempy geodata
-    geo_data: gp.data.GeoModel = gp.create_geomodel(
+    geo_model = gp.create_geomodel(
         project_name=name_model,
         extent=[0, 2000, 0, 2000, 0, 1600],
         resolution=[50, 50, 50],
@@ -80,7 +80,7 @@ def create_example(name_model, plot_section=True):
     ### Model 1 - Discordant layering ###
     if name_model in subset_list_1:
         gp.map_stack_to_surfaces(
-            gempy_model=geo_data,
+            gempy_model=geo_model,
             mapping_object={
                 "Strat_Series_1": ('Sandstone', 'Siltstone', 'Shale'),
                 "Strat_Series_2": ('Sandstone2', 'Siltstone2', 'Shale2')
@@ -90,21 +90,21 @@ def create_example(name_model, plot_section=True):
     ### Model 8 - ###
     elif name_model in subset_list_2:
         gp.map_stack_to_surfaces(
-            gempy_model=geo_data,
+            gempy_model=geo_model,
             mapping_object={
             "Fault_Series": 'Main_Fault',
             "Strat_Series": ('Sandstone', 'Siltstone', 'Shale', 'Sandstone_2', 'Schist', 'Gneiss')
             },
         )
         
-        gp.set_is_fault(geo_data, ['Fault_Series'])
+        gp.set_is_fault(geo_model, ['Fault_Series'])
         
     elif name_model in subset_list_3:
         ### Model 2 - Aufwölbung (durch Salzstock?) ###
         ### Model 3+9 - Parallele NNE Schichtung ohne Verwerfung ###
         ### Model 6 - Mulde ###
         gp.map_stack_to_surfaces(
-            gempy_model=geo_data,
+            gempy_model=geo_model,
             mapping_object={
             "Strat_Series": ('Sandstone', 'Siltstone', 'Shale', 'Sandstone_2', 'Schist', 'Gneiss')
             },
@@ -112,29 +112,29 @@ def create_example(name_model, plot_section=True):
     elif name_model in subset_list_4:
         ### Model 7 - Graben ###
         gp.map_stack_to_surfaces(
-            gempy_model=geo_data,
+            gempy_model=geo_model,
             mapping_object={
             "Fault_1": 'Fault_1', "Fault_2": 'Fault_2',
             "Strat_Series": ('Sandstone', 'Siltstone', 'Shale', 'Sandstone_2', 'Schist', 'Gneiss')
             },
         )
         
-        gp.set_is_fault(geo_data, ['Fault_1', 'Fault_2'])
+        gp.set_is_fault(geo_model, ['Fault_1', 'Fault_2'])
     else:
         print('You would never reach this point. Look for the bug')
 
     # Interpolation and Computation
-    sol = gp.compute_model(
-        gempy_model=geo_data,
+    gp.compute_model(
+        gempy_model=geo_model,
         engine_config=gp.data.GemPyEngineConfig(backend=gp.data.AvailableBackends.PYTORCH)
     )
 
     if plot_section is True:
         # 2D Plot
-        gpv.plot_2d(geo_data, cell_number=['mid'], direction='y', show_data=True)
-        gpv.plot_3d(geo_data, image=False)
+        gpv.plot_2d(geo_model, cell_number=['mid'], direction='y', show_data=True)
+        gpv.plot_3d(geo_model, show_lith=True, show_boundaries=True, ve=None)
 
-    return geo_data.structural_frame
+    return geo_model.structural_frame
 
 
 # %%

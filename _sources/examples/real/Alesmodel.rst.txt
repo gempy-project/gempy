@@ -18,19 +18,24 @@
 .. _sphx_glr_examples_real_Alesmodel.py:
 
 
-Model of Ales, France: Plotting Sections and Maps
-======================================
+Alès Basin, France
+=====================
 
-.. GENERATED FROM PYTHON SOURCE LINES 7-13
+Cross-sections, topography, and geological maps of the Tertiary Alès basin
+
+This model covers the Alès basin (Gard, southern France), a Tertiary onshore basin with
+Triassic, Liassic, and Carboniferous series offset by three faults.
+
+.. GENERATED FROM PYTHON SOURCE LINES 12-18
 
 .. admonition:: Explanation
 
       This model is generally quite unstable and requires float64 precision to determine a solution.
       The lack of data in one corner for the TRIAS and LIAS series causes the model to bend unrealistically,
-      eroding the CARBO layer, which disappears in that section. 
+      eroding the CARBO layer, which disappears in that section.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 13-18
+.. GENERATED FROM PYTHON SOURCE LINES 18-23
 
 .. code-block:: Python
 
@@ -46,11 +51,11 @@ Model of Ales, France: Plotting Sections and Maps
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 19-20
+.. GENERATED FROM PYTHON SOURCE LINES 24-25
 
 Setting up paths
 
-.. GENERATED FROM PYTHON SOURCE LINES 20-27
+.. GENERATED FROM PYTHON SOURCE LINES 25-32
 
 .. code-block:: Python
 
@@ -68,18 +73,17 @@ Setting up paths
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 28-29
+.. GENERATED FROM PYTHON SOURCE LINES 33-34
 
 Creating the geological model
 
-.. GENERATED FROM PYTHON SOURCE LINES 29-40
+.. GENERATED FROM PYTHON SOURCE LINES 34-44
 
 .. code-block:: Python
 
-    geo_model: gp.data.GeoModel = gp.create_geomodel(
-        project_name='Claudius',
+    geo_model = gp.create_geomodel(
+        project_name='Ales',
         extent=[729550.0, 751500.0, 1913500.0, 1923650.0, -1800.0, 800.0],
-        resolution=None,
         refinement=6,
         importer_helper=gp.data.ImporterHelper(
             path_to_orientations=path_orient,
@@ -94,11 +98,11 @@ Creating the geological model
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 41-42
+.. GENERATED FROM PYTHON SOURCE LINES 45-46
 
 Setting up the section grid
 
-.. GENERATED FROM PYTHON SOURCE LINES 42-49
+.. GENERATED FROM PYTHON SOURCE LINES 46-53
 
 .. code-block:: Python
 
@@ -147,11 +151,11 @@ Setting up the section grid
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 50-51
+.. GENERATED FROM PYTHON SOURCE LINES 54-55
 
 Sorting lithologies
 
-.. GENERATED FROM PYTHON SOURCE LINES 51-64
+.. GENERATED FROM PYTHON SOURCE LINES 55-68
 
 .. code-block:: Python
 
@@ -265,11 +269,11 @@ Sorting lithologies
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 65-66
+.. GENERATED FROM PYTHON SOURCE LINES 69-70
 
 Changing colors
 
-.. GENERATED FROM PYTHON SOURCE LINES 66-70
+.. GENERATED FROM PYTHON SOURCE LINES 70-74
 
 .. code-block:: Python
 
@@ -284,11 +288,11 @@ Changing colors
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 71-72
+.. GENERATED FROM PYTHON SOURCE LINES 75-76
 
 Plotting the 2D model
 
-.. GENERATED FROM PYTHON SOURCE LINES 72-74
+.. GENERATED FROM PYTHON SOURCE LINES 76-78
 
 .. code-block:: Python
 
@@ -308,15 +312,15 @@ Plotting the 2D model
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f577872c850>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3e3d5606d0>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 75-76
+.. GENERATED FROM PYTHON SOURCE LINES 79-80
 
 Plotting section traces
 
-.. GENERATED FROM PYTHON SOURCE LINES 76-78
+.. GENERATED FROM PYTHON SOURCE LINES 80-82
 
 .. code-block:: Python
 
@@ -336,26 +340,25 @@ Plotting section traces
  .. code-block:: none
 
 
-    <function plot_section_traces at 0x7f582f2ef8a0>
+    <function plot_section_traces at 0x7f3efa82a980>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 79-80
+.. GENERATED FROM PYTHON SOURCE LINES 83-84
 
 Setting faults
 
-.. GENERATED FROM PYTHON SOURCE LINES 80-90
+.. GENERATED FROM PYTHON SOURCE LINES 84-93
 
 .. code-block:: Python
 
     gp.set_is_fault(
-        frame=geo_model.structural_frame,
-        fault_groups=[
+        geo_model,
+        [
                 geo_model.structural_frame.get_group_by_name('fault_left'),
                 geo_model.structural_frame.get_group_by_name('fault_right'),
                 geo_model.structural_frame.get_group_by_name('fault_lr')
-        ],
-        change_color=True
+        ]
     )
 
 
@@ -449,11 +452,11 @@ Setting faults
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 91-92
+.. GENERATED FROM PYTHON SOURCE LINES 94-95
 
 Setting topography from file
 
-.. GENERATED FROM PYTHON SOURCE LINES 92-101
+.. GENERATED FROM PYTHON SOURCE LINES 95-104
 
 .. code-block:: Python
 
@@ -486,15 +489,15 @@ Setting topography from file
 
     Active grids: GridTypes.OCTREE|TOPOGRAPHY|SECTIONS|NONE
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f5778378590>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f3e14f1f070>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 102-103
+.. GENERATED FROM PYTHON SOURCE LINES 105-106
 
 Getting the Carbon Series
 
-.. GENERATED FROM PYTHON SOURCE LINES 103-105
+.. GENERATED FROM PYTHON SOURCE LINES 106-108
 
 .. code-block:: Python
 
@@ -507,11 +510,11 @@ Getting the Carbon Series
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 106-107
+.. GENERATED FROM PYTHON SOURCE LINES 109-110
 
 Modifying interpolation options for better model fitting
 
-.. GENERATED FROM PYTHON SOURCE LINES 107-115
+.. GENERATED FROM PYTHON SOURCE LINES 110-118
 
 .. code-block:: Python
 
@@ -614,11 +617,11 @@ Modifying interpolation options for better model fitting
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 116-117
+.. GENERATED FROM PYTHON SOURCE LINES 119-120
 
 Displaying the structural frame
 
-.. GENERATED FROM PYTHON SOURCE LINES 117-120
+.. GENERATED FROM PYTHON SOURCE LINES 120-123
 
 .. code-block:: Python
 
@@ -791,7 +794,7 @@ Displaying the structural frame
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 121-129
+.. GENERATED FROM PYTHON SOURCE LINES 124-132
 
 Explanation of model characteristics and adjustments
 This model has characteristics that make it difficult to get the right default values:
@@ -802,11 +805,11 @@ To address these issues:
 - Reduce the std of the error parameter in octree refinement, which evaluates fewer voxels but may leave some without refinement
 Enable debugging options to help tune these parameters.
 
-.. GENERATED FROM PYTHON SOURCE LINES 131-132
+.. GENERATED FROM PYTHON SOURCE LINES 134-135
 
 Setting verbose and condition number options for debugging
 
-.. GENERATED FROM PYTHON SOURCE LINES 132-135
+.. GENERATED FROM PYTHON SOURCE LINES 135-138
 
 .. code-block:: Python
 
@@ -820,13 +823,13 @@ Setting verbose and condition number options for debugging
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 136-139
+.. GENERATED FROM PYTHON SOURCE LINES 139-142
 
 Observations and parameter adjustments
 The octree refinement is making the octree grid almost dense, and smaller chunks are needed to avoid running out of memory.
 Adjusting parameters accordingly:
 
-.. GENERATED FROM PYTHON SOURCE LINES 139-143
+.. GENERATED FROM PYTHON SOURCE LINES 142-146
 
 .. code-block:: Python
 
@@ -841,16 +844,16 @@ Adjusting parameters accordingly:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 144-145
+.. GENERATED FROM PYTHON SOURCE LINES 147-148
 
 Computing the model with the adjusted settings
 
-.. GENERATED FROM PYTHON SOURCE LINES 145-155
+.. GENERATED FROM PYTHON SOURCE LINES 148-158
 
 .. code-block:: Python
 
     geo_model.interpolation_options.mesh_extraction = False
-    _ = gp.compute_model(
+    gp.compute_model(
         geo_model,
         engine_config=gp.data.GemPyEngineConfig(
             backend=gp.data.AvailableBackends.PYTORCH,
@@ -868,17 +871,18 @@ Computing the model with the adjusted settings
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.PYTORCH
-    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
-    Setting Backend To: AvailableBackends.PYTORCH
-    Condition number: 2917573.741854929.
+    GPU enabled. Using device: cuda
+    GPU device count: 1
+    Current GPU device: 0
+    Condition number: 2917573.741849366.
     Chunking done: 20 chunks
-    Condition number: 1174481.198953685.
+    Condition number: 1174481.19895321.
     Chunking done: 10 chunks
-    Condition number: 1642063.3120270486.
+    Condition number: 1642063.3120269668.
     Chunking done: 12 chunks
-    Condition number: 1586673.951914971.
+    Condition number: 1586673.9519149985.
     Chunking done: 265 chunks
-    Condition number: 1122611.6721622644.
+    Condition number: 1122611.6721622369.
     Chunking done: 212 chunks
     Chunking done: 11 chunks
     Chunking done: 6 chunks
@@ -908,15 +912,15 @@ Computing the model with the adjusted settings
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 156-157
+.. GENERATED FROM PYTHON SOURCE LINES 159-160
 
 Plotting the 2D model with and without topography
 
-.. GENERATED FROM PYTHON SOURCE LINES 157-161
+.. GENERATED FROM PYTHON SOURCE LINES 160-164
 
 .. code-block:: Python
 
-    gpv.plot_2d(geo_model, show_topography=False, section_names=['topography'], show_lith=True)
+    gpv.plot_2d(geo_model, show_topography=False, section_names=['topography'], show_lith=True, show_boundaries=False)
     gpv.plot_2d(geo_model, cell_number=[4], direction=['y'], show_topography=True, show_data=True)
     gpv.plot_2d(geo_model, cell_number=[-4], direction=['y'], show_topography=True, show_data=True)
 
@@ -953,16 +957,16 @@ Plotting the 2D model with and without topography
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f57bff681d0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3e14f2d350>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 162-164
+.. GENERATED FROM PYTHON SOURCE LINES 165-167
 
 Setting thumbnail number for Sphinx-Gallery
 sphinx_gallery_thumbnail_number = -1
 
-.. GENERATED FROM PYTHON SOURCE LINES 164-165
+.. GENERATED FROM PYTHON SOURCE LINES 167-168
 
 .. code-block:: Python
 
@@ -981,14 +985,14 @@ sphinx_gallery_thumbnail_number = -1
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f57780c0e50>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f3e14dbb3f0>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (4 minutes 37.155 seconds)
+   **Total running time of the script:** (2 minutes 0.401 seconds)
 
 
 .. _sphx_glr_download_examples_real_Alesmodel.py:

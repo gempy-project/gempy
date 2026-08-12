@@ -18,16 +18,19 @@
 .. _sphx_glr_examples_real_Claudius.py:
 
 
-Geomodeling benchmark: the "Claudius"-Model
-========
+Claudius, Queensland, Australia
+=================================
 
-This model is part of a geomodeling benchmaring effort. More information (and, hopefully, publication) coming.
+A geomodeling benchmark dataset located in northern Queensland, Australia
 
-.. GENERATED FROM PYTHON SOURCE LINES 9-19
+This model is part of a geomodeling benchmarking effort; a full publication describing the
+benchmark suite is still pending. It combines four stratigraphic surfaces with a single fault.
+
+.. GENERATED FROM PYTHON SOURCE LINES 12-22
 
 .. code-block:: Python
 
-    import sys, os
+    import os
 
     # Importing gempy
     import gempy as gp
@@ -44,7 +47,7 @@ This model is part of a geomodeling benchmaring effort. More information (and, h
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 20-26
+.. GENERATED FROM PYTHON SOURCE LINES 23-29
 
 Loading data from repository:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -53,7 +56,7 @@ With pandas we can do it directly from the web and with the right args
 we can directly tidy the data in gempy style:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 28-59
+.. GENERATED FROM PYTHON SOURCE LINES 31-62
 
 .. code-block:: Python
 
@@ -175,7 +178,7 @@ we can directly tidy the data in gempy style:
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 60-62
+.. GENERATED FROM PYTHON SOURCE LINES 63-65
 
 .. code-block:: Python
 
@@ -200,12 +203,12 @@ we can directly tidy the data in gempy style:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 63-65
+.. GENERATED FROM PYTHON SOURCE LINES 66-68
 
 How many points are per surface
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 67-69
+.. GENERATED FROM PYTHON SOURCE LINES 70-72
 
 .. code-block:: Python
 
@@ -300,12 +303,12 @@ How many points are per surface
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 70-72
+.. GENERATED FROM PYTHON SOURCE LINES 73-75
 
 Now we do the same with the orientations:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 74-93
+.. GENERATED FROM PYTHON SOURCE LINES 77-96
 
 .. code-block:: Python
 
@@ -433,7 +436,7 @@ Now we do the same with the orientations:
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 94-96
+.. GENERATED FROM PYTHON SOURCE LINES 97-99
 
 .. code-block:: Python
 
@@ -461,7 +464,7 @@ Now we do the same with the orientations:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 97-105
+.. GENERATED FROM PYTHON SOURCE LINES 100-108
 
 Data initialization:
 ~~~~~~~~~~~~~~~~~~~~
@@ -472,24 +475,24 @@ Suggested size of the axis-aligned modeling box: Origin: 548800 7816600
 Suggested resolution: 100m x 100m x -90m (grid size 38 x 55 x 30)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 107-108
+.. GENERATED FROM PYTHON SOURCE LINES 110-111
 
 Number of voxels:
 
-.. GENERATED FROM PYTHON SOURCE LINES 108-160
+.. GENERATED FROM PYTHON SOURCE LINES 111-160
 
 .. code-block:: Python
 
     np.array([38, 55, 30]).prod()
 
-    surface_points_table: gp.data.SurfacePointsTable = gp.data.SurfacePointsTable.from_arrays(
+    surface_points_table = gp.data.SurfacePointsTable.from_arrays(
         x=surface_points['X'].values,
         y=surface_points['Y'].values,
         z=surface_points['Z'].values,
         names=surface_points['surface'].values
     )
 
-    orientations_table: gp.data.OrientationsTable = gp.data.OrientationsTable.from_arrays(
+    orientations_table = gp.data.OrientationsTable.from_arrays(
         x=orientations['X'].values,
         y=orientations['Y'].values,
         z=orientations['Z'].values,
@@ -500,12 +503,12 @@ Number of voxels:
         name_id_map=surface_points_table.name_id_map  # ! Make sure that ids and names are shared
     )
 
-    structural_frame: gp.data.StructuralFrame = gp.data.StructuralFrame.from_data_tables(
+    structural_frame = gp.data.StructuralFrame.from_data_tables(
         surface_points=surface_points_table,
         orientations=orientations_table
     )
 
-    geo_model: gp.data.GeoModel = gp.create_geomodel(
+    geo_model = gp.create_geomodel(
         project_name='Claudius',
         extent=[548800, 552500, 7816600, 7822000, -11010, -8400],
         resolution=[38, 55, 30],
@@ -525,10 +528,7 @@ Number of voxels:
     # Insert the fault group into the structural frame:
     geo_model.structural_frame.insert_group(0, group_fault)
 
-    gp.set_is_fault(
-        frame=geo_model.structural_frame,
-        fault_groups=[geo_model.structural_frame.get_group_by_name('Fault1')]
-    )
+    gp.set_is_fault(geo_model, [geo_model.structural_frame.get_group_by_name('Fault1')])
 
     print(geo_model)
 
@@ -540,7 +540,7 @@ Number of voxels:
 
  .. code-block:: none
 
-    meta=GeoModelMeta(name='Claudius', creation_date='2026-06-18T08:40:32.287726', last_modification_date=None, owner=None) structural_frame=StructuralFrame(
+    meta=GeoModelMeta(name='Claudius', creation_date='2026-08-07T17:02:08.211826', last_modification_date=None, owner=None) structural_frame=StructuralFrame(
             structural_groups=[
     StructuralGroup(
             name=Fault1,
@@ -760,20 +760,19 @@ direction by calling the following:
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 177-181
+.. GENERATED FROM PYTHON SOURCE LINES 177-180
 
-We need an orientation per series/fault. The faults does not have
-orientation so the easiest is to create an orientation from the surface
-points availablle:
+We need an orientation per series/fault. Faults do not have an orientation,
+so the easiest approach is to create one from the surface points available:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 181-195
+.. GENERATED FROM PYTHON SOURCE LINES 180-194
 
 .. code-block:: Python
 
 
     element = geo_model.structural_frame.get_element_by_name("Claudius_fault")
-    new_orientations: gp.data.OrientationsTable = gp.create_orientations_from_surface_points_coords(
+    new_orientations = gp.create_orientations_from_surface_points_coords(
         xyz_coords=element.surface_points.xyz
     )
     gp.add_orientations(
@@ -850,7 +849,7 @@ points availablle:
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 196-198
+.. GENERATED FROM PYTHON SOURCE LINES 195-197
 
 .. code-block:: Python
 
@@ -870,16 +869,16 @@ points availablle:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f57780ec150>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3e14d7c450>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 199-201
+.. GENERATED FROM PYTHON SOURCE LINES 198-200
 
-We will need to separate with surface belong to each series:
+We need to specify which surface belongs to each series:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 201-210
+.. GENERATED FROM PYTHON SOURCE LINES 200-209
 
 .. code-block:: Python
 
@@ -889,7 +888,7 @@ We will need to separate with surface belong to each series:
         mapping_object={
             'Default series': ('0', '60', '250'),
             'Fault': 'Claudius_fault',
-            'Uncomformity': '330',
+            'Unconformity': '330',
         }
     )
 
@@ -939,7 +938,7 @@ We will need to separate with surface belong to each series:
             <br>
         <table style="border-left:1.2px solid black;>
           <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
-          <tr><td>Name:</td><td>Uncomformity</td></tr>
+          <tr><td>Name:</td><td>Unconformity</td></tr>
           <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
           <tr><td>Elements:</td><td>
         <table width="50%" style="border-left:15px solid #ffbe00;">
@@ -949,7 +948,7 @@ We will need to separate with surface belong to each series:
             </td></tr>
         </table>
             </td></tr>
-              <tr><td>Fault Relations:</td><td><table style="border-collapse: collapse; table-layout: fixed;"><th></th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Default se...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Fault</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Uncomformi...</th><tr><th>Default series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>Fault</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>Uncomformity</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr></table></td></tr>
+              <tr><td>Fault Relations:</td><td><table style="border-collapse: collapse; table-layout: fixed;"><th></th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Default se...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Fault</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Unconformi...</th><tr><th>Default series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>Fault</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>Unconformity</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr></table></td></tr>
               <tr><td></td><td>
             <table>
               <tr>
@@ -964,19 +963,16 @@ We will need to separate with surface belong to each series:
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 211-213
+.. GENERATED FROM PYTHON SOURCE LINES 210-212
 
-So far we did not specify which series/faults are actula faults:
+So far we have not specified which series/faults are actual faults:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 215-222
+.. GENERATED FROM PYTHON SOURCE LINES 214-218
 
 .. code-block:: Python
 
-    gp.set_is_fault(
-        frame=geo_model.structural_frame,
-        fault_groups=[geo_model.structural_frame.get_group_by_name('Fault')]
-    )
+    gp.set_is_fault(geo_model, [geo_model.structural_frame.get_group_by_name('Fault')])
 
     geo_model.structural_frame
 
@@ -1027,7 +1023,7 @@ So far we did not specify which series/faults are actula faults:
             <br>
         <table style="border-left:1.2px solid black;>
           <tr><th colspan="2"><b>StructuralGroup:</b></th></tr>
-          <tr><td>Name:</td><td>Uncomformity</td></tr>
+          <tr><td>Name:</td><td>Unconformity</td></tr>
           <tr><td>Structural Relation:</td><td>StackRelationType.ERODE</td></tr>
           <tr><td>Elements:</td><td>
         <table width="50%" style="border-left:15px solid #ffbe00;">
@@ -1037,7 +1033,7 @@ So far we did not specify which series/faults are actula faults:
             </td></tr>
         </table>
             </td></tr>
-              <tr><td>Fault Relations:</td><td><table style="border-collapse: collapse; table-layout: fixed;"><th></th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Default se...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Fault</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Uncomformi...</th><tr><th>Default series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>Fault</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>Uncomformity</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr></table></td></tr>
+              <tr><td>Fault Relations:</td><td><table style="border-collapse: collapse; table-layout: fixed;"><th></th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Default se...</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Fault</th><th style="transform: rotate(-35deg); height:150px; vertical-align: bottom; text-align: center;">Unconformi...</th><tr><th>Default series</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>Fault</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #527682; width: 20px; height: 20px; border: 1px solid black;"></td></tr><tr><th>Unconformity</th><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td><td style="background-color: #FFB6C1; width: 20px; height: 20px; border: 1px solid black;"></td></tr></table></td></tr>
               <tr><td></td><td>
             <table>
               <tr>
@@ -1052,14 +1048,14 @@ So far we did not specify which series/faults are actula faults:
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 223-233
+.. GENERATED FROM PYTHON SOURCE LINES 219-229
 
 .. code-block:: Python
 
     geo_model.interpolation_options.kernel_options.range = 1
     gp.compute_model(
         geo_model,
-        gp.data.GemPyEngineConfig(
+        engine_config=gp.data.GemPyEngineConfig(
             backend=gp.data.AvailableBackends.numpy,
             use_gpu=False,
             dtype='float64'
@@ -1095,7 +1091,7 @@ So far we did not specify which series/faults are actula faults:
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 234-238
+.. GENERATED FROM PYTHON SOURCE LINES 230-234
 
 .. code-block:: Python
 
@@ -1117,11 +1113,11 @@ So far we did not specify which series/faults are actula faults:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f57780ef650>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3e14c7a6d0>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 239-241
+.. GENERATED FROM PYTHON SOURCE LINES 235-237
 
 .. code-block:: Python
 
@@ -1141,11 +1137,11 @@ So far we did not specify which series/faults are actula faults:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f57780ec050>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3e14c7b2d0>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 242-246
+.. GENERATED FROM PYTHON SOURCE LINES 238-242
 
 .. code-block:: Python
 
@@ -1186,11 +1182,11 @@ So far we did not specify which series/faults are actula faults:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f57783b73d0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3e3d4cd1d0>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 247-249
+.. GENERATED FROM PYTHON SOURCE LINES 243-245
 
 .. code-block:: Python
 
@@ -1210,11 +1206,11 @@ So far we did not specify which series/faults are actula faults:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f57801313d0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3e14e31fd0>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 250-253
+.. GENERATED FROM PYTHON SOURCE LINES 246-249
 
 .. code-block:: Python
 
@@ -1235,14 +1231,14 @@ So far we did not specify which series/faults are actula faults:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f56f4192350>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f3e3d5af3f0>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 48.673 seconds)
+   **Total running time of the script:** (0 minutes 49.977 seconds)
 
 
 .. _sphx_glr_download_examples_real_Claudius.py:

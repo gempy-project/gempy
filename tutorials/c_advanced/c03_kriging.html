@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Populating a Structural Model with Properties &#8212; GemPy 2024.2.0.3.dev0+gf344a731.d20240626 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=e15417cb" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <script src="../../_static/documentation_options.js?v=bd57e1ea"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <link rel="icon" href="../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Analyzing Geomodel Topology" href="d04_topology.html" />
+    <link rel="prev" title="Forward Gravity Modeling" href="b02_gravity.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#sphx-glr-download-tutorials-c-advanced-c03-kriging-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code.</p>
+</div>
+<section class="sphx-glr-example-title" id="populating-a-structural-model-with-properties">
+<span id="sphx-glr-tutorials-c-advanced-c03-kriging-py"></span><h1>Populating a Structural Model with Properties<a class="headerlink" href="#populating-a-structural-model-with-properties" title="Link to this heading">¶</a></h1>
+<p>Domain-aware kriging and simulation with GSTools, respecting a model’s lithology and
+fault-block boundaries.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This tutorial relies on <code class="docutils literal notranslate"><span class="pre">gempy_plugins</span></code>, a separate package maintained in its own
+repository rather than by the core GemPy developers.</p>
+</div>
+<p>gempy builds structural models out of boundary surfaces between rock units, but the
+actual quantity of interest is often a property <em>within</em> those units – porosity, ore
+grade, or whatever else is being measured. This tutorial uses <code class="docutils literal notranslate"><span class="pre">gempy_plugins</span></code>’
+<code class="docutils literal notranslate"><span class="pre">property_estimation</span></code> module to populate a computed model’s regular grid with such
+a property via kriging or simulation, using <a class="reference external" href="https://geostat-framework.readthedocs.io/projects/gstools/en/stable/">GSTools</a> for all the
+underlying geostatistics: variogram models, kriging, and simulation are all plain
+GSTools objects, passed through unmodified.</p>
+<p>The one thing this plugin adds on top of GSTools is domain awareness: a “domain” is a
+(lithology, fault-block) pair, so property estimation can respect both kinds of
+structural boundary – including the same lithology occurring on both sides of a
+fault, which has to stay two separate domains, not one.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">gempy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">gstools</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gempy_plugins.property_estimation.conditioning_data</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConditioningData</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gempy_plugins.property_estimation.domains</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_domains</span><span class="p">,</span> <span class="n">describe_domains</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gempy_plugins.property_estimation.kriging</span><span class="w"> </span><span class="kn">import</span> <span class="n">KrigingDomainConfig</span><span class="p">,</span> <span class="n">run_kriging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gempy_plugins.property_estimation.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">plot_conditioning_data</span><span class="p">,</span> <span class="n">plot_domains</span><span class="p">,</span> <span class="n">plot_fault_blocks</span><span class="p">,</span> <span class="n">plot_property_field</span><span class="p">,</span>
+    <span class="n">plot_property_field_interactive</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gempy_plugins.property_estimation.simulation</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimulationDomainConfig</span><span class="p">,</span> <span class="n">run_simulation</span>
+
+<a href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.seed.html#numpy.random.seed" title="numpy.random.seed" class="sphx-glr-backref-module-numpy-random sphx-glr-backref-type-py-function"><a href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.seed.html#numpy.random.seed" title="numpy.random.seed" class="sphx-glr-backref-module-numpy-random sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span></a></a><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<section id="a-faulted-structural-model">
+<h2>A faulted structural model<a class="headerlink" href="#a-faulted-structural-model" title="Link to this heading">¶</a></h2>
+<p>A synthetic model with three lithologies (<code class="docutils literal notranslate"><span class="pre">rock3</span></code>, <code class="docutils literal notranslate"><span class="pre">rock2</span></code>, <code class="docutils literal notranslate"><span class="pre">rock1</span></code>) and a
+basement, offset by a single fault. <code class="docutils literal notranslate"><span class="pre">rock3</span></code> is deliberately mapped as younger than
+the fault, so the fault doesn’t actually offset it – this is used further down to
+demonstrate merging domains that a fault splits geometrically without any real
+structural break.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">data_path</span> <span class="o">=</span> <span class="s1">&#39;https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/&#39;</span>
+
+<a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a></a> <span class="o">=</span> <a href="../../GemPy API/gempy.create_geomodel.html#gempy.create_geomodel" title="gempy.create_geomodel" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><a href="../../GemPy API/gempy.create_geomodel.html#gempy.create_geomodel" title="gempy.create_geomodel" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">create_geomodel</span></a></a><span class="p">(</span>
+    <span class="n">project_name</span><span class="o">=</span><span class="s1">&#39;combination&#39;</span><span class="p">,</span>
+    <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2500</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1000</span><span class="p">],</span>
+    <span class="n">resolution</span><span class="o">=</span><span class="p">[</span><span class="mi">250</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">],</span>
+    <span class="n">importer_helper</span><span class="o">=</span><a href="../../Helper Classes/gempy.core.data.ImporterHelper.html#gempy.core.data.ImporterHelper" title="gempy.core.data.ImporterHelper" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class"><a href="../../Helper Classes/gempy.core.data.ImporterHelper.html#gempy.core.data.ImporterHelper" title="gempy.core.data.ImporterHelper" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class"><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">ImporterHelper</span></a></a><span class="p">(</span>
+        <span class="n">path_to_orientations</span><span class="o">=</span><span class="n">data_path</span> <span class="o">+</span> <span class="s2">&quot;/data/input_data/jan_models/model7_orientations.csv&quot;</span><span class="p">,</span>
+        <span class="n">path_to_surface_points</span><span class="o">=</span><span class="n">data_path</span> <span class="o">+</span> <span class="s2">&quot;/data/input_data/jan_models/model7_surface_points.csv&quot;</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+<a href="../../GemPy API/gempy.map_stack_to_surfaces.html#gempy.map_stack_to_surfaces" title="gempy.map_stack_to_surfaces" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><a href="../../GemPy API/gempy.map_stack_to_surfaces.html#gempy.map_stack_to_surfaces" title="gempy.map_stack_to_surfaces" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">map_stack_to_surfaces</span></a></a><span class="p">(</span>
+    <span class="n">gempy_model</span><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a></a><span class="p">,</span>
+    <span class="n">mapping_object</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;Strat_Series1&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;rock3&#39;</span><span class="p">),</span>
+        <span class="s2">&quot;Fault_Series&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;fault&#39;</span><span class="p">),</span>
+        <span class="s2">&quot;Strat_Series2&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;rock2&#39;</span><span class="p">,</span> <span class="s1">&#39;rock1&#39;</span><span class="p">),</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+<a href="../../GemPy API/gempy.set_is_fault.html#gempy.set_is_fault" title="gempy.set_is_fault" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><a href="../../GemPy API/gempy.set_is_fault.html#gempy.set_is_fault" title="gempy.set_is_fault" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">set_is_fault</span></a></a><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a></a><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;Fault_Series&quot;</span><span class="p">])</span>
+<a href="../../GemPy API/gempy.compute_model.html#gempy.compute_model" title="gempy.compute_model" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><a href="../../GemPy API/gempy.compute_model.html#gempy.compute_model" title="gempy.compute_model" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span></a></a><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a></a><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Surface points hash:  dd7b2f714c1c20cb7ce615c5c47ecc4cf3ca2ee3419e4090b2f11fbf633d459f
+Orientations hash:  4043b59bbfa7012abd818f04f74e2b0667ba970dd71c781512289bc073f5a6d5
+Setting Backend To: AvailableBackends.PYTORCH
+GPU enabled. Using device: cuda
+GPU device count: 1
+Current GPU device: 0
+Chunking done: 26 chunks
+Chunking done: 11 chunks
+Chunking done: 131 chunks
+</pre></div>
+</div>
+<div class="output_subarea output_html rendered_html output_result">
+<b>Solutions:</b> 4 Octree Levels, 4 DualContouringMeshes
+</div>
+<br />
+<br /></section>
+<section id="computing-and-inspecting-the-domains">
+<h2>Computing and inspecting the domains<a class="headerlink" href="#computing-and-inspecting-the-domains" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">compute_domains</span></code> combines lithology and fault-block membership into per-cell
+domain keys, and <code class="docutils literal notranslate"><span class="pre">plot_domains</span></code> visualizes the result directly:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">lith_array</span></a></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fault_array</span></a></a><span class="p">,</span> <span class="n">domain_keys</span> <span class="o">=</span> <span class="n">compute_domains</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a></a><span class="p">)</span>
+<span class="n">describe_domains</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a></a><span class="p">,</span> <span class="n">domain_keys</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{(1, 0): &#39;rock3 (fault block 0)&#39;, (1, 2): &#39;rock3 (fault block 2)&#39;, (3, 0): &#39;rock2 (fault block 0)&#39;, (3, 2): &#39;rock2 (fault block 2)&#39;, (4, 0): &#39;rock1 (fault block 0)&#39;, (4, 2): &#39;rock1 (fault block 2)&#39;, (5, 0): &#39;basement (fault block 0)&#39;, (5, 2): &#39;basement (fault block 2)&#39;}
+</pre></div>
+</div>
+<p>Each lithology gets its own base color, with its fault-block variants shown as
+shades of that color, so “same rock unit, different fault block” is visually
+obvious:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">plot_domains</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">lith_array</span></a></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fault_array</span></a></a><span class="p">,</span> <span class="n">domain_keys</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_c03_kriging_001.png" srcset="../../_images/sphx_glr_c03_kriging_001.png" alt="c03 kriging" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;pyvista.plotting.plotter.Plotter object at 0x7f3e4416fd90&gt;
+</pre></div>
+</div>
+<p>Shades alone don’t say <em>which</em> fault block is which, though – and that’s exactly
+what’s needed to decide whether domains should be merged. <code class="docutils literal notranslate"><span class="pre">plot_fault_blocks</span></code> shows
+fault blocks alone, unambiguously labeled:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">plot_fault_blocks</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fault_array</span></a></a><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_c03_kriging_002.png" srcset="../../_images/sphx_glr_c03_kriging_002.png" alt="c03 kriging" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;pyvista.plotting.plotter.Plotter object at 0x7f3e3f734410&gt;
+</pre></div>
+</div>
+</section>
+<section id="why-some-domains-need-merging">
+<h2>Why some domains need merging<a class="headerlink" href="#why-some-domains-need-merging" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">rock3</span></code> is mapped younger than the fault, so the fault’s structural relations don’t
+apply an offset to it at all. And yet <code class="docutils literal notranslate"><span class="pre">rock3</span></code> still shows up as <em>two</em> separate
+domains, one per fault block: fault-block membership is purely geometric – which
+side of the fault’s surface a cell falls on – independent of whether a fault
+actually offsets a given lithology. A real fault of negligible offset produces the
+exact same situation: geometrically there are still two blocks, even though nothing
+really moved. Either way, the fix is the same: merge the domains that should be
+treated as one. This is a purely structural decision – it needs only the domain
+keys, no conditioning data. A <code class="docutils literal notranslate"><span class="pre">domain_configs</span></code> key can be a tuple of domain keys
+instead of a single one, to merge them:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">rock3_merged</span> <span class="o">=</span> <span class="p">(</span><span class="n">domain_keys</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">domain_keys</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+</section>
+<section id="conditioning-data">
+<h2>Conditioning data<a class="headerlink" href="#conditioning-data" title="Link to this heading">¶</a></h2>
+<p>Standing in for real property samples (e.g. from boreholes): scattered points with a
+measured value, assigned to their nearest domain.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">n_samples</span> <span class="o">=</span> <span class="mi">300</span>
+<span class="n">conditioning_data</span> <span class="o">=</span> <span class="n">ConditioningData</span><span class="p">(</span>
+    <span class="n">x</span><span class="o">=</span><a href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.uniform.html#numpy.random.uniform" title="numpy.random.uniform" class="sphx-glr-backref-module-numpy-random sphx-glr-backref-type-py-function"><a href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.uniform.html#numpy.random.uniform" title="numpy.random.uniform" class="sphx-glr-backref-module-numpy-random sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span></a></a><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2500</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">),</span>
+    <span class="n">y</span><span class="o">=</span><a href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.uniform.html#numpy.random.uniform" title="numpy.random.uniform" class="sphx-glr-backref-module-numpy-random sphx-glr-backref-type-py-function"><a href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.uniform.html#numpy.random.uniform" title="numpy.random.uniform" class="sphx-glr-backref-module-numpy-random sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span></a></a><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">),</span>
+    <span class="n">z</span><span class="o">=</span><a href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.uniform.html#numpy.random.uniform" title="numpy.random.uniform" class="sphx-glr-backref-module-numpy-random sphx-glr-backref-type-py-function"><a href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.uniform.html#numpy.random.uniform" title="numpy.random.uniform" class="sphx-glr-backref-module-numpy-random sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span></a></a><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">),</span>
+    <span class="n">values</span><span class="o">=</span><a href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.normal.html#numpy.random.normal" title="numpy.random.normal" class="sphx-glr-backref-module-numpy-random sphx-glr-backref-type-py-function"><a href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.normal.html#numpy.random.normal" title="numpy.random.normal" class="sphx-glr-backref-module-numpy-random sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span></a></a><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">),</span>
+<span class="p">)</span>
+<span class="n">conditioning_data</span><span class="o">.</span><span class="n">assign_domains</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">lith_array</span></a></a><span class="p">,</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fault_array</span></a></a><span class="p">)</span>
+</pre></div>
+</div>
+<p>It’s worth seeing where these samples actually sit relative to the structure before
+running anything. <code class="docutils literal notranslate"><span class="pre">plot_conditioning_data</span></code> overlays them, colored by value, on the
+model’s surfaces alone:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">plot_conditioning_data</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a></a><span class="p">,</span> <span class="n">conditioning_data</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_c03_kriging_003.png" srcset="../../_images/sphx_glr_c03_kriging_003.png" alt="c03 kriging" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f3e3f712f90&gt;
+</pre></div>
+</div>
+</section>
+<section id="retrieving-conditioning-data-per-domain">
+<h2>Retrieving conditioning data per domain<a class="headerlink" href="#retrieving-conditioning-data-per-domain" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">ConditioningData.for_domain</span></code> pulls out the samples belonging to one domain – or a
+merged group of them, exactly like the <code class="docutils literal notranslate"><span class="pre">domain_configs</span></code> keys below – once
+<code class="docutils literal notranslate"><span class="pre">assign_domains</span></code> has run, returning a small object with just that subset’s own
+<code class="docutils literal notranslate"><span class="pre">.xyz</span></code>/<code class="docutils literal notranslate"><span class="pre">.values</span></code> arrays. Handy any time something domain-specific needs to be
+done directly with the raw samples, e.g. fitting a variogram per domain.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">rock3_samples</span> <span class="o">=</span> <span class="n">conditioning_data</span><span class="o">.</span><span class="n">for_domain</span><span class="p">(</span><span class="n">rock3_merged</span><span class="p">)</span>
+<span class="n">rock3_samples</span><span class="o">.</span><span class="n">xyz</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">rock3_samples</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>((78, 3), (78,))
+</pre></div>
+</div>
+</section>
+<section id="kriging-with-different-settings-per-domain">
+<h2>Kriging, with different settings per domain<a class="headerlink" href="#kriging-with-different-settings-per-domain" title="Link to this heading">¶</a></h2>
+<p>A domain is processed only if it has an entry in <code class="docutils literal notranslate"><span class="pre">domain_configs</span></code>, so kriging can
+be run over a chosen subset of domains, each with its own variogram model and kriging
+method. Three domains get different treatment here: the merged <code class="docutils literal notranslate"><span class="pre">rock3</span></code> domain and
+<code class="docutils literal notranslate"><span class="pre">basement</span></code> share a Gaussian model, <code class="docutils literal notranslate"><span class="pre">rock2</span></code> gets an Exponential model instead, and
+kriging type varies independently of that – Ordinary for <code class="docutils literal notranslate"><span class="pre">rock3</span></code>/<code class="docutils literal notranslate"><span class="pre">rock2</span></code>, Simple
+with a fixed mean for <code class="docutils literal notranslate"><span class="pre">basement</span></code>. A small nugget is added to the Gaussian model,
+since a smooth, nugget-free Gaussian covariance model can become numerically
+ill-conditioned once a domain has many conditioning points – a wildly out-of-range
+kriged result is a symptom of exactly this. The Exponential model doesn’t have that
+problem even without a nugget.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gaussian_model</span> <span class="o">=</span> <span class="n">gs</span><span class="o">.</span><span class="n">Gaussian</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">len_scale</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">nugget</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="n">exponential_model</span> <span class="o">=</span> <span class="n">gs</span><span class="o">.</span><span class="n">Exponential</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">len_scale</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+
+<span class="n">domain_configs</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">rock3_merged</span><span class="p">:</span> <span class="n">KrigingDomainConfig</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">gaussian_model</span><span class="p">),</span>
+    <span class="n">domain_keys</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="n">KrigingDomainConfig</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">exponential_model</span><span class="p">),</span>
+    <span class="n">domain_keys</span><span class="p">[</span><span class="mi">6</span><span class="p">]:</span> <span class="n">KrigingDomainConfig</span><span class="p">(</span>
+        <span class="n">model</span><span class="o">=</span><span class="n">gaussian_model</span><span class="p">,</span>
+        <span class="n">krige_class</span><span class="o">=</span><span class="n">gs</span><span class="o">.</span><span class="n">krige</span><span class="o">.</span><span class="n">Simple</span><span class="p">,</span>
+        <span class="n">krige_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;mean&#39;</span><span class="p">:</span> <span class="mi">15</span><span class="p">},</span>
+    <span class="p">),</span>
+<span class="p">}</span>
+<span class="n">field</span> <span class="o">=</span> <span class="n">run_kriging</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a></a><span class="p">,</span> <span class="n">conditioning_data</span><span class="p">,</span> <span class="n">domain_configs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Only the three configured domains are populated; every other cell stays <cite>nan</cite> and
+simply isn’t rendered:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">plot_property_field</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a></a><span class="p">,</span> <span class="n">field</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_c03_kriging_004.png" srcset="../../_images/sphx_glr_c03_kriging_004.png" alt="c03 kriging" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;pyvista.plotting.plotter.Plotter object at 0x7f3e3f735810&gt;
+</pre></div>
+</div>
+</section>
+<section id="retrieving-results-per-domain">
+<h2>Retrieving results per domain<a class="headerlink" href="#retrieving-results-per-domain" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">PropertyField.for_domain</span></code> mirrors this on the result side: xyz + values (+
+variance) for one domain or a merged group, pulled straight out of the full-grid
+arrays instead of off the raw samples:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">rock3_result</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">for_domain</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a></a><span class="p">,</span> <span class="n">rock3_merged</span><span class="p">)</span>
+<span class="n">rock3_result</span><span class="o">.</span><span class="n">xyz</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">rock3_result</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>((164752, 3), (164752,))
+</pre></div>
+</div>
+</section>
+<section id="simulation">
+<h2>Simulation<a class="headerlink" href="#simulation" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">run_simulation</span></code> mirrors <code class="docutils literal notranslate"><span class="pre">run_kriging</span></code>’s domain loop, but for GSTools’s
+stochastic-simulation classes (<code class="docutils literal notranslate"><span class="pre">SRF</span></code>/<code class="docutils literal notranslate"><span class="pre">CondSRF</span></code>) instead of kriging. Two domains
+here, each merged across both fault blocks: <code class="docutils literal notranslate"><span class="pre">rock2</span></code> conditioned with a plain
+isotropic Gaussian model, <code class="docutils literal notranslate"><span class="pre">rock1</span></code> unconditioned with a strongly anisotropic model –
+a “directional variogram” with high continuity along the diagonal between x and y,
+and low continuity in the two directions normal to that.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">rock2_merged</span> <span class="o">=</span> <span class="p">(</span><span class="n">domain_keys</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">domain_keys</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+<span class="n">rock1_merged</span> <span class="o">=</span> <span class="p">(</span><span class="n">domain_keys</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">domain_keys</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>GSTools’ <code class="docutils literal notranslate"><span class="pre">anis</span></code>/<code class="docutils literal notranslate"><span class="pre">angles</span></code> parameters do this directly on any covariance model,
+with nothing simulation- or plugin-specific about it: <code class="docutils literal notranslate"><span class="pre">angles=(pi/4,</span> <span class="pre">0,</span> <span class="pre">0)</span></code> rotates
+the model’s main axis onto the x-y diagonal, and <code class="docutils literal notranslate"><span class="pre">anis</span></code> shrinks the range in the
+two remaining directions – the perpendicular in-plane diagonal, and z:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">directional_model</span> <span class="o">=</span> <span class="n">gs</span><span class="o">.</span><span class="n">Gaussian</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">len_scale</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">anis</span><span class="o">=</span><span class="p">[</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">],</span> <span class="n">angles</span><span class="o">=</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/constants.html#numpy.pi" title="numpy.pi" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-data"><a href="https://numpy.org/doc/stable/reference/constants.html#numpy.pi" title="numpy.pi" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-data"><span class="n">np</span><span class="o">.</span><span class="n">pi</span></a></a> <span class="o">/</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
+<span class="n">simulation_configs</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">rock2_merged</span><span class="p">:</span> <span class="n">SimulationDomainConfig</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">gaussian_model</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+    <span class="n">rock1_merged</span><span class="p">:</span> <span class="n">SimulationDomainConfig</span><span class="p">(</span>
+        <span class="n">model</span><span class="o">=</span><span class="n">directional_model</span><span class="p">,</span>
+        <span class="n">conditioned</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">srf_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;mean&#39;</span><span class="p">:</span> <span class="mi">15</span><span class="p">},</span>
+        <span class="n">seed</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">}</span>
+<span class="n">simulated_field</span> <span class="o">=</span> <span class="n">run_simulation</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a></a><span class="p">,</span> <span class="n">conditioning_data</span><span class="p">,</span> <span class="n">simulation_configs</span><span class="p">)</span>
+<span class="n">plot_property_field</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a></a><span class="p">,</span> <span class="n">simulated_field</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_c03_kriging_005.png" srcset="../../_images/sphx_glr_c03_kriging_005.png" alt="c03 kriging" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;pyvista.plotting.plotter.Plotter object at 0x7f3e3f735a90&gt;
+</pre></div>
+</div>
+</section>
+<section id="interactive-inspection">
+<h2>Interactive inspection<a class="headerlink" href="#interactive-inspection" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">plot_property_field</span></code> above stays the simple default. For a more exploratory look,
+<code class="docutils literal notranslate"><span class="pre">plot_property_field_interactive</span></code> gives each domain its own visibility checkbox
+plus a two-sided min/max slider that thresholds just that domain’s displayed cells –
+e.g. to isolate only the highest-value cells in one domain while hiding another
+entirely. Passing <code class="docutils literal notranslate"><span class="pre">domain_configs</span></code> collapses each merged group back into a single
+row of controls, matching how the run was actually set up.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">plotter</span> <span class="o">=</span> <span class="n">plot_property_field_interactive</span><span class="p">(</span>
+    <a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a></a><span class="p">,</span> <span class="n">simulated_field</span><span class="p">,</span> <span class="n">domain_configs</span><span class="o">=</span><span class="n">simulation_configs</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span>
+<span class="p">)</span>
+
+<span class="c1"># The checkbox/slider widgets are plain VTK objects underneath, so their state can be</span>
+<span class="c1"># set programmatically too -- used here just to make the screenshot above show what</span>
+<span class="c1"># the controls actually do: rock2 (the upper domain) hidden, and rock1 narrowed down</span>
+<span class="c1"># to its higher-value cells.</span>
+<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">rock1_values</span></a></a> <span class="o">=</span> <span class="n">simulated_field</span><span class="o">.</span><span class="n">for_domain</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a></a><span class="p">,</span> <span class="n">rock1_merged</span><span class="p">)</span><span class="o">.</span><span class="n">values</span>
+<span class="n">rock1_highlight</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.nanpercentile.html#numpy.nanpercentile" title="numpy.nanpercentile" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><a href="https://numpy.org/doc/stable/reference/generated/numpy.nanpercentile.html#numpy.nanpercentile" title="numpy.nanpercentile" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">nanpercentile</span></a></a><span class="p">(</span><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">rock1_values</span></a></a><span class="p">,</span> <span class="mi">60</span><span class="p">))</span>
+
+<span class="n">rock2_checkbox</span> <span class="o">=</span> <span class="n">plotter</span><span class="o">.</span><span class="n">widgets</span><span class="o">.</span><span class="n">button_widgets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">rock2_checkbox</span><span class="o">.</span><span class="n">GetRepresentation</span><span class="p">()</span><span class="o">.</span><span class="n">SetState</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">rock2_checkbox</span><span class="o">.</span><span class="n">InvokeEvent</span><span class="p">(</span><span class="s1">&#39;StateChangedEvent&#39;</span><span class="p">)</span>
+
+<span class="n">rock1_min_slider</span> <span class="o">=</span> <span class="n">plotter</span><span class="o">.</span><span class="n">widgets</span><span class="o">.</span><span class="n">slider_widgets</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">rock1_min_slider</span><span class="o">.</span><span class="n">GetSliderRepresentation</span><span class="p">()</span><span class="o">.</span><span class="n">SetValue</span><span class="p">(</span><span class="n">rock1_highlight</span><span class="p">)</span>
+<span class="n">rock1_min_slider</span><span class="o">.</span><span class="n">InvokeEvent</span><span class="p">(</span><span class="s1">&#39;EndInteractionEvent&#39;</span><span class="p">)</span>
+
+<span class="n">plotter</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="c1"># sphinx_gallery_thumbnail_number = 6</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_c03_kriging_006.png" srcset="../../_images/sphx_glr_c03_kriging_006.png" alt="c03 kriging" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 12.705 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-tutorials-c-advanced-c03-kriging-py">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/3514efe2729d048dd7d1e3bb43011738/c03_kriging.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">c03_kriging.ipynb</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/5b693281a62b2344309d276cd5e2a360/c03_kriging.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">c03_kriging.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/03a58365171dd39beb18eb7097aea9ee/c03_kriging.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">c03_kriging.zip</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../index.html">
+    <img class="logo" src="../../_static/logos/gempy.png" alt="Logo" />
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=gempy-project&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">GemPy Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/index.html">Examples</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../external/external_examples.html">External Examples</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api_reference.html">Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_reference.html#data-classes">Data Classes</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">GemPy Tutorials</a><ul>
+  <li><a href="index.html">Advanced</a><ul>
+      <li>Previous: <a href="b02_gravity.html" title="previous chapter">Forward Gravity Modeling</a></li>
+      <li>Next: <a href="d04_topology.html" title="next chapter">Analyzing Geomodel Topology</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2017-2026, Gempy Developers.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../../_sources/tutorials/c_advanced/c03_kriging.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

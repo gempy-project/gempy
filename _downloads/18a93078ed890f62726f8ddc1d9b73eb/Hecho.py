@@ -1,8 +1,12 @@
 """
-Geomodeling benchmark: the "Hecho"-Model
-========
+Hecho, Spanish Pyrenees
+==========================
 
-This model is part of a geomodeling benchmaring effort. More information (and, hopefully, publication) coming.
+The Hecho Group turbidites, Spanish Pyrenees
+
+This model is part of a geomodeling benchmarking effort; a full publication describing the
+benchmark suite is still pending. It is defined on a local, outcrop-scale grid a few meters
+across, with nine stratigraphic horizons offset by three faults.
 """
 
 import os
@@ -12,7 +16,6 @@ import numpy as np
 
 # Aux imports
 import pandas as pn
-from gempy.modules.serialization.save_load import _validate_serialization
 
 # Importing gempy
 import gempy as gp
@@ -51,7 +54,7 @@ for f in range(1, 4):
     fault_df['surface'] = 'f' + str(f)
     dfs.append(fault_df)
 
-# We put all the surfaces points together because is how gempy likes it:
+# We put all the surface points together, since that's how gempy likes it:
 surface_points = pn.concat(dfs, sort=True)
 surface_points.reset_index(inplace=True, drop=False)
 surface_points.tail()
@@ -71,7 +74,7 @@ orientations = pn.read_csv(
 # use the same color
 orientations['surface'] = 0
 
-# We fill the laking direction with a dummy value:
+# We fill the missing direction with a dummy value:
 orientations['G_y'] = 0
 
 # Replace -99999.00000 with NaN
@@ -94,14 +97,14 @@ orientations.dropna(inplace=True)
 # 
 # %%
 
-surface_points_table: gp.data.SurfacePointsTable = gp.data.SurfacePointsTable.from_arrays(
+surface_points_table = gp.data.SurfacePointsTable.from_arrays(
     x=surface_points['X'].values,
     y=surface_points['Y'].values,
     z=surface_points['Z'].values,
     names=surface_points['surface'].values.astype(str)
 )
 
-orientations_table: gp.data.OrientationsTable = gp.data.OrientationsTable.from_arrays(
+orientations_table = gp.data.OrientationsTable.from_arrays(
     x=orientations['X'].values,
     y=orientations['Y'].values,
     z=orientations['Z'].values,
@@ -112,13 +115,13 @@ orientations_table: gp.data.OrientationsTable = gp.data.OrientationsTable.from_a
     name_id_map=surface_points_table.name_id_map  # ! Make sure that ids and names are shared
 )
 
-structural_frame: gp.data.StructuralFrame = gp.data.StructuralFrame.from_data_tables(
+structural_frame = gp.data.StructuralFrame.from_data_tables(
     surface_points=surface_points_table,
     orientations=orientations_table
 )
 
-geo_model: gp.data.GeoModel = gp.create_geomodel(
-    project_name='Moureze',
+geo_model = gp.create_geomodel(
+    project_name='Hecho',
     extent=[0, 16, -0.5, 0.5, 0, 4.5],
     resolution=[321, 21, 91],
     structural_frame=structural_frame
@@ -132,10 +135,9 @@ gp.set_section_grid(
 )
 
 # %%
-# We need an orientation per series/fault. The faults does not have
-# orientation so the easiest is to create an orientation from the surface
-# points availablle:
-# 
+# We need an orientation per series/fault. Faults do not have an orientation,
+# so the easiest approach is to create one from the surface points available:
+#
 
 # %% 
 f_names = ['f1', 'f2', 'f3']
@@ -169,31 +171,26 @@ gpv.plot_2d(geo_model)
 geo_model.structural_frame
 
 # %%
-# We will need to separate with surface belong to each series:
-# 
+# We need to specify which surface belongs to each series:
+#
 
-# %% 
+# %%
 gp.map_stack_to_surfaces(
     gempy_model=geo_model,
     mapping_object={'Fault1': 'f1', 'Fault2': 'f2', 'Fault3': 'f3'}
 )
 
 # %%
-# However if we want the faults to offset the “Default series”, they will
+# However, if we want the faults to offset the "Default series", they will
 # need to be more recent (higher on the pile). We can modify the order by:
-# 
-
-# %% 
+#
 
 # %%
-# Lastly, so far we did not specify which series/faults are actula faults:
-# 
+# Lastly, so far we have not specified which series/faults are actual faults:
+#
 
 # %% 
-gp.set_is_fault(
-    frame=geo_model,
-    fault_groups=['Fault1', 'Fault2', 'Fault3']
-)
+gp.set_is_fault(geo_model, ['Fault1', 'Fault2', 'Fault3'])
 
 # %%
 # The default range is always the diagonal of the extent. Since in this

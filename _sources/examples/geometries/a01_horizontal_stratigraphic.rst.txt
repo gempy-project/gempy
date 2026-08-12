@@ -19,31 +19,21 @@
 
 
 Model 1 - Horizontal Stratigraphy
-===================================
+====================================
 
-This example demonstrates how to build a basic geological model with horizontally stacked layers using GemPy,
-an open-source Python library for implicit geological modeling. In this script, we will:
+Simple model of horizontally stacked layers
 
-- Set up and compute a simple geological model using input data (orientations and surface points).
-- Visualize the model in 2D and 3D.
-- Export model components (formations, orientations, surface points, and the regular grid) to VTK files.
-- Extract mesh vertices and normals, save them to Excel files, and convert the vertex data to an XYZ file.
+This script demonstrates how to create a geological model with horizontally stacked layers using GemPy,
+a Python-based, open-source library for implicit geological modeling.
 
-Each section includes detailed comments to explain its purpose and functionality.
-
-.. GENERATED FROM PYTHON SOURCE LINES 17-18
-
-Import necessary libraries
-
-.. GENERATED FROM PYTHON SOURCE LINES 18-26
+.. GENERATED FROM PYTHON SOURCE LINES 10-17
 
 .. code-block:: Python
 
+
+    # Import necessary libraries
     import gempy as gp
     import gempy_viewer as gpv
-    import pyvista as pv
-    import vtk
-    import pandas as pd
 
     # sphinx_gallery_thumbnail_number = 2
 
@@ -54,44 +44,38 @@ Import necessary libraries
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 27-32
+.. GENERATED FROM PYTHON SOURCE LINES 18-21
 
-Generate the Geological Model
------------------------------
-In this section, we define the data source and create a GeoModel instance.
-The model is defined with a specific spatial extent and resolution (refinement).
-Input data (orientations and surface points) are loaded from a remote repository.
+Generate the model
+-------------------
+Define the path to the input data
 
-.. GENERATED FROM PYTHON SOURCE LINES 32-59
+.. GENERATED FROM PYTHON SOURCE LINES 21-44
 
 .. code-block:: Python
 
-
-    # Define the path to the dataset hosted online
     data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
+    path_to_data = data_path + "/data/input_data/jan_models/"
 
-    # Create a GeoModel instance with the given project name, extent, and refinement level.
-    data = gp.create_geomodel(
+    # Create a GeoModel instance
+    geo_model = gp.create_geomodel(
         project_name='horizontal',
         extent=[0, 1000, 0, 1000, 0, 1000],
         refinement=6,
         importer_helper=gp.data.ImporterHelper(
-            path_to_orientations=data_path + "/data/input_data/jan_models/model1_orientations.csv",
-            path_to_surface_points=data_path + "/data/input_data/jan_models/model1_surface_points.csv"
+            path_to_orientations=path_to_data + "model1_orientations.csv",
+            path_to_surface_points=path_to_data + "model1_surface_points.csv"
         )
     )
 
-    # Map a geological series to the corresponding surfaces.
-    # Here, the "Strat_Series" is associated with two formations ('rock2' and 'rock1'),
-    # which defines the stacking order of horizontal layers.
+    # Map geological series to surfaces
     gp.map_stack_to_surfaces(
-        gempy_model=data,
+        gempy_model=geo_model,
         mapping_object={"Strat_Series": ('rock2', 'rock1')}
     )
 
-    # Compute the geological model using the provided data and mappings.
-    gp.compute_model(data)
-    geo_data = data
+    # Compute the geological model
+    gp.compute_model(geo_model)
 
 
 
@@ -104,45 +88,65 @@ Input data (orientations and surface points) are loaded from a remote repository
     Surface points hash:  6f1a39ed77e87a4057f03629c946b1876b87e24409cadfe0e1cf7ab1488f69e4
     Orientations hash:  04c307ae23f70252fe54144a2fb95ca7d96584a2d497ea539ed32dfd23e7cd5d
     Setting Backend To: AvailableBackends.PYTORCH
-    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
-    Setting Backend To: AvailableBackends.PYTORCH
+    GPU enabled. Using device: cuda
+    GPU device count: 1
+    Current GPU device: 0
 
 
+.. raw:: html
 
+    <div class="output_subarea output_html rendered_html output_result">
+    <b>Solutions:</b> 6 Octree Levels, 2 DualContouringMeshes
+    </div>
+    <br />
+    <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 60-66
+.. GENERATED FROM PYTHON SOURCE LINES 45-48
 
-2D Visualization of the Geological Model
------------------------------------------
-The following plots provide 2D views of the model.
-- The first plot shows the initial model without computed results.
-- The subsequent plots display the computed geological data in the x and y directions.
-Note: The boundaries are hidden in the latter plots for a cleaner visualization.
+2D visualization
+-----------------
+Plot the initial input data in the y direction, without computed results
 
-.. GENERATED FROM PYTHON SOURCE LINES 66-74
+.. GENERATED FROM PYTHON SOURCE LINES 48-50
 
 .. code-block:: Python
 
+    gpv.plot_2d(geo_model, direction=['y'], show_results=False)
 
-    # Plot the initial model in the y direction (without displaying computed results)
-    gpv.plot_2d(geo_data, direction=['y'], show_results=False)
 
-    # Plot the computed model results in the x and y directions, including data but excluding boundaries
-    gpv.plot_2d(geo_data, direction=['x'], show_data=True, show_boundaries=False)
-    gpv.plot_2d(geo_data, direction=['y'], show_data=True, show_boundaries=False)
+
+
+.. image-sg:: /examples/geometries/images/sphx_glr_a01_horizontal_stratigraphic_001.png
+   :alt: Cell Number: mid Direction: y
+   :srcset: /examples/geometries/images/sphx_glr_a01_horizontal_stratigraphic_001.png
+   :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3e54737250>
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 51-52
+
+Plot the computed result in the x and y directions, with data
+
+.. GENERATED FROM PYTHON SOURCE LINES 52-55
+
+.. code-block:: Python
+
+    gpv.plot_2d(geo_model, direction=['x'], show_data=True)
+    gpv.plot_2d(geo_model, direction=['y'], show_data=True)
 
 
 
 
 .. rst-class:: sphx-glr-horizontal
 
-
-    *
-
-      .. image-sg:: /examples/geometries/images/sphx_glr_a01_horizontal_stratigraphic_001.png
-         :alt: Cell Number: mid Direction: y
-         :srcset: /examples/geometries/images/sphx_glr_a01_horizontal_stratigraphic_001.png
-         :class: sphx-glr-multi-img
 
     *
 
@@ -164,33 +168,21 @@ Note: The boundaries are hidden in the latter plots for a cleaner visualization.
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f580ed27350>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3e3d4907d0>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 75-79
+.. GENERATED FROM PYTHON SOURCE LINES 56-59
 
-3D Visualization and Export to VTK
-----------------------------------
-Visualize the model in 3D with data, results, and boundaries.
-The generated 3D plot is also used to export various components of the model to VTK files.
+3D visualization
+-----------------
+Display the computed model in 3D
 
-.. GENERATED FROM PYTHON SOURCE LINES 79-91
+.. GENERATED FROM PYTHON SOURCE LINES 59-60
 
 .. code-block:: Python
 
-    p = gpv.plot_3d(geo_data, show_data=True, show_results=True, show_boundaries=True, image=True)
-
-    # Export different components of the model to VTK files:
-    p.surface_poly['rock1'].save('rock1.vtk')  # Save formation 'rock1'
-    p.surface_poly['rock2'].save('rock2.vtk')  # Save formation 'rock2'
-    p.orientations_mesh.save('orientations.vtk')  # Save the orientations mesh
-    p.surface_points_mesh.save('surface_points.vtk')  # Save the surface points mesh
-
-    # Retrieve and export the regular grid (volume representation) of the model
-    box = pv.wrap(p.regular_grid_actor.GetMapper().GetInput())
-    box.save('box.vtk')
-
+    gpv.plot_3d(geo_model, show_lith=True, show_boundaries=True, ve=None)
 
 
 
@@ -199,321 +191,20 @@ The generated 3D plot is also used to export various components of the model to 
    :srcset: /examples/geometries/images/sphx_glr_a01_horizontal_stratigraphic_004.png
    :class: sphx-glr-single-img
 
-.. image-sg:: /examples/geometries/images/sphx_glr_a01_horizontal_stratigraphic_005.png
-   :alt: a01 horizontal stratigraphic
-   :srcset: /examples/geometries/images/sphx_glr_a01_horizontal_stratigraphic_005.png
-   :class: sphx-glr-single-img
 
+.. rst-class:: sphx-glr-script-out
 
+ .. code-block:: none
 
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 92-95
-
-Display the Exported VTK Files with PyVista
--------------------------------------------
-Load and plot each exported VTK file to verify the export.
-
-.. GENERATED FROM PYTHON SOURCE LINES 95-102
-
-.. code-block:: Python
-
-    pv.read('rock1.vtk').plot(show_edges=False)
-    pv.read('rock2.vtk').plot(show_edges=False)
-    pv.read('orientations.vtk').plot(show_edges=False)
-    pv.read('surface_points.vtk').plot(show_edges=False)
-    pv.read('box.vtk').plot(show_edges=False)
-
-
-
-
-
-.. rst-class:: sphx-glr-horizontal
-
-
-    *
-
-      .. image-sg:: /examples/geometries/images/sphx_glr_a01_horizontal_stratigraphic_006.png
-          :alt: a01 horizontal stratigraphic
-          :srcset: /examples/geometries/images/sphx_glr_a01_horizontal_stratigraphic_006.png
-          :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /examples/geometries/images/sphx_glr_a01_horizontal_stratigraphic_007.png
-          :alt: a01 horizontal stratigraphic
-          :srcset: /examples/geometries/images/sphx_glr_a01_horizontal_stratigraphic_007.png
-          :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /examples/geometries/images/sphx_glr_a01_horizontal_stratigraphic_008.png
-          :alt: a01 horizontal stratigraphic
-          :srcset: /examples/geometries/images/sphx_glr_a01_horizontal_stratigraphic_008.png
-          :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /examples/geometries/images/sphx_glr_a01_horizontal_stratigraphic_009.png
-          :alt: a01 horizontal stratigraphic
-          :srcset: /examples/geometries/images/sphx_glr_a01_horizontal_stratigraphic_009.png
-          :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /examples/geometries/images/sphx_glr_a01_horizontal_stratigraphic_010.png
-          :alt: a01 horizontal stratigraphic
-          :srcset: /examples/geometries/images/sphx_glr_a01_horizontal_stratigraphic_010.png
-          :class: sphx-glr-multi-img
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 103-107
-
-Extract and Save Mesh Vertices and Normals
-------------------------------------------
-The following functions extract vertex coordinates and corresponding normal vectors
-from a mesh (vtkPolyData), and then save this data into Excel files for further analysis.
-
-.. GENERATED FROM PYTHON SOURCE LINES 107-193
-
-.. code-block:: Python
-
-
-    def generate_normals(polydata):
-        """
-        Generate normals for the given polydata if they are not already computed.
-
-        Parameters:
-            polydata (vtk.vtkPolyData): Input polydata for which normals are to be computed.
-
-        Returns:
-            vtk.vtkPolyData: The polydata with computed point normals.
-        """
-        normal_generator = vtk.vtkPolyDataNormals()
-        normal_generator.SetInputData(polydata)
-        normal_generator.ComputePointNormalsOn()
-        normal_generator.ComputeCellNormalsOff()
-        normal_generator.Update()
-        return normal_generator.GetOutput()
-
-
-    def get_vertices_and_normals(mesh):
-        """
-        Extract vertices and normals from a mesh.
-
-        Parameters:
-            mesh: The mesh object (typically from a formation) to extract surface vertices and normals.
-
-        Returns:
-            tuple: Two lists containing vertices and normals respectively.
-        """
-        # Extract the surface of the mesh
-        surface_mesh = mesh.extract_surface()
-        polydata = surface_mesh
-
-        # Ensure normals are computed for the polydata
-        polydata_with_normals = generate_normals(polydata)
-
-        # Extract points (vertices)
-        points = polydata_with_normals.GetPoints()
-        vertices = [points.GetPoint(i) for i in range(points.GetNumberOfPoints())]
-
-        # Extract normals associated with the points
-        normals_array = polydata_with_normals.GetPointData().GetNormals()
-        normals = [normals_array.GetTuple(i) for i in range(normals_array.GetNumberOfTuples())]
-
-        return vertices, normals
-
-
-    def save_to_excel(vertices, normals, vertices_file, normals_file):
-        """
-        Save the vertices and normals to separate Excel files.
-
-        Parameters:
-            vertices (list): List of vertex coordinates.
-            normals (list): List of normal vectors.
-            vertices_file (str): File name for saving vertices.
-            normals_file (str): File name for saving normals.
-        """
-        # Create DataFrames from the lists
-        vertices_df = pd.DataFrame(vertices, columns=['X', 'Y', 'Z'])
-        normals_df = pd.DataFrame(normals, columns=['x', 'y', 'z'])
-
-        # Write the DataFrames to Excel files
-        vertices_df.to_excel(vertices_file, index=False)
-        normals_df.to_excel(normals_file, index=False)
-
-
-    # Extract vertices and normals from the mesh of formation 'rock1'
-    mesh = p.surface_poly['rock1']
-    vertices, normals = get_vertices_and_normals(mesh)
-
-    # Create DataFrames for later processing or verification
-    vertices_df = pd.DataFrame(vertices, columns=['X', 'Y', 'Z'])
-    normals_df = pd.DataFrame(normals, columns=['x', 'y', 'z'])
-
-    # Define file names for the Excel outputs
-    vertices_file = "rock1_vertices.xlsx"
-    normals_file = "rock1_norms.xlsx"
-
-    # Save the extracted data to Excel files
-    save_to_excel(vertices, normals, vertices_file, normals_file)
-
-    # Optionally, read back the Excel files to verify their content
-    pd.read_excel(vertices_file)
-    pd.read_excel(normals_file)
-
-
-
-
-
-
-
-.. raw:: html
-
-    <div class="output_subarea output_html rendered_html output_result">
-    <div>
-    <style scoped>
-        .dataframe tbody tr th:only-of-type {
-            vertical-align: middle;
-        }
-
-        .dataframe tbody tr th {
-            vertical-align: top;
-        }
-
-        .dataframe thead th {
-            text-align: right;
-        }
-    </style>
-    <table border="1" class="dataframe">
-      <thead>
-        <tr style="text-align: right;">
-          <th></th>
-          <th>x</th>
-          <th>y</th>
-          <th>z</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th>0</th>
-          <td>0</td>
-          <td>0</td>
-          <td>1</td>
-        </tr>
-        <tr>
-          <th>1</th>
-          <td>0</td>
-          <td>0</td>
-          <td>1</td>
-        </tr>
-        <tr>
-          <th>2</th>
-          <td>0</td>
-          <td>0</td>
-          <td>1</td>
-        </tr>
-        <tr>
-          <th>3</th>
-          <td>0</td>
-          <td>0</td>
-          <td>1</td>
-        </tr>
-        <tr>
-          <th>4</th>
-          <td>0</td>
-          <td>0</td>
-          <td>1</td>
-        </tr>
-        <tr>
-          <th>...</th>
-          <td>...</td>
-          <td>...</td>
-          <td>...</td>
-        </tr>
-        <tr>
-          <th>251</th>
-          <td>0</td>
-          <td>0</td>
-          <td>1</td>
-        </tr>
-        <tr>
-          <th>252</th>
-          <td>0</td>
-          <td>0</td>
-          <td>1</td>
-        </tr>
-        <tr>
-          <th>253</th>
-          <td>0</td>
-          <td>0</td>
-          <td>1</td>
-        </tr>
-        <tr>
-          <th>254</th>
-          <td>0</td>
-          <td>0</td>
-          <td>1</td>
-        </tr>
-        <tr>
-          <th>255</th>
-          <td>0</td>
-          <td>0</td>
-          <td>1</td>
-        </tr>
-      </tbody>
-    </table>
-    <p>256 rows × 3 columns</p>
-    </div>
-    </div>
-    <br />
-    <br />
-
-.. GENERATED FROM PYTHON SOURCE LINES 194-198
-
-Convert Vertices DataFrame to an XYZ File
------------------------------------------
-This function converts a DataFrame containing vertex coordinates to an XYZ format file,
-which is a simple text file with one point per line.
-
-.. GENERATED FROM PYTHON SOURCE LINES 198-217
-
-.. code-block:: Python
-
-
-    def dataframe_to_xyz(df, filename):
-        """
-        Write vertex coordinates from a DataFrame to an XYZ file.
-
-        Parameters:
-            df (pandas.DataFrame): DataFrame containing 'X', 'Y', and 'Z' columns.
-            filename (str): Output filename for the XYZ file.
-        """
-        with open(filename, 'w') as f:
-            for index, row in df.iterrows():
-                f.write(f"{row['X']} {row['Y']} {row['Z']}\n")
-
-
-    # Specify the output file name for the XYZ file
-    filename = "output.xyz"
-
-    # Convert the vertices DataFrame to an XYZ file
-    dataframe_to_xyz(vertices_df, filename)
-
-
-
-
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f3e3d54e890>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.156 seconds)
+   **Total running time of the script:** (0 minutes 1.736 seconds)
 
 
 .. _sphx_glr_download_examples_geometries_a01_horizontal_stratigraphic.py:

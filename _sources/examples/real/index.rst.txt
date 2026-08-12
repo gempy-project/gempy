@@ -2,10 +2,11 @@
 
 .. _sphx_glr_examples_real:
 
-Real case studies
------------------
+Real Case Studies
+--------------------
 
-These models are built with real data
+Geological models built from real-world datasets, spanning sedimentary basins, greenstone
+belts, karst terrain, and geomodeling benchmark datasets from France, Spain, and Australia.
 
 
 .. raw:: html
@@ -21,7 +22,7 @@ These models are built with real data
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Model of Ales, France: Plotting Sections and Maps">
+    <div class="sphx-glr-thumbcontainer" tooltip="Cross-sections, topography, and geological maps of the Tertiary Alès basin">
 
 .. only:: html
 
@@ -32,13 +33,13 @@ These models are built with real data
 
 .. raw:: html
 
-      <div class="sphx-glr-thumbnail-title">Model of Ales, France: Plotting Sections and Maps</div>
+      <div class="sphx-glr-thumbnail-title">Alès Basin, France</div>
     </div>
 
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This model is part of a geomodeling benchmaring effort. More information (and, hopefully, publication) coming.">
+    <div class="sphx-glr-thumbcontainer" tooltip="A geomodeling benchmark dataset located in northern Queensland, Australia">
 
 .. only:: html
 
@@ -49,13 +50,13 @@ These models are built with real data
 
 .. raw:: html
 
-      <div class="sphx-glr-thumbnail-title">Geomodeling benchmark: the "Claudius"-Model</div>
+      <div class="sphx-glr-thumbnail-title">Claudius, Queensland, Australia</div>
     </div>
 
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Greenstone.">
+    <div class="sphx-glr-thumbcontainer" tooltip="An Archean greenstone belt model from the Yilgarn Craton, WA">
 
 .. only:: html
 
@@ -66,13 +67,13 @@ These models are built with real data
 
 .. raw:: html
 
-      <div class="sphx-glr-thumbnail-title">Greenstone.</div>
+      <div class="sphx-glr-thumbnail-title">Sandstone Greenstone Belt, Western Australia</div>
     </div>
 
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This model is part of a geomodeling benchmaring effort. More information (and, hopefully, publication) coming.">
+    <div class="sphx-glr-thumbcontainer" tooltip="The Hecho Group turbidites, Spanish Pyrenees">
 
 .. only:: html
 
@@ -83,13 +84,13 @@ These models are built with real data
 
 .. raw:: html
 
-      <div class="sphx-glr-thumbnail-title">Geomodeling benchmark: the "Hecho"-Model</div>
+      <div class="sphx-glr-thumbnail-title">Hecho, Spanish Pyrenees</div>
     </div>
 
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This model is part of a geomodeling benchmaring effort. More information (and, hopefully, publication) coming.">
+    <div class="sphx-glr-thumbcontainer" tooltip="A karst/dolomite terrain model from the Cirque de Mourèze, Hérault, southern France">
 
 .. only:: html
 
@@ -100,13 +101,13 @@ These models are built with real data
 
 .. raw:: html
 
-      <div class="sphx-glr-thumbnail-title">Geomodeling benchmark: the "Moureze"-Model</div>
+      <div class="sphx-glr-thumbnail-title">Mourèze, France</div>
     </div>
 
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="A geological model of the Perth basin, Australia">
+    <div class="sphx-glr-thumbcontainer" tooltip="Regional stratigraphy and major normal faults of the northern Perth Basin">
 
 .. only:: html
 
@@ -117,24 +118,7 @@ These models are built with real data
 
 .. raw:: html
 
-      <div class="sphx-glr-thumbnail-title">A geological model of the Perth basin, Australia</div>
-    </div>
-
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="Unknown Model: Importing Borehole Data and Building a 3D Geological Model with GemPy">
-
-.. only:: html
-
-  .. image:: /examples/real/images/thumb/sphx_glr_mik_thumb.png
-    :alt:
-
-  :doc:`/examples/real/mik`
-
-.. raw:: html
-
-      <div class="sphx-glr-thumbnail-title">Unknown Model: Importing Borehole Data and Building a 3D Geological Model with GemPy</div>
+      <div class="sphx-glr-thumbnail-title">Perth Basin, Western Australia</div>
     </div>
 
 
@@ -154,5 +138,4 @@ These models are built with real data
    /examples/real/Hecho
    /examples/real/Moureze
    /examples/real/Perth_basin
-   /examples/real/mik
 

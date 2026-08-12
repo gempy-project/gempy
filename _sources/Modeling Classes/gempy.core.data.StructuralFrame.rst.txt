@@ -69,6 +69,7 @@
       ~StructuralFrame.orientations_colors_per_item
       ~StructuralFrame.orientations_copy
       ~StructuralFrame.structural_elements
+      ~StructuralFrame.structural_elements_filtered
       ~StructuralFrame.surface_points
       ~StructuralFrame.surface_points_colors_per_item
       ~StructuralFrame.surface_points_copy

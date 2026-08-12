@@ -1,6 +1,6 @@
 """
 Model 4 - Pinchout
-==================
+====================
 
 Modeling of a pinchout: combining scalar fields
 
@@ -12,17 +12,17 @@ a Python-based, open-source library for implicit geological modeling.
 import gempy as gp
 import gempy_viewer as gpv
 
-
 # sphinx_gallery_thumbnail_number = 3
-
 
 # %%
 # Generate the model
-# Define the path to data
+# -------------------
+# Define the path to the input data
 data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
 path_to_data = data_path + "/data/input_data/jan_models/"
+
 # Create a GeoModel instance
-data = gp.create_geomodel(
+geo_model = gp.create_geomodel(
     project_name='pinchout',
     extent=[0, 1000, 0, 1000, 0, 1000],
     resolution=[50, 50, 50],
@@ -32,22 +32,29 @@ data = gp.create_geomodel(
         path_to_surface_points=path_to_data + "model4_surface_points.csv"
     )
 )
+
 # Map geological series to surfaces
 gp.map_stack_to_surfaces(
-    gempy_model=data,
+    gempy_model=geo_model,
     mapping_object={"Strat_Series": ('rock2', 'rock1')}
 )
+
 # Compute the geological model
-gp.compute_model(data)
-geo_data = data
+gp.compute_model(geo_model)
 
 # %%
-# Plot the initial geological model in the y direction
-gpv.plot_2d(geo_data, direction=['y'], show_results=False)
-
-# Plot the result of the model in the x and y direction with data
-gpv.plot_2d(geo_data, direction=['x'], show_data=True)
-gpv.plot_2d(geo_data, direction=['y'], show_data=True)
+# 2D visualization
+# -----------------
+# Plot the initial input data in the y direction, without computed results
+gpv.plot_2d(geo_model, direction=['y'], show_results=False)
 
 # %%
-gpv.plot_3d(geo_data, show_surfaces=True)
+# Plot the computed result in the x and y directions, with data
+gpv.plot_2d(geo_model, direction=['x'], show_data=True)
+gpv.plot_2d(geo_model, direction=['y'], show_data=True)
+
+# %%
+# 3D visualization
+# -----------------
+# Display the computed model in 3D
+gpv.plot_3d(geo_model, show_lith=True, show_boundaries=True, ve=None)

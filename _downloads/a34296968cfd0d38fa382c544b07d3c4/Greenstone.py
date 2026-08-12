@@ -1,6 +1,12 @@
 """
-Greenstone.
-===========
+Sandstone Greenstone Belt, Western Australia
+===============================================
+
+An Archean greenstone belt model from the Yilgarn Craton, WA
+
+This model covers the Sandstone Greenstone Belt in the Yilgarn Craton of Western Australia,
+combining an early granite intrusion, banded iron formation (BIF), and mafic units above a
+basement.
 """
 import os
 
@@ -8,15 +14,11 @@ import os
 import gempy as gp
 import gempy_viewer as gpv
 
-print(gp.__version__)
-
 # %%
-
 data_path = os.path.abspath('../../data/input_data/tut_SandStone')
 
 # Importing the data from csv
-
-geo_model: gp.data.GeoModel = gp.create_geomodel(
+geo_model = gp.create_geomodel(
     project_name='Greenstone',
     extent=[696000, 747000, 6863000, 6930000, -20000, 200],  # * Here we define the extent of the model
     refinement=6,
@@ -53,4 +55,4 @@ gpv.plot_2d(geo_model, cell_number=['mid'], direction='x')
 
 # %%
 # sphinx_gallery_thumbnail_number = -1
-gpv.plot_3d(geo_model)
+gpv.plot_3d(geo_model, show_lith=True, show_boundaries=True, ve=None)

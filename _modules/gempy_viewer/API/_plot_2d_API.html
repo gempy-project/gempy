@@ -50,7 +50,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">gempy_viewer.API._plot_2d_sections_api</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_sections</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gempy_viewer.core.data_to_show</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataToShow</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gempy_viewer.core.section_data_2d</span><span class="w"> </span><span class="kn">import</span> <span class="n">SectionData2D</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">gempy_viewer.modules.plot_2d.multi_axis_manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">sections_iterator</span><span class="p">,</span> <span class="n">orthogonal_sections_iterator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gempy_viewer.modules.plot_2d.multi_axis_manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">sections_iterator</span><span class="p">,</span> <span class="n">orthogonal_sections_iterator</span><span class="p">,</span> <span class="n">equalize_axes_scale</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gempy_viewer.modules.plot_2d.plot_2d_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">position_to_cell_number</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gempy_viewer.modules.plot_2d.visualization_2d</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plot2D</span>
 
 
@@ -61,6 +62,7 @@
             <span class="n">n_axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">section_names</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">cell_number</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">position</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">direction</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span>
             <span class="n">series_n</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
             <span class="n">legend</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -83,6 +85,10 @@
 <span class="sd">        n_axis (Optional[int]): Subplot axis for multiple sections.</span>
 <span class="sd">        section_names (Optional[List[str]]): Names of predefined custom section traces.</span>
 <span class="sd">        cell_number (Optional[Union[int, List[int], str, List[str]]]): Position of the array to plot.</span>
+<span class="sd">        position (Optional[Union[float, List[float]]]): Real-world coordinate (in the same</span>
+<span class="sd">            units as the model extent) to slice at, along `direction` -- an alternative to</span>
+<span class="sd">            `cell_number` that doesn&#39;t require knowing the grid&#39;s resolution. Mutually</span>
+<span class="sd">            exclusive with `cell_number`.</span>
 <span class="sd">        direction (Optional[Union[str, List[str]]]): Cartesian direction to be plotted (xyz).</span>
 <span class="sd">        series_n (Union[int, List[int]]): Number of the scalar field.</span>
 <span class="sd">        legend (bool): If True, plot legend. Defaults to True.</span>
@@ -120,6 +126,17 @@
         <span class="n">kwargs_topography</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">kwargs_scalar_field</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">kwargs_scalar_field</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">position</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">cell_number</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Pass either `cell_number` or `position`, not both.&quot;</span><span class="p">)</span>
+        <span class="n">position_list</span> <span class="o">=</span> <span class="n">position</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">position</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span> <span class="k">else</span> <span class="p">[</span><span class="n">position</span><span class="p">]</span>
+        <span class="n">direction_list</span> <span class="o">=</span> <span class="n">direction</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span> <span class="k">else</span> <span class="p">[</span><span class="n">direction</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">position_list</span><span class="p">)</span>
+        <span class="n">cell_number</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">position_to_cell_number</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">regular_grid</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">d</span><span class="p">,</span> <span class="n">pos</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">direction_list</span><span class="p">,</span> <span class="n">position_list</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="n">direction</span> <span class="o">=</span> <span class="n">direction_list</span>
 
     <span class="k">if</span> <span class="n">section_names</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">cell_number</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">direction</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">cell_number</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;mid&#39;</span><span class="p">]</span>
@@ -216,6 +233,7 @@
         <span class="n">kwargs_lithology</span><span class="o">=</span><span class="n">kwargs_lithology</span><span class="p">,</span>
         <span class="n">kwargs_boundaries</span><span class="o">=</span><span class="n">kwargs_boundaries</span>
     <span class="p">)</span>
+    <span class="n">equalize_axes_scale</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">fig</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">axes</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">show</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">and</span> <span class="n">plt</span><span class="o">.</span><span class="n">get_backend</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;agg&quot;</span><span class="p">:</span>
         <span class="n">p</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 

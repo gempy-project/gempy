@@ -19,14 +19,14 @@
 
 
 Model 5 - Fault
-===============
+=================
 
 Modeling a fault
 
 This script demonstrates how to create a simple fault model with constant offset using GemPy,
 a Python-based, open-source library for implicit geological modeling.
 
-.. GENERATED FROM PYTHON SOURCE LINES 10-20
+.. GENERATED FROM PYTHON SOURCE LINES 10-17
 
 .. code-block:: Python
 
@@ -34,8 +34,6 @@ a Python-based, open-source library for implicit geological modeling.
     # Import necessary libraries
     import gempy as gp
     import gempy_viewer as gpv
-    import numpy as np
-    from gempy_engine.core.data.stack_relation_type import StackRelationType
 
     # sphinx_gallery_thumbnail_number = 2
 
@@ -46,20 +44,21 @@ a Python-based, open-source library for implicit geological modeling.
 
 
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 21-23
+.. GENERATED FROM PYTHON SOURCE LINES 18-21
 
 Generate the model
-Define the path to data
+-------------------
+Define the path to the input data
 
-.. GENERATED FROM PYTHON SOURCE LINES 23-50
+.. GENERATED FROM PYTHON SOURCE LINES 21-50
 
 .. code-block:: Python
 
     data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
     path_to_data = data_path + "/data/input_data/jan_models/"
+
     # Create a GeoModel instance
-    data = gp.create_geomodel(
+    geo_model = gp.create_geomodel(
         project_name='fault',
         extent=[0, 1000, 0, 1000, 0, 1000],
         refinement=6,
@@ -68,20 +67,21 @@ Define the path to data
             path_to_surface_points=path_to_data + "model5_surface_points.csv"
         )
     )
+
     # Map geological series to surfaces
     gp.map_stack_to_surfaces(
-        gempy_model=data,
+        gempy_model=geo_model,
         mapping_object={
             "Fault_Series": 'fault',
             "Strat_Series": ('rock2', 'rock1')
         }
     )
-    # Define fault groups
-    data.structural_frame.structural_groups[0].structural_relation = StackRelationType.FAULT
-    data.structural_frame.fault_relations = np.array([[0, 1], [0, 0]])
+
+    # Define the youngest structural group as a fault
+    gp.set_is_fault(geo_model, ["Fault_Series"])
+
     # Compute the geological model
-    gp.compute_model(data)
-    geo_data = data
+    gp.compute_model(geo_model)
 
 
 
@@ -94,21 +94,30 @@ Define the path to data
     Surface points hash:  8fe9250462c3e65080818a84d29925378664f6be46301dcdb42ed4047aa3fe6f
     Orientations hash:  58d1d28be0c52dfdcedf36c9adc3b231e67d6923554159d6484dba589b0bfc5e
     Setting Backend To: AvailableBackends.PYTORCH
-    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
-    Setting Backend To: AvailableBackends.PYTORCH
+    GPU enabled. Using device: cuda
+    GPU device count: 1
+    Current GPU device: 0
 
 
+.. raw:: html
 
+    <div class="output_subarea output_html rendered_html output_result">
+    <b>Solutions:</b> 6 Octree Levels, 3 DualContouringMeshes
+    </div>
+    <br />
+    <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 51-52
+.. GENERATED FROM PYTHON SOURCE LINES 51-54
 
-Plot the initial geological model in the y direction
+2D visualization
+-----------------
+Plot the initial input data in the y direction, without computed results
 
-.. GENERATED FROM PYTHON SOURCE LINES 52-54
+.. GENERATED FROM PYTHON SOURCE LINES 54-56
 
 .. code-block:: Python
 
-    gpv.plot_2d(geo_data, direction=['y'], show_results=False)
+    gpv.plot_2d(geo_model, direction=['y'], show_results=False)
 
 
 
@@ -124,43 +133,39 @@ Plot the initial geological model in the y direction
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f5782d739d0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3ed4dfd150>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 55-61
+.. GENERATED FROM PYTHON SOURCE LINES 57-58
+
+Plot the computed result in the y and x directions, with data
+
+.. GENERATED FROM PYTHON SOURCE LINES 58-61
 
 .. code-block:: Python
 
-
-    # Plot the result of the model in the x and y direction with data
-    gpv.plot_2d(geo_data, direction='y', show_data=True)
-    gpv.plot_2d(geo_data, direction='x', show_data=True)
-
-    gpv.plot_3d(geo_data, show_data=True, show_boundaries=True, show_lith=True)
+    gpv.plot_2d(geo_model, direction='y', show_data=True)
+    gpv.plot_2d(geo_model, direction='x', show_data=True)
 
 
 
-.. image-sg:: /examples/geometries/images/sphx_glr_e05_fault_002.png
-   :alt: e05 fault
-   :srcset: /examples/geometries/images/sphx_glr_e05_fault_002.png
-   :class: sphx-glr-single-img
 
 .. rst-class:: sphx-glr-horizontal
 
 
     *
 
-      .. image-sg:: /examples/geometries/images/sphx_glr_e05_fault_003.png
+      .. image-sg:: /examples/geometries/images/sphx_glr_e05_fault_002.png
          :alt: Cell Number: mid Direction: y
-         :srcset: /examples/geometries/images/sphx_glr_e05_fault_003.png
+         :srcset: /examples/geometries/images/sphx_glr_e05_fault_002.png
          :class: sphx-glr-multi-img
 
     *
 
-      .. image-sg:: /examples/geometries/images/sphx_glr_e05_fault_004.png
+      .. image-sg:: /examples/geometries/images/sphx_glr_e05_fault_003.png
          :alt: Cell Number: mid Direction: x
-         :srcset: /examples/geometries/images/sphx_glr_e05_fault_004.png
+         :srcset: /examples/geometries/images/sphx_glr_e05_fault_003.png
          :class: sphx-glr-multi-img
 
 
@@ -169,14 +174,43 @@ Plot the initial geological model in the y direction
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f57787a2430>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3e541e1b50>
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 62-65
+
+3D visualization
+-----------------
+Display the computed model in 3D
+
+.. GENERATED FROM PYTHON SOURCE LINES 65-66
+
+.. code-block:: Python
+
+    gpv.plot_3d(geo_model, show_lith=True, show_boundaries=True, ve=None)
+
+
+
+.. image-sg:: /examples/geometries/images/sphx_glr_e05_fault_004.png
+   :alt: e05 fault
+   :srcset: /examples/geometries/images/sphx_glr_e05_fault_004.png
+   :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f3e3d5cbd90>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.265 seconds)
+   **Total running time of the script:** (0 minutes 3.262 seconds)
 
 
 .. _sphx_glr_download_examples_geometries_e05_fault.py:

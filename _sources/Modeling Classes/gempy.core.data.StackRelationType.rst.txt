@@ -27,6 +27,7 @@
       ~StackRelationType.ONLAP
       ~StackRelationType.FAULT
       ~StackRelationType.BASEMENT
+      ~StackRelationType.NULL_SPACE
    
    
 

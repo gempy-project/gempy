@@ -3,10 +3,9 @@
 Examples
 ========
 
-This examples intend to be a gallery of what other people has done with GemPy.
-Hopefully with the help of the community we can create a complete library of
-structures that can serve as template for new users.
-
+This gallery showcases what other people have built with GemPy: real case studies alongside
+simple synthetic geometries. With the community's help, we hope to grow this into a full
+library of structures that can serve as a starting template for new users.
 
 .. raw:: html
 
@@ -25,9 +24,13 @@ structures that can serve as template for new users.
 
     </div>
 
-Simple geometries
------------------
-Some simple geometries.
+Simple Geometries
+--------------------
+
+A sequence of synthetic models, from horizontal stratigraphy through folds, faults,
+unconformities, and combinations of these, building up the core structural relationships
+GemPy can represent.
+
 
 .. raw:: html
 
@@ -42,7 +45,7 @@ Some simple geometries.
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to build a basic geological model with horizontally stacked layers using GemPy, an open-source Python library for implicit geological modeling. In this script, we will:">
+    <div class="sphx-glr-thumbcontainer" tooltip="Simple model of horizontally stacked layers">
 
 .. only:: html
 
@@ -172,7 +175,7 @@ Some simple geometries.
 
 .. raw:: html
 
-      <div class="sphx-glr-thumbnail-title">GemPy Models - Some More Complex Examples</div>
+      <div class="sphx-glr-thumbnail-title">Set of more complex examples</div>
     </div>
 
 
@@ -182,10 +185,11 @@ Some simple geometries.
 
     </div>
 
-Real case studies
------------------
+Real Case Studies
+--------------------
 
-These models are built with real data
+Geological models built from real-world datasets, spanning sedimentary basins, greenstone
+belts, karst terrain, and geomodeling benchmark datasets from France, Spain, and Australia.
 
 
 .. raw:: html
@@ -201,7 +205,7 @@ These models are built with real data
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Model of Ales, France: Plotting Sections and Maps">
+    <div class="sphx-glr-thumbcontainer" tooltip="Cross-sections, topography, and geological maps of the Tertiary Alès basin">
 
 .. only:: html
 
@@ -212,13 +216,13 @@ These models are built with real data
 
 .. raw:: html
 
-      <div class="sphx-glr-thumbnail-title">Model of Ales, France: Plotting Sections and Maps</div>
+      <div class="sphx-glr-thumbnail-title">Alès Basin, France</div>
     </div>
 
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This model is part of a geomodeling benchmaring effort. More information (and, hopefully, publication) coming.">
+    <div class="sphx-glr-thumbcontainer" tooltip="A geomodeling benchmark dataset located in northern Queensland, Australia">
 
 .. only:: html
 
@@ -229,13 +233,13 @@ These models are built with real data
 
 .. raw:: html
 
-      <div class="sphx-glr-thumbnail-title">Geomodeling benchmark: the "Claudius"-Model</div>
+      <div class="sphx-glr-thumbnail-title">Claudius, Queensland, Australia</div>
     </div>
 
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Greenstone.">
+    <div class="sphx-glr-thumbcontainer" tooltip="An Archean greenstone belt model from the Yilgarn Craton, WA">
 
 .. only:: html
 
@@ -246,13 +250,13 @@ These models are built with real data
 
 .. raw:: html
 
-      <div class="sphx-glr-thumbnail-title">Greenstone.</div>
+      <div class="sphx-glr-thumbnail-title">Sandstone Greenstone Belt, Western Australia</div>
     </div>
 
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This model is part of a geomodeling benchmaring effort. More information (and, hopefully, publication) coming.">
+    <div class="sphx-glr-thumbcontainer" tooltip="The Hecho Group turbidites, Spanish Pyrenees">
 
 .. only:: html
 
@@ -263,13 +267,13 @@ These models are built with real data
 
 .. raw:: html
 
-      <div class="sphx-glr-thumbnail-title">Geomodeling benchmark: the "Hecho"-Model</div>
+      <div class="sphx-glr-thumbnail-title">Hecho, Spanish Pyrenees</div>
     </div>
 
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This model is part of a geomodeling benchmaring effort. More information (and, hopefully, publication) coming.">
+    <div class="sphx-glr-thumbcontainer" tooltip="A karst/dolomite terrain model from the Cirque de Mourèze, Hérault, southern France">
 
 .. only:: html
 
@@ -280,13 +284,13 @@ These models are built with real data
 
 .. raw:: html
 
-      <div class="sphx-glr-thumbnail-title">Geomodeling benchmark: the "Moureze"-Model</div>
+      <div class="sphx-glr-thumbnail-title">Mourèze, France</div>
     </div>
 
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="A geological model of the Perth basin, Australia">
+    <div class="sphx-glr-thumbcontainer" tooltip="Regional stratigraphy and major normal faults of the northern Perth Basin">
 
 .. only:: html
 
@@ -297,24 +301,7 @@ These models are built with real data
 
 .. raw:: html
 
-      <div class="sphx-glr-thumbnail-title">A geological model of the Perth basin, Australia</div>
-    </div>
-
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="Unknown Model: Importing Borehole Data and Building a 3D Geological Model with GemPy">
-
-.. only:: html
-
-  .. image:: /examples/real/images/thumb/sphx_glr_mik_thumb.png
-    :alt:
-
-  :doc:`/examples/real/mik`
-
-.. raw:: html
-
-      <div class="sphx-glr-thumbnail-title">Unknown Model: Importing Borehole Data and Building a 3D Geological Model with GemPy</div>
+      <div class="sphx-glr-thumbnail-title">Perth Basin, Western Australia</div>
     </div>
 
 

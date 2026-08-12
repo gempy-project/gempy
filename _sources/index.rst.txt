@@ -110,7 +110,7 @@ Models generated with ``GemPy`` can be visualized in several ways:
 * 3D visualization using `Pyvista <https://www.pyvista.org>`_, including interactive plots
 
 .. image:: _images/3D_view_pyvista_example.png
-   :target: https://cgre-aachen.github.io/gempy/_images/sphx_glr_ch1_1_basics_009.png
+   :target: https://cgre-aachen.github.io/gempy/_images/sphx_glr_a01_basics_009.png
    :width: 70%
 
 For a more detailed elaboration of the theory behind ``GemPy``\ , we refer to the

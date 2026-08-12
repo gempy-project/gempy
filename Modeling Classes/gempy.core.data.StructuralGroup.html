@@ -46,35 +46,29 @@
 <h1>gempy.core.data.StructuralGroup<a class="headerlink" href="#gempy-core-data-structuralgroup" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="gempy.core.data.StructuralGroup">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">gempy.core.data.</span></span><span class="sig-name descname"><span class="pre">StructuralGroup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elements</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="gempy.core.data.StructuralElement.html#gempy.core.data.StructuralElement" title="gempy.core.data.structural_element.StructuralElement"><span class="pre">StructuralElement</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">structural_relation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gempy.core.data.StackRelationType.html#gempy.core.data.StackRelationType" title="gempy_engine.core.data.stack_relation_type.StackRelationType"><span class="pre">StackRelationType</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">fault_relations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#gempy.core.data.StructuralGroup" title="gempy.core.data.structural_group.StructuralGroup"><span class="pre">StructuralGroup</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="gempy.core.data.FaultsRelationSpecialCase.html#gempy.core.data.FaultsRelationSpecialCase" title="gempy.core.data.structural_group.FaultsRelationSpecialCase"><span class="pre">FaultsRelationSpecialCase</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">faults_input_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gempy.core.data.FaultsData.html#gempy.core.data.FaultsData" title="gempy_engine.core.data.kernel_classes.faults.FaultsData"><span class="pre">FaultsData</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data/structural_group.html#StructuralGroup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gempy.core.data.StructuralGroup" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">gempy.core.data.</span></span><span class="sig-name descname"><span class="pre">StructuralGroup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">str,</span> <span class="pre">elements:</span> <span class="pre">list[~gempy.core.data.structural_element.StructuralElement],</span> <span class="pre">structural_relation:</span> <span class="pre">~gempy_engine.core.data.stack_relation_type.StackRelationType,</span> <span class="pre">fault_relations:</span> <span class="pre">list[~gempy.core.data.structural_group.StructuralGroup]</span> <span class="pre">|</span> <span class="pre">~gempy.core.data.structural_group.FaultsRelationSpecialCase</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">faults_input_data:</span> <span class="pre">~gempy_engine.core.data.kernel_classes.faults.FaultsData</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">custom_interpolation:</span> <span class="pre">~typing.Annotated[~gempy_engine.core.data.interpolation_functions.CustomInterpolationFunctions</span> <span class="pre">|</span> <span class="pre">None,</span> <span class="pre">FieldInfo(annotation=NoneType,</span> <span class="pre">required=True,</span> <span class="pre">exclude=True)]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">ignored_grid_types:</span> <span class="pre">~typing.Annotated[tuple[str,</span> <span class="pre">...],</span> <span class="pre">FieldInfo(annotation=NoneType,</span> <span class="pre">required=True,</span> <span class="pre">exclude=True)]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gempy/core/data/structural_group.html#StructuralGroup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gempy.core.data.StructuralGroup" title="Link to this definition">¶</a></dt>
 <dd><p>An abstract base class that represents a structural group within a geological model.</p>
 <section id="examples-using-gempy-core-data-structuralgroup">
 <h2>Examples using <code class="docutils literal notranslate"><span class="pre">gempy.core.data.StructuralGroup</span></code><a class="headerlink" href="#examples-using-gempy-core-data-structuralgroup" title="Link to this heading">¶</a></h2>
-<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="Getting Started"><img alt="" src="../_images/sphx_glr_get_started_thumb.png" />
-<p><a class="reference internal" href="../tutorials/a_getting_started/get_started.html"><span class="doc">Getting Started</span></a></p>
-  <div class="sphx-glr-thumbnail-title">Getting Started</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="1.1 -Basics of geological modeling with GemPy"><img alt="" src="../_images/sphx_glr_ch1_1_basics_thumb.png" />
-<p><a class="reference internal" href="../tutorials/ch1_fundamentals/ch1_1_basics.html"><span class="doc">1.1 -Basics of geological modeling with GemPy</span></a></p>
-  <div class="sphx-glr-thumbnail-title">1.1 -Basics of geological modeling with GemPy</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="1.5: Fault relations"><img alt="" src="../_images/sphx_glr_ch1_5_fault_relations_thumb.png" />
-<p><a class="reference internal" href="../tutorials/ch1_fundamentals/ch1_5_fault_relations.html"><span class="doc">1.5: Fault relations</span></a></p>
-  <div class="sphx-glr-thumbnail-title">1.5: Fault relations</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="Video Tutorial &quot;code-along&quot;: Faults"><img alt="" src="../_images/sphx_glr_video_tutorial_model_2_faults_thumb.png" />
-<p><a class="reference internal" href="../tutorials/z_other_tutorials/video_tutorial_model_2_faults.html"><span class="doc">Video Tutorial “code-along”: Faults</span></a></p>
+<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="Video Tutorial &quot;code-along&quot;: Faults"><img alt="" src="../_images/sphx_glr_video_tutorial_model_2_faults_thumb.png" />
+<p><a class="reference internal" href="../tutorials/a_getting_started/video_tutorial_model_2_faults.html"><span class="doc">Video Tutorial “code-along”: Faults</span></a></p>
   <div class="sphx-glr-thumbnail-title">Video Tutorial "code-along": Faults</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="Model of Ales, France: Plotting Sections and Maps"><img alt="" src="../_images/sphx_glr_Alesmodel_thumb.png" />
-<p><a class="reference internal" href="../examples/real/Alesmodel.html"><span class="doc">Model of Ales, France: Plotting Sections and Maps</span></a></p>
-  <div class="sphx-glr-thumbnail-title">Model of Ales, France: Plotting Sections and Maps</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="This model is part of a geomodeling benchmaring effort. More information (and, hopefully, publication) coming."><img alt="" src="../_images/sphx_glr_Claudius_thumb.png" />
-<p><a class="reference internal" href="../examples/real/Claudius.html"><span class="doc">Geomodeling benchmark: the “Claudius”-Model</span></a></p>
-  <div class="sphx-glr-thumbnail-title">Geomodeling benchmark: the "Claudius"-Model</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="Unknown Model: Importing Borehole Data and Building a 3D Geological Model with GemPy"><img alt="" src="../_images/sphx_glr_mik_thumb.png" />
-<p><a class="reference internal" href="../examples/real/mik.html"><span class="doc">Unknown Model: Importing Borehole Data and Building a 3D Geological Model with GemPy</span></a></p>
-  <div class="sphx-glr-thumbnail-title">Unknown Model: Importing Borehole Data and Building a 3D Geological Model with GemPy</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="A closer look at gempy&#x27;s data classes and modeling API"><img alt="" src="../_images/sphx_glr_a01_basics_thumb.png" />
+<p><a class="reference internal" href="../tutorials/b_fundamentals/a01_basics.html"><span class="doc">Basics: Data Classes and Modeling API</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Basics: Data Classes and Modeling API</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Building a model from scratch, one borehole reading at a time"><img alt="" src="../_images/sphx_glr_b02_cross_section_thumb.png" />
+<p><a class="reference internal" href="../tutorials/b_fundamentals/b02_cross_section.html"><span class="doc">Building a Model from Scratch</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Building a Model from Scratch</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Cross-sections, topography, and geological maps of the Tertiary Alès basin"><img alt="" src="../_images/sphx_glr_Alesmodel_thumb.png" />
+<p><a class="reference internal" href="../examples/real/Alesmodel.html"><span class="doc">Alès Basin, France</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Alès Basin, France</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="A geomodeling benchmark dataset located in northern Queensland, Australia"><img alt="" src="../_images/sphx_glr_Claudius_thumb.png" />
+<p><a class="reference internal" href="../examples/real/Claudius.html"><span class="doc">Claudius, Queensland, Australia</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Claudius, Queensland, Australia</div>
 </div></div><div class="sphx-glr-clear"></div><p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.StructuralGroup.__init__" title="gempy.core.data.StructuralGroup.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(name, elements, structural_relation)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.StructuralGroup.__init__" title="gempy.core.data.StructuralGroup.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(name, elements, ...)</p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">append_element</span></code>(element)</p></td>
@@ -91,41 +85,47 @@
 <p class="rubric">Attributes</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.StructuralGroup.fault_relations" title="gempy.core.data.StructuralGroup.fault_relations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fault_relations</span></code></a></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">custom_interpolation</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data.StructuralGroup.fault_relations" title="gempy.core.data.StructuralGroup.fault_relations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fault_relations</span></code></a></p></td>
 <td><p>Relations with other groups in terms of faults.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">faults_input_data</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">faults_input_data</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">id</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">id</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_fault</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_fault</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_lithology</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_lithology</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">number_of_elements</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">number_of_elements</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">number_of_orientations</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">number_of_orientations</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">number_of_points</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">number_of_points</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.StructuralGroup.solution" title="gempy.core.data.StructuralGroup.solution"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solution</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data.StructuralGroup.solution" title="gempy.core.data.StructuralGroup.solution"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solution</span></code></a></p></td>
 <td><p>Solution related to this group from geological computations.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data.StructuralGroup.name" title="gempy.core.data.StructuralGroup.name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.StructuralGroup.name" title="gempy.core.data.StructuralGroup.name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code></a></p></td>
 <td><p>The name of the structural group.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.StructuralGroup.elements" title="gempy.core.data.StructuralGroup.elements"><code class="xref py py-obj docutils literal notranslate"><span class="pre">elements</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data.StructuralGroup.elements" title="gempy.core.data.StructuralGroup.elements"><code class="xref py py-obj docutils literal notranslate"><span class="pre">elements</span></code></a></p></td>
 <td><p>A list of structural elements within the group.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data.StructuralGroup.structural_relation" title="gempy.core.data.StructuralGroup.structural_relation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">structural_relation</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.StructuralGroup.structural_relation" title="gempy.core.data.StructuralGroup.structural_relation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">structural_relation</span></code></a></p></td>
 <td><p>The type of relation between the structural elements in the group.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ignored_grid_types</span></code></p></td>
+<td><p></p></td>
 </tr>
 </tbody>
 </table>
@@ -161,7 +161,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gempy.core.data.StructuralGroup.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elements</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="gempy.core.data.StructuralElement.html#gempy.core.data.StructuralElement" title="gempy.core.data.structural_element.StructuralElement"><span class="pre">StructuralElement</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">structural_relation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gempy.core.data.StackRelationType.html#gempy.core.data.StackRelationType" title="gempy_engine.core.data.stack_relation_type.StackRelationType"><span class="pre">StackRelationType</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">fault_relations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#gempy.core.data.StructuralGroup" title="gempy.core.data.structural_group.StructuralGroup"><span class="pre">StructuralGroup</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="gempy.core.data.FaultsRelationSpecialCase.html#gempy.core.data.FaultsRelationSpecialCase" title="gempy.core.data.structural_group.FaultsRelationSpecialCase"><span class="pre">FaultsRelationSpecialCase</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">faults_input_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gempy.core.data.FaultsData.html#gempy.core.data.FaultsData" title="gempy_engine.core.data.kernel_classes.faults.FaultsData"><span class="pre">FaultsData</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#gempy.core.data.StructuralGroup.__init__" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">str,</span> <span class="pre">elements:</span> <span class="pre">list[~gempy.core.data.structural_element.StructuralElement],</span> <span class="pre">structural_relation:</span> <span class="pre">~gempy_engine.core.data.stack_relation_type.StackRelationType,</span> <span class="pre">fault_relations:</span> <span class="pre">list[~gempy.core.data.structural_group.StructuralGroup]</span> <span class="pre">|</span> <span class="pre">~gempy.core.data.structural_group.FaultsRelationSpecialCase</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">faults_input_data:</span> <span class="pre">~gempy_engine.core.data.kernel_classes.faults.FaultsData</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">custom_interpolation:</span> <span class="pre">~typing.Annotated[~gempy_engine.core.data.interpolation_functions.CustomInterpolationFunctions</span> <span class="pre">|</span> <span class="pre">None,</span> <span class="pre">FieldInfo(annotation=NoneType,</span> <span class="pre">required=True,</span> <span class="pre">exclude=True)]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">ignored_grid_types:</span> <span class="pre">~typing.Annotated[tuple[str,</span> <span class="pre">...],</span> <span class="pre">FieldInfo(annotation=NoneType,</span> <span class="pre">required=True,</span> <span class="pre">exclude=True)]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#gempy.core.data.StructuralGroup.__init__" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </section>

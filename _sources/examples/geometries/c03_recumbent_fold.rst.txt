@@ -19,14 +19,14 @@
 
 
 Model 3 - Recumbent Fold
-========================
+=========================
 
 Modeling a recumbent fold
 
 This script demonstrates how to create a geological model of a recumbent fold using GemPy,
 a Python-based, open-source library for implicit geological modeling.
 
-.. GENERATED FROM PYTHON SOURCE LINES 10-19
+.. GENERATED FROM PYTHON SOURCE LINES 10-17
 
 .. code-block:: Python
 
@@ -34,7 +34,6 @@ a Python-based, open-source library for implicit geological modeling.
     # Import necessary libraries
     import gempy as gp
     import gempy_viewer as gpv
-
 
     # sphinx_gallery_thumbnail_number = 2
 
@@ -45,20 +44,21 @@ a Python-based, open-source library for implicit geological modeling.
 
 
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 20-22
+.. GENERATED FROM PYTHON SOURCE LINES 18-21
 
 Generate the model
-Define the path to data
+-------------------
+Define the path to the input data
 
-.. GENERATED FROM PYTHON SOURCE LINES 22-44
+.. GENERATED FROM PYTHON SOURCE LINES 21-45
 
 .. code-block:: Python
 
     data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
     path_to_data = data_path + "/data/input_data/jan_models/"
+
     # Create a GeoModel instance
-    data = gp.create_geomodel(
+    geo_model = gp.create_geomodel(
         project_name='recumbent',
         extent=[0, 1000, 0, 1000, 0, 1000],
         resolution=[50, 50, 50],
@@ -68,14 +68,15 @@ Define the path to data
             path_to_surface_points=path_to_data + "model3_surface_points.csv"
         )
     )
+
     # Map geological series to surfaces
     gp.map_stack_to_surfaces(
-        gempy_model=data,
+        gempy_model=geo_model,
         mapping_object={"Strat_Series": ('rock2', 'rock1')}
     )
+
     # Compute the geological model
-    gp.compute_model(data)
-    geo_data = data
+    gp.compute_model(geo_model)
 
 
 
@@ -88,47 +89,41 @@ Define the path to data
     Surface points hash:  16bd39d19892d9a70aa41b1141f130894de6a36910f27e98ec712351f9373ce2
     Orientations hash:  1d12a150cd6f3faa81b8bbebc167ba69de4ac85fc524b771bd97ce94eb2a3e60
     Setting Backend To: AvailableBackends.PYTORCH
-    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
-    Setting Backend To: AvailableBackends.PYTORCH
+    GPU enabled. Using device: cuda
+    GPU device count: 1
+    Current GPU device: 0
     Chunking done: 29 chunks
     Chunking done: 14 chunks
     Chunking done: 6 chunks
 
 
+.. raw:: html
 
+    <div class="output_subarea output_html rendered_html output_result">
+    <b>Solutions:</b> 6 Octree Levels, 2 DualContouringMeshes
+    </div>
+    <br />
+    <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 45-46
+.. GENERATED FROM PYTHON SOURCE LINES 46-49
 
-Plot the initial geological model in the y direction
+2D visualization
+-----------------
+Plot the initial input data in the y direction, without computed results
 
-.. GENERATED FROM PYTHON SOURCE LINES 46-51
+.. GENERATED FROM PYTHON SOURCE LINES 49-51
 
 .. code-block:: Python
 
-    gpv.plot_2d(geo_data, direction=['y'], show_results=False)
-
-    # Plot the result of the model in the y direction with data
-    gpv.plot_2d(geo_data, direction=['y'], show_data=True)
+    gpv.plot_2d(geo_model, direction=['y'], show_results=False)
 
 
 
 
-.. rst-class:: sphx-glr-horizontal
-
-
-    *
-
-      .. image-sg:: /examples/geometries/images/sphx_glr_c03_recumbent_fold_001.png
-         :alt: Cell Number: mid Direction: y
-         :srcset: /examples/geometries/images/sphx_glr_c03_recumbent_fold_001.png
-         :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /examples/geometries/images/sphx_glr_c03_recumbent_fold_002.png
-         :alt: Cell Number: mid Direction: y
-         :srcset: /examples/geometries/images/sphx_glr_c03_recumbent_fold_002.png
-         :class: sphx-glr-multi-img
+.. image-sg:: /examples/geometries/images/sphx_glr_c03_recumbent_fold_001.png
+   :alt: Cell Number: mid Direction: y
+   :srcset: /examples/geometries/images/sphx_glr_c03_recumbent_fold_001.png
+   :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
@@ -136,16 +131,49 @@ Plot the initial geological model in the y direction
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f57803edf50>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3eea7ff6d0>
 
 
 
 .. GENERATED FROM PYTHON SOURCE LINES 52-53
 
+Plot the computed result in the y direction, with data
+
+.. GENERATED FROM PYTHON SOURCE LINES 53-55
+
 .. code-block:: Python
 
-    gpv.plot_3d(geo_data, show_surfaces=True)
+    gpv.plot_2d(geo_model, direction=['y'], show_data=True)
 
+
+
+
+.. image-sg:: /examples/geometries/images/sphx_glr_c03_recumbent_fold_002.png
+   :alt: Cell Number: mid Direction: y
+   :srcset: /examples/geometries/images/sphx_glr_c03_recumbent_fold_002.png
+   :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3e3d5f7a50>
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 56-59
+
+3D visualization
+-----------------
+Display the computed model in 3D
+
+.. GENERATED FROM PYTHON SOURCE LINES 59-59
+
+.. code-block:: Python
+
+    gpv.plot_3d(geo_model, show_lith=True, show_boundaries=True, ve=None)
 
 
 .. image-sg:: /examples/geometries/images/sphx_glr_c03_recumbent_fold_003.png
@@ -159,14 +187,14 @@ Plot the initial geological model in the y direction
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f57836920b0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f3e3d583850>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.461 seconds)
+   **Total running time of the script:** (0 minutes 2.148 seconds)
 
 
 .. _sphx_glr_download_examples_geometries_c03_recumbent_fold.py:

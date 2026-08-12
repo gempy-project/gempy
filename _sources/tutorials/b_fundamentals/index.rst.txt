@@ -1,0 +1,123 @@
+
+
+.. _sphx_glr_tutorials_b_fundamentals:
+
+Fundamentals
+------------
+
+A deeper, written companion to the Getting Started video tutorials, covering GemPy's
+core modeling and visualization workflow in more technical detail.
+
+
+.. raw:: html
+
+  <div id='sg-tag-list' class='sphx-glr-tag-list'></div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+.. thumbnail-parent-div-open
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="A closer look at gempy&#x27;s data classes and modeling API">
+
+.. only:: html
+
+  .. image:: /tutorials/b_fundamentals/images/thumb/sphx_glr_a01_basics_thumb.png
+    :alt:
+
+  :doc:`/tutorials/b_fundamentals/a01_basics`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Basics: Data Classes and Modeling API</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Building a model from scratch, one borehole reading at a time">
+
+.. only:: html
+
+  .. image:: /tutorials/b_fundamentals/images/thumb/sphx_glr_b02_cross_section_thumb.png
+    :alt:
+
+  :doc:`/tutorials/b_fundamentals/b02_cross_section`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Building a Model from Scratch</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Why grids exist, and gempy&#x27;s different grid types">
+
+.. only:: html
+
+  .. image:: /tutorials/b_fundamentals/images/thumb/sphx_glr_c03_grids_thumb.png
+    :alt:
+
+  :doc:`/tutorials/b_fundamentals/c03_grids`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Grids: Regular, Octree, and Custom</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="A tour of gempy_viewer&#x27;s 2D plotting options">
+
+.. only:: html
+
+  .. image:: /tutorials/b_fundamentals/images/thumb/sphx_glr_d04_2d_visualization_thumb.png
+    :alt:
+
+  :doc:`/tutorials/b_fundamentals/d04_2d_visualization`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">2D Visualization: Sections and Custom Plots</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="A tour of gempy_viewer&#x27;s 3D plotting options">
+
+.. only:: html
+
+  .. image:: /tutorials/b_fundamentals/images/thumb/sphx_glr_e05_3d_visualization_thumb.png
+    :alt:
+
+  :doc:`/tutorials/b_fundamentals/e05_3d_visualization`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">3D Visualization: Interactive Model and Custom Plots</div>
+    </div>
+
+
+.. thumbnail-parent-div-close
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /tutorials/b_fundamentals/a01_basics
+   /tutorials/b_fundamentals/b02_cross_section
+   /tutorials/b_fundamentals/c03_grids
+   /tutorials/b_fundamentals/d04_2d_visualization
+   /tutorials/b_fundamentals/e05_3d_visualization
+

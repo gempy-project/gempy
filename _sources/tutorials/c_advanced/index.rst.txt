@@ -1,0 +1,104 @@
+
+
+.. _sphx_glr_tutorials_c_advanced:
+
+Advanced
+--------
+
+Tutorials on GemPy plugins and examples of using GemPy for specific workflows, building
+on the Fundamentals section.
+
+.. raw:: html
+
+  <div id='sg-tag-list' class='sphx-glr-tag-list'></div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+.. thumbnail-parent-div-open
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Precomputing the gravity kernel of a measurement-centered grid">
+
+.. only:: html
+
+  .. image:: /tutorials/c_advanced/images/thumb/sphx_glr_a01_cell_selection_thumb.png
+    :alt:
+
+  :doc:`/tutorials/c_advanced/a01_cell_selection`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Centered Grids for Geophysics</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Computing a simple gravity response for a greenstone belt model">
+
+.. only:: html
+
+  .. image:: /tutorials/c_advanced/images/thumb/sphx_glr_b02_gravity_thumb.png
+    :alt:
+
+  :doc:`/tutorials/c_advanced/b02_gravity`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Forward Gravity Modeling</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Domain-aware kriging and simulation with GSTools, respecting a model&#x27;s lithology and fault-block boundaries.">
+
+.. only:: html
+
+  .. image:: /tutorials/c_advanced/images/thumb/sphx_glr_c03_kriging_thumb.png
+    :alt:
+
+  :doc:`/tutorials/c_advanced/c03_kriging`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Populating a Structural Model with Properties</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Extracting adjacency graphs and topology relationships from a computed model">
+
+.. only:: html
+
+  .. image:: /tutorials/c_advanced/images/thumb/sphx_glr_d04_topology_thumb.png
+    :alt:
+
+  :doc:`/tutorials/c_advanced/d04_topology`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Analyzing Geomodel Topology</div>
+    </div>
+
+
+.. thumbnail-parent-div-close
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /tutorials/c_advanced/a01_cell_selection
+   /tutorials/c_advanced/b02_gravity
+   /tutorials/c_advanced/c03_kriging
+   /tutorials/c_advanced/d04_topology
+

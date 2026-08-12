@@ -31,6 +31,7 @@
 
    .. autosummary::
    
+      ~StructuralGroup.custom_interpolation
       ~StructuralGroup.fault_relations
       ~StructuralGroup.faults_input_data
       ~StructuralGroup.id
@@ -43,6 +44,7 @@
       ~StructuralGroup.name
       ~StructuralGroup.elements
       ~StructuralGroup.structural_relation
+      ~StructuralGroup.ignored_grid_types
    
    
 

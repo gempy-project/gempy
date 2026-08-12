@@ -1,12 +1,15 @@
 """
-Geomodeling benchmark: the "Claudius"-Model
-========
+Claudius, Queensland, Australia
+=================================
 
-This model is part of a geomodeling benchmaring effort. More information (and, hopefully, publication) coming.
+A geomodeling benchmark dataset located in northern Queensland, Australia
+
+This model is part of a geomodeling benchmarking effort; a full publication describing the
+benchmark suite is still pending. It combines four stratigraphic surfaces with a single fault.
 """
 
 # %%
-import sys, os
+import os
 
 # Importing gempy
 import gempy as gp
@@ -107,14 +110,14 @@ orientations.dtypes
 # Number of voxels:
 np.array([38, 55, 30]).prod()
 
-surface_points_table: gp.data.SurfacePointsTable = gp.data.SurfacePointsTable.from_arrays(
+surface_points_table = gp.data.SurfacePointsTable.from_arrays(
     x=surface_points['X'].values,
     y=surface_points['Y'].values,
     z=surface_points['Z'].values,
     names=surface_points['surface'].values
 )
 
-orientations_table: gp.data.OrientationsTable = gp.data.OrientationsTable.from_arrays(
+orientations_table = gp.data.OrientationsTable.from_arrays(
     x=orientations['X'].values,
     y=orientations['Y'].values,
     z=orientations['Z'].values,
@@ -125,12 +128,12 @@ orientations_table: gp.data.OrientationsTable = gp.data.OrientationsTable.from_a
     name_id_map=surface_points_table.name_id_map  # ! Make sure that ids and names are shared
 )
 
-structural_frame: gp.data.StructuralFrame = gp.data.StructuralFrame.from_data_tables(
+structural_frame = gp.data.StructuralFrame.from_data_tables(
     surface_points=surface_points_table,
     orientations=orientations_table
 )
 
-geo_model: gp.data.GeoModel = gp.create_geomodel(
+geo_model = gp.create_geomodel(
     project_name='Claudius',
     extent=[548800, 552500, 7816600, 7822000, -11010, -8400],
     resolution=[38, 55, 30],
@@ -150,10 +153,7 @@ geo_model.structural_frame.get_group_by_name("default_formation").elements.pop(-
 # Insert the fault group into the structural frame:
 geo_model.structural_frame.insert_group(0, group_fault)
 
-gp.set_is_fault(
-    frame=geo_model.structural_frame,
-    fault_groups=[geo_model.structural_frame.get_group_by_name('Fault1')]
-)
+gp.set_is_fault(geo_model, [geo_model.structural_frame.get_group_by_name('Fault1')])
 
 print(geo_model)
 
@@ -174,13 +174,12 @@ gp.modify_surface_points(geo_model, nugget=0.01)
 gp.modify_orientations(geo_model, polarity=-1)
 
 # %%
-# We need an orientation per series/fault. The faults does not have
-# orientation so the easiest is to create an orientation from the surface
-# points availablle:
-# 
+# We need an orientation per series/fault. Faults do not have an orientation,
+# so the easiest approach is to create one from the surface points available:
+#
 
 element = geo_model.structural_frame.get_element_by_name("Claudius_fault")
-new_orientations: gp.data.OrientationsTable = gp.create_orientations_from_surface_points_coords(
+new_orientations = gp.create_orientations_from_surface_points_coords(
     xyz_coords=element.surface_points.xyz
 )
 gp.add_orientations(
@@ -196,26 +195,23 @@ gp.add_orientations(
 gpv.plot_2d(geo_model, direction='y')
 
 # %%
-# We will need to separate with surface belong to each series:
-# 
+# We need to specify which surface belongs to each series:
+#
 
 gp.map_stack_to_surfaces(
     gempy_model=geo_model,
     mapping_object={
         'Default series': ('0', '60', '250'),
         'Fault': 'Claudius_fault',
-        'Uncomformity': '330',
+        'Unconformity': '330',
     }
 )
 # %%
-# So far we did not specify which series/faults are actula faults:
-# 
+# So far we have not specified which series/faults are actual faults:
+#
 
 # %%
-gp.set_is_fault(
-    frame=geo_model.structural_frame,
-    fault_groups=[geo_model.structural_frame.get_group_by_name('Fault')]
-)
+gp.set_is_fault(geo_model, [geo_model.structural_frame.get_group_by_name('Fault')])
 
 geo_model.structural_frame
 
@@ -223,7 +219,7 @@ geo_model.structural_frame
 geo_model.interpolation_options.kernel_options.range = 1
 gp.compute_model(
     geo_model,
-    gp.data.GemPyEngineConfig(
+    engine_config=gp.data.GemPyEngineConfig(
         backend=gp.data.AvailableBackends.numpy,
         use_gpu=False,
         dtype='float64'

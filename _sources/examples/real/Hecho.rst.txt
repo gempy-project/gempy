@@ -18,12 +18,16 @@
 .. _sphx_glr_examples_real_Hecho.py:
 
 
-Geomodeling benchmark: the "Hecho"-Model
-========
+Hecho, Spanish Pyrenees
+==========================
 
-This model is part of a geomodeling benchmaring effort. More information (and, hopefully, publication) coming.
+The Hecho Group turbidites, Spanish Pyrenees
 
-.. GENERATED FROM PYTHON SOURCE LINES 7-11
+This model is part of a geomodeling benchmarking effort; a full publication describing the
+benchmark suite is still pending. It is defined on a local, outcrop-scale grid a few meters
+across, with nine stratigraphic horizons offset by three faults.
+
+.. GENERATED FROM PYTHON SOURCE LINES 11-15
 
 .. code-block:: Python
 
@@ -38,14 +42,13 @@ This model is part of a geomodeling benchmaring effort. More information (and, h
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 12-21
+.. GENERATED FROM PYTHON SOURCE LINES 16-24
 
 .. code-block:: Python
 
 
     # Aux imports
     import pandas as pn
-    from gempy.modules.serialization.save_load import _validate_serialization
 
     # Importing gempy
     import gempy as gp
@@ -58,7 +61,7 @@ This model is part of a geomodeling benchmaring effort. More information (and, h
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 22-28
+.. GENERATED FROM PYTHON SOURCE LINES 25-31
 
 Loading surface points from repository:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -67,7 +70,7 @@ With pandas we can do it directly from the web and with the right args
 we can directly tidy the data in gempy style:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 30-59
+.. GENERATED FROM PYTHON SOURCE LINES 33-62
 
 .. code-block:: Python
 
@@ -95,7 +98,7 @@ we can directly tidy the data in gempy style:
         fault_df['surface'] = 'f' + str(f)
         dfs.append(fault_df)
 
-    # We put all the surfaces points together because is how gempy likes it:
+    # We put all the surface points together, since that's how gempy likes it:
     surface_points = pn.concat(dfs, sort=True)
     surface_points.reset_index(inplace=True, drop=False)
     surface_points.tail()
@@ -187,12 +190,12 @@ we can directly tidy the data in gempy style:
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 60-62
+.. GENERATED FROM PYTHON SOURCE LINES 63-65
 
 Now we do the same with the orientations:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 64-86
+.. GENERATED FROM PYTHON SOURCE LINES 67-89
 
 .. code-block:: Python
 
@@ -206,7 +209,7 @@ Now we do the same with the orientations:
     # use the same color
     orientations['surface'] = 0
 
-    # We fill the laking direction with a dummy value:
+    # We fill the missing direction with a dummy value:
     orientations['G_y'] = 0
 
     # Replace -99999.00000 with NaN
@@ -225,7 +228,7 @@ Now we do the same with the orientations:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 87-96
+.. GENERATED FROM PYTHON SOURCE LINES 90-99
 
 Data initialization:
 ~~~~~~~~~~~~~~~~~~~~
@@ -237,19 +240,19 @@ Suggested resolution: 0.05m (grid size 321 x 21 x 91)
 
 %%
 
-.. GENERATED FROM PYTHON SOURCE LINES 96-134
+.. GENERATED FROM PYTHON SOURCE LINES 99-137
 
 .. code-block:: Python
 
 
-    surface_points_table: gp.data.SurfacePointsTable = gp.data.SurfacePointsTable.from_arrays(
+    surface_points_table = gp.data.SurfacePointsTable.from_arrays(
         x=surface_points['X'].values,
         y=surface_points['Y'].values,
         z=surface_points['Z'].values,
         names=surface_points['surface'].values.astype(str)
     )
 
-    orientations_table: gp.data.OrientationsTable = gp.data.OrientationsTable.from_arrays(
+    orientations_table = gp.data.OrientationsTable.from_arrays(
         x=orientations['X'].values,
         y=orientations['Y'].values,
         z=orientations['Z'].values,
@@ -260,13 +263,13 @@ Suggested resolution: 0.05m (grid size 321 x 21 x 91)
         name_id_map=surface_points_table.name_id_map  # ! Make sure that ids and names are shared
     )
 
-    structural_frame: gp.data.StructuralFrame = gp.data.StructuralFrame.from_data_tables(
+    structural_frame = gp.data.StructuralFrame.from_data_tables(
         surface_points=surface_points_table,
         orientations=orientations_table
     )
 
-    geo_model: gp.data.GeoModel = gp.create_geomodel(
-        project_name='Moureze',
+    geo_model = gp.create_geomodel(
+        project_name='Hecho',
         extent=[0, 16, -0.5, 0.5, 0, 4.5],
         resolution=[321, 21, 91],
         structural_frame=structural_frame
@@ -317,14 +320,13 @@ Suggested resolution: 0.05m (grid size 321 x 21 x 91)
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 135-139
+.. GENERATED FROM PYTHON SOURCE LINES 138-141
 
-We need an orientation per series/fault. The faults does not have
-orientation so the easiest is to create an orientation from the surface
-points availablle:
+We need an orientation per series/fault. Faults do not have an orientation,
+so the easiest approach is to create one from the surface points available:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 141-157
+.. GENERATED FROM PYTHON SOURCE LINES 143-159
 
 .. code-block:: Python
 
@@ -351,12 +353,12 @@ points availablle:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 158-160
+.. GENERATED FROM PYTHON SOURCE LINES 160-162
 
 Now we can see how the data looks so far:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 162-164
+.. GENERATED FROM PYTHON SOURCE LINES 164-166
 
 .. code-block:: Python
 
@@ -376,16 +378,16 @@ Now we can see how the data looks so far:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f57801a1750>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3e14c7b550>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 165-167
+.. GENERATED FROM PYTHON SOURCE LINES 167-169
 
 By default all surfaces belong to one unique series.
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 169-171
+.. GENERATED FROM PYTHON SOURCE LINES 171-173
 
 .. code-block:: Python
 
@@ -484,12 +486,12 @@ By default all surfaces belong to one unique series.
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 172-174
+.. GENERATED FROM PYTHON SOURCE LINES 174-176
 
-We will need to separate with surface belong to each series:
+We need to specify which surface belongs to each series:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 176-181
+.. GENERATED FROM PYTHON SOURCE LINES 178-183
 
 .. code-block:: Python
 
@@ -612,25 +614,22 @@ We will need to separate with surface belong to each series:
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 182-185
+.. GENERATED FROM PYTHON SOURCE LINES 184-187
 
-However if we want the faults to offset the “Default series”, they will
+However, if we want the faults to offset the "Default series", they will
 need to be more recent (higher on the pile). We can modify the order by:
 
 
 .. GENERATED FROM PYTHON SOURCE LINES 189-191
 
-Lastly, so far we did not specify which series/faults are actula faults:
+Lastly, so far we have not specified which series/faults are actual faults:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 193-198
+.. GENERATED FROM PYTHON SOURCE LINES 193-195
 
 .. code-block:: Python
 
-    gp.set_is_fault(
-        frame=geo_model,
-        fault_groups=['Fault1', 'Fault2', 'Fault3']
-    )
+    gp.set_is_fault(geo_model, ['Fault1', 'Fault2', 'Fault3'])
 
 
 
@@ -746,14 +745,14 @@ Lastly, so far we did not specify which series/faults are actula faults:
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 199-203
+.. GENERATED FROM PYTHON SOURCE LINES 196-200
 
 The default range is always the diagonal of the extent. Since in this
 model data is very close we will need to reduce the range to 5-10% of
 that value:
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 205-207
+.. GENERATED FROM PYTHON SOURCE LINES 202-204
 
 .. code-block:: Python
 
@@ -766,7 +765,7 @@ that value:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 208-216
+.. GENERATED FROM PYTHON SOURCE LINES 205-213
 
 Explanation of model characteristics and adjustments
 This model has characteristics that make it difficult to get the right default values:
@@ -777,11 +776,11 @@ To address these issues:
 - Reduce the std of the error parameter in octree refinement, which evaluates fewer voxels but may leave some without refinement
 Enable debugging options to help tune these parameters.
 
-.. GENERATED FROM PYTHON SOURCE LINES 218-219
+.. GENERATED FROM PYTHON SOURCE LINES 215-216
 
 Setting verbose and condition number options for debugging
 
-.. GENERATED FROM PYTHON SOURCE LINES 219-222
+.. GENERATED FROM PYTHON SOURCE LINES 216-219
 
 .. code-block:: Python
 
@@ -795,7 +794,7 @@ Setting verbose and condition number options for debugging
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 223-232
+.. GENERATED FROM PYTHON SOURCE LINES 220-229
 
 .. code-block:: Python
 
@@ -817,15 +816,16 @@ Setting verbose and condition number options for debugging
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.PYTORCH
-    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
-    Setting Backend To: AvailableBackends.PYTORCH
-    Condition number: 1546449.7334630876.
+    GPU enabled. Using device: cuda
+    GPU device count: 1
+    Current GPU device: 0
+    Condition number: 1546449.7334630927.
     Chunking done: 21 chunks
-    Condition number: 1545102.6430502783.
+    Condition number: 1545102.643050272.
     Chunking done: 26 chunks
-    Condition number: 1447785.0114887375.
+    Condition number: 1447785.0114886982.
     Chunking done: 21 chunks
-    Condition number: 40165630.351970166.
+    Condition number: 40165630.3512226.
     Chunking done: 1052 chunks
     Chunking done: 9 chunks
     Chunking done: 59 chunks
@@ -840,7 +840,7 @@ Setting verbose and condition number options for debugging
     <br />
     <br />
 
-.. GENERATED FROM PYTHON SOURCE LINES 233-235
+.. GENERATED FROM PYTHON SOURCE LINES 230-232
 
 .. code-block:: Python
 
@@ -860,11 +860,11 @@ Setting verbose and condition number options for debugging
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f57ec7a5ed0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3e143a8e50>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 236-238
+.. GENERATED FROM PYTHON SOURCE LINES 233-235
 
 .. code-block:: Python
 
@@ -884,11 +884,11 @@ Setting verbose and condition number options for debugging
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f57783b6f50>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3e1440cbd0>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 239-241
+.. GENERATED FROM PYTHON SOURCE LINES 236-238
 
 .. code-block:: Python
 
@@ -908,15 +908,15 @@ Setting verbose and condition number options for debugging
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f5782d9c850>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3e143a8e50>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 242-243
+.. GENERATED FROM PYTHON SOURCE LINES 239-240
 
 sphinx_gallery_thumbnail_number = 3
 
-.. GENERATED FROM PYTHON SOURCE LINES 243-244
+.. GENERATED FROM PYTHON SOURCE LINES 240-241
 
 .. code-block:: Python
 
@@ -935,14 +935,14 @@ sphinx_gallery_thumbnail_number = 3
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f577809c590>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f3e143efbd0>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 27.182 seconds)
+   **Total running time of the script:** (0 minutes 18.407 seconds)
 
 
 .. _sphx_glr_download_examples_real_Hecho.py:

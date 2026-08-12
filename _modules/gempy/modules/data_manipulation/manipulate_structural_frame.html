@@ -40,7 +40,8 @@
           <div class="body" role="main">
             
   <h1>Source code for gempy.modules.data_manipulation.manipulate_structural_frame</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gempy_engine.core.data.stack_relation_type</span><span class="w"> </span><span class="kn">import</span> <span class="n">StackRelationType</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gempy_engine.core.data.interpolation_functions</span><span class="w"> </span><span class="kn">import</span> <span class="n">CustomInterpolationFunctions</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gempy_engine.core.data.stack_relation_type</span><span class="w"> </span><span class="kn">import</span> <span class="n">StackRelationType</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gempy.core.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">StructuralGroup</span><span class="p">,</span> <span class="n">GeoModel</span><span class="p">,</span> <span class="n">FaultsRelationSpecialCase</span><span class="p">,</span> <span class="n">StructuralElement</span><span class="p">,</span> <span class="n">StructuralFrame</span>
 
 
@@ -48,17 +49,20 @@
 <a class="viewcode-back" href="../../../../GemPy%20API/gempy.add_structural_group.html#gempy.add_structural_group">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">add_structural_group</span><span class="p">(</span>
         <span class="n">model</span><span class="p">:</span> <span class="n">GeoModel</span><span class="p">,</span> <span class="n">group_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">structural_group_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">elements</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">StructuralElement</span><span class="p">],</span>
-        <span class="n">structural_relation</span><span class="p">:</span> <span class="n">StackRelationType</span><span class="p">,</span> <span class="n">fault_relations</span><span class="p">:</span> <span class="n">FaultsRelationSpecialCase</span> <span class="o">=</span> <span class="n">FaultsRelationSpecialCase</span><span class="o">.</span><span class="n">OFFSET_ALL</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StructuralFrame</span><span class="p">:</span>
-    
+        <span class="n">structural_relation</span><span class="p">:</span> <span class="n">StackRelationType</span><span class="p">,</span>
+        <span class="n">fault_relations</span><span class="p">:</span> <span class="n">FaultsRelationSpecialCase</span> <span class="o">=</span> <span class="n">FaultsRelationSpecialCase</span><span class="o">.</span><span class="n">OFFSET_ALL</span><span class="p">,</span>
+        <span class="n">custom_interpolation</span><span class="p">:</span> <span class="n">CustomInterpolationFunctions</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StructuralFrame</span><span class="p">:</span>
+
     <span class="c1"># Check elements are a Sequence</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">elements</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;elements must be a list of StructuralElement objects.&quot;</span><span class="p">)</span>
-    
+
     <span class="n">new_group</span> <span class="o">=</span> <span class="n">StructuralGroup</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="n">structural_group_name</span><span class="p">,</span>
         <span class="n">elements</span><span class="o">=</span><span class="n">elements</span><span class="p">,</span>
         <span class="n">structural_relation</span><span class="o">=</span><span class="n">structural_relation</span><span class="p">,</span>
-        <span class="n">fault_relations</span><span class="o">=</span><span class="n">fault_relations</span>
+        <span class="n">fault_relations</span><span class="o">=</span><span class="n">fault_relations</span><span class="p">,</span>
+        <span class="n">custom_interpolation</span><span class="o">=</span><span class="n">custom_interpolation</span>
     <span class="p">)</span>
 
     <span class="c1"># Insert the fault group into the structural frame:</span>

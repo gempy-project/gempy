@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**12:03.490** total execution time for 31 files **from all galleries**:
+**08:30.454** total execution time for 26 files **from all galleries**:
 
 .. container::
 
@@ -33,95 +33,80 @@ Computation times
      - Time
      - Mem (MB)
    * - :ref:`sphx_glr_examples_real_Alesmodel.py` (``../../examples/examples/real/Alesmodel.py``)
-     - 04:37.155
+     - 02:00.401
      - 0.0
    * - :ref:`sphx_glr_examples_real_Perth_basin.py` (``../../examples/examples/real/Perth_basin.py``)
-     - 01:33.817
+     - 01:22.137
      - 0.0
-   * - :ref:`sphx_glr_tutorials_ch2-Geophysics_ch2_1_gravity.py` (``../../examples/tutorials/ch2-Geophysics/ch2_1_gravity.py``)
-     - 00:50.584
+   * - :ref:`sphx_glr_tutorials_c_advanced_b02_gravity.py` (``../../examples/tutorials/c_advanced/b02_gravity.py``)
+     - 00:52.916
      - 0.0
    * - :ref:`sphx_glr_examples_real_Claudius.py` (``../../examples/examples/real/Claudius.py``)
-     - 00:48.673
+     - 00:49.977
      - 0.0
-   * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_1_basics.py` (``../../examples/tutorials/ch1_fundamentals/ch1_1_basics.py``)
-     - 00:33.480
-     - 0.0
-   * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_7_3d_visualization.py` (``../../examples/tutorials/ch1_fundamentals/ch1_7_3d_visualization.py``)
-     - 00:28.092
-     - 0.0
-   * - :ref:`sphx_glr_examples_real_Hecho.py` (``../../examples/examples/real/Hecho.py``)
-     - 00:27.182
+   * - :ref:`sphx_glr_tutorials_b_fundamentals_a01_basics.py` (``../../examples/tutorials/b_fundamentals/a01_basics.py``)
+     - 00:26.598
      - 0.0
    * - :ref:`sphx_glr_examples_geometries_h08_more_examples.py` (``../../examples/examples/geometries/h08_more_examples.py``)
-     - 00:24.428
+     - 00:22.774
      - 0.0
-   * - :ref:`sphx_glr_tutorials_z_other_tutorials_video_tutorial_model_2_faults.py` (``../../examples/tutorials/z_other_tutorials/video_tutorial_model_2_faults.py``)
-     - 00:21.191
+   * - :ref:`sphx_glr_tutorials_a_getting_started_video_tutorial_model_2_faults.py` (``../../examples/tutorials/a_getting_started/video_tutorial_model_2_faults.py``)
+     - 00:20.229
      - 0.0
-   * - :ref:`sphx_glr_tutorials_a_getting_started_get_started.py` (``../../examples/tutorials/a_getting_started/get_started.py``)
-     - 00:18.103
+   * - :ref:`sphx_glr_tutorials_b_fundamentals_b02_cross_section.py` (``../../examples/tutorials/b_fundamentals/b02_cross_section.py``)
+     - 00:19.392
      - 0.0
-   * - :ref:`sphx_glr_tutorials_z_other_tutorials_video_tutorial_model_1.py` (``../../examples/tutorials/z_other_tutorials/video_tutorial_model_1.py``)
-     - 00:14.936
+   * - :ref:`sphx_glr_examples_real_Hecho.py` (``../../examples/examples/real/Hecho.py``)
+     - 00:18.407
      - 0.0
-   * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_5_fault_relations.py` (``../../examples/tutorials/ch1_fundamentals/ch1_5_fault_relations.py``)
-     - 00:14.248
+   * - :ref:`sphx_glr_tutorials_a_getting_started_video_tutorial_model_1.py` (``../../examples/tutorials/a_getting_started/video_tutorial_model_1.py``)
+     - 00:15.259
      - 0.0
-   * - :ref:`sphx_glr_tutorials_z_other_tutorials_video_tutorial_model_3_onlap.py` (``../../examples/tutorials/z_other_tutorials/video_tutorial_model_3_onlap.py``)
-     - 00:10.838
+   * - :ref:`sphx_glr_tutorials_c_advanced_c03_kriging.py` (``../../examples/tutorials/c_advanced/c03_kriging.py``)
+     - 00:12.705
+     - 0.0
+   * - :ref:`sphx_glr_tutorials_b_fundamentals_c03_grids.py` (``../../examples/tutorials/b_fundamentals/c03_grids.py``)
+     - 00:10.676
+     - 0.0
+   * - :ref:`sphx_glr_tutorials_a_getting_started_video_tutorial_model_3_onlap.py` (``../../examples/tutorials/a_getting_started/video_tutorial_model_3_onlap.py``)
+     - 00:10.268
      - 0.0
    * - :ref:`sphx_glr_examples_real_Moureze.py` (``../../examples/examples/real/Moureze.py``)
-     - 00:08.314
+     - 00:09.743
+     - 0.0
+   * - :ref:`sphx_glr_tutorials_b_fundamentals_e05_3d_visualization.py` (``../../examples/tutorials/b_fundamentals/e05_3d_visualization.py``)
+     - 00:07.695
      - 0.0
    * - :ref:`sphx_glr_examples_real_Greenstone.py` (``../../examples/examples/real/Greenstone.py``)
-     - 00:07.876
-     - 0.0
-   * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_4_onlap_relations.py` (``../../examples/tutorials/ch1_fundamentals/ch1_4_onlap_relations.py``)
-     - 00:07.439
+     - 00:06.874
      - 0.0
    * - :ref:`sphx_glr_examples_geometries_g07_combination.py` (``../../examples/examples/geometries/g07_combination.py``)
-     - 00:05.944
+     - 00:05.553
      - 0.0
-   * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_3c_topography.py` (``../../examples/tutorials/ch1_fundamentals/ch1_3c_topography.py``)
-     - 00:05.571
-     - 0.0
-   * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_3b_cross_sections.py` (``../../examples/tutorials/ch1_fundamentals/ch1_3b_cross_sections.py``)
-     - 00:03.310
-     - 0.0
-   * - :ref:`sphx_glr_examples_geometries_e05_fault.py` (``../../examples/examples/geometries/e05_fault.py``)
-     - 00:03.265
+   * - :ref:`sphx_glr_tutorials_b_fundamentals_d04_2d_visualization.py` (``../../examples/tutorials/b_fundamentals/d04_2d_visualization.py``)
+     - 00:03.568
      - 0.0
    * - :ref:`sphx_glr_examples_geometries_f06_unconformity.py` (``../../examples/examples/geometries/f06_unconformity.py``)
-     - 00:03.116
+     - 00:03.285
      - 0.0
-   * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_6_2d_visualization.py` (``../../examples/tutorials/ch1_fundamentals/ch1_6_2d_visualization.py``)
-     - 00:02.527
+   * - :ref:`sphx_glr_examples_geometries_e05_fault.py` (``../../examples/examples/geometries/e05_fault.py``)
+     - 00:03.262
      - 0.0
    * - :ref:`sphx_glr_examples_geometries_c03_recumbent_fold.py` (``../../examples/examples/geometries/c03_recumbent_fold.py``)
-     - 00:02.461
-     - 0.0
-   * - :ref:`sphx_glr_examples_real_mik.py` (``../../examples/examples/real/mik.py``)
-     - 00:02.291
-     - 0.0
-   * - :ref:`sphx_glr_examples_geometries_a01_horizontal_stratigraphic.py` (``../../examples/examples/geometries/a01_horizontal_stratigraphic.py``)
-     - 00:02.156
-     - 0.0
-   * - :ref:`sphx_glr_examples_geometries_d04_pinchout.py` (``../../examples/examples/geometries/d04_pinchout.py``)
-     - 00:01.896
-     - 0.0
-   * - :ref:`sphx_glr_tutorials_ch3-Interpolations_ch3_1_kriging_interpolation_and_simulation.py` (``../../examples/tutorials/ch3-Interpolations/ch3_1_kriging_interpolation_and_simulation.py``)
-     - 00:01.806
+     - 00:02.148
      - 0.0
    * - :ref:`sphx_glr_examples_geometries_b02_fold.py` (``../../examples/examples/geometries/b02_fold.py``)
-     - 00:01.795
+     - 00:01.825
      - 0.0
-   * - :ref:`sphx_glr_tutorials_ch4-Topology_ch4-1-Topology.py` (``../../examples/tutorials/ch4-Topology/ch4-1-Topology.py``)
-     - 00:00.759
+   * - :ref:`sphx_glr_examples_geometries_d04_pinchout.py` (``../../examples/examples/geometries/d04_pinchout.py``)
+     - 00:01.815
      - 0.0
-   * - :ref:`sphx_glr_tutorials_ch2-Geophysics_ch2_2_cell_selection.py` (``../../examples/tutorials/ch2-Geophysics/ch2_2_cell_selection.py``)
-     - 00:00.145
+   * - :ref:`sphx_glr_examples_geometries_a01_horizontal_stratigraphic.py` (``../../examples/examples/geometries/a01_horizontal_stratigraphic.py``)
+     - 00:01.736
      - 0.0
-   * - :ref:`sphx_glr_tutorials_ch1_fundamentals_ch1_3a_grids.py` (``../../examples/tutorials/ch1_fundamentals/ch1_3a_grids.py``)
-     - 00:00.093
+   * - :ref:`sphx_glr_tutorials_c_advanced_d04_topology.py` (``../../examples/tutorials/c_advanced/d04_topology.py``)
+     - 00:00.768
+     - 0.0
+   * - :ref:`sphx_glr_tutorials_c_advanced_a01_cell_selection.py` (``../../examples/tutorials/c_advanced/a01_cell_selection.py``)
+     - 00:00.444
      - 0.0

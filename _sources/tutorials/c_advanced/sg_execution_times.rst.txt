@@ -1,0 +1,46 @@
+
+:orphan:
+
+.. _sphx_glr_tutorials_c_advanced_sg_execution_times:
+
+
+Computation times
+=================
+**01:06.833** total execution time for 4 files **from tutorials/c_advanced**:
+
+.. container::
+
+  .. raw:: html
+
+    <style scoped>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
+    </style>
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script type="text/javascript" class="init">
+    $(document).ready( function () {
+        $('table.sg-datatable').DataTable({order: [[1, 'desc']]});
+    } );
+    </script>
+
+  .. list-table::
+   :header-rows: 1
+   :class: table table-striped sg-datatable
+
+   * - Example
+     - Time
+     - Mem (MB)
+   * - :ref:`sphx_glr_tutorials_c_advanced_b02_gravity.py` (``b02_gravity.py``)
+     - 00:52.916
+     - 0.0
+   * - :ref:`sphx_glr_tutorials_c_advanced_c03_kriging.py` (``c03_kriging.py``)
+     - 00:12.705
+     - 0.0
+   * - :ref:`sphx_glr_tutorials_c_advanced_d04_topology.py` (``d04_topology.py``)
+     - 00:00.768
+     - 0.0
+   * - :ref:`sphx_glr_tutorials_c_advanced_a01_cell_selection.py` (``a01_cell_selection.py``)
+     - 00:00.444
+     - 0.0

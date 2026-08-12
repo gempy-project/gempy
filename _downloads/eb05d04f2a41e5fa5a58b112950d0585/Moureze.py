@@ -1,14 +1,15 @@
 """
-Geomodeling benchmark: the "Moureze"-Model
-==========================================
+Mourèze, France
+==================
 
-This model is part of a geomodeling benchmaring effort. More information (and, hopefully, publication) coming.
+A karst/dolomite terrain model from the Cirque de Mourèze, Hérault, southern France
+
+This model is part of a geomodeling benchmarking effort; a full publication describing the
+benchmark suite is still pending. It is built from a dense point cloud, split into surface
+points and orientations by their gradient values.
 """
 
 import os
-
-# %% 
-# These two lines are necessary only if gempy is not installed
 
 # Importing gempy
 import gempy as gp
@@ -17,8 +18,6 @@ import gempy_viewer as gpv
 # Aux imports
 import numpy as np
 import pandas as pd
-
-from gempy_engine.config import AvailableBackends
 
 # %%
 # Loading surface points from repository:
@@ -51,8 +50,8 @@ Sections_NS = pd.read_csv(
 ).dropna()
 
 # %%
-# Extracting the orientatins:
-# 
+# Extracting the orientations:
+#
 
 # %% 
 mask_surfpoints = Moureze_points['G_x'] < -9999
@@ -88,9 +87,9 @@ orientations.tail()
 
 
 # %%
-# Only using one orientation because otherwhise it gets a mess
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# 
+# Only using one orientation, otherwise it gets messy
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#
 
 # %% 
 # Number voxels
@@ -102,14 +101,14 @@ resolution = [77, 103, 38]
 resolution_low = [45, 51, 38]
 
 
-surface_points_table: gp.data.SurfacePointsTable = gp.data.SurfacePointsTable.from_arrays(
+surface_points_table = gp.data.SurfacePointsTable.from_arrays(
     x=surface_points['X'].values,
     y=surface_points['Y'].values,
     z=surface_points['Z'].values,
     names=surface_points['surface'].values.astype(str)
 )
 
-orientations_table: gp.data.OrientationsTable = gp.data.OrientationsTable.from_arrays(
+orientations_table = gp.data.OrientationsTable.from_arrays(
     x=orientations['X'].values,
     y=orientations['Y'].values,
     z=orientations['Z'].values,
@@ -120,12 +119,12 @@ orientations_table: gp.data.OrientationsTable = gp.data.OrientationsTable.from_a
     name_id_map=surface_points_table.name_id_map  # ! Make sure that ids and names are shared
 )
 
-structural_frame: gp.data.StructuralFrame = gp.data.StructuralFrame.from_data_tables(
+structural_frame = gp.data.StructuralFrame.from_data_tables(
     surface_points=surface_points_table,
     orientations=orientations_table
 )
 
-geo_model: gp.data.GeoModel = gp.create_geomodel(
+geo_model = gp.create_geomodel(
     project_name='Moureze',
     extent=[-5, 305, -5, 405, -200, -50],
     # resolution=resolution_low,
@@ -157,9 +156,9 @@ geo_model.interpolation_options.evaluation_options.number_octree_levels_surface 
 gp.compute_model(
     gempy_model=geo_model,
     engine_config=gp.data.GemPyEngineConfig(
-        use_gpu=False, 
+        use_gpu=False,
         dtype='float32',
-        backend=AvailableBackends.PYTORCH
+        backend=gp.data.AvailableBackends.PYTORCH
     )
 )
 
@@ -199,4 +198,4 @@ gpv.plot_2d(geo_model, cell_number='mid', show_data=True, direction='y')
 
 # %%
 # sphinx_gallery_thumbnail_number = 4
-gpv.plot_3d(geo_model)
+gpv.plot_3d(geo_model, show_lith=True, show_boundaries=True, ve=None)

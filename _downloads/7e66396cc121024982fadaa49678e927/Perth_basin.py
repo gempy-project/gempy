@@ -1,6 +1,12 @@
 """
-A geological model of the Perth basin, Australia
-============
+Perth Basin, Western Australia
+=================================
+
+Regional stratigraphy and major normal faults of the northern Perth Basin
+
+This model covers the northern Perth Basin, Western Australia, including eight major
+normal faults (among them the Darling Fault) offsetting a Permian-to-Cretaceous
+sedimentary sequence.
 """
 import os
 
@@ -12,7 +18,6 @@ import gempy_viewer as gpv
 import matplotlib
 
 matplotlib.rcParams['figure.figsize'] = (20.0, 10.0)
-os.environ["aesara_FLAGS"] = "mode=FAST_RUN,device=cuda"
 
 # %%
 cwd = os.getcwd()
@@ -21,8 +26,8 @@ if 'examples' not in cwd:
 else:
     data_path = cwd + '/../..'
 
-# %% 
-geo_model: gp.data.GeoModel = gp.create_geomodel(
+# %%
+geo_model = gp.create_geomodel(
     project_name='Perth_Basin',
     extent=[337000, 400000, 6640000, 6710000, -18000, 1000],
     refinement=6,
@@ -65,7 +70,7 @@ gp.map_stack_to_surfaces(
 
 gp.set_is_fault(
     geo_model,
-    fault_groups=[
+    [
         "fault_Abrolhos_Transfer",
         "fault_Coomallo",
         "fault_Eneabba_South",
@@ -77,14 +82,9 @@ gp.set_is_fault(
     ],
 )
 
-
-# %% 
-# gp.set_fault_relation(geo_model, fr)
-
 print(geo_model.structural_frame.fault_relations)
 
-# %% 
-# %matplotlib inline
+# %%
 gpv.plot_2d(geo_model, direction=['z'])
 
 # %% 
@@ -96,7 +96,7 @@ gpv.plot_3d(geo_model)
 # %% 
 gp.compute_model(
     gempy_model=geo_model,
-    engine_config= gp.data.GemPyEngineConfig(
+    engine_config=gp.data.GemPyEngineConfig(
         backend=gp.data.AvailableBackends.PYTORCH,
         dtype="float64",
     )
@@ -113,4 +113,4 @@ gpv.plot_2d(geo_model, cell_number=[12], direction=["y"], show_data=True, show_t
 
 # %%
 # sphinx_gallery_thumbnail_number = 6
-gpv.plot_3d(geo_model, show_topography=True)
+gpv.plot_3d(geo_model, show_lith=True, show_boundaries=True, show_topography=True, ve=None)

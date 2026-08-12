@@ -1,6 +1,11 @@
 """
-Model of Ales, France: Plotting Sections and Maps
-======================================
+Alès Basin, France
+=====================
+
+Cross-sections, topography, and geological maps of the Tertiary Alès basin
+
+This model covers the Alès basin (Gard, southern France), a Tertiary onshore basin with
+Triassic, Liassic, and Carboniferous series offset by three faults.
 """
 
 # %%
@@ -8,7 +13,7 @@ Model of Ales, France: Plotting Sections and Maps
 #
 #       This model is generally quite unstable and requires float64 precision to determine a solution.
 #       The lack of data in one corner for the TRIAS and LIAS series causes the model to bend unrealistically,
-#       eroding the CARBO layer, which disappears in that section. 
+#       eroding the CARBO layer, which disappears in that section.
 #
 
 import gempy as gp
@@ -26,10 +31,9 @@ path_dem = os.path.join(data_path, "data/input_data/AlesModel/_cropped_DEM_coars
 
 # %%
 # Creating the geological model
-geo_model: gp.data.GeoModel = gp.create_geomodel(
-    project_name='Claudius',
+geo_model = gp.create_geomodel(
+    project_name='Ales',
     extent=[729550.0, 751500.0, 1913500.0, 1923650.0, -1800.0, 800.0],
-    resolution=None,
     refinement=6,
     importer_helper=gp.data.ImporterHelper(
         path_to_orientations=path_orient,
@@ -78,13 +82,12 @@ gpv.plot_section_traces(geo_model)
 # %%
 # Setting faults
 gp.set_is_fault(
-    frame=geo_model.structural_frame,
-    fault_groups=[
+    geo_model,
+    [
             geo_model.structural_frame.get_group_by_name('fault_left'),
             geo_model.structural_frame.get_group_by_name('fault_right'),
             geo_model.structural_frame.get_group_by_name('fault_lr')
-    ],
-    change_color=True
+    ]
 )
 
 # %%
@@ -143,7 +146,7 @@ geo_model.interpolation_options.evaluation_options.evaluation_chunk_size = 50_00
 # %%
 # Computing the model with the adjusted settings
 geo_model.interpolation_options.mesh_extraction = False
-_ = gp.compute_model(
+gp.compute_model(
     geo_model,
     engine_config=gp.data.GemPyEngineConfig(
         backend=gp.data.AvailableBackends.PYTORCH,
@@ -154,7 +157,7 @@ _ = gp.compute_model(
 
 # %%
 # Plotting the 2D model with and without topography
-gpv.plot_2d(geo_model, show_topography=False, section_names=['topography'], show_lith=True)
+gpv.plot_2d(geo_model, show_topography=False, section_names=['topography'], show_lith=True, show_boundaries=False)
 gpv.plot_2d(geo_model, cell_number=[4], direction=['y'], show_topography=True, show_data=True)
 gpv.plot_2d(geo_model, cell_number=[-4], direction=['y'], show_topography=True, show_data=True)
 

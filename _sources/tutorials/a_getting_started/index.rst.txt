@@ -2,10 +2,12 @@
 
 .. _sphx_glr_tutorials_a_getting_started:
 
-Getting Started
----------------
+Getting Started (Video Tutorials)
+----------------------------------
 
-Here you can see how to run a simple GemPy example.
+This section mirrors the tutorial series on the `GemPy YouTube channel
+<https://www.youtube.com/@GemPy3D>`_, so you can follow along with the videos.
+
 
 .. raw:: html
 
@@ -20,18 +22,52 @@ Here you can see how to run a simple GemPy example.
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Getting Started">
+    <div class="sphx-glr-thumbcontainer" tooltip="Video Tutorial &quot;code-along&quot;: Modeling step by step">
 
 .. only:: html
 
-  .. image:: /tutorials/a_getting_started/images/thumb/sphx_glr_get_started_thumb.png
+  .. image:: /tutorials/a_getting_started/images/thumb/sphx_glr_video_tutorial_model_1_thumb.png
     :alt:
 
-  :doc:`/tutorials/a_getting_started/get_started`
+  :doc:`/tutorials/a_getting_started/video_tutorial_model_1`
 
 .. raw:: html
 
-      <div class="sphx-glr-thumbnail-title">Getting Started</div>
+      <div class="sphx-glr-thumbnail-title">Video Tutorial "code-along": Modeling step by step</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Video Tutorial &quot;code-along&quot;: Faults">
+
+.. only:: html
+
+  .. image:: /tutorials/a_getting_started/images/thumb/sphx_glr_video_tutorial_model_2_faults_thumb.png
+    :alt:
+
+  :doc:`/tutorials/a_getting_started/video_tutorial_model_2_faults`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Video Tutorial "code-along": Faults</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Video Tutorial &quot;code-along&quot;: Onlap relations">
+
+.. only:: html
+
+  .. image:: /tutorials/a_getting_started/images/thumb/sphx_glr_video_tutorial_model_3_onlap_thumb.png
+    :alt:
+
+  :doc:`/tutorials/a_getting_started/video_tutorial_model_3_onlap`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Video Tutorial "code-along": Onlap relations</div>
     </div>
 
 
@@ -45,5 +81,7 @@ Here you can see how to run a simple GemPy example.
 .. toctree::
    :hidden:
 
-   /tutorials/a_getting_started/get_started
+   /tutorials/a_getting_started/video_tutorial_model_1
+   /tutorials/a_getting_started/video_tutorial_model_2_faults
+   /tutorials/a_getting_started/video_tutorial_model_3_onlap
 
