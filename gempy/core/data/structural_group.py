@@ -3,9 +3,11 @@ from abc import ABC
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Annotated, Optional, Union, Generator
+from uuid import uuid4
 
 from pydantic import Field
 
+from gempy_engine.core.data.finite_fault import FiniteFault
 from gempy_engine.core.data.interpolation_functions import CustomInterpolationFunctions
 from gempy_engine.core.data.kernel_classes.faults import FaultsData
 from gempy_engine.core.data.raw_arrays_solution import RawArraysSolution
@@ -17,6 +19,12 @@ class FaultsRelationSpecialCase(Enum):
     OFFSET_FORMATIONS = auto()
     OFFSET_NONE = auto()
     OFFSET_ALL = auto()
+
+
+class FaultType(str, Enum):
+    INFINITE = "Infinite"
+    FINITE = "Finite"
+    DISABLED = "Disabled"
     
     
 @dataclass
@@ -29,10 +37,12 @@ class StructuralGroup(ABC):
     
     elements: list[StructuralElement] = field(repr=False)  #: A list of structural elements within the group.
     structural_relation: StackRelationType  #: The type of relation between the structural elements in the group.
+    id: Annotated[Optional[str], Field(exclude=True)] = field(default=None)
 
     #: Relations with other groups in terms of faults.
     fault_relations: Optional[Union[list["StructuralGroup"], FaultsRelationSpecialCase]] = field(default=None, repr=False)
     faults_input_data: Optional[FaultsData] = field(default=None, repr=False)
+    finite_fault_draft: Annotated[Optional[FiniteFault], Field(exclude=True)] = field(default=None, repr=False)
     custom_interpolation: Annotated[Optional[CustomInterpolationFunctions], Field(exclude=True)] = field(default=None, repr=False)
     ignored_grid_types: Annotated[tuple[str, ...], Field(exclude=True)] = field(default_factory=tuple, repr=False)
 
@@ -40,6 +50,8 @@ class StructuralGroup(ABC):
     
     
     def __post_init__(self):
+        if self.id is None:
+            self.id = str(uuid4())
         if not isinstance(self.elements, list):
             raise TypeError("elements must be a list of StructuralElement objects.")
         for e in self.elements:
@@ -72,12 +84,31 @@ class StructuralGroup(ABC):
         self.elements.remove(element)
 
     @property
-    def id(self):
-        raise NotImplementedError
-    
-    @property
     def is_fault(self)-> bool:
         return self.structural_relation == StackRelationType.FAULT
+
+    @property
+    def fault_type(self) -> FaultType:
+        finite_fault = self.faults_input_data.finite_fault if self.faults_input_data is not None else None
+        if finite_fault is not None:
+            return FaultType.FINITE
+        if self.finite_fault_draft is not None:
+            return FaultType.DISABLED
+        return FaultType.INFINITE
+
+    def set_finite_fault(self, finite_fault: FiniteFault) -> None:
+        self.faults_input_data = FaultsData.from_user_input(thickness=None, finite_fault=finite_fault)
+        self.finite_fault_draft = None
+
+    def disable_finite_fault(self) -> None:
+        if self.fault_type is not FaultType.FINITE:
+            return
+        self.finite_fault_draft = self.faults_input_data.finite_fault
+        self.faults_input_data.finite_fault = None
+
+    def enable_finite_fault(self) -> None:
+        if self.finite_fault_draft is not None:
+            self.set_finite_fault(self.finite_fault_draft)
     
     @property
     def is_lithology(self)-> bool:
