@@ -1,1 +1,1 @@
-from ._engine_factory import interpolation_input_from_structural_frame
+from ._engine_factory import input_data_descriptor_from_geo_model, interpolation_input_from_structural_frame
