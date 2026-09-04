@@ -12,8 +12,9 @@ from gempy_engine.core.data.input_data_descriptor import InputDataDescriptor
 from gempy_engine.core.data.kernel_classes.faults import FaultsData
 from gempy_engine.core.data.stack_relation_type import StackRelationType
 
-from .encoders.binary_encoder import deserialize_input_data_tables
+from .encoders.binary_encoder import deserialize_input_data_tables, deserialize_micro_points
 from .encoders.converters import loading_model_context
+from .micro_points import MicroPointsTable
 from .orientations import OrientationsTable
 from .structural_element import StructuralElement
 from .structural_group import StructuralGroup, FaultsRelationSpecialCase
@@ -357,6 +358,19 @@ class StructuralFrame:
         return np.array([group.number_of_orientations for group in self.structural_groups])
 
     @property
+    def number_of_micro_points_per_element(self) -> np.ndarray:
+        """Returns the number of micro points for each element, including basement."""
+        return np.array([element.number_of_micro_points for element in self.structural_elements])
+
+    @property
+    def number_of_micro_points_per_group(self) -> np.ndarray:
+        """Returns the number of micro points for each structural group."""
+        return np.array([
+                sum(element.number_of_micro_points for element in group.elements)
+                for group in self.structural_groups
+        ])
+
+    @property
     def number_of_elements_per_group(self) -> np.ndarray:
         """Returns an array with the number of elements for each structural group."""
         return np.array([group.number_of_elements for group in self.structural_groups])
@@ -419,6 +433,43 @@ class StructuralFrame:
         """Distributes the modified orientations back to the structural elements."""
         for element in self.structural_elements:
             element.orientations.data = modified_orientations.get_orientations_by_id(element.id).data
+
+    @property
+    def micro_points_copy(self) -> MicroPointsTable:
+        """Returns a copy of all micro points in structural order."""
+        all_data = np.concatenate([element.micro_points.data for element in self.structural_elements])
+        return MicroPointsTable(data=all_data.copy(), name_id_map=self.element_name_id_map)
+
+    @property
+    def micro_points(self):
+        raise AttributeError("This property can only be set, not read. Access `micro_points_copy` or an element table.")
+
+    @micro_points.setter
+    def micro_points(self, modified_micro_points: MicroPointsTable) -> None:
+        elements = [element for group in self.structural_groups for element in group.elements]
+        element_ids = [element.id for element in elements]
+        if len(set(element_ids)) != len(element_ids) and len(modified_micro_points) > 0:
+            raise ValueError("Structural element IDs must be unique when micro points are present")
+
+        unknown_ids = set(modified_micro_points.ids.tolist()) - set(element_ids)
+        if unknown_ids:
+            raise ValueError(f"Micro points reference unknown structural element IDs: {sorted(unknown_ids)}")
+
+        for element in elements:
+            element.micro_points = modified_micro_points.get_micro_points_by_id(element.id)
+
+    def validate_micro_point_ownership(self) -> None:
+        """Validate flattened micro-point associations before serialization."""
+        elements = [element for group in self.structural_groups for element in group.elements]
+        if not any(element.number_of_micro_points for element in elements):
+            return
+
+        element_ids = [element.id for element in elements]
+        if len(set(element_ids)) != len(element_ids):
+            raise ValueError("Structural element IDs must be unique when micro points are present")
+        for element in elements:
+            if np.any(element.micro_points.ids != element.id):
+                raise ValueError(f"Micro points on element '{element.name}' have a mismatched element ID")
 
     @property
     def input_tables_binary(self):
@@ -539,6 +590,13 @@ class StructuralFrame:
                     sp_binary_length_=metadata["sp_binary_length"],
                     ori_binary_length_=metadata["ori_binary_length"]
                 )
+
+                if 'micro_points_binary' in context:
+                    instance.micro_points = deserialize_micro_points(
+                        binary_array=context['micro_points_binary'],
+                        metadata=metadata.get('micro_points'),
+                        name_id_map=instance.element_name_id_map,
+                    )
 
                 return instance
             case _:

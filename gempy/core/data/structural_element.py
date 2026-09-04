@@ -1,11 +1,12 @@
 ﻿import re
 from dataclasses import dataclass, field
 from pydantic import Field
-from typing import Optional
+from typing import Annotated, Optional
 
 import numpy as np
 
 from .orientations import OrientationsTable
+from .micro_points import MicroPointsTable
 from .surface_points import SurfacePointsTable
 
 """
@@ -27,6 +28,9 @@ class StructuralElement:
     _color: str  #: The color of the structural element in hexadecimal format.
     surface_points: SurfacePointsTable  #: The points on the surface of the structural element.
     orientations: OrientationsTable  #: The orientations of the structural element.
+    micro_points: Annotated[MicroPointsTable, Field(exclude=True)] = field(
+        default_factory=MicroPointsTable.initialize_empty
+    )
 
     # Output
     # ? Should we extract this to a separate class?
@@ -37,11 +41,13 @@ class StructuralElement:
     _id: int = -1
     
     def __init__(self, name: str, surface_points: SurfacePointsTable, orientations: OrientationsTable,
-                 id: Optional[int] = -1, is_active: Optional[bool] = True, color: Optional[str] = None):
+                 id: Optional[int] = -1, is_active: Optional[bool] = True, color: Optional[str] = None,
+                 micro_points: Optional[MicroPointsTable] = None):
         self.name = name
         
         self.surface_points = surface_points
         self.orientations = orientations
+        self.micro_points = MicroPointsTable.initialize_empty() if micro_points is None else micro_points
         
         self.is_active = is_active
         self.color = color
@@ -85,6 +91,10 @@ class StructuralElement:
     @property
     def number_of_orientations(self) -> int:
         return len(self.orientations)
+
+    @property
+    def number_of_micro_points(self) -> int:
+        return len(self.micro_points)
 
     @property
     def color(self):
