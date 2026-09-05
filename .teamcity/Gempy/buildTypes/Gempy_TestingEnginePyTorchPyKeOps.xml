@@ -13,6 +13,7 @@
       <param name="env.DUAL_CONTOURING_VERTEX_OVERLAP" value="none" />
       <param name="env.GEMPY_FLAT_STACKS" value="False" />
       <param name="env.MPLBACKEND" value="Agg" />
+      <param name="env.USE_GPU" value="False" />
     </parameters>
     <build-runners>
       <runner id="Setup" name="Setup" type="simpleRunner">
