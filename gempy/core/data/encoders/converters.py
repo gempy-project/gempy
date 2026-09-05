@@ -52,13 +52,19 @@ numpy_array_short_validator = BeforeValidator(validate_numpy_array)
 loading_model_context = ContextVar('loading_model_context', default={})
 
 @contextmanager
-def loading_model_from_binary(input_binary: bytes, grid_binary: bytes):
-    token = loading_model_context.set({
+def loading_model_from_binary(
+        input_binary: bytes,
+        grid_binary: bytes,
+        micro_points_binary: bytes | None = None,
+):
+    context = {
             'input_binary': input_binary,
-            'grid_binary': grid_binary
-    })
+            'grid_binary': grid_binary,
+    }
+    if micro_points_binary is not None:
+        context['micro_points_binary'] = micro_points_binary
+    token = loading_model_context.set(context)
     try:
         yield
     finally:
         loading_model_context.reset(token)
-

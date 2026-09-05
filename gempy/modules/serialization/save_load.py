@@ -13,6 +13,15 @@ from ...optional_dependencies import require_zlib
 import pathlib
 import os
 
+import numpy as np
+
+from ..._version import __version__
+
+
+SERIALIZATION_FORMAT = "gempy"
+SERIALIZATION_VERSION = 2
+SERIALIZATION_BYTE_ORDER = "little"
+
 
 def save_model(model: GeoModel, path: str | None = None, validate_serialization: bool = True):
     """
@@ -137,13 +146,29 @@ def load_model(path: str) -> GeoModel:
 
 
 def model_to_bytes(model: GeoModel) -> bytes:
+    model.structural_frame.validate_micro_point_ownership()
     with model.structural_frame.serialized_fault_relations():
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore", message="Pydantic serializer warnings")
-            header_json = model.model_dump_json(by_alias=True, indent=4)
+            header = json.loads(model.model_dump_json(by_alias=True, indent=4))
+
+    header["serialization"] = {
+            "format"        : SERIALIZATION_FORMAT,
+            "version"       : SERIALIZATION_VERSION,
+            "writer_version": __version__,
+            "byte_order"    : SERIALIZATION_BYTE_ORDER,
+    }
+    micro_points = model.structural_frame.micro_points_copy
+    header["structural_frame"]["binary_meta_data"]["micro_points"] = {
+            "dtype_version": 1,
+            "row_count"   : len(micro_points),
+            "byte_length" : micro_points.data.nbytes,
+    }
+    header_json = json.dumps(header, indent=4)
 
     # 2) Raw binary chunks (no additional zlib.compress here)
     input_raw = model.structural_frame.input_tables_binary
+    micro_points_raw = micro_points.data.tobytes(order="C")
     grid_raw = model.grid.grid_binary
 
     # 3) Pack into a ZIP archive in a fixed order:
@@ -157,11 +182,14 @@ def model_to_bytes(model: GeoModel) -> bytes:
         # Force a fixed timestamp (1980-01-01) so the file headers don't vary
         def make_info(name):
             zi = zipfile.ZipInfo(name, date_time=(1980, 1, 1, 0, 0, 0))
-            zi.external_attr = 0  # clear OS-specific file permissions
+            zi.create_system = 0
+            zi.external_attr = 0x20
+            zi.compress_type = zipfile.ZIP_STORED
             return zi
 
         zf.writestr(make_info("header.json"), header_json)
         zf.writestr(make_info("input.bin"), input_raw)
+        zf.writestr(make_info("micro_points.bin"), micro_points_raw)
         zf.writestr(make_info("grid.bin"), grid_raw)
         zf.writestr(make_info("liquid_earth_meta.json"), _liquid_earth_meta_json(model))
 
@@ -174,21 +202,44 @@ def _load_model_from_bytes(data: bytes) -> GeoModel:
     buf = io.BytesIO(data)
     with zipfile.ZipFile(buf, "r") as zf:
         header_json = zf.read("header.json").decode("utf-8")
+        header_dict = json.loads(header_json)
+        serialization = header_dict.pop("serialization", None)
+
+        if serialization is None:
+            serialization_version = 1
+        else:
+            if not isinstance(serialization, dict):
+                raise ValueError("Serialization manifest must be an object")
+            if serialization.get("format") != SERIALIZATION_FORMAT:
+                raise ValueError(f"Unsupported serialization format: {serialization.get('format')}")
+            serialization_version = serialization.get("version")
+            if serialization_version != SERIALIZATION_VERSION:
+                raise ValueError(f"Unsupported serialization version: {serialization_version}")
+            if serialization.get("byte_order") != SERIALIZATION_BYTE_ORDER:
+                raise ValueError(f"Unsupported serialization byte order: {serialization.get('byte_order')}")
+
         input_raw = zf.read("input.bin")
+        if serialization_version == SERIALIZATION_VERSION:
+            try:
+                micro_points_raw = zf.read("micro_points.bin")
+            except KeyError as error:
+                raise ValueError("Version 2 archive is missing micro_points.bin") from error
+        else:
+            micro_points_raw = None
         grid_raw = zf.read("grid.bin")
         try:
             liquid_earth_meta = json.loads(zf.read("liquid_earth_meta.json").decode("utf-8"))
         except KeyError:
             liquid_earth_meta = None
 
-    header_dict = json.loads(header_json)
     pending = StructuralFrame._extract_and_clear_fault_relation_names(
         header_dict.get('structural_frame', {}).get('structural_groups', [])
     )
 
     with loading_model_from_binary(
             input_binary=input_raw,
-            grid_binary=grid_raw
+            grid_binary=grid_raw,
+            micro_points_binary=micro_points_raw,
     ):
         model = GeoModel.model_validate(header_dict)
 
@@ -266,12 +317,23 @@ def _to_binary(header_json, body_input, body_grid) -> bytes:
 
 
 def _validate_serialization(original_model, model_deserialized):
-    a = hash(original_model.structural_frame.surface_points_copy.data.tobytes())
-    b = hash(model_deserialized.structural_frame.surface_points_copy.data.tobytes())
-    o_a = hash(original_model.structural_frame.orientations_copy.data.tobytes())
-    o_b = hash(model_deserialized.structural_frame.orientations_copy.data.tobytes())
-    assert a == b, "Hashes for surface points are not equal"
-    assert o_a == o_b, "Hashes for orientations are not equal"
+    np.testing.assert_array_equal(
+        original_model.structural_frame.surface_points_copy.data,
+        model_deserialized.structural_frame.surface_points_copy.data,
+    )
+    np.testing.assert_array_equal(
+        original_model.structural_frame.orientations_copy.data,
+        model_deserialized.structural_frame.orientations_copy.data,
+    )
+    np.testing.assert_array_equal(
+        original_model.structural_frame.micro_points_copy.data,
+        model_deserialized.structural_frame.micro_points_copy.data,
+    )
+    for original_element, loaded_element in zip(
+            original_model.structural_frame.structural_elements,
+            model_deserialized.structural_frame.structural_elements,
+    ):
+        np.testing.assert_array_equal(original_element.micro_points.data, loaded_element.micro_points.data)
     original_model___str__ = re.sub(r'\s+', ' ', original_model.__str__())
     deserialized___str__ = re.sub(r'\s+', ' ', model_deserialized.__str__())
     if original_model___str__ != deserialized___str__:
