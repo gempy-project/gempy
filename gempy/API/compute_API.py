@@ -11,7 +11,10 @@ from .grid_API import set_custom_grid
 from ..core.data import StructuralGroup
 from ..core.data.gempy_engine_config import GemPyEngineConfig
 from ..core.data.geo_model import GeoModel
-from ..modules.data_manipulation import interpolation_input_from_structural_frame
+from ..modules.data_manipulation import (
+    input_data_descriptor_from_geo_model,
+    interpolation_input_from_structural_frame,
+)
 from ..modules.optimize_nuggets import nugget_optimizer
 
 dotenv.load_dotenv()
@@ -63,12 +66,13 @@ def compute_model(gempy_model: GeoModel, engine_config: Optional[GemPyEngineConf
 
             # TODO: To decide what to do with this.
             interpolation_input = interpolation_input_from_structural_frame(gempy_model)
+            input_data_descriptor = input_data_descriptor_from_geo_model(gempy_model)
             gempy_model.taped_interpolation_input = interpolation_input  # * This is used for gradient tape
 
             gempy_model.solutions = gempy_engine.compute_model(
                 interpolation_input=interpolation_input,
                 options=gempy_model.interpolation_options,
-                data_descriptor=gempy_model.input_data_descriptor,
+                data_descriptor=input_data_descriptor,
                 geophysics_input=gempy_model.geophysics_input,
             )
         case _:
@@ -144,5 +148,3 @@ def optimize_and_compute(geo_model: GeoModel, engine_config: GemPyEngineConfig, 
         geophysics_input=geo_model.geophysics_input,
     )
     return geo_model.solutions
-
-

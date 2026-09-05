@@ -6,6 +6,8 @@ import warnings
 
 from ...core.data import GeoModel
 from ...core.data.structural_frame import StructuralFrame
+from gempy_engine.core.data import FiniteFault
+from pydantic import TypeAdapter
 from ...core.data.encoders.converters import loading_model_from_binary
 from ...optional_dependencies import require_zlib
 import pathlib
@@ -161,6 +163,7 @@ def model_to_bytes(model: GeoModel) -> bytes:
         zf.writestr(make_info("header.json"), header_json)
         zf.writestr(make_info("input.bin"), input_raw)
         zf.writestr(make_info("grid.bin"), grid_raw)
+        zf.writestr(make_info("liquid_earth_meta.json"), _liquid_earth_meta_json(model))
 
     return buf.getvalue()
 
@@ -173,6 +176,10 @@ def _load_model_from_bytes(data: bytes) -> GeoModel:
         header_json = zf.read("header.json").decode("utf-8")
         input_raw = zf.read("input.bin")
         grid_raw = zf.read("grid.bin")
+        try:
+            liquid_earth_meta = json.loads(zf.read("liquid_earth_meta.json").decode("utf-8"))
+        except KeyError:
+            liquid_earth_meta = None
 
     header_dict = json.loads(header_json)
     pending = StructuralFrame._extract_and_clear_fault_relation_names(
@@ -186,7 +193,33 @@ def _load_model_from_bytes(data: bytes) -> GeoModel:
         model = GeoModel.model_validate(header_dict)
 
     model.structural_frame.restore_fault_relations_from_names(pending)
+    _restore_liquid_earth_meta(model, liquid_earth_meta)
     return model
+
+
+def _liquid_earth_meta_json(model: GeoModel) -> str:
+    finite_fault_adapter = TypeAdapter(FiniteFault)
+    groups = []
+    for group in model.structural_frame.structural_groups:
+        draft = group.finite_fault_draft
+        groups.append({
+                "id": group.id,
+                "finite_fault_draft": finite_fault_adapter.dump_python(draft, mode="json") if draft is not None else None,
+        })
+    return json.dumps({"static_meshes": [], "structural_groups": groups}, indent=4)
+
+
+def _restore_liquid_earth_meta(model: GeoModel, metadata: dict | None) -> None:
+    if metadata is None:
+        return
+
+    finite_fault_adapter = TypeAdapter(FiniteFault)
+    group_metadata_items = metadata.get("structural_groups", [])
+    for group, group_metadata in zip(model.structural_frame.structural_groups, group_metadata_items):
+        group.id = group_metadata.get("id") or group.id
+        draft = group_metadata.get("finite_fault_draft")
+        if draft is not None:
+            group.finite_fault_draft = finite_fault_adapter.validate_python(draft)
 
 
 def _deserialize_binary_file(binary_file):
