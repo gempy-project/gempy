@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<build-type xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" uuid="c385b6d2-b6c9-46ac-b258-8732fad9c381" paused="true" xsi:noNamespaceSchemaLocation="https://www.jetbrains.com/teamcity/schemas/2025.3/project-config.xsd">
+<build-type xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" uuid="c385b6d2-b6c9-46ac-b258-8732fad9c381" xsi:noNamespaceSchemaLocation="https://www.jetbrains.com/teamcity/schemas/2025.3/project-config.xsd">
   <name>TestingEngine_PyTorchPyKeOpsFlat</name>
   <description />
   <settings>
@@ -35,7 +35,24 @@ ls -la requirements
 
 # Install requirements and teamcity-messages package
 venv/bin/pip install --verbose -r requirements/dev-requirements.txt
-venv/bin/pip install --verbose teamcity-messages]]></param>
+venv/bin/pip install --verbose teamcity-messages
+
+# These matrix jobs require real PyKeOps CPU execution, not optional skips.
+venv/bin/python -m pip install --verbose pykeops
+venv/bin/python - <<'PYKEOPS_CPU_CHECK'
+import torch
+import pykeops
+from pykeops.torch import LazyTensor
+
+x = torch.tensor([[0.0], [1.0], [2.0]], dtype=torch.float64, device="cpu")
+y = torch.tensor([[0.5], [1.5]], dtype=torch.float64, device="cpu")
+x_i = LazyTensor(x[:, None, :])
+y_j = LazyTensor(y[None, :, :])
+actual = ((x_i - y_j) ** 2).sum(dim=2).sum(dim=1, backend="CPU")
+expected = ((x[:, None, :] - y[None, :, :]) ** 2).sum(dim=2).sum(dim=1, keepdim=True)
+torch.testing.assert_close(actual, expected)
+print(f"PyKeOps {pykeops.__version__}: CPU compilation and reduction passed")
+PYKEOPS_CPU_CHECK]]></param>
           <param name="teamcity.step.mode" value="default" />
           <param name="use.custom.script" value="true" />
         </parameters>
