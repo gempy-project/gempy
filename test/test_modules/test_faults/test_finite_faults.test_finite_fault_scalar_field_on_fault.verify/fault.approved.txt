@@ -42,31 +42,17 @@
                     "fault_values_ref": [],
                     "fault_values_rest": [],
                     "thickness": null,
-                    "finite_fault_data": {
-                        "implicit_function_transform": {
-                            "position": [
-                                0,
-                                0,
-                                0
-                            ],
-                            "rotation": [
-                                0,
-                                60,
-                                0
-                            ],
-                            "scale": [
-                                1.0,
-                                1.0,
-                                1.0
-                            ],
-                            "_is_default_transform": false,
-                            "_cached_pivot": null
-                        },
-                        "pivot": [
-                            0.0,
-                            0.0,
-                            0.0
-                        ]
+                    "finite_fault": {
+                        "center": [
+                            500.0,
+                            500.0,
+                            500.0
+                        ],
+                        "strike_radius": 250.0,
+                        "dip_radius": 100.0,
+                        "taper": "cubic",
+                        "rotation_deg": 60.0,
+                        "spline_control_points": null
                     }
                 },
                 "solution": null
@@ -204,7 +190,19 @@
             "kernel_solver": 1,
             "compute_condition_number": false,
             "optimizing_condition_number": false,
-            "condition_number": null
+            "condition_number": null,
+            "condition_number_before": null,
+            "condition_number_after": null,
+            "fault_drift_equilibration": true,
+            "fault_drift_regularization": 0.001,
+            "symmetric_equilibration_method": "none",
+            "symmetric_equilibration_max_iterations": 10,
+            "symmetric_equilibration_tolerance": 0.01,
+            "nugget_implementation": "legacy",
+            "drift_diagnostics": false,
+            "drift_rank_policy": "warn",
+            "drift_rank_rcond": null,
+            "drift_warning_rcond": null
         },
         "evaluation_options": {
             "_number_octree_levels": 6,
@@ -216,6 +214,18 @@
             "mesh_extraction_masking_options": 3,
             "mesh_extraction_fancy": true,
             "evaluation_chunk_size": 500000,
+            "micro_anisotropic": {
+                "enabled": false,
+                "points": null,
+                "residuals": null,
+                "anisotropy_matrices": null,
+                "weights": null,
+                "kernel_range": 1.0,
+                "kernel_type": "matern_5_2",
+                "nugget": 0.0,
+                "preserve_macro_points": true,
+                "strength": 1.0
+            },
             "compute_scalar": true,
             "compute_scalar_gradient": false,
             "verbose": false

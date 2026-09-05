@@ -24,33 +24,19 @@ def test_finite_fault_scalar_field_on_fault():
 
     regular_grid = geo_model.grid.regular_grid
 
-    # TODO: Extract grid from the model
-    scaled_center = geo_model.input_transform.apply(center.reshape(1, -1))[0]
-    scaled_radius = geo_model.input_transform.scale_points(radius.reshape(1, -1))[0]
-    scalar_funtion: callable = gp.implicit_functions.ellipsoid_3d_factory(  # * This paints the 3d regular grid
-        center=scaled_center,
-        radius=scaled_radius,
-        max_slope=k  # * This controls the speed of the transition
-    )
     transform = gp.data.Transform(
         position=np.array([0, 0, 0]),
         rotation=np.array([0, 60, 0]),
         scale=np.ones(3)
     )
-    faults_data = gp.data.FaultsData(
-        fault_values_everywhere=np.zeros(0),
-        fault_values_on_sp=np.zeros(0),
-        thickness=None,
-        fault_values_ref=np.zeros(0),
-        fault_values_rest=np.zeros(0),
-        finite_fault_data=gp.data.FiniteFaultData(
-            implicit_function=scalar_funtion,
-            implicit_function_transform=transform,
-            pivot=scaled_center,
-        )
+    finite_fault = gp.data.FiniteFault(
+        center=tuple(center),
+        strike_radius=float(radius[0]),
+        dip_radius=float(radius[2]),
+        rotation_deg=60.0,
     )
 
-    geo_model.structural_frame.structural_groups[0].faults_input_data = faults_data
+    geo_model.structural_frame.structural_groups[0].set_finite_fault(finite_fault)
 
     verify_model_serialization(
         model=geo_model,
@@ -62,7 +48,7 @@ def test_finite_fault_scalar_field_on_fault():
 
     # TODO: Try to do this afterwards
 
-    if plot_pyvista := True:
+    if PLOT:
         plot3d = gpv.plot_3d(
             geo_model,
             show_lith=False,

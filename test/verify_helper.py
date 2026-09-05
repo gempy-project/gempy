@@ -9,7 +9,7 @@ from approvaltests.core import Comparator
 import json
 from approvaltests import verify, Options
 from approvaltests.namer import NamerFactory
-from approvaltests.reporters import GenericDiffReporter, GenericDiffReporterConfig
+from approvaltests.reporters import GenericDiffReporter, GenericDiffReporterConfig, PythonNativeReporter
 
 from gempy.core.data import GeoModel
 from gempy.modules.serialization.save_load import _load_model_from_bytes, model_to_bytes
@@ -36,7 +36,9 @@ def verify_json(item, name: str):
         extra_args=["diff"]
     )
 
-    if os.environ.get("WSL_DISTRO_NAME"):
+    if os.environ.get("TEAMCITY_VERSION") or os.environ.get("CI"):
+        reporter = PythonNativeReporter()
+    elif os.environ.get("WSL_DISTRO_NAME"):
         reporter = WSLWindowsDiffReporter(config)
     else:
         reporter = LinuxDiffReporter(config)
@@ -55,6 +57,8 @@ def gempy_verify_array(item, name: str, rtol: float = 1e-5, atol: float = 1e-5, 
     )
     
     reporter.extra_args = ["diff"]
+    if os.environ.get("TEAMCITY_VERSION") or os.environ.get("CI"):
+        reporter = PythonNativeReporter()
 
     parameters: Options = NamerFactory \
         .with_parameters(name) \
