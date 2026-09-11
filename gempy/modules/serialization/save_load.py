@@ -21,18 +21,6 @@ from ..._version import __version__
 SERIALIZATION_FORMAT = "gempy"
 SERIALIZATION_VERSION = 2
 SERIALIZATION_BYTE_ORDER = "little"
-from ..._version import __version__ as gempy_version
-
-
-SERIALIZATION_FORMAT_VERSION = 1
-SERIALIZATION_METADATA_FILENAME = "serialization.json"
-
-
-def _serialization_metadata() -> dict[str, int | str]:
-    return {
-        "serialization_format_version": SERIALIZATION_FORMAT_VERSION,
-        "gempy_version": gempy_version,
-    }
 
 
 def _warn_serialization_is_experimental() -> None:
@@ -245,10 +233,6 @@ def model_to_bytes(model: GeoModel) -> bytes:
         zf.writestr(make_info("micro_points.bin"), micro_points_raw)
         zf.writestr(make_info("grid.bin"), grid_raw)
         zf.writestr(make_info("liquid_earth_meta.json"), _liquid_earth_meta_json(model))
-        zf.writestr(
-            make_info(SERIALIZATION_METADATA_FILENAME),
-            json.dumps(_serialization_metadata(), indent=4),
-        )
 
     return buf.getvalue()
 
