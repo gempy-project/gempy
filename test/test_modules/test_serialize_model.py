@@ -3,13 +3,20 @@ import tempfile
 import json
 import os
 import pprint
+import zipfile
 
 from gempy_engine.core.data import InterpolationOptions
 
 import gempy as gp
 from gempy.core.data.encoders.converters import loading_model_from_binary
 from gempy.core.data.enumerators import ExampleModel
-from gempy.modules.serialization.save_load import save_model, load_model
+from gempy.modules.serialization.save_load import (
+    SERIALIZATION_BYTE_ORDER,
+    SERIALIZATION_FORMAT,
+    SERIALIZATION_VERSION,
+    save_model,
+    load_model,
+)
 from test.verify_helper import verify_json
 
 
@@ -46,6 +53,17 @@ def test_save_model_to_disk():
     with tempfile.NamedTemporaryFile(mode='w+', delete=True) as tmp:
         tmp_name = tmp.name + ".gempy"  # Store the name to use it later
         save_model(model, tmp_name)
+
+        with zipfile.ZipFile(tmp_name, "r") as zf:
+            serialization_metadata = json.loads(zf.read("header.json").decode("utf-8"))["serialization"]
+            assert "serialization.json" not in zf.namelist()
+
+        assert serialization_metadata == {
+            "format": SERIALIZATION_FORMAT,
+            "version": SERIALIZATION_VERSION,
+            "writer_version": gp.__version__,
+            "byte_order": SERIALIZATION_BYTE_ORDER,
+        }
 
         # Load the model from disk
         loaded_model = load_model(tmp_name)

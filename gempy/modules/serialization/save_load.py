@@ -23,25 +23,56 @@ SERIALIZATION_VERSION = 2
 SERIALIZATION_BYTE_ORDER = "little"
 
 
+def _warn_serialization_is_experimental() -> None:
+    warnings.warn(
+        "GemPy model serialization is still in development, and compatibility across "
+        "GemPy versions is not guaranteed. .gempy files include version metadata "
+        "to help identify the GemPy version used to save the model.",
+        UserWarning,
+        stacklevel=3,
+    )
+
+
 def save_model(model: GeoModel, path: str | None = None, validate_serialization: bool = True):
     """
-    Save a GeoModel to a file with proper extension validation.
-    
-    Parameters:
-    -----------
-    model : GeoModel
-        The geological model to save
-    path : str
-        The file path where to save the model
-    
+    Save a GemPy geological model to a ``.gempy`` file.
+
+    The saved file contains the model definition, including its structural
+    data, model configuration, and grid information. Computed model solutions
+    are not restored when the file is loaded and need to be recomputed with
+    :func:`gempy.compute_model`.
+
+    Args:
+        model (GeoModel):
+            The geological model to save.
+        path (str | None):
+            Path where the model should be saved. If ``None``, the model name
+            is used and the file is saved as ``<model_name>.gempy`` in the
+            current working directory. If the supplied path has no extension,
+            ``.gempy`` is appended automatically. Parent directories are
+            created if they do not already exist.
+        validate_serialization (bool):
+            If ``True``, GemPy deserializes the model in memory and validates
+            the result before writing the file. Defaults to ``True``.
+
+    Returns:
+        str:
+            The path of the saved file, including the ``.gempy`` extension if
+            it was added automatically.
+
     Raises:
-    -------
-    ValueError
-        If the file has an extension other than .gempy
+        ValueError:
+            If ``path`` specifies a file extension other than ``.gempy``.
+
+    Notes:
+        Model serialization is currently under active development and the
+        ``.gempy`` format may change in future versions. The saved file
+        includes serialization metadata with the GemPy package version and
+        serialization format version used to write the model.
     """
 
     # Warning about preview
-    warnings.warn("This function is still in development. It may not work as expected.")
+    _warn_serialization_is_experimental()
 
     # Define the valid extension for gempy models
     VALID_EXTENSION = ".gempy"
@@ -105,28 +136,38 @@ def model_to_binary(model: GeoModel) -> bytes:
 
 def load_model(path: str) -> GeoModel:
     """
-    Load a GeoModel from a file with extension validation.
-    
-    Parameters:
-    -----------
-    path : str
-        Path to the gempy model file
-        
+    Load a GemPy geological model from a ``.gempy`` file.
+
+    The function reconstructs the saved :class:`GeoModel`, including its
+    structural data, model configuration, and grid information. Computed model
+    solutions are not restored and need to be recomputed with
+    :func:`gempy.compute_model`.
+
+    Args:
+        path (str):
+            Path to the ``.gempy`` model file. Unlike :func:`save_model`, the
+            ``.gempy`` extension must be included explicitly.
+
     Returns:
-    --------
-    GeoModel
-        The loaded geological model
-        
+        GeoModel:
+            The reconstructed geological model.
+
     Raises:
-    -------
-    ValueError
-        If the file doesn't have the proper .gempy extension
-    FileNotFoundError
-        If the file doesn't exist
+        ValueError:
+            If ``path`` does not have the ``.gempy`` extension.
+        FileNotFoundError:
+            If the specified file does not exist.
+
+    Notes:
+        Model serialization is currently under active development and the
+        ``.gempy`` format may change in future versions. Files written by
+        current GemPy versions include serialization metadata with the GemPy
+        package version and serialization format version used to write the
+        model.
     """
 
     # Warning about preview
-    warnings.warn("This function is still in development. It may not work as expected.")
+    _warn_serialization_is_experimental()
 
     VALID_EXTENSION = ".gempy"
 
