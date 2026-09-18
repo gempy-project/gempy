@@ -252,7 +252,8 @@ def test_numerical_vs_autograd_comparison():
     print(f"Scenario C - Absolute Error: {abs_error}")
     print(f"Scenario C - Relative Error: {rel_error}")
 
-    assert rel_error < 1e-2 or abs_error < 1e-2, f"Gradient mismatch! Rel error: {rel_error}, Abs error: {abs_error}"
+    # * The engine graph is exact: AD and central FD agree to FD truncation/rounding (~1e-8 here).
+    assert rel_error < 1e-6, f"Gradient mismatch! Rel error: {rel_error}, Abs error: {abs_error}"
 
     # Reset model
     gp.modify_surface_points(geo_data, slice=point_idx, Z=original_z)
@@ -392,3 +393,167 @@ def test_multi_target_derivatives():
     
     # In a simple fold model, they might be highly correlated but not identical
     assert cos_sim.item() < 1.0, "Gradients for different targets should not be perfectly identical"
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Scenario F: AD vs converged central FD on programmatic models, tight tolerance.
+#
+# Covers the configurations that were reported (Sep 2026) to give wrong autograd derivatives: dipping layers with one
+# to three orientations, a faulted stack (derivative of the stratigraphic field w.r.t. a stratigraphic pick on the
+# other side of the fault) and the fault field w.r.t. its own picks. The root cause was not the engine graph but the
+# identity input transform that a model keeps when its structural frame was empty at `create_geomodel` time (the
+# picks were added afterwards): the kriging system then has a condition number of ~1e37 and derivatives through the
+# linear solve are numerically meaningless. `gp.compute_model` now derives the transform in that situation, so these
+# models are well conditioned and AD agrees with FD to FD accuracy.
+#
+# FD is done in real space with fresh model rebuilds. The input transform of the reference model is reused for the
+# perturbed models so that only the field, not the (data-dependent) transform, is differentiated; the AD gradient is
+# taken w.r.t. transformed coordinates and mapped back with the transform scale.
+# ---------------------------------------------------------------------------------------------------------------------
+import copy
+import contextlib
+import io
+
+import numpy as np
+import pytest
+
+from gempy_engine.core.data.options import InterpolationOptions
+from gempy_engine.core.data.stack_relation_type import StackRelationType
+
+_ENGINE_GRAD = gp.data.GemPyEngineConfig(backend=gp.data.AvailableBackends.PYTORCH, dtype='float64', compute_grads=True)
+_ENGINE_FD = gp.data.GemPyEngineConfig(backend=gp.data.AvailableBackends.PYTORCH, dtype='float64', compute_grads=False)
+
+_BOREHOLES = np.array([[300., 300.], [1000., 250.], [1700., 400.], [400., 1100.],
+                       [1100., 1000.], [1650., 1250.], [900., 1750.]])
+
+
+def _layered_picks(dip: bool) -> tuple[np.ndarray, np.ndarray]:
+    x, y = _BOREHOLES[:, 0], _BOREHOLES[:, 1]
+    top = 640.0 - 0.06 * x - 0.03 * y if dip else np.full(7, 560.0)
+    base = top - (210.0 - 0.01 * x) if dip else np.full(7, 360.0)
+    return np.column_stack([_BOREHOLES, top]), np.column_stack([_BOREHOLES, base])
+
+
+def _faulted_picks() -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    top, base = [], []
+    for x in (200.0, 500.0, 800.0):
+        for y in (300.0, 500.0, 700.0):
+            top.append([x, y, 600.0]); base.append([x, y, 450.0])
+    for x in (1200.0, 1500.0, 1800.0):
+        for y in (300.0, 500.0, 700.0):
+            top.append([x, y, 520.0]); base.append([x, y, 370.0])
+    fault = [[1000.0 + (z - 500.0) / np.tan(np.deg2rad(70.0)), y, z]
+             for z in (200.0, 500.0, 800.0) for y in (250.0, 500.0, 750.0)]
+    return np.array(top), np.array(base), np.array(fault)
+
+
+def _build_model(sp_top: np.ndarray, sp_base: np.ndarray, sp_fault: np.ndarray | None, n_ori: int,
+                 extent: list[float], transform=None) -> gp.data.GeoModel:
+    """Two horizons (+ optional fault). Points are added *after* `create_geomodel`, i.e. the model starts with the
+    default input transform; `transform` (if given) is frozen onto the model for FD rebuilds."""
+    color_gen = gp.data.structural_frame.ColorsGenerator()
+
+    def element(name):
+        return gp.data.StructuralElement(name, gp.data.SurfacePointsTable.initialize_empty(),
+                                         gp.data.OrientationsTable.initialize_empty(), color=next(color_gen))
+
+    groups = []
+    if sp_fault is not None:
+        groups.append(gp.data.StructuralGroup(name="Fault_Series", elements=[element("fault")],
+                                              structural_relation=StackRelationType.FAULT))
+    groups.append(gp.data.StructuralGroup(name="Strat_Series", elements=[element("top"), element("base")],
+                                          structural_relation=StackRelationType.ERODE))
+    frame = gp.data.StructuralFrame(structural_groups=groups, color_gen=color_gen)
+
+    with contextlib.redirect_stdout(io.StringIO()):
+        model = gp.create_geomodel(project_name="ad_vs_fd", extent=extent, refinement=2, structural_frame=frame)
+        if sp_fault is not None:
+            gp.add_surface_points(model, x=sp_fault[:, 0].tolist(), y=sp_fault[:, 1].tolist(), z=sp_fault[:, 2].tolist(),
+                                  elements_names=["fault"] * len(sp_fault))
+        for name, sp in (("top", sp_top), ("base", sp_base)):
+            gp.add_surface_points(model, x=sp[:, 0].tolist(), y=sp[:, 1].tolist(), z=sp[:, 2].tolist(),
+                                  elements_names=[name] * len(sp))
+        if sp_fault is not None:
+            normal = [np.sin(np.deg2rad(70.0)), 0.0, np.cos(np.deg2rad(70.0))]
+            gp.add_orientations(model, x=[1000.0], y=[500.0], z=[500.0], elements_names=["fault"], pole_vector=[normal])
+            gp.add_orientations(model, x=[500.0, 1500.0], y=[500.0, 500.0], z=[600.0, 520.0],
+                                elements_names=["top", "top"], pole_vector=[[0, 0, 1.0], [0, 0, 1.0]])
+            model.structural_frame.fault_relations = np.array([[0, 1], [0, 0]])
+            gp.set_is_fault(frame=model, fault_groups=["Fault_Series"])
+        else:
+            oris = [(1000., 1000., 500.), (400., 400., 500.), (1600., 1600., 500.)][:n_ori]
+            gp.add_orientations(model, x=[o[0] for o in oris], y=[o[1] for o in oris], z=[o[2] for o in oris],
+                                elements_names=["top"] * n_ori, pole_vector=[[0., 0., 1.]] * n_ori)
+        model.interpolation_options.cache_mode = InterpolationOptions.CacheMode.NO_CACHE
+        if transform is not None:
+            model.input_transform = copy.deepcopy(transform)
+    return model
+
+
+def _scalar_field_at(model: gp.data.GeoModel, point: np.ndarray, stack: int, engine_config) -> tuple:
+    with contextlib.redirect_stdout(io.StringIO()):
+        gp.set_custom_grid(model.grid, xyz_coord=np.atleast_2d(point))
+        solutions = gp.compute_model(model, engine_config=engine_config)
+    custom_slice = model.taped_interpolation_input.grid.custom_grid_slice
+    field = solutions.octrees_output[0].outputs[stack].exported_fields._scalar_field[custom_slice][0]
+    return field, model.taped_interpolation_input.surface_points.sp_coords
+
+
+_LAYERED_EXTENT = [0., 2000., 0., 2000., 0., 1000.]
+_FAULTED_EXTENT = [0., 2000., 0., 1000., 0., 1000.]
+
+
+@pytest.mark.parametrize("case", [
+    "flat_1ori", "dip_1ori", "dip_2ori", "dip_3ori",
+    "fault_strat_pick_across_fault", "fault_field_dX", "fault_field_dZ",
+])
+def test_ad_vs_fd_dipping_and_faulted(case):
+    fd_step = 0.02  # metres, real space
+
+    if case.startswith("fault"):
+        sp_top, sp_base, sp_fault = _faulted_picks()
+        n_ori, extent = 0, _FAULTED_EXTENT
+        eval_point = np.array([1400.0, 500.0, 500.0])  # hanging wall
+        if case == "fault_strat_pick_across_fault":
+            stack, pick_table, pick_row, coord = 1, "top", 4, 2  # top pick (500, 500) on the footwall, dZ
+        elif case == "fault_field_dX":
+            stack, pick_table, pick_row, coord = 0, "fault", 1, 0  # fault pick (890.8, 500, 200), dX
+        else:
+            stack, pick_table, pick_row, coord = 0, "fault", 1, 2  # fault pick (890.8, 500, 200), dZ
+        # * Fault pick 4 (1000, 500, 500) coincides with the fault orientation. The cubic kernel's gradient-interface
+        # * covariance has an |r| kink there (regularised over sqrt(1e-10) in transformed units by the engine), so a
+        # * derivative w.r.t. that pick is not well defined and FD/AD legitimately differ at the 1e-5 level.
+    else:
+        sp_top, sp_base = _layered_picks(dip=case.startswith("dip"))
+        sp_fault, n_ori, extent = None, int(case[-4]), _LAYERED_EXTENT
+        eval_point = np.array([1000.0, 1000.0, 480.0])
+        stack, pick_table, pick_row, coord = 0, "top", 3, 2  # top pick of borehole 4 (400, 1100), dZ
+
+    # --- reference model + autograd ------------------------------------------------------------------------------
+    model = _build_model(sp_top, sp_base, sp_fault, n_ori, extent)
+    with pytest.warns(RuntimeWarning, match="default .* input transform"):
+        field, sp_coords = _scalar_field_at(model, eval_point, stack, _ENGINE_GRAD)
+    transform = copy.deepcopy(model.input_transform)
+    assert not transform._is_default_transform
+    assert not np.allclose(transform.scale, 1.0)
+
+    grad_transformed = torch.autograd.grad(field, sp_coords)[0].numpy()
+    n_fault = 0 if sp_fault is None else len(sp_fault)
+    sp_row = (n_fault + pick_row) if pick_table == "top" else pick_row  # fault picks come first in the frame
+    ad_grad = grad_transformed[sp_row, coord] * float(transform.scale[coord])
+
+    # --- central FD in real space, fresh rebuilds with the frozen transform ---------------------------------------
+    values = []
+    for sign in (+1.0, -1.0):
+        top_p, base_p, fault_p = sp_top.copy(), sp_base.copy(), (None if sp_fault is None else sp_fault.copy())
+        (top_p if pick_table == "top" else fault_p)[pick_row, coord] += sign * fd_step
+        model_p = _build_model(top_p, base_p, fault_p, n_ori, extent, transform=transform)
+        with torch.no_grad():
+            value, _ = _scalar_field_at(model_p, eval_point, stack, _ENGINE_FD)
+        values.append(float(value))
+    fd_grad = (values[0] - values[1]) / (2 * fd_step)
+
+    rel_error = abs(ad_grad - fd_grad) / abs(fd_grad)
+    print(f"Scenario F [{case}] - AD: {ad_grad:.10e}  FD: {fd_grad:.10e}  rel. error: {rel_error:.2e}")
+    assert np.isfinite(ad_grad) and abs(fd_grad) > 0
+    assert rel_error < 1e-6, f"[{case}] AD {ad_grad} vs FD {fd_grad}: rel. error {rel_error}"
