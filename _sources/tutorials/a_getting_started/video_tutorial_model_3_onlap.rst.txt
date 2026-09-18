@@ -216,7 +216,7 @@ Video tutorial 11: Basic onlap scenario
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3f00bb4b90>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f9a075d16d0>
 
 
 
@@ -237,9 +237,8 @@ Video tutorial 11: Basic onlap scenario
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.PYTORCH
-    GPU enabled. Using device: cuda
-    GPU device count: 1
-    Current GPU device: 0
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
     Chunking done: 10 chunks
     Chunking done: 19 chunks
 
@@ -274,7 +273,7 @@ Video tutorial 11: Basic onlap scenario
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3f00bb4b90>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f9a075d16d0>
 
 
 
@@ -379,9 +378,8 @@ Video tutorial 11: Basic onlap scenario
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.PYTORCH
-    GPU enabled. Using device: cuda
-    GPU device count: 1
-    Current GPU device: 0
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
     Chunking done: 10 chunks
     Chunking done: 19 chunks
 
@@ -416,7 +414,7 @@ Video tutorial 11: Basic onlap scenario
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3e54173920>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f9a193f2de0>
 
 
 
@@ -491,7 +489,7 @@ Video tutorial 12: Advanced onlap - Subduction zone
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3eea7c0ad0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f9a0732cc50>
 
 
 
@@ -809,9 +807,8 @@ Video tutorial 12: Advanced onlap - Subduction zone
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.PYTORCH
-    GPU enabled. Using device: cuda
-    GPU device count: 1
-    Current GPU device: 0
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
     Chunking done: 14 chunks
     Chunking done: 10 chunks
     Chunking done: 12 chunks
@@ -847,7 +844,7 @@ Video tutorial 12: Advanced onlap - Subduction zone
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3eea7e1150>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f9a0744bcd0>
 
 
 
@@ -880,14 +877,14 @@ Video tutorial 12: Advanced onlap - Subduction zone
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f3e54128410>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f9a0757a490>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 10.268 seconds)
+   **Total running time of the script:** (0 minutes 12.072 seconds)
 
 
 .. _sphx_glr_download_tutorials_a_getting_started_video_tutorial_model_3_onlap.py:

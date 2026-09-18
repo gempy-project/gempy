@@ -33,8 +33,8 @@
       ~FaultsData.fault_values_on_sp
       ~FaultsData.fault_values_ref
       ~FaultsData.fault_values_rest
-      ~FaultsData.finite_fault_data
-      ~FaultsData.finite_faults_defined
+      ~FaultsData.finite_fault
+      ~FaultsData.finite_fault_defined
       ~FaultsData.n_faults
       ~FaultsData.thickness
    

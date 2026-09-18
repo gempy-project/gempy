@@ -9,7 +9,7 @@
     <link rel="stylesheet" type="text/css" href="../../../../../_static/basic.css?v=b08954a9" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/alabaster.css?v=e15417cb" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=4ae1632d" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/sg_gallery.css?v=c83e6b79" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
@@ -49,7 +49,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">.evaluation_options</span><span class="w"> </span><span class="kn">import</span> <span class="n">MeshExtractionMaskingOptions</span><span class="p">,</span> <span class="n">EvaluationOptions</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.temp_interpolation_values</span><span class="w"> </span><span class="kn">import</span> <span class="n">TempInterpolationValues</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">..kernel_classes.kernel_functions</span><span class="w"> </span><span class="kn">import</span> <span class="n">AvailableKernelFunctions</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.kernel_options</span><span class="w"> </span><span class="kn">import</span> <span class="n">KernelOptions</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.kernel_options</span><span class="w"> </span><span class="kn">import</span> <span class="n">KernelOptions</span><span class="p">,</span> <span class="n">NuggetImplementation</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">..raw_arrays_solution</span><span class="w"> </span><span class="kn">import</span> <span class="n">RawArraysSolution</span>
 
 
@@ -59,7 +59,7 @@
 <div class="viewcode-block" id="InterpolationOptions.CacheMode">
 <a class="viewcode-back" href="../../../../../Modeling%20Classes/gempy.core.data.InterpolationOptions.html#gempy.core.data.InterpolationOptions.CacheMode">[docs]</a>
     <span class="k">class</span><span class="w"> </span><span class="nc">CacheMode</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Cache mode for the interpolation&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">""" Cache mode for the interpolation"""</span>
         <span class="n">NO_CACHE</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>  <span class="c1">#: No cache at all even during the interpolation computation. This is quite expensive for no good reason.</span>
         <span class="n">CACHE</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
         <span class="n">IN_MEMORY_CACHE</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
@@ -108,6 +108,7 @@
             <span class="n">mesh_extraction</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
             <span class="n">compute_scalar_gradient</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
             <span class="n">compute_condition_number</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">nugget_implementation</span><span class="p">:</span> <span class="n">NuggetImplementation</span> <span class="o">=</span> <span class="n">NuggetImplementation</span><span class="o">.</span><span class="n">LEGACY</span><span class="p">,</span>
     <span class="p">):</span>
 
         <span class="n">kernel_options</span> <span class="o">=</span> <span class="n">KernelOptions</span><span class="p">(</span>
@@ -118,7 +119,8 @@
             <span class="n">gi_res</span><span class="o">=</span><span class="n">gi_res</span><span class="p">,</span>
             <span class="n">number_dimensions</span><span class="o">=</span><span class="n">number_dimensions</span><span class="p">,</span>
             <span class="n">kernel_function</span><span class="o">=</span><span class="n">kernel_function</span><span class="p">,</span>
-            <span class="n">compute_condition_number</span><span class="o">=</span><span class="n">compute_condition_number</span>
+            <span class="n">compute_condition_number</span><span class="o">=</span><span class="n">compute_condition_number</span><span class="p">,</span>
+            <span class="n">nugget_implementation</span><span class="o">=</span><span class="n">nugget_implementation</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="n">evaluation_options</span> <span class="o">=</span> <span class="n">EvaluationOptions</span><span class="p">(</span>
@@ -134,7 +136,7 @@
         <span class="n">temp_interpolation_values</span> <span class="o">=</span> <span class="n">TempInterpolationValues</span><span class="p">()</span>
         <span class="n">debug</span> <span class="o">=</span> <span class="n">gempy_engine</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">DEBUG_MODE</span>
         <span class="n">cache_mode</span> <span class="o">=</span> <span class="n">InterpolationOptions</span><span class="o">.</span><span class="n">CacheMode</span><span class="o">.</span><span class="n">IN_MEMORY_CACHE</span>
-        <span class="n">cache_model_name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">cache_model_name</span> <span class="o">=</span> <span class="s2">""</span>
         <span class="n">block_solutions_type</span> <span class="o">=</span> <span class="n">RawArraysSolution</span><span class="o">.</span><span class="n">BlockSolutionType</span><span class="o">.</span><span class="n">OCTREE</span>
         <span class="n">sigmoid_slope</span> <span class="o">=</span> <span class="mi">5_000_000</span>
 
@@ -152,7 +154,7 @@
 
     <span class="c1"># @on</span>
 
-    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;after&#39;</span><span class="p">)</span>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">'after'</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_normalize_kernel_options</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel_options</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">kernel_options</span><span class="o">.</span><span class="n">range</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel_options</span><span class="o">.</span><span class="n">range</span><span class="p">)</span>
@@ -182,24 +184,24 @@
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">probabilistic_options</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="c1"># TODO: This should have the sigmoid slope different</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Probabilistic interpolation is not yet implemented.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"Probabilistic interpolation is not yet implemented."</span><span class="p">)</span>
 
     <span class="c1"># def __repr__(self):</span>
-    <span class="c1">#     return f&quot;InterpolationOptions.from_args({&#39;, &#39;.join(f&#39;{k}={v}&#39; for k, v in asdict(self).items())})&quot;</span>
+    <span class="c1">#     return f"InterpolationOptions.from_args({', '.join(f'{k}={v}' for k, v in asdict(self).items())})"</span>
 
     <span class="c1"># def _repr_html_(self):</span>
-    <span class="c1">#     html = f&quot;&quot;&quot;</span>
+    <span class="c1">#     html = f"""</span>
     <span class="c1">#             &lt;table&gt;</span>
-    <span class="c1">#                 &lt;tr&gt;&lt;td colspan=&#39;2&#39; style=&#39;text-align:center&#39;&gt;&lt;b&gt;InterpolationOptions&lt;/b&gt;&lt;/td&gt;&lt;/tr&gt;</span>
-    <span class="c1">#                 {&#39;&#39;.join(f&#39;&lt;tr&gt;&lt;td&gt;{k}&lt;/td&gt;&lt;td&gt;{v._repr_html_() if isinstance(v, KernelOptions) else v}&lt;/td&gt;&lt;/tr&gt;&#39; for k, v in asdict(self).items())}</span>
+    <span class="c1">#                 &lt;tr&gt;&lt;td colspan='2' style='text-align:center'&gt;&lt;b&gt;InterpolationOptions&lt;/b&gt;&lt;/td&gt;&lt;/tr&gt;</span>
+    <span class="c1">#                 {''.join(f'&lt;tr&gt;&lt;td&gt;{k}&lt;/td&gt;&lt;td&gt;{v._repr_html_() if isinstance(v, KernelOptions) else v}&lt;/td&gt;&lt;/tr&gt;' for k, v in asdict(self).items())}</span>
     <span class="c1">#             &lt;/table&gt;</span>
-    <span class="c1">#             &quot;&quot;&quot;</span>
+    <span class="c1">#             """</span>
     <span class="c1">#     return html</span>
 
 <div class="viewcode-block" id="InterpolationOptions.update_options">
 <a class="viewcode-back" href="../../../../../Modeling%20Classes/gempy.core.data.InterpolationOptions.html#gempy.core.data.InterpolationOptions.update_options">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">update_options</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Updates the options of the class based on the provided keyword arguments.</span>
 
 <span class="sd">        Kwargs:</span>
@@ -219,12 +221,12 @@
 
 <span class="sd">        Raises:</span>
 <span class="sd">            Warning: If a provided keyword is not a recognized attribute.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>  <span class="c1"># checks if the attribute exists</span>
                 <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>  <span class="c1"># sets the attribute to the provided value</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> is not a recognized attribute and will be ignored.&quot;</span><span class="p">)</span></div>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> is not a recognized attribute and will be ignored."</span><span class="p">)</span></div>
 
 
     <span class="nd">@property</span>
@@ -233,8 +235,8 @@
 
     <span class="nd">@number_octree_levels</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">number_octree_levels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;The number_octree_levels attribute is deprecated and will be removed in the future. Use&quot;</span>
-                      <span class="s2">&quot;evaluation_options.number_octree_levels instead.&quot;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">"The number_octree_levels attribute is deprecated and will be removed in the future. Use"</span>
+                      <span class="s2">"evaluation_options.number_octree_levels instead."</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">evaluation_options</span><span class="o">.</span><span class="n">number_octree_levels</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="nd">@property</span>
@@ -244,8 +246,8 @@
     <span class="nd">@mesh_extraction</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">mesh_extraction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-            <span class="s2">&quot;The mesh_extraction attribute is deprecated and will be removed in the future. Use&quot;</span>
-            <span class="s2">&quot;evaluation_options.mesh_extraction instead.&quot;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
+            <span class="s2">"The mesh_extraction attribute is deprecated and will be removed in the future. Use"</span>
+            <span class="s2">"evaluation_options.mesh_extraction instead."</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">evaluation_options</span><span class="o">.</span><span class="n">mesh_extraction</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="nd">@property</span>
@@ -268,8 +270,8 @@
 
     <span class="nd">@compute_scalar_gradient</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_scalar_gradient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;The compute_scalar_gradient attribute is deprecated and will be removed in the future. Use&quot;</span>
-                      <span class="s2">&quot;evaluation_options.compute_scalar_gradient instead.&quot;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">"The compute_scalar_gradient attribute is deprecated and will be removed in the future. Use"</span>
+                      <span class="s2">"evaluation_options.compute_scalar_gradient instead."</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">evaluation_options</span><span class="o">.</span><span class="n">compute_scalar_gradient</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="nd">@property</span>
@@ -290,7 +292,7 @@
 
     <span class="nd">@uni_degree</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">uni_degree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;The uni_degree attribute is deprecated and will be removed in the future. &quot;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">"The uni_degree attribute is deprecated and will be removed in the future. "</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">kernel_options</span><span class="o">.</span><span class="n">uni_degree</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="nd">@property</span>
@@ -299,7 +301,7 @@
 
     <span class="nd">@i_res</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">i_res</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;The i_res attribute is deprecated and will be removed in the future. &quot;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">"The i_res attribute is deprecated and will be removed in the future. "</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">kernel_options</span><span class="o">.</span><span class="n">i_res</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="nd">@property</span>
@@ -308,7 +310,7 @@
 
     <span class="nd">@gi_res</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">gi_res</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;The gi_res attribute is deprecated and will be removed in the future. &quot;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">"The gi_res attribute is deprecated and will be removed in the future. "</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">kernel_options</span><span class="o">.</span><span class="n">gi_res</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="nd">@property</span>
@@ -321,7 +323,7 @@
 
     <span class="nd">@kernel_function</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">kernel_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;The kernel_function attribute is deprecated and will be removed in the future. &quot;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">"The kernel_function attribute is deprecated and will be removed in the future. "</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">kernel_options</span><span class="o">.</span><span class="n">kernel_function</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="nd">@property</span>
@@ -334,8 +336,8 @@
 
     <span class="nd">@number_octree_levels_surface</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">number_octree_levels_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;The number_octree_levels_surface attribute is deprecated and will be removed in the future. Use&quot;</span>
-                      <span class="s2">&quot;evaluation_options.number_octree_levels_surface instead.&quot;</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">"The number_octree_levels_surface attribute is deprecated and will be removed in the future. Use"</span>
+                      <span class="s2">"evaluation_options.number_octree_levels_surface instead."</span>
                       <span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">evaluation_options</span><span class="o">.</span><span class="n">number_octree_levels_surface</span> <span class="o">=</span> <span class="n">value</span>
 

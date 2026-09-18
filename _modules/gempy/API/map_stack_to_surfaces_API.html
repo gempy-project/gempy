@@ -9,7 +9,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/basic.css?v=b08954a9" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=e15417cb" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=c83e6b79" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
@@ -52,8 +52,8 @@
 <a class="viewcode-back" href="../../../GemPy%20API/gempy.map_stack_to_surfaces.html#gempy.map_stack_to_surfaces">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">map_stack_to_surfaces</span><span class="p">(</span><span class="n">gempy_model</span><span class="p">:</span> <span class="n">GeoModel</span><span class="p">,</span> <span class="n">mapping_object</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">]],</span>
                           <span class="n">set_series</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">remove_unused_series</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">series_data</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StructuralFrame</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Map stack (series) to surfaces by reorganizing elements between groups in a GeoModel&#39;s structural frame.</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Map stack (series) to surfaces by reorganizing elements between groups in a GeoModel's structural frame.</span>
 
 <span class="sd">    This function reorganizes structural elements (surfaces) based on a mapping object </span>
 <span class="sd">    and updates the structural frame of the GeoModel. It can also create new series </span>
@@ -68,7 +68,7 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        StructuralFrame: The updated StructuralFrame object.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">structural_groups</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">StructuralGroup</span><span class="p">]</span> <span class="o">=</span> <span class="n">gempy_model</span><span class="o">.</span><span class="n">structural_frame</span><span class="o">.</span><span class="n">structural_groups</span>
 
     <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="p">(</span><span class="n">group_name</span><span class="p">,</span> <span class="n">elements</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">mapping_object</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
@@ -79,8 +79,8 @@
             <span class="n">structural_relation</span> <span class="o">=</span> <span class="n">StackRelationType</span><span class="o">.</span><span class="n">ERODE</span>  <span class="c1"># Default value</span>
             <span class="k">if</span> <span class="n">series_data</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">series</span> <span class="ow">in</span> <span class="n">series_data</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">series</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">group_name</span><span class="p">:</span>
-                        <span class="n">structural_relation</span> <span class="o">=</span> <span class="n">StackRelationType</span><span class="p">[</span><span class="n">series</span><span class="p">[</span><span class="s1">&#39;structural_relation&#39;</span><span class="p">]]</span>
+                    <span class="k">if</span> <span class="n">series</span><span class="p">[</span><span class="s1">'name'</span><span class="p">]</span> <span class="o">==</span> <span class="n">group_name</span><span class="p">:</span>
+                        <span class="n">structural_relation</span> <span class="o">=</span> <span class="n">StackRelationType</span><span class="p">[</span><span class="n">series</span><span class="p">[</span><span class="s1">'structural_relation'</span><span class="p">]]</span>
                         <span class="k">break</span>
 
             <span class="n">new_group</span> <span class="o">=</span> <span class="n">StructuralGroup</span><span class="p">(</span>
@@ -104,7 +104,7 @@
                     <span class="n">from_group_name</span> <span class="o">=</span> <span class="n">group</span><span class="o">.</span><span class="n">name</span>
                     <span class="k">break</span>
 
-            <span class="c1"># If we&#39;ve found the group, we can proceed with moving the element.</span>
+            <span class="c1"># If we've found the group, we can proceed with moving the element.</span>
             <span class="k">if</span> <span class="n">from_group_name</span><span class="p">:</span>
                 <span class="n">_move_element</span><span class="p">(</span>
                     <span class="n">structural_groups</span><span class="o">=</span><span class="n">structural_groups</span><span class="p">,</span>
@@ -113,7 +113,7 @@
                     <span class="n">to_group_name</span><span class="o">=</span><span class="n">group_name</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find element &#39;</span><span class="si">{</span><span class="n">element_name</span><span class="si">}</span><span class="s2">&#39; in any group.&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Could not find element '</span><span class="si">{</span><span class="n">element_name</span><span class="si">}</span><span class="s2">' in any group."</span><span class="p">)</span>
 
     <span class="c1"># Remove empty groups</span>
     <span class="k">if</span> <span class="n">remove_unused_series</span><span class="p">:</span>
@@ -131,14 +131,14 @@
 
     <span class="c1"># Check if both groups exist</span>
     <span class="k">if</span> <span class="n">from_group</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">to_group</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;One or both group names are not found.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"One or both group names are not found."</span><span class="p">)</span>
 
     <span class="c1"># Find the element in the source group</span>
     <span class="n">element</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">element</span> <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">from_group</span><span class="o">.</span><span class="n">elements</span> <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">element_name</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
 
     <span class="c1"># Check if element exists</span>
     <span class="k">if</span> <span class="n">element</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Element &#39;</span><span class="si">{</span><span class="n">element_name</span><span class="si">}</span><span class="s2">&#39; not found in group &#39;</span><span class="si">{</span><span class="n">from_group_name</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Element '</span><span class="si">{</span><span class="n">element_name</span><span class="si">}</span><span class="s2">' not found in group '</span><span class="si">{</span><span class="n">from_group_name</span><span class="si">}</span><span class="s2">'."</span><span class="p">)</span>
 
     <span class="c1"># Remove the element from the source group and add it to the destination group</span>
     <span class="n">from_group</span><span class="o">.</span><span class="n">elements</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>

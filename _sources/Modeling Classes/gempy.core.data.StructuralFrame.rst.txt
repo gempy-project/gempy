@@ -29,6 +29,7 @@
       ~StructuralFrame.insert_group
       ~StructuralFrame.restore_fault_relations_from_names
       ~StructuralFrame.serialized_fault_relations
+      ~StructuralFrame.validate_micro_point_ownership
    
    
 
@@ -59,9 +60,13 @@
       ~StructuralFrame.input_data_descriptor
       ~StructuralFrame.input_tables_binary
       ~StructuralFrame.is_dirty
+      ~StructuralFrame.micro_points
+      ~StructuralFrame.micro_points_copy
       ~StructuralFrame.n_elements
       ~StructuralFrame.number_of_elements
       ~StructuralFrame.number_of_elements_per_group
+      ~StructuralFrame.number_of_micro_points_per_element
+      ~StructuralFrame.number_of_micro_points_per_group
       ~StructuralFrame.number_of_orientations_per_group
       ~StructuralFrame.number_of_points_per_element
       ~StructuralFrame.number_of_points_per_group

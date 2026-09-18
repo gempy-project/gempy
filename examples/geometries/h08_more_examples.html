@@ -10,7 +10,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=b08954a9" />
     <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=e15417cb" />
     <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=c83e6b79" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
@@ -51,14 +51,13 @@ to download the full example code.</p>
 <span id="sphx-glr-examples-geometries-h08-more-examples-py"></span><h1>Set of more complex examples<a class="headerlink" href="#set-of-more-complex-examples" title="Link to this heading">¶</a></h1>
 <p>A set of more complex examples</p>
 <p>Importing gempy</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">gempy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gp</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">gempy_viewer</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gpv</span>
-
-<span class="c1"># Aux imports</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-</pre></div>
-</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="kn">import</span><span class="w"> </span><span class="nn">gempy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gp</span><span class="w">
+</span><span class="kn">import</span><span class="w"> </span><span class="nn">gempy_viewer</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gpv</span><span class="w">
+</span><span class="w">
+</span><span class="c1"># Aux imports</span><span class="w">
+</span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span><span class="w">
+</span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span><span class="w">
+</span></pre></div></div>
 <section id="choose-a-model-and-load-the-corresponding-data-set-in-the-line-below">
 <h2>Choose a model and load the corresponding data set in the line below<a class="headerlink" href="#choose-a-model-and-load-the-corresponding-data-set-in-the-line-below" title="Link to this heading">¶</a></h2>
 <p>Model 1: Discordant layering</p>
@@ -69,113 +68,109 @@ to download the full example code.</p>
 <p>Model 7: Graben structure with two faults</p>
 <p>Model 8: Similar to Model 5</p>
 <p>Model 9: Parallel flat dipping layers</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">data_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s1">&#39;../..&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">create_example</span><span class="p">(</span><span class="n">name_model</span><span class="p">,</span> <span class="n">plot_section</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Create an inter_data from one of the examples data_set</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">data_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s1">'</span><span class="s1">../..</span><span class="s1">'</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">create_example</span><span class="p">(</span><span class="n">name_model</span><span class="p">,</span> <span class="n">plot_section</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;
+    Create an inter_data from one of the examples data_set
 
-<span class="sd">    Attr:</span>
-<span class="sd">        name_model (str): name of the model that you want to generate. It has to be in [&#39;Model 1&#39; ,&#39;Model 2&#39;, &#39;Model 3&#39;, &#39;Model 4&#39;,&#39;Model 5&#39; &#39;Model 6&#39;,&#39;Model 7&#39;,</span>
-<span class="sd">                          &#39;Model 8&#39;, &#39;Model 9&#39;]</span>
-<span class="sd">        save_pickle (bool, str): Save to a pickle the interp_data object. You can pass the path as a string otherwse</span>
-<span class="sd">                                the default name will be given</span>
-<span class="sd">        plot_section (bool)</span>
+    Attr:
+        name_model (str): name of the model that you want to generate. It has to be in ['Model 1' ,'Model 2', 'Model 3', 'Model 4','Model 5' 'Model 6','Model 7',
+                          'Model 8', 'Model 9']
+        save_pickle (bool, str): Save to a pickle the interp_data object. You can pass the path as a string otherwse
+                                the default name will be given
+        plot_section (bool)
 
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">name_list</span> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><a href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a></a><span class="p">([</span><span class="s1">&#39;Model 1&#39;</span><span class="p">,</span> <span class="s1">&#39;Model 2&#39;</span><span class="p">,</span> <span class="s1">&#39;Model 3&#39;</span><span class="p">,</span> <span class="s1">&#39;Model 4&#39;</span><span class="p">,</span> <span class="s1">&#39;Model 5&#39;</span><span class="p">,</span> <span class="s1">&#39;Model 6&#39;</span><span class="p">,</span> <span class="s1">&#39;Model 7&#39;</span><span class="p">,</span> <span class="s1">&#39;Model 8&#39;</span><span class="p">,</span> <span class="s1">&#39;Model 9&#39;</span><span class="p">])</span>
-    <span class="k">assert</span> <span class="n">name_model</span> <span class="ow">in</span> <span class="n">name_list</span><span class="p">,</span> <span class="s1">&#39;Name model must be in the following list: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">name_list</span><span class="p">)</span>
-    <span class="c1"># Extract number of the model</span>
-    <span class="n">n_model</span> <span class="o">=</span> <span class="n">name_model</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-
-    <span class="c1"># # Load right gempy geodata</span>
-    <span class="n">geo_model</span> <span class="o">=</span> <a href="../../GemPy API/gempy.create_geomodel.html#gempy.create_geomodel" title="gempy.create_geomodel" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><a href="../../GemPy API/gempy.create_geomodel.html#gempy.create_geomodel" title="gempy.create_geomodel" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">create_geomodel</span></a></a><span class="p">(</span>
-        <span class="n">project_name</span><span class="o">=</span><span class="n">name_model</span><span class="p">,</span>
-        <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1600</span><span class="p">],</span>
-        <span class="n">resolution</span><span class="o">=</span><span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">],</span>
-        <span class="n">refinement</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>  <span class="c1"># * For this model is better not to use octrees because we want to see what is happening in the scalar fields</span>
-        <span class="n">importer_helper</span><span class="o">=</span><a href="../../Helper Classes/gempy.core.data.ImporterHelper.html#gempy.core.data.ImporterHelper" title="gempy.core.data.ImporterHelper" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class"><a href="../../Helper Classes/gempy.core.data.ImporterHelper.html#gempy.core.data.ImporterHelper" title="gempy.core.data.ImporterHelper" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class"><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">ImporterHelper</span></a></a><span class="p">(</span>
-            <span class="n">path_to_orientations</span><span class="o">=</span><span class="n">data_path</span> <span class="o">+</span> <span class="s2">&quot;/data/input_data/lisa_models/foliations&quot;</span> <span class="o">+</span> <span class="n">n_model</span> <span class="o">+</span> <span class="s2">&quot;.csv&quot;</span><span class="p">,</span>
-            <span class="n">path_to_surface_points</span><span class="o">=</span><span class="n">data_path</span> <span class="o">+</span> <span class="s2">&quot;/data/input_data/lisa_models/interfaces&quot;</span> <span class="o">+</span> <span class="n">n_model</span> <span class="o">+</span> <span class="s2">&quot;.csv&quot;</span><span class="p">,</span>
-        <span class="p">)</span>
-    <span class="p">)</span>
-
-    <span class="c1"># Set the right sequential pile</span>
-    <span class="n">subset_list_1</span> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><a href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a></a><span class="p">([</span><span class="s1">&#39;Model 1&#39;</span><span class="p">])</span>
-    <span class="n">subset_list_2</span> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><a href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a></a><span class="p">([</span><span class="s1">&#39;Model 5&#39;</span><span class="p">,</span> <span class="s1">&#39;Model 8&#39;</span><span class="p">])</span>
-    <span class="n">subset_list_3</span> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><a href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a></a><span class="p">([</span><span class="s1">&#39;Model 2&#39;</span><span class="p">,</span> <span class="s1">&#39;Model 3&#39;</span><span class="p">,</span> <span class="s1">&#39;Model 9&#39;</span><span class="p">,</span> <span class="s1">&#39;Model 6&#39;</span><span class="p">])</span>
-    <span class="n">subset_list_4</span> <span class="o">=</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><a href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a></a><span class="p">([</span><span class="s1">&#39;Model 7&#39;</span><span class="p">])</span>
-
-    <span class="c1">### Model 1 - Discordant layering ###</span>
-    <span class="k">if</span> <span class="n">name_model</span> <span class="ow">in</span> <span class="n">subset_list_1</span><span class="p">:</span>
-        <a href="../../GemPy API/gempy.map_stack_to_surfaces.html#gempy.map_stack_to_surfaces" title="gempy.map_stack_to_surfaces" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><a href="../../GemPy API/gempy.map_stack_to_surfaces.html#gempy.map_stack_to_surfaces" title="gempy.map_stack_to_surfaces" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">map_stack_to_surfaces</span></a></a><span class="p">(</span>
-            <span class="n">gempy_model</span><span class="o">=</span><span class="n">geo_model</span><span class="p">,</span>
-            <span class="n">mapping_object</span><span class="o">=</span><span class="p">{</span>
-                <span class="s2">&quot;Strat_Series_1&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;Sandstone&#39;</span><span class="p">,</span> <span class="s1">&#39;Siltstone&#39;</span><span class="p">,</span> <span class="s1">&#39;Shale&#39;</span><span class="p">),</span>
-                <span class="s2">&quot;Strat_Series_2&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;Sandstone2&#39;</span><span class="p">,</span> <span class="s1">&#39;Siltstone2&#39;</span><span class="p">,</span> <span class="s1">&#39;Shale2&#39;</span><span class="p">)</span>
-            <span class="p">},</span>
-        <span class="p">)</span>
-    <span class="c1">### Model 5 - One normal Fault ###</span>
-    <span class="c1">### Model 8 - ###</span>
-    <span class="k">elif</span> <span class="n">name_model</span> <span class="ow">in</span> <span class="n">subset_list_2</span><span class="p">:</span>
-        <a href="../../GemPy API/gempy.map_stack_to_surfaces.html#gempy.map_stack_to_surfaces" title="gempy.map_stack_to_surfaces" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><a href="../../GemPy API/gempy.map_stack_to_surfaces.html#gempy.map_stack_to_surfaces" title="gempy.map_stack_to_surfaces" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">map_stack_to_surfaces</span></a></a><span class="p">(</span>
-            <span class="n">gempy_model</span><span class="o">=</span><span class="n">geo_model</span><span class="p">,</span>
-            <span class="n">mapping_object</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;Fault_Series&quot;</span><span class="p">:</span> <span class="s1">&#39;Main_Fault&#39;</span><span class="p">,</span>
-            <span class="s2">&quot;Strat_Series&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;Sandstone&#39;</span><span class="p">,</span> <span class="s1">&#39;Siltstone&#39;</span><span class="p">,</span> <span class="s1">&#39;Shale&#39;</span><span class="p">,</span> <span class="s1">&#39;Sandstone_2&#39;</span><span class="p">,</span> <span class="s1">&#39;Schist&#39;</span><span class="p">,</span> <span class="s1">&#39;Gneiss&#39;</span><span class="p">)</span>
-            <span class="p">},</span>
-        <span class="p">)</span>
-
-        <a href="../../GemPy API/gempy.set_is_fault.html#gempy.set_is_fault" title="gempy.set_is_fault" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><a href="../../GemPy API/gempy.set_is_fault.html#gempy.set_is_fault" title="gempy.set_is_fault" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">set_is_fault</span></a></a><span class="p">(</span><span class="n">geo_model</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;Fault_Series&#39;</span><span class="p">])</span>
-
-    <span class="k">elif</span> <span class="n">name_model</span> <span class="ow">in</span> <span class="n">subset_list_3</span><span class="p">:</span>
-        <span class="c1">### Model 2 - Aufwölbung (durch Salzstock?) ###</span>
-        <span class="c1">### Model 3+9 - Parallele NNE Schichtung ohne Verwerfung ###</span>
-        <span class="c1">### Model 6 - Mulde ###</span>
-        <a href="../../GemPy API/gempy.map_stack_to_surfaces.html#gempy.map_stack_to_surfaces" title="gempy.map_stack_to_surfaces" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><a href="../../GemPy API/gempy.map_stack_to_surfaces.html#gempy.map_stack_to_surfaces" title="gempy.map_stack_to_surfaces" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">map_stack_to_surfaces</span></a></a><span class="p">(</span>
-            <span class="n">gempy_model</span><span class="o">=</span><span class="n">geo_model</span><span class="p">,</span>
-            <span class="n">mapping_object</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;Strat_Series&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;Sandstone&#39;</span><span class="p">,</span> <span class="s1">&#39;Siltstone&#39;</span><span class="p">,</span> <span class="s1">&#39;Shale&#39;</span><span class="p">,</span> <span class="s1">&#39;Sandstone_2&#39;</span><span class="p">,</span> <span class="s1">&#39;Schist&#39;</span><span class="p">,</span> <span class="s1">&#39;Gneiss&#39;</span><span class="p">)</span>
-            <span class="p">},</span>
-        <span class="p">)</span>
-    <span class="k">elif</span> <span class="n">name_model</span> <span class="ow">in</span> <span class="n">subset_list_4</span><span class="p">:</span>
-        <span class="c1">### Model 7 - Graben ###</span>
-        <a href="../../GemPy API/gempy.map_stack_to_surfaces.html#gempy.map_stack_to_surfaces" title="gempy.map_stack_to_surfaces" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><a href="../../GemPy API/gempy.map_stack_to_surfaces.html#gempy.map_stack_to_surfaces" title="gempy.map_stack_to_surfaces" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">map_stack_to_surfaces</span></a></a><span class="p">(</span>
-            <span class="n">gempy_model</span><span class="o">=</span><span class="n">geo_model</span><span class="p">,</span>
-            <span class="n">mapping_object</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;Fault_1&quot;</span><span class="p">:</span> <span class="s1">&#39;Fault_1&#39;</span><span class="p">,</span> <span class="s2">&quot;Fault_2&quot;</span><span class="p">:</span> <span class="s1">&#39;Fault_2&#39;</span><span class="p">,</span>
-            <span class="s2">&quot;Strat_Series&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;Sandstone&#39;</span><span class="p">,</span> <span class="s1">&#39;Siltstone&#39;</span><span class="p">,</span> <span class="s1">&#39;Shale&#39;</span><span class="p">,</span> <span class="s1">&#39;Sandstone_2&#39;</span><span class="p">,</span> <span class="s1">&#39;Schist&#39;</span><span class="p">,</span> <span class="s1">&#39;Gneiss&#39;</span><span class="p">)</span>
-            <span class="p">},</span>
-        <span class="p">)</span>
-
-        <a href="../../GemPy API/gempy.set_is_fault.html#gempy.set_is_fault" title="gempy.set_is_fault" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><a href="../../GemPy API/gempy.set_is_fault.html#gempy.set_is_fault" title="gempy.set_is_fault" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">set_is_fault</span></a></a><span class="p">(</span><span class="n">geo_model</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;Fault_1&#39;</span><span class="p">,</span> <span class="s1">&#39;Fault_2&#39;</span><span class="p">])</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;You would never reach this point. Look for the bug&#39;</span><span class="p">)</span>
-
-    <span class="c1"># Interpolation and Computation</span>
-    <a href="../../GemPy API/gempy.compute_model.html#gempy.compute_model" title="gempy.compute_model" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><a href="../../GemPy API/gempy.compute_model.html#gempy.compute_model" title="gempy.compute_model" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span></a></a><span class="p">(</span>
-        <span class="n">gempy_model</span><span class="o">=</span><span class="n">geo_model</span><span class="p">,</span>
-        <span class="n">engine_config</span><span class="o">=</span><a href="../../Helper Classes/gempy.core.data.GemPyEngineConfig.html#gempy.core.data.GemPyEngineConfig" title="gempy.core.data.GemPyEngineConfig" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class"><a href="../../Helper Classes/gempy.core.data.GemPyEngineConfig.html#gempy.core.data.GemPyEngineConfig" title="gempy.core.data.GemPyEngineConfig" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class"><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GemPyEngineConfig</span></a></a><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">AvailableBackends</span><span class="o">.</span><span class="n">PYTORCH</span><span class="p">)</span>
-    <span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">plot_section</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="c1"># 2D Plot</span>
-        <span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><span class="n">geo_model</span><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;mid&#39;</span><span class="p">],</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">show_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">gpv</span><span class="o">.</span><span class="n">plot_3d</span><span class="p">(</span><span class="n">geo_model</span><span class="p">,</span> <span class="n">show_lith</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show_boundaries</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ve</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span>
-</pre></div>
-</div>
+    &quot;&quot;&quot;</span><span class="w">
+</span>    <span class="n">name_list</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="p">[</span><span class="s1">'</span><span class="s1">Model 1</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="s1">Model 2</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="s1">Model 3</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="s1">Model 4</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="s1">Model 5</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="s1">Model 6</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="s1">Model 7</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="s1">Model 8</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="s1">Model 9</span><span class="s1">'</span><span class="p">]</span><span class="p">)</span><span class="w">
+</span>    <span class="k">assert</span> <span class="n">name_model</span> <span class="ow">in</span> <span class="n">name_list</span><span class="p">,</span> <span class="s1">'</span><span class="s1">Name model must be in the following list: </span><span class="s1">'</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">name_list</span><span class="p">)</span><span class="w">
+</span>    <span class="c1"># Extract number of the model</span><span class="w">
+</span>    <span class="n">n_model</span> <span class="o">=</span> <span class="n">name_model</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="w">
+</span><span class="w">
+</span>    <span class="c1"># # Load right gempy geodata</span><span class="w">
+</span>    <span class="n">geo_model</span> <span class="o">=</span> <a class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function reference internal" href="../../GemPy%20API/gempy.create_geomodel.html#gempy.create_geomodel" title="gempy.create_geomodel"><span class="n">gp</span><span class="o">.</span><span class="n">create_geomodel</span></a><span class="p">(</span><span class="w">
+</span>        <span class="n">project_name</span><span class="o">=</span><span class="n">name_model</span><span class="p">,</span><span class="w">
+</span>        <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1600</span><span class="p">]</span><span class="p">,</span><span class="w">
+</span>        <span class="n">resolution</span><span class="o">=</span><span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">]</span><span class="p">,</span><span class="w">
+</span>        <span class="n">refinement</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>  <span class="c1"># * For this model is better not to use octrees because we want to see what is happening in the scalar fields</span><span class="w">
+</span>        <span class="n">importer_helper</span><span class="o">=</span><a class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class reference internal" href="../../Helper%20Classes/gempy.core.data.ImporterHelper.html#gempy.core.data.ImporterHelper" title="gempy.core.data.ImporterHelper"><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">ImporterHelper</span></a><span class="p">(</span><span class="w">
+</span>            <span class="n">path_to_orientations</span><span class="o">=</span><span class="n">data_path</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="s2">/data/input_data/lisa_models/foliations</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">n_model</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="s2">.csv</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>            <span class="n">path_to_surface_points</span><span class="o">=</span><span class="n">data_path</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="s2">/data/input_data/lisa_models/interfaces</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">n_model</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="s2">.csv</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>        <span class="p">)</span><span class="w">
+</span>    <span class="p">)</span><span class="w">
+</span><span class="w">
+</span>    <span class="c1"># Set the right sequential pile</span><span class="w">
+</span>    <span class="n">subset_list_1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="p">[</span><span class="s1">'</span><span class="s1">Model 1</span><span class="s1">'</span><span class="p">]</span><span class="p">)</span><span class="w">
+</span>    <span class="n">subset_list_2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="p">[</span><span class="s1">'</span><span class="s1">Model 5</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="s1">Model 8</span><span class="s1">'</span><span class="p">]</span><span class="p">)</span><span class="w">
+</span>    <span class="n">subset_list_3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="p">[</span><span class="s1">'</span><span class="s1">Model 2</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="s1">Model 3</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="s1">Model 9</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="s1">Model 6</span><span class="s1">'</span><span class="p">]</span><span class="p">)</span><span class="w">
+</span>    <span class="n">subset_list_4</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="p">[</span><span class="s1">'</span><span class="s1">Model 7</span><span class="s1">'</span><span class="p">]</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span>    <span class="c1">### Model 1 - Discordant layering ###</span><span class="w">
+</span>    <span class="k">if</span> <span class="n">name_model</span> <span class="ow">in</span> <span class="n">subset_list_1</span><span class="p">:</span><span class="w">
+</span>        <a class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function reference internal" href="../../GemPy%20API/gempy.map_stack_to_surfaces.html#gempy.map_stack_to_surfaces" title="gempy.map_stack_to_surfaces"><span class="n">gp</span><span class="o">.</span><span class="n">map_stack_to_surfaces</span></a><span class="p">(</span><span class="w">
+</span>            <span class="n">gempy_model</span><span class="o">=</span><span class="n">geo_model</span><span class="p">,</span><span class="w">
+</span>            <span class="n">mapping_object</span><span class="o">=</span><span class="p">{</span><span class="w">
+</span>                <span class="s2">&quot;</span><span class="s2">Strat_Series_1</span><span class="s2">&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s1">'</span><span class="s1">Sandstone</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="s1">Siltstone</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="s1">Shale</span><span class="s1">'</span><span class="p">)</span><span class="p">,</span><span class="w">
+</span>                <span class="s2">&quot;</span><span class="s2">Strat_Series_2</span><span class="s2">&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s1">'</span><span class="s1">Sandstone2</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="s1">Siltstone2</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="s1">Shale2</span><span class="s1">'</span><span class="p">)</span><span class="w">
+</span>            <span class="p">}</span><span class="p">,</span><span class="w">
+</span>        <span class="p">)</span><span class="w">
+</span>    <span class="c1">### Model 5 - One normal Fault ###</span><span class="w">
+</span>    <span class="c1">### Model 8 - ###</span><span class="w">
+</span>    <span class="k">elif</span> <span class="n">name_model</span> <span class="ow">in</span> <span class="n">subset_list_2</span><span class="p">:</span><span class="w">
+</span>        <a class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function reference internal" href="../../GemPy%20API/gempy.map_stack_to_surfaces.html#gempy.map_stack_to_surfaces" title="gempy.map_stack_to_surfaces"><span class="n">gp</span><span class="o">.</span><span class="n">map_stack_to_surfaces</span></a><span class="p">(</span><span class="w">
+</span>            <span class="n">gempy_model</span><span class="o">=</span><span class="n">geo_model</span><span class="p">,</span><span class="w">
+</span>            <span class="n">mapping_object</span><span class="o">=</span><span class="p">{</span><span class="w">
+</span>            <span class="s2">&quot;</span><span class="s2">Fault_Series</span><span class="s2">&quot;</span><span class="p">:</span> <span class="s1">'</span><span class="s1">Main_Fault</span><span class="s1">'</span><span class="p">,</span><span class="w">
+</span>            <span class="s2">&quot;</span><span class="s2">Strat_Series</span><span class="s2">&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s1">'</span><span class="s1">Sandstone</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="s1">Siltstone</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="s1">Shale</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="s1">Sandstone_2</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="s1">Schist</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="s1">Gneiss</span><span class="s1">'</span><span class="p">)</span><span class="w">
+</span>            <span class="p">}</span><span class="p">,</span><span class="w">
+</span>        <span class="p">)</span><span class="w">
+</span><span class="w">
+</span>        <a class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function reference internal" href="../../GemPy%20API/gempy.set_is_fault.html#gempy.set_is_fault" title="gempy.set_is_fault"><span class="n">gp</span><span class="o">.</span><span class="n">set_is_fault</span></a><span class="p">(</span><span class="n">geo_model</span><span class="p">,</span> <span class="p">[</span><span class="s1">'</span><span class="s1">Fault_Series</span><span class="s1">'</span><span class="p">]</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span>    <span class="k">elif</span> <span class="n">name_model</span> <span class="ow">in</span> <span class="n">subset_list_3</span><span class="p">:</span><span class="w">
+</span>        <span class="c1">### Model 2 - Aufwölbung (durch Salzstock?) ###</span><span class="w">
+</span>        <span class="c1">### Model 3+9 - Parallele NNE Schichtung ohne Verwerfung ###</span><span class="w">
+</span>        <span class="c1">### Model 6 - Mulde ###</span><span class="w">
+</span>        <a class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function reference internal" href="../../GemPy%20API/gempy.map_stack_to_surfaces.html#gempy.map_stack_to_surfaces" title="gempy.map_stack_to_surfaces"><span class="n">gp</span><span class="o">.</span><span class="n">map_stack_to_surfaces</span></a><span class="p">(</span><span class="w">
+</span>            <span class="n">gempy_model</span><span class="o">=</span><span class="n">geo_model</span><span class="p">,</span><span class="w">
+</span>            <span class="n">mapping_object</span><span class="o">=</span><span class="p">{</span><span class="w">
+</span>            <span class="s2">&quot;</span><span class="s2">Strat_Series</span><span class="s2">&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s1">'</span><span class="s1">Sandstone</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="s1">Siltstone</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="s1">Shale</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="s1">Sandstone_2</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="s1">Schist</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="s1">Gneiss</span><span class="s1">'</span><span class="p">)</span><span class="w">
+</span>            <span class="p">}</span><span class="p">,</span><span class="w">
+</span>        <span class="p">)</span><span class="w">
+</span>    <span class="k">elif</span> <span class="n">name_model</span> <span class="ow">in</span> <span class="n">subset_list_4</span><span class="p">:</span><span class="w">
+</span>        <span class="c1">### Model 7 - Graben ###</span><span class="w">
+</span>        <a class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function reference internal" href="../../GemPy%20API/gempy.map_stack_to_surfaces.html#gempy.map_stack_to_surfaces" title="gempy.map_stack_to_surfaces"><span class="n">gp</span><span class="o">.</span><span class="n">map_stack_to_surfaces</span></a><span class="p">(</span><span class="w">
+</span>            <span class="n">gempy_model</span><span class="o">=</span><span class="n">geo_model</span><span class="p">,</span><span class="w">
+</span>            <span class="n">mapping_object</span><span class="o">=</span><span class="p">{</span><span class="w">
+</span>            <span class="s2">&quot;</span><span class="s2">Fault_1</span><span class="s2">&quot;</span><span class="p">:</span> <span class="s1">'</span><span class="s1">Fault_1</span><span class="s1">'</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s2">Fault_2</span><span class="s2">&quot;</span><span class="p">:</span> <span class="s1">'</span><span class="s1">Fault_2</span><span class="s1">'</span><span class="p">,</span><span class="w">
+</span>            <span class="s2">&quot;</span><span class="s2">Strat_Series</span><span class="s2">&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s1">'</span><span class="s1">Sandstone</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="s1">Siltstone</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="s1">Shale</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="s1">Sandstone_2</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="s1">Schist</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="s1">Gneiss</span><span class="s1">'</span><span class="p">)</span><span class="w">
+</span>            <span class="p">}</span><span class="p">,</span><span class="w">
+</span>        <span class="p">)</span><span class="w">
+</span><span class="w">
+</span>        <a class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function reference internal" href="../../GemPy%20API/gempy.set_is_fault.html#gempy.set_is_fault" title="gempy.set_is_fault"><span class="n">gp</span><span class="o">.</span><span class="n">set_is_fault</span></a><span class="p">(</span><span class="n">geo_model</span><span class="p">,</span> <span class="p">[</span><span class="s1">'</span><span class="s1">Fault_1</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="s1">Fault_2</span><span class="s1">'</span><span class="p">]</span><span class="p">)</span><span class="w">
+</span>    <span class="k">else</span><span class="p">:</span><span class="w">
+</span>        <span class="nb">print</span><span class="p">(</span><span class="s1">'</span><span class="s1">You would never reach this point. Look for the bug</span><span class="s1">'</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span>    <span class="c1"># Interpolation and Computation</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function reference internal" href="../../GemPy%20API/gempy.compute_model.html#gempy.compute_model" title="gempy.compute_model"><span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span></a><span class="p">(</span><span class="w">
+</span>        <span class="n">gempy_model</span><span class="o">=</span><span class="n">geo_model</span><span class="p">,</span><span class="w">
+</span>        <span class="n">engine_config</span><span class="o">=</span><a class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class reference internal" href="../../Helper%20Classes/gempy.core.data.GemPyEngineConfig.html#gempy.core.data.GemPyEngineConfig" title="gempy.core.data.GemPyEngineConfig"><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GemPyEngineConfig</span></a><span class="p">(</span><span class="n">backend</span><span class="o">=</span><a class="sphx-glr-backref-module-gempy_engine-config sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../Modeling%20Classes/gempy.core.data.AvailableBackends.html#gempy.core.data.AvailableBackends" title="gempy_engine.config.AvailableBackends"><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">AvailableBackends</span><span class="o">.</span><span class="n">PYTORCH</span></a><span class="p">)</span><span class="w">
+</span>    <span class="p">)</span><span class="w">
+</span><span class="w">
+</span>    <span class="k">if</span> <span class="n">plot_section</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span><span class="w">
+</span>        <span class="c1"># 2D Plot</span><span class="w">
+</span>        <a class="sphx-glr-backref-module-gempy_viewer sphx-glr-backref-type-py-function reference internal" href="../../Plot/gempy_viewer.plot_2d.html#gempy_viewer.plot_2d" title="gempy_viewer.plot_2d"><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span></a><span class="p">(</span><span class="n">geo_model</span><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="p">[</span><span class="s1">'</span><span class="s1">mid</span><span class="s1">'</span><span class="p">]</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">'</span><span class="s1">y</span><span class="s1">'</span><span class="p">,</span> <span class="n">show_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="w">
+</span>        <a class="sphx-glr-backref-module-gempy_viewer sphx-glr-backref-type-py-function reference internal" href="../../Plot/gempy_viewer.plot_3d.html#gempy_viewer.plot_3d" title="gempy_viewer.plot_3d"><span class="n">gpv</span><span class="o">.</span><span class="n">plot_3d</span></a><span class="p">(</span><span class="n">geo_model</span><span class="p">,</span> <span class="n">show_lith</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show_boundaries</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ve</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span>    <span class="k">return</span> <span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span><span class="w">
+</span></pre></div></div>
 <section id="discordant-layering-1">
 <h3>Discordant layering 1<a class="headerlink" href="#discordant-layering-1" title="Link to this heading">¶</a></h3>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">create_example</span><span class="p">(</span><span class="s1">&#39;Model 1&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">create_example</span><span class="p">(</span><span class="s1">'</span><span class="s1">Model 1</span><span class="s1">'</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
 <img src="../../_images/sphx_glr_h08_more_examples_001.png" srcset="../../_images/sphx_glr_h08_more_examples_001.png" alt="h08 more examples" class = "sphx-glr-single-img"/><img src="../../_images/sphx_glr_h08_more_examples_002.png" srcset="../../_images/sphx_glr_h08_more_examples_002.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting Backend To: AvailableBackends.PYTORCH
-GPU enabled. Using device: cuda
-GPU device count: 1
-Current GPU device: 0
+GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+Setting Backend To: AvailableBackends.PYTORCH
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
@@ -242,13 +237,11 @@ Current GPU device: 0
 <br /></section>
 <section id="discordant-layering-2">
 <h3>Discordant layering 2<a class="headerlink" href="#discordant-layering-2" title="Link to this heading">¶</a></h3>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">create_example</span><span class="p">(</span><span class="s1">&#39;Model 2&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">create_example</span><span class="p">(</span><span class="s1">'</span><span class="s1">Model 2</span><span class="s1">'</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
 <img src="../../_images/sphx_glr_h08_more_examples_003.png" srcset="../../_images/sphx_glr_h08_more_examples_003.png" alt="h08 more examples" class = "sphx-glr-single-img"/><img src="../../_images/sphx_glr_h08_more_examples_004.png" srcset="../../_images/sphx_glr_h08_more_examples_004.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting Backend To: AvailableBackends.PYTORCH
-GPU enabled. Using device: cuda
-GPU device count: 1
-Current GPU device: 0
+GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+Setting Backend To: AvailableBackends.PYTORCH
 Chunking done: 6 chunks
 Chunking done: 9 chunks
 </pre></div>
@@ -310,13 +303,11 @@ Chunking done: 9 chunks
 <br /></section>
 <section id="discordant-layering-3">
 <h3>Discordant layering 3<a class="headerlink" href="#discordant-layering-3" title="Link to this heading">¶</a></h3>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">create_example</span><span class="p">(</span><span class="s1">&#39;Model 3&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">create_example</span><span class="p">(</span><span class="s1">'</span><span class="s1">Model 3</span><span class="s1">'</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
 <img src="../../_images/sphx_glr_h08_more_examples_005.png" srcset="../../_images/sphx_glr_h08_more_examples_005.png" alt="h08 more examples" class = "sphx-glr-single-img"/><img src="../../_images/sphx_glr_h08_more_examples_006.png" srcset="../../_images/sphx_glr_h08_more_examples_006.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting Backend To: AvailableBackends.PYTORCH
-GPU enabled. Using device: cuda
-GPU device count: 1
-Current GPU device: 0
+GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+Setting Backend To: AvailableBackends.PYTORCH
 Chunking done: 6 chunks
 </pre></div>
 </div>
@@ -377,13 +368,11 @@ Chunking done: 6 chunks
 <br /></section>
 <section id="one-normal-fault-1">
 <h3>One normal Fault 1<a class="headerlink" href="#one-normal-fault-1" title="Link to this heading">¶</a></h3>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">create_example</span><span class="p">(</span><span class="s1">&#39;Model 5&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">create_example</span><span class="p">(</span><span class="s1">'</span><span class="s1">Model 5</span><span class="s1">'</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
 <img src="../../_images/sphx_glr_h08_more_examples_007.png" srcset="../../_images/sphx_glr_h08_more_examples_007.png" alt="h08 more examples" class = "sphx-glr-single-img"/><img src="../../_images/sphx_glr_h08_more_examples_008.png" srcset="../../_images/sphx_glr_h08_more_examples_008.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting Backend To: AvailableBackends.PYTORCH
-GPU enabled. Using device: cuda
-GPU device count: 1
-Current GPU device: 0
+GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+Setting Backend To: AvailableBackends.PYTORCH
 Chunking done: 7 chunks
 </pre></div>
 </div>
@@ -456,13 +445,11 @@ Chunking done: 7 chunks
 <br /></section>
 <section id="fold">
 <h3>Fold<a class="headerlink" href="#fold" title="Link to this heading">¶</a></h3>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">create_example</span><span class="p">(</span><span class="s1">&#39;Model 6&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">create_example</span><span class="p">(</span><span class="s1">'</span><span class="s1">Model 6</span><span class="s1">'</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
 <img src="../../_images/sphx_glr_h08_more_examples_009.png" srcset="../../_images/sphx_glr_h08_more_examples_009.png" alt="h08 more examples" class = "sphx-glr-single-img"/><img src="../../_images/sphx_glr_h08_more_examples_010.png" srcset="../../_images/sphx_glr_h08_more_examples_010.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting Backend To: AvailableBackends.PYTORCH
-GPU enabled. Using device: cuda
-GPU device count: 1
-Current GPU device: 0
+GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+Setting Backend To: AvailableBackends.PYTORCH
 Chunking done: 7 chunks
 Chunking done: 7 chunks
 </pre></div>
@@ -524,13 +511,11 @@ Chunking done: 7 chunks
 <br /></section>
 <section id="graben">
 <h3>Graben<a class="headerlink" href="#graben" title="Link to this heading">¶</a></h3>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">create_example</span><span class="p">(</span><span class="s1">&#39;Model 7&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">create_example</span><span class="p">(</span><span class="s1">'</span><span class="s1">Model 7</span><span class="s1">'</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
 <img src="../../_images/sphx_glr_h08_more_examples_011.png" srcset="../../_images/sphx_glr_h08_more_examples_011.png" alt="h08 more examples" class = "sphx-glr-single-img"/><img src="../../_images/sphx_glr_h08_more_examples_012.png" srcset="../../_images/sphx_glr_h08_more_examples_012.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting Backend To: AvailableBackends.PYTORCH
-GPU enabled. Using device: cuda
-GPU device count: 1
-Current GPU device: 0
+GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+Setting Backend To: AvailableBackends.PYTORCH
 Chunking done: 19 chunks
 Chunking done: 21 chunks
 Chunking done: 10 chunks
@@ -617,13 +602,11 @@ Chunking done: 10 chunks
 <br /></section>
 <section id="one-normal-fault-2">
 <h3>One normal Fault 2<a class="headerlink" href="#one-normal-fault-2" title="Link to this heading">¶</a></h3>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">create_example</span><span class="p">(</span><span class="s1">&#39;Model 8&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">create_example</span><span class="p">(</span><span class="s1">'</span><span class="s1">Model 8</span><span class="s1">'</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
 <img src="../../_images/sphx_glr_h08_more_examples_013.png" srcset="../../_images/sphx_glr_h08_more_examples_013.png" alt="h08 more examples" class = "sphx-glr-single-img"/><img src="../../_images/sphx_glr_h08_more_examples_014.png" srcset="../../_images/sphx_glr_h08_more_examples_014.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting Backend To: AvailableBackends.PYTORCH
-GPU enabled. Using device: cuda
-GPU device count: 1
-Current GPU device: 0
+GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+Setting Backend To: AvailableBackends.PYTORCH
 Chunking done: 11 chunks
 Chunking done: 13 chunks
 Chunking done: 7 chunks
@@ -698,13 +681,11 @@ Chunking done: 7 chunks
 <br /></section>
 <section id="horizontal-tilted">
 <h3>Horizontal tilted<a class="headerlink" href="#horizontal-tilted" title="Link to this heading">¶</a></h3>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">create_example</span><span class="p">(</span><span class="s1">&#39;Model 9&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">create_example</span><span class="p">(</span><span class="s1">'</span><span class="s1">Model 9</span><span class="s1">'</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
 <img src="../../_images/sphx_glr_h08_more_examples_015.png" srcset="../../_images/sphx_glr_h08_more_examples_015.png" alt="h08 more examples" class = "sphx-glr-single-img"/><img src="../../_images/sphx_glr_h08_more_examples_016.png" srcset="../../_images/sphx_glr_h08_more_examples_016.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting Backend To: AvailableBackends.PYTORCH
-GPU enabled. Using device: cuda
-GPU device count: 1
-Current GPU device: 0
+GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+Setting Backend To: AvailableBackends.PYTORCH
 Chunking done: 6 chunks
 </pre></div>
 </div>
@@ -762,12 +743,11 @@ Chunking done: 6 chunks
 
 </div>
 <br />
-<br /><div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># generate_all_models([&#39;Model 1&#39;, &#39;Model 2&#39;, &#39;Model 3&#39;,</span>
-<span class="c1">#                     &#39;Model 5&#39;, &#39;Model 6&#39;, &#39;Model 7&#39;,</span>
-<span class="c1">#                     &#39;Model 8&#39;, &#39;Model 9&#39;])</span>
-</pre></div>
-</div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 22.774 seconds)</p>
+<br /><div class="highlight-Python notranslate"><div class="highlight"><pre><span class="c1"># generate_all_models(['Model 1', 'Model 2', 'Model 3',</span><span class="w">
+</span><span class="c1">#                     'Model 5', 'Model 6', 'Model 7',</span><span class="w">
+</span><span class="c1">#                     'Model 8', 'Model 9'])</span><span class="w">
+</span></pre></div></div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 26.999 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-examples-geometries-h08-more-examples-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/63104c414841e116bba92672ce2656c3/h08_more_examples.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">h08_more_examples.ipynb</span></code></a></p>

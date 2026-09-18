@@ -44,6 +44,8 @@
       ~RawArraysSolution.fault_block
       ~RawArraysSolution.litho_faults_block
       ~RawArraysSolution.scalar_field_matrix
+      ~RawArraysSolution.finite_fault_scalar_field_matrix
+      ~RawArraysSolution.finite_fault_stack_indices
       ~RawArraysSolution.block_matrix
       ~RawArraysSolution.mask_matrix
       ~RawArraysSolution.mask_matrix_squeezed

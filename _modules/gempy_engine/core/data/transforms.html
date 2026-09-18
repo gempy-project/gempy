@@ -9,7 +9,7 @@
     <link rel="stylesheet" type="text/css" href="../../../../_static/basic.css?v=b08954a9" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/alabaster.css?v=e15417cb" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery.css?v=c83e6b79" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
@@ -87,7 +87,7 @@
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Transform</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Both objects must be an instance of Transform&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Both objects must be an instance of Transform"</span><span class="p">)</span>
 
         <span class="n">new_position</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">+</span> <span class="n">other</span><span class="o">.</span><span class="n">position</span>
         <span class="n">new_rotation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rotation</span> <span class="o">+</span> <span class="n">other</span><span class="o">.</span><span class="n">rotation</span>
@@ -127,7 +127,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_cached_pivot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pivot</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">from_input_points</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">surface_points</span><span class="p">:</span> <span class="s1">&#39;gempy.data.SurfacePointsTable&#39;</span><span class="p">,</span> <span class="n">orientations</span><span class="p">:</span> <span class="s1">&#39;gempy.data.OrientationsTable&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Transform&#39;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_input_points</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">surface_points</span><span class="p">:</span> <span class="s1">'gempy.data.SurfacePointsTable'</span><span class="p">,</span> <span class="n">orientations</span><span class="p">:</span> <span class="s1">'gempy.data.OrientationsTable'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'Transform'</span><span class="p">:</span>
         <span class="n">input_points_xyz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">surface_points</span><span class="o">.</span><span class="n">xyz</span><span class="p">,</span> <span class="n">orientations</span><span class="o">.</span><span class="n">xyz</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">input_points_xyz</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">transform</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">rotation</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">scale</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
@@ -160,8 +160,8 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">apply_anisotropy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">anisotropy_type</span><span class="p">:</span> <span class="n">GlobalAnisotropy</span><span class="p">,</span> <span class="n">anisotropy_limit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">anisotropy_type</span> <span class="o">==</span> <span class="n">GlobalAnisotropy</span><span class="o">.</span><span class="n">CUBE</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Interpolation is being done with the default transform. &quot;</span>
-                        <span class="s2">&quot;If you do not know what you are doing you should probably call GeoModel.update_transform() first.&quot;</span><span class="p">,</span>
+                <span class="n">message</span><span class="o">=</span><span class="s2">"Interpolation is being done with the default transform. "</span>
+                        <span class="s2">"If you do not know what you are doing you should probably call GeoModel.update_transform() first."</span><span class="p">,</span>
                 <span class="n">category</span><span class="o">=</span><span class="ne">RuntimeWarning</span>
             <span class="p">)</span>
         <span class="k">elif</span> <span class="n">anisotropy_type</span> <span class="o">==</span> <span class="n">GlobalAnisotropy</span><span class="o">.</span><span class="n">NONE</span><span class="p">:</span>
@@ -253,17 +253,17 @@
             <span class="k">case</span> <span class="n">TransformOpsOrder</span><span class="o">.</span><span class="n">SRT</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">S</span> <span class="o">@</span> <span class="n">R</span> <span class="o">@</span> <span class="n">T</span>
             <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Transform type </span><span class="si">{</span><span class="n">transform_type</span><span class="si">}</span><span class="s2"> not implemented&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Transform type </span><span class="si">{</span><span class="n">transform_type</span><span class="si">}</span><span class="s2"> not implemented"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">transform_op_order</span><span class="p">:</span> <span class="n">TransformOpsOrder</span> <span class="o">=</span> <span class="n">TransformOpsOrder</span><span class="o">.</span><span class="n">SRT</span><span class="p">):</span>
         <span class="c1"># * NOTE: to compare with legacy we would have to add 0.5 to the coords</span>
         <span class="k">assert</span> <span class="n">points</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="s1">&#39;cpu&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="s1">'cpu'</span><span class="p">):</span>
             <span class="n">points</span> <span class="o">=</span> <span class="n">points</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_default_transform</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Interpolation is being done with the default transform. &quot;</span>
-                        <span class="s2">&quot;If you do not know what you are doing you should probably call GeoModel.update_transform() first.&quot;</span><span class="p">,</span>
+                <span class="n">message</span><span class="o">=</span><span class="s2">"Interpolation is being done with the default transform. "</span>
+                        <span class="s2">"If you do not know what you are doing you should probably call GeoModel.update_transform() first."</span><span class="p">,</span>
                 <span class="n">category</span><span class="o">=</span><span class="ne">RuntimeWarning</span>
             <span class="p">)</span>
 
@@ -278,7 +278,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">apply_inverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">transform_op_order</span><span class="p">:</span> <span class="n">TransformOpsOrder</span> <span class="o">=</span> <span class="n">TransformOpsOrder</span><span class="o">.</span><span class="n">SRT</span><span class="p">):</span>
         <span class="c1"># * NOTE: to compare with legacy we would have to add 0.5 to the coords</span>
         <span class="k">assert</span> <span class="n">points</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="s1">&#39;cpu&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="s1">'cpu'</span><span class="p">):</span>
             <span class="n">points</span> <span class="o">=</span> <span class="n">points</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
         <span class="n">homogeneous_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">points</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">points</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">))],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">matrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_transform_matrix</span><span class="p">(</span><span class="n">transform_op_order</span><span class="p">)</span>
@@ -288,24 +288,24 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">apply_with_cached_pivot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">transform_op_order</span><span class="p">:</span> <span class="n">TransformOpsOrder</span> <span class="o">=</span> <span class="n">TransformOpsOrder</span><span class="o">.</span><span class="n">SRT</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cached_pivot</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;A pivot must be set before calling this method&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"A pivot must be set before calling this method"</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">apply_with_pivot</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cached_pivot</span><span class="p">,</span> <span class="n">transform_op_order</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">apply_inverse_with_cached_pivot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">transform_op_order</span><span class="p">:</span> <span class="n">TransformOpsOrder</span> <span class="o">=</span> <span class="n">TransformOpsOrder</span><span class="o">.</span><span class="n">SRT</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cached_pivot</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;A pivot must be set before calling this method&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"A pivot must be set before calling this method"</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">apply_inverse_with_pivot</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cached_pivot</span><span class="p">,</span> <span class="n">transform_op_order</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Transform.apply_with_pivot">
 <a class="viewcode-back" href="../../../../Modeling%20Classes/gempy.core.data.Transform.html#gempy.core.data.Transform.apply_with_pivot">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">apply_with_pivot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">pivot</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
                          <span class="n">transform_op_order</span><span class="p">:</span> <span class="n">TransformOpsOrder</span> <span class="o">=</span> <span class="n">TransformOpsOrder</span><span class="o">.</span><span class="n">SRT</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;These are used for ellipsoids for finite faults&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""These are used for ellipsoids for finite faults"""</span>
         <span class="k">assert</span> <span class="n">points</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_default_transform</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Interpolation is being done with the default transform. &quot;</span>
-                        <span class="s2">&quot;If you do not know what you are doing you should probably call GeoModel.update_transform() first.&quot;</span><span class="p">,</span>
+                <span class="n">message</span><span class="o">=</span><span class="s2">"Interpolation is being done with the default transform. "</span>
+                        <span class="s2">"If you do not know what you are doing you should probably call GeoModel.update_transform() first."</span><span class="p">,</span>
                 <span class="n">category</span><span class="o">=</span><span class="ne">RuntimeWarning</span>
             <span class="p">)</span>
 

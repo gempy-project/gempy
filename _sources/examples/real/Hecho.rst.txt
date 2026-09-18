@@ -378,7 +378,7 @@ Now we can see how the data looks so far:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3e14c7b550>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f995c125950>
 
 
 
@@ -816,16 +816,11 @@ Setting verbose and condition number options for debugging
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.PYTORCH
-    GPU enabled. Using device: cuda
-    GPU device count: 1
-    Current GPU device: 0
-    Condition number: 1546449.7334630927.
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
     Chunking done: 21 chunks
-    Condition number: 1545102.643050272.
     Chunking done: 26 chunks
-    Condition number: 1447785.0114886982.
     Chunking done: 21 chunks
-    Condition number: 40165630.3512226.
     Chunking done: 1052 chunks
     Chunking done: 9 chunks
     Chunking done: 59 chunks
@@ -860,7 +855,7 @@ Setting verbose and condition number options for debugging
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3e143a8e50>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f995c1271d0>
 
 
 
@@ -884,7 +879,7 @@ Setting verbose and condition number options for debugging
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3e1440cbd0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f995c126550>
 
 
 
@@ -908,7 +903,7 @@ Setting verbose and condition number options for debugging
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3e143a8e50>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f997403d1d0>
 
 
 
@@ -935,14 +930,14 @@ sphinx_gallery_thumbnail_number = 3
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f3e143efbd0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f995c1a3e70>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 18.407 seconds)
+   **Total running time of the script:** (0 minutes 41.097 seconds)
 
 
 .. _sphx_glr_download_examples_real_Hecho.py:

@@ -117,9 +117,8 @@ structural break.
     Surface points hash:  dd7b2f714c1c20cb7ce615c5c47ecc4cf3ca2ee3419e4090b2f11fbf633d459f
     Orientations hash:  4043b59bbfa7012abd818f04f74e2b0667ba970dd71c781512289bc073f5a6d5
     Setting Backend To: AvailableBackends.PYTORCH
-    GPU enabled. Using device: cuda
-    GPU device count: 1
-    Current GPU device: 0
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
     Chunking done: 26 chunks
     Chunking done: 11 chunks
     Chunking done: 131 chunks
@@ -186,7 +185,7 @@ obvious:
  .. code-block:: none
 
 
-    <pyvista.plotting.plotter.Plotter object at 0x7f3e4416fd90>
+    <pyvista.plotting.plotter.Plotter object at 0x7f99f76a5810>
 
 
 
@@ -216,7 +215,7 @@ fault blocks alone, unambiguously labeled:
  .. code-block:: none
 
 
-    <pyvista.plotting.plotter.Plotter object at 0x7f3e3f734410>
+    <pyvista.plotting.plotter.Plotter object at 0x7f99f76a56d0>
 
 
 
@@ -301,7 +300,7 @@ model's surfaces alone:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f3e3f712f90>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f9a071649f0>
 
 
 
@@ -400,7 +399,7 @@ simply isn't rendered:
  .. code-block:: none
 
 
-    <pyvista.plotting.plotter.Plotter object at 0x7f3e3f735810>
+    <pyvista.plotting.plotter.Plotter object at 0x7f99f76a65d0>
 
 
 
@@ -496,7 +495,7 @@ two remaining directions -- the perpendicular in-plane diagonal, and z:
  .. code-block:: none
 
 
-    <pyvista.plotting.plotter.Plotter object at 0x7f3e3f735a90>
+    <pyvista.plotting.plotter.Plotter object at 0x7f99f76a6850>
 
 
 
@@ -552,7 +551,7 @@ row of controls, matching how the run was actually set up.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 12.705 seconds)
+   **Total running time of the script:** (0 minutes 16.377 seconds)
 
 
 .. _sphx_glr_download_tutorials_c_advanced_c03_kriging.py:

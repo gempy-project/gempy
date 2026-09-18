@@ -120,9 +120,8 @@ in a small helper to avoid repeating the same setup for each one:
     Surface points hash:  4cdd54cd510cf345a583610585f2206a2936a05faaae05595b61febfc0191563
     Orientations hash:  7ba1de060fc8df668d411d0207a326bc94a6cdca9f5fe2ed511fd4db6b3f3526
     Setting Backend To: AvailableBackends.PYTORCH
-    GPU enabled. Using device: cuda
-    GPU device count: 1
-    Current GPU device: 0
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
 
 
 .. raw:: html
@@ -302,11 +301,10 @@ held fixed:
     Surface points hash:  4cdd54cd510cf345a583610585f2206a2936a05faaae05595b61febfc0191563
     Orientations hash:  7ba1de060fc8df668d411d0207a326bc94a6cdca9f5fe2ed511fd4db6b3f3526
     Setting Backend To: AvailableBackends.PYTORCH
-    GPU enabled. Using device: cuda
-    GPU device count: 1
-    Current GPU device: 0
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f3e54132eb0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f9a29efdc50>
 
 
 
@@ -334,13 +332,12 @@ held fixed:
     Surface points hash:  4cdd54cd510cf345a583610585f2206a2936a05faaae05595b61febfc0191563
     Orientations hash:  7ba1de060fc8df668d411d0207a326bc94a6cdca9f5fe2ed511fd4db6b3f3526
     Setting Backend To: AvailableBackends.PYTORCH
-    GPU enabled. Using device: cuda
-    GPU device count: 1
-    Current GPU device: 0
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
     Chunking done: 13 chunks
     Chunking done: 7 chunks
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f3e54132dd0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f9a29efcf30>
 
 
 
@@ -431,9 +428,8 @@ in the same order they were given:
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.PYTORCH
-    GPU enabled. Using device: cuda
-    GPU device count: 1
-    Current GPU device: 0
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
 
     array([2., 6., 6.])
 
@@ -505,9 +501,8 @@ the gravity kernel):
 
     Active grids: GridTypes.DENSE|CUSTOM|CENTERED|NONE
     Setting Backend To: AvailableBackends.PYTORCH
-    GPU enabled. Using device: cuda
-    GPU device count: 1
-    Current GPU device: 0
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
 
 
 .. raw:: html
@@ -568,7 +563,7 @@ plotting options for them, in :doc:`d04_2d_visualization`.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 10.676 seconds)
+   **Total running time of the script:** (0 minutes 11.439 seconds)
 
 
 .. _sphx_glr_download_tutorials_b_fundamentals_c03_grids.py:

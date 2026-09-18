@@ -555,7 +555,7 @@ Select which series are faults
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3e14f032d0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f99740e9750>
 
 
 
@@ -663,7 +663,7 @@ Select which series are faults
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f3e14f6fbd0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f99f72719b0>
 
 
 
@@ -688,9 +688,8 @@ Select which series are faults
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.PYTORCH
-    GPU enabled. Using device: cuda
-    GPU device count: 1
-    Current GPU device: 0
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
     Chunking done: 10 chunks
     Chunking done: 11 chunks
     Chunking done: 7 chunks
@@ -751,7 +750,7 @@ Select which series are faults
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3e3f725850>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f995c13ae50>
 
 
 
@@ -775,7 +774,7 @@ Select which series are faults
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3e3d5656d0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f995c1fb7d0>
 
 
 
@@ -799,7 +798,7 @@ Select which series are faults
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3e144013d0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f9990100b50>
 
 
 
@@ -825,14 +824,14 @@ sphinx_gallery_thumbnail_number = 6
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f3e14f8e430>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f99740150f0>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (1 minutes 22.137 seconds)
+   **Total running time of the script:** (1 minutes 40.010 seconds)
 
 
 .. _sphx_glr_download_examples_real_Perth_basin.py:

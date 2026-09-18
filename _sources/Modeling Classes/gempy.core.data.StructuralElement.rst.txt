@@ -34,6 +34,7 @@
       ~StructuralElement.id
       ~StructuralElement.index
       ~StructuralElement.is_basement
+      ~StructuralElement.number_of_micro_points
       ~StructuralElement.number_of_orientations
       ~StructuralElement.number_of_points
       ~StructuralElement.scalar_field_at_interface
@@ -43,6 +44,7 @@
       ~StructuralElement.is_active
       ~StructuralElement.surface_points
       ~StructuralElement.orientations
+      ~StructuralElement.micro_points
    
    
 

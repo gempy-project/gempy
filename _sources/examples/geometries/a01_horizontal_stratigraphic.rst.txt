@@ -88,9 +88,8 @@ Define the path to the input data
     Surface points hash:  6f1a39ed77e87a4057f03629c946b1876b87e24409cadfe0e1cf7ab1488f69e4
     Orientations hash:  04c307ae23f70252fe54144a2fb95ca7d96584a2d497ea539ed32dfd23e7cd5d
     Setting Backend To: AvailableBackends.PYTORCH
-    GPU enabled. Using device: cuda
-    GPU device count: 1
-    Current GPU device: 0
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
 
 
 .. raw:: html
@@ -127,7 +126,7 @@ Plot the initial input data in the y direction, without computed results
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3e54737250>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f9a193b52d0>
 
 
 
@@ -168,7 +167,7 @@ Plot the computed result in the x and y directions, with data
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3e3d4907d0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f9a28127150>
 
 
 
@@ -197,14 +196,14 @@ Display the computed model in 3D
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f3e3d54e890>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f99f727ac10>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 1.736 seconds)
+   **Total running time of the script:** (0 minutes 1.883 seconds)
 
 
 .. _sphx_glr_download_examples_geometries_a01_horizontal_stratigraphic.py:

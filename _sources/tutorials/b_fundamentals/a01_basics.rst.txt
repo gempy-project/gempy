@@ -504,7 +504,7 @@ computing anything. ``plot_2d`` projects the input data onto a plane along a cho
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3e459299d0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f9a0758f0d0>
 
 
 
@@ -532,7 +532,7 @@ and ``plot_3d`` shows the same data in an interactive 3D view:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f3f00b58d60>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f9a076f8c30>
 
 
 
@@ -559,7 +559,7 @@ controls) -- change them only if you understand the implications:
  .. code-block:: none
 
 
-    InterpolationOptions(kernel_options=KernelOptions(range=1.7, c_o=10.0, uni_degree=1, i_res=4.0, gi_res=2.0, number_dimensions=3, kernel_function=AvailableKernelFunctions.cubic, kernel_solver=Solvers.DEFAULT, compute_condition_number=False, optimizing_condition_number=False, condition_number=None), evaluation_options=EvaluationOptions(_number_octree_levels=6, _number_octree_levels_surface=4, octree_curvature_threshold=-1.0, octree_error_threshold=1.0, octree_min_level=2, mesh_extraction=True, mesh_extraction_masking_options=<MeshExtractionMaskingOptions.INTERSECT: 3>, mesh_extraction_fancy=True, evaluation_chunk_size=500000, compute_scalar=True, compute_scalar_gradient=False, verbose=False), debug=False, cache_mode=<CacheMode.IN_MEMORY_CACHE: 3>, cache_model_name='Tutorial_Basics', block_solutions_type=<BlockSolutionType.OCTREE: 1>, sigmoid_slope=5000000)
+    InterpolationOptions(kernel_options=KernelOptions(range=1.7, c_o=10.0, uni_degree=1, i_res=4.0, gi_res=2.0, number_dimensions=3, kernel_function=AvailableKernelFunctions.cubic, kernel_solver=Solvers.DEFAULT, compute_condition_number=False, optimizing_condition_number=False, condition_number=None, condition_number_before=None, condition_number_after=None, fault_drift_equilibration=True, fault_drift_regularization=0.001, symmetric_equilibration_method=none, symmetric_equilibration_max_iterations=10, symmetric_equilibration_tolerance=0.01, nugget_implementation=NuggetImplementation.LEGACY, drift_diagnostics=False, drift_rank_policy=warn, drift_rank_rcond=None, drift_warning_rcond=None), evaluation_options=EvaluationOptions(_number_octree_levels=6, _number_octree_levels_surface=4, octree_curvature_threshold=-1.0, octree_error_threshold=1.0, octree_min_level=2, mesh_extraction=True, mesh_extraction_masking_options=<MeshExtractionMaskingOptions.INTERSECT: 3>, mesh_extraction_fancy=True, evaluation_chunk_size=500000, micro_anisotropic=MicroAnisotropicOptions(enabled=False, points=None, residuals=None, anisotropy_matrices=None, weights=None, kernel_range=1.0, kernel_type='matern_5_2', nugget=0.0, preserve_macro_points=True, strength=1.0), compute_scalar=True, compute_scalar_gradient=False, verbose=False), debug=False, cache_mode=<CacheMode.IN_MEMORY_CACHE: 3>, cache_model_name='Tutorial_Basics', block_solutions_type=<BlockSolutionType.OCTREE: 1>, sigmoid_slope=5000000)
 
 
 
@@ -584,9 +584,8 @@ also stored on the model itself as ``geo_model.solutions`` for later reference:
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.PYTORCH
-    GPU enabled. Using device: cuda
-    GPU device count: 1
-    Current GPU device: 0
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
     Chunking done: 18 chunks
     Chunking done: 16 chunks
     Chunking done: 89 chunks
@@ -630,7 +629,7 @@ a section through the middle of the model:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3e541e39d0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f9a14af10d0>
 
 
 
@@ -659,7 +658,7 @@ position in ``map_stack_to_surfaces``, 0-indexed) -- series 0 is the fault:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3efa9eb150>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f9a29ec5850>
 
 
 
@@ -687,7 +686,7 @@ and series 1 is the stratigraphy, visibly offset by the fault:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3e541e39d0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f9a29edba50>
 
 
 
@@ -715,7 +714,7 @@ The same result in 3D, with the surfaces extracted via dual contouring:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f3f00b58d60>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f9a076f8c30>
 
 
 
@@ -756,9 +755,8 @@ lets a model's surfaces be intersected with real (or, as below, synthetic) terra
 
     Active grids: GridTypes.OCTREE|TOPOGRAPHY|NONE
     Setting Backend To: AvailableBackends.PYTORCH
-    GPU enabled. Using device: cuda
-    GPU device count: 1
-    Current GPU device: 0
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
     Chunking done: 18 chunks
     Chunking done: 16 chunks
     Chunking done: 89 chunks
@@ -766,7 +764,7 @@ lets a model's surfaces be intersected with real (or, as below, synthetic) terra
     Chunking done: 41 chunks
     Chunking done: 7 chunks
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3e541138d0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f9a14e26d50>
 
 
 
@@ -790,7 +788,7 @@ lets a model's surfaces be intersected with real (or, as below, synthetic) terra
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f3f00a17e30>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f9a1942d130>
 
 
 
@@ -921,8 +919,8 @@ redo the setup above:
 
  .. code-block:: none
 
-    /opt/buildAgent/work/3a8738c25f60c3c9/gempy/modules/serialization/save_load.py:33: UserWarning: This function is still in development. It may not work as expected.
-      warnings.warn("This function is still in development. It may not work as expected.")
+    /opt/buildAgent/work/3a8738c25f60c3c9/examples/tutorials/b_fundamentals/a01_basics.py:298: UserWarning: GemPy model serialization is still in development, and compatibility across GemPy versions is not guaranteed. .gempy files include version metadata to help identify the GemPy version used to save the model.
+      gp.save_model(geo_model, path='tutorial_basics_model.gempy')
 
     'tutorial_basics_model.gempy'
 
@@ -943,8 +941,8 @@ redo the setup above:
 
  .. code-block:: none
 
-    /opt/buildAgent/work/3a8738c25f60c3c9/gempy/modules/serialization/save_load.py:118: UserWarning: This function is still in development. It may not work as expected.
-      warnings.warn("This function is still in development. It may not work as expected.")
+    /opt/buildAgent/work/3a8738c25f60c3c9/examples/tutorials/b_fundamentals/a01_basics.py:301: UserWarning: GemPy model serialization is still in development, and compatibility across GemPy versions is not guaranteed. .gempy files include version metadata to help identify the GemPy version used to save the model.
+      reloaded_model = gp.load_model('tutorial_basics_model.gempy')
 
 
 .. raw:: html
@@ -1030,7 +1028,7 @@ redo the setup above:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 26.598 seconds)
+   **Total running time of the script:** (0 minutes 34.952 seconds)
 
 
 .. _sphx_glr_download_tutorials_b_fundamentals_a01_basics.py:

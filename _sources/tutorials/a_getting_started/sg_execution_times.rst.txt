@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**00:45.756** total execution time for 3 files **from tutorials/a_getting_started**:
+**00:55.607** total execution time for 3 files **from tutorials/a_getting_started**:
 
 .. container::
 
@@ -33,11 +33,11 @@ Computation times
      - Time
      - Mem (MB)
    * - :ref:`sphx_glr_tutorials_a_getting_started_video_tutorial_model_2_faults.py` (``video_tutorial_model_2_faults.py``)
-     - 00:20.229
+     - 00:23.485
      - 0.0
    * - :ref:`sphx_glr_tutorials_a_getting_started_video_tutorial_model_1.py` (``video_tutorial_model_1.py``)
-     - 00:15.259
+     - 00:20.050
      - 0.0
    * - :ref:`sphx_glr_tutorials_a_getting_started_video_tutorial_model_3_onlap.py` (``video_tutorial_model_3_onlap.py``)
-     - 00:10.268
+     - 00:12.072
      - 0.0

@@ -9,7 +9,7 @@
     <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=e15417cb" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
-    <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css?v=c83e6b79" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css?v=1277b6f3" />
@@ -52,6 +52,7 @@
  | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
  | <a href="#I"><strong>I</strong></a>
+ | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
  | <a href="#N"><strong>N</strong></a>
  | <a href="#O"><strong>O</strong></a>
@@ -325,12 +326,22 @@
   </ul></td>
 </tr></table>
 
+<h2 id="L">L</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="GemPy%20API/gempy.load_model.html#gempy.load_model">load_model() (in module gempy)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="GemPy%20API/gempy.map_stack_to_surfaces.html#gempy.map_stack_to_surfaces">map_stack_to_surfaces() (in module gempy)</a>
 </li>
       <li><a href="Modeling%20Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel.meta">meta (gempy.core.data.GeoModel attribute)</a>
+</li>
+      <li><a href="Modeling%20Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame.micro_points_copy">micro_points_copy (gempy.core.data.StructuralFrame property)</a>
 </li>
       <li><a href="Modeling%20Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel.model_config">model_config (gempy.core.data.GeoModel attribute)</a>
 
@@ -375,13 +386,17 @@
       </ul></li>
       <li><a href="Modeling%20Classes/gempy.core.data.InterpolationOptions.html#gempy.core.data.InterpolationOptions.CacheMode.NO_CACHE">NO_CACHE (gempy.core.data.InterpolationOptions.CacheMode attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="Modeling%20Classes/gempy.core.data.OrientationsTable.html#gempy.core.data.OrientationsTable.nugget">nugget (gempy.core.data.OrientationsTable property)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="Modeling%20Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame.number_of_elements">number_of_elements (gempy.core.data.StructuralFrame property)</a>
 </li>
       <li><a href="Modeling%20Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame.number_of_elements_per_group">number_of_elements_per_group (gempy.core.data.StructuralFrame property)</a>
+</li>
+      <li><a href="Modeling%20Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame.number_of_micro_points_per_element">number_of_micro_points_per_element (gempy.core.data.StructuralFrame property)</a>
+</li>
+      <li><a href="Modeling%20Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame.number_of_micro_points_per_group">number_of_micro_points_per_group (gempy.core.data.StructuralFrame property)</a>
 </li>
       <li><a href="Modeling%20Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame.number_of_orientations_per_group">number_of_orientations_per_group (gempy.core.data.StructuralFrame property)</a>
 </li>
@@ -449,6 +464,8 @@
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="GemPy%20API/gempy.save_model.html#gempy.save_model">save_model() (in module gempy)</a>
+</li>
       <li><a href="Modeling%20Classes/gempy.core.data.StructuralElement.html#gempy.core.data.StructuralElement.scalar_field_at_interface">scalar_field_at_interface (gempy.core.data.StructuralElement attribute)</a>
 </li>
       <li><a href="Modeling%20Classes/gempy.core.data.Solutions.html#gempy.core.data.Solutions.scalar_field_at_surface_points">scalar_field_at_surface_points (gempy.core.data.Solutions attribute)</a>
@@ -561,12 +578,14 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="Modeling%20Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel.validate">validate() (gempy.core.data.GeoModel method)</a>
 </li>
-      <li><a href="Modeling%20Classes/gempy.core.data.StructuralElement.html#gempy.core.data.StructuralElement.vertices">vertices (gempy.core.data.StructuralElement attribute)</a>
+      <li><a href="Modeling%20Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame.validate_micro_point_ownership">validate_micro_point_ownership() (gempy.core.data.StructuralFrame method)</a>
 </li>
-      <li><a href="Modeling%20Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame.volume_elements">volume_elements (gempy.core.data.StructuralFrame property)</a>
+      <li><a href="Modeling%20Classes/gempy.core.data.StructuralElement.html#gempy.core.data.StructuralElement.vertices">vertices (gempy.core.data.StructuralElement attribute)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Modeling%20Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame.volume_elements">volume_elements (gempy.core.data.StructuralFrame property)</a>
+</li>
       <li><a href="Modeling%20Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame.volume_elements_colors">volume_elements_colors (gempy.core.data.StructuralFrame property)</a>
 </li>
       <li><a href="Modeling%20Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame.volume_elements_enumerator">volume_elements_enumerator (gempy.core.data.StructuralFrame property)</a>

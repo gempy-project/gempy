@@ -14,6 +14,8 @@ GemPy API
 
     compute_model
     create_geomodel
+    save_model
+    load_model
     map_stack_to_surfaces
     structural_elements_from_borehole_set
     set_section_grid

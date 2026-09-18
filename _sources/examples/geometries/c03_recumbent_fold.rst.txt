@@ -89,9 +89,8 @@ Define the path to the input data
     Surface points hash:  16bd39d19892d9a70aa41b1141f130894de6a36910f27e98ec712351f9373ce2
     Orientations hash:  1d12a150cd6f3faa81b8bbebc167ba69de4ac85fc524b771bd97ce94eb2a3e60
     Setting Backend To: AvailableBackends.PYTORCH
-    GPU enabled. Using device: cuda
-    GPU device count: 1
-    Current GPU device: 0
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
     Chunking done: 29 chunks
     Chunking done: 14 chunks
     Chunking done: 6 chunks
@@ -131,7 +130,7 @@ Plot the initial input data in the y direction, without computed results
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3eea7ff6d0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f9a2815bf50>
 
 
 
@@ -159,7 +158,7 @@ Plot the computed result in the y direction, with data
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3e3d5f7a50>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f9a193b52d0>
 
 
 
@@ -187,14 +186,14 @@ Display the computed model in 3D
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f3e3d583850>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f99f72a7930>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.148 seconds)
+   **Total running time of the script:** (0 minutes 2.830 seconds)
 
 
 .. _sphx_glr_download_examples_geometries_c03_recumbent_fold.py:

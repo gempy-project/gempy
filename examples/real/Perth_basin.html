@@ -10,7 +10,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=b08954a9" />
     <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=e15417cb" />
     <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=c83e6b79" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
@@ -53,39 +53,35 @@ to download the full example code.</p>
 <p>This model covers the northern Perth Basin, Western Australia, including eight major
 normal faults (among them the Darling Fault) offsetting a Permian-to-Cretaceous
 sedimentary sequence.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-
-<span class="c1"># Importing GemPy</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">gempy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gp</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">gempy_viewer</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gpv</span>
-
-<span class="c1"># Importing auxiliary libraries</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span>
-
-<span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;figure.figsize&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">20.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">cwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
-<span class="k">if</span> <span class="s1">&#39;examples&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cwd</span><span class="p">:</span>
-    <span class="n">data_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;/examples&#39;</span>
-<span class="k">else</span><span class="p">:</span>
-    <span class="n">data_path</span> <span class="o">=</span> <span class="n">cwd</span> <span class="o">+</span> <span class="s1">&#39;/../..&#39;</span>
-</pre></div>
-</div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a></a> <span class="o">=</span> <a href="../../GemPy API/gempy.create_geomodel.html#gempy.create_geomodel" title="gempy.create_geomodel" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><a href="../../GemPy API/gempy.create_geomodel.html#gempy.create_geomodel" title="gempy.create_geomodel" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">create_geomodel</span></a></a><span class="p">(</span>
-    <span class="n">project_name</span><span class="o">=</span><span class="s1">&#39;Perth_Basin&#39;</span><span class="p">,</span>
-    <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="mi">337000</span><span class="p">,</span> <span class="mi">400000</span><span class="p">,</span> <span class="mi">6640000</span><span class="p">,</span> <span class="mi">6710000</span><span class="p">,</span> <span class="o">-</span><span class="mi">18000</span><span class="p">,</span> <span class="mi">1000</span><span class="p">],</span>
-    <span class="n">refinement</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
-    <span class="n">importer_helper</span><span class="o">=</span><a href="../../Helper Classes/gempy.core.data.ImporterHelper.html#gempy.core.data.ImporterHelper" title="gempy.core.data.ImporterHelper" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class"><a href="../../Helper Classes/gempy.core.data.ImporterHelper.html#gempy.core.data.ImporterHelper" title="gempy.core.data.ImporterHelper" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class"><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">ImporterHelper</span></a></a><span class="p">(</span>
-        <span class="n">path_to_orientations</span><span class="o">=</span><span class="n">data_path</span> <span class="o">+</span> <span class="s2">&quot;/data/input_data/perth_basin/Paper_GU2F_sc_faults_topo_Foliations.csv&quot;</span><span class="p">,</span>
-        <span class="n">path_to_surface_points</span><span class="o">=</span><span class="n">data_path</span> <span class="o">+</span> <span class="s2">&quot;/data/input_data/perth_basin/Paper_GU2F_sc_faults_topo_Points.csv&quot;</span><span class="p">,</span>
-    <span class="p">)</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span></a></a>
-</pre></div>
-</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="kn">import</span><span class="w"> </span><span class="nn">os</span><span class="w">
+</span><span class="w">
+</span><span class="c1"># Importing GemPy</span><span class="w">
+</span><span class="kn">import</span><span class="w"> </span><span class="nn">gempy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gp</span><span class="w">
+</span><span class="kn">import</span><span class="w"> </span><span class="nn">gempy_viewer</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gpv</span><span class="w">
+</span><span class="w">
+</span><span class="c1"># Importing auxiliary libraries</span><span class="w">
+</span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w">
+</span><span class="w">
+</span><span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">'</span><span class="s1">figure.figsize</span><span class="s1">'</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">20.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">cwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(</span><span class="p">)</span><span class="w">
+</span><span class="k">if</span> <span class="s1">'</span><span class="s1">examples</span><span class="s1">'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cwd</span><span class="p">:</span><span class="w">
+</span>    <span class="n">data_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(</span><span class="p">)</span> <span class="o">+</span> <span class="s1">'</span><span class="s1">/examples</span><span class="s1">'</span><span class="w">
+</span><span class="k">else</span><span class="p">:</span><span class="w">
+</span>    <span class="n">data_path</span> <span class="o">=</span> <span class="n">cwd</span> <span class="o">+</span> <span class="s1">'</span><span class="s1">/../..</span><span class="s1">'</span><span class="w">
+</span></pre></div></div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../Modeling%20Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel"><span class="n">geo_model</span></a> <span class="o">=</span> <a class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function reference internal" href="../../GemPy%20API/gempy.create_geomodel.html#gempy.create_geomodel" title="gempy.create_geomodel"><span class="n">gp</span><span class="o">.</span><span class="n">create_geomodel</span></a><span class="p">(</span><span class="w">
+</span>    <span class="n">project_name</span><span class="o">=</span><span class="s1">'</span><span class="s1">Perth_Basin</span><span class="s1">'</span><span class="p">,</span><span class="w">
+</span>    <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="mi">337000</span><span class="p">,</span> <span class="mi">400000</span><span class="p">,</span> <span class="mi">6640000</span><span class="p">,</span> <span class="mi">6710000</span><span class="p">,</span> <span class="o">-</span><span class="mi">18000</span><span class="p">,</span> <span class="mi">1000</span><span class="p">]</span><span class="p">,</span><span class="w">
+</span>    <span class="n">refinement</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span><span class="w">
+</span>    <span class="n">importer_helper</span><span class="o">=</span><a class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class reference internal" href="../../Helper%20Classes/gempy.core.data.ImporterHelper.html#gempy.core.data.ImporterHelper" title="gempy.core.data.ImporterHelper"><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">ImporterHelper</span></a><span class="p">(</span><span class="w">
+</span>        <span class="n">path_to_orientations</span><span class="o">=</span><span class="n">data_path</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="s2">/data/input_data/perth_basin/Paper_GU2F_sc_faults_topo_Foliations.csv</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>        <span class="n">path_to_surface_points</span><span class="o">=</span><span class="n">data_path</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="s2">/data/input_data/perth_basin/Paper_GU2F_sc_faults_topo_Points.csv</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="p">)</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../Modeling%20Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame"><span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span></a><span class="w">
+</span></pre></div></div>
 <div class="output_subarea output_html rendered_html output_result">
 
         <table>
@@ -190,13 +186,12 @@ sedimentary sequence.</p>
 
 </div>
 <br />
-<br /><div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">del_surfaces</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Cadda&#39;</span><span class="p">,</span> <span class="s1">&#39;Woodada_Kockatea&#39;</span><span class="p">,</span> <span class="s1">&#39;Cattamarra&#39;</span><span class="p">]</span>
-<span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">del_surfaces</span><span class="p">:</span>
-    <a href="../../GemPy API/gempy.remove_element_by_name.html#gempy.remove_element_by_name" title="gempy.remove_element_by_name" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><a href="../../GemPy API/gempy.remove_element_by_name.html#gempy.remove_element_by_name" title="gempy.remove_element_by_name" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">remove_element_by_name</span></a></a><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a></a><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
-
-<a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span></a></a>
-</pre></div>
-</div>
+<br /><div class="highlight-Python notranslate"><div class="highlight"><pre><span class="n">del_surfaces</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'</span><span class="s1">Cadda</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="s1">Woodada_Kockatea</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="s1">Cattamarra</span><span class="s1">'</span><span class="p">]</span><span class="w">
+</span><span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">del_surfaces</span><span class="p">:</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function reference internal" href="../../GemPy%20API/gempy.remove_element_by_name.html#gempy.remove_element_by_name" title="gempy.remove_element_by_name"><span class="n">gp</span><span class="o">.</span><span class="n">remove_element_by_name</span></a><span class="p">(</span><a class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../Modeling%20Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">s</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><a class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../Modeling%20Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame" title="gempy.core.data.StructuralFrame"><span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span></a><span class="w">
+</span></pre></div></div>
 <div class="output_subarea output_html rendered_html output_result">
 
         <table>
@@ -286,22 +281,21 @@ sedimentary sequence.</p>
 
 </div>
 <br />
-<br /><div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../GemPy API/gempy.map_stack_to_surfaces.html#gempy.map_stack_to_surfaces" title="gempy.map_stack_to_surfaces" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><a href="../../GemPy API/gempy.map_stack_to_surfaces.html#gempy.map_stack_to_surfaces" title="gempy.map_stack_to_surfaces" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">map_stack_to_surfaces</span></a></a><span class="p">(</span>
-    <span class="n">gempy_model</span><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a></a><span class="p">,</span>
-    <span class="n">mapping_object</span><span class="o">=</span><span class="p">{</span>
-        <span class="s2">&quot;fault_Abrolhos_Transfer&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Abrolhos_Transfer&quot;</span><span class="p">],</span>
-        <span class="s2">&quot;fault_Coomallo&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Coomallo&quot;</span><span class="p">],</span>
-        <span class="s2">&quot;fault_Eneabba_South&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Eneabba_South&quot;</span><span class="p">],</span>
-        <span class="s2">&quot;fault_Hypo_fault_W&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Hypo_fault_W&quot;</span><span class="p">],</span>
-        <span class="s2">&quot;fault_Hypo_fault_E&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Hypo_fault_E&quot;</span><span class="p">],</span>
-        <span class="s2">&quot;fault_Urella_North&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Urella_North&quot;</span><span class="p">],</span>
-        <span class="s2">&quot;fault_Darling&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Darling&quot;</span><span class="p">],</span>
-        <span class="s2">&quot;fault_Urella_South&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Urella_South&quot;</span><span class="p">],</span>
-        <span class="s2">&quot;Sedimentary_Series&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;Cretaceous&#39;</span><span class="p">,</span> <span class="s1">&#39;Yarragadee&#39;</span><span class="p">,</span> <span class="s1">&#39;Eneabba&#39;</span><span class="p">,</span> <span class="s1">&#39;Lesueur&#39;</span><span class="p">,</span> <span class="s1">&#39;Permian&#39;</span><span class="p">]</span>
-    <span class="p">}</span>
-<span class="p">)</span>
-</pre></div>
-</div>
+<br /><div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function reference internal" href="../../GemPy%20API/gempy.map_stack_to_surfaces.html#gempy.map_stack_to_surfaces" title="gempy.map_stack_to_surfaces"><span class="n">gp</span><span class="o">.</span><span class="n">map_stack_to_surfaces</span></a><span class="p">(</span><span class="w">
+</span>    <span class="n">gempy_model</span><span class="o">=</span><a class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../Modeling%20Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel"><span class="n">geo_model</span></a><span class="p">,</span><span class="w">
+</span>    <span class="n">mapping_object</span><span class="o">=</span><span class="p">{</span><span class="w">
+</span>        <span class="s2">&quot;</span><span class="s2">fault_Abrolhos_Transfer</span><span class="s2">&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;</span><span class="s2">Abrolhos_Transfer</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">,</span><span class="w">
+</span>        <span class="s2">&quot;</span><span class="s2">fault_Coomallo</span><span class="s2">&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;</span><span class="s2">Coomallo</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">,</span><span class="w">
+</span>        <span class="s2">&quot;</span><span class="s2">fault_Eneabba_South</span><span class="s2">&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;</span><span class="s2">Eneabba_South</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">,</span><span class="w">
+</span>        <span class="s2">&quot;</span><span class="s2">fault_Hypo_fault_W</span><span class="s2">&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;</span><span class="s2">Hypo_fault_W</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">,</span><span class="w">
+</span>        <span class="s2">&quot;</span><span class="s2">fault_Hypo_fault_E</span><span class="s2">&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;</span><span class="s2">Hypo_fault_E</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">,</span><span class="w">
+</span>        <span class="s2">&quot;</span><span class="s2">fault_Urella_North</span><span class="s2">&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;</span><span class="s2">Urella_North</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">,</span><span class="w">
+</span>        <span class="s2">&quot;</span><span class="s2">fault_Darling</span><span class="s2">&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;</span><span class="s2">Darling</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">,</span><span class="w">
+</span>        <span class="s2">&quot;</span><span class="s2">fault_Urella_South</span><span class="s2">&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;</span><span class="s2">Urella_South</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">,</span><span class="w">
+</span>        <span class="s2">&quot;</span><span class="s2">Sedimentary_Series</span><span class="s2">&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s1">'</span><span class="s1">Cretaceous</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="s1">Yarragadee</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="s1">Eneabba</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="s1">Lesueur</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="s1">Permian</span><span class="s1">'</span><span class="p">]</span><span class="w">
+</span>    <span class="p">}</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
 <div class="output_subarea output_html rendered_html output_result">
 
         <table>
@@ -449,23 +443,22 @@ sedimentary sequence.</p>
 <br />
 <br /><section id="select-which-series-are-faults">
 <h2>Select which series are faults<a class="headerlink" href="#select-which-series-are-faults" title="Link to this heading">¶</a></h2>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../GemPy API/gempy.set_is_fault.html#gempy.set_is_fault" title="gempy.set_is_fault" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><a href="../../GemPy API/gempy.set_is_fault.html#gempy.set_is_fault" title="gempy.set_is_fault" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">set_is_fault</span></a></a><span class="p">(</span>
-    <a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a></a><span class="p">,</span>
-    <span class="p">[</span>
-        <span class="s2">&quot;fault_Abrolhos_Transfer&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;fault_Coomallo&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;fault_Eneabba_South&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;fault_Hypo_fault_W&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;fault_Hypo_fault_E&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;fault_Urella_North&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;fault_Darling&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;fault_Urella_South&quot;</span>
-    <span class="p">],</span>
-<span class="p">)</span>
-
-<span class="nb">print</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame.fault_relations" title="gempy.core.data.StructuralFrame.fault_relations" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-property"><a href="../../Modeling Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame.fault_relations" title="gempy.core.data.StructuralFrame.fault_relations" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-property"><span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span><span class="o">.</span><span class="n">fault_relations</span></a></a><span class="p">)</span>
-</pre></div>
-</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function reference internal" href="../../GemPy%20API/gempy.set_is_fault.html#gempy.set_is_fault" title="gempy.set_is_fault"><span class="n">gp</span><span class="o">.</span><span class="n">set_is_fault</span></a><span class="p">(</span><span class="w">
+</span>    <a class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../Modeling%20Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel"><span class="n">geo_model</span></a><span class="p">,</span><span class="w">
+</span>    <span class="p">[</span><span class="w">
+</span>        <span class="s2">&quot;</span><span class="s2">fault_Abrolhos_Transfer</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>        <span class="s2">&quot;</span><span class="s2">fault_Coomallo</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>        <span class="s2">&quot;</span><span class="s2">fault_Eneabba_South</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>        <span class="s2">&quot;</span><span class="s2">fault_Hypo_fault_W</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>        <span class="s2">&quot;</span><span class="s2">fault_Hypo_fault_E</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>        <span class="s2">&quot;</span><span class="s2">fault_Urella_North</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>        <span class="s2">&quot;</span><span class="s2">fault_Darling</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>        <span class="s2">&quot;</span><span class="s2">fault_Urella_South</span><span class="s2">&quot;</span><span class="w">
+</span>    <span class="p">]</span><span class="p">,</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span><span class="w">
+</span><span class="nb">print</span><span class="p">(</span><a class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-property reference internal" href="../../Modeling%20Classes/gempy.core.data.StructuralFrame.html#gempy.core.data.StructuralFrame.fault_relations" title="gempy.core.data.StructuralFrame.fault_relations"><span class="n">geo_model</span><span class="o">.</span><span class="n">structural_frame</span><span class="o">.</span><span class="n">fault_relations</span></a><span class="p">)</span><span class="w">
+</span></pre></div></div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[[False False False False False False False False  True]
  [False False False False False False False False  True]
  [False False False False False False False False  True]
@@ -477,15 +470,13 @@ sedimentary sequence.</p>
  [False False False False False False False False False]]
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a></a><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;z&#39;</span><span class="p">])</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-gempy_viewer sphx-glr-backref-type-py-function reference internal" href="../../Plot/gempy_viewer.plot_2d.html#gempy_viewer.plot_2d" title="gempy_viewer.plot_2d"><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span></a><span class="p">(</span><a class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../Modeling%20Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="p">[</span><span class="s1">'</span><span class="s1">z</span><span class="s1">'</span><span class="p">]</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<img src="../../_images/sphx_glr_Perth_basin_001.png" srcset="../../_images/sphx_glr_Perth_basin_001.png" alt="Cell Number: mid Direction: z" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f99740e9750&gt;
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_Perth_basin_001.png" srcset="../../_images/sphx_glr_Perth_basin_001.png" alt="Cell Number: mid Direction: z" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3e14f032d0&gt;
-</pre></div>
-</div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../GemPy API/gempy.set_topography_from_random.html#gempy.set_topography_from_random" title="gempy.set_topography_from_random" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><a href="../../GemPy API/gempy.set_topography_from_random.html#gempy.set_topography_from_random" title="gempy.set_topography_from_random" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">set_topography_from_random</span></a></a><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><a href="../../Modeling Classes/gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span><span class="o">.</span><span class="n">grid</span></a></a><span class="p">)</span>
-</pre></div>
-</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function reference internal" href="../../GemPy%20API/gempy.set_topography_from_random.html#gempy.set_topography_from_random" title="gempy.set_topography_from_random"><span class="n">gp</span><span class="o">.</span><span class="n">set_topography_from_random</span></a><span class="p">(</span><a class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../Modeling%20Classes/gempy.core.data.Grid.html#gempy.core.data.Grid" title="gempy.core.data.Grid"><span class="n">geo_model</span><span class="o">.</span><span class="n">grid</span></a><span class="p">)</span><span class="w">
+</span></pre></div></div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[-2800.  1000.]
 Active grids: GridTypes.OCTREE|TOPOGRAPHY|NONE
 
@@ -555,25 +546,22 @@ Topography(_regular_grid=RegularGrid(resolution=array([192, 256,  64]), extent=a
       shape=(49152, 3)), resolution=(192, 256), raster_shape=())
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_3d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a></a><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-gempy_viewer sphx-glr-backref-type-py-function reference internal" href="../../Plot/gempy_viewer.plot_3d.html#gempy_viewer.plot_3d" title="gempy_viewer.plot_3d"><span class="n">gpv</span><span class="o">.</span><span class="n">plot_3d</span></a><span class="p">(</span><a class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../Modeling%20Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel"><span class="n">geo_model</span></a><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<img src="../../_images/sphx_glr_Perth_basin_002.png" srcset="../../_images/sphx_glr_Perth_basin_002.png" alt="Perth basin" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f99f72719b0&gt;
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_Perth_basin_002.png" srcset="../../_images/sphx_glr_Perth_basin_002.png" alt="Perth basin" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f3e14f6fbd0&gt;
-</pre></div>
-</div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../../GemPy API/gempy.compute_model.html#gempy.compute_model" title="gempy.compute_model" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><a href="../../GemPy API/gempy.compute_model.html#gempy.compute_model" title="gempy.compute_model" class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function"><span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span></a></a><span class="p">(</span>
-    <span class="n">gempy_model</span><span class="o">=</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a></a><span class="p">,</span>
-    <span class="n">engine_config</span><span class="o">=</span><a href="../../Helper Classes/gempy.core.data.GemPyEngineConfig.html#gempy.core.data.GemPyEngineConfig" title="gempy.core.data.GemPyEngineConfig" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class"><a href="../../Helper Classes/gempy.core.data.GemPyEngineConfig.html#gempy.core.data.GemPyEngineConfig" title="gempy.core.data.GemPyEngineConfig" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class"><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GemPyEngineConfig</span></a></a><span class="p">(</span>
-        <span class="n">backend</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">AvailableBackends</span><span class="o">.</span><span class="n">PYTORCH</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float64&quot;</span><span class="p">,</span>
-    <span class="p">)</span>
-<span class="p">)</span>
-</pre></div>
-</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-gempy sphx-glr-backref-type-py-function reference internal" href="../../GemPy%20API/gempy.compute_model.html#gempy.compute_model" title="gempy.compute_model"><span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span></a><span class="p">(</span><span class="w">
+</span>    <span class="n">gempy_model</span><span class="o">=</span><a class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../Modeling%20Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel"><span class="n">geo_model</span></a><span class="p">,</span><span class="w">
+</span>    <span class="n">engine_config</span><span class="o">=</span><a class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class reference internal" href="../../Helper%20Classes/gempy.core.data.GemPyEngineConfig.html#gempy.core.data.GemPyEngineConfig" title="gempy.core.data.GemPyEngineConfig"><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">GemPyEngineConfig</span></a><span class="p">(</span><span class="w">
+</span>        <span class="n">backend</span><span class="o">=</span><a class="sphx-glr-backref-module-gempy_engine-config sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../Modeling%20Classes/gempy.core.data.AvailableBackends.html#gempy.core.data.AvailableBackends" title="gempy_engine.config.AvailableBackends"><span class="n">gp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">AvailableBackends</span><span class="o">.</span><span class="n">PYTORCH</span></a><span class="p">,</span><span class="w">
+</span>        <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">float64</span><span class="s2">&quot;</span><span class="p">,</span><span class="w">
+</span>    <span class="p">)</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Setting Backend To: AvailableBackends.PYTORCH
-GPU enabled. Using device: cuda
-GPU device count: 1
-Current GPU device: 0
+GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+Setting Backend To: AvailableBackends.PYTORCH
 Chunking done: 10 chunks
 Chunking done: 11 chunks
 Chunking done: 7 chunks
@@ -610,32 +598,28 @@ Chunking done: 26 chunks
 <b>Solutions:</b> 6 Octree Levels, 13 DualContouringMeshes
 </div>
 <br />
-<br /><div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a></a><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="s2">&quot;mid&quot;</span><span class="p">)</span>
+<br /><div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-gempy_viewer sphx-glr-backref-type-py-function reference internal" href="../../Plot/gempy_viewer.plot_2d.html#gempy_viewer.plot_2d" title="gempy_viewer.plot_2d"><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span></a><span class="p">(</span><a class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../Modeling%20Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">mid</span><span class="s2">&quot;</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<img src="../../_images/sphx_glr_Perth_basin_003.png" srcset="../../_images/sphx_glr_Perth_basin_003.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f995c13ae50&gt;
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_Perth_basin_003.png" srcset="../../_images/sphx_glr_Perth_basin_003.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3e3f725850&gt;
+<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-gempy_viewer sphx-glr-backref-type-py-function reference internal" href="../../Plot/gempy_viewer.plot_2d.html#gempy_viewer.plot_2d" title="gempy_viewer.plot_2d"><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span></a><span class="p">(</span><a class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../Modeling%20Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="s2">&quot;</span><span class="s2">mid</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">series_n</span><span class="o">=</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">show_scalar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<img src="../../_images/sphx_glr_Perth_basin_004.png" srcset="../../_images/sphx_glr_Perth_basin_004.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f995c1fb7d0&gt;
 </pre></div>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a></a><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="s2">&quot;mid&quot;</span><span class="p">,</span> <span class="n">series_n</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">show_scalar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-</div>
-<img src="../../_images/sphx_glr_Perth_basin_004.png" srcset="../../_images/sphx_glr_Perth_basin_004.png" alt="Cell Number: mid Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3e3d5656d0&gt;
-</pre></div>
-</div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a></a><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="p">[</span><span class="mi">12</span><span class="p">],</span> <span class="n">direction</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">],</span> <span class="n">show_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show_topography</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-</div>
-<img src="../../_images/sphx_glr_Perth_basin_005.png" srcset="../../_images/sphx_glr_Perth_basin_005.png" alt="Cell Number: 12 Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3e144013d0&gt;
+<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-gempy_viewer sphx-glr-backref-type-py-function reference internal" href="../../Plot/gempy_viewer.plot_2d.html#gempy_viewer.plot_2d" title="gempy_viewer.plot_2d"><span class="n">gpv</span><span class="o">.</span><span class="n">plot_2d</span></a><span class="p">(</span><a class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../Modeling%20Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="p">[</span><span class="mi">12</span><span class="p">]</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;</span><span class="s2">y</span><span class="s2">&quot;</span><span class="p">]</span><span class="p">,</span> <span class="n">show_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show_topography</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<img src="../../_images/sphx_glr_Perth_basin_005.png" srcset="../../_images/sphx_glr_Perth_basin_005.png" alt="Cell Number: 12 Direction: y" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f9990100b50&gt;
 </pre></div>
 </div>
 <p>sphinx_gallery_thumbnail_number = 6</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">gpv</span><span class="o">.</span><span class="n">plot_3d</span><span class="p">(</span><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><a href="../../Modeling Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel" class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">geo_model</span></a></a><span class="p">,</span> <span class="n">show_lith</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show_boundaries</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show_topography</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ve</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><a class="sphx-glr-backref-module-gempy_viewer sphx-glr-backref-type-py-function reference internal" href="../../Plot/gempy_viewer.plot_3d.html#gempy_viewer.plot_3d" title="gempy_viewer.plot_3d"><span class="n">gpv</span><span class="o">.</span><span class="n">plot_3d</span></a><span class="p">(</span><a class="sphx-glr-backref-module-gempy-core-data sphx-glr-backref-type-py-class sphx-glr-backref-instance reference internal" href="../../Modeling%20Classes/gempy.core.data.GeoModel.html#gempy.core.data.GeoModel" title="gempy.core.data.GeoModel"><span class="n">geo_model</span></a><span class="p">,</span> <span class="n">show_lith</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show_boundaries</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show_topography</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ve</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span><span class="w">
+</span></pre></div></div>
+<img src="../../_images/sphx_glr_Perth_basin_006.png" srcset="../../_images/sphx_glr_Perth_basin_006.png" alt="Perth basin" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f99740150f0&gt;
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_Perth_basin_006.png" srcset="../../_images/sphx_glr_Perth_basin_006.png" alt="Perth basin" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f3e14f8e430&gt;
-</pre></div>
-</div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 22.137 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (1 minutes 40.010 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-examples-real-perth-basin-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/efebcc512a2cf32b32c9f73b9822f2a9/Perth_basin.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">Perth_basin.ipynb</span></code></a></p>

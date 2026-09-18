@@ -382,7 +382,7 @@ check the sections are positioned as intended before computing:
  .. code-block:: none
 
 
-    <function plot_section_traces at 0x7f3efa82a980>
+    <function plot_section_traces at 0x7f9a105d8eb0>
 
 
 
@@ -408,9 +408,8 @@ interpolates values across the regular grid and both of them in one call:
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.PYTORCH
-    GPU enabled. Using device: cuda
-    GPU device count: 1
-    Current GPU device: 0
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
     Chunking done: 9 chunks
     Chunking done: 50 chunks
 
@@ -453,7 +452,7 @@ model:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3e54735650>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f9a07517e50>
 
 
 
@@ -486,7 +485,7 @@ the midpoint of this model's 0-2000 extent), specified directly instead:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3eea7fdbd0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f9a072c7050>
 
 
 
@@ -519,7 +518,7 @@ rather than a single profile line:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3eea19f3d0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f9a074d6450>
 
 
 
@@ -566,7 +565,7 @@ so only the scalar field itself shows:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3eea219250>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f9a072af3d0>
 
 
 
@@ -598,7 +597,7 @@ lithology ends and the next begins -- without the lithology fill:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3eea19f3d0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f9a074d6450>
 
 
 
@@ -632,7 +631,7 @@ apply, just addressed via ``section_names`` instead of ``direction`` +
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3eea1a6bd0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f9a07335fd0>
 
 
 
@@ -656,7 +655,7 @@ apply, just addressed via ``section_names`` instead of ``direction`` +
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3eea22df50>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f9a2813a3d0>
 
 
 
@@ -698,7 +697,7 @@ map, a plain orthogonal section, and that same cut as a scalar field:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3e459c0950>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f9a0744b8d0>
 
 
 
@@ -729,7 +728,7 @@ matplotlib's ``ax.set_aspect``:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3eea1fa550>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f9a074d4dd0>
 
 
 
@@ -833,7 +832,7 @@ and ``stop`` are stored per section in ``grid.sections.df``:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.568 seconds)
+   **Total running time of the script:** (0 minutes 4.452 seconds)
 
 
 .. _sphx_glr_download_tutorials_b_fundamentals_d04_2d_visualization.py:

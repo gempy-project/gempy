@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**01:07.929** total execution time for 5 files **from tutorials/b_fundamentals**:
+**01:25.133** total execution time for 6 files **from tutorials/b_fundamentals**:
 
 .. container::
 
@@ -33,17 +33,20 @@ Computation times
      - Time
      - Mem (MB)
    * - :ref:`sphx_glr_tutorials_b_fundamentals_a01_basics.py` (``a01_basics.py``)
-     - 00:26.598
+     - 00:34.952
      - 0.0
    * - :ref:`sphx_glr_tutorials_b_fundamentals_b02_cross_section.py` (``b02_cross_section.py``)
-     - 00:19.392
+     - 00:20.008
      - 0.0
    * - :ref:`sphx_glr_tutorials_b_fundamentals_c03_grids.py` (``c03_grids.py``)
-     - 00:10.676
+     - 00:11.439
      - 0.0
    * - :ref:`sphx_glr_tutorials_b_fundamentals_e05_3d_visualization.py` (``e05_3d_visualization.py``)
-     - 00:07.695
+     - 00:08.904
+     - 0.0
+   * - :ref:`sphx_glr_tutorials_b_fundamentals_f06_save_load.py` (``f06_save_load.py``)
+     - 00:05.378
      - 0.0
    * - :ref:`sphx_glr_tutorials_b_fundamentals_d04_2d_visualization.py` (``d04_2d_visualization.py``)
-     - 00:03.568
+     - 00:04.452
      - 0.0

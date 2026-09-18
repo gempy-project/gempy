@@ -540,7 +540,7 @@ Number of voxels:
 
  .. code-block:: none
 
-    meta=GeoModelMeta(name='Claudius', creation_date='2026-08-07T17:02:08.211826', last_modification_date=None, owner=None) structural_frame=StructuralFrame(
+    meta=GeoModelMeta(name='Claudius', creation_date='2026-09-18T10:15:33.281444', last_modification_date=None, owner=None) structural_frame=StructuralFrame(
             structural_groups=[
     StructuralGroup(
             name=Fault1,
@@ -601,7 +601,7 @@ Number of voxels:
      '_is_default_transform': False,
      'position': array([ -550658.0605    , -7819213.97425586,     9824.6748045 ]),
      'rotation': array([0., 0., 0.]),
-     'scale': array([9.56397917e-05, 9.56397917e-05, 9.56397917e-05])} interpolation_grid=None interpolation_options=InterpolationOptions(kernel_options=KernelOptions(range=1.7, c_o=10.0, uni_degree=1, i_res=4.0, gi_res=2.0, number_dimensions=3, kernel_function=AvailableKernelFunctions.cubic, kernel_solver=Solvers.DEFAULT, compute_condition_number=False, optimizing_condition_number=False, condition_number=None), evaluation_options=EvaluationOptions(_number_octree_levels=5, _number_octree_levels_surface=4, octree_curvature_threshold=-1.0, octree_error_threshold=1.0, octree_min_level=2, mesh_extraction=True, mesh_extraction_masking_options=<MeshExtractionMaskingOptions.INTERSECT: 3>, mesh_extraction_fancy=True, evaluation_chunk_size=500000, compute_scalar=True, compute_scalar_gradient=False, verbose=False), debug=False, cache_mode=<CacheMode.IN_MEMORY_CACHE: 3>, cache_model_name='Claudius', block_solutions_type=<BlockSolutionType.DENSE_GRID: 2>, sigmoid_slope=5000000)
+     'scale': array([9.56397917e-05, 9.56397917e-05, 9.56397917e-05])} interpolation_grid=None interpolation_options=InterpolationOptions(kernel_options=KernelOptions(range=1.7, c_o=10.0, uni_degree=1, i_res=4.0, gi_res=2.0, number_dimensions=3, kernel_function=AvailableKernelFunctions.cubic, kernel_solver=Solvers.DEFAULT, compute_condition_number=False, optimizing_condition_number=False, condition_number=None, condition_number_before=None, condition_number_after=None, fault_drift_equilibration=True, fault_drift_regularization=0.001, symmetric_equilibration_method=none, symmetric_equilibration_max_iterations=10, symmetric_equilibration_tolerance=0.01, nugget_implementation=NuggetImplementation.LEGACY, drift_diagnostics=False, drift_rank_policy=warn, drift_rank_rcond=None, drift_warning_rcond=None), evaluation_options=EvaluationOptions(_number_octree_levels=5, _number_octree_levels_surface=4, octree_curvature_threshold=-1.0, octree_error_threshold=1.0, octree_min_level=2, mesh_extraction=True, mesh_extraction_masking_options=<MeshExtractionMaskingOptions.INTERSECT: 3>, mesh_extraction_fancy=True, evaluation_chunk_size=500000, micro_anisotropic=MicroAnisotropicOptions(enabled=False, points=None, residuals=None, anisotropy_matrices=None, weights=None, kernel_range=1.0, kernel_type='matern_5_2', nugget=0.0, preserve_macro_points=True, strength=1.0), compute_scalar=True, compute_scalar_gradient=False, verbose=False), debug=False, cache_mode=<CacheMode.IN_MEMORY_CACHE: 3>, cache_model_name='Claudius', block_solutions_type=<BlockSolutionType.DENSE_GRID: 2>, sigmoid_slope=5000000)
 
 
 
@@ -869,7 +869,7 @@ so the easiest approach is to create one from the surface points available:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3e14d7c450>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f997403cf50>
 
 
 
@@ -1113,7 +1113,7 @@ So far we have not specified which series/faults are actual faults:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3e14c7a6d0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f997403cf50>
 
 
 
@@ -1137,7 +1137,7 @@ So far we have not specified which series/faults are actual faults:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3e14c7b2d0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f99f72e3ed0>
 
 
 
@@ -1182,7 +1182,7 @@ So far we have not specified which series/faults are actual faults:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3e3d4cd1d0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f99f72e1ed0>
 
 
 
@@ -1206,7 +1206,7 @@ So far we have not specified which series/faults are actual faults:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3e14e31fd0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f995c7003d0>
 
 
 
@@ -1231,14 +1231,14 @@ So far we have not specified which series/faults are actual faults:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f3e3d5af3f0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f99f7271b70>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 49.977 seconds)
+   **Total running time of the script:** (0 minutes 50.876 seconds)
 
 
 .. _sphx_glr_download_examples_real_Claudius.py:

@@ -9,7 +9,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/basic.css?v=b08954a9" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=e15417cb" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=c83e6b79" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
@@ -73,7 +73,7 @@
 <a class="viewcode-back" href="../../../Plot/gempy_viewer.plot_3d.html#gempy_viewer.plot_3d">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">plot_3d</span><span class="p">(</span>
         <span class="n">model</span><span class="p">:</span> <span class="n">GeoModel</span><span class="p">,</span>
-        <span class="n">plotter_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;basic&#39;</span><span class="p">,</span>
+        <span class="n">plotter_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'basic'</span><span class="p">,</span>
         <span class="n">active_scalar_field</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">ve</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">topography_scalar_type</span><span class="p">:</span> <span class="n">TopographyDataType</span> <span class="o">=</span> <span class="n">TopographyDataType</span><span class="o">.</span><span class="n">GEOMAP</span><span class="p">,</span>
@@ -90,7 +90,7 @@
         <span class="n">show_nugget_effect</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GemPyToVista</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Plots a 3D visualization of a geological model using the GemPy framework and PyVista.</span>
 
 <span class="sd">    This function generates a 3D visual representation of geological data, including topography, </span>
@@ -101,7 +101,7 @@
 
 <span class="sd">    :param model: The geological model (GeoModel) to visualize, which includes information on </span>
 <span class="sd">        grid topology, geological structures, and solutions (if available).</span>
-<span class="sd">    :param plotter_type: The type of PyVista plotter to use. Default is &#39;basic&#39;.</span>
+<span class="sd">    :param plotter_type: The type of PyVista plotter to use. Default is 'basic'.</span>
 <span class="sd">    :param active_scalar_field: The scalar field to set as the active field for visualization. </span>
 <span class="sd">        Defaults to None.</span>
 <span class="sd">    :param ve: Vertical exaggeration factor for z-axis scaling. Defaults to None.</span>
@@ -131,7 +131,7 @@
 <span class="sd">        of miscellaneous settings or configurations.</span>
 <span class="sd">    :return: A GemPyToVista object containing the generated visualization configuration and state.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="kn">from</span><span class="w"> </span><span class="nn">gempy_viewer.modules.plot_3d.drawer_input_3d</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_data</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">gempy_viewer.modules.plot_3d.drawer_structured_grid_3d</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_structured_grid</span>
@@ -143,16 +143,16 @@
     <span class="n">can_show_results</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">solutions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>  <span class="c1"># and model.solutions.lith_block.shape[0] != 0</span>
     <span class="n">data_to_show</span> <span class="o">=</span> <span class="n">DataToShow</span><span class="p">(</span>
         <span class="n">n_axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-        <span class="n">show_data</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;show_data&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
-        <span class="n">_show_results</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;show_results&#39;</span><span class="p">,</span> <span class="n">can_show_results</span><span class="p">),</span>
-        <span class="n">show_surfaces</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;show_surfaces&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
-        <span class="n">show_lith</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;show_lith&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
-        <span class="n">show_scalar</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;show_scalar&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
-        <span class="n">show_boundaries</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;show_boundaries&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
-        <span class="n">show_topography</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;show_topography&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
-        <span class="n">show_section_traces</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;show_section_traces&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
-        <span class="n">show_values</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;show_values&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
-        <span class="n">show_block</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;show_block&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">show_data</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'show_data'</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+        <span class="n">_show_results</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'show_results'</span><span class="p">,</span> <span class="n">can_show_results</span><span class="p">),</span>
+        <span class="n">show_surfaces</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'show_surfaces'</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+        <span class="n">show_lith</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'show_lith'</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+        <span class="n">show_scalar</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'show_scalar'</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+        <span class="n">show_boundaries</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'show_boundaries'</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+        <span class="n">show_topography</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'show_topography'</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+        <span class="n">show_section_traces</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'show_section_traces'</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+        <span class="n">show_values</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'show_values'</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+        <span class="n">show_block</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'show_block'</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
     <span class="p">)</span>
     <span class="n">kwargs_plot_topography</span> <span class="o">=</span> <span class="n">kwargs_plot_topography</span> <span class="ow">or</span> <span class="p">{}</span>
     <span class="n">kwargs_plot_structured_grid</span> <span class="o">=</span> <span class="n">kwargs_plot_structured_grid</span> <span class="ow">or</span> <span class="p">{}</span>
@@ -164,8 +164,8 @@
 
     <span class="k">if</span> <span class="n">image</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
         <span class="n">show</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="n">kwargs_plotter</span><span class="p">[</span><span class="s1">&#39;off_screen&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="n">plotter_type</span> <span class="o">=</span> <span class="s1">&#39;basic&#39;</span>
+        <span class="n">kwargs_plotter</span><span class="p">[</span><span class="s1">'off_screen'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">plotter_type</span> <span class="o">=</span> <span class="s1">'basic'</span>
 
     <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">solutions</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">data_to_show</span><span class="o">.</span><span class="n">show_results</span> <span class="o">=</span> <span class="kc">False</span>
@@ -191,7 +191,7 @@
             <span class="n">solution</span><span class="o">=</span><span class="n">solutions_raw_arrays</span><span class="p">,</span>
             <span class="n">topography_scalar_type</span><span class="o">=</span><span class="n">topography_scalar_type</span><span class="p">,</span>
             <span class="n">elements_colors</span><span class="o">=</span><span class="n">structural_frame</span><span class="o">.</span><span class="n">elements_colors</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
-            <span class="n">contours</span><span class="o">=</span><span class="n">kwargs_plot_topography</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;contours&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+            <span class="n">contours</span><span class="o">=</span><span class="n">kwargs_plot_topography</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'contours'</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
             <span class="o">**</span><span class="n">kwargs_plot_topography</span>
         <span class="p">)</span>
         
@@ -202,7 +202,7 @@
             <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">vertices</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">elements_to_plot</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">elements_to_plot</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No elements to plot. Please check the model.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"No elements to plot. Please check the model."</span><span class="p">)</span>
         
         <span class="k">if</span> <span class="n">transformed_data</span><span class="p">:</span>
             <span class="n">surfaces_transform</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">input_transform</span>
@@ -220,7 +220,7 @@
         <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">data_to_show</span><span class="o">.</span><span class="n">show_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="n">arrow_size</span> <span class="o">=</span> <span class="n">kwargs_plot_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;arrow_size&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+        <span class="n">arrow_size</span> <span class="o">=</span> <span class="n">kwargs_plot_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'arrow_size'</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
         <span class="n">min_axes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">extent</span><span class="p">)[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">]])</span>
 
         <span class="n">plot_data</span><span class="p">(</span>
@@ -232,7 +232,7 @@
             <span class="o">**</span><span class="n">kwargs_plot_data</span>
         <span class="p">)</span>
     <span class="k">elif</span> <span class="n">show_nugget_effect</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Data plotting is disabled. Please set show_data=True to plot nugget.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Data plotting is disabled. Please set show_data=True to plot nugget."</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">transformed_data</span><span class="p">:</span>
         <span class="n">vtk_formated_regular_mesh</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">regular_grid_coordinates_transformed</span>
@@ -245,7 +245,7 @@
             <span class="n">vtk_formated_regular_mesh</span><span class="o">=</span><span class="n">vtk_formated_regular_mesh</span><span class="p">,</span>
             <span class="n">resolution</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">regular_grid</span><span class="o">.</span><span class="n">resolution</span><span class="p">,</span>
             <span class="n">scalar_data_type</span><span class="o">=</span><span class="n">ScalarDataType</span><span class="o">.</span><span class="n">LITHOLOGY</span><span class="p">,</span>
-            <span class="n">active_scalar_field</span><span class="o">=</span><span class="s2">&quot;lith&quot;</span><span class="p">,</span>
+            <span class="n">active_scalar_field</span><span class="o">=</span><span class="s2">"lith"</span><span class="p">,</span>
             <span class="n">solution</span><span class="o">=</span><span class="n">solutions_raw_arrays</span><span class="p">,</span>
             <span class="n">cmap</span><span class="o">=</span><span class="n">get_geo_model_cmap</span><span class="p">(</span><span class="n">structural_frame</span><span class="o">.</span><span class="n">volume_elements_colors</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
             <span class="o">**</span><span class="n">kwargs_plot_structured_grid</span>
@@ -260,7 +260,7 @@
             <span class="n">scalar_data_type</span><span class="o">=</span><span class="n">ScalarDataType</span><span class="o">.</span><span class="n">SCALAR_FIELD</span><span class="p">,</span>
             <span class="n">active_scalar_field</span><span class="o">=</span><span class="n">active_scalar_field</span><span class="p">,</span>
             <span class="n">solution</span><span class="o">=</span><span class="n">solutions_raw_arrays</span><span class="p">,</span>
-            <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;magma&#39;</span><span class="p">,</span>
+            <span class="n">cmap</span><span class="o">=</span><span class="s1">'magma'</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs_plot_structured_grid</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span> <span class="c1"># * If it is not a scalar field, we use the structural frame bar</span>
@@ -282,13 +282,13 @@
     <span class="k">if</span> <span class="n">ve</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">gempy_vista</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">set_scale</span><span class="p">(</span><span class="n">zscale</span><span class="o">=</span><span class="n">ve</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;show_octree&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'show_octree'</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
         <span class="n">plot_octree_gizmos</span><span class="p">(</span>
             <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> 
             <span class="n">pd3</span><span class="o">=</span><span class="n">gempy_vista</span>
         <span class="p">)</span>
 
-    <span class="n">fig_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;fig_path&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">fig_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'fig_path'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">fig_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">gempy_vista</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">screenshot</span><span class="o">=</span><span class="n">fig_path</span><span class="p">)</span>
 
@@ -306,8 +306,8 @@
     <span class="n">gempy_vista</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">screenshot</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">img</span> <span class="o">=</span> <span class="n">gempy_vista</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">last_image</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">plt</span><span class="o">.</span><span class="n">get_backend</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;agg&quot;</span><span class="p">:</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">'off'</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">plt</span><span class="o">.</span><span class="n">get_backend</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">"agg"</span><span class="p">:</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">gempy_vista</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     <span class="n">show</span> <span class="o">=</span> <span class="kc">False</span>

@@ -149,7 +149,7 @@ Video tutorial 2: Input data
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3eec88cec0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f9a076e9fd0>
 
 
 
@@ -237,7 +237,7 @@ Video tutorial 2: Input data
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3eea7065d0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f9a07439090>
 
 
 
@@ -455,7 +455,7 @@ Video tutorial 4: Computation and results
  .. code-block:: none
 
 
-    InterpolationOptions(kernel_options=KernelOptions(range=1.7, c_o=10.0, uni_degree=1, i_res=4.0, gi_res=2.0, number_dimensions=3, kernel_function=AvailableKernelFunctions.cubic, kernel_solver=Solvers.DEFAULT, compute_condition_number=False, optimizing_condition_number=False, condition_number=None), evaluation_options=EvaluationOptions(_number_octree_levels=1, _number_octree_levels_surface=4, octree_curvature_threshold=-1.0, octree_error_threshold=1.0, octree_min_level=2, mesh_extraction=True, mesh_extraction_masking_options=<MeshExtractionMaskingOptions.INTERSECT: 3>, mesh_extraction_fancy=True, evaluation_chunk_size=500000, compute_scalar=True, compute_scalar_gradient=False, verbose=False), debug=False, cache_mode=<CacheMode.IN_MEMORY_CACHE: 3>, cache_model_name='tutorial_model', block_solutions_type=<BlockSolutionType.DENSE_GRID: 2>, sigmoid_slope=5000000)
+    InterpolationOptions(kernel_options=KernelOptions(range=1.7, c_o=10.0, uni_degree=1, i_res=4.0, gi_res=2.0, number_dimensions=3, kernel_function=AvailableKernelFunctions.cubic, kernel_solver=Solvers.DEFAULT, compute_condition_number=False, optimizing_condition_number=False, condition_number=None, condition_number_before=None, condition_number_after=None, fault_drift_equilibration=True, fault_drift_regularization=0.001, symmetric_equilibration_method=none, symmetric_equilibration_max_iterations=10, symmetric_equilibration_tolerance=0.01, nugget_implementation=NuggetImplementation.LEGACY, drift_diagnostics=False, drift_rank_policy=warn, drift_rank_rcond=None, drift_warning_rcond=None), evaluation_options=EvaluationOptions(_number_octree_levels=1, _number_octree_levels_surface=4, octree_curvature_threshold=-1.0, octree_error_threshold=1.0, octree_min_level=2, mesh_extraction=True, mesh_extraction_masking_options=<MeshExtractionMaskingOptions.INTERSECT: 3>, mesh_extraction_fancy=True, evaluation_chunk_size=500000, micro_anisotropic=MicroAnisotropicOptions(enabled=False, points=None, residuals=None, anisotropy_matrices=None, weights=None, kernel_range=1.0, kernel_type='matern_5_2', nugget=0.0, preserve_macro_points=True, strength=1.0), compute_scalar=True, compute_scalar_gradient=False, verbose=False), debug=False, cache_mode=<CacheMode.IN_MEMORY_CACHE: 3>, cache_model_name='tutorial_model', block_solutions_type=<BlockSolutionType.DENSE_GRID: 2>, sigmoid_slope=5000000)
 
 
 
@@ -476,9 +476,8 @@ Video tutorial 4: Computation and results
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.PYTORCH
-    GPU enabled. Using device: cuda
-    GPU device count: 1
-    Current GPU device: 0
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
     Chunking done: 7 chunks
     Chunking done: 30 chunks
 
@@ -513,7 +512,7 @@ Video tutorial 4: Computation and results
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3eea788190>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f9a0743ac10>
 
 
 
@@ -586,7 +585,7 @@ Video tutorial 5: 2D visualization
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3eec8c22c0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f9a1a1f90f0>
 
 
 
@@ -671,7 +670,7 @@ Video tutorial 5: 2D visualization
  .. code-block:: none
 
 
-    <function plot_section_traces at 0x7f3efa82a980>
+    <function plot_section_traces at 0x7f9a105d8eb0>
 
 
 
@@ -692,9 +691,8 @@ Video tutorial 5: 2D visualization
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.PYTORCH
-    GPU enabled. Using device: cuda
-    GPU device count: 1
-    Current GPU device: 0
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
     Chunking done: 8 chunks
     Chunking done: 33 chunks
 
@@ -729,7 +727,7 @@ Video tutorial 5: 2D visualization
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3eec9b68d0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f9a19505b50>
 
 
 
@@ -773,7 +771,7 @@ Video tutorial 6: 3D visualization
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f3eea7d2e40>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f9a07381e80>
 
 
 
@@ -845,62 +843,62 @@ Video tutorial 7: Topography
            ...,
            [2487.5,  987.5,  937.5],
            [2487.5,  987.5,  962.5],
-           [2487.5,  987.5,  987.5]], shape=(160000, 3)), mask_topo=array([], shape=(0, 3), dtype=bool), _transform=None, _base_resolution=array([2, 2, 2])), values_2d=array([[[   0.        ,    0.        ,  846.48200887],
-            [   0.        ,   10.1010101 ,  845.7885738 ],
-            [   0.        ,   20.2020202 ,  845.13500395],
+           [2487.5,  987.5,  987.5]], shape=(160000, 3)), mask_topo=array([], shape=(0, 3), dtype=bool), _transform=None, _base_resolution=array([2, 2, 2])), values_2d=array([[[   0.        ,    0.        ,  806.5888454 ],
+            [   0.        ,   10.1010101 ,  805.41476253],
+            [   0.        ,   20.2020202 ,  804.27779025],
             ...,
-            [   0.        ,  979.7979798 ,  858.17962427],
-            [   0.        ,  989.8989899 ,  858.56778738],
-            [   0.        , 1000.        ,  859.02124602]],
+            [   0.        ,  979.7979798 ,  724.75850286],
+            [   0.        ,  989.8989899 ,  724.45465258],
+            [   0.        , 1000.        ,  724.15136232]],
 
-           [[  10.04016064,    0.        ,  847.36106954],
-            [  10.04016064,   10.1010101 ,  846.65906498],
-            [  10.04016064,   20.2020202 ,  845.99218121],
+           [[  10.04016064,    0.        ,  806.00436567],
+            [  10.04016064,   10.1010101 ,  804.81430883],
+            [  10.04016064,   20.2020202 ,  803.61546993],
             ...,
-            [  10.04016064,  979.7979798 ,  858.79922685],
-            [  10.04016064,  989.8989899 ,  859.15630107],
-            [  10.04016064, 1000.        ,  859.59405788]],
+            [  10.04016064,  979.7979798 ,  725.11489205],
+            [  10.04016064,  989.8989899 ,  724.86314474],
+            [  10.04016064, 1000.        ,  724.60767754]],
 
-           [[  20.08032129,    0.        ,  848.23831087],
-            [  20.08032129,   10.1010101 ,  847.54698227],
-            [  20.08032129,   20.2020202 ,  846.88378095],
+           [[  20.08032129,    0.        ,  805.37206419],
+            [  20.08032129,   10.1010101 ,  804.24118234],
+            [  20.08032129,   20.2020202 ,  803.03498538],
             ...,
-            [  20.08032129,  979.7979798 ,  859.36667512],
-            [  20.08032129,  989.8989899 ,  859.73843469],
-            [  20.08032129, 1000.        ,  860.20142948]],
+            [  20.08032129,  979.7979798 ,  725.45855758],
+            [  20.08032129,  989.8989899 ,  725.3067018 ],
+            [  20.08032129, 1000.        ,  725.14014953]],
 
            ...,
 
-           [[2479.91967871,    0.        ,  843.59900934],
-            [2479.91967871,   10.1010101 ,  842.92517567],
-            [2479.91967871,   20.2020202 ,  842.26117265],
+           [[2479.91967871,    0.        ,  808.94931514],
+            [2479.91967871,   10.1010101 ,  807.79223131],
+            [2479.91967871,   20.2020202 ,  806.65075679],
             ...,
-            [2479.91967871,  979.7979798 ,  856.39660819],
-            [2479.91967871,  989.8989899 ,  856.81354684],
-            [2479.91967871, 1000.        ,  857.26684359]],
+            [2479.91967871,  979.7979798 ,  723.9652805 ],
+            [2479.91967871,  989.8989899 ,  723.57423016],
+            [2479.91967871, 1000.        ,  723.14341083]],
 
-           [[2489.95983936,    0.        ,  844.67814891],
-            [2489.95983936,   10.1010101 ,  843.99656816],
-            [2489.95983936,   20.2020202 ,  843.31958929],
+           [[2489.95983936,    0.        ,  808.12494266],
+            [2489.95983936,   10.1010101 ,  806.94502238],
+            [2489.95983936,   20.2020202 ,  805.83830321],
             ...,
-            [2489.95983936,  979.7979798 ,  857.0343389 ],
-            [2489.95983936,  989.8989899 ,  857.43709416],
-            [2489.95983936, 1000.        ,  857.87090113]],
+            [2489.95983936,  979.7979798 ,  724.16160672],
+            [2489.95983936,  989.8989899 ,  723.80304682],
+            [2489.95983936, 1000.        ,  723.39759727]],
 
-           [[2500.        ,    0.        ,  845.62858323],
-            [2500.        ,   10.1010101 ,  844.92906332],
-            [2500.        ,   20.2020202 ,  844.25939646],
+           [[2500.        ,    0.        ,  807.3014964 ],
+            [2500.        ,   10.1010101 ,  806.12348615],
+            [2500.        ,   20.2020202 ,  805.01636651],
             ...,
-            [2500.        ,  979.7979798 ,  857.60270315],
-            [2500.        ,  989.8989899 ,  858.02933643],
-            [2500.        , 1000.        ,  858.47392974]]],
-          shape=(250, 100, 3)), source=None, values=array([[   0.        ,    0.        ,  846.48200887],
-           [   0.        ,   10.1010101 ,  845.7885738 ],
-           [   0.        ,   20.2020202 ,  845.13500395],
+            [2500.        ,  979.7979798 ,  724.43139443],
+            [2500.        ,  989.8989899 ,  724.12131066],
+            [2500.        , 1000.        ,  723.76706711]]],
+          shape=(250, 100, 3)), source=None, values=array([[   0.        ,    0.        ,  806.5888454 ],
+           [   0.        ,   10.1010101 ,  805.41476253],
+           [   0.        ,   20.2020202 ,  804.27779025],
            ...,
-           [2500.        ,  979.7979798 ,  857.60270315],
-           [2500.        ,  989.8989899 ,  858.02933643],
-           [2500.        , 1000.        ,  858.47392974]], shape=(25000, 3)), resolution=(250, 100), raster_shape=())
+           [2500.        ,  979.7979798 ,  724.43139443],
+           [2500.        ,  989.8989899 ,  724.12131066],
+           [2500.        , 1000.        ,  723.76706711]], shape=(25000, 3)), resolution=(250, 100), raster_shape=())
 
 
 
@@ -921,9 +919,8 @@ Video tutorial 7: Topography
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.PYTORCH
-    GPU enabled. Using device: cuda
-    GPU device count: 1
-    Current GPU device: 0
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
     Chunking done: 9 chunks
     Chunking done: 37 chunks
 
@@ -958,7 +955,7 @@ Video tutorial 7: Topography
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3eec8a6be0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f9a07546030>
 
 
 
@@ -984,7 +981,7 @@ Video tutorial 7: Topography
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3e5468df20>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f9a073e47c0>
 
 
 
@@ -1011,14 +1008,14 @@ Video tutorial 7: Topography
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f3e541e5950>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f9a29e6e5d0>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 15.259 seconds)
+   **Total running time of the script:** (0 minutes 20.050 seconds)
 
 
 .. _sphx_glr_download_tutorials_a_getting_started_video_tutorial_model_1.py:

@@ -9,7 +9,7 @@
     <link rel="stylesheet" type="text/css" href="../../../../_static/basic.css?v=b08954a9" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/alabaster.css?v=e15417cb" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery.css?v=c83e6b79" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
@@ -45,9 +45,11 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">auto</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Generator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">uuid</span><span class="w"> </span><span class="kn">import</span> <span class="n">uuid4</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">Field</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">gempy_engine.core.data.finite_fault</span><span class="w"> </span><span class="kn">import</span> <span class="n">FiniteFault</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gempy_engine.core.data.interpolation_functions</span><span class="w"> </span><span class="kn">import</span> <span class="n">CustomInterpolationFunctions</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gempy_engine.core.data.kernel_classes.faults</span><span class="w"> </span><span class="kn">import</span> <span class="n">FaultsData</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gempy_engine.core.data.raw_arrays_solution</span><span class="w"> </span><span class="kn">import</span> <span class="n">RawArraysSolution</span>
@@ -62,24 +64,32 @@
     <span class="n">OFFSET_NONE</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">OFFSET_ALL</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span></div>
 
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">FaultType</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
+    <span class="n">INFINITE</span> <span class="o">=</span> <span class="s2">"Infinite"</span>
+    <span class="n">FINITE</span> <span class="o">=</span> <span class="s2">"Finite"</span>
+    <span class="n">DISABLED</span> <span class="o">=</span> <span class="s2">"Disabled"</span>
     
     
 <div class="viewcode-block" id="StructuralGroup">
 <a class="viewcode-back" href="../../../../Modeling%20Classes/gempy.core.data.StructuralGroup.html#gempy.core.data.StructuralGroup">[docs]</a>
 <span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">StructuralGroup</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    An abstract base class that represents a structural group within a geological model.</span>
 <span class="sd">    </span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>  <span class="c1">#: The name of the structural group.</span>
     
     <span class="n">elements</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">StructuralElement</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1">#: A list of structural elements within the group.</span>
     <span class="n">structural_relation</span><span class="p">:</span> <span class="n">StackRelationType</span>  <span class="c1">#: The type of relation between the structural elements in the group.</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Field</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 
     <span class="c1">#: Relations with other groups in terms of faults.</span>
-    <span class="n">fault_relations</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="s2">&quot;StructuralGroup&quot;</span><span class="p">],</span> <span class="n">FaultsRelationSpecialCase</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">fault_relations</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="s2">"StructuralGroup"</span><span class="p">],</span> <span class="n">FaultsRelationSpecialCase</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">faults_input_data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">FaultsData</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">finite_fault_draft</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">FiniteFault</span><span class="p">],</span> <span class="n">Field</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">custom_interpolation</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">CustomInterpolationFunctions</span><span class="p">],</span> <span class="n">Field</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">ignored_grid_types</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">Field</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
@@ -87,29 +97,31 @@
     
     
     <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid4</span><span class="p">())</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;elements must be a list of StructuralElement objects.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"elements must be a list of StructuralElement objects."</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">StructuralElement</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;elements must be a list of StructuralElement objects.&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"elements must be a list of StructuralElement objects."</span><span class="p">)</span>
         
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">elements_repr</span> <span class="o">=</span> <span class="s1">&#39;,</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">repr</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">])</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;StructuralGroup(</span><span class="se">\n</span><span class="s2">&quot;</span> \
-               <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">,</span><span class="se">\n</span><span class="s2">&quot;</span> \
-               <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">structural_relation=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">structural_relation</span><span class="si">}</span><span class="s2">,</span><span class="se">\n</span><span class="s2">&quot;</span> \
-               <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">elements=[</span><span class="se">\n</span><span class="si">{</span><span class="n">elements_repr</span><span class="si">}</span><span class="se">\n</span><span class="s2">]</span><span class="se">\n</span><span class="s2">)&quot;</span>
+        <span class="n">elements_repr</span> <span class="o">=</span> <span class="s1">',</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">repr</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">])</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"StructuralGroup(</span><span class="se">\n</span><span class="s2">"</span> \
+               <span class="sa">f</span><span class="s2">"</span><span class="se">\t</span><span class="s2">name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">,</span><span class="se">\n</span><span class="s2">"</span> \
+               <span class="sa">f</span><span class="s2">"</span><span class="se">\t</span><span class="s2">structural_relation=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">structural_relation</span><span class="si">}</span><span class="s2">,</span><span class="se">\n</span><span class="s2">"</span> \
+               <span class="sa">f</span><span class="s2">"</span><span class="se">\t</span><span class="s2">elements=[</span><span class="se">\n</span><span class="si">{</span><span class="n">elements_repr</span><span class="si">}</span><span class="se">\n</span><span class="s2">]</span><span class="se">\n</span><span class="s2">)"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_repr_html_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">elements_html</span> <span class="o">=</span> <span class="s1">&#39;&lt;br&gt;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">e</span><span class="o">.</span><span class="n">_repr_html_</span><span class="p">()</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">])</span>
-        <span class="n">html</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">    &lt;table style=&quot;border-left:1.2px solid black;&gt;</span>
-<span class="s2">      &lt;tr&gt;&lt;th colspan=&quot;2&quot;&gt;&lt;b&gt;StructuralGroup:&lt;/b&gt;&lt;/th&gt;&lt;/tr&gt;</span>
+        <span class="n">elements_html</span> <span class="o">=</span> <span class="s1">'&lt;br&gt;'</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">e</span><span class="o">.</span><span class="n">_repr_html_</span><span class="p">()</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">])</span>
+        <span class="n">html</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"""</span>
+<span class="s2">    &lt;table style="border-left:1.2px solid black;&gt;</span>
+<span class="s2">      &lt;tr&gt;&lt;th colspan="2"&gt;&lt;b&gt;StructuralGroup:&lt;/b&gt;&lt;/th&gt;&lt;/tr&gt;</span>
 <span class="s2">      &lt;tr&gt;&lt;td&gt;Name:&lt;/td&gt;&lt;td&gt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&lt;/td&gt;&lt;/tr&gt;</span>
 <span class="s2">      &lt;tr&gt;&lt;td&gt;Structural Relation:&lt;/td&gt;&lt;td&gt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">structural_relation</span><span class="si">}</span><span class="s2">&lt;/td&gt;&lt;/tr&gt;</span>
 <span class="s2">      &lt;tr&gt;&lt;td&gt;Elements:&lt;/td&gt;&lt;td&gt;</span><span class="si">{</span><span class="n">elements_html</span><span class="si">}</span><span class="s2">&lt;/td&gt;&lt;/tr&gt;</span>
 <span class="s2">    &lt;/table&gt;</span>
-<span class="s2">        &quot;&quot;&quot;</span>
+<span class="s2">        """</span>
         <span class="k">return</span> <span class="n">html</span>
     
     <span class="k">def</span><span class="w"> </span><span class="nf">append_element</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">StructuralElement</span><span class="p">):</span>
@@ -119,12 +131,31 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-    
-    <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_fault</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">structural_relation</span> <span class="o">==</span> <span class="n">StackRelationType</span><span class="o">.</span><span class="n">FAULT</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fault_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FaultType</span><span class="p">:</span>
+        <span class="n">finite_fault</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">faults_input_data</span><span class="o">.</span><span class="n">finite_fault</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">faults_input_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">finite_fault</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">FaultType</span><span class="o">.</span><span class="n">FINITE</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">finite_fault_draft</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">FaultType</span><span class="o">.</span><span class="n">DISABLED</span>
+        <span class="k">return</span> <span class="n">FaultType</span><span class="o">.</span><span class="n">INFINITE</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_finite_fault</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">finite_fault</span><span class="p">:</span> <span class="n">FiniteFault</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">faults_input_data</span> <span class="o">=</span> <span class="n">FaultsData</span><span class="o">.</span><span class="n">from_user_input</span><span class="p">(</span><span class="n">thickness</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">finite_fault</span><span class="o">=</span><span class="n">finite_fault</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">finite_fault_draft</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">disable_finite_fault</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fault_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">FaultType</span><span class="o">.</span><span class="n">FINITE</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">finite_fault_draft</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">faults_input_data</span><span class="o">.</span><span class="n">finite_fault</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">faults_input_data</span><span class="o">.</span><span class="n">finite_fault</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">enable_finite_fault</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">finite_fault_draft</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_finite_fault</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">finite_fault_draft</span><span class="p">)</span>
     
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_lithology</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -147,10 +178,10 @@
         <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="n">matched_elements</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_fault_relation_names_for_json</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert list[StructuralGroup] to list[str] names for JSON-safe serialization.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Convert list[StructuralGroup] to list[str] names for JSON-safe serialization."""</span>
         <span class="n">fr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fault_relations</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fr</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="n">fr</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">[</span><span class="n">g</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="n">g</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">fr</span><span class="p">]</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">g</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="s1">'name'</span><span class="p">)</span> <span class="k">else</span> <span class="n">g</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">fr</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">fr</span></div>
 
 

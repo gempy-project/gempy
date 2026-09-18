@@ -20,8 +20,11 @@
    
       ~StructuralGroup.__init__
       ~StructuralGroup.append_element
+      ~StructuralGroup.disable_finite_fault
+      ~StructuralGroup.enable_finite_fault
       ~StructuralGroup.get_element_by_name
       ~StructuralGroup.remove_element
+      ~StructuralGroup.set_finite_fault
    
    
 
@@ -33,7 +36,9 @@
    
       ~StructuralGroup.custom_interpolation
       ~StructuralGroup.fault_relations
+      ~StructuralGroup.fault_type
       ~StructuralGroup.faults_input_data
+      ~StructuralGroup.finite_fault_draft
       ~StructuralGroup.id
       ~StructuralGroup.is_fault
       ~StructuralGroup.is_lithology

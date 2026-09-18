@@ -336,9 +336,8 @@ That's enough to compute a first version of the model:
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.PYTORCH
-    GPU enabled. Using device: cuda
-    GPU device count: 1
-    Current GPU device: 0
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
 
 
 .. raw:: html
@@ -369,7 +368,7 @@ That's enough to compute a first version of the model:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3eea0904d0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f9a070f5bd0>
 
 
 
@@ -422,7 +421,7 @@ the three points, shaped by the one orientation:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f3ecef62030>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f9a07545f20>
 
 
 
@@ -452,7 +451,7 @@ data, to get a feel for how it responds as new units and points are added:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3eea224150>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f9a07517d50>
 
 
 
@@ -506,9 +505,8 @@ and append it to the same group as the limestone:
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.PYTORCH
-    GPU enabled. Using device: cuda
-    GPU device count: 1
-    Current GPU device: 0
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
 
 
 
@@ -563,9 +561,8 @@ missing point, plus a third unit while we're at it:
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.PYTORCH
-    GPU enabled. Using device: cuda
-    GPU device count: 1
-    Current GPU device: 0
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
 
 
 
@@ -590,7 +587,7 @@ missing point, plus a third unit while we're at it:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f3f0185d9d0>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f9a193e1480>
 
 
 
@@ -734,9 +731,8 @@ each on its own:
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.PYTORCH
-    GPU enabled. Using device: cuda
-    GPU device count: 1
-    Current GPU device: 0
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
 
 
 .. raw:: html
@@ -767,7 +763,7 @@ each on its own:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3eec8ee1d0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f9a073af350>
 
 
 
@@ -791,7 +787,7 @@ each on its own:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3eea179950>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f9a0758db50>
 
 
 
@@ -856,7 +852,7 @@ Nothing needs to change for this one; it's already the default:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f3eec828d50>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f9a0759d550>
 
 
 
@@ -898,9 +894,8 @@ Onlap
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.PYTORCH
-    GPU enabled. Using device: cuda
-    GPU device count: 1
-    Current GPU device: 0
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
 
 
 
@@ -925,7 +920,7 @@ Onlap
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f3eec828d50>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f9a074c6e50>
 
 
 
@@ -968,9 +963,8 @@ A fault additionally needs ``set_is_fault``, exactly as in the Basics tutorial:
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.PYTORCH
-    GPU enabled. Using device: cuda
-    GPU device count: 1
-    Current GPU device: 0
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
 
 
 
@@ -995,7 +989,7 @@ A fault additionally needs ``set_is_fault``, exactly as in the Basics tutorial:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f3eec878410>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f9a29e3cd70>
 
 
 
@@ -1029,7 +1023,7 @@ The deposit series' scalar field itself now visibly reflects the fault's offset:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3eea2e2350>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f9a0758d6d0>
 
 
 
@@ -1071,7 +1065,7 @@ in for real data below (real rasters are supported too, via
 
     Active grids: GridTypes.DENSE|TOPOGRAPHY|NONE
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3e4590b3d0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f9a29ed4b50>
 
 
 
@@ -1095,7 +1089,7 @@ in for real data below (real rasters are supported too, via
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f3e5416ac60>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f9a29e3fa70>
 
 
 
@@ -1127,11 +1121,10 @@ at the surface can be read directly as a geological map -- a top-down view via
  .. code-block:: none
 
     Setting Backend To: AvailableBackends.PYTORCH
-    GPU enabled. Using device: cuda
-    GPU device count: 1
-    Current GPU device: 0
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3e5474bad0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f9a14e26c50>
 
 
 
@@ -1155,7 +1148,7 @@ at the surface can be read directly as a geological map -- a top-down view via
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f3eec8f1710>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f9a072f4590>
 
 
 
@@ -1181,7 +1174,7 @@ up one decision at a time rather than handed over in a CSV file.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 19.392 seconds)
+   **Total running time of the script:** (0 minutes 20.008 seconds)
 
 
 .. _sphx_glr_download_tutorials_b_fundamentals_b02_cross_section.py:

@@ -105,6 +105,23 @@ core modeling and visualization workflow in more technical detail.
     </div>
 
 
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Serializing a configured model to disk, and loading it back in a later session">
+
+.. only:: html
+
+  .. image:: /tutorials/b_fundamentals/images/thumb/sphx_glr_f06_save_load_thumb.png
+    :alt:
+
+  :doc:`/tutorials/b_fundamentals/f06_save_load`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Saving and Loading gempy Models</div>
+    </div>
+
+
 .. thumbnail-parent-div-close
 
 .. raw:: html
@@ -120,4 +137,5 @@ core modeling and visualization workflow in more technical detail.
    /tutorials/b_fundamentals/c03_grids
    /tutorials/b_fundamentals/d04_2d_visualization
    /tutorials/b_fundamentals/e05_3d_visualization
+   /tutorials/b_fundamentals/f06_save_load
 

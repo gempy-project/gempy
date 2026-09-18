@@ -99,9 +99,8 @@ Define the path to the input data
     Surface points hash:  dd7b2f714c1c20cb7ce615c5c47ecc4cf3ca2ee3419e4090b2f11fbf633d459f
     Orientations hash:  4043b59bbfa7012abd818f04f74e2b0667ba970dd71c781512289bc073f5a6d5
     Setting Backend To: AvailableBackends.PYTORCH
-    GPU enabled. Using device: cuda
-    GPU device count: 1
-    Current GPU device: 0
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
     Chunking done: 6 chunks
     Chunking done: 26 chunks
     Chunking done: 13 chunks
@@ -142,7 +141,7 @@ Plot the initial input data in the y direction, without computed results
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3e459464d0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f9a29ed5b50>
 
 
 
@@ -183,7 +182,7 @@ Plot the computed result in the y and x directions, with data
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3eea273950>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f9a29ed8e50>
 
 
 
@@ -216,7 +215,7 @@ Plot the lithology blocks accounting for fault offsets
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f3e459463d0>
+    <gempy_viewer.modules.plot_2d.visualization_2d.Plot2D object at 0x7f99f7241750>
 
 
 
@@ -245,14 +244,14 @@ Display the computed model in 3D
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f3e3d42e350>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f99f415e430>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 5.553 seconds)
+   **Total running time of the script:** (0 minutes 6.663 seconds)
 
 
 .. _sphx_glr_download_examples_geometries_g07_combination.py:

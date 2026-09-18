@@ -10,7 +10,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
     <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=e15417cb" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=c83e6b79" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
@@ -149,6 +149,9 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.StructuralFrame.serialized_fault_relations" title="gempy.core.data.StructuralFrame.serialized_fault_relations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">serialized_fault_relations</span></code></a>()</p></td>
 <td><p>Context manager that temporarily converts fault_relations for safe JSON serialization.</p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data.StructuralFrame.validate_micro_point_ownership" title="gempy.core.data.StructuralFrame.validate_micro_point_ownership"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_micro_point_ownership</span></code></a>()</p></td>
+<td><p>Validate flattened micro-point associations before serialization.</p></td>
+</tr>
 </tbody>
 </table>
 <p class="rubric">Attributes</p>
@@ -217,6 +220,12 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.StructuralFrame.is_dirty" title="gempy.core.data.StructuralFrame.is_dirty"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_dirty</span></code></a></p></td>
 <td><p></p></td>
 </tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">micro_points</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.StructuralFrame.micro_points_copy" title="gempy.core.data.StructuralFrame.micro_points_copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">micro_points_copy</span></code></a></p></td>
+<td><p>Returns a copy of all micro points in structural order.</p></td>
+</tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data.StructuralFrame.n_elements" title="gempy.core.data.StructuralFrame.n_elements"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_elements</span></code></a></p></td>
 <td><p>Returns the total number of elements in the structural frame.</p></td>
 </tr>
@@ -225,6 +234,12 @@
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data.StructuralFrame.number_of_elements_per_group" title="gempy.core.data.StructuralFrame.number_of_elements_per_group"><code class="xref py py-obj docutils literal notranslate"><span class="pre">number_of_elements_per_group</span></code></a></p></td>
 <td><p>Returns an array with the number of elements for each structural group.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.StructuralFrame.number_of_micro_points_per_element" title="gempy.core.data.StructuralFrame.number_of_micro_points_per_element"><code class="xref py py-obj docutils literal notranslate"><span class="pre">number_of_micro_points_per_element</span></code></a></p></td>
+<td><p>Returns the number of micro points for each element, including basement.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gempy.core.data.StructuralFrame.number_of_micro_points_per_group" title="gempy.core.data.StructuralFrame.number_of_micro_points_per_group"><code class="xref py py-obj docutils literal notranslate"><span class="pre">number_of_micro_points_per_group</span></code></a></p></td>
+<td><p>Returns the number of micro points for each structural group.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#gempy.core.data.StructuralFrame.number_of_orientations_per_group" title="gempy.core.data.StructuralFrame.number_of_orientations_per_group"><code class="xref py py-obj docutils literal notranslate"><span class="pre">number_of_orientations_per_group</span></code></a></p></td>
 <td><p>Returns an array with the number of orientations for each structural group.</p></td>
@@ -380,6 +395,18 @@
 </dd></dl>
 
 <dl class="py property">
+<dt class="sig sig-object py" id="gempy.core.data.StructuralFrame.number_of_micro_points_per_element">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">number_of_micro_points_per_element</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></span><a class="headerlink" href="#gempy.core.data.StructuralFrame.number_of_micro_points_per_element" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the number of micro points for each element, including basement.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gempy.core.data.StructuralFrame.number_of_micro_points_per_group">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">number_of_micro_points_per_group</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></span><a class="headerlink" href="#gempy.core.data.StructuralFrame.number_of_micro_points_per_group" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the number of micro points for each structural group.</p>
+</dd></dl>
+
+<dl class="py property">
 <dt class="sig sig-object py" id="gempy.core.data.StructuralFrame.number_of_elements_per_group">
 <span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">number_of_elements_per_group</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></span><a class="headerlink" href="#gempy.core.data.StructuralFrame.number_of_elements_per_group" title="Link to this definition">¶</a></dt>
 <dd><p>Returns an array with the number of elements for each structural group.</p>
@@ -425,6 +452,18 @@
 <dt class="sig sig-object py" id="gempy.core.data.StructuralFrame.orientations_copy">
 <span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">orientations_copy</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="gempy.core.data.OrientationsTable.html#gempy.core.data.OrientationsTable" title="gempy.core.data.orientations.OrientationsTable"><span class="pre">OrientationsTable</span></a></span><a class="headerlink" href="#gempy.core.data.StructuralFrame.orientations_copy" title="Link to this definition">¶</a></dt>
 <dd><p>Returns an OrientationsTable for all orientations across the structural elements.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gempy.core.data.StructuralFrame.micro_points_copy">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">micro_points_copy</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">MicroPointsTable</span></span><a class="headerlink" href="#gempy.core.data.StructuralFrame.micro_points_copy" title="Link to this definition">¶</a></dt>
+<dd><p>Returns a copy of all micro points in structural order.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gempy.core.data.StructuralFrame.validate_micro_point_ownership">
+<span class="sig-name descname"><span class="pre">validate_micro_point_ownership</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/gempy/core/data/structural_frame.html#StructuralFrame.validate_micro_point_ownership"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gempy.core.data.StructuralFrame.validate_micro_point_ownership" title="Link to this definition">¶</a></dt>
+<dd><p>Validate flattened micro-point associations before serialization.</p>
 </dd></dl>
 
 <dl class="py property">

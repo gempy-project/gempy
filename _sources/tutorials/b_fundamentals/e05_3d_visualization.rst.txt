@@ -208,9 +208,8 @@ over, and something for the boreholes to start from later on:
 
     Active grids: GridTypes.DENSE|TOPOGRAPHY|NONE
     Setting Backend To: AvailableBackends.PYTORCH
-    GPU enabled. Using device: cuda
-    GPU device count: 1
-    Current GPU device: 0
+    GPU requested but unavailable; falling back to CPU (GEMPY_GPU_FALLBACK=True)
+    Setting Backend To: AvailableBackends.PYTORCH
     Chunking done: 19 chunks
     Chunking done: 21 chunks
     Chunking done: 10 chunks
@@ -253,7 +252,7 @@ topography -- the geological map draped over it:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f3eea0b3770>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f9a071d1d30>
 
 
 
@@ -285,7 +284,7 @@ element, with no surfaces or topography in the way:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f3eea0b2350>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f9a071d09f0>
 
 
 
@@ -317,7 +316,7 @@ useful for seeing the layering through the outside of the block:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f3eea0b3770>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f9a071d1d30>
 
 
 
@@ -346,7 +345,7 @@ with nothing filling the space between them:
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f3eea0b2350>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f9a071d09f0>
 
 
 
@@ -386,7 +385,7 @@ three series -- ``sf_0`` (``Fault_1``), ``sf_1`` (``Fault_2``), and ``sf_2``
  .. code-block:: none
 
 
-    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f3eea0b3770>
+    <gempy_viewer.modules.plot_3d.vista.GemPyToVista object at 0x7f9a071d1d30>
 
 
 
@@ -440,7 +439,7 @@ model's top down to its own depth, drawn as a tube with a sphere at the collar:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 7.695 seconds)
+   **Total running time of the script:** (0 minutes 8.904 seconds)
 
 
 .. _sphx_glr_download_tutorials_b_fundamentals_e05_3d_visualization.py:
