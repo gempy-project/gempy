@@ -8,7 +8,8 @@ from ...core.data.structural_frame import StructuralFrame
 from gempy_engine.core.data import FiniteFault, Orientations, SurfacePoints
 from gempy_engine.core.data import engine_grid
 from gempy_engine.core.data.input_data_descriptor import InputDataDescriptor
-from gempy_engine.core.data.interpolation_input import InterpolationInput, MicroPoints
+from gempy_engine.core.data.interpolation_input import InterpolationInput
+from gempy_engine.core.data.micro_points import MicroPoints
 from gempy_engine.core.data.kernel_classes.faults import FaultsData
 from gempy_engine.core.data.transforms import Transform
 
