@@ -53,9 +53,8 @@ def interpolation_input_from_structural_frame(geo_model: "gempy.data.GeoModel") 
             return input_transform.apply(grid.transform.apply_with_cached_pivot(xyz))
 
         transformed_centers = to_engine_coordinates(centers)
-        transformed_axes = (to_engine_coordinates(
-            (centers[:, :, None] + axes).transpose(0, 2, 1).reshape(-1, 3)
-        ).reshape(-1, 3, 3) - transformed_centers[:, None, :]).transpose(0, 2, 1)
+        support_to_engine = micro_support_to_engine(geo_model)
+        transformed_axes = support_to_engine @ axes
         micro_points = MicroPoints(
             points=transformed_centers,
             anisotropy_matrices=np.linalg.inv(transformed_axes),
@@ -63,6 +62,7 @@ def interpolation_input_from_structural_frame(geo_model: "gempy.data.GeoModel") 
             surface_indices=np.concatenate([
                 np.full(len(table), index, dtype=np.int64) for index, table in micro_tables
             ]),
+            support_to_engine=support_to_engine,
         )
 
     grid: engine_grid.EngineGrid = _apply_input_transform_to_grids(
@@ -86,6 +86,12 @@ def interpolation_input_from_structural_frame(geo_model: "gempy.data.GeoModel") 
     )
 
     return interpolation_input
+
+
+def micro_support_to_engine(geo_model: "gempy.data.GeoModel") -> np.ndarray:
+    """Linear part of the composed point transform, independent of its pivot."""
+    return (geo_model.input_transform.get_transform_matrix()[:3, :3]
+            @ geo_model.grid.transform.get_transform_matrix()[:3, :3])
 
 
 def input_data_descriptor_from_geo_model(geo_model: "gempy.data.GeoModel") -> InputDataDescriptor:
