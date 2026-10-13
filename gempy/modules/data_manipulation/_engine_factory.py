@@ -74,7 +74,14 @@ def interpolation_input_from_structural_frame(geo_model: "gempy.data.GeoModel") 
     weights = []
     if geo_model.solutions is not None:
         for stack_sol in geo_model.solutions.root_output.outputs:
-            weights.append(stack_sol.weights)
+            # A previous solve is only a warm start, not part of the new autograd
+            # graph. Host copies also remain valid when switching backend/device.
+            previous_weights = stack_sol.weights
+            if previous_weights is not None:
+                if hasattr(previous_weights, "detach"):
+                    previous_weights = previous_weights.detach().cpu().numpy()
+                previous_weights = np.array(previous_weights, copy=True)
+            weights.append(previous_weights)
 
     interpolation_input: InterpolationInput = InterpolationInput(
         surface_points=surface_points,
