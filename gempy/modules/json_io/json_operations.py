@@ -4,6 +4,8 @@ This module provides functionality to load and save GemPy models to/from JSON fi
 """
 
 import json
+from pydantic import TypeAdapter
+from gempy_engine.core.data.options.evaluation_options import EvaluationOptions
 from typing import Dict, Any, Optional, List
 import numpy as np
 from datetime import datetime
@@ -161,6 +163,12 @@ class JsonIO:
             mesh_extraction=data.get('interpolation_options', {}).get('mesh_extraction', True),
             number_octree_levels=data.get('interpolation_options', {}).get('number_octree_levels', 1)
         )
+        # Nested settings take precedence; flat keys remain supported for older files.
+        nested_evaluation = data.get('interpolation_options', {}).get('evaluation_options')
+        if nested_evaluation is not None:
+            evaluation = interpolation_options.model_dump(mode='json')['evaluation_options']
+            evaluation.update(nested_evaluation)
+            interpolation_options.evaluation_options = TypeAdapter(EvaluationOptions).validate_python(evaluation)
         
         # Create GeoModel with default metadata if not provided
         current_date = datetime.now().strftime("%Y-%m-%d")
@@ -365,7 +373,8 @@ class JsonIO:
                     "c_o": float(model.interpolation_options.kernel_options.c_o)
                 },
                 "mesh_extraction": bool(model.interpolation_options.mesh_extraction),
-                "number_octree_levels": int(model.interpolation_options.number_octree_levels)
+                "number_octree_levels": int(model.interpolation_options.number_octree_levels),
+                "evaluation_options": model.interpolation_options.model_dump(mode='json')['evaluation_options']
             },
             "fault_relations": [[int(x) for x in row] for row in model.structural_frame.fault_relations] if hasattr(model.structural_frame, 'fault_relations') else None,
             "id_name_mapping": {
@@ -490,6 +499,11 @@ class JsonIO:
         if 'interpolation_options' in data:
             if not isinstance(data['interpolation_options'], dict):
                 raise ValueError("Interpolation options must be a dictionary")
+            if 'evaluation_options' in data['interpolation_options']:
+                evaluation_options = data['interpolation_options']['evaluation_options']
+                if not isinstance(evaluation_options, dict):
+                    raise ValueError("Evaluation options must be a dictionary")
+                TypeAdapter(EvaluationOptions).validate_python(evaluation_options)
             if 'kernel_options' in data['interpolation_options']:
                 kernel_options = data['interpolation_options']['kernel_options']
                 if not isinstance(kernel_options, dict):
@@ -533,4 +547,4 @@ class JsonIO:
         elif not isinstance(metadata['owner'], str):
             raise ValueError("Metadata owner must be a string")
 
-        return True 
+        return True

@@ -8,6 +8,7 @@ from gempy_engine.config import AvailableBackends
 from gempy_engine.core.backend_tensor import BackendTensor
 from gempy_engine.core.data import Solutions
 from .grid_API import set_custom_grid
+from .field_evaluation_API import _FieldEvaluationContext
 from ..core.data import StructuralGroup
 from ..core.data.gempy_engine_config import GemPyEngineConfig
 from ..core.data.geo_model import GeoModel
@@ -68,13 +69,16 @@ def compute_model(gempy_model: GeoModel, engine_config: Optional[GemPyEngineConf
             interpolation_input = interpolation_input_from_structural_frame(gempy_model)
             input_data_descriptor = input_data_descriptor_from_geo_model(gempy_model)
             gempy_model.taped_interpolation_input = interpolation_input  # * This is used for gradient tape
-
+            options = gempy_model.interpolation_options
+            context = _FieldEvaluationContext.capture(gempy_model, interpolation_input, input_data_descriptor, options)
+            gempy_model._field_evaluation_context = None
             gempy_model.solutions = gempy_engine.compute_model(
                 interpolation_input=interpolation_input,
-                options=gempy_model.interpolation_options,
+                options=options,
                 data_descriptor=input_data_descriptor,
                 geophysics_input=gempy_model.geophysics_input,
             )
+            gempy_model._field_evaluation_context = context
         case _:
             raise ValueError(f'Backend {engine_config} not supported')
 

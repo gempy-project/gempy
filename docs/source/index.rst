@@ -50,6 +50,7 @@ Contents:
    :maxdepth: 1
 
    api_reference
+   meshing_and_field_queries
 
 
 Features

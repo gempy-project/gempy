@@ -15,13 +15,17 @@ from ..color_generator import ColorsGenerator
 from gempy_engine.core.data.interpolation_input import InterpolationInput
 from gempy_engine.core.data.stack_relation_type import StackRelationType
 from gempy_engine.core.data.options import InterpolationOptions
+from gempy_engine.core.data.options.evaluation_options import (
+    EvaluationOptions, OctreeRefinementMode, TriangulationMethod,
+    MeshExtentCapping, MeshExtractionMaskingOptions,
+)
 from gempy_engine.core.data.solutions import Solutions
 from gempy_engine.core.data.raw_arrays_solution import RawArraysSolution
 from gempy_engine.core.data.interpolation_functions import CustomInterpolationFunctions
 from gempy_engine.core.data.transforms import GlobalAnisotropy, Transform
 from gempy_engine.core.data.finite_fault import FiniteFault, TaperType
 from gempy_engine.core.data.kernel_classes.faults import FaultsData
-from gempy_engine.config import AvailableBackends
+from gempy_engine.config import AvailableBackends, DualContouringOverlap
 from gempy_engine.core.data.geophysics_input import GeophysicsInput
 
 
@@ -33,5 +37,7 @@ __all__ = [
     'ImporterHelper', 'GemPyEngineConfig', 'FaultsRelationSpecialCase', 'ColorsGenerator', 'ModelValidationError',
     # From gempy engine
     'InterpolationInput','StackRelationType', 'InterpolationOptions', 'Solutions', 'RawArraysSolution', 'GlobalAnisotropy', 'Transform',
+    'EvaluationOptions', 'OctreeRefinementMode', 'TriangulationMethod', 'MeshExtentCapping',
+    'MeshExtractionMaskingOptions', 'DualContouringOverlap',
     'FaultsData', 'FiniteFault', 'TaperType', 'FaultType', 'AvailableBackends', 'GeophysicsInput', 'CustomInterpolationFunctions'
 ]
