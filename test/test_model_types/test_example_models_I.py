@@ -1,4 +1,5 @@
 ﻿import pytest
+import numpy as np
 from gempy_viewer import GemPyToVista
 
 import gempy as gp
@@ -68,7 +69,13 @@ def test_generate_fault_model():
 
 def test_generate_combination_model():
 
-    model = gp.generate_example_model(ExampleModel.COMBINATION, compute_model=True)
+    model = gp.generate_example_model(ExampleModel.COMBINATION, compute_model=False)
+    # Adaptive leaf counts/order may change without changing the interpolant.
+    # Compare every stack at fixed world coordinates instead of striding leaves.
+    axis = np.array([50., 500., 950.])
+    points = np.array(np.meshgrid([125., 1250., 2375.], axis, axis, indexing='ij')).reshape(3, -1).T
+    gp.set_custom_grid(model.grid, points)
+    gp.compute_model(model)
     print(model.structural_frame)
 
     if PLOT:
@@ -82,10 +89,12 @@ def test_generate_combination_model():
             show=True
         )
 
-    _verify_scalar_field(
-        model=model,
-        name="Combination Scalar Field"
-    )
+    root = model.solutions.root_output
+    scalar_fields = np.stack([
+        output.exported_fields.scalar_field[root.grid.custom_grid_slice]
+        for output in root.outputs
+    ])
+    gempy_verify_array(scalar_fields, "Combination Scalar Field")
 
 
 def test_generate_greenstone_model():

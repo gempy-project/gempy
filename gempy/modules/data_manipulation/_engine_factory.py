@@ -9,6 +9,7 @@ from gempy_engine.core.data import FiniteFault, Orientations, SurfacePoints
 from gempy_engine.core.data import engine_grid
 from gempy_engine.core.data.input_data_descriptor import InputDataDescriptor
 from gempy_engine.core.data.interpolation_input import InterpolationInput
+from gempy_engine.core.data.micro_points import MicroPoints
 from gempy_engine.core.data.kernel_classes.faults import FaultsData
 from gempy_engine.core.data.transforms import Transform
 
@@ -38,6 +39,32 @@ def interpolation_input_from_structural_frame(geo_model: "gempy.data.GeoModel") 
         nugget_effect_grad=orientations_copy_transformed.nugget
     )
 
+    micro_points = None
+    elements = [element for group in structural_frame.structural_groups for element in group.elements]
+    micro_tables = [(index, element.micro_points) for index, element in enumerate(elements)
+                    if len(element.micro_points)]
+    if micro_tables:
+        structural_frame.validate_micro_point_ownership()
+        transforms = np.concatenate([table.support_transforms for _, table in micro_tables])
+        centers = transforms[:, :3, 3]
+        axes = transforms[:, :3, :3]
+
+        def to_engine_coordinates(xyz):
+            return input_transform.apply(grid.transform.apply_with_cached_pivot(xyz))
+
+        transformed_centers = to_engine_coordinates(centers)
+        support_to_engine = micro_support_to_engine(geo_model)
+        transformed_axes = support_to_engine @ axes
+        micro_points = MicroPoints(
+            points=transformed_centers,
+            anisotropy_matrices=np.linalg.inv(transformed_axes),
+            nuggets=np.concatenate([table.nugget for _, table in micro_tables]),
+            surface_indices=np.concatenate([
+                np.full(len(table), index, dtype=np.int64) for index, table in micro_tables
+            ]),
+            support_to_engine=support_to_engine,
+        )
+
     grid: engine_grid.EngineGrid = _apply_input_transform_to_grids(
         grid=grid,
         input_transform=input_transform,
@@ -47,17 +74,31 @@ def interpolation_input_from_structural_frame(geo_model: "gempy.data.GeoModel") 
     weights = []
     if geo_model.solutions is not None:
         for stack_sol in geo_model.solutions.root_output.outputs:
-            weights.append(stack_sol.weights)
+            # A previous solve is only a warm start, not part of the new autograd
+            # graph. Host copies also remain valid when switching backend/device.
+            previous_weights = stack_sol.weights
+            if previous_weights is not None:
+                if hasattr(previous_weights, "detach"):
+                    previous_weights = previous_weights.detach().cpu().numpy()
+                previous_weights = np.array(previous_weights, copy=True)
+            weights.append(previous_weights)
 
     interpolation_input: InterpolationInput = InterpolationInput(
         surface_points=surface_points,
         orientations=orientations,
         grid=grid,
         unit_values=structural_frame.elements_enumerator,  # TODO: Here we will need to pass densities etc.
-        weights=weights
+        weights=weights,
+        micro_points=micro_points,
     )
 
     return interpolation_input
+
+
+def micro_support_to_engine(geo_model: "gempy.data.GeoModel") -> np.ndarray:
+    """Linear part of the composed point transform, independent of its pivot."""
+    return (geo_model.input_transform.get_transform_matrix()[:3, :3]
+            @ geo_model.grid.transform.get_transform_matrix()[:3, :3])
 
 
 def input_data_descriptor_from_geo_model(geo_model: "gempy.data.GeoModel") -> InputDataDescriptor:

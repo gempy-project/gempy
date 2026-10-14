@@ -24,6 +24,7 @@ from .structural_frame import StructuralFrame
 from .surface_points import SurfacePointsTable
 from .validation import ModelValidationError
 from ...modules.data_manipulation import interpolation_input_from_structural_frame
+from ...modules.data_manipulation._engine_factory import micro_support_to_engine
 
 
 """
@@ -102,6 +103,19 @@ class GeoModel(BaseModel):
         # * This is set  from the gempy engine
 
         self._solutions = value
+
+        micro_results = value.micro_point_results
+        if micro_results is not None:
+            # Result indices refer to input contact order, before the element reorder below.
+            matrices = micro_results.anisotropy_matrices
+            if hasattr(matrices, "detach"):
+                matrices = matrices.detach().cpu().numpy()
+            world_supports = np.linalg.solve(micro_support_to_engine(self), np.linalg.inv(matrices))
+            elements = [element for group in self.structural_frame.structural_groups for element in group.elements]
+            offsets = np.cumsum([0] + [len(element.micro_points) for element in elements])
+            for source_index, support in zip(micro_results.source_indices, world_supports):
+                element_index = np.searchsorted(offsets[1:], source_index, side="right")
+                elements[element_index].micro_points.support_transforms[source_index - offsets[element_index], :3, :3] = support
 
         # * Set solutions per element
         for e, element in enumerate(self.structural_frame.structural_elements_filtered[:-1]):  # * Ignore basement
