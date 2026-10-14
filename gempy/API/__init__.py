@@ -12,6 +12,8 @@ from .compute_API import (
 )
 
 # Map stack to surfaces API
+from .field_evaluation_API import FieldEvaluator, prepare_field_evaluator, evaluate_fields, classify_units
+
 from .map_stack_to_surfaces_API import map_stack_to_surfaces
 
 # Grid API
@@ -67,6 +69,7 @@ from gempy_engine.modules.geophysics.gravity_gradient import calculate_gravity_g
 __all__ = [
         'create_data_legacy', 'create_geomodel', 'structural_elements_from_borehole_set',
         'compute_model', 'compute_model_at', 'map_stack_to_surfaces',
+        'FieldEvaluator', 'prepare_field_evaluator', 'evaluate_fields', 'classify_units',
         'set_section_grid', 'set_active_grid', 'set_topography_from_random', 'set_topography_from_file', 'set_topography_from_subsurface_structured_grid', 'set_topography_from_arrays',
         'set_custom_grid', 'set_centered_grid',
         'generate_example_model', 'set_fault_relation', 'set_is_fault', 'set_is_finite_fault',

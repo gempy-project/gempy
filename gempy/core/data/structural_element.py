@@ -4,6 +4,7 @@ from pydantic import Field
 from typing import Annotated, Optional
 
 import numpy as np
+from gempy_engine.core.data.dual_contouring_mesh import DualContouringMesh
 
 from .orientations import OrientationsTable
 from .micro_points import MicroPointsTable
@@ -37,6 +38,8 @@ class StructuralElement:
     vertices: np.ndarray | None = Field(default=None, exclude=True)  #: The vertices of the element in 3D space.
     edges: np.ndarray | None = Field(default=None, exclude=True)  #: The edges of the element in 3D space.
     scalar_field_at_interface: float | None = None  #: The scalar field value for the element.
+    mesh: Annotated[Optional[DualContouringMesh], Field(exclude=True)] = field(default=None, repr=False)
+    """Computed mesh in world coordinates, including engine diagnostics and joint metadata."""
 
     _id: int = -1
     
@@ -50,6 +53,9 @@ class StructuralElement:
         self.micro_points = MicroPointsTable.initialize_empty() if micro_points is None else micro_points
         
         self.is_active = is_active
+        self.vertices = None
+        self.edges = None
+        self.mesh = None
         self.color = color
         
         self._id = id 

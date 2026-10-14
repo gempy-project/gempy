@@ -1,4 +1,5 @@
 ﻿import datetime
+import copy
 import numpy as np
 import pprint
 import warnings
@@ -76,6 +77,7 @@ class GeoModel(BaseModel):
     # endregion
     _solutions: Solutions = PrivateAttr(init=False, default=None)  #: The computed solutions of the geological model. 
     _taped_interpolation_input: InterpolationInput | None = PrivateAttr(default=None)
+    _field_evaluation_context: object = PrivateAttr(default=None)
 
     def __repr__(self):
         # TODO: Improve this
@@ -103,6 +105,7 @@ class GeoModel(BaseModel):
         # * This is set  from the gempy engine
 
         self._solutions = value
+        self._field_evaluation_context = None
 
         micro_results = value.micro_point_results
         if micro_results is not None:
@@ -117,22 +120,29 @@ class GeoModel(BaseModel):
                 element_index = np.searchsorted(offsets[1:], source_index, side="right")
                 elements[element_index].micro_points.support_transforms[source_index - offsets[element_index], :3, :3] = support
 
-        # * Set solutions per element
-        for e, element in enumerate(self.structural_frame.structural_elements_filtered[:-1]):  # * Ignore basement
+        # Scalar values include null-space stacks; exported meshes do not.
+        elements = [element for group in self.structural_frame.structural_groups for element in group.elements]
+        for e, element in enumerate(elements):
             element.scalar_field_at_interface = value.scalar_field_at_surface_points[e]
+            element.vertices = None
+            element.edges = None
+            element.mesh = None
 
-            if self._solutions.dc_meshes is None:
-                continue
-            dc_mesh = self._solutions.dc_meshes[e]
+        exported_elements = self.structural_frame.structural_elements_filtered[:-1]
+        for e, dc_mesh in enumerate(value.dc_meshes or []):
             if dc_mesh is None:
                 continue
-
-            # TODO: These meshes are in the order of the scalar field 
+            if dc_mesh.stack_index is not None and dc_mesh.surface_index is not None:
+                element = self.structural_frame.structural_groups[dc_mesh.stack_index].elements[dc_mesh.surface_index]
+            else:
+                element = exported_elements[e]
             world_coord_vertices = self.input_transform.apply_inverse(dc_mesh.vertices)
             world_coord_vertices = self.grid.transform.apply_inverse_with_cached_pivot(world_coord_vertices)
-
+            # Keep metadata (including dynamic joint identity arrays), without modifying engine coordinates.
+            element.mesh = copy.copy(dc_mesh)
+            element.mesh.vertices = world_coord_vertices
             element.vertices = world_coord_vertices
-            element.edges = (dc_mesh.edges if dc_mesh is not None else None)
+            element.edges = dc_mesh.edges
 
         # * Reordering the elements according to the scalar field
         for e, order_per_structural_group in enumerate(self._solutions._ordered_elements):
