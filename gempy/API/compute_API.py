@@ -1,7 +1,7 @@
 ﻿import dotenv
 import numpy as np
 import os
-from typing import Optional
+from typing import Callable, Optional
 
 import gempy_engine
 from gempy_engine.config import AvailableBackends
@@ -23,6 +23,7 @@ dotenv.load_dotenv()
 
 def compute_model(gempy_model: GeoModel, engine_config: Optional[GemPyEngineConfig] = None,
                   skip_validation: bool = False,
+                  on_octree_level: Optional[Callable[[int, list], None]] = None,
                   **kwargs) -> Solutions:
     """
     Compute the geological model given the provided GemPy model.
@@ -30,6 +31,8 @@ def compute_model(gempy_model: GeoModel, engine_config: Optional[GemPyEngineConf
     Args:
         gempy_model (GeoModel): The GemPy model to compute.
         engine_config (Optional[GemPyEngineConfig]): Configuration for the computational engine. Defaults to None, in which case a default configuration will be used.
+        on_octree_level (Optional[Callable]): Called as ``on_octree_level(level, octree_list)`` each time an octree
+            level is complete, with the engine's live ``OctreeLevel`` list for levels ``0..level``. Raising aborts the computation.
 
     Raises:
         ValueError: If the provided backend in the engine_config is not supported.
@@ -77,6 +80,7 @@ def compute_model(gempy_model: GeoModel, engine_config: Optional[GemPyEngineConf
                 options=options,
                 data_descriptor=input_data_descriptor,
                 geophysics_input=gempy_model.geophysics_input,
+                on_octree_level=on_octree_level,
             )
             gempy_model._field_evaluation_context = context
         case _:
