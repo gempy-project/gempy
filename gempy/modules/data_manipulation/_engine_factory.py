@@ -40,7 +40,14 @@ def interpolation_input_from_structural_frame(geo_model: "gempy.data.GeoModel") 
     )
 
     micro_points = None
-    elements = [element for group in structural_frame.structural_groups for element in group.elements]
+    # Surface indices count the engine's surfaces, which an external group without points does not have.
+    elements = []
+    for group in structural_frame.structural_groups:
+        if group.custom_interpolation is None or group.number_of_points > 0:
+            elements.extend(group.elements)
+        elif any(len(element.micro_points) for element in group.elements):
+            raise ValueError(f"Group '{group.name}' has micro points but no surfaces: "
+                             "it is external and has no surface points.")
     micro_tables = [(index, element.micro_points) for index, element in enumerate(elements)
                     if len(element.micro_points)]
     if micro_tables:

@@ -2,8 +2,14 @@ import numpy as np
 import pytest
 
 import gempy as gp
+from gempy.core.data.orientations import OrientationsTable
+from gempy.core.data.structural_element import StructuralElement
+from gempy.core.data.structural_group import StructuralGroup
+from gempy.core.data.surface_points import SurfacePointsTable
 from gempy.modules.data_manipulation import interpolation_input_from_structural_frame
 from gempy_engine.core.backend_tensor import BackendTensor
+from gempy_engine.core.data.interpolation_functions import CustomInterpolationFunctions
+from gempy_engine.core.data.stack_relation_type import StackRelationType
 from test.test_modules.test_micro_points_serialization import _model_with_micro_points
 
 
@@ -239,3 +245,47 @@ def test_authored_numpy_micro_points_compute_with_torch_and_macro_gradients(torc
     field.sum().backward()
     assert macro.grad is not None
     assert torch.isfinite(macro.grad).all()
+
+
+def _mesh_field_group():
+    """As the server's apply_mesh_fields: one empty element and a null-space external function."""
+    element = StructuralElement(
+        name='mesh_field_dummy', color='#808080',
+        surface_points=SurfacePointsTable(np.zeros(0, dtype=SurfacePointsTable.dt)),
+        orientations=OrientationsTable(np.zeros(0, dtype=OrientationsTable.dt)),
+    )
+    return StructuralGroup(
+        name='mesh_field_null', elements=[element], structural_relation=StackRelationType.NULL_SPACE,
+        custom_interpolation=CustomInterpolationFunctions(np.array([99.0]), lambda xyz: xyz[:, 2]),
+        ignored_grid_types=('custom_grid',),
+    )
+
+
+def test_micro_surface_indices_do_not_count_a_mesh_field():
+    model = _compute_ready_model()
+    expected = interpolation_input_from_structural_frame(model).micro_points.surface_indices
+    model.structural_frame.insert_group(0, _mesh_field_group())
+    np.testing.assert_array_equal(interpolation_input_from_structural_frame(model).micro_points.surface_indices, expected)
+
+
+def test_micro_contacts_under_a_mesh_field_reach_their_own_surface():
+    numpy_engine = gp.data.GemPyEngineConfig(backend=gp.data.AvailableBackends.numpy)
+    BackendTensor._change_backend(numpy_engine.backend)  # External isovalues take the backend active when built.
+    model = _compute_ready_model()
+    model.structural_frame.insert_group(0, _mesh_field_group())
+    fields = gp.compute_model(model, engine_config=numpy_engine).octrees_output[-1].outputs[-1].exported_fields
+    contacts = fields.scalar_field_everywhere[-4:]
+    nearest = np.argmin(np.abs(contacts[:, None] - fields.scalar_field_at_surface_points), axis=1)
+    np.testing.assert_array_equal(nearest, [0, 0, 1, 1])
+
+
+def test_micro_points_on_a_zero_point_external_group_are_rejected():
+    model = _compute_ready_model()
+    group = _mesh_field_group()
+    model.structural_frame.insert_group(0, group)
+    group.elements[0].micro_points = gp.data.MicroPointsTable.from_transforms(
+        np.eye(4)[None], names=group.elements[0].name, nugget=np.zeros(1),
+        name_id_map=model.structural_frame.element_name_id_map,
+    )
+    with pytest.raises(ValueError, match='mesh_field_null'):
+        interpolation_input_from_structural_frame(model)
