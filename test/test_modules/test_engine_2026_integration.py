@@ -35,13 +35,14 @@ def model_and_config():
 
 
 @pytest.mark.parametrize('overlap', [None, 'joint', gp.data.DualContouringOverlap.joint_contacts])
-def test_meshing_options_round_trip_in_both_formats(tmp_path, overlap):
+@pytest.mark.parametrize('snap_to_extent', [True, False])
+def test_meshing_options_round_trip_in_both_formats(tmp_path, overlap, snap_to_extent):
     model, _ = model_and_config()
     evaluation = model.interpolation_options.evaluation_options
     evaluation.octree_refinement_mode = gp.data.OctreeRefinementMode.PRECISE
     evaluation.deduplicate_octree_corners = True
     evaluation.triangulation_method = gp.data.TriangulationMethod.QUADS
-    evaluation.mesh_extraction_extent_capping = gp.data.MeshExtentCapping.SCALAR_LESS_EQUAL
+    evaluation.mesh_extraction_snap_to_extent = snap_to_extent
     evaluation.mesh_extraction_overlap = overlap
     evaluation.octree_curvature_threshold = 0.2
     evaluation.octree_error_threshold = 0.7
@@ -62,7 +63,7 @@ def test_meshing_options_round_trip_in_both_formats(tmp_path, overlap):
     assert not JsonIO.load_model_from_json(str(path)).interpolation_options.evaluation_options.mesh_extraction
 
 
-@pytest.mark.parametrize('mode', ['none', 'pretty', 'watertight', 'joint', 'joint_contacts', 'quads', 'capped'])
+@pytest.mark.parametrize('mode', ['none', 'pretty', 'watertight', 'joint', 'joint_contacts', 'quads', 'unsnapped'])
 def test_mesh_modes_and_clearing_previous_outputs(mode):
     model, config = model_and_config()
     evaluation = model.interpolation_options.evaluation_options
@@ -70,8 +71,8 @@ def test_mesh_modes_and_clearing_previous_outputs(mode):
         evaluation.triangulation_method = gp.data.TriangulationMethod.QUADS
         evaluation.deduplicate_octree_corners = True
         evaluation.octree_refinement_mode = gp.data.OctreeRefinementMode.BALANCED
-    elif mode == 'capped':
-        evaluation.mesh_extraction_extent_capping = gp.data.MeshExtentCapping.SCALAR_LESS_EQUAL
+    elif mode == 'unsnapped':
+        evaluation.mesh_extraction_snap_to_extent = False
     else:
         evaluation.mesh_extraction_overlap = mode
     solutions = gp.compute_model(model, config)
@@ -87,8 +88,6 @@ def test_mesh_modes_and_clearing_previous_outputs(mode):
         assert element.mesh.contact_report is mesh.contact_report
         if mode.startswith('joint'):
             np.testing.assert_array_equal(element.mesh.joint_vertex_ids, mesh.joint_vertex_ids)
-        if mode == 'capped':
-            assert element.mesh.capping_report is not None
     evaluation.mesh_extraction = False
     gp.compute_model(model, config)
     assert all(e.mesh is None and e.vertices is None and e.edges is None
@@ -173,14 +172,10 @@ def test_fault_side_queries_match_engine_in_transformed_coordinates():
     np.testing.assert_allclose(evaluator.fault_values(points), reference.fault_values(transformed))
 
 
-def test_joint_rejects_capping_and_stale_backend_is_rejected():
+def test_stale_backend_is_rejected_after_joint_extraction():
     model, config = model_and_config()
     evaluation = model.interpolation_options.evaluation_options
     evaluation.mesh_extraction_overlap = 'joint'
-    evaluation.mesh_extraction_extent_capping = gp.data.MeshExtentCapping.SCALAR_LESS_EQUAL
-    with pytest.raises((ValueError, NotImplementedError), match='capping'):
-        gp.compute_model(model, config)
-    evaluation.mesh_extraction_extent_capping = gp.data.MeshExtentCapping.NONE
     gp.compute_model(model, config)
     BackendTensor._change_backend(gp.data.AvailableBackends.numpy, dtype='float32')
     with pytest.raises(RuntimeError, match='backend changed'):

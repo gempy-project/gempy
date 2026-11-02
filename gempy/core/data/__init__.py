@@ -17,7 +17,7 @@ from gempy_engine.core.data.stack_relation_type import StackRelationType
 from gempy_engine.core.data.options import InterpolationOptions
 from gempy_engine.core.data.options.evaluation_options import (
     EvaluationOptions, OctreeRefinementMode, TriangulationMethod,
-    MeshExtentCapping, MeshExtractionMaskingOptions,
+    MeshExtractionMaskingOptions,
 )
 from gempy_engine.core.data.solutions import Solutions
 from gempy_engine.core.data.raw_arrays_solution import RawArraysSolution
@@ -37,7 +37,7 @@ __all__ = [
     'ImporterHelper', 'GemPyEngineConfig', 'FaultsRelationSpecialCase', 'ColorsGenerator', 'ModelValidationError',
     # From gempy engine
     'InterpolationInput','StackRelationType', 'InterpolationOptions', 'Solutions', 'RawArraysSolution', 'GlobalAnisotropy', 'Transform',
-    'EvaluationOptions', 'OctreeRefinementMode', 'TriangulationMethod', 'MeshExtentCapping',
+    'EvaluationOptions', 'OctreeRefinementMode', 'TriangulationMethod',
     'MeshExtractionMaskingOptions', 'DualContouringOverlap',
     'FaultsData', 'FiniteFault', 'TaperType', 'FaultType', 'AvailableBackends', 'GeophysicsInput', 'CustomInterpolationFunctions'
 ]
