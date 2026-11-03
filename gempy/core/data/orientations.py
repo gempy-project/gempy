@@ -6,7 +6,7 @@ from gempy_engine.core.data.transforms import Transform
 from pydantic import Field
 
 from ...optional_dependencies import require_pandas
-from ._data_points_helpers import generate_ids_from_names
+from ._data_points_helpers import generate_ids_from_names, resolve_ids_from_names
 
 DEFAULT_ORI_NUGGET = 0.01
 
@@ -71,7 +71,7 @@ class OrientationsTable:
         if name_id_map is None:
             ids, name_id_map = generate_ids_from_names(name_id_map, names, x)
         else:
-            ids = np.array([name_id_map[name] for name in names])
+            ids = resolve_ids_from_names(name_id_map, names)
         data = np.zeros(len(x), dtype=OrientationsTable.dt)
         data['X'], data['Y'], data['Z'], data['G_x'], data['G_y'], data['G_z'], data['id'], data['nugget'] = x, y, z, G_x, G_y, G_z, ids, nugget
         return data, name_id_map
