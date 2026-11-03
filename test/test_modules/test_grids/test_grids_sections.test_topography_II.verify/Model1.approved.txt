@@ -227,7 +227,7 @@
             "deduplicate_octree_corners": false,
             "triangulation_method": "legacy",
             "mesh_extraction": true,
-            "mesh_extraction_extent_capping": "none",
+            "mesh_extraction_snap_to_extent": true,
             "mesh_extraction_masking_options": 3,
             "mesh_extraction_fancy": true,
             "evaluation_chunk_size": 500000,

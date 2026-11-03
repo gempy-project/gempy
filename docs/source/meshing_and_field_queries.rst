@@ -2,7 +2,7 @@ Meshing options and fixed-weight field queries
 =============================================
 
 GemPy passes ``model.interpolation_options`` directly to GemPy Engine. With
-engine 2026.2.0a0, the meshing types are available through ``gp.data``.
+engine 2026.2.0a6, the meshing types are available through ``gp.data``.
 
 Configure mesh extraction
 -------------------------
@@ -36,8 +36,8 @@ The evaluation options include:
 * ``mesh_extraction_overlap``: ``None`` uses the process default. Explicit names
   are ``none``, ``pretty``, ``watertight``, ``joint``, and ``joint_contacts``;
   corresponding ``gp.data.DualContouringOverlap`` flags are also accepted.
-* ``mesh_extraction_extent_capping``: ``gp.data.MeshExtentCapping.NONE`` or
-  ``SCALAR_LESS_EQUAL`` (best-effort extent caps of the scalar sublevel region).
+* ``mesh_extraction_snap_to_extent``: snap surface-border vertices to the model
+  extent faces (default ``True``). This aligns open borders without adding caps.
 * ``mesh_extraction_masking_options``: ``gp.data.MeshExtractionMaskingOptions``
   with ``INTERSECT``, ``DISJOINT``, ``RAW``, and the testing-only ``NOTHING``.
 * Refinement controls: ``number_octree_levels``, ``number_octree_levels_surface``,
@@ -53,12 +53,12 @@ Joint extraction
 
     evaluation.mesh_extraction_overlap = "joint_contacts"
     evaluation.mesh_extraction_masking_options = gp.data.MeshExtractionMaskingOptions.INTERSECT
-    evaluation.mesh_extraction_extent_capping = gp.data.MeshExtentCapping.NONE
+    evaluation.mesh_extraction_snap_to_extent = True
     gp.compute_model(model, config)
 
 ``joint`` and ``joint_contacts`` establish shared erosion/onlap contact vertices.
 They are exclusive overlap modes and bypass legacy triangulation. They require
-float64 without autograd, ``INTERSECT`` masking, no extent capping, no null-space
+float64 without autograd, ``INTERSECT`` masking, no null-space
 stacks, and a supported face/edge-balanced dyadic leaf complex. The ``BALANCED``
 refinement stencil does not itself guarantee this leaf balance.
 
@@ -79,7 +79,7 @@ vertices and the engine's diagnostics and topology metadata:
 
     element = model.structural_frame.structural_groups[0].elements[0]
     mesh = element.mesh
-    print(mesh.support_report, mesh.capping_report, mesh.contact_report)
+    print(mesh.support_report, mesh.contact_report)
     # Joint modes also expose joint_vertex_ids, joint_vertex_keys, joint_seam_edges.
     # Banked joint extraction adds joint_bank_ids and joint_face_bank_ids.
 
