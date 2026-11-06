@@ -13,6 +13,7 @@ from gempy_engine.core.data.kernel_classes.faults import FaultsData
 from gempy_engine.core.data.raw_arrays_solution import RawArraysSolution
 from gempy_engine.core.data.stack_relation_type import StackRelationType
 from gempy.core.data.structural_element import StructuralElement
+from gempy.core.data.mesh_scalar_field import MeshScalarField
 
 
 class FaultsRelationSpecialCase(Enum):
@@ -44,7 +45,13 @@ class StructuralGroup(ABC):
     faults_input_data: Optional[FaultsData] = field(default=None, repr=False)
     finite_fault_draft: Annotated[Optional[FiniteFault], Field(exclude=True)] = field(default=None, repr=False)
     custom_interpolation: Annotated[Optional[CustomInterpolationFunctions], Field(exclude=True)] = field(default=None, repr=False)
-    ignored_grid_types: Annotated[tuple[str, ...], Field(exclude=True)] = field(default_factory=tuple, repr=False)
+    ignored_grid_types: Annotated[tuple, Field(exclude=True)] = field(default_factory=tuple, repr=False)
+
+    #: The region this group claims is void (null space, id -1) and its surfaces export no mesh. The relation,
+    #: ERODE or ONLAP, still shapes that region. A legacy ``NULL_SPACE`` relation is ERODE with this flag.
+    null_space: bool = False
+    #: Scalar field from a mesh instead of from surface points: the group has one element and no input data.
+    mesh_source: Optional[MeshScalarField] = field(default=None, repr=False)
 
     solution: Optional[RawArraysSolution] = field(init=False, default=None, repr=False)  #: Solution related to this group from geological computations.
     
@@ -52,6 +59,9 @@ class StructuralGroup(ABC):
     def __post_init__(self):
         if self.id is None:
             self.id = str(uuid4())
+        if self.structural_relation == StackRelationType.NULL_SPACE:
+            self.structural_relation = StackRelationType.ERODE
+            self.null_space = True
         if not isinstance(self.elements, list):
             raise TypeError("elements must be a list of StructuralElement objects.")
         for e in self.elements:
@@ -63,7 +73,13 @@ class StructuralGroup(ABC):
         return f"StructuralGroup(\n" \
                f"\tname={self.name},\n" \
                f"\tstructural_relation={self.structural_relation},\n" \
+               f"{self._null_and_mesh_repr()}" \
                f"\telements=[\n{elements_repr}\n]\n)"
+
+    def _null_and_mesh_repr(self) -> str:
+        null = "\tnull_space=True,\n" if self.null_space else ""
+        mesh = f"\tmesh_source={self.mesh_source.uri},\n" if self.mesh_source is not None else ""
+        return null + mesh
 
     def _repr_html_(self):
         elements_html = '<br>'.join([e._repr_html_() for e in self.elements])
@@ -112,6 +128,8 @@ class StructuralGroup(ABC):
     
     @property
     def is_lithology(self)-> bool:
+        if self.null_space:
+            return False
         return self.structural_relation == StackRelationType.ERODE or self.structural_relation == StackRelationType.ONLAP
     
     @property

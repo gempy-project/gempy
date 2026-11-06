@@ -207,10 +207,13 @@ class StructuralFrame:
 
     @property
     def structural_elements_filtered(self) -> list[StructuralElement]:
-        """Returns a list of all structural elements across the structural groups."""
+        """Elements that own a lith id, plus the basement: lith id ``k`` is element ``k - 1``.
+
+        Null-space groups own no ids (their region is ``-1``), so their elements are left out.
+        """
         elements = []
         for group in self.structural_groups:
-            if group.structural_relation == StackRelationType.NULL_SPACE:
+            if group.null_space:
                 continue
             elements.extend(group.elements)
         elements.append(self._basement_element)
@@ -512,10 +515,10 @@ class StructuralFrame:
 
     @property
     def volume_elements(self) -> list[StructuralElement]:
-        """Returns structural elements that have lithology volume (excludes fault elements, includes basement)."""
+        """Returns structural elements that have lithology volume (excludes fault and null-space elements, includes basement)."""
         elements = []
         for group in self.structural_groups:
-            if not group.is_fault:
+            if not group.is_fault and not group.null_space:
                 elements.extend(group.elements)
         elements.append(self._basement_element)
         return elements

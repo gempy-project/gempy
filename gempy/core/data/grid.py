@@ -82,6 +82,8 @@ class Grid:
 
                         if grid.custom_grid is not None:
                             grid.custom_grid.values = custom_grid_vals.reshape(-1, 3)
+                            grid.custom_grid.segments = [(str(name), int(length)) for name, length in
+                                                         metadata.get("custom_grid_segments", [])]
 
                         if grid.topography is not None:
                             grid.topography.set_values2d(values=topography_vals)
@@ -109,10 +111,13 @@ class Grid:
 
     @computed_field
     def binary_meta_data(self) -> dict:
-        return {
+        meta_data = {
                 'custom_grid_binary_length': len(self._custom_grid.values.astype("float64").tobytes()) if self._custom_grid else 0,
                 'topography_binary_length' : len(self._topography.values.astype("float64").tobytes()) if self._topography else 0,
         }
+        if self._custom_grid is not None and self._custom_grid.segments:
+            meta_data['custom_grid_segments'] = [[name, length] for name, length in self._custom_grid.segments]
+        return meta_data
 
     @computed_field(alias="active_grids")
     @property

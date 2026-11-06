@@ -390,6 +390,8 @@ class JsonIO:
                 "structural_relation": str(group.structural_relation.name),
                 "colors": [str(element.color) for element in group.elements]
             }
+            if group.null_space:
+                series_entry["null_space"] = True
             json_data["series"].append(series_entry)
         
         # Get surface points

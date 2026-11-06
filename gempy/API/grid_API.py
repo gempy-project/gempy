@@ -1,4 +1,4 @@
-﻿from typing import Union, Sequence
+﻿from typing import Mapping, Union, Sequence
 
 import numpy as np
 
@@ -88,12 +88,34 @@ def set_topography_from_file(grid: Grid, filepath: str, crop_to_extent: Union[Se
     return set_topography_from_subsurface_structured_grid(grid, struct)
 
 
-def set_custom_grid(grid: Grid, xyz_coord: np.ndarray, reset: bool = False):
-    custom_grid = CustomGrid(values=np.asarray(xyz_coord, dtype=np.float64))
+def set_custom_grid(grid: Grid, xyz_coord: Union[np.ndarray, Mapping[str, np.ndarray]], reset: bool = False):
+    """Replace the custom grid. A mapping names each run of points, in order (see ``CustomGrid.segments``)."""
+    if isinstance(xyz_coord, Mapping):
+        custom_grid = CustomGrid.from_segments(xyz_coord)
+    else:
+        custom_grid = CustomGrid(values=np.asarray(xyz_coord, dtype=np.float64))
     grid.custom_grid = custom_grid
 
     set_active_grid(grid, grid_type=[Grid.GridTypes.CUSTOM], reset=reset)
     return grid.custom_grid
+
+
+def add_custom_grid_segment(grid: Grid, name: str, xyz_coord: np.ndarray) -> CustomGrid:
+    """Append a named run of points to the custom grid, e.g. the vertices of a mesh to paint.
+
+    Results on the custom grid split by name with ``grid.custom_grid.split``.
+    """
+    existing = grid.custom_grid
+    if existing is None or existing.length == 0:
+        segments = {}
+    elif not existing.segments:
+        raise ValueError("The custom grid's points have no names: set them with a mapping first.")
+    else:
+        segments = existing.split(existing.values)
+    if name in segments:
+        raise ValueError(f"The custom grid already has a segment '{name}'.")
+    segments[name] = xyz_coord
+    return set_custom_grid(grid, segments)
 
 
 def set_centered_grid(grid: Grid, centers: np.ndarray, resolution: Sequence[float], radius: Union[float, Sequence[float]]):

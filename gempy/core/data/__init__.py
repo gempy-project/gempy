@@ -2,6 +2,7 @@ from .geo_model import GeoModel
 from .structural_frame import StructuralFrame
 from .structural_group import StructuralGroup, FaultType
 from .structural_element import StructuralElement
+from .mesh_scalar_field import MeshScalarField
 from .orientations import OrientationsTable
 from .micro_points import MicroPointsTable
 from .surface_points import SurfacePointsTable
@@ -31,7 +32,7 @@ from gempy_engine.core.data.geophysics_input import GeophysicsInput
 
 __all__ = [
     # From gempy
-    'GeoModel', 'StructuralFrame', 'StructuralGroup', 'StructuralElement', 'OrientationsTable', 'SurfacePointsTable',
+    'GeoModel', 'StructuralFrame', 'StructuralGroup', 'StructuralElement', 'MeshScalarField', 'OrientationsTable', 'SurfacePointsTable',
     'MicroPointsTable',
     'Grid', 'Topography',
     'ImporterHelper', 'GemPyEngineConfig', 'FaultsRelationSpecialCase', 'ColorsGenerator', 'ModelValidationError',

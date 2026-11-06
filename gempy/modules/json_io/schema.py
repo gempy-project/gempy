@@ -50,6 +50,7 @@ class Series(TypedDict, total=False):
     order_series: NotRequired[int]  # Optional, will be auto-generated
     faults: NotRequired[List[Fault]]  # Optional, defaults to empty list
     structural_relation: NotRequired[str]  # Optional, defaults to "ONLAP"
+    null_space: NotRequired[bool]  # Optional, defaults to False: the region the series claims is void
     colors: NotRequired[Optional[List[str]]]  # Optional
 
 class GridSettings(TypedDict, total=False):
