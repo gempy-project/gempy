@@ -33,16 +33,19 @@ def map_stack_to_surfaces(gempy_model: GeoModel, mapping_object: Union[dict[str,
         if set_series and not group_already_exists:
             # Get structural relation from series_data if available
             structural_relation = StackRelationType.ERODE  # Default value
+            null_space = False
             if series_data:
                 for series in series_data:
                     if series['name'] == group_name:
                         structural_relation = StackRelationType[series['structural_relation']]
+                        null_space = bool(series.get('null_space', False))
                         break
 
             new_group = StructuralGroup(
                 name=group_name,
                 elements=[],
-                structural_relation=structural_relation
+                structural_relation=structural_relation,
+                null_space=null_space
             )
             structural_groups.insert(index, new_group)
         # endregion

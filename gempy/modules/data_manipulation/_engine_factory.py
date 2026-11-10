@@ -13,10 +13,16 @@ from gempy_engine.core.data.micro_points import MicroPoints
 from gempy_engine.core.data.kernel_classes.faults import FaultsData
 from gempy_engine.core.data.transforms import Transform
 
+from ..mesh_fields import resolve_mesh_fields
+
 
 def interpolation_input_from_structural_frame(geo_model: "gempy.data.GeoModel") -> InterpolationInput:
     import gempy  # ! This is important for type safety
     geo_model: gempy.data.GeoModel = geo_model
+
+    # Mesh groups' fields depend on the transform and tensor backend in use: build them now, before
+    # anything reads custom_interpolation.
+    resolve_mesh_fields(geo_model)
 
     _legacy_factor = 0
 
@@ -111,6 +117,7 @@ def micro_support_to_engine(geo_model: "gempy.data.GeoModel") -> np.ndarray:
 def input_data_descriptor_from_geo_model(geo_model: "gempy.data.GeoModel") -> InputDataDescriptor:
     """Build an engine descriptor with finite-fault geometry in engine coordinates."""
     descriptor = geo_model.input_data_descriptor
+    _resolve_custom_grid_segments(descriptor, geo_model.grid)
     faults_input_data = descriptor.stack_structure.faults_input_data
     if faults_input_data is None or not any(
             fault_data is not None and fault_data.finite_fault_defined
@@ -153,6 +160,25 @@ def input_data_descriptor_from_geo_model(geo_model: "gempy.data.GeoModel") -> In
 
     descriptor.stack_structure.faults_input_data = transformed_faults_input_data
     return descriptor
+
+
+def _resolve_custom_grid_segments(descriptor: InputDataDescriptor, grid: Grid) -> None:
+    """``"custom_grid/<segment>"`` in a group's ignored grids becomes ``("custom_grid", start, stop)``."""
+    ignored = descriptor.stack_structure.ignored_grid_types_per_stack
+    if ignored is None:
+        return
+    prefix = "custom_grid/"
+
+    def resolved(entry):
+        if not (isinstance(entry, str) and entry.startswith(prefix)):
+            return entry
+        if grid.custom_grid is None or grid.GridTypes.CUSTOM not in grid.active_grids:
+            raise ValueError(f"Ignored grid '{entry}' needs an active custom grid.")
+        segment = grid.custom_grid.segment_slice(entry[len(prefix):])
+        return "custom_grid", segment.start, segment.stop
+
+    descriptor.stack_structure.ignored_grid_types_per_stack = [
+        tuple(resolved(entry) for entry in entries) if entries else entries for entries in ignored]
 
 
 def _scale_radius(radius: float | tuple[float, float], scale: float) -> float | tuple[float, float]:

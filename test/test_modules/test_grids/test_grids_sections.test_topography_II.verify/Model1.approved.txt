@@ -33,6 +33,8 @@
                 "structural_relation": 3,
                 "fault_relations": 3,
                 "faults_input_data": null,
+                "null_space": false,
+                "mesh_source": null,
                 "solution": null
             },
             {
@@ -91,6 +93,8 @@
                 "structural_relation": 1,
                 "fault_relations": null,
                 "faults_input_data": null,
+                "null_space": false,
+                "mesh_source": null,
                 "solution": null
             }
         ],

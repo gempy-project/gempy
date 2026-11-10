@@ -20,6 +20,7 @@ from .map_stack_to_surfaces_API import map_stack_to_surfaces
 from .grid_API import (
     set_active_grid,
     set_custom_grid,
+    add_custom_grid_segment,
     set_section_grid,
     set_centered_grid,
     set_topography_from_random,
@@ -56,6 +57,7 @@ from ..modules.data_manipulation.orientations_from_surface_points import (
 # Data manipulation: structural frame
 from ..modules.data_manipulation.manipulate_structural_frame import (
     add_structural_group,
+    add_mesh_group,
     remove_structural_group_by_index,
     remove_structural_group_by_name,
     remove_element_by_name
@@ -71,11 +73,11 @@ __all__ = [
         'compute_model', 'compute_model_at', 'map_stack_to_surfaces',
         'FieldEvaluator', 'prepare_field_evaluator', 'evaluate_fields', 'classify_units',
         'set_section_grid', 'set_active_grid', 'set_topography_from_random', 'set_topography_from_file', 'set_topography_from_subsurface_structured_grid', 'set_topography_from_arrays',
-        'set_custom_grid', 'set_centered_grid',
+        'set_custom_grid', 'add_custom_grid_segment', 'set_centered_grid',
         'generate_example_model', 'set_fault_relation', 'set_is_fault', 'set_is_finite_fault',
         'add_surface_points', 'add_orientations', 'delete_surface_points', 'delete_orientations',
         'create_orientations_from_surface_points_coords', 'modify_surface_points', 'modify_orientations',
-        'add_structural_group', 'remove_structural_group_by_index', 'remove_structural_group_by_name', 'remove_element_by_name',
+        'add_structural_group', 'add_mesh_group', 'remove_structural_group_by_index', 'remove_structural_group_by_name', 'remove_element_by_name',
         'calculate_gravity_gradient',
         'save_model', 'load_model'
 ]

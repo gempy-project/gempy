@@ -417,3 +417,40 @@ class GeoModel(BaseModel):
                     message=f"Group '{group.name}' has a Basement relation but is not the last group. Basement is only valid on the final group.",
                     context={"group_name": group.name}
                 )
+
+        # R6/R7: null-space and mesh groups bound older groups, so they erode or onlap. A null group may be the
+        # last one (void above its lowest surface, basement below); a mesh group above it may not.
+        for i, group in enumerate(groups):
+            last = i == len(groups) - 1
+            if group.null_space and not last and group.structural_relation not in (StackRelationType.ERODE, StackRelationType.ONLAP):
+                raise ModelValidationError(
+                    field=f"structural_groups[{i}].structural_relation",
+                    reason="null_space_group_relation",
+                    message=f"The null-space group '{group.name}' must erode or onlap, unless it is the last group.",
+                    context={"group_name": group.name, "relation": str(group.structural_relation)}
+                )
+            if group.mesh_source is None:
+                continue
+            relations = (StackRelationType.ERODE, StackRelationType.ONLAP) + ((StackRelationType.BASEMENT,) if group.null_space else ())
+            if (last and not group.null_space) or group.structural_relation not in relations:
+                raise ModelValidationError(
+                    field=f"structural_groups[{i}].structural_relation",
+                    reason="mesh_group_relation",
+                    message=f"The mesh group '{group.name}' must erode or onlap, and only a null-space one can be the last group.",
+                    context={"group_name": group.name, "relation": str(group.structural_relation)}
+                )
+            if len(group.elements) != 1:
+                raise ModelValidationError(
+                    field=f"structural_groups[{i}].elements",
+                    reason="mesh_group_elements",
+                    message=f"The mesh group '{group.name}' has one surface, its mesh, not {len(group.elements)}.",
+                    context={"group_name": group.name, "elements": len(group.elements)}
+                )
+            if group.number_of_points or group.number_of_orientations:
+                raise ModelValidationError(
+                    field=f"structural_groups[{i}].elements",
+                    reason="mesh_group_input_data",
+                    message=f"The mesh group '{group.name}' takes its surface from its mesh: remove its surface points and orientations.",
+                    context={"group_name": group.name, "surface_points": group.number_of_points,
+                             "orientations": group.number_of_orientations}
+                )
