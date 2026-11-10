@@ -5,7 +5,7 @@ import numpy as np
 from gempy_engine.core.data.transforms import Transform
 from pydantic import Field
 
-from ._data_points_helpers import generate_ids_from_names
+from ._data_points_helpers import generate_ids_from_names, resolve_ids_from_names
 from ...optional_dependencies import require_pandas
 
 DEFAULT_SP_NUGGET = 0.00002
@@ -91,7 +91,7 @@ class SurfacePointsTable:
         if name_id_map is None:
             ids, name_id_map = generate_ids_from_names(name_id_map, names, x)
         else:
-            ids = np.array([name_id_map[name] for name in names])
+            ids = resolve_ids_from_names(name_id_map, names)
 
         data = np.zeros(len(x), dtype=SurfacePointsTable.dt)
         data['X'], data['Y'], data['Z'], data['id'], data['nugget'] = x, y, z, ids, nugget
