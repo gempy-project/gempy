@@ -1,12 +1,14 @@
 ﻿import dotenv
 import numpy as np
 import os
+import warnings
 from typing import Callable, Optional
 
 import gempy_engine
 from gempy_engine.config import AvailableBackends
 from gempy_engine.core.backend_tensor import BackendTensor
 from gempy_engine.core.data import Solutions
+from gempy_engine.core.data.transforms import GlobalAnisotropy
 from .grid_API import set_custom_grid
 from .field_evaluation_API import _FieldEvaluationContext
 from ..core.data import StructuralGroup
@@ -44,6 +46,8 @@ def compute_model(gempy_model: GeoModel, engine_config: Optional[GemPyEngineConf
 
     if not skip_validation:
         gempy_model.validate()
+
+    _ensure_input_transform(gempy_model)
 
     match engine_config.backend:
         case AvailableBackends.numpy | AvailableBackends.PYTORCH:
@@ -96,6 +100,39 @@ def compute_model(gempy_model: GeoModel, engine_config: Optional[GemPyEngineConf
         _validate_serialization(gempy_model, model_deserialized)
 
     return gempy_model.solutions
+
+
+def _ensure_input_transform(gempy_model: GeoModel) -> None:
+    """Derive the input transform from the data if the model still carries the default (identity) one.
+
+    ``create_geomodel`` derives ``GeoModel.input_transform`` from the points present at creation
+    time. When the structural frame is populated afterwards (``gp.add_surface_points`` /
+    ``gp.add_orientations``) the transform stays the identity and the interpolation runs on raw
+    coordinates. With the default kernel range (1.7) the covariance kernel is then evaluated far
+    outside its range, the kriging system becomes extremely ill-conditioned (condition numbers of
+    ~1e37 for a model spanning kilometres) and, while the forward fields still look plausible,
+    autograd derivatives through the linear solve are silently wrong by up to orders of magnitude.
+
+    Deriving the transform here is equivalent to the documented
+    ``geo_model.update_transform(GlobalAnisotropy.NONE)`` call before the first compute.
+    """
+    transform = gempy_model.input_transform
+    if transform is None or not transform._is_default_transform:
+        return
+
+    frame = gempy_model.structural_frame
+    has_data = len(frame.surface_points_copy.data) > 0 or len(frame.orientations_copy.data) > 0
+    if not has_data:
+        return
+
+    warnings.warn(
+        "The model still has the default (identity) input transform because its structural frame was empty "
+        "when it was created. Deriving the transform from the current input data now, as "
+        "GeoModel.update_transform(GlobalAnisotropy.NONE) would. Call update_transform() yourself after adding "
+        "the input data to silence this warning or to choose a different anisotropy.",
+        RuntimeWarning
+    )
+    gempy_model.update_transform(auto_anisotropy=GlobalAnisotropy.NONE)
 
 
 def compute_model_at(gempy_model: GeoModel, at: np.ndarray,
