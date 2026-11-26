@@ -454,3 +454,29 @@ class GeoModel(BaseModel):
                     context={"group_name": group.name, "surface_points": group.number_of_points,
                              "orientations": group.number_of_orientations}
                 )
+
+        # R8/R9: the engine needs surface points on every surface and an orientation in every group, unless the
+        # group's field comes from elsewhere (a mesh or a custom interpolation function). Names only exist here.
+        for i, group in enumerate(groups):
+            if group.mesh_source is not None or group.custom_interpolation is not None:
+                continue
+            for j, element in enumerate(group.elements):
+                if element.number_of_points == 0:
+                    raise ModelValidationError(
+                        field=f"structural_groups[{i}].elements[{j}]",
+                        reason="surface_without_points",
+                        message=f"Surface '{element.name}' in group '{group.name}' has no surface points. Add surface "
+                                f"points to it or delete it, then compute again.",
+                        context={"group_name": group.name, "surface_name": element.name}
+                    )
+            if group.number_of_orientations == 0:
+                raise ModelValidationError(
+                    field=f"structural_groups[{i}].elements",
+                    reason="missing_orientations",
+                    message=f"Group '{group.name}' has no orientations. Add at least one orientation to it, then "
+                            f"compute again.",
+                    context={"group_name": group.name}
+                )
+
+        # R10: fault offsets (fault_offsets_older_group, invalid_fault_relation) are checked where they are built.
+        _ = self.structural_frame.fault_relations
