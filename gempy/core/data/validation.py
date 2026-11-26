@@ -13,4 +13,4 @@ class ModelValidationError(ValueError):
         self.reason = reason
         self.message = message
         self.context = context or {}
-        super().__init__(f"[{field}] {reason}")
+        super().__init__(f"[{field}] {reason}: {message}" if message else f"[{field}] {reason}")

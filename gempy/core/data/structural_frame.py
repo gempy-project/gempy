@@ -19,6 +19,7 @@ from .orientations import OrientationsTable
 from .structural_element import StructuralElement
 from .structural_group import StructuralGroup, FaultsRelationSpecialCase
 from .surface_points import SurfacePointsTable
+from .validation import ModelValidationError
 from ..color_generator import ColorsGenerator
 
 
@@ -280,10 +281,23 @@ class StructuralFrame:
                     for fault_group in fault_groups:
                         j = self.structural_groups.index(fault_group)
                         if j <= i:  # Only consider groups that are 
-                            raise ValueError(f"Fault {group.name} cannot affect older fault {fault_group.name}")
+                            raise ModelValidationError(
+                                field=f"structural_groups[{i}].fault_relations",
+                                reason="fault_offsets_older_group",
+                                message=f"Fault {group.name} cannot affect older fault {fault_group.name}. A fault can only "
+                                        f"offset groups below it: remove '{fault_group.name}' from the offset list of "
+                                        f"'{group.name}', then compute again.",
+                                context={"fault_name": group.name, "group_name": fault_group.name},
+                            )
                         fault_relations[i, j] = True
                 case (StackRelationType.FAULT, _):
-                    raise ValueError(f"Fault {group.name} has an invalid fault relation")
+                    raise ModelValidationError(
+                        field=f"structural_groups[{i}].fault_relations",
+                        reason="invalid_fault_relation",
+                        message=f"Fault {group.name} has an invalid fault relation: choose the groups it offsets, "
+                                f"then compute again.",
+                        context={"fault_name": group.name},
+                    )
                 case _:
                     pass  # If not a fault or fault relation is not specified, do nothing
         return fault_relations
